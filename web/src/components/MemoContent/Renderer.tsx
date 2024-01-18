@@ -18,6 +18,7 @@ import {
   OrderedListNode,
   ParagraphNode,
   StrikethroughNode,
+  TableNode,
   TagNode,
   TaskListNode,
   TextNode,
@@ -40,6 +41,7 @@ import Math from "./Math";
 import OrderedList from "./OrderedList";
 import Paragraph from "./Paragraph";
 import Strikethrough from "./Strikethrough";
+import Table from "./Table";
 import Tag from "./Tag";
 import TaskList from "./TaskList";
 import Text from "./Text";
@@ -72,6 +74,8 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
       return <TaskList index={index} {...(node.taskListNode as TaskListNode)} />;
     case NodeType.MATH_BLOCK:
       return <Math {...(node.mathBlockNode as MathNode)} block={true} />;
+    case NodeType.TABLE:
+      return <Table {...(node.tableNode as TableNode)} />;
     case NodeType.TEXT:
       return <Text {...(node.textNode as TextNode)} />;
     case NodeType.BOLD:

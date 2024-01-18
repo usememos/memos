@@ -88,6 +88,8 @@
     - [ParseMarkdownRequest](#memos-api-v2-ParseMarkdownRequest)
     - [ParseMarkdownResponse](#memos-api-v2-ParseMarkdownResponse)
     - [StrikethroughNode](#memos-api-v2-StrikethroughNode)
+    - [TableNode](#memos-api-v2-TableNode)
+    - [TableNode.Row](#memos-api-v2-TableNode-Row)
     - [TagNode](#memos-api-v2-TagNode)
     - [TaskListNode](#memos-api-v2-TaskListNode)
     - [TextNode](#memos-api-v2-TextNode)
@@ -1222,6 +1224,7 @@
 | unordered_list_node | [UnorderedListNode](#memos-api-v2-UnorderedListNode) |  |  |
 | task_list_node | [TaskListNode](#memos-api-v2-TaskListNode) |  |  |
 | math_block_node | [MathBlockNode](#memos-api-v2-MathBlockNode) |  |  |
+| table_node | [TableNode](#memos-api-v2-TableNode) |  |  |
 | text_node | [TextNode](#memos-api-v2-TextNode) |  |  |
 | bold_node | [BoldNode](#memos-api-v2-BoldNode) |  |  |
 | italic_node | [ItalicNode](#memos-api-v2-ItalicNode) |  |  |
@@ -1318,6 +1321,38 @@
 
 
 
+<a name="memos-api-v2-TableNode"></a>
+
+### TableNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| header | [string](#string) | repeated |  |
+| delimiter | [int32](#int32) | repeated |  |
+| rows | [TableNode.Row](#memos-api-v2-TableNode-Row) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-TableNode-Row"></a>
+
+### TableNode.Row
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| cells | [string](#string) | repeated |  |
+
+
+
+
+
+
 <a name="memos-api-v2-TagNode"></a>
 
 ### TagNode
@@ -1403,19 +1438,20 @@
 | UNORDERED_LIST | 8 |  |
 | TASK_LIST | 9 |  |
 | MATH_BLOCK | 10 |  |
-| TEXT | 11 |  |
-| BOLD | 12 |  |
-| ITALIC | 13 |  |
-| BOLD_ITALIC | 14 |  |
-| CODE | 15 |  |
-| IMAGE | 16 |  |
-| LINK | 17 |  |
-| AUTO_LINK | 18 |  |
-| TAG | 19 |  |
-| STRIKETHROUGH | 20 |  |
-| ESCAPING_CHARACTER | 21 |  |
-| MATH | 22 |  |
-| HIGHLIGHT | 23 |  |
+| TABLE | 11 |  |
+| TEXT | 12 |  |
+| BOLD | 13 |  |
+| ITALIC | 14 |  |
+| BOLD_ITALIC | 15 |  |
+| CODE | 16 |  |
+| IMAGE | 17 |  |
+| LINK | 18 |  |
+| AUTO_LINK | 19 |  |
+| TAG | 20 |  |
+| STRIKETHROUGH | 21 |  |
+| ESCAPING_CHARACTER | 22 |  |
+| MATH | 23 |  |
+| HIGHLIGHT | 24 |  |
 
 
  

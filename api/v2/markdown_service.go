@@ -63,6 +63,8 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 		node.Node = &apiv2pb.Node_TaskListNode{TaskListNode: &apiv2pb.TaskListNode{Symbol: n.Symbol, Indent: int32(n.Indent), Complete: n.Complete, Children: children}}
 	case *ast.MathBlock:
 		node.Node = &apiv2pb.Node_MathBlockNode{MathBlockNode: &apiv2pb.MathBlockNode{Content: n.Content}}
+	case *ast.Table:
+		node.Node = &apiv2pb.Node_TableNode{TableNode: convertTableFromASTNode(n)}
 	case *ast.Text:
 		node.Node = &apiv2pb.Node_TextNode{TextNode: &apiv2pb.TextNode{Content: n.Content}}
 	case *ast.Bold:
@@ -134,6 +136,8 @@ func convertToASTNode(node *apiv2pb.Node) ast.Node {
 		return &ast.TaskList{Symbol: n.TaskListNode.Symbol, Indent: int(n.TaskListNode.Indent), Complete: n.TaskListNode.Complete, Children: children}
 	case *apiv2pb.Node_MathBlockNode:
 		return &ast.MathBlock{Content: n.MathBlockNode.Content}
+	case *apiv2pb.Node_TableNode:
+		return convertTableToASTNode(node)
 	case *apiv2pb.Node_TextNode:
 		return &ast.Text{Content: n.TextNode.Content}
 	case *apiv2pb.Node_BoldNode:
@@ -164,6 +168,32 @@ func convertToASTNode(node *apiv2pb.Node) ast.Node {
 	default:
 		return &ast.Text{}
 	}
+}
+
+func convertTableToASTNode(node *apiv2pb.Node) *ast.Table {
+	table := &ast.Table{
+		Header: node.GetTableNode().Header,
+	}
+	for _, d := range node.GetTableNode().Delimiter {
+		table.Delimiter = append(table.Delimiter, int(d))
+	}
+	for _, row := range node.GetTableNode().Rows {
+		table.Rows = append(table.Rows, row.Cells)
+	}
+	return table
+}
+
+func convertTableFromASTNode(node *ast.Table) *apiv2pb.TableNode {
+	table := &apiv2pb.TableNode{
+		Header: node.Header,
+	}
+	for _, d := range node.Delimiter {
+		table.Delimiter = append(table.Delimiter, int32(d))
+	}
+	for _, row := range node.Rows {
+		table.Rows = append(table.Rows, &apiv2pb.TableNode_Row{Cells: row})
+	}
+	return table
 }
 
 func traverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {

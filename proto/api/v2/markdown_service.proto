@@ -35,19 +35,20 @@ enum NodeType {
   UNORDERED_LIST = 8;
   TASK_LIST = 9;
   MATH_BLOCK = 10;
-  TEXT = 11;
-  BOLD = 12;
-  ITALIC = 13;
-  BOLD_ITALIC = 14;
-  CODE = 15;
-  IMAGE = 16;
-  LINK = 17;
-  AUTO_LINK = 18;
-  TAG = 19;
-  STRIKETHROUGH = 20;
-  ESCAPING_CHARACTER = 21;
-  MATH = 22;
-  HIGHLIGHT = 23;
+  TABLE = 11;
+  TEXT = 12;
+  BOLD = 13;
+  ITALIC = 14;
+  BOLD_ITALIC = 15;
+  CODE = 16;
+  IMAGE = 17;
+  LINK = 18;
+  AUTO_LINK = 19;
+  TAG = 20;
+  STRIKETHROUGH = 21;
+  ESCAPING_CHARACTER = 22;
+  MATH = 23;
+  HIGHLIGHT = 24;
 }
 
 message Node {
@@ -63,19 +64,20 @@ message Node {
     UnorderedListNode unordered_list_node = 9;
     TaskListNode task_list_node = 10;
     MathBlockNode math_block_node = 11;
-    TextNode text_node = 12;
-    BoldNode bold_node = 13;
-    ItalicNode italic_node = 14;
-    BoldItalicNode bold_italic_node = 15;
-    CodeNode code_node = 16;
-    ImageNode image_node = 17;
-    LinkNode link_node = 18;
-    AutoLinkNode auto_link_node = 19;
-    TagNode tag_node = 20;
-    StrikethroughNode strikethrough_node = 21;
-    EscapingCharacterNode escaping_character_node = 22;
-    MathNode math_node = 23;
-    HighlightNode highlight_node = 24;
+    TableNode table_node = 12;
+    TextNode text_node = 13;
+    BoldNode bold_node = 14;
+    ItalicNode italic_node = 15;
+    BoldItalicNode bold_italic_node = 16;
+    CodeNode code_node = 17;
+    ImageNode image_node = 18;
+    LinkNode link_node = 19;
+    AutoLinkNode auto_link_node = 20;
+    TagNode tag_node = 21;
+    StrikethroughNode strikethrough_node = 22;
+    EscapingCharacterNode escaping_character_node = 23;
+    MathNode math_node = 24;
+    HighlightNode highlight_node = 25;
   }
 }
 
@@ -124,6 +126,16 @@ message TaskListNode {
 
 message MathBlockNode {
   string content = 1;
+}
+
+message TableNode {
+  repeated string header = 1;
+  repeated int32 delimiter = 2;
+
+  message Row {
+    repeated string cells = 1;
+  }
+  repeated Row rows = 3;
 }
 
 message TextNode {
