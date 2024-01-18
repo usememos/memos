@@ -4,12 +4,14 @@ import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
+import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import UserAvatar from "@/components/UserAvatar";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
+import { useFilterStore } from "@/store/module";
 import { useMemoList, useMemoStore, useUserStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -19,11 +21,13 @@ const UserProfile = () => {
   const params = useParams();
   const userStore = useUserStore();
   const loadingState = useLoading();
+  const filterStore = useFilterStore();
   const [user, setUser] = useState<User>();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
+  const { tag: tagQuery, text: textQuery } = filterStore.state;
   const sortedMemos = memoList.value
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
@@ -53,7 +57,7 @@ const UserProfile = () => {
 
     memoList.reset();
     fetchMemos();
-  }, [user]);
+  }, [user, tagQuery, textQuery]);
 
   const fetchMemos = async () => {
     if (!user) {
@@ -61,6 +65,16 @@ const UserProfile = () => {
     }
 
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
+    const contentSearch: string[] = [];
+    if (tagQuery) {
+      contentSearch.push(`"#${tagQuery}"`);
+    }
+    if (textQuery) {
+      contentSearch.push(`"${textQuery}"`);
+    }
+    if (contentSearch.length > 0) {
+      filters.push(`content_search == [${contentSearch.join(", ")}]`);
+    }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
       filter: filters.join(" && "),
@@ -91,6 +105,7 @@ const UserProfile = () => {
                   <p className="text-3xl text-black leading-none opacity-80 dark:text-gray-200">{user?.nickname}</p>
                 </div>
               </div>
+              <MemoFilter className="px-2 pb-3" />
               {sortedMemos.map((memo) => (
                 <MemoView key={memo.id} memo={memo} showVisibility showPinnedStyle />
               ))}
