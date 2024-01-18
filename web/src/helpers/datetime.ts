@@ -42,38 +42,19 @@ export function getTimeString(t?: Date | number | string): string {
  * - "pl" locale: "30.01.2023, 22:05:00"
  */
 export function getDateTimeString(t?: Date | number | string | any, locale = i18n.language): string {
-  const tsFromDate = getTimeStampByDate(t ? t : Date.now());
-
-  return new Date(tsFromDate).toLocaleDateString(locale, {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-  });
-}
-
-/**
- * Get a localized date string to provided time.
- *
- * If no date is provided, the current date is used.
- *
- * Note: This function does not include time information.
- *
- * Sample outputs:
- * - "en" locale: "1/30/2023"
- * - "pt-BR" locale: "30/01/2023"
- * - "pl" locale: "30.01.2023"
- */
-export function getDateString(t?: Date | number | string, locale = i18n.language): string {
-  const tsFromDate = getTimeStampByDate(t ? t : Date.now());
-
-  return new Date(tsFromDate).toLocaleDateString(locale, {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-  });
+  const tsFromDate = new Date(getTimeStampByDate(t ? t : Date.now()));
+  try {
+    return tsFromDate.toLocaleString(locale, {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+  } catch (error) {
+    return tsFromDate.toLocaleString();
+  }
 }
 
 /**
@@ -98,14 +79,7 @@ export const getRelativeTimeString = (time: number, locale = i18n.language, form
   const dayMillis = hourMillis * 24;
   // Show full date if more than 1 day ago.
   if (pastTimeMillis >= dayMillis) {
-    return new Date(time).toLocaleDateString(locale, {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    });
+    return getDateTimeString(time, locale);
   }
 
   // numeric: "auto" provides "yesterday" for 1 day ago, "always" provides "1 day ago"
