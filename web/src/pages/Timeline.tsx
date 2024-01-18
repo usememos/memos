@@ -1,10 +1,12 @@
-import { Button, IconButton } from "@mui/joy";
+import { Button, Divider, IconButton } from "@mui/joy";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { sum } from "lodash-es";
+import { Fragment, useEffect, useState } from "react";
 import ActivityCalendar from "@/components/ActivityCalendar";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
+import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { memoServiceClient } from "@/grpcweb";
@@ -13,6 +15,7 @@ import { getNormalizedTimeString, getTimeStampByDate } from "@/helpers/datetime"
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
+import { useFilterStore } from "@/store/module";
 import { useMemoList, useMemoStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -47,22 +50,36 @@ const Timeline = () => {
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
+  const filterStore = useFilterStore();
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [isRequesting, setIsRequesting] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
+  const { tag: tagQuery, text: textQuery } = filterStore.state;
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
   const groupedByMonth = groupByMonth(activityStats, sortedMemos);
 
   useEffect(() => {
     memoList.reset();
     fetchMemos();
-  }, []);
+  }, [tagQuery, textQuery]);
 
   useEffect(() => {
     (async () => {
+      const filters = [`row_status == "NORMAL"`];
+      const contentSearch: string[] = [];
+      if (tagQuery) {
+        contentSearch.push(`"#${tagQuery}"`);
+      }
+      if (textQuery) {
+        contentSearch.push(`"${textQuery}"`);
+      }
+      if (contentSearch.length > 0) {
+        filters.push(`content_search == [${contentSearch.join(", ")}]`);
+      }
       const { stats } = await memoServiceClient.getUserMemosStats({
         name: user.name,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        filter: filters.join(" && "),
       });
       setActivityStats(stats);
     })();
@@ -70,6 +87,16 @@ const Timeline = () => {
 
   const fetchMemos = async () => {
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
+    const contentSearch: string[] = [];
+    if (tagQuery) {
+      contentSearch.push(`"#${tagQuery}"`);
+    }
+    if (textQuery) {
+      contentSearch.push(`"${textQuery}"`);
+    }
+    if (contentSearch.length > 0) {
+      filters.push(`content_search == [${contentSearch.join(", ")}]`);
+    }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
       filter: filters.join(" && "),
@@ -103,42 +130,45 @@ const Timeline = () => {
             </div>
           </div>
           <div className="w-full h-auto flex flex-col justify-start items-start">
-            {groupedByMonth.map((group) => (
-              <div
-                key={group.month}
-                className={classNames("flex justify-start items-start w-full mt-2 mb-4", md ? "flex-row" : "flex-col")}
-              >
-                <div className={classNames("flex shrink-0", md ? "flex-col w-32 pr-4 pl-2 pb-8" : "flex-row w-full pl-1 mt-2 mb-2")}>
-                  <div className="w-full flex flex-col mt-2 mb-2">
-                    <span className="font-medium text-4xl leading-none mb-1">
-                      {new Date(group.month).toLocaleString(i18n.language, { month: "short" })}
-                    </span>
-                    <span className="text-sm opacity-60">{new Date(group.month).getFullYear()}</span>
-                  </div>
-                  <ActivityCalendar month={group.month} data={group.data} />
-                </div>
+            <MemoFilter className="px-2 my-4" />
 
-                <div className={classNames("flex flex-col justify-start items-start", md ? "w-[calc(100%-8rem)]" : "w-full")}>
-                  {group.memos.map((memo, index) => (
-                    <div
-                      key={`${memo.id}-${memo.createTime}`}
-                      className={classNames("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
-                    >
-                      <MemoView className="!border !border-gray-100 dark:!border-zinc-700" memo={memo} />
-                      {group.memos.length > 1 && (
-                        <div className="absolute -left-2 sm:left-2 top-4 h-full">
-                          {index !== group.memos.length - 1 && (
-                            <div className="absolute top-2 left-[7px] h-full w-0.5 bg-gray-200 dark:bg-gray-700 block"></div>
-                          )}
-                          <div className="border-4 rounded-full border-white relative dark:border-zinc-800">
-                            <Icon.Circle className="w-2 h-auto bg-gray-200 text-gray-200 dark:bg-gray-700 dark:text-gray-700 rounded-full" />
-                          </div>
-                        </div>
-                      )}
+            {groupedByMonth.map((group, index) => (
+              <Fragment key={group.month}>
+                <div className={classNames("flex justify-start items-start w-full mt-2 last:mb-4", md ? "flex-row" : "flex-col")}>
+                  <div className={classNames("flex shrink-0", md ? "flex-col w-32 pr-4 pl-2 pb-8" : "flex-row w-full pl-1 mt-2 mb-2")}>
+                    <div className={classNames("w-full flex flex-col", md && "mt-4 mb-2")}>
+                      <span className="font-medium text-3xl leading-none mb-1">
+                        {new Date(group.month).toLocaleString(i18n.language, { month: "short" })}
+                      </span>
+                      <span className="opacity-60">{new Date(group.month).getFullYear()}</span>
+                      <span className="text-xs opacity-40">Total: {sum(Object.values(group.data))}</span>
                     </div>
-                  ))}
+                    <ActivityCalendar month={group.month} data={group.data} />
+                  </div>
+
+                  <div className={classNames("flex flex-col justify-start items-start", md ? "w-[calc(100%-8rem)]" : "w-full")}>
+                    {group.memos.map((memo, index) => (
+                      <div
+                        key={`${memo.id}-${memo.createTime}`}
+                        className={classNames("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
+                      >
+                        <MemoView className="!border !border-gray-100 dark:!border-zinc-700" memo={memo} />
+                        {group.memos.length > 1 && (
+                          <div className="absolute -left-2 sm:left-2 top-4 h-full">
+                            {index !== group.memos.length - 1 && (
+                              <div className="absolute top-2 left-[7px] h-full w-0.5 bg-gray-200 dark:bg-gray-700 block"></div>
+                            )}
+                            <div className="border-4 rounded-full border-white relative dark:border-zinc-800">
+                              <Icon.Circle className="w-2 h-auto bg-gray-200 text-gray-200 dark:bg-gray-700 dark:text-gray-700 rounded-full" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+                {index !== groupedByMonth.length - 1 && <Divider className="w-full !my-4 md:!mb-8 !bg-gray-100 dark:!bg-zinc-700" />}
+              </Fragment>
             ))}
             {isRequesting ? (
               <div className="flex flex-col justify-start items-center w-full my-4">

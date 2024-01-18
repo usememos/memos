@@ -33,6 +33,7 @@ interface Props {
   memoId?: number;
   parentMemoId?: number;
   relationList?: MemoRelation[];
+  autoFocus?: boolean;
   onConfirm?: (memoId: number) => void;
 }
 
@@ -45,7 +46,7 @@ interface State {
 }
 
 const MemoEditor = (props: Props) => {
-  const { className, editorClassName, cacheKey, memoId, parentMemoId, onConfirm } = props;
+  const { className, editorClassName, cacheKey, memoId, parentMemoId, autoFocus, onConfirm } = props;
   const { i18n } = useTranslation();
   const t = useTranslate();
   const contentCacheKey = `memo-editor-${cacheKey}`;
@@ -75,6 +76,12 @@ const MemoEditor = (props: Props) => {
   useEffect(() => {
     editorRef.current?.setContent(contentCache || "");
   }, []);
+
+  useEffect(() => {
+    if (autoFocus) {
+      handleEditorFocus();
+    }
+  }, [autoFocus]);
 
   useEffect(() => {
     let visibility = userSetting.memoVisibility;
@@ -376,8 +383,8 @@ const MemoEditor = (props: Props) => {
       <Editor ref={editorRef} {...editorConfig} />
       <div className="relative w-full flex flex-row justify-between items-center pt-2" onFocus={(e) => e.stopPropagation()}>
         <div className="flex flex-row justify-start items-center opacity-80">
-          <MarkdownMenu editorRef={editorRef} />
           <TagSelector editorRef={editorRef} />
+          <MarkdownMenu editorRef={editorRef} />
           <IconButton size="sm" onClick={handleUploadFileBtnClick}>
             <Icon.Image className="w-5 h-5 mx-auto" />
           </IconButton>

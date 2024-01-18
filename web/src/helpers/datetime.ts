@@ -11,17 +11,6 @@ export function getDateStampByDate(t?: Date | number | string): number {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
 
-export function getNormalizedDateString(t?: Date | number | string): string {
-  const tsFromDate = getTimeStampByDate(t ? t : Date.now());
-  const d = new Date(tsFromDate);
-
-  const year = d.getFullYear();
-  const month = d.getMonth() + 1;
-  const date = d.getDate();
-
-  return `${year}/${month}/${date}`;
-}
-
 /**
  * Get a time string to provided time.
  *
@@ -165,6 +154,19 @@ export function getNormalizedTimeString(t?: Date | number | string): string {
   const mm = m < 10 ? "0" + m : m;
 
   return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
+}
+
+export function getNormalizedDateString(t?: Date | number | string): string {
+  const date = new Date(t ? t : Date.now());
+
+  const yyyy = date.getFullYear();
+  const M = date.getMonth() + 1;
+  const d = date.getDate();
+
+  const MM = M < 10 ? "0" + M : M;
+  const dd = d < 10 ? "0" + d : d;
+
+  return `${yyyy}-${MM}-${dd}`;
 }
 
 /**

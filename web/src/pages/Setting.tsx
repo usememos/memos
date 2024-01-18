@@ -109,17 +109,15 @@ const Setting = () => {
             ) : null}
           </div>
           <div className="w-full grow sm:pl-4 overflow-x-auto">
-            <Select
-              className="block my-2 sm:!hidden"
-              value={state.selectedSection}
-              onChange={(_, value) => handleSectionSelectorItemClick(value as SettingSection)}
-            >
-              {getSettingSectionList().map((settingSection) => (
-                <Option key={settingSection} value={settingSection}>
-                  {t(`setting.${settingSection}`)}
-                </Option>
-              ))}
-            </Select>
+            <div className="w-auto inline-block my-2 sm:hidden">
+              <Select value={state.selectedSection} onChange={(_, value) => handleSectionSelectorItemClick(value as SettingSection)}>
+                {getSettingSectionList().map((settingSection) => (
+                  <Option key={settingSection} value={settingSection}>
+                    {t(`setting.${settingSection}`)}
+                  </Option>
+                ))}
+              </Select>
+            </div>
             {state.selectedSection === "my-account" ? (
               <MyAccountSection />
             ) : state.selectedSection === "preference" ? (

@@ -241,6 +241,9 @@ message GetUserMemosStatsRequest {
   // Format: uses tz identifier
   // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   string timezone = 2;
+
+  // Same as ListMemosRequest.filter
+  string filter = 3;
 }
 
 message GetUserMemosStatsResponse {

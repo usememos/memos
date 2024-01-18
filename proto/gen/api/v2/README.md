@@ -1780,6 +1780,7 @@
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | name is the name of the user to get stats for. Format: users/{username} |
 | timezone | [string](#string) |  | timezone location Format: uses tz identifier https://en.wikipedia.org/wiki/List_of_tz_database_time_zones |
+| filter | [string](#string) |  | Same as ListMemosRequest.filter |
 
 
 

@@ -449,6 +449,31 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 	if displayWithUpdatedTs {
 		memoFind.OrderByUpdatedTs = true
 	}
+	if request.Filter != "" {
+		filter, err := parseListMemosFilter(request.Filter)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		}
+		if len(filter.ContentSearch) > 0 {
+			memoFind.ContentSearch = filter.ContentSearch
+		}
+		if len(filter.Visibilities) > 0 {
+			memoFind.VisibilityList = filter.Visibilities
+		}
+		if filter.OrderByPinned {
+			memoFind.OrderByPinned = filter.OrderByPinned
+		}
+		if filter.CreatedTsBefore != nil {
+			memoFind.CreatedTsBefore = filter.CreatedTsBefore
+		}
+		if filter.CreatedTsAfter != nil {
+			memoFind.CreatedTsAfter = filter.CreatedTsAfter
+		}
+		if filter.RowStatus != nil {
+			memoFind.RowStatus = filter.RowStatus
+		}
+	}
+
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memos")
