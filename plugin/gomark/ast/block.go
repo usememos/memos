@@ -198,9 +198,8 @@ func (n *MathBlock) Restore() string {
 type Table struct {
 	BaseBlock
 
-	Header []string
-	// Delimiter is the list of delimiter counts.
-	Delimiter []int
+	Header    []string
+	Delimiter []string
 	Rows      [][]string
 }
 
@@ -215,11 +214,7 @@ func (n *Table) Restore() string {
 	}
 	result += "|\n"
 	for _, d := range n.Delimiter {
-		symbol := ""
-		for i := 0; i < d; i++ {
-			symbol += "-"
-		}
-		result += fmt.Sprintf("| %s ", symbol)
+		result += fmt.Sprintf("| %s ", d)
 	}
 	result += "|\n"
 	for index, row := range n.Rows {

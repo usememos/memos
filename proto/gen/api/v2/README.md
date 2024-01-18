@@ -1330,7 +1330,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | header | [string](#string) | repeated |  |
-| delimiter | [int32](#int32) | repeated |  |
+| delimiter | [string](#string) | repeated |  |
 | rows | [TableNode.Row](#memos-api-v2-TableNode-Row) | repeated |  |
 
 

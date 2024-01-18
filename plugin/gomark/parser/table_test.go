@@ -18,7 +18,7 @@ func TestTableParser(t *testing.T) {
 			text: "| header |\n| --- |\n| cell |\n",
 			table: &ast.Table{
 				Header:    []string{"header"},
-				Delimiter: []int{3},
+				Delimiter: []string{"---"},
 				Rows: [][]string{
 					{"cell"},
 				},
@@ -28,7 +28,18 @@ func TestTableParser(t *testing.T) {
 			text: "| header1 | header2 |\n| --- | ---- |\n| cell1 | cell2 |\n| cell3 | cell4 |",
 			table: &ast.Table{
 				Header:    []string{"header1", "header2"},
-				Delimiter: []int{3, 4},
+				Delimiter: []string{"---", "----"},
+				Rows: [][]string{
+					{"cell1", "cell2"},
+					{"cell3", "cell4"},
+				},
+			},
+		},
+		{
+			text: "| header1 | header2 |\n| :-- | ----: |\n| cell1 | cell2 |\n| cell3 | cell4 |",
+			table: &ast.Table{
+				Header:    []string{"header1", "header2"},
+				Delimiter: []string{":--", "----:"},
 				Rows: [][]string{
 					{"cell1", "cell2"},
 					{"cell3", "cell4"},
