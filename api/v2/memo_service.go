@@ -590,6 +590,10 @@ func (s *APIV2Service) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Conte
 	if err != nil {
 		return false, errors.Wrap(err, "failed to find system setting")
 	}
+	if memoDisplayWithUpdatedTsSetting == nil {
+		return false, nil
+	}
+
 	memoDisplayWithUpdatedTs := false
 	if memoDisplayWithUpdatedTsSetting != nil {
 		err = json.Unmarshal([]byte(memoDisplayWithUpdatedTsSetting.Value), &memoDisplayWithUpdatedTs)
@@ -607,6 +611,10 @@ func (s *APIV2Service) getDisablePublicMemosSystemSettingValue(ctx context.Conte
 	if err != nil {
 		return false, errors.Wrap(err, "failed to find system setting")
 	}
+	if disablePublicMemosSystemSetting == nil {
+		return false, nil
+	}
+
 	disablePublicMemos := false
 	err = json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos)
 	if err != nil {
