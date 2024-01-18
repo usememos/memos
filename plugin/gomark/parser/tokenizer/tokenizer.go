@@ -20,6 +20,7 @@ const (
 	GreaterThan        TokenType = ">"
 	DollarSign         TokenType = "$"
 	EqualSign          TokenType = "="
+	Pipe               TokenType = "|"
 	Backslash          TokenType = "\\"
 	Newline            TokenType = "\n"
 	Space              TokenType = " "
@@ -80,6 +81,8 @@ func Tokenize(text string) []*Token {
 			tokens = append(tokens, NewToken(DollarSign, "$"))
 		case '=':
 			tokens = append(tokens, NewToken(EqualSign, "="))
+		case '|':
+			tokens = append(tokens, NewToken(Pipe, "|"))
 		case '\\':
 			tokens = append(tokens, NewToken(Backslash, `\`))
 		case '\n':
@@ -120,4 +123,23 @@ func Stringify(tokens []*Token) string {
 		text += token.String()
 	}
 	return text
+}
+
+func Split(tokens []*Token, delimiter TokenType) [][]*Token {
+	result := make([][]*Token, 0)
+	current := make([]*Token, 0)
+	for _, token := range tokens {
+		if token.Type == delimiter {
+			if len(current) > 0 {
+				result = append(result, current)
+				current = make([]*Token, 0)
+			}
+		} else {
+			current = append(current, token)
+		}
+	}
+	if len(current) > 0 {
+		result = append(result, current)
+	}
+	return result
 }

@@ -31,6 +31,7 @@ func Parse(tokens []*tokenizer.Token) ([]ast.Node, error) {
 
 var defaultBlockParsers = []BlockParser{
 	NewCodeBlockParser(),
+	NewTableParser(),
 	NewHorizontalRuleParser(),
 	NewHeadingParser(),
 	NewBlockquoteParser(),

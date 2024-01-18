@@ -15,6 +15,7 @@ const (
 	UnorderedListNode
 	TaskListNode
 	MathBlockNode
+	TableNode
 	// Inline nodes.
 	TextNode
 	BoldNode
