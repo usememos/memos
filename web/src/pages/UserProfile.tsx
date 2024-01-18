@@ -107,7 +107,7 @@ const UserProfile = () => {
               </div>
               <MemoFilter className="px-2 pb-3" />
               {sortedMemos.map((memo) => (
-                <MemoView key={memo.id} memo={memo} showVisibility showPinnedStyle />
+                <MemoView key={memo.id} memo={memo} showVisibility showPinned />
               ))}
               {isRequesting ? (
                 <div className="flex flex-col justify-start items-center w-full my-4">

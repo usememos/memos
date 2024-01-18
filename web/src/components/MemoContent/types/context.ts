@@ -5,6 +5,7 @@ interface Context {
   nodes: Node[];
   memoId?: number;
   readonly?: boolean;
+  disableFilter?: boolean;
 }
 
 export const RendererContext = createContext<Context>({

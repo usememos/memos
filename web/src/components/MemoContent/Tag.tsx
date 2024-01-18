@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { useContext } from "react";
 import { useFilterStore } from "@/store/module";
 import { RendererContext } from "./types";
@@ -11,7 +12,7 @@ const Tag: React.FC<Props> = ({ content }: Props) => {
   const filterStore = useFilterStore();
 
   const handleTagClick = () => {
-    if (context.readonly) {
+    if (context.disableFilter) {
       return;
     }
 
@@ -24,7 +25,13 @@ const Tag: React.FC<Props> = ({ content }: Props) => {
   };
 
   return (
-    <span className="cursor-pointer inline-block w-auto text-blue-600 dark:text-blue-400 hover:opacity-80" onClick={handleTagClick}>
+    <span
+      className={classNames(
+        "inline-block w-auto text-blue-600 dark:text-blue-400",
+        context.disableFilter ? "" : "cursor-pointer hover:opacity-80"
+      )}
+      onClick={handleTagClick}
+    >
       #{content}
     </span>
   );

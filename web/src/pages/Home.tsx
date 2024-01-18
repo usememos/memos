@@ -73,7 +73,7 @@ const Home = () => {
           <div className="flex flex-col justify-start items-start w-full max-w-full pb-28">
             <MemoFilter className="px-2 pb-2" />
             {sortedMemos.map((memo) => (
-              <MemoView key={`${memo.id}-${memo.updateTime}`} memo={memo} showVisibility showPinnedStyle />
+              <MemoView key={`${memo.id}-${memo.updateTime}`} memo={memo} showVisibility showPinned />
             ))}
             {isRequesting ? (
               <div className="flex flex-col justify-start items-center w-full my-4">
