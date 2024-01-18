@@ -595,11 +595,8 @@ func (s *APIV2Service) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Conte
 	}
 
 	memoDisplayWithUpdatedTs := false
-	if memoDisplayWithUpdatedTsSetting != nil {
-		err = json.Unmarshal([]byte(memoDisplayWithUpdatedTsSetting.Value), &memoDisplayWithUpdatedTs)
-		if err != nil {
-			return false, errors.Wrap(err, "failed to unmarshal system setting value")
-		}
+	if err := json.Unmarshal([]byte(memoDisplayWithUpdatedTsSetting.Value), &memoDisplayWithUpdatedTs); err != nil {
+		return false, errors.Wrap(err, "failed to unmarshal system setting value")
 	}
 	return memoDisplayWithUpdatedTs, nil
 }
@@ -616,8 +613,7 @@ func (s *APIV2Service) getDisablePublicMemosSystemSettingValue(ctx context.Conte
 	}
 
 	disablePublicMemos := false
-	err = json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos)
-	if err != nil {
+	if err := json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos); err != nil {
 		return false, errors.Wrap(err, "failed to unmarshal system setting value")
 	}
 	return disablePublicMemos, nil
