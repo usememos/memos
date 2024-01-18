@@ -8,13 +8,12 @@ A privacy-first, lightweight note-taking service. Easily capture and share your 
 <a href="https://demo.usememos.com/">Live Demo</a>
 
 <p>
-  <a href="https://github.com/usememos/memos/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos?logo=github" /></a>
   <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg"/></a>
   <a href="https://hosted.weblate.org/engage/memos-i18n/"><img src="https://hosted.weblate.org/widget/memos-i18n/english/svg-badge.svg" alt="Translation status" /></a>
   <a href="https://discord.gg/tfPJa4UmAv"><img alt="Discord" src="https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5" /></a>
 </p>
 
-![demo](https://www.usememos.com/demo.webp)
+![demo](https://www.usememos.com/demo.png)
 
 ## Key points
 
@@ -27,7 +26,7 @@ A privacy-first, lightweight note-taking service. Easily capture and share your 
 ## Deploy with Docker in seconds
 
 ```bash
-docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos ghcr.io/usememos/memos:latest
+docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:stable
 ```
 
 > The `~/.memos/` directory will be used as the data directory on your local machine, while `/var/opt/memos` is the directory of the volume in Docker and should not be modified.
@@ -41,21 +40,6 @@ Contributions are what make the open-source community such an amazing place to l
 <a href="https://github.com/usememos/memos/graphs/contributors">
   <img src="https://contri-graphy.yourselfhosted.com/graph?repo=usememos/memos&format=svg" />
 </a>
-
----
-
-- [Moe Memos](https://memos.moe/) - Third party client for iOS and Android
-- [lmm214/memos-bber](https://github.com/lmm214/memos-bber) - Chrome extension
-- [Rabithua/memos_wmp](https://github.com/Rabithua/memos_wmp) - WeChat MiniProgram
-- [qazxcdswe123/telegramMemoBot](https://github.com/qazxcdswe123/telegramMemoBot) - Telegram bot
-- [eallion/memos.top](https://github.com/eallion/memos.top) - Static page rendered with the Memos API
-- [eindex/logseq-memos-sync](https://github.com/EINDEX/logseq-memos-sync) - Logseq plugin
-- [quanru/obsidian-periodic-para](https://github.com/quanru/obsidian-periodic-para#daily-record) - Obsidian plugin
-- [JakeLaoyu/memos-import-from-flomo](https://github.com/JakeLaoyu/memos-import-from-flomo) - Import data. Support from flomo, wechat reading
-- [Quick Memo](https://www.icloud.com/shortcuts/1eaef307112843ed9f91d256f5ee7ad9) - Shortcuts (iOS, iPadOS or macOS)
-- [Memos Raycast Extension](https://www.raycast.com/JakeYu/memos) - Raycast extension
-- [Memos Desktop](https://github.com/xudaolong/memos-desktop) - Third party client for MacOS and Windows
-- [MemosGallery](https://github.com/BarryYangi/MemosGallery) - A static Gallery rendered with the Memos API
 
 ## Star history
 
