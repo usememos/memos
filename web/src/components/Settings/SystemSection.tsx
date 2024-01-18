@@ -252,9 +252,14 @@ const SystemSection = () => {
         <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span className="text-sm">
-          {t("setting.system-section.database-file-size")}: <span className="font-mono font-bold">{formatBytes(state.dbSize)}</span>
-        </span>
+        <div className="flex flex-row items-center">
+          <span className="text-sm">
+            {t("setting.system-section.database-file-size")}: <span className="font-mono font-bold">{formatBytes(state.dbSize)}</span>
+          </span>
+          <Tooltip title={t("setting.system-section.vacuum-hint")} placement="top">
+            <Icon.HelpCircle className="w-4 h-auto" />
+          </Tooltip>
+        </div>
         <Button onClick={handleVacuumBtnClick}>{t("common.vacuum")}</Button>
       </div>
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.settings")}</p>
