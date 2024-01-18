@@ -64,8 +64,8 @@ func (*TableParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if len(delimiterTokens) < 5 {
 		return 0, false
 	}
-	alignCells, ok := matchTableCellTokens(delimiterTokens)
-	if alignCells != headerCells || !ok {
+	delimiterCells, ok := matchTableCellTokens(delimiterTokens)
+	if delimiterCells != headerCells || !ok {
 		return 0, false
 	}
 	for _, t := range tokenizer.Split(delimiterTokens, tokenizer.Pipe) {
@@ -109,7 +109,7 @@ func (p *TableParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 
 	rawRows := tokenizer.Split(tokens[:size-1], tokenizer.Newline)
 	headerTokens := rawRows[0]
-	alignTokens := rawRows[1]
+	dilimiterTokens := rawRows[1]
 	rowTokens := rawRows[2:]
 	header := make([]string, 0)
 	delimiter := make([]string, 0)
@@ -118,7 +118,7 @@ func (p *TableParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	for _, t := range tokenizer.Split(headerTokens, tokenizer.Pipe) {
 		header = append(header, tokenizer.Stringify(t[1:len(t)-1]))
 	}
-	for _, t := range tokenizer.Split(alignTokens, tokenizer.Pipe) {
+	for _, t := range tokenizer.Split(dilimiterTokens, tokenizer.Pipe) {
 		delimiter = append(delimiter, tokenizer.Stringify(t[1:len(t)-1]))
 	}
 	for _, row := range rowTokens {
