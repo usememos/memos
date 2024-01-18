@@ -1,4 +1,18 @@
-import { Button, Divider, IconButton, Input, Option, Select, Typography } from "@mui/joy";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionGroup,
+  AccordionSummary,
+  Button,
+  IconButton,
+  Input,
+  ListItemContent,
+  Option,
+  Select,
+  Typography,
+  accordionDetailsClasses,
+  accordionSummaryClasses,
+} from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import * as api from "@/helpers/api";
@@ -241,171 +255,229 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
           <Icon.X className="w-5 h-auto" />
         </IconButton>
       </div>
-      <div className="dialog-content-container min-w-[19rem]">
+      <div className="dialog-content-container ">
+        <AccordionGroup
+          variant="outlined"
+          transition="0.2s"
+          size="lg"
+          disableDivider
+          sx={{
+            width: "100%",
+            minWidth: "19rem",
+            borderRadius: "lg",
+            [`& .${accordionDetailsClasses.content}.${accordionDetailsClasses.expanded}`]: {
+              paddingBlock: "1rem",
+              borderBottom: "1px solid #32383e",
+            },
+            [`& .${accordionSummaryClasses.button}`]: {
+              borderBottom: "1px solid #32383e",
+              paddingBlock: "1.5rem",
+            },
+          }}
+        >
+          <Accordion>
+            <AccordionSummary>
+              {/* <Avatar color="primary">C1</Avatar> */}
+              <ListItemContent>
+                <Typography level="title-md">Config 1</Typography>
+                {/* <Typography level="body-sm">Activate or deactivate your connections</Typography> */}
+              </ListItemContent>
+            </AccordionSummary>
+            <AccordionDetails>
+              {isCreating && (
+                <>
+                  <Typography className="!mb-2" level="body-md">
+                    {t("common.type")}
+                  </Typography>
+                  <Select className="w-full mb-4" value={type} onChange={(_, e) => setType(e ?? type)}>
+                    {identityProviderTypes.map((kind) => (
+                      <Option key={kind} value={kind}>
+                        {kind}
+                      </Option>
+                    ))}
+                  </Select>
+                  <Typography className="!mb-2" level="body-md">
+                    {t("setting.sso-section.template")}
+                  </Typography>
+                  <Select
+                    className="mb-4 h-auto w-full"
+                    value={selectedTemplate}
+                    onChange={(_, e) => setSelectedTemplate(e ?? selectedTemplate)}
+                  >
+                    {templateList.map((template) => (
+                      <Option key={template.name} value={template.name}>
+                        {template.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </>
+              )}
+              <Typography className="!mb-2" level="body-md">
+                {t("common.name")}
+                <span className="text-red-600">*</span>
+              </Typography>
+              <Input
+                className="mb-4"
+                placeholder={t("common.name")}
+                value={basicInfo.name}
+                onChange={(e) =>
+                  setBasicInfo({
+                    ...basicInfo,
+                    name: e.target.value,
+                  })
+                }
+                fullWidth
+              />
+              <Typography className="!mb-2" level="body-md">
+                {t("setting.sso-section.identifier-filter")}
+              </Typography>
+              <Input
+                className="mb-4"
+                placeholder={t("setting.sso-section.identifier-filter")}
+                value={basicInfo.identifierFilter}
+                onChange={(e) =>
+                  setBasicInfo({
+                    ...basicInfo,
+                    identifierFilter: e.target.value,
+                  })
+                }
+                fullWidth
+              />
+            </AccordionDetails>
+          </Accordion>
+
+          {type === "OAUTH2" && (
+            <>
+              <Accordion>
+                <AccordionSummary>
+                  {/* <Avatar color="primary">C1</Avatar> */}
+                  <ListItemContent>
+                    <Typography level="title-md">Config 2</Typography>
+                    {/* <Typography level="body-sm">Activate or deactivate your connections</Typography> */}
+                  </ListItemContent>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography className="!mb-2" level="body-md">
+                    {t("setting.sso-section.client-id")}
+                    <span className="text-red-600">*</span>
+                  </Typography>
+                  <Input
+                    className="mb-4"
+                    placeholder={t("setting.sso-section.client-id")}
+                    value={oauth2Config.clientId}
+                    onChange={(e) => setPartialOAuth2Config({ clientId: e.target.value })}
+                    fullWidth
+                  />
+                  <Typography className="!mb-2" level="body-md">
+                    {t("setting.sso-section.client-secret")}
+                    <span className="text-red-600">*</span>
+                  </Typography>
+                  <Input
+                    className="mb-4"
+                    placeholder={t("setting.sso-section.client-secret")}
+                    value={oauth2Config.clientSecret}
+                    onChange={(e) => setPartialOAuth2Config({ clientSecret: e.target.value })}
+                    fullWidth
+                  />
+                  <Typography className="!mb-2" level="body-md">
+                    {t("setting.sso-section.authorization-endpoint")}
+                    <span className="text-red-600">*</span>
+                  </Typography>
+                  <Input
+                    className="mb-4"
+                    placeholder={t("setting.sso-section.authorization-endpoint")}
+                    value={oauth2Config.authUrl}
+                    onChange={(e) => setPartialOAuth2Config({ authUrl: e.target.value })}
+                    fullWidth
+                  />
+                  <Typography className="!mb-2" level="body-md">
+                    {t("setting.sso-section.token-endpoint")}
+                    <span className="text-red-600">*</span>
+                  </Typography>
+                  <Input
+                    className="mb-4"
+                    placeholder={t("setting.sso-section.token-endpoint")}
+                    value={oauth2Config.tokenUrl}
+                    onChange={(e) => setPartialOAuth2Config({ tokenUrl: e.target.value })}
+                    fullWidth
+                  />
+                  <Typography className="!mb-2" level="body-md">
+                    {t("setting.sso-section.user-endpoint")}
+                    <span className="text-red-600">*</span>
+                  </Typography>
+                  <Input
+                    className="mb-4"
+                    placeholder={t("setting.sso-section.user-endpoint")}
+                    value={oauth2Config.userInfoUrl}
+                    onChange={(e) => setPartialOAuth2Config({ userInfoUrl: e.target.value })}
+                    fullWidth
+                  />
+                  <Typography className="!mb-2" level="body-md">
+                    {t("setting.sso-section.scopes")}
+                    <span className="text-red-600">*</span>
+                  </Typography>
+                  <Input
+                    className="mb-4"
+                    placeholder={t("setting.sso-section.scopes")}
+                    value={oauth2Scopes}
+                    onChange={(e) => setOAuth2Scopes(e.target.value)}
+                    fullWidth
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </>
+          )}
+
+          <Accordion>
+            <AccordionSummary>
+              {/* <Avatar color="primary">C1</Avatar> */}
+              <ListItemContent>
+                <Typography level="title-md">Config 3</Typography>
+                {/* <Typography level="body-sm">Activate or deactivate your connections</Typography> */}
+              </ListItemContent>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography className="!mb-4  " level="body-md">
+                {t("setting.sso-section.identifier")}
+                <span className="text-red-600">*</span>
+              </Typography>
+              <Input
+                className="mb-4"
+                placeholder={t("setting.sso-section.identifier")}
+                value={oauth2Config.fieldMapping.identifier}
+                onChange={(e) => setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, identifier: e.target.value } })}
+                fullWidth
+              />
+              <Typography className="!mb-4  " level="body-md">
+                {t("setting.sso-section.display-name")}
+              </Typography>
+              <Input
+                className="mb-4"
+                placeholder={t("setting.sso-section.display-name")}
+                value={oauth2Config.fieldMapping.displayName}
+                onChange={(e) => setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, displayName: e.target.value } })}
+                fullWidth
+              />
+              <Typography className="!mb-4  " level="body-md">
+                {t("common.email")}
+              </Typography>
+              <Input
+                className="mb-4"
+                placeholder={t("common.email")}
+                value={oauth2Config.fieldMapping.email}
+                onChange={(e) => setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, email: e.target.value } })}
+                fullWidth
+              />
+            </AccordionDetails>
+          </Accordion>
+        </AccordionGroup>
+
         {isCreating && (
-          <>
-            <Typography className="!mb-1" level="body-md">
-              {t("common.type")}
-            </Typography>
-            <Select className="w-full mb-4" value={type} onChange={(_, e) => setType(e ?? type)}>
-              {identityProviderTypes.map((kind) => (
-                <Option key={kind} value={kind}>
-                  {kind}
-                </Option>
-              ))}
-            </Select>
-            <Typography className="mb-2" level="body-md">
-              {t("setting.sso-section.template")}
-            </Typography>
-            <Select className="mb-1 h-auto w-full" value={selectedTemplate} onChange={(_, e) => setSelectedTemplate(e ?? selectedTemplate)}>
-              {templateList.map((template) => (
-                <Option key={template.name} value={template.name}>
-                  {template.name}
-                </Option>
-              ))}
-            </Select>
-            <Divider className="!my-2" />
-          </>
+          <p className="border rounded-md p-2 text-sm w-full mb-4 mt-6 break-all">
+            {t("setting.sso-section.redirect-url")}: {absolutifyLink("/auth/callback")}
+          </p>
         )}
-        <Typography className="!mb-1" level="body-md">
-          {t("common.name")}
-          <span className="text-red-600">*</span>
-        </Typography>
-        <Input
-          className="mb-2"
-          placeholder={t("common.name")}
-          value={basicInfo.name}
-          onChange={(e) =>
-            setBasicInfo({
-              ...basicInfo,
-              name: e.target.value,
-            })
-          }
-          fullWidth
-        />
-        <Typography className="!mb-1" level="body-md">
-          {t("setting.sso-section.identifier-filter")}
-        </Typography>
-        <Input
-          className="mb-2"
-          placeholder={t("setting.sso-section.identifier-filter")}
-          value={basicInfo.identifierFilter}
-          onChange={(e) =>
-            setBasicInfo({
-              ...basicInfo,
-              identifierFilter: e.target.value,
-            })
-          }
-          fullWidth
-        />
-        <Divider className="!my-2" />
-        {type === "OAUTH2" && (
-          <>
-            {isCreating && (
-              <p className="border rounded-md p-2 text-sm w-full mb-2 break-all">
-                {t("setting.sso-section.redirect-url")}: {absolutifyLink("/auth/callback")}
-              </p>
-            )}
-            <Typography className="!mb-1" level="body-md">
-              {t("setting.sso-section.client-id")}
-              <span className="text-red-600">*</span>
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("setting.sso-section.client-id")}
-              value={oauth2Config.clientId}
-              onChange={(e) => setPartialOAuth2Config({ clientId: e.target.value })}
-              fullWidth
-            />
-            <Typography className="!mb-1" level="body-md">
-              {t("setting.sso-section.client-secret")}
-              <span className="text-red-600">*</span>
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("setting.sso-section.client-secret")}
-              value={oauth2Config.clientSecret}
-              onChange={(e) => setPartialOAuth2Config({ clientSecret: e.target.value })}
-              fullWidth
-            />
-            <Typography className="!mb-1" level="body-md">
-              {t("setting.sso-section.authorization-endpoint")}
-              <span className="text-red-600">*</span>
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("setting.sso-section.authorization-endpoint")}
-              value={oauth2Config.authUrl}
-              onChange={(e) => setPartialOAuth2Config({ authUrl: e.target.value })}
-              fullWidth
-            />
-            <Typography className="!mb-1" level="body-md">
-              {t("setting.sso-section.token-endpoint")}
-              <span className="text-red-600">*</span>
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("setting.sso-section.token-endpoint")}
-              value={oauth2Config.tokenUrl}
-              onChange={(e) => setPartialOAuth2Config({ tokenUrl: e.target.value })}
-              fullWidth
-            />
-            <Typography className="!mb-1" level="body-md">
-              {t("setting.sso-section.user-endpoint")}
-              <span className="text-red-600">*</span>
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("setting.sso-section.user-endpoint")}
-              value={oauth2Config.userInfoUrl}
-              onChange={(e) => setPartialOAuth2Config({ userInfoUrl: e.target.value })}
-              fullWidth
-            />
-            <Typography className="!mb-1" level="body-md">
-              {t("setting.sso-section.scopes")}
-              <span className="text-red-600">*</span>
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("setting.sso-section.scopes")}
-              value={oauth2Scopes}
-              onChange={(e) => setOAuth2Scopes(e.target.value)}
-              fullWidth
-            />
-            <Divider className="!my-2" />
-            <Typography className="!mb-1" level="body-md">
-              {t("setting.sso-section.identifier")}
-              <span className="text-red-600">*</span>
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("setting.sso-section.identifier")}
-              value={oauth2Config.fieldMapping.identifier}
-              onChange={(e) => setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, identifier: e.target.value } })}
-              fullWidth
-            />
-            <Typography className="!mb-1" level="body-md">
-              {t("setting.sso-section.display-name")}
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("setting.sso-section.display-name")}
-              value={oauth2Config.fieldMapping.displayName}
-              onChange={(e) => setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, displayName: e.target.value } })}
-              fullWidth
-            />
-            <Typography className="!mb-1" level="body-md">
-              {t("common.email")}
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("common.email")}
-              value={oauth2Config.fieldMapping.email}
-              onChange={(e) => setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, email: e.target.value } })}
-              fullWidth
-            />
-          </>
-        )}
+
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
