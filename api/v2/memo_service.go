@@ -53,6 +53,15 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		Content:    request.Content,
 		Visibility: store.Visibility(request.Visibility.String()),
 	}
+	// Find disable public memos system setting.
+	disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get system setting")
+	}
+	if disablePublicMemosSystem && create.Visibility == store.Public {
+		return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
+	}
+
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
 		return nil, err
@@ -589,6 +598,21 @@ func (s *APIV2Service) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Conte
 		}
 	}
 	return memoDisplayWithUpdatedTs, nil
+}
+
+func (s *APIV2Service) getDisablePublicMemosSystemSettingValue(ctx context.Context) (bool, error) {
+	disablePublicMemosSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+		Name: apiv1.SystemSettingDisablePublicMemosName.String(),
+	})
+	if err != nil {
+		return false, errors.Wrap(err, "failed to find system setting")
+	}
+	disablePublicMemos := false
+	err = json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos)
+	if err != nil {
+		return false, errors.Wrap(err, "failed to unmarshal system setting value")
+	}
+	return disablePublicMemos, nil
 }
 
 func convertVisibilityFromStore(visibility store.Visibility) apiv2pb.Visibility {

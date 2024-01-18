@@ -8,7 +8,7 @@ interface Props {
 const Table = ({ header, rows }: Props) => {
   return (
     <table className="w-auto max-w-full border border-gray-300 dark:border-zinc-600 divide-y divide-gray-300 dark:divide-zinc-600">
-      <thead className="text-sm font-semibold leading-5 text-left text-gray-900 dark:text-gray-400">
+      <thead className="text-sm font-medium leading-5 text-left text-gray-900 dark:text-gray-400">
         <tr className="divide-x divide-gray-300 dark:divide-zinc-600">
           {header.map((h, i) => (
             <th key={i} className="py-1 px-2">
