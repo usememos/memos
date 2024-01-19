@@ -88,6 +88,8 @@
     - [ParseMarkdownRequest](#memos-api-v2-ParseMarkdownRequest)
     - [ParseMarkdownResponse](#memos-api-v2-ParseMarkdownResponse)
     - [StrikethroughNode](#memos-api-v2-StrikethroughNode)
+    - [SubscriptNode](#memos-api-v2-SubscriptNode)
+    - [SuperscriptNode](#memos-api-v2-SuperscriptNode)
     - [TableNode](#memos-api-v2-TableNode)
     - [TableNode.Row](#memos-api-v2-TableNode-Row)
     - [TagNode](#memos-api-v2-TagNode)
@@ -1238,6 +1240,8 @@
 | escaping_character_node | [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode) |  |  |
 | math_node | [MathNode](#memos-api-v2-MathNode) |  |  |
 | highlight_node | [HighlightNode](#memos-api-v2-HighlightNode) |  |  |
+| subscript_node | [SubscriptNode](#memos-api-v2-SubscriptNode) |  |  |
+| superscript_node | [SuperscriptNode](#memos-api-v2-SuperscriptNode) |  |  |
 
 
 
@@ -1309,6 +1313,36 @@
 <a name="memos-api-v2-StrikethroughNode"></a>
 
 ### StrikethroughNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SubscriptNode"></a>
+
+### SubscriptNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SuperscriptNode"></a>
+
+### SuperscriptNode
 
 
 
@@ -1452,6 +1486,8 @@
 | ESCAPING_CHARACTER | 22 |  |
 | MATH | 23 |  |
 | HIGHLIGHT | 24 |  |
+| SUBSCRIPT | 25 |  |
+| SUPERSCRIPT | 26 |  |
 
 
  
