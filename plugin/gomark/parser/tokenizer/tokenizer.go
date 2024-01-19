@@ -22,6 +22,7 @@ const (
 	EqualSign          TokenType = "="
 	Pipe               TokenType = "|"
 	Colon              TokenType = ":"
+	Caret              TokenType = "^"
 	Backslash          TokenType = "\\"
 	Newline            TokenType = "\n"
 	Space              TokenType = " "
@@ -86,6 +87,8 @@ func Tokenize(text string) []*Token {
 			tokens = append(tokens, NewToken(Pipe, "|"))
 		case ':':
 			tokens = append(tokens, NewToken(Colon, ":"))
+		case '^':
+			tokens = append(tokens, NewToken(Caret, "^"))
 		case '\\':
 			tokens = append(tokens, NewToken(Backslash, `\`))
 		case '\n':

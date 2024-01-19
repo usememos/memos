@@ -30,6 +30,8 @@ const (
 	EscapingCharacterNode
 	MathNode
 	HighlightNode
+	SubscriptNode
+	SuperscriptNode
 )
 
 type Node interface {
