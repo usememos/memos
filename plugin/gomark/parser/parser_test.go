@@ -218,6 +218,22 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			text: "Hello\n![[memos/101]]",
+			nodes: []ast.Node{
+				&ast.Paragraph{
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "Hello",
+						},
+					},
+				},
+				&ast.LineBreak{},
+				&ast.EmbeddedContent{
+					ResourceName: "memos/101",
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {

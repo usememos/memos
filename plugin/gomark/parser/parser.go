@@ -39,6 +39,7 @@ var defaultBlockParsers = []BlockParser{
 	NewUnorderedListParser(),
 	NewOrderedListParser(),
 	NewMathBlockParser(),
+	NewEmbeddedContentParser(),
 	NewParagraphParser(),
 	NewLineBreakParser(),
 }
