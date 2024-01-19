@@ -72,6 +72,7 @@
     - [BoldNode](#memos-api-v2-BoldNode)
     - [CodeBlockNode](#memos-api-v2-CodeBlockNode)
     - [CodeNode](#memos-api-v2-CodeNode)
+    - [EmbeddedContentNode](#memos-api-v2-EmbeddedContentNode)
     - [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode)
     - [HeadingNode](#memos-api-v2-HeadingNode)
     - [HighlightNode](#memos-api-v2-HighlightNode)
@@ -1058,6 +1059,21 @@
 
 
 
+<a name="memos-api-v2-EmbeddedContentNode"></a>
+
+### EmbeddedContentNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource_name | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-EscapingCharacterNode"></a>
 
 ### EscapingCharacterNode
@@ -1227,6 +1243,7 @@
 | task_list_node | [TaskListNode](#memos-api-v2-TaskListNode) |  |  |
 | math_block_node | [MathBlockNode](#memos-api-v2-MathBlockNode) |  |  |
 | table_node | [TableNode](#memos-api-v2-TableNode) |  |  |
+| embedded_content_node | [EmbeddedContentNode](#memos-api-v2-EmbeddedContentNode) |  |  |
 | text_node | [TextNode](#memos-api-v2-TextNode) |  |  |
 | bold_node | [BoldNode](#memos-api-v2-BoldNode) |  |  |
 | italic_node | [ItalicNode](#memos-api-v2-ItalicNode) |  |  |
@@ -1473,21 +1490,22 @@
 | TASK_LIST | 9 |  |
 | MATH_BLOCK | 10 |  |
 | TABLE | 11 |  |
-| TEXT | 12 |  |
-| BOLD | 13 |  |
-| ITALIC | 14 |  |
-| BOLD_ITALIC | 15 |  |
-| CODE | 16 |  |
-| IMAGE | 17 |  |
-| LINK | 18 |  |
-| AUTO_LINK | 19 |  |
-| TAG | 20 |  |
-| STRIKETHROUGH | 21 |  |
-| ESCAPING_CHARACTER | 22 |  |
-| MATH | 23 |  |
-| HIGHLIGHT | 24 |  |
-| SUBSCRIPT | 25 |  |
-| SUPERSCRIPT | 26 |  |
+| EMBEDDED_CONTENT | 12 |  |
+| TEXT | 13 |  |
+| BOLD | 14 |  |
+| ITALIC | 15 |  |
+| BOLD_ITALIC | 16 |  |
+| CODE | 17 |  |
+| IMAGE | 18 |  |
+| LINK | 19 |  |
+| AUTO_LINK | 20 |  |
+| TAG | 21 |  |
+| STRIKETHROUGH | 22 |  |
+| ESCAPING_CHARACTER | 23 |  |
+| MATH | 24 |  |
+| HIGHLIGHT | 25 |  |
+| SUBSCRIPT | 26 |  |
+| SUPERSCRIPT | 27 |  |
 
 
  

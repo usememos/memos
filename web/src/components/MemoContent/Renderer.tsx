@@ -5,6 +5,7 @@ import {
   BoldNode,
   CodeBlockNode,
   CodeNode,
+  EmbeddedContentNode,
   EscapingCharacterNode,
   HeadingNode,
   HighlightNode,
@@ -31,6 +32,7 @@ import Bold from "./Bold";
 import BoldItalic from "./BoldItalic";
 import Code from "./Code";
 import CodeBlock from "./CodeBlock";
+import EmbeddedContent from "./EmbeddedContent";
 import EscapingCharacter from "./EscapingCharacter";
 import Heading from "./Heading";
 import Highlight from "./Highlight";
@@ -80,6 +82,8 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
       return <Math {...(node.mathBlockNode as MathNode)} block={true} />;
     case NodeType.TABLE:
       return <Table {...(node.tableNode as TableNode)} />;
+    case NodeType.EMBEDDED_CONTENT:
+      return <EmbeddedContent {...(node.embeddedContentNode as EmbeddedContentNode)} />;
     case NodeType.TEXT:
       return <Text {...(node.textNode as TextNode)} />;
     case NodeType.BOLD:

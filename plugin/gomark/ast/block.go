@@ -228,3 +228,17 @@ func (n *Table) Restore() string {
 	}
 	return result
 }
+
+type EmbeddedContent struct {
+	BaseBlock
+
+	ResourceName string
+}
+
+func (*EmbeddedContent) Type() NodeType {
+	return EmbeddedContentNode
+}
+
+func (n *EmbeddedContent) Restore() string {
+	return fmt.Sprintf("![[%s]]", n.ResourceName)
+}

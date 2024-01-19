@@ -132,20 +132,20 @@ func Stringify(tokens []*Token) string {
 }
 
 func Split(tokens []*Token, delimiter TokenType) [][]*Token {
+	if len(tokens) == 0 {
+		return [][]*Token{}
+	}
+
 	result := make([][]*Token, 0)
 	current := make([]*Token, 0)
 	for _, token := range tokens {
 		if token.Type == delimiter {
-			if len(current) > 0 {
-				result = append(result, current)
-				current = make([]*Token, 0)
-			}
+			result = append(result, current)
+			current = make([]*Token, 0)
 		} else {
 			current = append(current, token)
 		}
 	}
-	if len(current) > 0 {
-		result = append(result, current)
-	}
+	result = append(result, current)
 	return result
 }

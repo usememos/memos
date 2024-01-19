@@ -39,8 +39,10 @@ func (*TableParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	rowTokens := []*tokenizer.Token{}
 	for index, token := range tokens[len(headerTokens)+len(delimiterTokens)+2:] {
 		temp := len(headerTokens) + len(delimiterTokens) + 2 + index
-		if token.Type == tokenizer.Newline && temp != len(tokens)-1 && tokens[temp+1].Type != tokenizer.Pipe {
-			break
+		if token.Type == tokenizer.Newline {
+			if (temp == len(tokens)-1) || (temp+1 == len(tokens)-1 && tokens[temp+1].Type == tokenizer.Newline) {
+				break
+			}
 		}
 		rowTokens = append(rowTokens, token)
 	}
@@ -65,7 +67,18 @@ func (*TableParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if delimiterCells != headerCells || !ok {
 		return 0, false
 	}
-	for _, t := range tokenizer.Split(delimiterTokens, tokenizer.Pipe) {
+
+	for index, t := range tokenizer.Split(delimiterTokens, tokenizer.Pipe) {
+		if index == 0 || index == headerCells {
+			if len(t) != 0 {
+				return 0, false
+			}
+			continue
+		}
+		if len(t) < 5 {
+			return 0, false
+		}
+
 		delimiterTokens := t[1 : len(t)-1]
 		if len(delimiterTokens) < 3 {
 			return 0, false
@@ -112,15 +125,16 @@ func (p *TableParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	delimiter := make([]string, 0)
 	rows := make([][]string, 0)
 
-	for _, t := range tokenizer.Split(headerTokens, tokenizer.Pipe) {
+	cols := len(tokenizer.Split(headerTokens, tokenizer.Pipe)) - 2
+	for _, t := range tokenizer.Split(headerTokens, tokenizer.Pipe)[1 : cols+1] {
 		header = append(header, tokenizer.Stringify(t[1:len(t)-1]))
 	}
-	for _, t := range tokenizer.Split(dilimiterTokens, tokenizer.Pipe) {
+	for _, t := range tokenizer.Split(dilimiterTokens, tokenizer.Pipe)[1 : cols+1] {
 		delimiter = append(delimiter, tokenizer.Stringify(t[1:len(t)-1]))
 	}
 	for _, row := range rowTokens {
 		cells := make([]string, 0)
-		for _, t := range tokenizer.Split(row, tokenizer.Pipe) {
+		for _, t := range tokenizer.Split(row, tokenizer.Pipe)[1 : cols+1] {
 			cells = append(cells, tokenizer.Stringify(t[1:len(t)-1]))
 		}
 		rows = append(rows, cells)
@@ -145,10 +159,13 @@ func matchTableCellTokens(tokens []*tokenizer.Token) (int, bool) {
 		}
 	}
 	cells := tokenizer.Split(tokens, tokenizer.Pipe)
-	if len(cells) != pipes-1 {
+	if len(cells) != pipes+1 {
 		return 0, false
 	}
-	for _, cellTokens := range cells {
+	if len(cells[0]) != 0 || len(cells[len(cells)-1]) != 0 {
+		return 0, false
+	}
+	for _, cellTokens := range cells[1 : len(cells)-1] {
 		if len(cellTokens) == 0 {
 			return 0, false
 		}
@@ -160,5 +177,5 @@ func matchTableCellTokens(tokens []*tokenizer.Token) (int, bool) {
 		}
 	}
 
-	return len(cells), true
+	return len(cells) - 1, true
 }
