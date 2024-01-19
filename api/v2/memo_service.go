@@ -346,6 +346,13 @@ func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMe
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
+	if memoMessage, err := s.convertMemoFromStore(ctx, memo); err == nil {
+		// Try to dispatch webhook when memo is deleted.
+		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
+			log.Warn("Failed to dispatch memo deleted webhook", zap.Error(err))
+		}
+	}
+
 	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{
 		ID: request.Id,
 	}); err != nil {
@@ -738,6 +745,11 @@ func (s *APIV2Service) DispatchMemoCreatedWebhook(ctx context.Context, memo *api
 // DispatchMemoUpdatedWebhook dispatches webhook when memo is updated.
 func (s *APIV2Service) DispatchMemoUpdatedWebhook(ctx context.Context, memo *apiv2pb.Memo) error {
 	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.updated")
+}
+
+// DispatchMemoDeletedWebhook dispatches webhook when memo is deleted.
+func (s *APIV2Service) DispatchMemoDeletedWebhook(ctx context.Context, memo *apiv2pb.Memo) error {
+	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.deleted")
 }
 
 func (s *APIV2Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *apiv2pb.Memo, activityType string) error {

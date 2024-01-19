@@ -625,6 +625,13 @@ func (s *APIV1Service) DeleteMemo(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 	}
 
+	if memoMessage, err := s.convertMemoFromStore(ctx, memo); err == nil {
+		// Try to dispatch webhook when memo is deleted.
+		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
+			log.Warn("Failed to dispatch memo deleted webhook", zap.Error(err))
+		}
+	}
+
 	if err := s.Store.DeleteMemo(ctx, &store.DeleteMemo{
 		ID: memoID,
 	}); err != nil {
@@ -956,6 +963,11 @@ func (s *APIV1Service) DispatchMemoCreatedWebhook(ctx context.Context, memo *Mem
 // DispatchMemoUpdatedWebhook dispatches webhook when memo is updated.
 func (s *APIV1Service) DispatchMemoUpdatedWebhook(ctx context.Context, memo *Memo) error {
 	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.updated")
+}
+
+// DispatchMemoDeletedWebhook dispatches webhook when memo is deletedd.
+func (s *APIV1Service) DispatchMemoDeletedWebhook(ctx context.Context, memo *Memo) error {
+	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.deleted")
 }
 
 func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *Memo, activityType string) error {
