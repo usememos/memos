@@ -632,7 +632,6 @@ func (s *APIV1Service) DeleteMemo(c echo.Context) error {
 		}
 	}
 
-
 	if err := s.Store.DeleteMemo(ctx, &store.DeleteMemo{
 		ID: memoID,
 	}); err != nil {

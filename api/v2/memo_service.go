@@ -353,7 +353,6 @@ func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMe
 		}
 	}
 
-
 	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{
 		ID: request.Id,
 	}); err != nil {
