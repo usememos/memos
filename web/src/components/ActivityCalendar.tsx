@@ -49,7 +49,7 @@ const ActivityCalendar = (props: Props) => {
   return (
     <div className={classNames("w-28 h-auto p-0.5 shrink-0 grid grid-cols-7 grid-flow-row gap-1")}>
       {days.map((day, index) => {
-        const date = getNormalizedDateString(`${year}-${month}-${day}`);
+        const date = getNormalizedDateString(`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
         const count = data[date] || 0;
         const isToday = new Date().toDateString() === new Date(date).toDateString();
         const tooltipText = count ? `${count} memos in ${date}` : date;
