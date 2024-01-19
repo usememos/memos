@@ -83,6 +83,8 @@ var defaultInlineParsers = []InlineParser{
 	NewItalicParser(),
 	NewHighlightParser(),
 	NewCodeParser(),
+	NewSubscriptParser(),
+	NewSuperscriptParser(),
 	NewMathParser(),
 	NewTagParser(),
 	NewStrikethroughParser(),
