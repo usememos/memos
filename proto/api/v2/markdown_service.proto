@@ -49,6 +49,8 @@ enum NodeType {
   ESCAPING_CHARACTER = 22;
   MATH = 23;
   HIGHLIGHT = 24;
+  SUBSCRIPT = 25;
+  SUPERSCRIPT = 26;
 }
 
 message Node {
@@ -78,6 +80,8 @@ message Node {
     EscapingCharacterNode escaping_character_node = 23;
     MathNode math_node = 24;
     HighlightNode highlight_node = 25;
+    SubscriptNode subscript_node = 26;
+    SuperscriptNode superscript_node = 27;
   }
 }
 
@@ -193,5 +197,13 @@ message MathNode {
 }
 
 message HighlightNode {
+  string content = 1;
+}
+
+message SubscriptNode {
+  string content = 1;
+}
+
+message SuperscriptNode {
   string content = 1;
 }

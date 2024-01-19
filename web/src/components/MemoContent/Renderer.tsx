@@ -18,6 +18,8 @@ import {
   OrderedListNode,
   ParagraphNode,
   StrikethroughNode,
+  SubscriptNode,
+  SuperscriptNode,
   TableNode,
   TagNode,
   TaskListNode,
@@ -41,6 +43,8 @@ import Math from "./Math";
 import OrderedList from "./OrderedList";
 import Paragraph from "./Paragraph";
 import Strikethrough from "./Strikethrough";
+import Subscript from "./Subscript";
+import Superscript from "./Superscript";
 import Table from "./Table";
 import Tag from "./Tag";
 import TaskList from "./TaskList";
@@ -102,6 +106,10 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
       return <Highlight {...(node.highlightNode as HighlightNode)} />;
     case NodeType.ESCAPING_CHARACTER:
       return <EscapingCharacter {...(node.escapingCharacterNode as EscapingCharacterNode)} />;
+    case NodeType.SUBSCRIPT:
+      return <Subscript {...(node.subscriptNode as SubscriptNode)} />;
+    case NodeType.SUPERSCRIPT:
+      return <Superscript {...(node.superscriptNode as SuperscriptNode)} />;
     default:
       return null;
   }
