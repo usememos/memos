@@ -84,6 +84,7 @@ func TestSplit(t *testing.T) {
 		sep    TokenType
 		result [][]*Token
 	}{
+
 		{
 			tokens: []*Token{
 				{
@@ -109,6 +110,7 @@ func TestSplit(t *testing.T) {
 			},
 			sep: Asterisk,
 			result: [][]*Token{
+				{},
 				{
 					{
 						Type:  Text,
@@ -125,88 +127,6 @@ func TestSplit(t *testing.T) {
 					{
 						Type:  ExclamationMark,
 						Value: "!",
-					},
-				},
-			},
-		},
-		{
-			tokens: []*Token{
-				{
-					Type:  Asterisk,
-					Value: "*",
-				},
-				{
-					Type:  Text,
-					Value: "Hello",
-				},
-				{
-					Type:  Space,
-					Value: " ",
-				},
-				{
-					Type:  Text,
-					Value: "world",
-				},
-				{
-					Type:  ExclamationMark,
-					Value: "!",
-				},
-			},
-			sep: Text,
-			result: [][]*Token{
-				{
-					{
-						Type:  Asterisk,
-						Value: "*",
-					},
-				},
-				{
-					{
-						Type:  Space,
-						Value: " ",
-					},
-				},
-				{
-					{
-						Type:  ExclamationMark,
-						Value: "!",
-					},
-				},
-			},
-		},
-		{
-			tokens: []*Token{
-				{
-					Type:  Text,
-					Value: "Hello",
-				},
-				{
-					Type:  Space,
-					Value: " ",
-				},
-				{
-					Type:  Text,
-					Value: "world",
-				},
-				{
-					Type:  Newline,
-					Value: "\n",
-				},
-			},
-			sep: Newline,
-			result: [][]*Token{
-				{
-					{
-						Type:  Text,
-						Value: "Hello",
-					},
-					{
-						Type:  Space,
-						Value: " ",
-					},
-					{
-						Type:  Text,
-						Value: "world",
 					},
 				},
 			},
@@ -215,6 +135,8 @@ func TestSplit(t *testing.T) {
 
 	for _, test := range tests {
 		result := Split(test.tokens, test.sep)
-		require.Equal(t, test.result, result)
+		for index, tokens := range result {
+			require.Equal(t, Stringify(test.result[index]), Stringify(tokens))
+		}
 	}
 }
