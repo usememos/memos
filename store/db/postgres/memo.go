@@ -12,8 +12,8 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"creator_id", "content", "visibility"}
-	args := []any{create.CreatorID, create.Content, create.Visibility}
+	fields := []string{"resource_name", "creator_id", "content", "visibility"}
+	args := []any{create.ResourceName, create.CreatorID, create.Content, create.Visibility}
 
 	stmt := "INSERT INTO memo (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts, row_status"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
@@ -33,6 +33,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	if v := find.ID; v != nil {
 		where, args = append(where, "memo.id = "+placeholder(len(args)+1)), append(args, *v)
+	}
+	if v := find.ResourceName; v != nil {
+		where, args = append(where, "memo.resource_name = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "memo.creator_id = "+placeholder(len(args)+1)), append(args, *v)
@@ -82,6 +85,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	fields := []string{
 		`memo.id AS id`,
+		`memo.resource_name AS resource_name`,
 		`memo.creator_id AS creator_id`,
 		`memo.created_ts AS created_ts`,
 		`memo.updated_ts AS updated_ts`,
@@ -118,6 +122,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		var memo store.Memo
 		dests := []any{
 			&memo.ID,
+			&memo.ResourceName,
 			&memo.CreatorID,
 			&memo.CreatedTs,
 			&memo.UpdatedTs,
@@ -157,6 +162,9 @@ func (d *DB) GetMemo(ctx context.Context, find *store.FindMemo) (*store.Memo, er
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	set, args := []string{}, []any{}
+	if v := update.ResourceName; v != nil {
+		set, args = append(set, "resource_name = "+placeholder(len(args)+1)), append(args, *v)
+	}
 	if v := update.CreatedTs; v != nil {
 		set, args = append(set, "created_ts = "+placeholder(len(args)+1)), append(args, *v)
 	}
