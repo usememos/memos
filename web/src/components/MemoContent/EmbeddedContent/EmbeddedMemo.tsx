@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { useMemoStore } from "@/store/v1";
 import MemoContent from "..";
 import { RendererContext } from "../types";
+import Error from "./Error";
 
 interface Props {
   memoId: number;
@@ -17,16 +18,16 @@ const EmbeddedMemo = ({ memoId }: Props) => {
     memoStore.getOrFetchMemoById(memoId);
   }, [memoId]);
 
-  if (memoId === context.memoId || context.embeddedMemos.has(resourceName)) {
-    return <p>Nested Rendering Error: {`![[${resourceName}]]`}</p>;
+  if (!memo) {
+    return null;
   }
-  context.embeddedMemos.add(resourceName);
+  if (memoId === context.memoId || context.embeddedMemos.has(resourceName)) {
+    return <Error message={`Nested Rendering Error: ![[${resourceName}]]`} />;
+  }
 
-  return (
-    <div className="embedded-memo">
-      <MemoContent nodes={memo.nodes} memoId={memoId} embeddedMemos={context.embeddedMemos} />
-    </div>
-  );
+  // Add the memo to the set of embedded memos. This is used to prevent infinite loops when a memo embeds itself.
+  context.embeddedMemos.add(resourceName);
+  return <MemoContent nodes={memo.nodes} memoId={memoId} embeddedMemos={context.embeddedMemos} />;
 };
 
 export default EmbeddedMemo;

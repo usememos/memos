@@ -66,6 +66,19 @@ func (s *APIV2Service) ListResources(ctx context.Context, _ *apiv2pb.ListResourc
 	return response, nil
 }
 
+func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetResourceRequest) (*apiv2pb.GetResourceResponse, error) {
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{
+		ID: &request.Id,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)
+	}
+
+	return &apiv2pb.GetResourceResponse{
+		Resource: s.convertResourceFromStore(ctx, resource),
+	}, nil
+}
+
 func (s *APIV2Service) UpdateResource(ctx context.Context, request *apiv2pb.UpdateResourceRequest) (*apiv2pb.UpdateResourceResponse, error) {
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")

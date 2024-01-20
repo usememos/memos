@@ -1,4 +1,6 @@
 import EmbeddedMemo from "./EmbeddedMemo";
+import EmbeddedResource from "./EmbeddedResource";
+import Error from "./Error";
 
 interface Props {
   resourceName: string;
@@ -13,8 +15,10 @@ const EmbeddedContent = ({ resourceName }: Props) => {
   const { resourceType, resourceId } = extractResourceTypeAndId(resourceName);
   if (resourceType === "memos") {
     return <EmbeddedMemo memoId={Number(resourceId)} />;
+  } else if (resourceType === "resources") {
+    return <EmbeddedResource resourceId={Number(resourceId)} />;
   }
-  return <p>Unknown resource: {resourceName}</p>;
+  return <Error message={`Unknown resource: ${resourceName}`} />;
 };
 
 export default EmbeddedContent;

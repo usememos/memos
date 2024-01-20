@@ -137,7 +137,7 @@ const MemoDetail = () => {
             </div>
           )}
           <MemoContent memoId={memo.id} nodes={memo.nodes} readonly={readonly} />
-          <MemoResourceListView resourceList={memo.resources} />
+          <MemoResourceListView resources={memo.resources} />
           <MemoRelationListView memo={memo} relationList={referenceRelations} />
           <div className="w-full mt-3 flex flex-row justify-between items-center gap-2">
             <div className="flex flex-row justify-start items-center">
