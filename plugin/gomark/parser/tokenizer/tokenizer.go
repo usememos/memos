@@ -12,6 +12,7 @@ const (
 	LeftParenthesis    TokenType = "("
 	RightParenthesis   TokenType = ")"
 	ExclamationMark    TokenType = "!"
+	QuestionMark       TokenType = "?"
 	Tilde              TokenType = "~"
 	Hyphen             TokenType = "-"
 	PlusSign           TokenType = "+"
@@ -67,6 +68,8 @@ func Tokenize(text string) []*Token {
 			tokens = append(tokens, NewToken(RightParenthesis, ")"))
 		case '!':
 			tokens = append(tokens, NewToken(ExclamationMark, "!"))
+		case '?':
+			tokens = append(tokens, NewToken(QuestionMark, "?"))
 		case '~':
 			tokens = append(tokens, NewToken(Tilde, "~"))
 		case '-':
@@ -148,4 +151,13 @@ func Split(tokens []*Token, delimiter TokenType) [][]*Token {
 	}
 	result = append(result, current)
 	return result
+}
+
+func Find(tokens []*Token, delimiter TokenType) (int, bool) {
+	for index, token := range tokens {
+		if token.Type == delimiter {
+			return index, true
+		}
+	}
+	return 0, false
 }
