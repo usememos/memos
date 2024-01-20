@@ -1,7 +1,7 @@
 import { Divider, Tooltip } from "@mui/joy";
 import classNames from "classnames";
 import copy from "copy-to-clipboard";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -153,7 +153,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     toast.success("Copied to clipboard!");
   };
 
-  const handleMemoContentClick = async (e: React.MouseEvent) => {
+  const handleMemoContentClick = useCallback(async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
     if (targetEl.tagName === "IMG") {
@@ -162,7 +162,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
         showPreviewImageDialog([imgUrl], 0);
       }
     }
-  };
+  }, []);
 
   return (
     <div
@@ -257,7 +257,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
         </div>
       </div>
       <MemoContent memoId={memo.id} nodes={memo.nodes} readonly={readonly} onClick={handleMemoContentClick} />
-      <MemoResourceListView resourceList={memo.resources} />
+      <MemoResourceListView resources={memo.resources} />
       <MemoRelationListView memo={memo} relationList={referenceRelations} />
     </div>
   );

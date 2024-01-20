@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/proto/api/v2/markdown_service";
@@ -65,4 +65,4 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default MemoContent;
+export default memo(MemoContent);

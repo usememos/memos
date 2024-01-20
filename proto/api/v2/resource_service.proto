@@ -16,6 +16,10 @@ service ResourceService {
   rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse) {
     option (google.api.http) = {get: "/api/v2/resources"};
   }
+  rpc GetResource(GetResourceRequest) returns (GetResourceResponse) {
+    option (google.api.http) = {get: "/api/v2/resources/{id}"};
+    option (google.api.method_signature) = "id";
+  }
   rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse) {
     option (google.api.http) = {
       patch: "/api/v2/resources/{resource.id}",
@@ -24,7 +28,7 @@ service ResourceService {
     option (google.api.method_signature) = "resource,update_mask";
   }
   rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse) {
-    option (google.api.http) = {get: "/api/v2/resources/{id}"};
+    option (google.api.http) = {delete: "/api/v2/resources/{id}"};
     option (google.api.method_signature) = "id";
   }
 }
@@ -54,6 +58,14 @@ message ListResourcesRequest {}
 
 message ListResourcesResponse {
   repeated Resource resources = 1;
+}
+
+message GetResourceRequest {
+  int32 id = 1;
+}
+
+message GetResourceResponse {
+  Resource resource = 1;
 }
 
 message UpdateResourceRequest {

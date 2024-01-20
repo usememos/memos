@@ -6,11 +6,11 @@ import MemoResource from "./MemoResource";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
 
-const MemoResourceListView = ({ resourceList = [] }: { resourceList: Resource[] }) => {
+const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => {
   const mediaResources: Resource[] = [];
   const otherResources: Resource[] = [];
 
-  resourceList.forEach((resource) => {
+  resources.forEach((resource) => {
     const type = getResourceType(resource);
     if (type === "image/*" || type === "video/*") {
       mediaResources.push(resource);

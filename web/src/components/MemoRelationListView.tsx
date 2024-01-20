@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMemoStore } from "@/store/v1";
 import { MemoRelation } from "@/types/proto/api/v2/memo_relation_service";
@@ -82,4 +82,4 @@ const MemoRelationListView = (props: Props) => {
   );
 };
 
-export default MemoRelationListView;
+export default memo(MemoRelationListView);
