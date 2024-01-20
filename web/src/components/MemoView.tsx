@@ -106,6 +106,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const handleEditMemoClick = () => {
     showMemoEditorDialog({
       memoId: memo.id,
+      cacheKey: `${memo.id}-${memo.updateTime}`,
     });
   };
 
