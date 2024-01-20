@@ -1,7 +1,9 @@
 import classNames from "classnames";
 import { useEffect } from "react";
 import MemoResourceListView from "@/components/MemoResourceListView";
+import useLoading from "@/hooks/useLoading";
 import { useResourceStore } from "@/store/v1";
+import Error from "./Error";
 
 interface Props {
   resourceId: number;
@@ -34,16 +36,20 @@ const getAdditionalClassNameWithParams = (params: URLSearchParams) => {
 };
 
 const EmbeddedResource = ({ resourceId, params: paramsStr }: Props) => {
+  const loadingState = useLoading();
   const resourceStore = useResourceStore();
   const resource = resourceStore.getResourceById(resourceId);
   const params = new URLSearchParams(paramsStr);
 
   useEffect(() => {
-    resourceStore.getOrFetchResourceById(resourceId);
+    resourceStore.getOrFetchResourceById(resourceId).finally(() => loadingState.setFinish());
   }, [resourceId]);
 
-  if (!resource) {
+  if (loadingState.isLoading) {
     return null;
+  }
+  if (!resource) {
+    return <Error message={`Resource not found: ${resourceId}`} />;
   }
 
   return (
