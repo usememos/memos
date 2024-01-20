@@ -21,10 +21,6 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-var (
-	usernameMatcher = regexp.MustCompile("^[a-z0-9]([a-z0-9-]{1,30}[a-z0-9])$")
-)
-
 type SignIn struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -293,7 +289,7 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Failed to find users").SetInternal(err)
 	}
-	if !usernameMatcher.MatchString(strings.ToLower(signup.Username)) {
+	if !util.ResourceNameMatcher.MatchString(strings.ToLower(signup.Username)) {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid username %s", signup.Username)).SetInternal(err)
 	}
 

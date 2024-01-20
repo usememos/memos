@@ -55,6 +55,7 @@ CREATE TABLE user_setting (
 -- memo
 CREATE TABLE memo (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  resource_name TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),

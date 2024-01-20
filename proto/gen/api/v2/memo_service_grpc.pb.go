@@ -22,6 +22,7 @@ const (
 	MemoService_CreateMemo_FullMethodName        = "/memos.api.v2.MemoService/CreateMemo"
 	MemoService_ListMemos_FullMethodName         = "/memos.api.v2.MemoService/ListMemos"
 	MemoService_GetMemo_FullMethodName           = "/memos.api.v2.MemoService/GetMemo"
+	MemoService_GetMemoByName_FullMethodName     = "/memos.api.v2.MemoService/GetMemoByName"
 	MemoService_UpdateMemo_FullMethodName        = "/memos.api.v2.MemoService/UpdateMemo"
 	MemoService_DeleteMemo_FullMethodName        = "/memos.api.v2.MemoService/DeleteMemo"
 	MemoService_SetMemoResources_FullMethodName  = "/memos.api.v2.MemoService/SetMemoResources"
@@ -43,6 +44,8 @@ type MemoServiceClient interface {
 	ListMemos(ctx context.Context, in *ListMemosRequest, opts ...grpc.CallOption) (*ListMemosResponse, error)
 	// GetMemo gets a memo by id.
 	GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*GetMemoResponse, error)
+	// GetMemoByName gets a memo by name.
+	GetMemoByName(ctx context.Context, in *GetMemoByNameRequest, opts ...grpc.CallOption) (*GetMemoByNameResponse, error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*UpdateMemoResponse, error)
 	// DeleteMemo deletes a memo by id.
@@ -92,6 +95,15 @@ func (c *memoServiceClient) ListMemos(ctx context.Context, in *ListMemosRequest,
 func (c *memoServiceClient) GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*GetMemoResponse, error) {
 	out := new(GetMemoResponse)
 	err := c.cc.Invoke(ctx, MemoService_GetMemo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) GetMemoByName(ctx context.Context, in *GetMemoByNameRequest, opts ...grpc.CallOption) (*GetMemoByNameResponse, error) {
+	out := new(GetMemoByNameResponse)
+	err := c.cc.Invoke(ctx, MemoService_GetMemoByName_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -189,6 +201,8 @@ type MemoServiceServer interface {
 	ListMemos(context.Context, *ListMemosRequest) (*ListMemosResponse, error)
 	// GetMemo gets a memo by id.
 	GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error)
+	// GetMemoByName gets a memo by name.
+	GetMemoByName(context.Context, *GetMemoByNameRequest) (*GetMemoByNameResponse, error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(context.Context, *UpdateMemoRequest) (*UpdateMemoResponse, error)
 	// DeleteMemo deletes a memo by id.
@@ -222,6 +236,9 @@ func (UnimplementedMemoServiceServer) ListMemos(context.Context, *ListMemosReque
 }
 func (UnimplementedMemoServiceServer) GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemo not implemented")
+}
+func (UnimplementedMemoServiceServer) GetMemoByName(context.Context, *GetMemoByNameRequest) (*GetMemoByNameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMemoByName not implemented")
 }
 func (UnimplementedMemoServiceServer) UpdateMemo(context.Context, *UpdateMemoRequest) (*UpdateMemoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemo not implemented")
@@ -313,6 +330,24 @@ func _MemoService_GetMemo_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemoServiceServer).GetMemo(ctx, req.(*GetMemoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_GetMemoByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMemoByNameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).GetMemoByName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_GetMemoByName_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).GetMemoByName(ctx, req.(*GetMemoByNameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -497,6 +532,10 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMemo",
 			Handler:    _MemoService_GetMemo_Handler,
+		},
+		{
+			MethodName: "GetMemoByName",
+			Handler:    _MemoService_GetMemoByName_Handler,
 		},
 		{
 			MethodName: "UpdateMemo",

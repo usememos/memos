@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
 
@@ -18,13 +17,10 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/api/auth"
+	"github.com/usememos/memos/internal/util"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
-)
-
-var (
-	usernameMatcher = regexp.MustCompile("^[a-z0-9]([a-z0-9-]{1,30}[a-z0-9])$")
 )
 
 func (s *APIV2Service) ListUsers(ctx context.Context, _ *apiv2pb.ListUsersRequest) (*apiv2pb.ListUsersResponse, error) {
@@ -85,7 +81,7 @@ func (s *APIV2Service) CreateUser(ctx context.Context, request *apiv2pb.CreateUs
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "name is required")
 	}
-	if !usernameMatcher.MatchString(strings.ToLower(username)) {
+	if !util.ResourceNameMatcher.MatchString(strings.ToLower(username)) {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", username)
 	}
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
@@ -141,7 +137,7 @@ func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUs
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "username" {
-			if !usernameMatcher.MatchString(strings.ToLower(request.User.Username)) {
+			if !util.ResourceNameMatcher.MatchString(strings.ToLower(request.User.Username)) {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 			}
 			update.Username = &request.User.Username
