@@ -73,6 +73,9 @@ func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetReso
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)
 	}
+	if resource == nil {
+		return nil, status.Errorf(codes.NotFound, "resource not found")
+	}
 
 	return &apiv2pb.GetResourceResponse{
 		Resource: s.convertResourceFromStore(ctx, resource),

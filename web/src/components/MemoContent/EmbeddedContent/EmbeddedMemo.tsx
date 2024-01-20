@@ -1,4 +1,5 @@
 import { useContext, useEffect } from "react";
+import useLoading from "@/hooks/useLoading";
 import { useMemoStore } from "@/store/v1";
 import MemoContent from "..";
 import { RendererContext } from "../types";
@@ -11,16 +12,20 @@ interface Props {
 
 const EmbeddedMemo = ({ memoId }: Props) => {
   const context = useContext(RendererContext);
+  const loadingState = useLoading();
   const memoStore = useMemoStore();
   const memo = memoStore.getMemoById(memoId);
   const resourceName = `memos/${memoId}`;
 
   useEffect(() => {
-    memoStore.getOrFetchMemoById(memoId);
+    memoStore.getOrFetchMemoById(memoId).finally(() => loadingState.setFinish());
   }, [memoId]);
 
-  if (!memo) {
+  if (loadingState.isLoading) {
     return null;
+  }
+  if (!memo) {
+    return <Error message={`Memo not found: ${memoId}`} />;
   }
   if (memoId === context.memoId || context.embeddedMemos.has(resourceName)) {
     return <Error message={`Nested Rendering Error: ![[${resourceName}]]`} />;
