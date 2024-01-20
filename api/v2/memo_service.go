@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/cel-go/cel"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
@@ -16,6 +17,7 @@ import (
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/log"
+	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
@@ -49,9 +51,10 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	}
 
 	create := &store.Memo{
-		CreatorID:  user.ID,
-		Content:    request.Content,
-		Visibility: store.Visibility(request.Visibility.String()),
+		ResourceName: shortuuid.New(),
+		CreatorID:    user.ID,
+		Content:      request.Content,
+		Visibility:   store.Visibility(request.Visibility.String()),
 	}
 	// Find disable public memos system setting.
 	disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
@@ -234,6 +237,27 @@ func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequ
 	return response, nil
 }
 
+func (s *APIV2Service) GetMemoByName(ctx context.Context, request *apiv2pb.GetMemoByNameRequest) (*apiv2pb.GetMemoByNameResponse, error) {
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+		ResourceName: &request.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+
+	memoMessage, err := s.convertMemoFromStore(ctx, memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert memo")
+	}
+	response := &apiv2pb.GetMemoByNameResponse{
+		Memo: memoMessage,
+	}
+	return response, nil
+}
+
 func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMemoRequest) (*apiv2pb.UpdateMemoResponse, error) {
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
@@ -282,6 +306,11 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 			nodes := convertToASTNodes(request.Memo.Nodes)
 			content := restore.Restore(nodes)
 			update.Content = &content
+		} else if path == "resource_name" {
+			update.ResourceName = &request.Memo.Name
+			if !util.ResourceNameMatcher.MatchString(*update.ResourceName) {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name")
+			}
 		} else if path == "visibility" {
 			visibility := convertVisibilityToStore(request.Memo.Visibility)
 			update.Visibility = &visibility
@@ -574,6 +603,7 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 
 	return &apiv2pb.Memo{
 		Id:          int32(memo.ID),
+		Name:        memo.ResourceName,
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
 		Creator:     fmt.Sprintf("%s%s", UserNamePrefix, creator.Username),
 		CreatorId:   int32(memo.CreatorID),
