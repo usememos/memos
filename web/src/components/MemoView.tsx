@@ -83,6 +83,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
         showPreviewImageDialog([imgUrl], 0);
       }
     }
+
+    if (e.detail === 2) {
+      handleEditMemoClick();
+    }
   }, []);
 
   return (
