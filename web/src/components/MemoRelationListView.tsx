@@ -43,7 +43,7 @@ const MemoRelationListView = (props: Props) => {
               <div key={memo.id} className="block w-auto max-w-[50%]">
                 <Link
                   className="px-2 border rounded-md w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-zinc-700 dark:bg-zinc-900 hover:shadow hover:opacity-80"
-                  to={`/m/${memo.id}`}
+                  to={`/m/${memo.name}`}
                   unstable_viewTransition
                 >
                   <Tooltip title="Reference" placement="top">
@@ -64,7 +64,7 @@ const MemoRelationListView = (props: Props) => {
               <div key={memo.id} className="block w-auto max-w-[50%]">
                 <Link
                   className="px-2 border rounded-md w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-300 dark:border-gray-600 hover:shadow hover:opacity-80"
-                  to={`/m/${memo.id}`}
+                  to={`/m/${memo.name}`}
                   unstable_viewTransition
                 >
                   <Tooltip title="Backlink" placement="top">

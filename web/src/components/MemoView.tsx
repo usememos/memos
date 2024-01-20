@@ -75,7 +75,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     if (event.altKey) {
       showChangeMemoCreatedTsDialog(memo.id);
     } else {
-      navigateTo(`/m/${memo.id}`);
+      navigateTo(`/m/${memo.name}`);
     }
   };
 
