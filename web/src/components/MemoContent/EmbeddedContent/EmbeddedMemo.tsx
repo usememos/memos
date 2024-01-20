@@ -6,6 +6,7 @@ import Error from "./Error";
 
 interface Props {
   memoId: number;
+  params: string;
 }
 
 const EmbeddedMemo = ({ memoId }: Props) => {

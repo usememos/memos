@@ -1070,6 +1070,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | resource_name | [string](#string) |  |  |
+| params | [string](#string) |  |  |
 
 
 

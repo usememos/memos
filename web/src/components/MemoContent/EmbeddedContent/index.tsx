@@ -4,6 +4,7 @@ import Error from "./Error";
 
 interface Props {
   resourceName: string;
+  params: string;
 }
 
 const extractResourceTypeAndId = (resourceName: string) => {
@@ -11,12 +12,12 @@ const extractResourceTypeAndId = (resourceName: string) => {
   return { resourceType, resourceId };
 };
 
-const EmbeddedContent = ({ resourceName }: Props) => {
+const EmbeddedContent = ({ resourceName, params }: Props) => {
   const { resourceType, resourceId } = extractResourceTypeAndId(resourceName);
   if (resourceType === "memos") {
-    return <EmbeddedMemo memoId={Number(resourceId)} />;
+    return <EmbeddedMemo memoId={Number(resourceId)} params={params} />;
   } else if (resourceType === "resources") {
-    return <EmbeddedResource resourceId={Number(resourceId)} />;
+    return <EmbeddedResource resourceId={Number(resourceId)} params={params} />;
   }
   return <Error message={`Unknown resource: ${resourceName}`} />;
 };

@@ -146,6 +146,7 @@ message TableNode {
 
 message EmbeddedContentNode {
   string resource_name = 1;
+  string params = 2;
 }
 
 message TextNode {

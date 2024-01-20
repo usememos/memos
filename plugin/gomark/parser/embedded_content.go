@@ -45,7 +45,18 @@ func (p *EmbeddedContentParser) Parse(tokens []*tokenizer.Token) (ast.Node, erro
 		return nil, errors.New("not matched")
 	}
 
+	contentTokens := tokens[3 : size-2]
+	resourceName, params := "", ""
+	paramsIndex, ok := tokenizer.Find(contentTokens, tokenizer.QuestionMark)
+	if ok && paramsIndex > 0 {
+		resourceName = tokenizer.Stringify(contentTokens[:paramsIndex])
+		params = tokenizer.Stringify(contentTokens[paramsIndex+1:])
+	} else {
+		resourceName = tokenizer.Stringify(contentTokens)
+	}
+
 	return &ast.EmbeddedContent{
-		ResourceName: tokenizer.Stringify(tokens[3 : size-2]),
+		ResourceName: resourceName,
+		Params:       params,
 	}, nil
 }
