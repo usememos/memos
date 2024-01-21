@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
@@ -894,10 +895,11 @@ func convertCreateMemoRequestToMemoMessage(memoCreate *CreateMemoRequest) *store
 		createdTs = *memoCreate.CreatedTs
 	}
 	return &store.Memo{
-		CreatorID:  memoCreate.CreatorID,
-		CreatedTs:  createdTs,
-		Content:    memoCreate.Content,
-		Visibility: store.Visibility(memoCreate.Visibility),
+		ResourceName: shortuuid.New(),
+		CreatorID:    memoCreate.CreatorID,
+		CreatedTs:    createdTs,
+		Content:      memoCreate.Content,
+		Visibility:   store.Visibility(memoCreate.Visibility),
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"unicode/utf16"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 
 	apiv1 "github.com/usememos/memos/api/v1"
@@ -58,8 +59,9 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	}
 
 	create := &store.Memo{
-		CreatorID:  creatorID,
-		Visibility: store.Private,
+		ResourceName: shortuuid.New(),
+		CreatorID:    creatorID,
+		Visibility:   store.Private,
 	}
 
 	if message.Text != nil {
