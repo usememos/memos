@@ -86,11 +86,12 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	for _, attachment := range attachments {
 		// Fill the common field of create
 		create := store.Resource{
-			CreatorID: creatorID,
-			Filename:  filepath.Base(attachment.FileName),
-			Type:      attachment.GetMimeType(),
-			Size:      attachment.FileSize,
-			MemoID:    &memoMessage.ID,
+			ResourceName: shortuuid.New(),
+			CreatorID:    creatorID,
+			Filename:     filepath.Base(attachment.FileName),
+			Type:         attachment.GetMimeType(),
+			Size:         attachment.FileSize,
+			MemoID:       &memoMessage.ID,
 		}
 
 		err := apiv1.SaveResourceBlob(ctx, t.store, &create, bytes.NewReader(attachment.Data))

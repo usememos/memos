@@ -10,8 +10,8 @@ import (
 )
 
 func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store.Resource, error) {
-	fields := []string{"filename", "blob", "external_link", "type", "size", "creator_id", "internal_path", "memo_id"}
-	args := []any{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.MemoID}
+	fields := []string{"resource_name", "filename", "blob", "external_link", "type", "size", "creator_id", "internal_path", "memo_id"}
+	args := []any{create.ResourceName, create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.MemoID}
 
 	stmt := "INSERT INTO resource (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
@@ -26,6 +26,9 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	if v := find.ID; v != nil {
 		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *v)
 	}
+	if v := find.ResourceName; v != nil {
+		where, args = append(where, "resource_name = "+placeholder(len(args)+1)), append(args, *v)
+	}
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "creator_id = "+placeholder(len(args)+1)), append(args, *v)
 	}
@@ -39,7 +42,7 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		where = append(where, "memo_id IS NOT NULL")
 	}
 
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path", "memo_id"}
+	fields := []string{"id", "resource_name", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path", "memo_id"}
 	if find.GetBlob {
 		fields = append(fields, "blob")
 	}
@@ -70,6 +73,7 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		var memoID sql.NullInt32
 		dests := []any{
 			&resource.ID,
+			&resource.ResourceName,
 			&resource.Filename,
 			&resource.ExternalLink,
 			&resource.Type,
@@ -102,6 +106,9 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (*store.Resource, error) {
 	set, args := []string{}, []any{}
 
+	if v := update.ResourceName; v != nil {
+		set, args = append(set, "resource_name = "+placeholder(len(args)+1)), append(args, *v)
+	}
 	if v := update.UpdatedTs; v != nil {
 		set, args = append(set, "updated_ts = "+placeholder(len(args)+1)), append(args, *v)
 	}
@@ -118,16 +125,13 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (
 		set, args = append(set, "blob = "+placeholder(len(args)+1)), append(args, v)
 	}
 
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path"}
-	stmt := `
-	UPDATE resource
-	SET ` + strings.Join(set, ", ") + `
-	WHERE id = ` + placeholder(len(args)+1) + `
-	RETURNING ` + strings.Join(fields, ", ")
+	fields := []string{"id", "resource_name", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path"}
+	stmt := `UPDATE resource SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1) + ` RETURNING ` + strings.Join(fields, ", ")
 	args = append(args, update.ID)
 	resource := store.Resource{}
 	dests := []any{
 		&resource.ID,
+		&resource.ResourceName,
 		&resource.Filename,
 		&resource.ExternalLink,
 		&resource.Type,
@@ -157,11 +161,7 @@ func (d *DB) DeleteResource(ctx context.Context, delete *store.DeleteResource) e
 }
 
 func vacuumResource(ctx context.Context, tx *sql.Tx) error {
-	stmt := `
-	DELETE FROM 
-		resource 
-	WHERE 
-		creator_id NOT IN (SELECT id FROM "user")`
+	stmt := `DELETE FROM resource WHERE creator_id NOT IN (SELECT id FROM "user")`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
 		return err
