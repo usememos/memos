@@ -1705,7 +1705,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| id | [int32](#int32) |  | id is the system generated unique identifier. |
+| name | [string](#string) |  | name is the user provided name. |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | filename | [string](#string) |  |  |
 | external_link | [string](#string) |  |  |
@@ -2104,8 +2105,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  | id is the unique auto-incremented id. |
-| name | [string](#string) |  | name is the user-defined name. |
+| id | [int32](#int32) |  | id is the system generated unique identifier. |
+| name | [string](#string) |  | name is the user provided name. |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
 | creator | [string](#string) |  | The name of the creator. Format: users/{username} |
 | creator_id | [int32](#int32) |  |  |

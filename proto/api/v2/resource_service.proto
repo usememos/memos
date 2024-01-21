@@ -34,13 +34,23 @@ service ResourceService {
 }
 
 message Resource {
+  // id is the system generated unique identifier.
   int32 id = 1;
-  google.protobuf.Timestamp create_time = 2;
-  string filename = 3;
-  string external_link = 4;
-  string type = 5;
-  int64 size = 6;
-  optional int32 memo_id = 7;
+
+  // name is the user provided name.
+  string name = 2;
+
+  google.protobuf.Timestamp create_time = 3;
+
+  string filename = 4;
+
+  string external_link = 5;
+
+  string type = 6;
+
+  int64 size = 7;
+
+  optional int32 memo_id = 8;
 }
 
 message CreateResourceRequest {

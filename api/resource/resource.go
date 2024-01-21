@@ -43,26 +43,22 @@ func NewService(profile *profile.Profile, store *store.Store) *Service {
 }
 
 func (s *Service) RegisterResourcePublicRoutes(g *echo.Group) {
-	g.GET("/r/:resourceId", s.streamResource)
-	g.GET("/r/:resourceId/*", s.streamResource)
+	g.GET("/r/:resourceName", s.streamResource)
+	g.GET("/r/:resourceName/*", s.streamResource)
 }
 
 func (s *Service) streamResource(c echo.Context) error {
 	ctx := c.Request().Context()
-	resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
-	}
-
+	resourceName := c.Param("resourceName")
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
-		ID:      &resourceID,
-		GetBlob: true,
+		ResourceName: &resourceName,
+		GetBlob:      true,
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by id: %s", resourceName)).SetInternal(err)
 	}
 	if resource == nil {
-		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %s", resourceName))
 	}
 	// Check the related memo visibility.
 	if resource.MemoID != nil {
