@@ -17,7 +17,8 @@ const (
 )
 
 type Resource struct {
-	ID int32
+	ID           int32
+	ResourceName string
 
 	// Standard fields
 	CreatorID int32
@@ -37,6 +38,7 @@ type Resource struct {
 type FindResource struct {
 	GetBlob        bool
 	ID             *int32
+	ResourceName   *string
 	CreatorID      *int32
 	Filename       *string
 	MemoID         *int32
@@ -47,6 +49,7 @@ type FindResource struct {
 
 type UpdateResource struct {
 	ID           int32
+	ResourceName *string
 	UpdatedTs    *int64
 	Filename     *string
 	InternalPath *string
@@ -60,6 +63,9 @@ type DeleteResource struct {
 }
 
 func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {
+	if !util.ResourceNameMatcher.MatchString(create.ResourceName) {
+		return nil, errors.New("invalid resource name")
+	}
 	return s.driver.CreateResource(ctx, create)
 }
 
@@ -81,6 +87,9 @@ func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource,
 }
 
 func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Resource, error) {
+	if update.ResourceName != nil && !util.ResourceNameMatcher.MatchString(*update.ResourceName) {
+		return nil, errors.New("invalid resource name")
+	}
 	return s.driver.UpdateResource(ctx, update)
 }
 
@@ -101,6 +110,7 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 		}
 		_ = os.Remove(resourcePath)
 	}
+
 	// Delete the thumbnail.
 	if util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
 		ext := filepath.Ext(resource.Filename)

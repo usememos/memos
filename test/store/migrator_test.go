@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/stretchr/testify/require"
 
 	"github.com/usememos/memos/store"
@@ -33,6 +34,7 @@ func TestMigrateResourceInternalPath(t *testing.T) {
 	for _, testCase := range testCases {
 		for input, expectedOutput := range testCase {
 			resourceCreate := &store.Resource{
+				ResourceName: shortuuid.New(),
 				CreatorID:    user.ID,
 				InternalPath: input,
 			}
