@@ -96,13 +96,12 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
             <div className="w-full flex flex-row justify-start items-start flex-wrap gap-2 mt-1">
               {memoList.map((memo) => (
                 <div
-                  className="max-w-[50%] text-sm px-3 py-1 flex flex-row justify-start items-center border rounded-md cursor-pointer truncate opacity-80 dark:text-gray-300 dark:border-zinc-700 hover:opacity-60 hover:line-through"
-                  key={memo.id}
+                  className="max-w-[50%] text-sm px-2 py-1 flex flex-row justify-start items-center border rounded-md cursor-pointer truncate opacity-80 text-gray-600 dark:text-gray-400 dark:border-zinc-700 dark:bg-zinc-900 hover:opacity-60 hover:line-through"
+                  key={memo.name}
                   onClick={() => handleDeleteMemoRelation(memo)}
                 >
-                  <span className="opacity-60 shrink-0">#{memo.id}</span>
-                  <span className="mx-1 max-w-full text-ellipsis whitespace-nowrap overflow-hidden">{memo.content}</span>
-                  <Icon.X className="opacity-80 w-4 h-auto shrink-0 ml-1" />
+                  <span className="max-w-full text-ellipsis whitespace-nowrap overflow-hidden">{memo.content}</span>
+                  <Icon.X className="opacity-60 w-4 h-auto shrink-0 ml-1" />
                 </div>
               ))}
             </div>
