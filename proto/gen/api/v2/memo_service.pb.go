@@ -80,9 +80,9 @@ type Memo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// id is the unique auto-incremented id.
+	// id is the system generated unique identifier.
 	Id int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// name is the user-defined name.
+	// name is the user provided name.
 	Name      string    `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	RowStatus RowStatus `protobuf:"varint,3,opt,name=row_status,json=rowStatus,proto3,enum=memos.api.v2.RowStatus" json:"row_status,omitempty"`
 	// The name of the creator.

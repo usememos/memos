@@ -148,6 +148,7 @@ func (s *APIV2Service) convertResourceFromStore(ctx context.Context, resource *s
 
 	return &apiv2pb.Resource{
 		Id:           resource.ID,
+		Name:         resource.ResourceName,
 		CreateTime:   timestamppb.New(time.Unix(resource.CreatedTs, 0)),
 		Filename:     resource.Filename,
 		ExternalLink: resource.ExternalLink,
