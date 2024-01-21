@@ -150,7 +150,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   };
 
   const handleCopyMemoId = () => {
-    copy(String(memo.id));
+    copy(memo.name);
     toast.success("Copied to clipboard!");
   };
 
@@ -246,10 +246,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     {t("common.delete")}
                   </span>
                   <Divider className="!my-1" />
-                  <div className="w-full px-3 text-xs text-gray-400">
-                    <span className="cursor-pointer" onClick={handleCopyMemoId}>
-                      ID: <span className="font-mono">{memo.id}</span>
-                    </span>
+                  <div className="w-full pl-3 pr-2 text-xs text-gray-400">
+                    <div className="font-mono max-w-20 cursor-pointer truncate" onClick={handleCopyMemoId}>
+                      ID: {memo.name}
+                    </div>
                   </div>
                 </div>
               </div>
