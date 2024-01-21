@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
@@ -139,6 +140,7 @@ func (s *APIV1Service) CreateResource(c echo.Context) error {
 	}
 
 	create := &store.Resource{
+		ResourceName: shortuuid.New(),
 		CreatorID:    userID,
 		Filename:     request.Filename,
 		ExternalLink: request.ExternalLink,
@@ -215,10 +217,11 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	defer sourceFile.Close()
 
 	create := &store.Resource{
-		CreatorID: userID,
-		Filename:  file.Filename,
-		Type:      file.Header.Get("Content-Type"),
-		Size:      file.Size,
+		ResourceName: shortuuid.New(),
+		CreatorID:    userID,
+		Filename:     file.Filename,
+		Type:         file.Header.Get("Content-Type"),
+		Size:         file.Size,
 	}
 	err = SaveResourceBlob(ctx, s.Store, create, sourceFile)
 	if err != nil {
