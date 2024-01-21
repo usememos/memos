@@ -103,10 +103,10 @@ enum Visibility {
 }
 
 message Memo {
-  // id is the unique auto-incremented id.
+  // id is the system generated unique identifier.
   int32 id = 1;
 
-  // name is the user-defined name.
+  // name is the user provided name.
   string name = 2;
 
   RowStatus row_status = 3;
