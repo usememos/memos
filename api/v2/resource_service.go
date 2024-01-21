@@ -73,13 +73,29 @@ func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetReso
 		ID: &request.Id,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
 	}
 	if resource == nil {
 		return nil, status.Errorf(codes.NotFound, "resource not found")
 	}
 
 	return &apiv2pb.GetResourceResponse{
+		Resource: s.convertResourceFromStore(ctx, resource),
+	}, nil
+}
+
+func (s *APIV2Service) GetResourceByName(ctx context.Context, request *apiv2pb.GetResourceByNameRequest) (*apiv2pb.GetResourceByNameResponse, error) {
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{
+		ResourceName: &request.Name,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+	}
+	if resource == nil {
+		return nil, status.Errorf(codes.NotFound, "resource not found")
+	}
+
+	return &apiv2pb.GetResourceByNameResponse{
 		Resource: s.convertResourceFromStore(ctx, resource),
 	}, nil
 }

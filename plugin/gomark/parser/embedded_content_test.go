@@ -48,6 +48,13 @@ func TestEmbeddedContentParser(t *testing.T) {
 				Params:       "align=center",
 			},
 		},
+		{
+			text: "![[resources/6uxnhT98q8vN8anBbUbRGu?align=center]]",
+			embeddedContent: &ast.EmbeddedContent{
+				ResourceName: "resources/6uxnhT98q8vN8anBbUbRGu",
+				Params:       "align=center",
+			},
+		},
 	}
 
 	for _, test := range tests {

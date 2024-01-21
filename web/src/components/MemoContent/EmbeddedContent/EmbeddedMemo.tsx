@@ -7,28 +7,28 @@ import { RendererContext } from "../types";
 import Error from "./Error";
 
 interface Props {
-  memoId: number;
+  resourceId: string;
   params: string;
 }
 
-const EmbeddedMemo = ({ memoId }: Props) => {
+const EmbeddedMemo = ({ resourceId }: Props) => {
   const context = useContext(RendererContext);
   const loadingState = useLoading();
   const memoStore = useMemoStore();
-  const memo = memoStore.getMemoById(memoId);
-  const resourceName = `memos/${memoId}`;
+  const memo = memoStore.getMemoByName(resourceId);
+  const resourceName = `memos/${resourceId}`;
 
   useEffect(() => {
-    memoStore.getOrFetchMemoById(memoId).finally(() => loadingState.setFinish());
-  }, [memoId]);
+    memoStore.getOrFetchMemoByName(resourceId).finally(() => loadingState.setFinish());
+  }, [resourceId]);
 
   if (loadingState.isLoading) {
     return null;
   }
   if (!memo) {
-    return <Error message={`Memo not found: ${memoId}`} />;
+    return <Error message={`Memo not found: ${resourceId}`} />;
   }
-  if (memoId === context.memoId || context.embeddedMemos.has(resourceName)) {
+  if (memo.id === context.memoId || context.embeddedMemos.has(resourceName)) {
     return <Error message={`Nested Rendering Error: ![[${resourceName}]]`} />;
   }
 
@@ -36,7 +36,7 @@ const EmbeddedMemo = ({ memoId }: Props) => {
   context.embeddedMemos.add(resourceName);
   return (
     <div className="w-full">
-      <MemoContent nodes={memo.nodes} memoId={memoId} embeddedMemos={context.embeddedMemos} />
+      <MemoContent nodes={memo.nodes} memoId={memo.id} embeddedMemos={context.embeddedMemos} />
       <MemoResourceListView resources={memo.resources} />
     </div>
   );

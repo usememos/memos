@@ -20,6 +20,10 @@ service ResourceService {
     option (google.api.http) = {get: "/api/v2/resources/{id}"};
     option (google.api.method_signature) = "id";
   }
+  rpc GetResourceByName(GetResourceByNameRequest) returns (GetResourceByNameResponse) {
+    option (google.api.http) = {get: "/api/v2/resources/{name}"};
+    option (google.api.method_signature) = "name";
+  }
   rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse) {
     option (google.api.http) = {
       patch: "/api/v2/resources/{resource.id}",
@@ -75,6 +79,14 @@ message GetResourceRequest {
 }
 
 message GetResourceResponse {
+  Resource resource = 1;
+}
+
+message GetResourceByNameRequest {
+  string name = 1;
+}
+
+message GetResourceByNameResponse {
   Resource resource = 1;
 }
 

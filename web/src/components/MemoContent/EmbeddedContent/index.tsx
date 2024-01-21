@@ -15,9 +15,9 @@ const extractResourceTypeAndId = (resourceName: string) => {
 const EmbeddedContent = ({ resourceName, params }: Props) => {
   const { resourceType, resourceId } = extractResourceTypeAndId(resourceName);
   if (resourceType === "memos") {
-    return <EmbeddedMemo memoId={Number(resourceId)} params={params} />;
+    return <EmbeddedMemo resourceId={resourceId} params={params} />;
   } else if (resourceType === "resources") {
-    return <EmbeddedResource resourceId={Number(resourceId)} params={params} />;
+    return <EmbeddedResource resourceId={resourceId} params={params} />;
   }
   return <Error message={`Unknown resource: ${resourceName}`} />;
 };

@@ -9,7 +9,7 @@ import (
 
 // Version is the service current released version.
 // Semantic versioning: https://semver.org/
-var Version = "0.18.2"
+var Version = "0.19.0"
 
 // DevVersion is the service current development version.
 var DevVersion = "0.18.2"

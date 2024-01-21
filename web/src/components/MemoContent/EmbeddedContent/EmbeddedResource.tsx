@@ -6,7 +6,7 @@ import { useResourceStore } from "@/store/v1";
 import Error from "./Error";
 
 interface Props {
-  resourceId: number;
+  resourceId: string;
   params: string;
 }
 
@@ -38,11 +38,11 @@ const getAdditionalClassNameWithParams = (params: URLSearchParams) => {
 const EmbeddedResource = ({ resourceId, params: paramsStr }: Props) => {
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
-  const resource = resourceStore.getResourceById(resourceId);
+  const resource = resourceStore.getResourceByName(resourceId);
   const params = new URLSearchParams(paramsStr);
 
   useEffect(() => {
-    resourceStore.getOrFetchResourceById(resourceId).finally(() => loadingState.setFinish());
+    resourceStore.getOrFetchResourceByName(resourceId).finally(() => loadingState.setFinish());
   }, [resourceId]);
 
   if (loadingState.isLoading) {

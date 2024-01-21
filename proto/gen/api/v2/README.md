@@ -112,6 +112,8 @@
     - [CreateResourceResponse](#memos-api-v2-CreateResourceResponse)
     - [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest)
     - [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse)
+    - [GetResourceByNameRequest](#memos-api-v2-GetResourceByNameRequest)
+    - [GetResourceByNameResponse](#memos-api-v2-GetResourceByNameResponse)
     - [GetResourceRequest](#memos-api-v2-GetResourceRequest)
     - [GetResourceResponse](#memos-api-v2-GetResourceResponse)
     - [ListResourcesRequest](#memos-api-v2-ListResourcesRequest)
@@ -1642,6 +1644,36 @@
 
 
 
+<a name="memos-api-v2-GetResourceByNameRequest"></a>
+
+### GetResourceByNameRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetResourceByNameResponse"></a>
+
+### GetResourceByNameResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource | [Resource](#memos-api-v2-Resource) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-GetResourceRequest"></a>
 
 ### GetResourceRequest
@@ -1766,6 +1798,7 @@
 | CreateResource | [CreateResourceRequest](#memos-api-v2-CreateResourceRequest) | [CreateResourceResponse](#memos-api-v2-CreateResourceResponse) |  |
 | ListResources | [ListResourcesRequest](#memos-api-v2-ListResourcesRequest) | [ListResourcesResponse](#memos-api-v2-ListResourcesResponse) |  |
 | GetResource | [GetResourceRequest](#memos-api-v2-GetResourceRequest) | [GetResourceResponse](#memos-api-v2-GetResourceResponse) |  |
+| GetResourceByName | [GetResourceByNameRequest](#memos-api-v2-GetResourceByNameRequest) | [GetResourceByNameResponse](#memos-api-v2-GetResourceByNameResponse) |  |
 | UpdateResource | [UpdateResourceRequest](#memos-api-v2-UpdateResourceRequest) | [UpdateResourceResponse](#memos-api-v2-UpdateResourceResponse) |  |
 | DeleteResource | [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest) | [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse) |  |
 

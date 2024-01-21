@@ -38,5 +38,29 @@ export const useResourceStore = create(
     getResourceById: (id: number) => {
       return get().resourceMapById[id];
     },
+    getOrFetchResourceByName: async (name: string, options?: { skipCache?: boolean; skipStore?: boolean }) => {
+      const resourceMap = get().resourceMapById;
+      const cachedResource = Object.values(resourceMap).find((r) => r.name === name);
+      if (cachedResource && !options?.skipCache) {
+        return cachedResource;
+      }
+
+      const { resource } = await resourceServiceClient.getResourceByName({
+        name,
+      });
+      if (!resource) {
+        throw new Error("Resource not found");
+      }
+
+      if (!options?.skipStore) {
+        resourceMap[resource.id] = resource;
+        set({ resourceMapById: resourceMap });
+      }
+      return resource;
+    },
+    getResourceByName: (name: string) => {
+      const resourceMap = get().resourceMapById;
+      return Object.values(resourceMap).find((r) => r.name === name);
+    },
   }))
 );
