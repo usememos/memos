@@ -1,0 +1,1 @@
+ALTER TABLE `resource` MODIFY COLUMN `blob` LONGBLOB;
