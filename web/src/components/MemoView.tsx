@@ -216,7 +216,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
               <span className="btn more-action-btn">
                 <Icon.MoreVertical className="icon-img" />
               </span>
-              <div className="more-action-btns-wrapper">
+              <div className="more-action-btns-wrapper z-10">
                 <div className="more-action-btns-container min-w-[6em]">
                   {props.showPinned && (
                     <span className="btn" onClick={handleTogglePinMemoBtnClick}>
