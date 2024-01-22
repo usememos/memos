@@ -712,6 +712,36 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 	if patchMemoRequest.Visibility != nil {
 		visibility := store.Visibility(patchMemoRequest.Visibility.String())
 		updateMemoMessage.Visibility = &visibility
+		// Find disable public memos system setting.
+		disablePublicMemosSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+			Name: SystemSettingDisablePublicMemosName.String(),
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+		}
+		if disablePublicMemosSystemSetting != nil {
+			disablePublicMemos := false
+			err = json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
+			}
+			if disablePublicMemos {
+				user, err := s.Store.GetUser(ctx, &store.FindUser{
+					ID: &userID,
+				})
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+				}
+				if user == nil {
+					return echo.NewHTTPError(http.StatusNotFound, "User not found")
+				}
+				// Enforce normal user to save as private memo if public memos are disabled.
+				if user.Role == store.RoleUser {
+					visibility = store.Visibility("PRIVATE")
+					updateMemoMessage.Visibility = &visibility
+				}
+			}
+		}
 	}
 
 	err = s.Store.UpdateMemo(ctx, updateMemoMessage)

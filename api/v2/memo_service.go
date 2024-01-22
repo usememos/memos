@@ -325,6 +325,14 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 			}
 		} else if path == "visibility" {
 			visibility := convertVisibilityToStore(request.Memo.Visibility)
+			// Find disable public memos system setting.
+			disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get system setting")
+			}
+			if disablePublicMemosSystem && visibility == store.Public {
+				return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
+			}
 			update.Visibility = &visibility
 		} else if path == "row_status" {
 			rowStatus := convertRowStatusToStore(request.Memo.RowStatus)
