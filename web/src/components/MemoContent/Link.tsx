@@ -1,4 +1,4 @@
-import { AspectRatio, Badge, Card, CardContent, Chip, Typography, useColorScheme } from "@mui/joy";
+import { AspectRatio, Badge, Card, CardContent, Chip, Typography } from "@mui/joy";
 import MuiLink from "@mui/joy/Link";
 import { ExternalLink, Twitter } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -9,15 +9,15 @@ interface Props {
 }
 
 const isYouTubeVideoUrl = (url: string) => {
-  return url.includes("youtube.com") || url.includes("youtu.be");
+  return url.includes(encodeURIComponent("youtube.com")) || url.includes(encodeURIComponent("youtu.be"));
 };
 
 const isYouTubeShortsUrl = (url: string) => {
-  return url.includes("youtube.com/shorts");
+  return url.includes(encodeURIComponent("youtube.com/shorts"));
 };
 
 const isTwitterUrl = (url: string) => {
-  return url.includes("twitter.com");
+  return url.includes(encodeURIComponent("twitter.com"));
 };
 
 const Link: React.FC<Props> = ({ text, url }: Props) => {
@@ -93,8 +93,6 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
 
     fetchData();
   }, [url]);
-
-  // const { mode, systemMode } = useColorScheme();
 
   const renderLink = () => {
     if (isYouTubeShortsUrl(url)) {
@@ -366,7 +364,7 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
                   </MuiLink>
                 </div>
               </div>
-              <Typography level="body-" id="card-description">
+              <Typography level="body-sm" id="card-description">
                 <p>{tweetContent}</p>
               </Typography>
               <Typography level="body-xs" id="card-description">
