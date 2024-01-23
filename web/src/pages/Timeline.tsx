@@ -145,7 +145,7 @@ const Timeline = () => {
             {groupedByMonth.map((group, index) => (
               <Fragment key={group.month}>
                 <div className={classNames("flex justify-start items-start w-full mt-2 last:mb-4", md ? "flex-row" : "flex-col")}>
-                  <div className={classNames("flex shrink-0", md ? "flex-col w-32 pr-4 pl-2 pb-8" : "flex-row w-full pl-1 mt-2 mb-2")}>
+                  <div className={classNames("flex shrink-0", md ? "flex-col w-40 pr-4 pl-2 pb-8" : "flex-row w-full pl-1 mt-2 mb-2")}>
                     <div className={classNames("w-full flex flex-col", md && "mt-4 mb-2")}>
                       <span className="font-medium text-3xl leading-none mb-1">
                         {new Date(group.month).toLocaleString(i18n.language, { month: "short" })}
