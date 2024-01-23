@@ -84,7 +84,9 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	link := uploadOutput.Location
 	// If url prefix is set, use it as the file link.
 	if client.Config.URLPrefix != "" {
-		link = fmt.Sprintf("%s/%s%s", client.Config.URLPrefix, url.PathEscape(filename), client.Config.URLSuffix)
+		parts := strings.Split(filename, "/")
+		parts[len(parts)-1] = url.PathEscape(parts[len(parts)-1])
+		link = fmt.Sprintf("%s/%s%s", client.Config.URLPrefix, strings.Join(parts, "/"), client.Config.URLSuffix)
 	}
 	if link == "" {
 		return "", errors.New("failed to get file link")
