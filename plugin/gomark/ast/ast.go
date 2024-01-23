@@ -33,6 +33,7 @@ const (
 	HighlightNode
 	SubscriptNode
 	SuperscriptNode
+	ReferencedContentNode
 )
 
 type Node interface {

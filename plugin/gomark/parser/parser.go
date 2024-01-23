@@ -80,6 +80,7 @@ var defaultInlineParsers = []InlineParser{
 	NewSubscriptParser(),
 	NewSuperscriptParser(),
 	NewMathParser(),
+	NewReferencedContentParser(),
 	NewTagParser(),
 	NewStrikethroughParser(),
 	NewLineBreakParser(),

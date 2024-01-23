@@ -13,7 +13,7 @@ func NewEmbeddedContentParser() *EmbeddedContentParser {
 
 func (*EmbeddedContentParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
-	if len(matchedTokens) < 5 {
+	if len(matchedTokens) < 6 {
 		return nil, 0
 	}
 	if matchedTokens[0].Type != tokenizer.ExclamationMark || matchedTokens[1].Type != tokenizer.LeftSquareBracket || matchedTokens[2].Type != tokenizer.LeftSquareBracket {

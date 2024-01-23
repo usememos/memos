@@ -241,9 +241,10 @@ func (*EmbeddedContent) Type() NodeType {
 }
 
 func (n *EmbeddedContent) Restore() string {
-	result := fmt.Sprintf("![[%s]]", n.ResourceName)
+	params := ""
 	if n.Params != "" {
-		result += fmt.Sprintf("?%s", n.Params)
+		params = fmt.Sprintf("?%s", n.Params)
 	}
+	result := fmt.Sprintf("![[%s%s]]", n.ResourceName, params)
 	return result
 }
