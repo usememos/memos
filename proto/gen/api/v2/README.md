@@ -88,6 +88,7 @@
     - [ParagraphNode](#memos-api-v2-ParagraphNode)
     - [ParseMarkdownRequest](#memos-api-v2-ParseMarkdownRequest)
     - [ParseMarkdownResponse](#memos-api-v2-ParseMarkdownResponse)
+    - [ReferencedContentNode](#memos-api-v2-ReferencedContentNode)
     - [StrikethroughNode](#memos-api-v2-StrikethroughNode)
     - [SubscriptNode](#memos-api-v2-SubscriptNode)
     - [SuperscriptNode](#memos-api-v2-SuperscriptNode)
@@ -1266,6 +1267,7 @@
 | highlight_node | [HighlightNode](#memos-api-v2-HighlightNode) |  |  |
 | subscript_node | [SubscriptNode](#memos-api-v2-SubscriptNode) |  |  |
 | superscript_node | [SuperscriptNode](#memos-api-v2-SuperscriptNode) |  |  |
+| referenced_content_node | [ReferencedContentNode](#memos-api-v2-ReferencedContentNode) |  |  |
 
 
 
@@ -1328,6 +1330,22 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | nodes | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ReferencedContentNode"></a>
+
+### ReferencedContentNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource_name | [string](#string) |  |  |
+| params | [string](#string) |  |  |
 
 
 
@@ -1513,6 +1531,7 @@
 | HIGHLIGHT | 25 |  |
 | SUBSCRIPT | 26 |  |
 | SUPERSCRIPT | 27 |  |
+| REFERENCED_CONTENT | 28 |  |
 
 
  
