@@ -79,7 +79,7 @@ func (n *BaseNode) SetNextSibling(node Node) {
 
 func IsBlockNode(node Node) bool {
 	switch node.Type() {
-	case ParagraphNode, CodeBlockNode, HeadingNode, HorizontalRuleNode, BlockquoteNode, OrderedListNode, UnorderedListNode, TaskListNode, MathBlockNode:
+	case ParagraphNode, CodeBlockNode, HeadingNode, HorizontalRuleNode, BlockquoteNode, OrderedListNode, UnorderedListNode, TaskListNode, MathBlockNode, TableNode, EmbeddedContentNode:
 		return true
 	default:
 		return false

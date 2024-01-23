@@ -41,7 +41,7 @@ func TestSubscriptParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewSubscriptParser().Parse(tokens)
+		node, _ := NewSubscriptParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.subscript}), restore.Restore([]ast.Node{node}))
 	}
 }

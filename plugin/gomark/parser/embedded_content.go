@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"errors"
-
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -13,50 +11,33 @@ func NewEmbeddedContentParser() *EmbeddedContentParser {
 	return &EmbeddedContentParser{}
 }
 
-func (*EmbeddedContentParser) Match(tokens []*tokenizer.Token) (int, bool) {
-	lines := tokenizer.Split(tokens, tokenizer.Newline)
-	if len(lines) < 1 {
-		return 0, false
+func (p *EmbeddedContentParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+	matchedTokens := tokenizer.GetFirstLine(tokens)
+	if len(matchedTokens) < 5 {
+		return nil, 0
 	}
-	firstLine := lines[0]
-	if len(firstLine) < 5 {
-		return 0, false
-	}
-	if firstLine[0].Type != tokenizer.ExclamationMark || firstLine[1].Type != tokenizer.LeftSquareBracket || firstLine[2].Type != tokenizer.LeftSquareBracket {
-		return 0, false
+	if matchedTokens[0].Type != tokenizer.ExclamationMark || matchedTokens[1].Type != tokenizer.LeftSquareBracket || matchedTokens[2].Type != tokenizer.LeftSquareBracket {
+		return nil, 0
 	}
 	matched := false
-	for index, token := range firstLine[:len(firstLine)-1] {
-		if token.Type == tokenizer.RightSquareBracket && firstLine[index+1].Type == tokenizer.RightSquareBracket && index+1 == len(firstLine)-1 {
+	for index, token := range matchedTokens[:len(matchedTokens)-1] {
+		if token.Type == tokenizer.RightSquareBracket && matchedTokens[index+1].Type == tokenizer.RightSquareBracket && index+1 == len(matchedTokens)-1 {
 			matched = true
 			break
 		}
 	}
 	if !matched {
-		return 0, false
+		return nil, 0
 	}
 
-	return len(firstLine), true
-}
-
-func (p *EmbeddedContentParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
-	size, ok := p.Match(tokens)
-	if size == 0 || !ok {
-		return nil, errors.New("not matched")
+	contentTokens := matchedTokens[3 : len(matchedTokens)-2]
+	resourceName, params := tokenizer.Stringify(contentTokens), ""
+	questionMarkIndex := tokenizer.FindUnescaped(contentTokens, tokenizer.QuestionMark)
+	if questionMarkIndex > 0 {
+		resourceName, params = tokenizer.Stringify(contentTokens[:questionMarkIndex]), tokenizer.Stringify(contentTokens[questionMarkIndex+1:])
 	}
-
-	contentTokens := tokens[3 : size-2]
-	resourceName, params := "", ""
-	paramsIndex, ok := tokenizer.Find(contentTokens, tokenizer.QuestionMark)
-	if ok && paramsIndex > 0 {
-		resourceName = tokenizer.Stringify(contentTokens[:paramsIndex])
-		params = tokenizer.Stringify(contentTokens[paramsIndex+1:])
-	} else {
-		resourceName = tokenizer.Stringify(contentTokens)
-	}
-
 	return &ast.EmbeddedContent{
 		ResourceName: resourceName,
 		Params:       params,
-	}, nil
+	}, len(matchedTokens)
 }

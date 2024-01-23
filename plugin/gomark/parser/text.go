@@ -13,18 +13,11 @@ func NewTextParser() *TextParser {
 	return &TextParser{}
 }
 
-func (*TextParser) Match(tokens []*tokenizer.Token) (int, bool) {
+func (*TextParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	if len(tokens) == 0 {
-		return 0, false
-	}
-	return 1, true
-}
-
-func (*TextParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
-	if len(tokens) == 0 {
-		return &ast.Text{}, nil
+		return nil, 0
 	}
 	return &ast.Text{
 		Content: tokens[0].String(),
-	}, nil
+	}, 1
 }

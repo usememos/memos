@@ -51,7 +51,7 @@ func TestHorizontalRuleParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewHorizontalRuleParser().Parse(tokens)
+		node, _ := NewHorizontalRuleParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.horizontalRule}), restore.Restore([]ast.Node{node}))
 	}
 }

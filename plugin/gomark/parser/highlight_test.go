@@ -35,7 +35,7 @@ func TestHighlightParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewHighlightParser().Parse(tokens)
+		node, _ := NewHighlightParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.bold}), restore.Restore([]ast.Node{node}))
 	}
 }
