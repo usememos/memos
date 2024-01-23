@@ -11,7 +11,7 @@ func NewLinkParser() *LinkParser {
 	return &LinkParser{}
 }
 
-func (p *LinkParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*LinkParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 5 {
 		return nil, 0

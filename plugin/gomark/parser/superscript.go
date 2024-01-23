@@ -11,7 +11,7 @@ func NewSuperscriptParser() *SuperscriptParser {
 	return &SuperscriptParser{}
 }
 
-func (p *SuperscriptParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*SuperscriptParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 3 {
 		return nil, 0

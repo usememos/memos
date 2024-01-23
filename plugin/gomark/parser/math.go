@@ -11,7 +11,7 @@ func NewMathParser() *MathParser {
 	return &MathParser{}
 }
 
-func (p *MathParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*MathParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 3 {
 		return nil, 0

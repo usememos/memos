@@ -11,7 +11,7 @@ func NewUnorderedListParser() *UnorderedListParser {
 	return &UnorderedListParser{}
 }
 
-func (p *UnorderedListParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*UnorderedListParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	indent := 0
 	for _, token := range matchedTokens {

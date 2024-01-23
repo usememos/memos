@@ -11,7 +11,7 @@ func NewSubscriptParser() *SubscriptParser {
 	return &SubscriptParser{}
 }
 
-func (p *SubscriptParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*SubscriptParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 3 {
 		return nil, 0

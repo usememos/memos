@@ -11,7 +11,7 @@ func NewEmbeddedContentParser() *EmbeddedContentParser {
 	return &EmbeddedContentParser{}
 }
 
-func (p *EmbeddedContentParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*EmbeddedContentParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 5 {
 		return nil, 0

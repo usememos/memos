@@ -11,7 +11,7 @@ func NewHeadingParser() *HeadingParser {
 	return &HeadingParser{}
 }
 
-func (p *HeadingParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*HeadingParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	spaceIndex := tokenizer.FindUnescaped(matchedTokens, tokenizer.Space)
 	if spaceIndex < 0 {

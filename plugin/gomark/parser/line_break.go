@@ -11,7 +11,7 @@ func NewLineBreakParser() *LineBreakParser {
 	return &LineBreakParser{}
 }
 
-func (p *LineBreakParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*LineBreakParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	if len(tokens) == 0 {
 		return nil, 0
 	}

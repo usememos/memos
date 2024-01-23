@@ -11,7 +11,7 @@ func NewHorizontalRuleParser() *HorizontalRuleParser {
 	return &HorizontalRuleParser{}
 }
 
-func (p *HorizontalRuleParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*HorizontalRuleParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 3 {
 		return nil, 0

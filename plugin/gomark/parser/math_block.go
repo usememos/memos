@@ -11,7 +11,7 @@ func NewMathBlockParser() *MathBlockParser {
 	return &MathBlockParser{}
 }
 
-func (p *MathBlockParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*MathBlockParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	rows := tokenizer.Split(tokens, tokenizer.Newline)
 	if len(rows) < 3 {
 		return nil, 0

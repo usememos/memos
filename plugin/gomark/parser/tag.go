@@ -11,7 +11,7 @@ func NewTagParser() *TagParser {
 	return &TagParser{}
 }
 
-func (p *TagParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*TagParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 2 {
 		return nil, 0

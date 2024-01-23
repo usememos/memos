@@ -11,7 +11,7 @@ func NewStrikethroughParser() *StrikethroughParser {
 	return &StrikethroughParser{}
 }
 
-func (p *StrikethroughParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*StrikethroughParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 5 {
 		return nil, 0

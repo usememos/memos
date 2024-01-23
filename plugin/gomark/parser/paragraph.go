@@ -13,7 +13,7 @@ func NewParagraphParser() *ParagraphParser {
 	return &ParagraphParser{}
 }
 
-func (p *ParagraphParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*ParagraphParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) == 0 {
 		return nil, 0

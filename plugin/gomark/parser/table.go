@@ -11,7 +11,7 @@ func NewTableParser() *TableParser {
 	return &TableParser{}
 }
 
-func (p *TableParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*TableParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	rawRows := tokenizer.Split(tokens, tokenizer.Newline)
 	if len(rawRows) < 3 {
 		return nil, 0

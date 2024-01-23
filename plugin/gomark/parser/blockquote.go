@@ -11,7 +11,7 @@ func NewBlockquoteParser() *BlockquoteParser {
 	return &BlockquoteParser{}
 }
 
-func (p *BlockquoteParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*BlockquoteParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 3 {
 		return nil, 0

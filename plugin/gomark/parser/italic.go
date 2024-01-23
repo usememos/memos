@@ -13,7 +13,7 @@ func NewItalicParser() *ItalicParser {
 	return &ItalicParser{}
 }
 
-func (p *ItalicParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*ItalicParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedTokens := tokenizer.GetFirstLine(tokens)
 	if len(matchedTokens) < 3 {
 		return nil, 0

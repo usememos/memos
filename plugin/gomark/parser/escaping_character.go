@@ -11,7 +11,7 @@ func NewEscapingCharacterParser() *EscapingCharacterParser {
 	return &EscapingCharacterParser{}
 }
 
-func (p *EscapingCharacterParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*EscapingCharacterParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	if len(tokens) < 2 {
 		return nil, 0
 	}

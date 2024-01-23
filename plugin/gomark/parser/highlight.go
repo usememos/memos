@@ -11,7 +11,7 @@ func NewHighlightParser() InlineParser {
 	return &HighlightParser{}
 }
 
-func (p *HighlightParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+func (*HighlightParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	matchedToken := tokenizer.GetFirstLine(tokens)
 	if len(matchedToken) < 5 {
 		return nil, 0
