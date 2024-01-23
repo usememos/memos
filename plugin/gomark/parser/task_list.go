@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"errors"
-
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -13,71 +11,47 @@ func NewTaskListParser() *TaskListParser {
 	return &TaskListParser{}
 }
 
-func (*TaskListParser) Match(tokens []*tokenizer.Token) (int, bool) {
-	if len(tokens) < 7 {
-		return 0, false
-	}
-
+func (*TaskListParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+	matchedTokens := tokenizer.GetFirstLine(tokens)
 	indent := 0
-	for _, token := range tokens {
+	for _, token := range matchedTokens {
 		if token.Type == tokenizer.Space {
 			indent++
 		} else {
 			break
 		}
 	}
-	symbolToken := tokens[indent]
+	if len(matchedTokens) < indent+6 {
+		return nil, 0
+	}
+
+	symbolToken := matchedTokens[indent]
 	if symbolToken.Type != tokenizer.Hyphen && symbolToken.Type != tokenizer.Asterisk && symbolToken.Type != tokenizer.PlusSign {
-		return 0, false
+		return nil, 0
 	}
-	if tokens[indent+1].Type != tokenizer.Space {
-		return 0, false
+	if matchedTokens[indent+1].Type != tokenizer.Space {
+		return nil, 0
 	}
-	if tokens[indent+2].Type != tokenizer.LeftSquareBracket || (tokens[indent+3].Type != tokenizer.Space && tokens[indent+3].Value != "x") || tokens[indent+4].Type != tokenizer.RightSquareBracket {
-		return 0, false
+	if matchedTokens[indent+2].Type != tokenizer.LeftSquareBracket || (matchedTokens[indent+3].Type != tokenizer.Space && matchedTokens[indent+3].Value != "x") || matchedTokens[indent+4].Type != tokenizer.RightSquareBracket {
+		return nil, 0
 	}
-	if tokens[indent+5].Type != tokenizer.Space {
-		return 0, false
+	if matchedTokens[indent+5].Type != tokenizer.Space {
+		return nil, 0
 	}
 
-	contentTokens := []*tokenizer.Token{}
-	for _, token := range tokens[indent+6:] {
-		if token.Type == tokenizer.Newline {
-			break
-		}
-		contentTokens = append(contentTokens, token)
-	}
+	contentTokens := matchedTokens[indent+6:]
 	if len(contentTokens) == 0 {
-		return 0, false
+		return nil, 0
 	}
 
-	return indent + len(contentTokens) + 6, true
-}
-
-func (p *TaskListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
-	size, ok := p.Match(tokens)
-	if size == 0 || !ok {
-		return nil, errors.New("not matched")
-	}
-
-	indent := 0
-	for _, token := range tokens {
-		if token.Type == tokenizer.Space {
-			indent++
-		} else {
-			break
-		}
-	}
-	symbolToken := tokens[indent]
-	contentTokens := tokens[indent+6 : size]
 	children, err := ParseInline(contentTokens)
 	if err != nil {
-		return nil, err
+		return nil, 0
 	}
 	return &ast.TaskList{
 		Symbol:   symbolToken.Type,
 		Indent:   indent,
-		Complete: tokens[indent+3].Value == "x",
+		Complete: matchedTokens[indent+3].Value == "x",
 		Children: children,
-	}, nil
+	}, indent + len(contentTokens) + 6
 }

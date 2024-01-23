@@ -24,7 +24,7 @@ func TestMathParser(t *testing.T) {
 	}
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewMathParser().Parse(tokens)
+		node, _ := NewMathParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.link}), restore.Restore([]ast.Node{node}))
 	}
 }

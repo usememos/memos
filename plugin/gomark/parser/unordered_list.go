@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"errors"
-
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -13,62 +11,36 @@ func NewUnorderedListParser() *UnorderedListParser {
 	return &UnorderedListParser{}
 }
 
-func (*UnorderedListParser) Match(tokens []*tokenizer.Token) (int, bool) {
-	if len(tokens) < 3 {
-		return 0, false
-	}
-
+func (*UnorderedListParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+	matchedTokens := tokenizer.GetFirstLine(tokens)
 	indent := 0
-	for _, token := range tokens {
+	for _, token := range matchedTokens {
 		if token.Type == tokenizer.Space {
 			indent++
 		} else {
 			break
 		}
 	}
-	corsor := indent
-	symbolToken := tokens[corsor]
-	if (symbolToken.Type != tokenizer.Hyphen && symbolToken.Type != tokenizer.Asterisk && symbolToken.Type != tokenizer.PlusSign) || tokens[corsor+1].Type != tokenizer.Space {
-		return 0, false
+	if len(matchedTokens) < indent+2 {
+		return nil, 0
 	}
 
-	contentTokens := []*tokenizer.Token{}
-	for _, token := range tokens[corsor+2:] {
-		if token.Type == tokenizer.Newline {
-			break
-		}
-		contentTokens = append(contentTokens, token)
+	symbolToken := matchedTokens[indent]
+	if (symbolToken.Type != tokenizer.Hyphen && symbolToken.Type != tokenizer.Asterisk && symbolToken.Type != tokenizer.PlusSign) || matchedTokens[indent+1].Type != tokenizer.Space {
+		return nil, 0
 	}
+
+	contentTokens := matchedTokens[indent+2:]
 	if len(contentTokens) == 0 {
-		return 0, false
+		return nil, 0
 	}
-
-	return indent + len(contentTokens) + 2, true
-}
-
-func (p *UnorderedListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
-	size, ok := p.Match(tokens)
-	if size == 0 || !ok {
-		return nil, errors.New("not matched")
-	}
-
-	indent := 0
-	for _, token := range tokens {
-		if token.Type == tokenizer.Space {
-			indent++
-		} else {
-			break
-		}
-	}
-	symbolToken := tokens[indent]
-	contentTokens := tokens[indent+2 : size]
 	children, err := ParseInline(contentTokens)
 	if err != nil {
-		return nil, err
+		return nil, 0
 	}
 	return &ast.UnorderedList{
 		Symbol:   symbolToken.Type,
 		Indent:   indent,
 		Children: children,
-	}, nil
+	}, indent + len(contentTokens) + 2
 }

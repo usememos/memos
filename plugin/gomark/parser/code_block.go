@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"errors"
-
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -16,16 +14,16 @@ func NewCodeBlockParser() *CodeBlockParser {
 	return &CodeBlockParser{}
 }
 
-func (*CodeBlockParser) Match(tokens []*tokenizer.Token) (int, bool) {
+func (*CodeBlockParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	if len(tokens) < 9 {
-		return 0, false
+		return nil, 0
 	}
 
 	if tokens[0].Type != tokenizer.Backtick || tokens[1].Type != tokenizer.Backtick || tokens[2].Type != tokenizer.Backtick {
-		return 0, false
+		return nil, 0
 	}
 	if tokens[3].Type != tokenizer.Newline && tokens[4].Type != tokenizer.Newline {
-		return 0, false
+		return nil, 0
 	}
 	cursor := 4
 	if tokens[3].Type != tokenizer.Newline {
@@ -47,20 +45,11 @@ func (*CodeBlockParser) Match(tokens []*tokenizer.Token) (int, bool) {
 		}
 	}
 	if !matched {
-		return 0, false
-	}
-
-	return cursor, true
-}
-
-func (p *CodeBlockParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
-	size, ok := p.Match(tokens)
-	if size == 0 || !ok {
-		return nil, errors.New("not matched")
+		return nil, 0
 	}
 
 	languageToken := tokens[3]
-	contentStart, contentEnd := 5, size-4
+	contentStart, contentEnd := 5, cursor-4
 	if languageToken.Type == tokenizer.Newline {
 		languageToken = nil
 		contentStart = 4
@@ -72,5 +61,5 @@ func (p *CodeBlockParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	if languageToken != nil {
 		codeBlock.Language = languageToken.String()
 	}
-	return codeBlock, nil
+	return codeBlock, cursor
 }

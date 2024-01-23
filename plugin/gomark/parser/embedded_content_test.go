@@ -59,7 +59,7 @@ func TestEmbeddedContentParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewEmbeddedContentParser().Parse(tokens)
+		node, _ := NewEmbeddedContentParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.embeddedContent}), restore.Restore([]ast.Node{node}))
 	}
 }

@@ -2,6 +2,7 @@ package tokenizer
 
 type TokenType = string
 
+// Special character tokens.
 const (
 	Underscore         TokenType = "_"
 	Asterisk           TokenType = "*"
@@ -29,6 +30,7 @@ const (
 	Space              TokenType = " "
 )
 
+// Text based tokens.
 const (
 	Number TokenType = "number"
 	Text   TokenType = ""
@@ -153,11 +155,29 @@ func Split(tokens []*Token, delimiter TokenType) [][]*Token {
 	return result
 }
 
-func Find(tokens []*Token, delimiter TokenType) (int, bool) {
-	for index, token := range tokens {
-		if token.Type == delimiter {
-			return index, true
+func Find(tokens []*Token, target TokenType) int {
+	for i, token := range tokens {
+		if token.Type == target {
+			return i
 		}
 	}
-	return 0, false
+	return -1
+}
+
+func FindUnescaped(tokens []*Token, target TokenType) int {
+	for i, token := range tokens {
+		if token.Type == target && (i == 0 || (i > 0 && tokens[i-1].Type != Backslash)) {
+			return i
+		}
+	}
+	return -1
+}
+
+func GetFirstLine(tokens []*Token) []*Token {
+	for i, token := range tokens {
+		if token.Type == Newline {
+			return tokens[:i]
+		}
+	}
+	return tokens
 }

@@ -36,7 +36,7 @@ func TestAutoLinkParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewAutoLinkParser().Parse(tokens)
+		node, _ := NewAutoLinkParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.link}), restore.Restore([]ast.Node{node}))
 	}
 }

@@ -57,7 +57,7 @@ func TestParagraphParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewParagraphParser().Parse(tokens)
+		node, _ := NewParagraphParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.paragraph}), restore.Restore([]ast.Node{node}))
 	}
 }

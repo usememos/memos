@@ -233,3 +233,23 @@ func (*Superscript) Type() NodeType {
 func (n *Superscript) Restore() string {
 	return fmt.Sprintf("^%s^", n.Content)
 }
+
+type ReferencedContent struct {
+	BaseInline
+
+	ResourceName string
+	Params       string
+}
+
+func (*ReferencedContent) Type() NodeType {
+	return ReferencedContentNode
+}
+
+func (n *ReferencedContent) Restore() string {
+	params := ""
+	if n.Params != "" {
+		params = fmt.Sprintf("?%s", n.Params)
+	}
+	result := fmt.Sprintf("[[%s%s]]", n.ResourceName, params)
+	return result
+}

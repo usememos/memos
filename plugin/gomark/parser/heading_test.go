@@ -80,7 +80,7 @@ Hello World`,
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewHeadingParser().Parse(tokens)
+		node, _ := NewHeadingParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.heading}), restore.Restore([]ast.Node{node}))
 	}
 }

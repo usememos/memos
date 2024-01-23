@@ -41,7 +41,7 @@ func TestStrikethroughParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewStrikethroughParser().Parse(tokens)
+		node, _ := NewStrikethroughParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.strikethrough}), restore.Restore([]ast.Node{node}))
 	}
 }

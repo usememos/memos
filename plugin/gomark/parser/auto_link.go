@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"errors"
 	"net/url"
 
 	"github.com/usememos/memos/plugin/gomark/ast"
@@ -14,56 +13,31 @@ func NewAutoLinkParser() *AutoLinkParser {
 	return &AutoLinkParser{}
 }
 
-func (*AutoLinkParser) Match(tokens []*tokenizer.Token) (int, bool) {
+func (*AutoLinkParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	if len(tokens) < 3 {
-		return 0, false
+		return nil, 0
 	}
 
-	hasAngleBrackets := false
-	if tokens[0].Type == tokenizer.LessThan {
-		hasAngleBrackets = true
-	}
-
-	contentTokens := []*tokenizer.Token{}
-	for _, token := range tokens {
-		if token.Type == tokenizer.Newline || token.Type == tokenizer.Space {
-			break
+	matchedTokens := tokenizer.GetFirstLine(tokens)
+	urlStr, isRawText := "", true
+	if matchedTokens[0].Type == tokenizer.LessThan {
+		greaterThanIndex := tokenizer.FindUnescaped(matchedTokens, tokenizer.GreaterThan)
+		if greaterThanIndex < 0 {
+			return nil, 0
 		}
-		contentTokens = append(contentTokens, token)
-		if hasAngleBrackets && token.Type == tokenizer.GreaterThan {
-			break
-		}
-	}
-
-	if hasAngleBrackets && contentTokens[len(contentTokens)-1].Type != tokenizer.GreaterThan {
-		return 0, false
-	}
-
-	content := tokenizer.Stringify(contentTokens)
-	if !hasAngleBrackets {
-		u, err := url.Parse(content)
-		if err != nil || u.Scheme == "" || u.Host == "" {
-			return 0, false
-		}
-	}
-
-	return len(contentTokens), true
-}
-
-func (p *AutoLinkParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
-	size, ok := p.Match(tokens)
-	if size == 0 || !ok {
-		return nil, errors.New("not matched")
-	}
-
-	url := tokenizer.Stringify(tokens[:size])
-	isRawText := true
-	if tokens[0].Type == tokenizer.LessThan && tokens[size-1].Type == tokenizer.GreaterThan {
+		matchedTokens = matchedTokens[:greaterThanIndex+1]
+		urlStr = tokenizer.Stringify(matchedTokens[1 : len(matchedTokens)-1])
 		isRawText = false
-		url = tokenizer.Stringify(tokens[1 : size-1])
+	} else {
+		u, err := url.Parse(tokenizer.Stringify(matchedTokens))
+		if err != nil || u.Scheme == "" || u.Host == "" {
+			return nil, 0
+		}
+		urlStr = tokenizer.Stringify(matchedTokens)
 	}
+
 	return &ast.AutoLink{
-		URL:       url,
+		URL:       urlStr,
 		IsRawText: isRawText,
-	}, nil
+	}, len(matchedTokens)
 }

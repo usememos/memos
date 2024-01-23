@@ -41,7 +41,7 @@ func TestSuperscriptParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewSuperscriptParser().Parse(tokens)
+		node, _ := NewSuperscriptParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.superscript}), restore.Restore([]ast.Node{node}))
 	}
 }

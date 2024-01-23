@@ -20,6 +20,14 @@ func TestBoldItalicParser(t *testing.T) {
 			boldItalic: nil,
 		},
 		{
+			text:       "*** Hello * *",
+			boldItalic: nil,
+		},
+		{
+			text:       "*** Hello **",
+			boldItalic: nil,
+		},
+		{
 			text: "***Hello***",
 			boldItalic: &ast.BoldItalic{
 				Symbol:  "*",
@@ -33,19 +41,11 @@ func TestBoldItalicParser(t *testing.T) {
 				Content: " Hello ",
 			},
 		},
-		{
-			text:       "*** Hello * *",
-			boldItalic: nil,
-		},
-		{
-			text:       "*** Hello **",
-			boldItalic: nil,
-		},
 	}
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewBoldItalicParser().Parse(tokens)
+		node, _ := NewBoldItalicParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.boldItalic}), restore.Restore([]ast.Node{node}))
 	}
 }
