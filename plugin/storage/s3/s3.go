@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -83,7 +84,7 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	link := uploadOutput.Location
 	// If url prefix is set, use it as the file link.
 	if client.Config.URLPrefix != "" {
-		link = fmt.Sprintf("%s/%s%s", client.Config.URLPrefix, filename, client.Config.URLSuffix)
+		link = fmt.Sprintf("%s/%s%s", client.Config.URLPrefix, url.PathEscape(filename), client.Config.URLSuffix)
 	}
 	if link == "" {
 		return "", errors.New("failed to get file link")
