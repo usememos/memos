@@ -13,6 +13,9 @@ service TagService {
   rpc ListTags(ListTagsRequest) returns (ListTagsResponse) {
     option (google.api.http) = {get: "/api/v2/tags"};
   }
+  rpc RenameTag(RenameTagRequest) returns (RenameTagResponse) {
+    option (google.api.http) = {patch: "/api/v2/tags:rename"};
+  }
   rpc DeleteTag(DeleteTagRequest) returns (DeleteTagResponse) {
     option (google.api.http) = {delete: "/api/v2/tags"};
   }
@@ -44,6 +47,18 @@ message ListTagsRequest {
 
 message ListTagsResponse {
   repeated Tag tags = 1;
+}
+
+message RenameTagRequest {
+  // The creator of tags.
+  // Format: users/{username}
+  string user = 1;
+  string old_name = 2;
+  string new_name = 3;
+}
+
+message RenameTagResponse {
+  Tag tag = 1;
 }
 
 message DeleteTagRequest {

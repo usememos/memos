@@ -1,3 +1,4 @@
+import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
 import { useFilterStore, useTagStore } from "@/store/module";
@@ -5,6 +6,7 @@ import { useMemoList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showCreateTagDialog from "./CreateTagDialog";
 import Icon from "./Icon";
+import showRenameTagDialog from "./RenameTagDialog";
 
 interface Tag {
   key: string;
@@ -116,17 +118,25 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
 
   return (
     <>
-      <div
-        className="relative group flex flex-row justify-between items-center w-full h-8 py-0 mt-px first:mt-1 rounded-lg text-base sm:text-sm cursor-pointer select-none shrink-0 hover:opacity-80"
-        onClick={handleTagClick}
-      >
+      <div className="relative group flex flex-row justify-between items-center w-full h-8 py-0 mt-px first:mt-1 rounded-lg text-base sm:text-sm cursor-pointer select-none shrink-0 hover:opacity-80">
         <div
           className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-gray-600 dark:text-gray-400 ${
             isActive && "!text-blue-600"
           }`}
         >
-          <Icon.Hash className="w-4 h-auto shrink-0 opacity-60 mr-1" />
-          <span className="truncate">{tag.key}</span>
+          <Dropdown>
+            <MenuButton slots={{ root: "div" }}>
+              <div className="shrink-0">
+                <Icon.Hash className="w-4 h-auto shrink-0 opacity-60 mr-1" />
+              </div>
+            </MenuButton>
+            <Menu size="sm" placement="bottom-start">
+              <MenuItem onClick={() => showRenameTagDialog({ tag: tag.text })}>Rename</MenuItem>
+            </Menu>
+          </Dropdown>
+          <span className="truncate" onClick={handleTagClick}>
+            {tag.key}
+          </span>
         </div>
         <div className="flex flex-row justify-end items-center">
           {hasSubTags ? (
