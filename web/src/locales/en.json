@@ -64,7 +64,8 @@
     "mark": "Mark",
     "profile": "Profile",
     "inbox": "Inbox",
-    "search": "Search"
+    "search": "Search",
+    "role": "Role"
   },
   "router": {
     "go-to-home": "Go to Home",

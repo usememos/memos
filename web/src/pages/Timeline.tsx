@@ -69,10 +69,10 @@ const Timeline = () => {
       const filters = [`row_status == "NORMAL"`];
       const contentSearch: string[] = [];
       if (tagQuery) {
-        contentSearch.push(`"#${tagQuery}"`);
+        contentSearch.push(JSON.stringify(`#${tagQuery}`));
       }
       if (textQuery) {
-        contentSearch.push(`"${textQuery}"`);
+        contentSearch.push(JSON.stringify(textQuery));
       }
       if (contentSearch.length > 0) {
         filters.push(`content_search == [${contentSearch.join(", ")}]`);
@@ -90,10 +90,10 @@ const Timeline = () => {
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
     const contentSearch: string[] = [];
     if (tagQuery) {
-      contentSearch.push(`"#${tagQuery}"`);
+      contentSearch.push(JSON.stringify(`#${tagQuery}`));
     }
     if (textQuery) {
-      contentSearch.push(`"${textQuery}"`);
+      contentSearch.push(JSON.stringify(textQuery));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
@@ -145,7 +145,7 @@ const Timeline = () => {
             {groupedByMonth.map((group, index) => (
               <Fragment key={group.month}>
                 <div className={classNames("flex justify-start items-start w-full mt-2 last:mb-4", md ? "flex-row" : "flex-col")}>
-                  <div className={classNames("flex shrink-0", md ? "flex-col w-32 pr-4 pl-2 pb-8" : "flex-row w-full pl-1 mt-2 mb-2")}>
+                  <div className={classNames("flex shrink-0", md ? "flex-col w-40 pr-4 pl-2 pb-8" : "flex-row w-full pl-1 mt-2 mb-2")}>
                     <div className={classNames("w-full flex flex-col", md && "mt-4 mb-2")}>
                       <span className="font-medium text-3xl leading-none mb-1">
                         {new Date(group.month).toLocaleString(i18n.language, { month: "short" })}
@@ -159,7 +159,7 @@ const Timeline = () => {
                   <div className={classNames("flex flex-col justify-start items-start", md ? "w-[calc(100%-8rem)]" : "w-full")}>
                     {group.memos.map((memo, index) => (
                       <div
-                        key={`${memo.id}-${memo.createTime}`}
+                        key={`${memo.id}-${memo.displayTime}`}
                         className={classNames("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
                       >
                         <MemoView className="!border !border-gray-100 dark:!border-zinc-700" memo={memo} />

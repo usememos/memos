@@ -34,10 +34,10 @@ const Archived = () => {
         const filters = [`creator == "${user.name}"`, "row_status == 'ARCHIVED'"];
         const contentSearch: string[] = [];
         if (tagQuery) {
-          contentSearch.push(`"#${tagQuery}"`);
+          contentSearch.push(JSON.stringify(`#${tagQuery}`));
         }
         if (textQuery) {
-          contentSearch.push(`"${textQuery}"`);
+          contentSearch.push(JSON.stringify(textQuery));
         }
         if (contentSearch.length > 0) {
           filters.push(`content_search == [${contentSearch.join(", ")}]`);

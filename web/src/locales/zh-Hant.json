@@ -356,7 +356,7 @@
       "telegram-bot-token": "Telegram 機器人權杖",
       "telegram-bot-token-description": "Telegram 機器人權杖或 API Proxy，如 `http.../bot<token>`",
       "telegram-bot-token-placeholder": "您的 Telegram 機器人權杖",
-      "vacuum-hint": "清理未使用的資料。"
+      "vacuum-hint": "清理未使用的資料"
     }
   },
   "tag-list": {

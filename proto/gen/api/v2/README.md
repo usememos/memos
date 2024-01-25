@@ -175,6 +175,8 @@
     - [GetTagSuggestionsResponse](#memos-api-v2-GetTagSuggestionsResponse)
     - [ListTagsRequest](#memos-api-v2-ListTagsRequest)
     - [ListTagsResponse](#memos-api-v2-ListTagsResponse)
+    - [RenameTagRequest](#memos-api-v2-RenameTagRequest)
+    - [RenameTagResponse](#memos-api-v2-RenameTagResponse)
     - [Tag](#memos-api-v2-Tag)
     - [UpsertTagRequest](#memos-api-v2-UpsertTagRequest)
     - [UpsertTagResponse](#memos-api-v2-UpsertTagResponse)
@@ -2503,6 +2505,38 @@
 
 
 
+<a name="memos-api-v2-RenameTagRequest"></a>
+
+### RenameTagRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [string](#string) |  | The creator of tags. Format: users/{username} |
+| old_name | [string](#string) |  |  |
+| new_name | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-RenameTagResponse"></a>
+
+### RenameTagResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tag | [Tag](#memos-api-v2-Tag) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-Tag"></a>
 
 ### Tag
@@ -2564,6 +2598,7 @@
 | ----------- | ------------ | ------------- | ------------|
 | UpsertTag | [UpsertTagRequest](#memos-api-v2-UpsertTagRequest) | [UpsertTagResponse](#memos-api-v2-UpsertTagResponse) |  |
 | ListTags | [ListTagsRequest](#memos-api-v2-ListTagsRequest) | [ListTagsResponse](#memos-api-v2-ListTagsResponse) |  |
+| RenameTag | [RenameTagRequest](#memos-api-v2-RenameTagRequest) | [RenameTagResponse](#memos-api-v2-RenameTagResponse) |  |
 | DeleteTag | [DeleteTagRequest](#memos-api-v2-DeleteTagRequest) | [DeleteTagResponse](#memos-api-v2-DeleteTagResponse) |  |
 | GetTagSuggestions | [GetTagSuggestionsRequest](#memos-api-v2-GetTagSuggestionsRequest) | [GetTagSuggestionsResponse](#memos-api-v2-GetTagSuggestionsResponse) |  |
 

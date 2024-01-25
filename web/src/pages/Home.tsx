@@ -1,6 +1,7 @@
 import { Button } from "@mui/joy";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Empty from "@/components/Empty";
 import HomeSidebar from "@/components/HomeSidebar";
 import HomeSidebarDrawer from "@/components/HomeSidebarDrawer";
@@ -20,6 +21,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
   const t = useTranslate();
+  const location = useLocation();
   const { md } = useResponsiveWidth();
   const user = useCurrentUser();
   const filterStore = useFilterStore();
@@ -34,6 +36,32 @@ const Home = () => {
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tag = urlParams.get("tag");
+    const text = urlParams.get("text");
+    if (tag) {
+      filterStore.setTagFilter(tag);
+    }
+    if (text) {
+      filterStore.setTextFilter(text);
+    }
+  }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    if (tagQuery) {
+      urlParams.set("tag", tagQuery);
+    } else {
+      urlParams.delete("tag");
+    }
+    if (textQuery) {
+      urlParams.set("text", textQuery);
+    } else {
+      urlParams.delete("text");
+    }
+    const params = urlParams.toString();
+    window.history.replaceState({}, "", `${location.pathname}${params?.length > 0 ? `?${params}` : ""}`);
+
     memoList.reset();
     fetchMemos();
   }, [tagQuery, textQuery]);
@@ -42,10 +70,10 @@ const Home = () => {
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
     if (tagQuery) {
-      contentSearch.push(`"#${tagQuery}"`);
+      contentSearch.push(JSON.stringify(`#${tagQuery}`));
     }
     if (textQuery) {
-      contentSearch.push(`"${textQuery}"`);
+      contentSearch.push(JSON.stringify(textQuery));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
@@ -73,7 +101,7 @@ const Home = () => {
           <div className="flex flex-col justify-start items-start w-full max-w-full pb-28">
             <MemoFilter className="px-2 pb-2" />
             {sortedMemos.map((memo) => (
-              <MemoView key={`${memo.id}-${memo.updateTime}`} memo={memo} showVisibility showPinned />
+              <MemoView key={`${memo.id}-${memo.displayTime}`} memo={memo} showVisibility showPinned />
             ))}
             {isRequesting ? (
               <div className="flex flex-col justify-start items-center w-full my-4">
