@@ -51,7 +51,7 @@ func TestTableParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewTableParser().Parse(tokens)
+		node, _ := NewTableParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.table}), restore.Restore([]ast.Node{node}))
 	}
 }

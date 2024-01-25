@@ -25,7 +25,7 @@ func TestEscapingCharacterParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewEscapingCharacterParser().Parse(tokens)
+		node, _ := NewEscapingCharacterParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.node}), restore.Restore([]ast.Node{node}))
 	}
 }

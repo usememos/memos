@@ -65,7 +65,7 @@ func TestOrderedListParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewOrderedListParser().Parse(tokens)
+		node, _ := NewOrderedListParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.node}), restore.Restore([]ast.Node{node}))
 	}
 }

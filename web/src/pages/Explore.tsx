@@ -32,10 +32,10 @@ const Explore = () => {
     const filters = [`row_status == "NORMAL"`, `visibilities == [${user ? "'PUBLIC', 'PROTECTED'" : "'PUBLIC'"}]`];
     const contentSearch: string[] = [];
     if (tagQuery) {
-      contentSearch.push(`"#${tagQuery}"`);
+      contentSearch.push(JSON.stringify(`#${tagQuery}`));
     }
     if (textQuery) {
-      contentSearch.push(`"${textQuery}"`);
+      contentSearch.push(JSON.stringify(textQuery));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
@@ -56,7 +56,7 @@ const Explore = () => {
       <div className="relative w-full h-auto flex flex-col justify-start items-start px-4 sm:px-6">
         <MemoFilter className="px-2 pb-2" />
         {sortedMemos.map((memo) => (
-          <MemoView key={memo.id} memo={memo} showCreator />
+          <MemoView key={`${memo.id}-${memo.displayTime}`} memo={memo} showCreator />
         ))}
         {isRequesting ? (
           <div className="flex flex-col justify-start items-center w-full my-4">

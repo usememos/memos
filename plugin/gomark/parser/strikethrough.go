@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"errors"
-
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -13,39 +11,29 @@ func NewStrikethroughParser() *StrikethroughParser {
 	return &StrikethroughParser{}
 }
 
-func (*StrikethroughParser) Match(tokens []*tokenizer.Token) (int, bool) {
-	if len(tokens) < 5 {
-		return 0, false
+func (*StrikethroughParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+	matchedTokens := tokenizer.GetFirstLine(tokens)
+	if len(matchedTokens) < 5 {
+		return nil, 0
 	}
-	if tokens[0].Type != tokenizer.Tilde || tokens[1].Type != tokenizer.Tilde {
-		return 0, false
+	if matchedTokens[0].Type != tokenizer.Tilde || matchedTokens[1].Type != tokenizer.Tilde {
+		return nil, 0
 	}
 
-	cursor, matched := 2, false
-	for ; cursor < len(tokens)-1; cursor++ {
-		token, nextToken := tokens[cursor], tokens[cursor+1]
-		if token.Type == tokenizer.Newline || nextToken.Type == tokenizer.Newline {
-			return 0, false
-		}
+	contentTokens := []*tokenizer.Token{}
+	matched := false
+	for cursor := 2; cursor < len(matchedTokens)-1; cursor++ {
+		token, nextToken := matchedTokens[cursor], matchedTokens[cursor+1]
 		if token.Type == tokenizer.Tilde && nextToken.Type == tokenizer.Tilde {
 			matched = true
 			break
 		}
+		contentTokens = append(contentTokens, token)
 	}
-	if !matched {
-		return 0, false
+	if !matched || len(contentTokens) == 0 {
+		return nil, 0
 	}
-	return cursor + 2, true
-}
-
-func (p *StrikethroughParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
-	size, ok := p.Match(tokens)
-	if size == 0 || !ok {
-		return nil, errors.New("not matched")
-	}
-
-	contentTokens := tokens[2 : size-2]
 	return &ast.Strikethrough{
 		Content: tokenizer.Stringify(contentTokens),
-	}, nil
+	}, len(contentTokens) + 4
 }

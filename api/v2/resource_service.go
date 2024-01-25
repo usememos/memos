@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/lithammer/shortuuid/v4"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -30,6 +31,7 @@ func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.Crea
 	}
 
 	create := &store.Resource{
+		ResourceName: shortuuid.New(),
 		CreatorID:    user.ID,
 		Filename:     request.Filename,
 		ExternalLink: request.ExternalLink,
@@ -64,6 +66,38 @@ func (s *APIV2Service) ListResources(ctx context.Context, _ *apiv2pb.ListResourc
 		response.Resources = append(response.Resources, s.convertResourceFromStore(ctx, resource))
 	}
 	return response, nil
+}
+
+func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetResourceRequest) (*apiv2pb.GetResourceResponse, error) {
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{
+		ID: &request.Id,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+	}
+	if resource == nil {
+		return nil, status.Errorf(codes.NotFound, "resource not found")
+	}
+
+	return &apiv2pb.GetResourceResponse{
+		Resource: s.convertResourceFromStore(ctx, resource),
+	}, nil
+}
+
+func (s *APIV2Service) GetResourceByName(ctx context.Context, request *apiv2pb.GetResourceByNameRequest) (*apiv2pb.GetResourceByNameResponse, error) {
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{
+		ResourceName: &request.Name,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+	}
+	if resource == nil {
+		return nil, status.Errorf(codes.NotFound, "resource not found")
+	}
+
+	return &apiv2pb.GetResourceByNameResponse{
+		Resource: s.convertResourceFromStore(ctx, resource),
+	}, nil
 }
 
 func (s *APIV2Service) UpdateResource(ctx context.Context, request *apiv2pb.UpdateResourceRequest) (*apiv2pb.UpdateResourceResponse, error) {
@@ -130,6 +164,7 @@ func (s *APIV2Service) convertResourceFromStore(ctx context.Context, resource *s
 
 	return &apiv2pb.Resource{
 		Id:           resource.ID,
+		Name:         resource.ResourceName,
 		CreateTime:   timestamppb.New(time.Unix(resource.CreatedTs, 0)),
 		Filename:     resource.Filename,
 		ExternalLink: resource.ExternalLink,

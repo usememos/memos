@@ -16,6 +16,14 @@ service ResourceService {
   rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse) {
     option (google.api.http) = {get: "/api/v2/resources"};
   }
+  rpc GetResource(GetResourceRequest) returns (GetResourceResponse) {
+    option (google.api.http) = {get: "/api/v2/resources/{id}"};
+    option (google.api.method_signature) = "id";
+  }
+  rpc GetResourceByName(GetResourceByNameRequest) returns (GetResourceByNameResponse) {
+    option (google.api.http) = {get: "/api/v2/resources/{name}"};
+    option (google.api.method_signature) = "name";
+  }
   rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse) {
     option (google.api.http) = {
       patch: "/api/v2/resources/{resource.id}",
@@ -24,19 +32,29 @@ service ResourceService {
     option (google.api.method_signature) = "resource,update_mask";
   }
   rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse) {
-    option (google.api.http) = {get: "/api/v2/resources/{id}"};
+    option (google.api.http) = {delete: "/api/v2/resources/{id}"};
     option (google.api.method_signature) = "id";
   }
 }
 
 message Resource {
+  // id is the system generated unique identifier.
   int32 id = 1;
-  google.protobuf.Timestamp create_time = 2;
-  string filename = 3;
-  string external_link = 4;
-  string type = 5;
-  int64 size = 6;
-  optional int32 memo_id = 7;
+
+  // name is the user provided name.
+  string name = 2;
+
+  google.protobuf.Timestamp create_time = 3;
+
+  string filename = 4;
+
+  string external_link = 5;
+
+  string type = 6;
+
+  int64 size = 7;
+
+  optional int32 memo_id = 8;
 }
 
 message CreateResourceRequest {
@@ -54,6 +72,22 @@ message ListResourcesRequest {}
 
 message ListResourcesResponse {
   repeated Resource resources = 1;
+}
+
+message GetResourceRequest {
+  int32 id = 1;
+}
+
+message GetResourceResponse {
+  Resource resource = 1;
+}
+
+message GetResourceByNameRequest {
+  string name = 1;
+}
+
+message GetResourceByNameResponse {
+  Resource resource = 1;
 }
 
 message UpdateResourceRequest {

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
@@ -625,6 +626,13 @@ func (s *APIV1Service) DeleteMemo(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 	}
 
+	if memoMessage, err := s.convertMemoFromStore(ctx, memo); err == nil {
+		// Try to dispatch webhook when memo is deleted.
+		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
+			log.Warn("Failed to dispatch memo deleted webhook", zap.Error(err))
+		}
+	}
+
 	if err := s.Store.DeleteMemo(ctx, &store.DeleteMemo{
 		ID: memoID,
 	}); err != nil {
@@ -704,6 +712,36 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 	if patchMemoRequest.Visibility != nil {
 		visibility := store.Visibility(patchMemoRequest.Visibility.String())
 		updateMemoMessage.Visibility = &visibility
+		// Find disable public memos system setting.
+		disablePublicMemosSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+			Name: SystemSettingDisablePublicMemosName.String(),
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+		}
+		if disablePublicMemosSystemSetting != nil {
+			disablePublicMemos := false
+			err = json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
+			}
+			if disablePublicMemos {
+				user, err := s.Store.GetUser(ctx, &store.FindUser{
+					ID: &userID,
+				})
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+				}
+				if user == nil {
+					return echo.NewHTTPError(http.StatusNotFound, "User not found")
+				}
+				// Enforce normal user to save as private memo if public memos are disabled.
+				if user.Role == store.RoleUser {
+					visibility = store.Visibility("PRIVATE")
+					updateMemoMessage.Visibility = &visibility
+				}
+			}
+		}
 	}
 
 	err = s.Store.UpdateMemo(ctx, updateMemoMessage)
@@ -887,10 +925,11 @@ func convertCreateMemoRequestToMemoMessage(memoCreate *CreateMemoRequest) *store
 		createdTs = *memoCreate.CreatedTs
 	}
 	return &store.Memo{
-		CreatorID:  memoCreate.CreatorID,
-		CreatedTs:  createdTs,
-		Content:    memoCreate.Content,
-		Visibility: store.Visibility(memoCreate.Visibility),
+		ResourceName: shortuuid.New(),
+		CreatorID:    memoCreate.CreatorID,
+		CreatedTs:    createdTs,
+		Content:      memoCreate.Content,
+		Visibility:   store.Visibility(memoCreate.Visibility),
 	}
 }
 
@@ -956,6 +995,11 @@ func (s *APIV1Service) DispatchMemoCreatedWebhook(ctx context.Context, memo *Mem
 // DispatchMemoUpdatedWebhook dispatches webhook when memo is updated.
 func (s *APIV1Service) DispatchMemoUpdatedWebhook(ctx context.Context, memo *Memo) error {
 	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.updated")
+}
+
+// DispatchMemoDeletedWebhook dispatches webhook when memo is deletedd.
+func (s *APIV1Service) DispatchMemoDeletedWebhook(ctx context.Context, memo *Memo) error {
+	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.deleted")
 }
 
 func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *Memo, activityType string) error {

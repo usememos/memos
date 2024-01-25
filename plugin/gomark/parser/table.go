@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"errors"
-
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -13,124 +11,113 @@ func NewTableParser() *TableParser {
 	return &TableParser{}
 }
 
-func (*TableParser) Match(tokens []*tokenizer.Token) (int, bool) {
-	headerTokens := []*tokenizer.Token{}
-	for _, token := range tokens {
-		if token.Type == tokenizer.Newline {
-			break
-		}
-		headerTokens = append(headerTokens, token)
-	}
-	if len(headerTokens) < 5 || len(tokens) < len(headerTokens)+3 {
-		return 0, false
+func (*TableParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+	rawRows := tokenizer.Split(tokens, tokenizer.Newline)
+	if len(rawRows) < 3 {
+		return nil, 0
 	}
 
-	delimiterTokens := []*tokenizer.Token{}
-	for _, token := range tokens[len(headerTokens)+1:] {
-		if token.Type == tokenizer.Newline {
-			break
-		}
-		delimiterTokens = append(delimiterTokens, token)
-	}
-	if len(delimiterTokens) < 5 || len(tokens) < len(headerTokens)+len(delimiterTokens)+3 {
-		return 0, false
+	headerTokens := rawRows[0]
+	if len(headerTokens) < 3 {
+		return nil, 0
 	}
 
-	rowTokens := []*tokenizer.Token{}
-	for index, token := range tokens[len(headerTokens)+len(delimiterTokens)+2:] {
-		temp := len(headerTokens) + len(delimiterTokens) + 2 + index
-		if token.Type == tokenizer.Newline && temp != len(tokens)-1 && tokens[temp+1].Type != tokenizer.Pipe {
-			break
-		}
-		rowTokens = append(rowTokens, token)
-	}
-	if len(rowTokens) < 5 {
-		return 0, false
+	delimiterTokens := rawRows[1]
+	if len(delimiterTokens) < 3 {
+		return nil, 0
 	}
 
 	// Check header.
 	if len(headerTokens) < 5 {
-		return 0, false
+		return nil, 0
 	}
 	headerCells, ok := matchTableCellTokens(headerTokens)
 	if headerCells == 0 || !ok {
-		return 0, false
+		return nil, 0
 	}
 
 	// Check delimiter.
 	if len(delimiterTokens) < 5 {
-		return 0, false
+		return nil, 0
 	}
 	delimiterCells, ok := matchTableCellTokens(delimiterTokens)
 	if delimiterCells != headerCells || !ok {
-		return 0, false
+		return nil, 0
 	}
-	for _, t := range tokenizer.Split(delimiterTokens, tokenizer.Pipe) {
+	for index, t := range tokenizer.Split(delimiterTokens, tokenizer.Pipe) {
+		if index == 0 || index == headerCells {
+			if len(t) != 0 {
+				return nil, 0
+			}
+			continue
+		}
+		// Each delimiter cell should be like ` --- `, ` :-- `, ` --: `, ` :-: `.
+		if len(t) < 5 {
+			return nil, 0
+		}
+
 		delimiterTokens := t[1 : len(t)-1]
 		if len(delimiterTokens) < 3 {
-			return 0, false
+			return nil, 0
 		}
-		if (delimiterTokens[0].Type != tokenizer.Colon && delimiterTokens[0].Type != tokenizer.Hyphen) || (delimiterTokens[len(delimiterTokens)-1].Type != tokenizer.Colon && delimiterTokens[len(delimiterTokens)-1].Type != tokenizer.Hyphen) {
-			return 0, false
+		if (delimiterTokens[0].Type != tokenizer.Colon &&
+			delimiterTokens[0].Type != tokenizer.Hyphen) ||
+			(delimiterTokens[len(delimiterTokens)-1].Type != tokenizer.Colon &&
+				delimiterTokens[len(delimiterTokens)-1].Type != tokenizer.Hyphen) {
+			return nil, 0
 		}
 		for _, token := range delimiterTokens[1 : len(delimiterTokens)-1] {
 			if token.Type != tokenizer.Hyphen {
-				return 0, false
+				return nil, 0
 			}
 		}
 	}
 
 	// Check rows.
-	if len(rowTokens) < 5 {
-		return 0, false
-	}
-	rows := tokenizer.Split(rowTokens, tokenizer.Newline)
-	if len(rows) == 0 {
-		return 0, false
-	}
-	for _, row := range rows {
-		cells, ok := matchTableCellTokens(row)
+	rows := rawRows[2:]
+	matchedRows := 0
+	for _, rowTokens := range rows {
+		cells, ok := matchTableCellTokens(rowTokens)
 		if cells != headerCells || !ok {
-			return 0, false
+			break
 		}
+		matchedRows++
 	}
-
-	return len(headerTokens) + len(delimiterTokens) + len(rowTokens) + 2, true
-}
-
-func (p *TableParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
-	size, ok := p.Match(tokens)
-	if size == 0 || !ok {
-		return nil, errors.New("not matched")
+	if matchedRows == 0 {
+		return nil, 0
 	}
+	rows = rows[:matchedRows]
 
-	rawRows := tokenizer.Split(tokens[:size-1], tokenizer.Newline)
-	headerTokens := rawRows[0]
-	dilimiterTokens := rawRows[1]
-	rowTokens := rawRows[2:]
 	header := make([]string, 0)
 	delimiter := make([]string, 0)
-	rows := make([][]string, 0)
+	rowsStr := make([][]string, 0)
 
-	for _, t := range tokenizer.Split(headerTokens, tokenizer.Pipe) {
+	cols := len(tokenizer.Split(headerTokens, tokenizer.Pipe)) - 2
+	for _, t := range tokenizer.Split(headerTokens, tokenizer.Pipe)[1 : cols+1] {
 		header = append(header, tokenizer.Stringify(t[1:len(t)-1]))
 	}
-	for _, t := range tokenizer.Split(dilimiterTokens, tokenizer.Pipe) {
+	for _, t := range tokenizer.Split(delimiterTokens, tokenizer.Pipe)[1 : cols+1] {
 		delimiter = append(delimiter, tokenizer.Stringify(t[1:len(t)-1]))
 	}
-	for _, row := range rowTokens {
+	for _, row := range rows {
 		cells := make([]string, 0)
-		for _, t := range tokenizer.Split(row, tokenizer.Pipe) {
+		for _, t := range tokenizer.Split(row, tokenizer.Pipe)[1 : cols+1] {
 			cells = append(cells, tokenizer.Stringify(t[1:len(t)-1]))
 		}
-		rows = append(rows, cells)
+		rowsStr = append(rowsStr, cells)
 	}
+
+	size := len(headerTokens) + len(delimiterTokens) + 2
+	for _, row := range rows {
+		size += len(row)
+	}
+	size = size + len(rows) - 1
 
 	return &ast.Table{
 		Header:    header,
 		Delimiter: delimiter,
-		Rows:      rows,
-	}, nil
+		Rows:      rowsStr,
+	}, size
 }
 
 func matchTableCellTokens(tokens []*tokenizer.Token) (int, bool) {
@@ -145,10 +132,13 @@ func matchTableCellTokens(tokens []*tokenizer.Token) (int, bool) {
 		}
 	}
 	cells := tokenizer.Split(tokens, tokenizer.Pipe)
-	if len(cells) != pipes-1 {
+	if len(cells) != pipes+1 {
 		return 0, false
 	}
-	for _, cellTokens := range cells {
+	if len(cells[0]) != 0 || len(cells[len(cells)-1]) != 0 {
+		return 0, false
+	}
+	for _, cellTokens := range cells[1 : len(cells)-1] {
 		if len(cellTokens) == 0 {
 			return 0, false
 		}
@@ -160,5 +150,5 @@ func matchTableCellTokens(tokens []*tokenizer.Token) (int, bool) {
 		}
 	}
 
-	return len(cells), true
+	return len(cells) - 1, true
 }

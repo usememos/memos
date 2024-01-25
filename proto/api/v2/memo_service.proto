@@ -31,6 +31,11 @@ service MemoService {
     option (google.api.http) = {get: "/api/v2/memos/{id}"};
     option (google.api.method_signature) = "id";
   }
+  // GetMemoByName gets a memo by name.
+  rpc GetMemoByName(GetMemoByNameRequest) returns (GetMemoByNameResponse) {
+    option (google.api.http) = {get: "/api/v2/memos/{name}"};
+    option (google.api.method_signature) = "name";
+  }
   // UpdateMemo updates a memo.
   rpc UpdateMemo(UpdateMemoRequest) returns (UpdateMemoResponse) {
     option (google.api.http) = {
@@ -98,35 +103,39 @@ enum Visibility {
 }
 
 message Memo {
+  // id is the system generated unique identifier.
   int32 id = 1;
 
-  RowStatus row_status = 2;
+  // name is the user provided name.
+  string name = 2;
+
+  RowStatus row_status = 3;
 
   // The name of the creator.
   // Format: users/{username}
-  string creator = 3;
+  string creator = 4;
 
-  int32 creator_id = 4;
+  int32 creator_id = 5;
 
-  google.protobuf.Timestamp create_time = 5;
+  google.protobuf.Timestamp create_time = 6;
 
-  google.protobuf.Timestamp update_time = 6;
+  google.protobuf.Timestamp update_time = 7;
 
-  google.protobuf.Timestamp display_time = 7;
+  google.protobuf.Timestamp display_time = 8;
 
-  string content = 8;
+  string content = 9;
 
-  repeated Node nodes = 9;
+  repeated Node nodes = 10;
 
-  Visibility visibility = 10;
+  Visibility visibility = 11;
 
-  bool pinned = 11;
+  bool pinned = 12;
 
-  optional int32 parent_id = 12;
+  optional int32 parent_id = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated Resource resources = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated Resource resources = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated MemoRelation relations = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {
@@ -160,6 +169,14 @@ message GetMemoRequest {
 }
 
 message GetMemoResponse {
+  Memo memo = 1;
+}
+
+message GetMemoByNameRequest {
+  string name = 1;
+}
+
+message GetMemoByNameResponse {
   Memo memo = 1;
 }
 

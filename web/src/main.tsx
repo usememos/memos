@@ -7,7 +7,7 @@ import "./css/global.css";
 import "./css/tailwind.css";
 import "./helpers/polyfill";
 import "./i18n";
-import "./less/code-highlight.less";
+import "./less/highlight.less";
 import router from "./router";
 import store from "./store";
 import theme from "./theme";

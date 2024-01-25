@@ -72,6 +72,7 @@
     - [BoldNode](#memos-api-v2-BoldNode)
     - [CodeBlockNode](#memos-api-v2-CodeBlockNode)
     - [CodeNode](#memos-api-v2-CodeNode)
+    - [EmbeddedContentNode](#memos-api-v2-EmbeddedContentNode)
     - [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode)
     - [HeadingNode](#memos-api-v2-HeadingNode)
     - [HighlightNode](#memos-api-v2-HighlightNode)
@@ -87,7 +88,10 @@
     - [ParagraphNode](#memos-api-v2-ParagraphNode)
     - [ParseMarkdownRequest](#memos-api-v2-ParseMarkdownRequest)
     - [ParseMarkdownResponse](#memos-api-v2-ParseMarkdownResponse)
+    - [ReferencedContentNode](#memos-api-v2-ReferencedContentNode)
     - [StrikethroughNode](#memos-api-v2-StrikethroughNode)
+    - [SubscriptNode](#memos-api-v2-SubscriptNode)
+    - [SuperscriptNode](#memos-api-v2-SuperscriptNode)
     - [TableNode](#memos-api-v2-TableNode)
     - [TableNode.Row](#memos-api-v2-TableNode-Row)
     - [TagNode](#memos-api-v2-TagNode)
@@ -109,6 +113,10 @@
     - [CreateResourceResponse](#memos-api-v2-CreateResourceResponse)
     - [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest)
     - [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse)
+    - [GetResourceByNameRequest](#memos-api-v2-GetResourceByNameRequest)
+    - [GetResourceByNameResponse](#memos-api-v2-GetResourceByNameResponse)
+    - [GetResourceRequest](#memos-api-v2-GetResourceRequest)
+    - [GetResourceResponse](#memos-api-v2-GetResourceResponse)
     - [ListResourcesRequest](#memos-api-v2-ListResourcesRequest)
     - [ListResourcesResponse](#memos-api-v2-ListResourcesResponse)
     - [Resource](#memos-api-v2-Resource)
@@ -124,6 +132,8 @@
     - [CreateMemoResponse](#memos-api-v2-CreateMemoResponse)
     - [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest)
     - [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse)
+    - [GetMemoByNameRequest](#memos-api-v2-GetMemoByNameRequest)
+    - [GetMemoByNameResponse](#memos-api-v2-GetMemoByNameResponse)
     - [GetMemoRequest](#memos-api-v2-GetMemoRequest)
     - [GetMemoResponse](#memos-api-v2-GetMemoResponse)
     - [GetUserMemosStatsRequest](#memos-api-v2-GetUserMemosStatsRequest)
@@ -1056,6 +1066,22 @@
 
 
 
+<a name="memos-api-v2-EmbeddedContentNode"></a>
+
+### EmbeddedContentNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource_name | [string](#string) |  |  |
+| params | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-EscapingCharacterNode"></a>
 
 ### EscapingCharacterNode
@@ -1225,6 +1251,7 @@
 | task_list_node | [TaskListNode](#memos-api-v2-TaskListNode) |  |  |
 | math_block_node | [MathBlockNode](#memos-api-v2-MathBlockNode) |  |  |
 | table_node | [TableNode](#memos-api-v2-TableNode) |  |  |
+| embedded_content_node | [EmbeddedContentNode](#memos-api-v2-EmbeddedContentNode) |  |  |
 | text_node | [TextNode](#memos-api-v2-TextNode) |  |  |
 | bold_node | [BoldNode](#memos-api-v2-BoldNode) |  |  |
 | italic_node | [ItalicNode](#memos-api-v2-ItalicNode) |  |  |
@@ -1238,6 +1265,9 @@
 | escaping_character_node | [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode) |  |  |
 | math_node | [MathNode](#memos-api-v2-MathNode) |  |  |
 | highlight_node | [HighlightNode](#memos-api-v2-HighlightNode) |  |  |
+| subscript_node | [SubscriptNode](#memos-api-v2-SubscriptNode) |  |  |
+| superscript_node | [SuperscriptNode](#memos-api-v2-SuperscriptNode) |  |  |
+| referenced_content_node | [ReferencedContentNode](#memos-api-v2-ReferencedContentNode) |  |  |
 
 
 
@@ -1306,9 +1336,55 @@
 
 
 
+<a name="memos-api-v2-ReferencedContentNode"></a>
+
+### ReferencedContentNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource_name | [string](#string) |  |  |
+| params | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-StrikethroughNode"></a>
 
 ### StrikethroughNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SubscriptNode"></a>
+
+### SubscriptNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SuperscriptNode"></a>
+
+### SuperscriptNode
 
 
 
@@ -1439,19 +1515,23 @@
 | TASK_LIST | 9 |  |
 | MATH_BLOCK | 10 |  |
 | TABLE | 11 |  |
-| TEXT | 12 |  |
-| BOLD | 13 |  |
-| ITALIC | 14 |  |
-| BOLD_ITALIC | 15 |  |
-| CODE | 16 |  |
-| IMAGE | 17 |  |
-| LINK | 18 |  |
-| AUTO_LINK | 19 |  |
-| TAG | 20 |  |
-| STRIKETHROUGH | 21 |  |
-| ESCAPING_CHARACTER | 22 |  |
-| MATH | 23 |  |
-| HIGHLIGHT | 24 |  |
+| EMBEDDED_CONTENT | 12 |  |
+| TEXT | 13 |  |
+| BOLD | 14 |  |
+| ITALIC | 15 |  |
+| BOLD_ITALIC | 16 |  |
+| CODE | 17 |  |
+| IMAGE | 18 |  |
+| LINK | 19 |  |
+| AUTO_LINK | 20 |  |
+| TAG | 21 |  |
+| STRIKETHROUGH | 22 |  |
+| ESCAPING_CHARACTER | 23 |  |
+| MATH | 24 |  |
+| HIGHLIGHT | 25 |  |
+| SUBSCRIPT | 26 |  |
+| SUPERSCRIPT | 27 |  |
+| REFERENCED_CONTENT | 28 |  |
 
 
  
@@ -1583,6 +1663,66 @@
 
 
 
+<a name="memos-api-v2-GetResourceByNameRequest"></a>
+
+### GetResourceByNameRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetResourceByNameResponse"></a>
+
+### GetResourceByNameResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource | [Resource](#memos-api-v2-Resource) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetResourceRequest"></a>
+
+### GetResourceRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetResourceResponse"></a>
+
+### GetResourceResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource | [Resource](#memos-api-v2-Resource) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-ListResourcesRequest"></a>
 
 ### ListResourcesRequest
@@ -1616,7 +1756,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| id | [int32](#int32) |  | id is the system generated unique identifier. |
+| name | [string](#string) |  | name is the user provided name. |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | filename | [string](#string) |  |  |
 | external_link | [string](#string) |  |  |
@@ -1675,6 +1816,8 @@
 | ----------- | ------------ | ------------- | ------------|
 | CreateResource | [CreateResourceRequest](#memos-api-v2-CreateResourceRequest) | [CreateResourceResponse](#memos-api-v2-CreateResourceResponse) |  |
 | ListResources | [ListResourcesRequest](#memos-api-v2-ListResourcesRequest) | [ListResourcesResponse](#memos-api-v2-ListResourcesResponse) |  |
+| GetResource | [GetResourceRequest](#memos-api-v2-GetResourceRequest) | [GetResourceResponse](#memos-api-v2-GetResourceResponse) |  |
+| GetResourceByName | [GetResourceByNameRequest](#memos-api-v2-GetResourceByNameRequest) | [GetResourceByNameResponse](#memos-api-v2-GetResourceByNameResponse) |  |
 | UpdateResource | [UpdateResourceRequest](#memos-api-v2-UpdateResourceRequest) | [UpdateResourceResponse](#memos-api-v2-UpdateResourceResponse) |  |
 | DeleteResource | [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest) | [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse) |  |
 
@@ -1770,6 +1913,36 @@
 
 ### DeleteMemoResponse
 
+
+
+
+
+
+
+<a name="memos-api-v2-GetMemoByNameRequest"></a>
+
+### GetMemoByNameRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetMemoByNameResponse"></a>
+
+### GetMemoByNameResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo | [Memo](#memos-api-v2-Memo) |  |  |
 
 
 
@@ -1984,7 +2157,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| id | [int32](#int32) |  | id is the system generated unique identifier. |
+| name | [string](#string) |  | name is the user provided name. |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
 | creator | [string](#string) |  | The name of the creator. Format: users/{username} |
 | creator_id | [int32](#int32) |  |  |
@@ -2118,6 +2292,7 @@
 | CreateMemo | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) | [CreateMemoResponse](#memos-api-v2-CreateMemoResponse) | CreateMemo creates a memo. |
 | ListMemos | [ListMemosRequest](#memos-api-v2-ListMemosRequest) | [ListMemosResponse](#memos-api-v2-ListMemosResponse) | ListMemos lists memos with pagination and filter. |
 | GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) | GetMemo gets a memo by id. |
+| GetMemoByName | [GetMemoByNameRequest](#memos-api-v2-GetMemoByNameRequest) | [GetMemoByNameResponse](#memos-api-v2-GetMemoByNameResponse) | GetMemoByName gets a memo by name. |
 | UpdateMemo | [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest) | [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse) | UpdateMemo updates a memo. |
 | DeleteMemo | [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest) | [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse) | DeleteMemo deletes a memo by id. |
 | SetMemoResources | [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest) | [SetMemoResourcesResponse](#memos-api-v2-SetMemoResourcesResponse) | SetMemoResources sets resources for a memo. |

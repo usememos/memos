@@ -205,3 +205,51 @@ func (*Highlight) Type() NodeType {
 func (n *Highlight) Restore() string {
 	return fmt.Sprintf("==%s==", n.Content)
 }
+
+type Subscript struct {
+	BaseInline
+
+	Content string
+}
+
+func (*Subscript) Type() NodeType {
+	return SubscriptNode
+}
+
+func (n *Subscript) Restore() string {
+	return fmt.Sprintf("~%s~", n.Content)
+}
+
+type Superscript struct {
+	BaseInline
+
+	Content string
+}
+
+func (*Superscript) Type() NodeType {
+	return SuperscriptNode
+}
+
+func (n *Superscript) Restore() string {
+	return fmt.Sprintf("^%s^", n.Content)
+}
+
+type ReferencedContent struct {
+	BaseInline
+
+	ResourceName string
+	Params       string
+}
+
+func (*ReferencedContent) Type() NodeType {
+	return ReferencedContentNode
+}
+
+func (n *ReferencedContent) Restore() string {
+	params := ""
+	if n.Params != "" {
+		params = fmt.Sprintf("?%s", n.Params)
+	}
+	result := fmt.Sprintf("[[%s%s]]", n.ResourceName, params)
+	return result
+}

@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"errors"
-
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -13,8 +11,7 @@ type Context struct {
 }
 
 type BaseParser interface {
-	Match(tokens []*tokenizer.Token) (int, bool)
-	Parse(tokens []*tokenizer.Token) (ast.Node, error)
+	Match(tokens []*tokenizer.Token) (ast.Node, int)
 }
 
 type InlineParser interface {
@@ -39,6 +36,7 @@ var defaultBlockParsers = []BlockParser{
 	NewUnorderedListParser(),
 	NewOrderedListParser(),
 	NewMathBlockParser(),
+	NewEmbeddedContentParser(),
 	NewParagraphParser(),
 	NewLineBreakParser(),
 }
@@ -52,13 +50,9 @@ func ParseBlockWithParsers(tokens []*tokenizer.Token, blockParsers []BlockParser
 	var prevNode ast.Node
 	for len(tokens) > 0 {
 		for _, blockParser := range blockParsers {
-			size, matched := blockParser.Match(tokens)
-			if matched {
-				node, err := blockParser.Parse(tokens)
-				if err != nil {
-					return nil, errors.New("parse error")
-				}
-
+			node, size := blockParser.Match(tokens)
+			if node != nil {
+				// Consume matched tokens.
 				tokens = tokens[size:]
 				if prevNode != nil {
 					prevNode.SetNextSibling(node)
@@ -83,7 +77,10 @@ var defaultInlineParsers = []InlineParser{
 	NewItalicParser(),
 	NewHighlightParser(),
 	NewCodeParser(),
+	NewSubscriptParser(),
+	NewSuperscriptParser(),
 	NewMathParser(),
+	NewReferencedContentParser(),
 	NewTagParser(),
 	NewStrikethroughParser(),
 	NewLineBreakParser(),
@@ -99,13 +96,9 @@ func ParseInlineWithParsers(tokens []*tokenizer.Token, inlineParsers []InlinePar
 	var prevNode ast.Node
 	for len(tokens) > 0 {
 		for _, inlineParser := range inlineParsers {
-			size, matched := inlineParser.Match(tokens)
-			if matched {
-				node, err := inlineParser.Parse(tokens)
-				if err != nil {
-					return nil, errors.New("parse error")
-				}
-
+			node, size := inlineParser.Match(tokens)
+			if node != nil {
+				// Consume matched tokens.
 				tokens = tokens[size:]
 				if prevNode != nil {
 					// Merge text nodes if possible.
@@ -117,8 +110,8 @@ func ParseInlineWithParsers(tokens []*tokenizer.Token, inlineParsers []InlinePar
 					prevNode.SetNextSibling(node)
 					node.SetPrevSibling(prevNode)
 				}
-				nodes = append(nodes, node)
 				prevNode = node
+				nodes = append(nodes, node)
 				break
 			}
 		}

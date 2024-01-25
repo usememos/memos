@@ -33,7 +33,7 @@ func TestCodeParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewCodeParser().Parse(tokens)
+		node, _ := NewCodeParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.code}), restore.Restore([]ast.Node{node}))
 	}
 }

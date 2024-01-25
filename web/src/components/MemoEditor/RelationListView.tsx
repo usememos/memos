@@ -37,14 +37,13 @@ const RelationListView = (props: Props) => {
           {referencingMemoList.map((memo) => {
             return (
               <div
-                key={memo.id}
+                key={memo.name}
                 className="w-auto max-w-xs overflow-hidden flex flex-row justify-start items-center bg-zinc-100 dark:bg-zinc-900 hover:opacity-80 rounded-md text-sm p-1 px-2 text-gray-500 dark:text-gray-400 cursor-pointer hover:line-through"
                 onClick={() => handleDeleteRelation(memo)}
               >
                 <Icon.Link className="w-4 h-auto shrink-0 opacity-80" />
-                <span className="px-1 shrink-0 opacity-80">#{memo.id}</span>
-                <span className="max-w-full text-ellipsis whitespace-nowrap overflow-hidden">{memo.content}</span>
-                <Icon.X className="w-4 h-auto cursor-pointer opacity-60 hover:opacity-100" />
+                <span className="mx-1 max-w-full text-ellipsis whitespace-nowrap overflow-hidden">{memo.content}</span>
+                <Icon.X className="w-4 h-auto cursor-pointer shrink-0 opacity-60 hover:opacity-100" />
               </div>
             );
           })}

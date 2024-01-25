@@ -381,6 +381,8 @@ const MemoEditor = (props: Props) => {
       onFocus={handleEditorFocus}
     >
       <Editor ref={editorRef} {...editorConfig} />
+      <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
+      <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
       <div className="relative w-full flex flex-row justify-between items-center pt-2" onFocus={(e) => e.stopPropagation()}>
         <div className="flex flex-row justify-start items-center opacity-80">
           <TagSelector editorRef={editorRef} />
@@ -393,8 +395,6 @@ const MemoEditor = (props: Props) => {
           </IconButton>
         </div>
       </div>
-      <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
-      <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
       <Divider className="!mt-2" />
       <div className="w-full flex flex-row justify-between items-center py-3 dark:border-t-zinc-500">
         <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>

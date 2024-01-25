@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"unicode/utf16"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 
 	apiv1 "github.com/usememos/memos/api/v1"
@@ -58,8 +59,9 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	}
 
 	create := &store.Memo{
-		CreatorID:  creatorID,
-		Visibility: store.Private,
+		ResourceName: shortuuid.New(),
+		CreatorID:    creatorID,
+		Visibility:   store.Private,
 	}
 
 	if message.Text != nil {
@@ -84,11 +86,12 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	for _, attachment := range attachments {
 		// Fill the common field of create
 		create := store.Resource{
-			CreatorID: creatorID,
-			Filename:  filepath.Base(attachment.FileName),
-			Type:      attachment.GetMimeType(),
-			Size:      attachment.FileSize,
-			MemoID:    &memoMessage.ID,
+			ResourceName: shortuuid.New(),
+			CreatorID:    creatorID,
+			Filename:     filepath.Base(attachment.FileName),
+			Type:         attachment.GetMimeType(),
+			Size:         attachment.FileSize,
+			MemoID:       &memoMessage.ID,
 		}
 
 		err := apiv1.SaveResourceBlob(ctx, t.store, &create, bytes.NewReader(attachment.Data))

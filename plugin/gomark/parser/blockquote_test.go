@@ -16,6 +16,10 @@ func TestBlockquoteParser(t *testing.T) {
 		blockquote ast.Node
 	}{
 		{
+			text:       ">Hello world",
+			blockquote: nil,
+		},
+		{
 			text: "> Hello world",
 			blockquote: &ast.Blockquote{
 				Children: []ast.Node{
@@ -57,15 +61,11 @@ func TestBlockquoteParser(t *testing.T) {
 				},
 			},
 		},
-		{
-			text:       ">Hello\nworld",
-			blockquote: nil,
-		},
 	}
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewBlockquoteParser().Parse(tokens)
+		node, _ := NewBlockquoteParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.blockquote}), restore.Restore([]ast.Node{node}))
 	}
 }

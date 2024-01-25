@@ -208,7 +208,7 @@ func (*Table) Type() NodeType {
 }
 
 func (n *Table) Restore() string {
-	var result string
+	result := ""
 	for _, header := range n.Header {
 		result += fmt.Sprintf("| %s ", header)
 	}
@@ -226,5 +226,25 @@ func (n *Table) Restore() string {
 			result += "\n"
 		}
 	}
+	return result
+}
+
+type EmbeddedContent struct {
+	BaseBlock
+
+	ResourceName string
+	Params       string
+}
+
+func (*EmbeddedContent) Type() NodeType {
+	return EmbeddedContentNode
+}
+
+func (n *EmbeddedContent) Restore() string {
+	params := ""
+	if n.Params != "" {
+		params = fmt.Sprintf("?%s", n.Params)
+	}
+	result := fmt.Sprintf("![[%s%s]]", n.ResourceName, params)
 	return result
 }

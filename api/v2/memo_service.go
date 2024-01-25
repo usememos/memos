@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/cel-go/cel"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
@@ -16,6 +17,7 @@ import (
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/log"
+	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
@@ -49,9 +51,10 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	}
 
 	create := &store.Memo{
-		CreatorID:  user.ID,
-		Content:    request.Content,
-		Visibility: store.Visibility(request.Visibility.String()),
+		ResourceName: shortuuid.New(),
+		CreatorID:    user.ID,
+		Content:      request.Content,
+		Visibility:   store.Visibility(request.Visibility.String()),
 	}
 	// Find disable public memos system setting.
 	disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
@@ -234,6 +237,39 @@ func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequ
 	return response, nil
 }
 
+func (s *APIV2Service) GetMemoByName(ctx context.Context, request *apiv2pb.GetMemoByNameRequest) (*apiv2pb.GetMemoByNameResponse, error) {
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+		ResourceName: &request.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+	if memo.Visibility != store.Public {
+		user, err := getCurrentUser(ctx, s.Store)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get user")
+		}
+		if user == nil {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+		if memo.Visibility == store.Private && memo.CreatorID != user.ID {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
+	memoMessage, err := s.convertMemoFromStore(ctx, memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert memo")
+	}
+	response := &apiv2pb.GetMemoByNameResponse{
+		Memo: memoMessage,
+	}
+	return response, nil
+}
+
 func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMemoRequest) (*apiv2pb.UpdateMemoResponse, error) {
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
@@ -282,8 +318,21 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 			nodes := convertToASTNodes(request.Memo.Nodes)
 			content := restore.Restore(nodes)
 			update.Content = &content
+		} else if path == "resource_name" {
+			update.ResourceName = &request.Memo.Name
+			if !util.ResourceNameMatcher.MatchString(*update.ResourceName) {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name")
+			}
 		} else if path == "visibility" {
 			visibility := convertVisibilityToStore(request.Memo.Visibility)
+			// Find disable public memos system setting.
+			disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get system setting")
+			}
+			if disablePublicMemosSystem && visibility == store.Public {
+				return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
+			}
 			update.Visibility = &visibility
 		} else if path == "row_status" {
 			rowStatus := convertRowStatusToStore(request.Memo.RowStatus)
@@ -344,6 +393,13 @@ func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMe
 	user, _ := getCurrentUser(ctx, s.Store)
 	if memo.CreatorID != user.ID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	if memoMessage, err := s.convertMemoFromStore(ctx, memo); err == nil {
+		// Try to dispatch webhook when memo is deleted.
+		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
+			log.Warn("Failed to dispatch memo deleted webhook", zap.Error(err))
+		}
 	}
 
 	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{
@@ -567,6 +623,7 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 
 	return &apiv2pb.Memo{
 		Id:          int32(memo.ID),
+		Name:        memo.ResourceName,
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
 		Creator:     fmt.Sprintf("%s%s", UserNamePrefix, creator.Username),
 		CreatorId:   int32(memo.CreatorID),
@@ -738,6 +795,11 @@ func (s *APIV2Service) DispatchMemoCreatedWebhook(ctx context.Context, memo *api
 // DispatchMemoUpdatedWebhook dispatches webhook when memo is updated.
 func (s *APIV2Service) DispatchMemoUpdatedWebhook(ctx context.Context, memo *apiv2pb.Memo) error {
 	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.updated")
+}
+
+// DispatchMemoDeletedWebhook dispatches webhook when memo is deleted.
+func (s *APIV2Service) DispatchMemoDeletedWebhook(ctx context.Context, memo *apiv2pb.Memo) error {
+	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.deleted")
 }
 
 func (s *APIV2Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *apiv2pb.Memo, activityType string) error {

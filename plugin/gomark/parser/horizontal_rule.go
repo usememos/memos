@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"errors"
-
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -13,29 +11,21 @@ func NewHorizontalRuleParser() *HorizontalRuleParser {
 	return &HorizontalRuleParser{}
 }
 
-func (*HorizontalRuleParser) Match(tokens []*tokenizer.Token) (int, bool) {
-	if len(tokens) < 3 {
-		return 0, false
+func (*HorizontalRuleParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
+	matchedTokens := tokenizer.GetFirstLine(tokens)
+	if len(matchedTokens) < 3 {
+		return nil, 0
 	}
-	if tokens[0].Type != tokens[1].Type || tokens[0].Type != tokens[2].Type || tokens[1].Type != tokens[2].Type {
-		return 0, false
+	if len(matchedTokens) > 3 && matchedTokens[3].Type != tokenizer.Newline {
+		return nil, 0
 	}
-	if tokens[0].Type != tokenizer.Hyphen && tokens[0].Type != tokenizer.Underscore && tokens[0].Type != tokenizer.Asterisk {
-		return 0, false
+	if matchedTokens[0].Type != matchedTokens[1].Type || matchedTokens[0].Type != matchedTokens[2].Type || matchedTokens[1].Type != matchedTokens[2].Type {
+		return nil, 0
 	}
-	if len(tokens) > 3 && tokens[3].Type != tokenizer.Newline {
-		return 0, false
+	if matchedTokens[0].Type != tokenizer.Hyphen && matchedTokens[0].Type != tokenizer.Underscore && matchedTokens[0].Type != tokenizer.Asterisk {
+		return nil, 0
 	}
-	return 3, true
-}
-
-func (p *HorizontalRuleParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
-	size, ok := p.Match(tokens)
-	if size == 0 || !ok {
-		return nil, errors.New("not matched")
-	}
-
 	return &ast.HorizontalRule{
-		Symbol: tokens[0].Type,
-	}, nil
+		Symbol: matchedTokens[0].Type,
+	}, 3
 }

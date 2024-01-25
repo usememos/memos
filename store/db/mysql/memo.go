@@ -12,9 +12,9 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"`creator_id`", "`content`", "`visibility`"}
-	placeholder := []string{"?", "?", "?"}
-	args := []any{create.CreatorID, create.Content, create.Visibility}
+	fields := []string{"`resource_name`", "`creator_id`", "`content`", "`visibility`"}
+	placeholder := []string{"?", "?", "?", "?"}
+	args := []any{create.ResourceName, create.CreatorID, create.Content, create.Visibility}
 
 	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
@@ -42,6 +42,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	if v := find.ID; v != nil {
 		where, args = append(where, "`memo`.`id` = ?"), append(args, *v)
+	}
+	if v := find.ResourceName; v != nil {
+		where, args = append(where, "`memo`.`resource_name` = ?"), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "`memo`.`creator_id` = ?"), append(args, *v)
@@ -91,6 +94,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	fields := []string{
 		"`memo`.`id` AS `id`",
+		"`memo`.`resource_name` AS `resource_name`",
 		"`memo`.`creator_id` AS `creator_id`",
 		"UNIX_TIMESTAMP(`memo`.`created_ts`) AS `created_ts`",
 		"UNIX_TIMESTAMP(`memo`.`updated_ts`) AS `updated_ts`",
@@ -122,6 +126,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		var memo store.Memo
 		dests := []any{
 			&memo.ID,
+			&memo.ResourceName,
 			&memo.CreatorID,
 			&memo.CreatedTs,
 			&memo.UpdatedTs,
@@ -161,6 +166,9 @@ func (d *DB) GetMemo(ctx context.Context, find *store.FindMemo) (*store.Memo, er
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	set, args := []string{}, []any{}
+	if v := update.ResourceName; v != nil {
+		set, args = append(set, "`resource_name` = ?"), append(args, *v)
+	}
 	if v := update.CreatedTs; v != nil {
 		set, args = append(set, "`created_ts` = FROM_UNIXTIME(?)"), append(args, *v)
 	}

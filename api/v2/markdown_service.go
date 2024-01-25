@@ -65,6 +65,8 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 		node.Node = &apiv2pb.Node_MathBlockNode{MathBlockNode: &apiv2pb.MathBlockNode{Content: n.Content}}
 	case *ast.Table:
 		node.Node = &apiv2pb.Node_TableNode{TableNode: convertTableFromASTNode(n)}
+	case *ast.EmbeddedContent:
+		node.Node = &apiv2pb.Node_EmbeddedContentNode{EmbeddedContentNode: &apiv2pb.EmbeddedContentNode{ResourceName: n.ResourceName, Params: n.Params}}
 	case *ast.Text:
 		node.Node = &apiv2pb.Node_TextNode{TextNode: &apiv2pb.TextNode{Content: n.Content}}
 	case *ast.Bold:
@@ -92,6 +94,12 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 		node.Node = &apiv2pb.Node_MathNode{MathNode: &apiv2pb.MathNode{Content: n.Content}}
 	case *ast.Highlight:
 		node.Node = &apiv2pb.Node_HighlightNode{HighlightNode: &apiv2pb.HighlightNode{Content: n.Content}}
+	case *ast.Subscript:
+		node.Node = &apiv2pb.Node_SubscriptNode{SubscriptNode: &apiv2pb.SubscriptNode{Content: n.Content}}
+	case *ast.Superscript:
+		node.Node = &apiv2pb.Node_SuperscriptNode{SuperscriptNode: &apiv2pb.SuperscriptNode{Content: n.Content}}
+	case *ast.ReferencedContent:
+		node.Node = &apiv2pb.Node_ReferencedContentNode{ReferencedContentNode: &apiv2pb.ReferencedContentNode{ResourceName: n.ResourceName, Params: n.Params}}
 	default:
 		node.Node = &apiv2pb.Node_TextNode{TextNode: &apiv2pb.TextNode{}}
 	}
@@ -138,6 +146,8 @@ func convertToASTNode(node *apiv2pb.Node) ast.Node {
 		return &ast.MathBlock{Content: n.MathBlockNode.Content}
 	case *apiv2pb.Node_TableNode:
 		return convertTableToASTNode(node)
+	case *apiv2pb.Node_EmbeddedContentNode:
+		return &ast.EmbeddedContent{ResourceName: n.EmbeddedContentNode.ResourceName, Params: n.EmbeddedContentNode.Params}
 	case *apiv2pb.Node_TextNode:
 		return &ast.Text{Content: n.TextNode.Content}
 	case *apiv2pb.Node_BoldNode:
@@ -165,6 +175,12 @@ func convertToASTNode(node *apiv2pb.Node) ast.Node {
 		return &ast.Math{Content: n.MathNode.Content}
 	case *apiv2pb.Node_HighlightNode:
 		return &ast.Highlight{Content: n.HighlightNode.Content}
+	case *apiv2pb.Node_SubscriptNode:
+		return &ast.Subscript{Content: n.SubscriptNode.Content}
+	case *apiv2pb.Node_SuperscriptNode:
+		return &ast.Superscript{Content: n.SuperscriptNode.Content}
+	case *apiv2pb.Node_ReferencedContentNode:
+		return &ast.ReferencedContent{ResourceName: n.ReferencedContentNode.ResourceName, Params: n.ReferencedContentNode.Params}
 	default:
 		return &ast.Text{}
 	}

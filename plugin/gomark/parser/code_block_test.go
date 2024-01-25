@@ -59,7 +59,7 @@ func TestCodeBlockParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		node, _ := NewCodeBlockParser().Parse(tokens)
+		node, _ := NewCodeBlockParser().Match(tokens)
 		require.Equal(t, restore.Restore([]ast.Node{test.codeBlock}), restore.Restore([]ast.Node{node}))
 	}
 }
