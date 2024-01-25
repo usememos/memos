@@ -69,10 +69,10 @@ const Timeline = () => {
       const filters = [`row_status == "NORMAL"`];
       const contentSearch: string[] = [];
       if (tagQuery) {
-        contentSearch.push(`"#${tagQuery}"`);
+        contentSearch.push(JSON.stringify(`#${tagQuery}`));
       }
       if (textQuery) {
-        contentSearch.push(`"${textQuery}"`);
+        contentSearch.push(JSON.stringify(textQuery));
       }
       if (contentSearch.length > 0) {
         filters.push(`content_search == [${contentSearch.join(", ")}]`);
@@ -90,10 +90,10 @@ const Timeline = () => {
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
     const contentSearch: string[] = [];
     if (tagQuery) {
-      contentSearch.push(`"#${tagQuery}"`);
+      contentSearch.push(JSON.stringify(`#${tagQuery}`));
     }
     if (textQuery) {
-      contentSearch.push(`"${textQuery}"`);
+      contentSearch.push(JSON.stringify(textQuery));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
@@ -159,7 +159,7 @@ const Timeline = () => {
                   <div className={classNames("flex flex-col justify-start items-start", md ? "w-[calc(100%-8rem)]" : "w-full")}>
                     {group.memos.map((memo, index) => (
                       <div
-                        key={`${memo.id}-${memo.createTime}`}
+                        key={`${memo.id}-${memo.displayTime}`}
                         className={classNames("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
                       >
                         <MemoView className="!border !border-gray-100 dark:!border-zinc-700" memo={memo} />

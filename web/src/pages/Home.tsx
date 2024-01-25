@@ -42,10 +42,10 @@ const Home = () => {
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
     if (tagQuery) {
-      contentSearch.push(`"#${tagQuery}"`);
+      contentSearch.push(JSON.stringify(`#${tagQuery}`));
     }
     if (textQuery) {
-      contentSearch.push(`"${textQuery}"`);
+      contentSearch.push(JSON.stringify(textQuery));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
@@ -73,7 +73,7 @@ const Home = () => {
           <div className="flex flex-col justify-start items-start w-full max-w-full pb-28">
             <MemoFilter className="px-2 pb-2" />
             {sortedMemos.map((memo) => (
-              <MemoView key={`${memo.id}-${memo.updateTime}`} memo={memo} showVisibility showPinned />
+              <MemoView key={`${memo.id}-${memo.displayTime}`} memo={memo} showVisibility showPinned />
             ))}
             {isRequesting ? (
               <div className="flex flex-col justify-start items-center w-full my-4">
