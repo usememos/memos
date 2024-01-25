@@ -1,6 +1,7 @@
 import { Button } from "@mui/joy";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Empty from "@/components/Empty";
 import HomeSidebar from "@/components/HomeSidebar";
 import HomeSidebarDrawer from "@/components/HomeSidebarDrawer";
@@ -20,6 +21,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
   const t = useTranslate();
+  const location = useLocation();
   const { md } = useResponsiveWidth();
   const user = useCurrentUser();
   const filterStore = useFilterStore();
@@ -34,6 +36,32 @@ const Home = () => {
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tag = urlParams.get("tag");
+    const text = urlParams.get("text");
+    if (tag) {
+      filterStore.setTagFilter(tag);
+    }
+    if (text) {
+      filterStore.setTextFilter(text);
+    }
+  }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    if (tagQuery) {
+      urlParams.set("tag", tagQuery);
+    } else {
+      urlParams.delete("tag");
+    }
+    if (textQuery) {
+      urlParams.set("text", textQuery);
+    } else {
+      urlParams.delete("text");
+    }
+    const params = urlParams.toString();
+    window.history.replaceState({}, "", `${location.pathname}${params?.length > 0 ? `?${params}` : ""}`);
+
     memoList.reset();
     fetchMemos();
   }, [tagQuery, textQuery]);

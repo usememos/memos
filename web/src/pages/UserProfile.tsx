@@ -1,7 +1,7 @@
 import { Button } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MemoFilter from "@/components/MemoFilter";
@@ -18,6 +18,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = () => {
   const t = useTranslate();
+  const location = useLocation();
   const params = useParams();
   const userStore = useUserStore();
   const loadingState = useLoading();
@@ -31,6 +32,18 @@ const UserProfile = () => {
   const sortedMemos = memoList.value
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tag = urlParams.get("tag");
+    const text = urlParams.get("text");
+    if (tag) {
+      filterStore.setTagFilter(tag);
+    }
+    if (text) {
+      filterStore.setTextFilter(text);
+    }
+  }, []);
 
   useEffect(() => {
     const username = params.username;
@@ -54,6 +67,20 @@ const UserProfile = () => {
     if (!user) {
       return;
     }
+
+    const urlParams = new URLSearchParams(location.search);
+    if (tagQuery) {
+      urlParams.set("tag", tagQuery);
+    } else {
+      urlParams.delete("tag");
+    }
+    if (textQuery) {
+      urlParams.set("text", textQuery);
+    } else {
+      urlParams.delete("text");
+    }
+    const params = urlParams.toString();
+    window.history.replaceState({}, "", `${location.pathname}${params?.length > 0 ? `?${params}` : ""}`);
 
     memoList.reset();
     fetchMemos();
