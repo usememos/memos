@@ -88,13 +88,13 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <div className="dialog-header-container">
+      <div className="dialog-header-container !w-96">
         <p className="title-text">{"Add references"}</p>
         <IconButton size="sm" onClick={() => destroy()}>
           <Icon.X className="w-5 h-auto" />
         </IconButton>
       </div>
-      <div className="dialog-content-container !w-80">
+      <div className="dialog-content-container max-w-[24rem]">
         <Autocomplete
           className="w-full"
           size="md"
@@ -133,7 +133,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           }
           onChange={(_, value) => setSelectedMemos(value)}
         />
-        <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
+        <div className="mt-4 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseDialog}>
             {t("common.cancel")}
           </Button>
