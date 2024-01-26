@@ -49,11 +49,11 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   }
 
   return (
-    <div className="relative flex flex-col justify-start items-start w-full p-4 pt-3 mb-2 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700">
-      <div className="w-full flex flex-row justify-between items-center">
+    <div className="relative flex flex-col justify-start items-start w-full p-4 pt-3 !my-2 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 hover:shadow">
+      <div className="w-full mb-1 flex flex-row justify-between items-center">
         <span className="text-sm text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</span>
         <Link className="hover:opacity-80" to={`/m/${memo.name}`} unstable_viewTransition>
-          <Icon.ExternalLink className="w-4 h-auto opacity-80" />
+          <Icon.ArrowUpRight className="w-5 h-auto opacity-80 text-gray-400" />
         </Link>
       </div>
       <MemoContent nodes={memo.nodes} memoId={memo.id} embeddedMemos={context.embeddedMemos} />

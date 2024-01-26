@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import useDebounce from "react-use/lib/useDebounce";
 import { memoServiceClient } from "@/grpcweb";
+import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Memo } from "@/types/proto/api/v2/memo_service";
@@ -34,7 +35,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           filters.push(`content_search == [${JSON.stringify(searchText)}]`);
         }
         const { memos } = await memoServiceClient.listMemos({
-          limit: 10,
+          limit: DEFAULT_MEMO_LIMIT,
           filter: filters.length > 0 ? filters.join(" && ") : undefined,
         });
         setFetchedMemos(memos);
