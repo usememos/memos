@@ -11,4 +11,4 @@ export const DAILY_TIMESTAMP = 3600 * 24 * 1000;
 export const TAB_SPACE_WIDTH = 2;
 
 // default fetch memo amount
-export const DEFAULT_MEMO_LIMIT = 20;
+export const DEFAULT_MEMO_LIMIT = 10;
