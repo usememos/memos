@@ -1,7 +1,7 @@
 import { Button } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MemoFilter from "@/components/MemoFilter";
@@ -10,40 +10,26 @@ import MobileHeader from "@/components/MobileHeader";
 import UserAvatar from "@/components/UserAvatar";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
+import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useLoading from "@/hooks/useLoading";
-import { useFilterStore } from "@/store/module";
 import { useMemoList, useMemoStore, useUserStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = () => {
   const t = useTranslate();
-  const location = useLocation();
   const params = useParams();
   const userStore = useUserStore();
   const loadingState = useLoading();
-  const filterStore = useFilterStore();
   const [user, setUser] = useState<User>();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
-  const { tag: tagQuery, text: textQuery } = filterStore.state;
+  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const tag = urlParams.get("tag");
-    const text = urlParams.get("text");
-    if (tag) {
-      filterStore.setTagFilter(tag);
-    }
-    if (text) {
-      filterStore.setTextFilter(text);
-    }
-  }, []);
 
   useEffect(() => {
     const username = params.username;
@@ -67,20 +53,6 @@ const UserProfile = () => {
     if (!user) {
       return;
     }
-
-    const urlParams = new URLSearchParams(location.search);
-    if (tagQuery) {
-      urlParams.set("tag", tagQuery);
-    } else {
-      urlParams.delete("tag");
-    }
-    if (textQuery) {
-      urlParams.set("text", textQuery);
-    } else {
-      urlParams.delete("text");
-    }
-    const params = urlParams.toString();
-    window.history.replaceState({}, "", `${location.pathname}${params?.length > 0 ? `?${params}` : ""}`);
 
     memoList.reset();
     fetchMemos();

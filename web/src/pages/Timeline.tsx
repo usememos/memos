@@ -13,9 +13,9 @@ import { memoServiceClient } from "@/grpcweb";
 import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getNormalizedTimeString, getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
-import { useFilterStore } from "@/store/module";
 import { useMemoList, useMemoStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -50,12 +50,11 @@ const Timeline = () => {
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
-  const filterStore = useFilterStore();
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDay, setSelectedDay] = useState<string | undefined>();
   const [isRequesting, setIsRequesting] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
-  const { tag: tagQuery, text: textQuery } = filterStore.state;
+  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
   const groupedByMonth = groupByMonth(activityStats, sortedMemos);
 
