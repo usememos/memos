@@ -22,7 +22,7 @@ func (*HorizontalRuleParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	if matchedTokens[0].Type != matchedTokens[1].Type || matchedTokens[0].Type != matchedTokens[2].Type || matchedTokens[1].Type != matchedTokens[2].Type {
 		return nil, 0
 	}
-	if matchedTokens[0].Type != tokenizer.Hyphen && matchedTokens[0].Type != tokenizer.Underscore && matchedTokens[0].Type != tokenizer.Asterisk {
+	if matchedTokens[0].Type != tokenizer.Hyphen && matchedTokens[0].Type != tokenizer.Asterisk {
 		return nil, 0
 	}
 	return &ast.HorizontalRule{

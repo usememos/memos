@@ -20,7 +20,7 @@ func (*ItalicParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	}
 
 	prefixTokens := matchedTokens[:1]
-	if prefixTokens[0].Type != tokenizer.Asterisk && prefixTokens[0].Type != tokenizer.Underscore {
+	if prefixTokens[0].Type != tokenizer.Asterisk {
 		return nil, 0
 	}
 	prefixTokenType := prefixTokens[0].Type

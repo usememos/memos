@@ -41,12 +41,6 @@ func TestHorizontalRuleParser(t *testing.T) {
 			text:           "-*-",
 			horizontalRule: nil,
 		},
-		{
-			text: "___",
-			horizontalRule: &ast.HorizontalRule{
-				Symbol: "_",
-			},
-		},
 	}
 
 	for _, test := range tests {

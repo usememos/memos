@@ -21,7 +21,7 @@ func (*BoldItalicParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 		return nil, 0
 	}
 	prefixTokenType := prefixTokens[0].Type
-	if prefixTokenType != tokenizer.Asterisk && prefixTokenType != tokenizer.Underscore {
+	if prefixTokenType != tokenizer.Asterisk {
 		return nil, 0
 	}
 
