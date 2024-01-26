@@ -38,8 +38,8 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   // Add the memo to the set of embedded memos. This is used to prevent infinite loops when a memo embeds itself.
   context.embeddedMemos.add(resourceName);
   const params = new URLSearchParams(paramsStr);
-  const useInlineMode = params.has("inline");
-  if (useInlineMode) {
+  const inlineMode = params.has("inline");
+  if (inlineMode) {
     return (
       <div className="w-full">
         <MemoContent nodes={memo.nodes} memoId={memo.id} embeddedMemos={context.embeddedMemos} />

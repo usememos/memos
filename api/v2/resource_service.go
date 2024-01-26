@@ -11,6 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -44,6 +45,8 @@ func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.Crea
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create resource: %v", err)
 	}
+
+	metric.Enqueue("resource create")
 	return &apiv2pb.CreateResourceResponse{
 		Resource: s.convertResourceFromStore(ctx, resource),
 	}, nil

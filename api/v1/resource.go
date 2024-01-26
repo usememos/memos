@@ -233,6 +233,7 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 	}
+	metric.Enqueue("resource create")
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 }
 

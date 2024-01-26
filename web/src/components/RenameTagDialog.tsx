@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { tagServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
+import { useFilterStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -15,6 +16,7 @@ interface Props extends DialogProps {
 const RenameTagDialog: React.FC<Props> = (props: Props) => {
   const { tag, destroy } = props;
   const t = useTranslate();
+  const filterStore = useFilterStore();
   const currentUser = useCurrentUser();
   const [newName, setNewName] = useState(tag);
   const requestState = useLoading(false);
@@ -24,8 +26,8 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleConfirm = async () => {
-    if (!newName) {
-      toast.error("Please fill all required fields");
+    if (!newName || newName.includes(" ")) {
+      toast.error("Tag name cannot be empty or contain spaces");
       return;
     }
     if (newName === tag) {
@@ -40,13 +42,12 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
         newName: newName,
       });
       toast.success("Rename tag successfully");
-      setTimeout(() => {
-        window.location.reload();
-      }, 300);
+      filterStore.setTagFilter(newName);
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
     }
+    destroy();
   };
 
   return (
@@ -75,9 +76,8 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
             />
           </div>
           <List className="!leading-5" size="sm" marker="disc">
-            <ListItem>All memes with this tag will be updated.</ListItem>
-            <ListItem>If the amount of data is large, it will take longer and the server load will become higher.</ListItem>
-            <ListItem>The page will be automatically refreshed when the task is completed</ListItem>
+            <ListItem>All your memos with this tag will be updated.</ListItem>
+            <ListItem>If the number of related memos is large, it will take longer and the server load will become higher.</ListItem>
           </List>
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-2 space-x-2">

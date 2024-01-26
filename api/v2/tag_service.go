@@ -104,7 +104,7 @@ func (s *APIV2Service) RenameTag(ctx context.Context, request *apiv2pb.RenameTag
 			return nil, status.Errorf(codes.Internal, "failed to parse memo: %v", err)
 		}
 		traverseASTNodes(nodes, func(node ast.Node) {
-			if tag, ok := node.(*ast.Tag); ok {
+			if tag, ok := node.(*ast.Tag); ok && tag.Content == request.OldName {
 				tag.Content = request.NewName
 			}
 		})
