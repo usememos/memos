@@ -11,6 +11,7 @@ export const availableLocales = [
   "fr",
   "hi",
   "hr",
+  "hu",
   "it",
   "ja",
   "ko",
