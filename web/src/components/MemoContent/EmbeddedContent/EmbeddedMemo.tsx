@@ -1,5 +1,8 @@
 import { useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
+import Icon from "@/components/Icon";
 import MemoResourceListView from "@/components/MemoResourceListView";
+import { getDateTimeString } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
 import { useMemoStore } from "@/store/v1";
 import MemoContent from "..";
@@ -11,7 +14,7 @@ interface Props {
   params: string;
 }
 
-const EmbeddedMemo = ({ resourceId }: Props) => {
+const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   const context = useContext(RendererContext);
   const loadingState = useLoading();
   const memoStore = useMemoStore();
@@ -34,8 +37,25 @@ const EmbeddedMemo = ({ resourceId }: Props) => {
 
   // Add the memo to the set of embedded memos. This is used to prevent infinite loops when a memo embeds itself.
   context.embeddedMemos.add(resourceName);
+  const params = new URLSearchParams(paramsStr);
+  const useInlineMode = params.has("inline");
+  if (useInlineMode) {
+    return (
+      <div className="w-full">
+        <MemoContent nodes={memo.nodes} memoId={memo.id} embeddedMemos={context.embeddedMemos} />
+        <MemoResourceListView resources={memo.resources} />
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full">
+    <div className="relative flex flex-col justify-start items-start w-full p-4 pt-3 mb-2 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700">
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="text-sm text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</span>
+        <Link className="hover:opacity-80" to={`/m/${memo.name}`} unstable_viewTransition>
+          <Icon.ExternalLink className="w-4 h-auto opacity-80" />
+        </Link>
+      </div>
       <MemoContent nodes={memo.nodes} memoId={memo.id} embeddedMemos={context.embeddedMemos} />
       <MemoResourceListView resources={memo.resources} />
     </div>
