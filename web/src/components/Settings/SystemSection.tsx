@@ -19,6 +19,7 @@ interface State {
   additionalStyle: string;
   additionalScript: string;
   maxUploadSizeMiB: number;
+  maxMemoContentLength: number;
   memoDisplayWithUpdatedTs: boolean;
 }
 
@@ -34,6 +35,7 @@ const SystemSection = () => {
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
     maxUploadSizeMiB: systemStatus.maxUploadSizeMiB,
+    maxMemoContentLength: systemStatus.maxMemoContentLength,
     memoDisplayWithUpdatedTs: systemStatus.memoDisplayWithUpdatedTs,
   });
   const [telegramBotToken, setTelegramBotToken] = useState<string>("");
@@ -238,7 +240,31 @@ const SystemSection = () => {
     });
   };
 
+  const handleMaxMemoContentLengthChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
+    // fixes cursor skipping position on mobile
+    event.target.selectionEnd = event.target.value.length;
+
+    let num = parseInt(event.target.value);
+    if (Number.isNaN(num)) {
+      num = 0;
+    }
+    setState({
+      ...state,
+      maxMemoContentLength: num,
+    });
+    event.target.value = num.toString();
+    globalStore.setSystemStatus({ maxMemoContentLength: num });
+    await api.upsertSystemSetting({
+      name: "max-memo-content-length",
+      value: JSON.stringify(num),
+    });
+  };
+
   const handleMaxUploadSizeFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    event.target.select();
+  };
+
+  const handleMaxMemoContentLengthFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     event.target.select();
   };
 
@@ -294,6 +320,20 @@ const SystemSection = () => {
           defaultValue={state.maxUploadSizeMiB}
           onFocus={handleMaxUploadSizeFocus}
           onChange={handleMaxUploadSizeChanged}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <div className="flex flex-row items-center">
+          <span className="text-sm mr-1">{t("setting.system-section.max-memo-content-length")}</span>
+        </div>
+        <Input
+          className="w-16"
+          sx={{
+            fontFamily: "monospace",
+          }}
+          defaultValue={state.maxMemoContentLength}
+          onFocus={handleMaxMemoContentLengthFocus}
+          onChange={handleMaxMemoContentLengthChanged}
         />
       </div>
       <Divider className="!mt-3 !my-4" />

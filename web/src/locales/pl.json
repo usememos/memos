@@ -224,7 +224,8 @@
       "database-file-size": "Rozmiar bazy danych",
       "disable-public-memos": "Wyłącz publiczne notatki",
       "display-with-updated-time": "Display with updated time",
-      "server-name": "Nazwa serwera"
+      "server-name": "Nazwa serwera",
+      "max-memo-content-length": "Maksymalna długość treści notatki"
     }
   },
   "tag-list": {

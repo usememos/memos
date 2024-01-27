@@ -345,6 +345,7 @@
       "enable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer aktiviert. Fahre nur fort, wenn du möchtest, dass sich Benutzer sowohl mit SSO als auch mit einem Passwort anmelden können",
       "max-upload-size": "Maximale Uploadgröße (MiB)",
       "max-upload-size-hint": "Empfohlene Wert ist 32 MiB.",
+      "max-memo-content-length": "Maximale Länge des Memo-Inhalts",
       "server-name": "Servername",
       "telegram-bot-token": "Telegram Bot Token",
       "telegram-bot-token-description": "Telegram Bot Token oder API Proxy, wie `http…/bot<token>`",

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/google/cel-go/cel"
@@ -29,10 +30,6 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-const (
-	MaxContentLength = 8 * 1024
-)
-
 func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMemoRequest) (*apiv2pb.CreateMemoResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
@@ -41,7 +38,14 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	if user == nil {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	if len(request.Content) > MaxContentLength {
+
+	maxContentLengthSetting := s.Store.GetSystemSettingValueWithDefault(ctx, apiv1.SystemSettingMaxMemoContentLengthName.String(), "8192")
+	settingMaxContentLength, err := strconv.Atoi(maxContentLengthSetting)
+	if err != nil {
+		log.Warn("Failed to parse max content length", zap.Error(err))
+	}
+
+	if len(request.Content) > settingMaxContentLength {
 		return nil, status.Errorf(codes.InvalidArgument, "content too long")
 	}
 
@@ -351,7 +355,13 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 			}
 		}
 	}
-	if update.Content != nil && len(*update.Content) > MaxContentLength {
+	maxContentLengthSetting := s.Store.GetSystemSettingValueWithDefault(ctx, apiv1.SystemSettingMaxMemoContentLengthName.String(), "8192")
+	settingMaxContentLength, err := strconv.Atoi(maxContentLengthSetting)
+	if err != nil {
+		log.Warn("Failed to parse max content length", zap.Error(err))
+	}
+
+	if update.Content != nil && len(*update.Content) > settingMaxContentLength {
 		return nil, status.Errorf(codes.InvalidArgument, "content too long")
 	}
 
