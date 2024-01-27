@@ -39,7 +39,7 @@ func (*BlockquoteParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 		children = append(children, nodes[0])
 		size += len(row)
 		if index != len(contentRows)-1 {
-			size += 1 // NewLine.
+			size++ // NewLine.
 		}
 	}
 
