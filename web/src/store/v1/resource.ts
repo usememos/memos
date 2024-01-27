@@ -62,5 +62,5 @@ export const useResourceStore = create(
       const resourceMap = get().resourceMapById;
       return Object.values(resourceMap).find((r) => r.name === name);
     },
-  }))
+  })),
 );

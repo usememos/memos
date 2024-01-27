@@ -14,7 +14,7 @@ const channel = createChannel(
   window.location.origin,
   FetchTransport({
     credentials: "include",
-  })
+  }),
 );
 
 const clientFactory = createClientFactory();

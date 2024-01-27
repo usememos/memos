@@ -20,5 +20,5 @@ root.render(
       <RouterProvider router={router} />
       <Toaster position="top-right" />
     </CssVarsProvider>
-  </Provider>
+  </Provider>,
 );

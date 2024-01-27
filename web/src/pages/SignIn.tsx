@@ -97,7 +97,7 @@ const SignIn = () => {
       const authUrl = `${oauth2Config.authUrl}?client_id=${
         oauth2Config.clientId
       }&redirect_uri=${redirectUri}&state=${stateQueryParameter}&response_type=code&scope=${encodeURIComponent(
-        oauth2Config.scopes.join(" ")
+        oauth2Config.scopes.join(" "),
       )}`;
       window.location.href = authUrl;
     }

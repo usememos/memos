@@ -87,7 +87,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             id: memo.id,
             pinned: false,
           },
-          ["pinned"]
+          ["pinned"],
         );
       } else {
         await memoStore.updateMemo(
@@ -95,7 +95,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             id: memo.id,
             pinned: true,
           },
-          ["pinned"]
+          ["pinned"],
         );
       }
     } catch (error) {
@@ -129,7 +129,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           id: memo.id,
           rowStatus: RowStatus.ARCHIVED,
         },
-        ["row_status"]
+        ["row_status"],
       );
     } catch (error: any) {
       console.error(error);

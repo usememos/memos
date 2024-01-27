@@ -59,7 +59,7 @@ const ActivityCalendar = (props: Props) => {
               className={classNames(
                 "w-4 h-4 text-[9px] rounded-md flex justify-center items-center border border-transparent",
                 getCellAdditionalStyles(count, maxCount),
-                isToday && "border-gray-600 dark:!border-gray-500"
+                isToday && "border-gray-600 dark:!border-gray-500",
               )}
               onClick={() => count && onClick && onClick(date)}
             >
@@ -71,7 +71,7 @@ const ActivityCalendar = (props: Props) => {
             key={`${date}-${index}`}
             className={classNames(
               "shrink-0 opacity-30 w-4 h-4 rounded-md flex justify-center items-center border border-transparent",
-              getCellAdditionalStyles(count, maxCount)
+              getCellAdditionalStyles(count, maxCount),
             )}
           ></div>
         );

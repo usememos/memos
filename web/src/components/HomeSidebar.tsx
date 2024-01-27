@@ -15,7 +15,7 @@ const HomeSidebar = (props: Props) => {
     <aside
       className={classNames(
         "relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start",
-        props.className
+        props.className,
       )}
     >
       <SearchBar />

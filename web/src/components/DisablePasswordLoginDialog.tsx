@@ -91,7 +91,7 @@ function showDisablePasswordLoginDialog() {
       className: "disable-password-login-dialog",
       dialogName: "disable-password-login-dialog",
     },
-    DisablePasswordLoginDialog
+    DisablePasswordLoginDialog,
   );
 }
 

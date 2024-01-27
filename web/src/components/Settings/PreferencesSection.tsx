@@ -26,7 +26,7 @@ const PreferencesSection = () => {
       {
         locale,
       },
-      ["locale"]
+      ["locale"],
     );
     globalStore.setLocale(locale);
   };
@@ -36,7 +36,7 @@ const PreferencesSection = () => {
       {
         appearance,
       },
-      ["appearance"]
+      ["appearance"],
     );
     globalStore.setAppearance(appearance);
   };
@@ -46,7 +46,7 @@ const PreferencesSection = () => {
       {
         memoVisibility: value,
       },
-      ["memo_visibility"]
+      ["memo_visibility"],
     );
   };
 
@@ -56,7 +56,7 @@ const PreferencesSection = () => {
         {
           telegramUserId: telegramUserId,
         },
-        ["telegram_user_id"]
+        ["telegram_user_id"],
       );
       toast.success(t("message.update-succeed"));
     } catch (error: any) {

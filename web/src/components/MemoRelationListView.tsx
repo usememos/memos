@@ -22,13 +22,13 @@ const MemoRelationListView = (props: Props) => {
       const referencingMemoList = await Promise.all(
         relationList
           .filter((relation) => relation.memoId === memo.id && relation.relatedMemoId !== memo.id)
-          .map((relation) => memoStore.getOrFetchMemoById(relation.relatedMemoId, { skipStore: true }))
+          .map((relation) => memoStore.getOrFetchMemoById(relation.relatedMemoId, { skipStore: true })),
       );
       setReferencingMemoList(referencingMemoList);
       const referencedMemoList = await Promise.all(
         relationList
           .filter((relation) => relation.memoId !== memo.id && relation.relatedMemoId === memo.id)
-          .map((relation) => memoStore.getOrFetchMemoById(relation.memoId, { skipStore: true }))
+          .map((relation) => memoStore.getOrFetchMemoById(relation.memoId, { skipStore: true })),
       );
       setReferencedMemoList(referencedMemoList);
     })();

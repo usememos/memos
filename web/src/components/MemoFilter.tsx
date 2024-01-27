@@ -29,7 +29,7 @@ const MemoFilter = (props: Props) => {
     <div
       className={classNames(
         `w-full flex flex-row justify-start items-start flex-wrap gap-2 text-sm leading-7 dark:text-gray-400`,
-        props.className
+        props.className,
       )}
     >
       <div className="shrink-0 flex flex-row justify-start items-center text-gray-400">

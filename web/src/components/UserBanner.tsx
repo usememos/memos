@@ -32,7 +32,7 @@ const UserBanner = (props: Props) => {
           <div
             className={classNames(
               "py-1 my-1 w-auto flex flex-row justify-start items-center cursor-pointer rounded-2xl border border-transparent text-gray-800 dark:text-gray-300",
-              collapsed ? "px-1" : "px-3"
+              collapsed ? "px-1" : "px-3",
             )}
           >
             <UserAvatar className="shadow shrink-0" avatarUrl={avatarUrl} />

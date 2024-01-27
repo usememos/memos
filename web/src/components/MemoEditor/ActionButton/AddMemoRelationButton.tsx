@@ -51,8 +51,8 @@ const AddMemoRelationButton = (props: Props) => {
               ...memoIdList.map((id) => ({ memoId: context.memoId || UNKNOWN_ID, relatedMemoId: id, type: MemoRelation_Type.REFERENCE })),
               ...context.relationList,
             ].filter((relation) => relation.relatedMemoId !== (context.memoId || UNKNOWN_ID)),
-            "relatedMemoId"
-          )
+            "relatedMemoId",
+          ),
         );
       },
     });

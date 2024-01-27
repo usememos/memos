@@ -88,7 +88,7 @@ function showUpdateLocalStorageDialog(localStoragePath?: string, confirmCallback
       dialogName: "update-local-storage-dialog",
     },
     UpdateLocalStorageDialog,
-    { localStoragePath, confirmCallback }
+    { localStoragePath, confirmCallback },
   );
 }
 

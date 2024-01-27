@@ -28,7 +28,7 @@ const Tag: React.FC<Props> = ({ content }: Props) => {
     <span
       className={classNames(
         "inline-block w-auto text-blue-600 dark:text-blue-400",
-        context.disableFilter ? "" : "cursor-pointer hover:opacity-80"
+        context.disableFilter ? "" : "cursor-pointer hover:opacity-80",
       )}
       onClick={handleTagClick}
     >

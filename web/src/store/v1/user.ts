@@ -123,7 +123,7 @@ export const useUserStore = create(
       set({ userSetting: updatedUserSetting });
       return updatedUserSetting;
     },
-  }))
+  })),
 );
 
 export const stringifyUserRole = (role: User_Role) => {

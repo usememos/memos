@@ -170,7 +170,7 @@ function showCreateTagDialog() {
       className: "create-tag-dialog",
       dialogName: "create-tag-dialog",
     },
-    CreateTagDialog
+    CreateTagDialog,
   );
 }
 

@@ -100,7 +100,7 @@ function showRenameTagDialog(props: Pick<Props, "tag">) {
       dialogName: "rename-tag-dialog",
     },
     RenameTagDialog,
-    props
+    props,
   );
 }
 

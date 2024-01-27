@@ -240,7 +240,7 @@ function showCreateStorageServiceDialog(storage?: ObjectStorage, confirmCallback
       dialogName: "create-storage-service-dialog",
     },
     CreateStorageServiceDialog,
-    { storage, confirmCallback }
+    { storage, confirmCallback },
   );
 }
 

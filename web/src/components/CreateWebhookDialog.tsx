@@ -155,7 +155,7 @@ function showCreateWebhookDialog(onConfirm: () => void) {
     CreateWebhookDialog,
     {
       onConfirm,
-    }
+    },
   );
 }
 

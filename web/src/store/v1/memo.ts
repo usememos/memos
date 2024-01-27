@@ -104,7 +104,7 @@ export const useMemoStore = create(
       delete memoMap[id];
       set({ memoMapById: memoMap });
     },
-  }))
+  })),
 );
 
 export const useMemoList = () => {

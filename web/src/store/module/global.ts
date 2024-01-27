@@ -84,7 +84,7 @@ export const useGlobalStore = () => {
             ...state.systemStatus,
             ...systemStatus,
           },
-        })
+        }),
       );
     },
     setLocale: (locale: Locale) => {

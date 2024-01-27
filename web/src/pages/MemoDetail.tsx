@@ -88,7 +88,7 @@ const MemoDetail = () => {
         id: memo.id,
         visibility: visibility,
       },
-      ["visibility"]
+      ["visibility"],
     );
   };
 

@@ -69,7 +69,7 @@ const MemoEditor = (props: Props) => {
   const userSetting = userStore.userSetting as UserSetting;
   const referenceRelations = memoId
     ? state.relationList.filter(
-        (relation) => relation.memoId === memoId && relation.relatedMemoId !== memoId && relation.type === MemoRelation_Type.REFERENCE
+        (relation) => relation.memoId === memoId && relation.relatedMemoId !== memoId && relation.type === MemoRelation_Type.REFERENCE,
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
 
@@ -275,7 +275,7 @@ const MemoEditor = (props: Props) => {
               content,
               visibility: state.memoVisibility,
             },
-            ["content", "visibility"]
+            ["content", "visibility"],
           );
           await memoServiceClient.setMemoResources({
             id: memo.id,
@@ -348,7 +348,7 @@ const MemoEditor = (props: Props) => {
       onContentChange: handleContentChange,
       onPaste: handlePasteEvent,
     }),
-    [i18n.language]
+    [i18n.language],
   );
 
   const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;

@@ -40,7 +40,7 @@ const TaskList: React.FC<Props> = ({ index, indent, complete, children }: Props)
         id: context.memoId,
         nodes: context.nodes,
       },
-      ["nodes"]
+      ["nodes"],
     );
   };
 

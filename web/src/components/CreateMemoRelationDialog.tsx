@@ -46,7 +46,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
       setIsFetching(false);
     },
     300,
-    [searchText]
+    [searchText],
   );
 
   const getHighlightedContent = (content: string) => {
@@ -80,7 +80,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
   const handleConfirmBtnClick = async () => {
     onConfirm(
       selectedMemos.map((memo) => memo.id),
-      embedded
+      embedded,
     );
     destroy();
   };
@@ -155,7 +155,7 @@ function showCreateMemoRelationDialog(props: Omit<Props, "destroy" | "hide">) {
       dialogName: "create-memo-relation-dialog",
     },
     CreateMemoRelationDialog,
-    props
+    props,
   );
 }
 

@@ -72,7 +72,7 @@ const Archived = () => {
           id: memo.id,
           rowStatus: RowStatus.ACTIVE,
         },
-        ["row_status"]
+        ["row_status"],
       );
       setArchivedMemos((prev) => prev.filter((m) => m.id !== memo.id));
       toast(t("message.restored-successfully"));

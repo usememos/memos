@@ -58,6 +58,6 @@ export default function showMemoEditorDialog(props: Pick<Props, "memoId" | "cach
       containerClassName: "dark:!bg-zinc-800",
     },
     MemoEditorDialog,
-    props
+    props,
   );
 }
