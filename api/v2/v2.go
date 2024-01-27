@@ -21,7 +21,7 @@ import (
 )
 
 type APIV2Service struct {
-	apiv2pb.UnimplementedSystemServiceServer
+	apiv2pb.UnimplementedWorkspaceServiceServer
 	apiv2pb.UnimplementedAuthServiceServer
 	apiv2pb.UnimplementedUserServiceServer
 	apiv2pb.UnimplementedMemoServiceServer
@@ -56,7 +56,7 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 		grpcServerPort: grpcServerPort,
 	}
 
-	apiv2pb.RegisterSystemServiceServer(grpcServer, apiv2Service)
+	apiv2pb.RegisterWorkspaceServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterAuthServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterUserServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterMemoServiceServer(grpcServer, apiv2Service)
@@ -89,7 +89,7 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 	}
 
 	gwMux := runtime.NewServeMux()
-	if err := apiv2pb.RegisterSystemServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := apiv2pb.RegisterWorkspaceServiceHandler(context.Background(), gwMux, conn); err != nil {
 		return err
 	}
 	if err := apiv2pb.RegisterAuthServiceHandler(context.Background(), gwMux, conn); err != nil {

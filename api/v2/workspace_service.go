@@ -11,29 +11,18 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV2Service) GetSystemInfo(ctx context.Context, _ *apiv2pb.GetSystemInfoRequest) (*apiv2pb.GetSystemInfoResponse, error) {
-	defaultSystemInfo := &apiv2pb.SystemInfo{}
-
-	// Get the database size if the user is a host.
-	currentUser, err := getCurrentUser(ctx, s.Store)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+func (s *APIV2Service) GetWorkspaceProfile(ctx context.Context, _ *apiv2pb.GetWorkspaceProfileRequest) (*apiv2pb.GetWorkspaceProfileResponse, error) {
+	workspaceProfile := &apiv2pb.WorkspaceProfile{
+		Version: s.Profile.Version,
+		Mode:    s.Profile.Mode,
 	}
-	if currentUser != nil && currentUser.Role == store.RoleHost {
-		size, err := s.Store.GetCurrentDBSize(ctx)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get db size: %v", err)
-		}
-		defaultSystemInfo.DbSize = size
-	}
-
-	response := &apiv2pb.GetSystemInfoResponse{
-		SystemInfo: defaultSystemInfo,
+	response := &apiv2pb.GetWorkspaceProfileResponse{
+		WorkspaceProfile: workspaceProfile,
 	}
 	return response, nil
 }
 
-func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.UpdateSystemInfoRequest) (*apiv2pb.UpdateSystemInfoResponse, error) {
+func (s *APIV2Service) UpdateWorkspaceProfile(ctx context.Context, request *apiv2pb.UpdateWorkspaceProfileRequest) (*apiv2pb.UpdateWorkspaceProfileResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -50,7 +39,7 @@ func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.Up
 		if field == "allow_registration" {
 			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 				Name:  "allow-signup",
-				Value: strconv.FormatBool(request.SystemInfo.AllowRegistration),
+				Value: strconv.FormatBool(request.WorkspaceProfile.AllowRegistration),
 			})
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to update allow_registration system setting: %v", err)
@@ -58,7 +47,7 @@ func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.Up
 		} else if field == "disable_password_login" {
 			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 				Name:  "disable-password-login",
-				Value: strconv.FormatBool(request.SystemInfo.DisablePasswordLogin),
+				Value: strconv.FormatBool(request.WorkspaceProfile.DisablePasswordLogin),
 			})
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to update disable_password_login system setting: %v", err)
@@ -66,7 +55,7 @@ func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.Up
 		} else if field == "additional_script" {
 			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 				Name:  "additional-script",
-				Value: request.SystemInfo.AdditionalScript,
+				Value: request.WorkspaceProfile.AdditionalScript,
 			})
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to update additional_script system setting: %v", err)
@@ -74,7 +63,7 @@ func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.Up
 		} else if field == "additional_style" {
 			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 				Name:  "additional-style",
-				Value: request.SystemInfo.AdditionalStyle,
+				Value: request.WorkspaceProfile.AdditionalStyle,
 			})
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to update additional_style system setting: %v", err)
@@ -82,11 +71,11 @@ func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.Up
 		}
 	}
 
-	systemInfo, err := s.GetSystemInfo(ctx, &apiv2pb.GetSystemInfoRequest{})
+	workspaceProfileMessage, err := s.GetWorkspaceProfile(ctx, &apiv2pb.GetWorkspaceProfileRequest{})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get system info: %v", err)
 	}
-	return &apiv2pb.UpdateSystemInfoResponse{
-		SystemInfo: systemInfo.SystemInfo,
+	return &apiv2pb.UpdateWorkspaceProfileResponse{
+		WorkspaceProfile: workspaceProfileMessage.WorkspaceProfile,
 	}, nil
 }

@@ -16,13 +16,11 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
 
   const ratio = count / maxCount;
   if (ratio > 0.7) {
-    return "bg-blue-600 text-gray-200";
-  } else if (ratio > 0.5) {
+    return "bg-blue-600 text-gray-100 dark:opacity-80";
+  } else if (ratio > 0.4) {
     return "bg-blue-400 text-gray-200 dark:opacity-80";
-  } else if (ratio > 0.3) {
-    return "bg-blue-300 text-gray-200 dark:opacity-80";
   } else {
-    return "bg-blue-200 text-gray-200 dark:opacity-80";
+    return "bg-blue-300 text-gray-600 dark:opacity-80";
   }
 };
 

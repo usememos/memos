@@ -17,7 +17,6 @@ const globalSlice = createSlice({
         mode: "demo",
         version: "",
       },
-      dbSize: 0,
       allowSignUp: false,
       disablePasswordLogin: false,
       disablePublicMemos: false,

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import * as api from "@/helpers/api";
-import { formatBytes } from "@/helpers/utils";
 import { useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { showCommonDialog } from "../Dialog/CommonDialog";
@@ -12,7 +11,6 @@ import Icon from "../Icon";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 
 interface State {
-  dbSize: number;
   allowSignUp: boolean;
   disablePasswordLogin: boolean;
   disablePublicMemos: boolean;
@@ -27,7 +25,6 @@ const SystemSection = () => {
   const globalStore = useGlobalStore();
   const systemStatus = globalStore.state.systemStatus;
   const [state, setState] = useState<State>({
-    dbSize: systemStatus.dbSize,
     allowSignUp: systemStatus.allowSignUp,
     disablePasswordLogin: systemStatus.disablePasswordLogin,
     additionalStyle: systemStatus.additionalStyle,
@@ -59,7 +56,6 @@ const SystemSection = () => {
   useEffect(() => {
     setState({
       ...state,
-      dbSize: systemStatus.dbSize,
       allowSignUp: systemStatus.allowSignUp,
       disablePasswordLogin: systemStatus.disablePasswordLogin,
       additionalStyle: systemStatus.additionalStyle,
@@ -105,17 +101,6 @@ const SystemSection = () => {
 
   const handleUpdateCustomizedProfileButtonClick = () => {
     showUpdateCustomizedProfileDialog();
-  };
-
-  const handleVacuumBtnClick = async () => {
-    try {
-      await api.vacuumDatabase();
-      await globalStore.fetchSystemStatus();
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-    toast.success(t("message.succeed-vacuum-database"));
   };
 
   const handleInstanceUrlChanged = (value: string) => {
@@ -250,17 +235,6 @@ const SystemSection = () => {
           {t("setting.system-section.server-name")}: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
         </div>
         <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <div className="flex flex-row items-center">
-          <span className="text-sm">
-            {t("setting.system-section.database-file-size")}: <span className="font-mono font-bold">{formatBytes(state.dbSize)}</span>
-          </span>
-          <Tooltip title={t("setting.system-section.vacuum-hint")} placement="top">
-            <Icon.HelpCircle className="w-4 h-auto" />
-          </Tooltip>
-        </div>
-        <Button onClick={handleVacuumBtnClick}>{t("common.vacuum")}</Button>
       </div>
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.settings")}</p>
       <div className="w-full flex flex-row justify-between items-center">

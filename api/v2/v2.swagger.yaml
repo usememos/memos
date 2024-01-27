@@ -10,9 +10,9 @@ tags:
   - name: MarkdownService
   - name: ResourceService
   - name: MemoService
-  - name: SystemService
   - name: TagService
   - name: WebhookService
+  - name: WorkspaceService
 consumes:
   - application/json
 produces:
@@ -546,40 +546,6 @@ paths:
                 format: int32
       tags:
         - ResourceService
-  /api/v2/system/info:
-    get:
-      operationId: SystemService_GetSystemInfo
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2GetSystemInfoResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      tags:
-        - SystemService
-    patch:
-      operationId: SystemService_UpdateSystemInfo
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2UpdateSystemInfoResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: systemInfo
-          description: System info is the updated data.
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v2SystemInfo'
-      tags:
-        - SystemService
   /api/v2/tags:
     get:
       operationId: TagService_ListTags
@@ -815,6 +781,40 @@ paths:
             $ref: '#/definitions/WebhookServiceUpdateWebhookBody'
       tags:
         - WebhookService
+  /api/v2/workspace/profile:
+    get:
+      operationId: WorkspaceService_GetWorkspaceProfile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetWorkspaceProfileResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - WorkspaceService
+    patch:
+      operationId: WorkspaceService_UpdateWorkspaceProfile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateWorkspaceProfileResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: workspaceProfile
+          description: System info is the updated data.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2WorkspaceProfile'
+      tags:
+        - WorkspaceService
   /api/v2/{name}:
     get:
       summary: GetUser gets a user by name.
@@ -1464,11 +1464,6 @@ definitions:
     properties:
       resource:
         $ref: '#/definitions/v2Resource'
-  v2GetSystemInfoResponse:
-    type: object
-    properties:
-      systemInfo:
-        $ref: '#/definitions/v2SystemInfo'
   v2GetTagSuggestionsResponse:
     type: object
     properties:
@@ -1502,6 +1497,11 @@ definitions:
     properties:
       webhook:
         $ref: '#/definitions/apiv2Webhook'
+  v2GetWorkspaceProfileResponse:
+    type: object
+    properties:
+      workspaceProfile:
+        $ref: '#/definitions/v2WorkspaceProfile'
   v2HeadingNode:
     type: object
     properties:
@@ -1937,24 +1937,6 @@ definitions:
     properties:
       content:
         type: string
-  v2SystemInfo:
-    type: object
-    properties:
-      version:
-        type: string
-      mode:
-        type: string
-      allowRegistration:
-        type: boolean
-      disablePasswordLogin:
-        type: boolean
-      additionalScript:
-        type: string
-      additionalStyle:
-        type: string
-      dbSize:
-        type: string
-        format: int64
   v2TableNode:
     type: object
     properties:
@@ -2034,11 +2016,6 @@ definitions:
     properties:
       resource:
         $ref: '#/definitions/v2Resource'
-  v2UpdateSystemInfoResponse:
-    type: object
-    properties:
-      systemInfo:
-        $ref: '#/definitions/v2SystemInfo'
   v2UpdateUserResponse:
     type: object
     properties:
@@ -2054,6 +2031,11 @@ definitions:
     properties:
       webhook:
         $ref: '#/definitions/apiv2Webhook'
+  v2UpdateWorkspaceProfileResponse:
+    type: object
+    properties:
+      workspaceProfile:
+        $ref: '#/definitions/v2WorkspaceProfile'
   v2UpsertTagResponse:
     type: object
     properties:
@@ -2111,3 +2093,18 @@ definitions:
       - PROTECTED
       - PUBLIC
     default: VISIBILITY_UNSPECIFIED
+  v2WorkspaceProfile:
+    type: object
+    properties:
+      version:
+        type: string
+      mode:
+        type: string
+      allowRegistration:
+        type: boolean
+      disablePasswordLogin:
+        type: boolean
+      additionalScript:
+        type: string
+      additionalStyle:
+        type: string

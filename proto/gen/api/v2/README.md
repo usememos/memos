@@ -161,15 +161,6 @@
   
     - [MemoService](#memos-api-v2-MemoService)
   
-- [api/v2/system_service.proto](#api_v2_system_service-proto)
-    - [GetSystemInfoRequest](#memos-api-v2-GetSystemInfoRequest)
-    - [GetSystemInfoResponse](#memos-api-v2-GetSystemInfoResponse)
-    - [SystemInfo](#memos-api-v2-SystemInfo)
-    - [UpdateSystemInfoRequest](#memos-api-v2-UpdateSystemInfoRequest)
-    - [UpdateSystemInfoResponse](#memos-api-v2-UpdateSystemInfoResponse)
-  
-    - [SystemService](#memos-api-v2-SystemService)
-  
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
     - [DeleteTagRequest](#memos-api-v2-DeleteTagRequest)
     - [DeleteTagResponse](#memos-api-v2-DeleteTagResponse)
@@ -199,6 +190,15 @@
     - [Webhook](#memos-api-v2-Webhook)
   
     - [WebhookService](#memos-api-v2-WebhookService)
+  
+- [api/v2/workspace_service.proto](#api_v2_workspace_service-proto)
+    - [GetWorkspaceProfileRequest](#memos-api-v2-GetWorkspaceProfileRequest)
+    - [GetWorkspaceProfileResponse](#memos-api-v2-GetWorkspaceProfileResponse)
+    - [UpdateWorkspaceProfileRequest](#memos-api-v2-UpdateWorkspaceProfileRequest)
+    - [UpdateWorkspaceProfileResponse](#memos-api-v2-UpdateWorkspaceProfileResponse)
+    - [WorkspaceProfile](#memos-api-v2-WorkspaceProfile)
+  
+    - [WorkspaceService](#memos-api-v2-WorkspaceService)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -2328,110 +2328,6 @@ Used internally for obfuscating the page token.
 
 
 
-<a name="api_v2_system_service-proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## api/v2/system_service.proto
-
-
-
-<a name="memos-api-v2-GetSystemInfoRequest"></a>
-
-### GetSystemInfoRequest
-
-
-
-
-
-
-
-<a name="memos-api-v2-GetSystemInfoResponse"></a>
-
-### GetSystemInfoResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| system_info | [SystemInfo](#memos-api-v2-SystemInfo) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-SystemInfo"></a>
-
-### SystemInfo
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| version | [string](#string) |  |  |
-| mode | [string](#string) |  |  |
-| allow_registration | [bool](#bool) |  |  |
-| disable_password_login | [bool](#bool) |  |  |
-| additional_script | [string](#string) |  |  |
-| additional_style | [string](#string) |  |  |
-| db_size | [int64](#int64) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-UpdateSystemInfoRequest"></a>
-
-### UpdateSystemInfoRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| system_info | [SystemInfo](#memos-api-v2-SystemInfo) |  | System info is the updated data. |
-| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-UpdateSystemInfoResponse"></a>
-
-### UpdateSystemInfoResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| system_info | [SystemInfo](#memos-api-v2-SystemInfo) |  |  |
-
-
-
-
-
- 
-
- 
-
- 
-
-
-<a name="memos-api-v2-SystemService"></a>
-
-### SystemService
-
-
-| Method Name | Request Type | Response Type | Description |
-| ----------- | ------------ | ------------- | ------------|
-| GetSystemInfo | [GetSystemInfoRequest](#memos-api-v2-GetSystemInfoRequest) | [GetSystemInfoResponse](#memos-api-v2-GetSystemInfoResponse) |  |
-| UpdateSystemInfo | [UpdateSystemInfoRequest](#memos-api-v2-UpdateSystemInfoRequest) | [UpdateSystemInfoResponse](#memos-api-v2-UpdateSystemInfoResponse) |  |
-
- 
-
-
-
 <a name="api_v2_tag_service-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -2818,6 +2714,109 @@ Used internally for obfuscating the page token.
 | ListWebhooks | [ListWebhooksRequest](#memos-api-v2-ListWebhooksRequest) | [ListWebhooksResponse](#memos-api-v2-ListWebhooksResponse) |  |
 | UpdateWebhook | [UpdateWebhookRequest](#memos-api-v2-UpdateWebhookRequest) | [UpdateWebhookResponse](#memos-api-v2-UpdateWebhookResponse) |  |
 | DeleteWebhook | [DeleteWebhookRequest](#memos-api-v2-DeleteWebhookRequest) | [DeleteWebhookResponse](#memos-api-v2-DeleteWebhookResponse) |  |
+
+ 
+
+
+
+<a name="api_v2_workspace_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/workspace_service.proto
+
+
+
+<a name="memos-api-v2-GetWorkspaceProfileRequest"></a>
+
+### GetWorkspaceProfileRequest
+
+
+
+
+
+
+
+<a name="memos-api-v2-GetWorkspaceProfileResponse"></a>
+
+### GetWorkspaceProfileResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| workspace_profile | [WorkspaceProfile](#memos-api-v2-WorkspaceProfile) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateWorkspaceProfileRequest"></a>
+
+### UpdateWorkspaceProfileRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| workspace_profile | [WorkspaceProfile](#memos-api-v2-WorkspaceProfile) |  | System info is the updated data. |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateWorkspaceProfileResponse"></a>
+
+### UpdateWorkspaceProfileResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| workspace_profile | [WorkspaceProfile](#memos-api-v2-WorkspaceProfile) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-WorkspaceProfile"></a>
+
+### WorkspaceProfile
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| version | [string](#string) |  |  |
+| mode | [string](#string) |  |  |
+| allow_registration | [bool](#bool) |  |  |
+| disable_password_login | [bool](#bool) |  |  |
+| additional_script | [string](#string) |  |  |
+| additional_style | [string](#string) |  |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-WorkspaceService"></a>
+
+### WorkspaceService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| GetWorkspaceProfile | [GetWorkspaceProfileRequest](#memos-api-v2-GetWorkspaceProfileRequest) | [GetWorkspaceProfileResponse](#memos-api-v2-GetWorkspaceProfileResponse) |  |
+| UpdateWorkspaceProfile | [UpdateWorkspaceProfileRequest](#memos-api-v2-UpdateWorkspaceProfileRequest) | [UpdateWorkspaceProfileResponse](#memos-api-v2-UpdateWorkspaceProfileResponse) |  |
 
  
 
