@@ -55,7 +55,7 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		ResourceName: shortuuid.New(),
 		CreatorID:    user.ID,
 		Content:      request.Content,
-		Visibility:   store.Visibility(request.Visibility.String()),
+		Visibility:   convertVisibilityToStore(request.Visibility),
 	}
 	// Find disable public memos system setting.
 	disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
