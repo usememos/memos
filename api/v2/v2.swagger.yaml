@@ -1,0 +1,2113 @@
+swagger: "2.0"
+info:
+  title: api/v2/activity_service.proto
+  version: version not set
+tags:
+  - name: ActivityService
+  - name: UserService
+  - name: AuthService
+  - name: InboxService
+  - name: MarkdownService
+  - name: ResourceService
+  - name: MemoService
+  - name: SystemService
+  - name: TagService
+  - name: WebhookService
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /api/v2/auth/status:
+    post:
+      operationId: AuthService_GetAuthStatus
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetAuthStatusResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - AuthService
+  /api/v2/inboxes:
+    get:
+      operationId: InboxService_ListInboxes
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListInboxesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user
+          description: 'Format: users/{username}'
+          in: query
+          required: false
+          type: string
+      tags:
+        - InboxService
+  /api/v2/markdown:
+    post:
+      operationId: MarkdownService_ParseMarkdown
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ParseMarkdownResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2ParseMarkdownRequest'
+      tags:
+        - MarkdownService
+  /api/v2/memos:
+    get:
+      summary: ListMemos lists memos with pagination and filter.
+      operationId: MemoService_ListMemos
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListMemosResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: The maximum number of memos to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: |-
+            A page token, received from a previous `ListMemos` call.
+            Provide this to retrieve the subsequent page.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter is used to filter memos returned in the list.
+            Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
+          in: query
+          required: false
+          type: string
+      tags:
+        - MemoService
+    post:
+      summary: CreateMemo creates a memo.
+      operationId: MemoService_CreateMemo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2CreateMemoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2CreateMemoRequest'
+      tags:
+        - MemoService
+  /api/v2/memos/stats:
+    get:
+      summary: GetUserMemosStats gets stats of memos for a user.
+      operationId: MemoService_GetUserMemosStats
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetUserMemosStatsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            name is the name of the user to get stats for.
+            Format: users/{username}
+          in: query
+          required: false
+          type: string
+        - name: timezone
+          description: |-
+            timezone location
+            Format: uses tz identifier
+            https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: Same as ListMemosRequest.filter
+          in: query
+          required: false
+          type: string
+      tags:
+        - MemoService
+  /api/v2/memos/{id}:
+    get:
+      summary: GetMemo gets a memo by id.
+      operationId: MemoService_GetMemo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetMemoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - MemoService
+    delete:
+      summary: DeleteMemo deletes a memo by id.
+      operationId: MemoService_DeleteMemo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteMemoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - MemoService
+    patch:
+      summary: UpdateMemo updates a memo.
+      operationId: MemoService_UpdateMemo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateMemoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceUpdateMemoBody'
+      tags:
+        - MemoService
+  /api/v2/memos/{id}/comments:
+    get:
+      summary: ListMemoComments lists comments for a memo.
+      operationId: MemoService_ListMemoComments
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListMemoCommentsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - MemoService
+    post:
+      summary: CreateMemoComment creates a comment for a memo.
+      operationId: MemoService_CreateMemoComment
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2CreateMemoCommentResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          description: id is the memo id to create comment for.
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: create.content
+          in: query
+          required: false
+          type: string
+        - name: create.visibility
+          in: query
+          required: false
+          type: string
+          enum:
+            - VISIBILITY_UNSPECIFIED
+            - PRIVATE
+            - PROTECTED
+            - PUBLIC
+          default: VISIBILITY_UNSPECIFIED
+      tags:
+        - MemoService
+  /api/v2/memos/{id}/relations:
+    get:
+      summary: ListMemoRelations lists relations for a memo.
+      operationId: MemoService_ListMemoRelations
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListMemoRelationsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - MemoService
+    post:
+      summary: SetMemoRelations sets relations for a memo.
+      operationId: MemoService_SetMemoRelations
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SetMemoRelationsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceSetMemoRelationsBody'
+      tags:
+        - MemoService
+  /api/v2/memos/{id}/resources:
+    get:
+      summary: ListMemoResources lists resources for a memo.
+      operationId: MemoService_ListMemoResources
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListMemoResourcesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - MemoService
+    post:
+      summary: SetMemoResources sets resources for a memo.
+      operationId: MemoService_SetMemoResources
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SetMemoResourcesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceSetMemoResourcesBody'
+      tags:
+        - MemoService
+  /api/v2/memos/{name}:
+    get:
+      summary: GetMemoByName gets a memo by name.
+      operationId: MemoService_GetMemoByName
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetMemoByNameResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - MemoService
+  /api/v2/resources:
+    get:
+      operationId: ResourceService_ListResources
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListResourcesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - ResourceService
+    post:
+      operationId: ResourceService_CreateResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2CreateResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: filename
+          in: query
+          required: false
+          type: string
+        - name: externalLink
+          in: query
+          required: false
+          type: string
+        - name: type
+          in: query
+          required: false
+          type: string
+        - name: memoId
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - ResourceService
+  /api/v2/resources/{id}:
+    get:
+      operationId: ResourceService_GetResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - ResourceService
+    delete:
+      operationId: ResourceService_DeleteResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - ResourceService
+  /api/v2/resources/{name}:
+    get:
+      operationId: ResourceService_GetResourceByName
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetResourceByNameResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      tags:
+        - ResourceService
+  /api/v2/resources/{resource.id}:
+    patch:
+      operationId: ResourceService_UpdateResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: resource.id
+          description: id is the system generated unique identifier.
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: resource
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: name is the user provided name.
+              createTime:
+                type: string
+                format: date-time
+              filename:
+                type: string
+              externalLink:
+                type: string
+              type:
+                type: string
+              size:
+                type: string
+                format: int64
+              memoId:
+                type: integer
+                format: int32
+      tags:
+        - ResourceService
+  /api/v2/system/info:
+    get:
+      operationId: SystemService_GetSystemInfo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetSystemInfoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - SystemService
+    patch:
+      operationId: SystemService_UpdateSystemInfo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateSystemInfoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: systemInfo
+          description: System info is the updated data.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2SystemInfo'
+      tags:
+        - SystemService
+  /api/v2/tags:
+    get:
+      operationId: TagService_ListTags
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListTagsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user
+          description: |-
+            The creator of tags.
+            Format: users/{username}
+          in: query
+          required: false
+          type: string
+      tags:
+        - TagService
+    delete:
+      operationId: TagService_DeleteTag
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteTagResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: tag.name
+          in: query
+          required: false
+          type: string
+        - name: tag.creator
+          description: |-
+            The creator of tags.
+            Format: users/{username}
+          in: query
+          required: false
+          type: string
+      tags:
+        - TagService
+    post:
+      operationId: TagService_UpsertTag
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpsertTagResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          in: query
+          required: false
+          type: string
+      tags:
+        - TagService
+  /api/v2/tags/suggestion:
+    get:
+      operationId: TagService_GetTagSuggestions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetTagSuggestionsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user
+          description: |-
+            The creator of tags.
+            Format: users/{username}
+          in: query
+          required: false
+          type: string
+      tags:
+        - TagService
+  /api/v2/tags:rename:
+    patch:
+      operationId: TagService_RenameTag
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2RenameTagResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user
+          description: |-
+            The creator of tags.
+            Format: users/{username}
+          in: query
+          required: false
+          type: string
+        - name: oldName
+          in: query
+          required: false
+          type: string
+        - name: newName
+          in: query
+          required: false
+          type: string
+      tags:
+        - TagService
+  /api/v2/users:
+    get:
+      summary: ListUsers returns a list of users.
+      operationId: UserService_ListUsers
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListUsersResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - UserService
+  /api/v2/webhooks:
+    get:
+      operationId: WebhookService_ListWebhooks
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListWebhooksResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: creatorId
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - WebhookService
+    post:
+      operationId: WebhookService_CreateWebhook
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2CreateWebhookResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2CreateWebhookRequest'
+      tags:
+        - WebhookService
+  /api/v2/webhooks/{id}:
+    get:
+      operationId: WebhookService_GetWebhook
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetWebhookResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - WebhookService
+    delete:
+      operationId: WebhookService_DeleteWebhook
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteWebhookResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - WebhookService
+  /api/v2/webhooks/{webhook.id}:
+    patch:
+      operationId: WebhookService_UpdateWebhook
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateWebhookResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: webhook.id
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/WebhookServiceUpdateWebhookBody'
+      tags:
+        - WebhookService
+  /api/v2/{name}:
+    get:
+      summary: GetUser gets a user by name.
+      operationId: UserService_GetUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetUserResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the user.
+            Format: users/{username}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - UserService
+    delete:
+      summary: DeleteUser deletes a user.
+      operationId: UserService_DeleteUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteUserResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the user.
+            Format: users/{username}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - UserService
+  /api/v2/{name}/access_tokens:
+    get:
+      summary: ListUserAccessTokens returns a list of access tokens for a user.
+      operationId: UserService_ListUserAccessTokens
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListUserAccessTokensResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the user.
+            Format: users/{username}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - UserService
+    post:
+      summary: CreateUserAccessToken creates a new access token for a user.
+      operationId: UserService_CreateUserAccessToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2CreateUserAccessTokenResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the user.
+            Format: users/{username}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserServiceCreateUserAccessTokenBody'
+      tags:
+        - UserService
+  /api/v2/{name}/access_tokens/{accessToken}:
+    delete:
+      summary: DeleteUserAccessToken deletes an access token for a user.
+      operationId: UserService_DeleteUserAccessToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteUserAccessTokenResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the user.
+            Format: users/{username}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: accessToken
+          description: access_token is the access token to delete.
+          in: path
+          required: true
+          type: string
+      tags:
+        - UserService
+  /api/v2/{name}/setting:
+    get:
+      operationId: UserService_GetUserSetting
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetUserSettingResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the user.
+            Format: users/{username}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - UserService
+  /api/v2/{setting.name}:
+    patch:
+      operationId: UserService_UpdateUserSetting
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateUserSettingResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: setting.name
+          description: |-
+            The name of the user.
+            Format: users/{username}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/setting
+        - name: setting
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              locale:
+                type: string
+                description: The preferred locale of the user.
+              appearance:
+                type: string
+                description: The preferred appearance of the user.
+              memoVisibility:
+                type: string
+                description: The default visibility of the memo.
+              telegramUserId:
+                type: string
+                description: The telegram user id of the user.
+      tags:
+        - UserService
+  /api/v2/{user.name}:
+    patch:
+      summary: UpdateUser updates a user.
+      operationId: UserService_UpdateUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateUserResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user.name
+          description: |-
+            The name of the user.
+            Format: users/{username}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: user
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int32
+              role:
+                $ref: '#/definitions/UserRole'
+              username:
+                type: string
+              email:
+                type: string
+              nickname:
+                type: string
+              avatarUrl:
+                type: string
+              password:
+                type: string
+              rowStatus:
+                $ref: '#/definitions/apiv2RowStatus'
+              createTime:
+                type: string
+                format: date-time
+              updateTime:
+                type: string
+                format: date-time
+      tags:
+        - UserService
+  /v1/users:
+    post:
+      summary: CreateUser creates a new user.
+      operationId: UserService_CreateUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2CreateUserResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2User'
+      tags:
+        - UserService
+  /v2/activities:
+    get:
+      operationId: ActivityService_GetActivity
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetActivityResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - ActivityService
+  /v2/inboxes:
+    patch:
+      operationId: InboxService_UpdateInbox
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateInboxResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: inbox
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2Inbox'
+      tags:
+        - InboxService
+  /v2/{name}:
+    delete:
+      operationId: InboxService_DeleteInbox
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteInboxResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the inbox to delete.
+            Format: inboxes/{inbox}
+          in: path
+          required: true
+          type: string
+          pattern: inboxes/[^/]+
+      tags:
+        - InboxService
+definitions:
+  MemoServiceSetMemoRelationsBody:
+    type: object
+    properties:
+      relations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2MemoRelation'
+  MemoServiceSetMemoResourcesBody:
+    type: object
+    properties:
+      resources:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Resource'
+  MemoServiceUpdateMemoBody:
+    type: object
+    properties:
+      memo:
+        $ref: '#/definitions/v2Memo'
+      updateMask:
+        type: string
+  TableNodeRow:
+    type: object
+    properties:
+      cells:
+        type: array
+        items:
+          type: string
+  UserRole:
+    type: string
+    enum:
+      - ROLE_UNSPECIFIED
+      - HOST
+      - ADMIN
+      - USER
+    default: ROLE_UNSPECIFIED
+  UserServiceCreateUserAccessTokenBody:
+    type: object
+    properties:
+      description:
+        type: string
+      expiresAt:
+        type: string
+        format: date-time
+  WebhookServiceUpdateWebhookBody:
+    type: object
+    properties:
+      webhook:
+        type: object
+        properties:
+          creatorId:
+            type: integer
+            format: int32
+          createdTime:
+            type: string
+            format: date-time
+          updatedTime:
+            type: string
+            format: date-time
+          rowStatus:
+            $ref: '#/definitions/apiv2RowStatus'
+          name:
+            type: string
+          url:
+            type: string
+      updateMask:
+        type: string
+  apiv2ActivityMemoCommentPayload:
+    type: object
+    properties:
+      memoId:
+        type: integer
+        format: int32
+      relatedMemoId:
+        type: integer
+        format: int32
+  apiv2ActivityPayload:
+    type: object
+    properties:
+      memoComment:
+        $ref: '#/definitions/apiv2ActivityMemoCommentPayload'
+      versionUpdate:
+        $ref: '#/definitions/apiv2ActivityVersionUpdatePayload'
+  apiv2ActivityVersionUpdatePayload:
+    type: object
+    properties:
+      version:
+        type: string
+  apiv2RowStatus:
+    type: string
+    enum:
+      - ROW_STATUS_UNSPECIFIED
+      - ACTIVE
+      - ARCHIVED
+    default: ROW_STATUS_UNSPECIFIED
+  apiv2UserSetting:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the user.
+          Format: users/{username}
+      locale:
+        type: string
+        description: The preferred locale of the user.
+      appearance:
+        type: string
+        description: The preferred appearance of the user.
+      memoVisibility:
+        type: string
+        description: The default visibility of the memo.
+      telegramUserId:
+        type: string
+        description: The telegram user id of the user.
+  apiv2Webhook:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      creatorId:
+        type: integer
+        format: int32
+      createdTime:
+        type: string
+        format: date-time
+      updatedTime:
+        type: string
+        format: date-time
+      rowStatus:
+        $ref: '#/definitions/apiv2RowStatus'
+      name:
+        type: string
+      url:
+        type: string
+  googlerpcStatus:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      details:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/protobufAny'
+  protobufAny:
+    type: object
+    properties:
+      '@type':
+        type: string
+    additionalProperties: {}
+  v2Activity:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      creatorId:
+        type: integer
+        format: int32
+      type:
+        type: string
+      level:
+        type: string
+      createTime:
+        type: string
+        format: date-time
+      payload:
+        $ref: '#/definitions/apiv2ActivityPayload'
+  v2AutoLinkNode:
+    type: object
+    properties:
+      url:
+        type: string
+      isRawText:
+        type: boolean
+  v2BlockquoteNode:
+    type: object
+    properties:
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Node'
+  v2BoldItalicNode:
+    type: object
+    properties:
+      symbol:
+        type: string
+      content:
+        type: string
+  v2BoldNode:
+    type: object
+    properties:
+      symbol:
+        type: string
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Node'
+  v2CodeBlockNode:
+    type: object
+    properties:
+      language:
+        type: string
+      content:
+        type: string
+  v2CodeNode:
+    type: object
+    properties:
+      content:
+        type: string
+  v2CreateMemoCommentResponse:
+    type: object
+    properties:
+      memo:
+        $ref: '#/definitions/v2Memo'
+  v2CreateMemoRequest:
+    type: object
+    properties:
+      content:
+        type: string
+      visibility:
+        $ref: '#/definitions/v2Visibility'
+  v2CreateMemoResponse:
+    type: object
+    properties:
+      memo:
+        $ref: '#/definitions/v2Memo'
+  v2CreateResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v2Resource'
+  v2CreateUserAccessTokenResponse:
+    type: object
+    properties:
+      accessToken:
+        $ref: '#/definitions/v2UserAccessToken'
+  v2CreateUserResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v2User'
+  v2CreateWebhookRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+  v2CreateWebhookResponse:
+    type: object
+    properties:
+      webhook:
+        $ref: '#/definitions/apiv2Webhook'
+  v2DeleteInboxResponse:
+    type: object
+  v2DeleteMemoResponse:
+    type: object
+  v2DeleteResourceResponse:
+    type: object
+  v2DeleteTagResponse:
+    type: object
+  v2DeleteUserAccessTokenResponse:
+    type: object
+  v2DeleteUserResponse:
+    type: object
+  v2DeleteWebhookResponse:
+    type: object
+  v2EmbeddedContentNode:
+    type: object
+    properties:
+      resourceName:
+        type: string
+      params:
+        type: string
+  v2EscapingCharacterNode:
+    type: object
+    properties:
+      symbol:
+        type: string
+  v2GetActivityResponse:
+    type: object
+    properties:
+      activity:
+        $ref: '#/definitions/v2Activity'
+  v2GetAuthStatusResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v2User'
+  v2GetMemoByNameResponse:
+    type: object
+    properties:
+      memo:
+        $ref: '#/definitions/v2Memo'
+  v2GetMemoResponse:
+    type: object
+    properties:
+      memo:
+        $ref: '#/definitions/v2Memo'
+  v2GetResourceByNameResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v2Resource'
+  v2GetResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v2Resource'
+  v2GetSystemInfoResponse:
+    type: object
+    properties:
+      systemInfo:
+        $ref: '#/definitions/v2SystemInfo'
+  v2GetTagSuggestionsResponse:
+    type: object
+    properties:
+      tags:
+        type: array
+        items:
+          type: string
+  v2GetUserMemosStatsResponse:
+    type: object
+    properties:
+      stats:
+        type: object
+        additionalProperties:
+          type: integer
+          format: int32
+        description: |-
+          stats is the stats of memo creating/updating activities.
+          key is the year-month-day string. e.g. "2020-01-01".
+  v2GetUserResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v2User'
+  v2GetUserSettingResponse:
+    type: object
+    properties:
+      setting:
+        $ref: '#/definitions/apiv2UserSetting'
+  v2GetWebhookResponse:
+    type: object
+    properties:
+      webhook:
+        $ref: '#/definitions/apiv2Webhook'
+  v2HeadingNode:
+    type: object
+    properties:
+      level:
+        type: integer
+        format: int32
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Node'
+  v2HighlightNode:
+    type: object
+    properties:
+      content:
+        type: string
+  v2HorizontalRuleNode:
+    type: object
+    properties:
+      symbol:
+        type: string
+  v2ImageNode:
+    type: object
+    properties:
+      altText:
+        type: string
+      url:
+        type: string
+  v2Inbox:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the inbox.
+          Format: inboxes/{id}
+      sender:
+        type: string
+        title: 'Format: users/{username}'
+      receiver:
+        type: string
+        title: 'Format: users/{username}'
+      status:
+        $ref: '#/definitions/v2InboxStatus'
+      createTime:
+        type: string
+        format: date-time
+      type:
+        $ref: '#/definitions/v2InboxType'
+      activityId:
+        type: integer
+        format: int32
+  v2InboxStatus:
+    type: string
+    enum:
+      - STATUS_UNSPECIFIED
+      - UNREAD
+      - ARCHIVED
+    default: STATUS_UNSPECIFIED
+  v2InboxType:
+    type: string
+    enum:
+      - TYPE_UNSPECIFIED
+      - TYPE_MEMO_COMMENT
+      - TYPE_VERSION_UPDATE
+    default: TYPE_UNSPECIFIED
+  v2ItalicNode:
+    type: object
+    properties:
+      symbol:
+        type: string
+      content:
+        type: string
+  v2LineBreakNode:
+    type: object
+  v2LinkNode:
+    type: object
+    properties:
+      text:
+        type: string
+      url:
+        type: string
+  v2ListInboxesResponse:
+    type: object
+    properties:
+      inboxes:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Inbox'
+  v2ListMemoCommentsResponse:
+    type: object
+    properties:
+      memos:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Memo'
+  v2ListMemoRelationsResponse:
+    type: object
+    properties:
+      relations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2MemoRelation'
+  v2ListMemoResourcesResponse:
+    type: object
+    properties:
+      resources:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Resource'
+  v2ListMemosResponse:
+    type: object
+    properties:
+      memos:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Memo'
+      nextPageToken:
+        type: string
+        description: |-
+          A token, which can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
+  v2ListResourcesResponse:
+    type: object
+    properties:
+      resources:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Resource'
+  v2ListTagsResponse:
+    type: object
+    properties:
+      tags:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Tag'
+  v2ListUserAccessTokensResponse:
+    type: object
+    properties:
+      accessTokens:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2UserAccessToken'
+  v2ListUsersResponse:
+    type: object
+    properties:
+      users:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2User'
+  v2ListWebhooksResponse:
+    type: object
+    properties:
+      webhooks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/apiv2Webhook'
+  v2MathBlockNode:
+    type: object
+    properties:
+      content:
+        type: string
+  v2MathNode:
+    type: object
+    properties:
+      content:
+        type: string
+  v2Memo:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: id is the system generated unique identifier.
+      name:
+        type: string
+        description: name is the user provided name.
+      rowStatus:
+        $ref: '#/definitions/apiv2RowStatus'
+      creator:
+        type: string
+        title: |-
+          The name of the creator.
+          Format: users/{username}
+      creatorId:
+        type: integer
+        format: int32
+      createTime:
+        type: string
+        format: date-time
+      updateTime:
+        type: string
+        format: date-time
+      displayTime:
+        type: string
+        format: date-time
+      content:
+        type: string
+      nodes:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Node'
+      visibility:
+        $ref: '#/definitions/v2Visibility'
+      pinned:
+        type: boolean
+      parentId:
+        type: integer
+        format: int32
+        readOnly: true
+      resources:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Resource'
+        readOnly: true
+      relations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2MemoRelation'
+        readOnly: true
+  v2MemoRelation:
+    type: object
+    properties:
+      memoId:
+        type: integer
+        format: int32
+      relatedMemoId:
+        type: integer
+        format: int32
+      type:
+        $ref: '#/definitions/v2MemoRelationType'
+  v2MemoRelationType:
+    type: string
+    enum:
+      - TYPE_UNSPECIFIED
+      - REFERENCE
+      - COMMENT
+    default: TYPE_UNSPECIFIED
+  v2Node:
+    type: object
+    properties:
+      type:
+        $ref: '#/definitions/v2NodeType'
+      lineBreakNode:
+        $ref: '#/definitions/v2LineBreakNode'
+      paragraphNode:
+        $ref: '#/definitions/v2ParagraphNode'
+      codeBlockNode:
+        $ref: '#/definitions/v2CodeBlockNode'
+      headingNode:
+        $ref: '#/definitions/v2HeadingNode'
+      horizontalRuleNode:
+        $ref: '#/definitions/v2HorizontalRuleNode'
+      blockquoteNode:
+        $ref: '#/definitions/v2BlockquoteNode'
+      orderedListNode:
+        $ref: '#/definitions/v2OrderedListNode'
+      unorderedListNode:
+        $ref: '#/definitions/v2UnorderedListNode'
+      taskListNode:
+        $ref: '#/definitions/v2TaskListNode'
+      mathBlockNode:
+        $ref: '#/definitions/v2MathBlockNode'
+      tableNode:
+        $ref: '#/definitions/v2TableNode'
+      embeddedContentNode:
+        $ref: '#/definitions/v2EmbeddedContentNode'
+      textNode:
+        $ref: '#/definitions/v2TextNode'
+      boldNode:
+        $ref: '#/definitions/v2BoldNode'
+      italicNode:
+        $ref: '#/definitions/v2ItalicNode'
+      boldItalicNode:
+        $ref: '#/definitions/v2BoldItalicNode'
+      codeNode:
+        $ref: '#/definitions/v2CodeNode'
+      imageNode:
+        $ref: '#/definitions/v2ImageNode'
+      linkNode:
+        $ref: '#/definitions/v2LinkNode'
+      autoLinkNode:
+        $ref: '#/definitions/v2AutoLinkNode'
+      tagNode:
+        $ref: '#/definitions/v2TagNode'
+      strikethroughNode:
+        $ref: '#/definitions/v2StrikethroughNode'
+      escapingCharacterNode:
+        $ref: '#/definitions/v2EscapingCharacterNode'
+      mathNode:
+        $ref: '#/definitions/v2MathNode'
+      highlightNode:
+        $ref: '#/definitions/v2HighlightNode'
+      subscriptNode:
+        $ref: '#/definitions/v2SubscriptNode'
+      superscriptNode:
+        $ref: '#/definitions/v2SuperscriptNode'
+      referencedContentNode:
+        $ref: '#/definitions/v2ReferencedContentNode'
+  v2NodeType:
+    type: string
+    enum:
+      - NODE_UNSPECIFIED
+      - LINE_BREAK
+      - PARAGRAPH
+      - CODE_BLOCK
+      - HEADING
+      - HORIZONTAL_RULE
+      - BLOCKQUOTE
+      - ORDERED_LIST
+      - UNORDERED_LIST
+      - TASK_LIST
+      - MATH_BLOCK
+      - TABLE
+      - EMBEDDED_CONTENT
+      - TEXT
+      - BOLD
+      - ITALIC
+      - BOLD_ITALIC
+      - CODE
+      - IMAGE
+      - LINK
+      - AUTO_LINK
+      - TAG
+      - STRIKETHROUGH
+      - ESCAPING_CHARACTER
+      - MATH
+      - HIGHLIGHT
+      - SUBSCRIPT
+      - SUPERSCRIPT
+      - REFERENCED_CONTENT
+    default: NODE_UNSPECIFIED
+  v2OrderedListNode:
+    type: object
+    properties:
+      number:
+        type: string
+      indent:
+        type: integer
+        format: int32
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Node'
+  v2ParagraphNode:
+    type: object
+    properties:
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Node'
+  v2ParseMarkdownRequest:
+    type: object
+    properties:
+      markdown:
+        type: string
+  v2ParseMarkdownResponse:
+    type: object
+    properties:
+      nodes:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Node'
+  v2ReferencedContentNode:
+    type: object
+    properties:
+      resourceName:
+        type: string
+      params:
+        type: string
+  v2RenameTagResponse:
+    type: object
+    properties:
+      tag:
+        $ref: '#/definitions/v2Tag'
+  v2Resource:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: id is the system generated unique identifier.
+      name:
+        type: string
+        description: name is the user provided name.
+      createTime:
+        type: string
+        format: date-time
+      filename:
+        type: string
+      externalLink:
+        type: string
+      type:
+        type: string
+      size:
+        type: string
+        format: int64
+      memoId:
+        type: integer
+        format: int32
+  v2SetMemoRelationsResponse:
+    type: object
+  v2SetMemoResourcesResponse:
+    type: object
+  v2StrikethroughNode:
+    type: object
+    properties:
+      content:
+        type: string
+  v2SubscriptNode:
+    type: object
+    properties:
+      content:
+        type: string
+  v2SuperscriptNode:
+    type: object
+    properties:
+      content:
+        type: string
+  v2SystemInfo:
+    type: object
+    properties:
+      version:
+        type: string
+      mode:
+        type: string
+      allowRegistration:
+        type: boolean
+      disablePasswordLogin:
+        type: boolean
+      additionalScript:
+        type: string
+      additionalStyle:
+        type: string
+      dbSize:
+        type: string
+        format: int64
+  v2TableNode:
+    type: object
+    properties:
+      header:
+        type: array
+        items:
+          type: string
+      delimiter:
+        type: array
+        items:
+          type: string
+      rows:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/TableNodeRow'
+  v2Tag:
+    type: object
+    properties:
+      name:
+        type: string
+      creator:
+        type: string
+        title: |-
+          The creator of tags.
+          Format: users/{username}
+  v2TagNode:
+    type: object
+    properties:
+      content:
+        type: string
+  v2TaskListNode:
+    type: object
+    properties:
+      symbol:
+        type: string
+      indent:
+        type: integer
+        format: int32
+      complete:
+        type: boolean
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Node'
+  v2TextNode:
+    type: object
+    properties:
+      content:
+        type: string
+  v2UnorderedListNode:
+    type: object
+    properties:
+      symbol:
+        type: string
+      indent:
+        type: integer
+        format: int32
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Node'
+  v2UpdateInboxResponse:
+    type: object
+    properties:
+      inbox:
+        $ref: '#/definitions/v2Inbox'
+  v2UpdateMemoResponse:
+    type: object
+    properties:
+      memo:
+        $ref: '#/definitions/v2Memo'
+  v2UpdateResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v2Resource'
+  v2UpdateSystemInfoResponse:
+    type: object
+    properties:
+      systemInfo:
+        $ref: '#/definitions/v2SystemInfo'
+  v2UpdateUserResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v2User'
+  v2UpdateUserSettingResponse:
+    type: object
+    properties:
+      setting:
+        $ref: '#/definitions/apiv2UserSetting'
+  v2UpdateWebhookResponse:
+    type: object
+    properties:
+      webhook:
+        $ref: '#/definitions/apiv2Webhook'
+  v2UpsertTagResponse:
+    type: object
+    properties:
+      tag:
+        $ref: '#/definitions/v2Tag'
+  v2User:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the user.
+          Format: users/{username}
+      id:
+        type: integer
+        format: int32
+      role:
+        $ref: '#/definitions/UserRole'
+      username:
+        type: string
+      email:
+        type: string
+      nickname:
+        type: string
+      avatarUrl:
+        type: string
+      password:
+        type: string
+      rowStatus:
+        $ref: '#/definitions/apiv2RowStatus'
+      createTime:
+        type: string
+        format: date-time
+      updateTime:
+        type: string
+        format: date-time
+  v2UserAccessToken:
+    type: object
+    properties:
+      accessToken:
+        type: string
+      description:
+        type: string
+      issuedAt:
+        type: string
+        format: date-time
+      expiresAt:
+        type: string
+        format: date-time
+  v2Visibility:
+    type: string
+    enum:
+      - VISIBILITY_UNSPECIFIED
+      - PRIVATE
+      - PROTECTED
+      - PUBLIC
+    default: VISIBILITY_UNSPECIFIED
