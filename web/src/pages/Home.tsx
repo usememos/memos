@@ -1,6 +1,6 @@
 import { Button } from "@mui/joy";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Empty from "@/components/Empty";
 import HomeSidebar from "@/components/HomeSidebar";
 import HomeSidebarDrawer from "@/components/HomeSidebarDrawer";
@@ -25,7 +25,7 @@ const Home = () => {
   const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
-  const [isComplete, setIsComplete] = useState(false);
+  const nextPageTokenRef = useRef<string | undefined>(undefined);
   const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
@@ -33,7 +33,7 @@ const Home = () => {
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
-    memoList.reset();
+    nextPageTokenRef.current = undefined;
     fetchMemos();
   }, [tagQuery, textQuery]);
 
@@ -51,12 +51,12 @@ const Home = () => {
     }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
+      pageSize: DEFAULT_MEMO_LIMIT,
       filter: filters.join(" && "),
-      limit: DEFAULT_MEMO_LIMIT,
-      offset: memoList.size(),
+      pageToken: nextPageTokenRef.current,
     });
     setIsRequesting(false);
-    setIsComplete(data.length < DEFAULT_MEMO_LIMIT);
+    nextPageTokenRef.current = data.nextPageToken;
   };
 
   return (
@@ -78,7 +78,7 @@ const Home = () => {
               <div className="flex flex-col justify-start items-center w-full my-4">
                 <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
               </div>
-            ) : isComplete ? (
+            ) : !nextPageTokenRef.current ? (
               sortedMemos.length === 0 && (
                 <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
                   <Empty />

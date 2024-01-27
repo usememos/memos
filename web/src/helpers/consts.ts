@@ -12,3 +12,5 @@ export const TAB_SPACE_WIDTH = 2;
 
 // default fetch memo amount
 export const DEFAULT_MEMO_LIMIT = 10;
+
+export const DEFAULT_LIST_MEMOS_PAGE_SIZE = 10;

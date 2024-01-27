@@ -14,6 +14,8 @@
     - [ActivityService](#memos-api-v2-ActivityService)
   
 - [api/v2/common.proto](#api_v2_common-proto)
+    - [PageToken](#memos-api-v2-PageToken)
+  
     - [RowStatus](#memos-api-v2-RowStatus)
   
 - [api/v2/user_service.proto](#api_v2_user_service-proto)
@@ -329,6 +331,22 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## api/v2/common.proto
+
+
+
+<a name="memos-api-v2-PageToken"></a>
+
+### PageToken
+Used internally for obfuscating the page token.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| limit | [int32](#int32) |  |  |
+| offset | [int32](#int32) |  |  |
+
+
+
 
 
  
@@ -2127,8 +2145,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| offset | [int32](#int32) |  | offset is the offset of the first memo to return. |
-| limit | [int32](#int32) |  | limit is the maximum number of memos to return. |
+| page_size | [int32](#int32) |  | The maximum number of memos to return. |
+| page_token | [string](#string) |  | A page token, received from a previous `ListMemos` call. Provide this to retrieve the subsequent page. |
 | filter | [string](#string) |  | Filter is used to filter memos returned in the list. Format: &#34;creator == users/{username} &amp;&amp; visibilities == [&#39;PUBLIC&#39;, &#39;PROTECTED&#39;]&#34; |
 
 
@@ -2145,6 +2163,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | memos | [Memo](#memos-api-v2-Memo) | repeated |  |
+| next_page_token | [string](#string) |  | A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages. |
 
 
 

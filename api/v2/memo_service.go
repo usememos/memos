@@ -30,6 +30,7 @@ import (
 )
 
 const (
+	DefaultPageSize  = 10
 	MaxContentLength = 8 * 1024
 )
 
@@ -179,27 +180,51 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		memoFind.OrderByUpdatedTs = true
 	}
 
-	if request.Limit != 0 {
-		offset, limit := int(request.Offset), int(request.Limit)
-		memoFind.Offset = &offset
-		memoFind.Limit = &limit
+	var limit, offset int
+	if request.PageToken != "" {
+		var pageToken apiv2pb.PageToken
+		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
+		}
+		if pageToken.Limit < 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "page size cannot be negative")
+		}
+		limit = int(pageToken.Limit)
+		offset = int(pageToken.Offset)
+	} else {
+		limit = int(request.PageSize)
 	}
+	if limit <= 0 {
+		limit = DefaultPageSize
+	}
+	limitPlusOne := limit + 1
+	memoFind.Offset = &offset
+	memoFind.Limit = &limitPlusOne
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return nil, err
 	}
 
-	memoMessages := make([]*apiv2pb.Memo, len(memos))
-	for i, memo := range memos {
+	memoMessages := []*apiv2pb.Memo{}
+	nextPageToken := ""
+	if len(memos) == limitPlusOne {
+		memos = memos[:limit]
+		nextPageToken, err = getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
+		}
+	}
+	for _, memo := range memos {
 		memoMessage, err := s.convertMemoFromStore(ctx, memo)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
-		memoMessages[i] = memoMessage
+		memoMessages = append(memoMessages, memoMessage)
 	}
 
 	response := &apiv2pb.ListMemosResponse{
-		Memos: memoMessages,
+		Memos:         memoMessages,
+		NextPageToken: nextPageToken,
 	}
 	return response, nil
 }

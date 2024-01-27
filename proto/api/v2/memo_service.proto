@@ -149,11 +149,12 @@ message CreateMemoResponse {
 }
 
 message ListMemosRequest {
-  // offset is the offset of the first memo to return.
-  int32 offset = 1;
+  // The maximum number of memos to return.
+  int32 page_size = 1;
 
-  // limit is the maximum number of memos to return.
-  int32 limit = 2;
+  // A page token, received from a previous `ListMemos` call.
+  // Provide this to retrieve the subsequent page.
+  string page_token = 2;
 
   // Filter is used to filter memos returned in the list.
   // Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
@@ -162,6 +163,10 @@ message ListMemosRequest {
 
 message ListMemosResponse {
   repeated Memo memos = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
 }
 
 message GetMemoRequest {

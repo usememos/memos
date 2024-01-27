@@ -11,3 +11,9 @@ enum RowStatus {
 
   ARCHIVED = 2;
 }
+
+// Used internally for obfuscating the page token.
+message PageToken {
+  int32 limit = 1;
+  int32 offset = 2;
+}
