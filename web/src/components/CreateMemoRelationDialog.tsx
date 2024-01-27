@@ -35,7 +35,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           filters.push(`content_search == [${JSON.stringify(searchText)}]`);
         }
         const { memos } = await memoServiceClient.listMemos({
-          limit: DEFAULT_MEMO_LIMIT,
+          pageSize: DEFAULT_MEMO_LIMIT,
           filter: filters.length > 0 ? filters.join(" && ") : undefined,
         });
         setFetchedMemos(memos);
