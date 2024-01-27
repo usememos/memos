@@ -25,6 +25,16 @@ func New(driver Driver, profile *profile.Profile) *Store {
 	}
 }
 
+func (s *Store) MigrateManually(ctx context.Context) error {
+	if err := s.MigrateResourceInternalPath(ctx); err != nil {
+		return err
+	}
+	if err := s.MigrateResourceName(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Store) Vacuum(ctx context.Context) error {
 	return s.driver.Vacuum(ctx)
 }
