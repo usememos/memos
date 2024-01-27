@@ -38,13 +38,16 @@ func (*MathBlockParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	}
 
 	contentTokens := []*tokenizer.Token{}
-	for _, row := range contentRows {
+	for index, row := range contentRows {
 		contentTokens = append(contentTokens, row...)
-		contentTokens = append(contentTokens, &tokenizer.Token{
-			Type: tokenizer.Newline,
-		})
+		if index != len(contentRows)-1 {
+			contentTokens = append(contentTokens, &tokenizer.Token{
+				Type:  tokenizer.Newline,
+				Value: "\n",
+			})
+		}
 	}
 	return &ast.MathBlock{
 		Content: tokenizer.Stringify(contentTokens),
-	}, 3 + len(contentTokens) + 2
+	}, 3 + len(contentTokens) + 3
 }

@@ -15,14 +15,9 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   const formatedLanguage = language.toLowerCase() || "plaintext";
   let highlightedCode = hljs.highlightAuto(content).value;
 
-  // Users can set Markdown code blocks as 'iframe'
-  // to embed videos or external audio links from services like Apple Music or Spotify.
-  if (formatedLanguage === "iframe") {
-    const renderHTML = () => {
-      return { __html: content };
-    };
-
-    return <div className="mx-auto w-11/12 !my-4" dangerouslySetInnerHTML={renderHTML()} />;
+  // Users can set Markdown code blocks as `__html` to render HTML directly.
+  if (formatedLanguage === "__html") {
+    return <div className="w-full !my-2" dangerouslySetInnerHTML={{ __html: content }} />;
   }
 
   try {
