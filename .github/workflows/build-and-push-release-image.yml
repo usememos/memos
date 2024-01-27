@@ -52,7 +52,6 @@ jobs:
             neosmemo/memos
             ghcr.io/usememos/memos
           tags: |
-            type=raw,value=latest
             type=semver,pattern={{version}},value=${{ env.VERSION }}
             type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
 
