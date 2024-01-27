@@ -48,13 +48,45 @@ func TestBlockquoteParser(t *testing.T) {
 			},
 		},
 		{
-			text: "> Hello\nworld",
+			text: "> Hello\n> world",
 			blockquote: &ast.Blockquote{
 				Children: []ast.Node{
 					&ast.Paragraph{
 						Children: []ast.Node{
 							&ast.Text{
 								Content: "Hello",
+							},
+						},
+					},
+					&ast.Paragraph{
+						Children: []ast.Node{
+							&ast.Text{
+								Content: "world",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			text: "> Hello\n> > world",
+			blockquote: &ast.Blockquote{
+				Children: []ast.Node{
+					&ast.Paragraph{
+						Children: []ast.Node{
+							&ast.Text{
+								Content: "Hello",
+							},
+						},
+					},
+					&ast.Blockquote{
+						Children: []ast.Node{
+							&ast.Paragraph{
+								Children: []ast.Node{
+									&ast.Text{
+										Content: "world",
+									},
+								},
 							},
 						},
 					},

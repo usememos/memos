@@ -29,7 +29,7 @@ func (*BoldParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	cursor, matched := 2, false
 	for ; cursor < len(matchedTokens)-1; cursor++ {
 		token, nextToken := matchedTokens[cursor], matchedTokens[cursor+1]
-		if token.Type == tokenizer.Newline || nextToken.Type == tokenizer.Newline {
+		if token.Type == tokenizer.NewLine || nextToken.Type == tokenizer.NewLine {
 			return nil, 0
 		}
 		if token.Type == prefixTokenType && nextToken.Type == prefixTokenType {

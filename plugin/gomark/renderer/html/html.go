@@ -122,14 +122,9 @@ func (r *HTMLRenderer) renderHorizontalRule(_ *ast.HorizontalRule) {
 }
 
 func (r *HTMLRenderer) renderBlockquote(node *ast.Blockquote) {
-	prevSibling, nextSibling := ast.FindPrevSiblingExceptLineBreak(node), ast.FindNextSiblingExceptLineBreak(node)
-	if prevSibling == nil || prevSibling.Type() != ast.BlockquoteNode {
-		r.output.WriteString("<blockquote>")
-	}
+	r.output.WriteString("<blockquote>")
 	r.RenderNodes(node.Children)
-	if nextSibling == nil || nextSibling.Type() != ast.BlockquoteNode {
-		r.output.WriteString("</blockquote>")
-	}
+	r.output.WriteString("</blockquote>")
 }
 
 func (r *HTMLRenderer) renderTaskList(node *ast.TaskList) {

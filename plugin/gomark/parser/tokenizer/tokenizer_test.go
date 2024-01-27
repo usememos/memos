@@ -57,7 +57,7 @@ func TestTokenize(t *testing.T) {
 					Value: " ",
 				},
 				{
-					Type:  Newline,
+					Type:  NewLine,
 					Value: "\n",
 				},
 				{

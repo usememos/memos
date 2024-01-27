@@ -28,7 +28,7 @@ func (*BoldItalicParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 	cursor, matched := 3, false
 	for ; cursor < len(matchedTokens)-2; cursor++ {
 		token, nextToken, endToken := matchedTokens[cursor], matchedTokens[cursor+1], matchedTokens[cursor+2]
-		if token.Type == tokenizer.Newline || nextToken.Type == tokenizer.Newline || endToken.Type == tokenizer.Newline {
+		if token.Type == tokenizer.NewLine || nextToken.Type == tokenizer.NewLine || endToken.Type == tokenizer.NewLine {
 			return nil, 0
 		}
 		if token.Type == prefixTokenType && nextToken.Type == prefixTokenType && endToken.Type == prefixTokenType {

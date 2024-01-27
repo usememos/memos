@@ -12,25 +12,38 @@ func NewBlockquoteParser() *BlockquoteParser {
 }
 
 func (*BlockquoteParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
-	matchedTokens := tokenizer.GetFirstLine(tokens)
-	if len(matchedTokens) < 3 {
-		return nil, 0
+	rows := tokenizer.Split(tokens, tokenizer.NewLine)
+	contentRows := [][]*tokenizer.Token{}
+	for _, row := range rows {
+		if len(row) < 3 || row[0].Type != tokenizer.GreaterThan || row[1].Type != tokenizer.Space {
+			break
+		}
+		contentRows = append(contentRows, row)
 	}
-	if matchedTokens[0].Type != tokenizer.GreaterThan || matchedTokens[1].Type != tokenizer.Space {
+	if len(contentRows) == 0 {
 		return nil, 0
 	}
 
-	contentTokens := matchedTokens[2:]
-	children, err := ParseInlineWithParsers(contentTokens, []InlineParser{NewLinkParser(), NewTextParser()})
-	if err != nil {
-		return nil, 0
+	children := []ast.Node{}
+	size := 0
+	for index, row := range contentRows {
+		contentTokens := row[2:]
+		nodes, err := ParseBlockWithParsers(contentTokens, []BlockParser{NewBlockquoteParser(), NewParagraphParser()})
+		if err != nil {
+			return nil, 0
+		}
+		if len(nodes) != 1 {
+			return nil, 0
+		}
+
+		children = append(children, nodes[0])
+		size += len(row)
+		if index != len(contentRows)-1 {
+			size += 1 // NewLine.
+		}
 	}
 
 	return &ast.Blockquote{
-		Children: []ast.Node{
-			&ast.Paragraph{
-				Children: children,
-			},
-		},
-	}, len(matchedTokens)
+		Children: children,
+	}, size
 }

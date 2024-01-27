@@ -12,7 +12,7 @@ func NewTableParser() *TableParser {
 }
 
 func (*TableParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
-	rawRows := tokenizer.Split(tokens, tokenizer.Newline)
+	rawRows := tokenizer.Split(tokens, tokenizer.NewLine)
 	if len(rawRows) < 3 {
 		return nil, 0
 	}

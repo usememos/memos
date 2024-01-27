@@ -26,7 +26,7 @@ const (
 	Colon              TokenType = ":"
 	Caret              TokenType = "^"
 	Backslash          TokenType = "\\"
-	Newline            TokenType = "\n"
+	NewLine            TokenType = "\n"
 	Space              TokenType = " "
 )
 
@@ -97,7 +97,7 @@ func Tokenize(text string) []*Token {
 		case '\\':
 			tokens = append(tokens, NewToken(Backslash, `\`))
 		case '\n':
-			tokens = append(tokens, NewToken(Newline, "\n"))
+			tokens = append(tokens, NewToken(NewLine, "\n"))
 		case ' ':
 			tokens = append(tokens, NewToken(Space, " "))
 		default:
@@ -175,7 +175,7 @@ func FindUnescaped(tokens []*Token, target TokenType) int {
 
 func GetFirstLine(tokens []*Token) []*Token {
 	for i, token := range tokens {
-		if token.Type == Newline {
+		if token.Type == NewLine {
 			return tokens[:i]
 		}
 	}

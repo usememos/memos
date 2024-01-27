@@ -17,7 +17,7 @@ func NewCodeBlockParser() *CodeBlockParser {
 }
 
 func (*CodeBlockParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
-	rows := tokenizer.Split(tokens, tokenizer.Newline)
+	rows := tokenizer.Split(tokens, tokenizer.NewLine)
 	if len(rows) < 3 {
 		return nil, 0
 	}
@@ -59,7 +59,7 @@ func (*CodeBlockParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 		contentTokens = append(contentTokens, row...)
 		if index != len(contentRows)-1 {
 			contentTokens = append(contentTokens, &tokenizer.Token{
-				Type:  tokenizer.Newline,
+				Type:  tokenizer.NewLine,
 				Value: "\n",
 			})
 		}
