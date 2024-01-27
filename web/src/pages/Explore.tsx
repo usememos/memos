@@ -24,6 +24,7 @@ const Explore = () => {
 
   useEffect(() => {
     nextPageTokenRef.current = undefined;
+    memoList.reset();
     fetchMemos();
   }, [tagQuery, textQuery]);
 
@@ -58,8 +59,9 @@ const Explore = () => {
           <MemoView key={`${memo.id}-${memo.displayTime}`} memo={memo} showCreator />
         ))}
         {isRequesting ? (
-          <div className="flex flex-col justify-start items-center w-full my-4">
-            <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
+          <div className="flex flex-row justify-center items-center w-full my-4 text-gray-400">
+            <Icon.Loader className="w-4 h-auto animate-spin mr-1" />
+            <p className="text-sm italic">{t("memo.fetching-data")}</p>
           </div>
         ) : !nextPageTokenRef.current ? (
           sortedMemos.length === 0 && (
