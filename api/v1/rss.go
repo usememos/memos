@@ -3,7 +3,6 @@ package v1
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -127,10 +126,9 @@ func (s *APIV1Service) generateRSSFromMemoList(ctx context.Context, memoList []*
 		}
 		feed.Items[i] = &feeds.Item{
 			Title:       getRSSItemTitle(memoMessage.Content),
-			Link:        &feeds.Link{Href: baseURL + "/m/" + fmt.Sprintf("%d", memoMessage.ID)},
+			Link:        &feeds.Link{Href: baseURL + "/m/" + memoMessage.Name},
 			Description: description,
 			Created:     time.Unix(memoMessage.CreatedTs, 0),
-			Enclosure:   &feeds.Enclosure{Url: baseURL + "/m/" + fmt.Sprintf("%d", memoMessage.ID) + "/image"},
 		}
 		if len(memoMessage.ResourceList) > 0 {
 			resource := memoMessage.ResourceList[0]

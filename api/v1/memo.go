@@ -46,7 +46,8 @@ func (v Visibility) String() string {
 }
 
 type Memo struct {
-	ID int32 `json:"id"`
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
 
 	// Standard fields
 	RowStatus RowStatus `json:"rowStatus"`
@@ -832,6 +833,7 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*Memo, error) {
 	memoMessage := &Memo{
 		ID:         memo.ID,
+		Name:       memo.ResourceName,
 		RowStatus:  RowStatus(memo.RowStatus.String()),
 		CreatorID:  memo.CreatorID,
 		CreatedTs:  memo.CreatedTs,
