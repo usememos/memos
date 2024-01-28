@@ -73,6 +73,8 @@ linters-settings:
         disabled: true
       - name: unhandled-error
         disabled: true
+      - name: if-return
+        disabled: true
   gocritic:
     disabled-checks:
       - ifElseChain
