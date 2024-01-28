@@ -58,7 +58,9 @@ func (s *Store) MigrateResourceInternalPath(ctx context.Context) error {
 
 // MigrateResourceName migrates resource name from other format to short UUID.
 func (s *Store) MigrateResourceName(ctx context.Context) error {
-	memos, err := s.ListMemos(ctx, &FindMemo{})
+	memos, err := s.ListMemos(ctx, &FindMemo{
+		ExcludeContent: true,
+	})
 	if err != nil {
 		return errors.Wrap(err, "failed to list memos")
 	}
