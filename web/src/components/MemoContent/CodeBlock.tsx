@@ -17,7 +17,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
 
   // Users can set Markdown code blocks as `__html` to render HTML directly.
   if (formatedLanguage === "__html") {
-    return <div className="w-full !my-2" dangerouslySetInnerHTML={{ __html: content }} />;
+    return <div className="w-full overflow-auto !my-2" dangerouslySetInnerHTML={{ __html: content }} />;
   }
 
   try {
