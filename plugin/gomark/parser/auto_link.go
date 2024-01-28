@@ -29,6 +29,18 @@ func (*AutoLinkParser) Match(tokens []*tokenizer.Token) (ast.Node, int) {
 		urlStr = tokenizer.Stringify(matchedTokens[1 : len(matchedTokens)-1])
 		isRawText = false
 	} else {
+		contentTokens := []*tokenizer.Token{}
+		for _, token := range matchedTokens {
+			if token.Type == tokenizer.Space {
+				break
+			}
+			contentTokens = append(contentTokens, token)
+		}
+		if len(contentTokens) == 0 {
+			return nil, 0
+		}
+
+		matchedTokens = contentTokens
 		u, err := url.Parse(tokenizer.Stringify(matchedTokens))
 		if err != nil || u.Scheme == "" || u.Host == "" {
 			return nil, 0
