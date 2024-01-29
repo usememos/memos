@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import AppearanceSelect from "@/components/AppearanceSelect";
 import LocaleSelect from "@/components/LocaleSelect";
+import { authServiceClient } from "@/grpcweb";
 import * as api from "@/helpers/api";
 import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
@@ -75,7 +76,7 @@ const SignIn = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      const { data: user } = await api.signin(username, password, remember);
+      const { user } = await authServiceClient.signIn({ username, password, neverExpire: remember });
       if (user) {
         await userStore.fetchCurrentUser();
         navigateTo("/");

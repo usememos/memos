@@ -823,6 +823,7 @@ Used internally for obfuscating the page token.
 | ----- | ---- | ----- | ----------- |
 | username | [string](#string) |  |  |
 | password | [string](#string) |  |  |
+| never_expire | [bool](#bool) |  |  |
 
 
 

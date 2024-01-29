@@ -40,6 +40,10 @@ paths:
           in: query
           required: false
           type: string
+        - name: neverExpire
+          in: query
+          required: false
+          type: boolean
       tags:
         - AuthService
   /api/v2/auth/signin/sso:

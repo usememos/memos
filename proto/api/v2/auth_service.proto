@@ -39,6 +39,7 @@ message GetAuthStatusResponse {
 message SignInRequest {
   string username = 1;
   string password = 2;
+  bool never_expire = 3;
 }
 
 message SignInResponse {
