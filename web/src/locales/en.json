@@ -228,7 +228,8 @@
       "url-prefix": "URL prefix",
       "url-prefix-placeholder": "Custom URL prefix, optional",
       "url-suffix": "URL suffix",
-      "url-suffix-placeholder": "Custom URL suffix, optional"
+      "url-suffix-placeholder": "Custom URL suffix, optional",
+      "presign-placeholder": "Pre-sign URL, optional"
     },
     "member-section": {
       "create-a-member": "Create a member",

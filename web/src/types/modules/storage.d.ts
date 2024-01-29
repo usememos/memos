@@ -11,6 +11,7 @@ interface StorageS3Config {
   bucket: string;
   urlPrefix: string;
   urlSuffix: string;
+  presign: boolean;
 }
 
 interface StorageConfig {

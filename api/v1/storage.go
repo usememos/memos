@@ -43,6 +43,7 @@ type StorageS3Config struct {
 	Bucket    string `json:"bucket"`
 	URLPrefix string `json:"urlPrefix"`
 	URLSuffix string `json:"urlSuffix"`
+	PreSign   bool   `json:"presign"`
 }
 
 type Storage struct {
