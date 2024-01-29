@@ -10,12 +10,12 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
+	"github.com/usememos/gomark/ast"
+	"github.com/usememos/gomark/parser"
+	"github.com/usememos/gomark/parser/tokenizer"
+	"github.com/usememos/gomark/renderer"
 
 	"github.com/usememos/memos/internal/util"
-	"github.com/usememos/memos/plugin/gomark/ast"
-	"github.com/usememos/memos/plugin/gomark/parser"
-	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
-	"github.com/usememos/memos/plugin/gomark/renderer"
 	"github.com/usememos/memos/store"
 )
 
