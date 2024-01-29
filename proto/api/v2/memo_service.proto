@@ -91,7 +91,7 @@ service MemoService {
     option (google.api.method_signature) = "username";
   }
 
-  rpc MemosExport(ExportMemosRequest) returns (stream ExportMemosResponse) {
+  rpc MemosExport(MemosExportRequest) returns (stream MemosExportResponse) {
     option (google.api.http) = {get: "/api/v2/memos/export"};
   }
 }
@@ -278,11 +278,11 @@ message GetUserMemosStatsResponse {
   map<string, int32> stats = 1;
 }
 
-message ExportMemosRequest {
+message MemosExportRequest {
   // Same as ListMemosRequest.filter
   string filter = 1;
 }
 
-message ExportMemosResponse {
+message MemosExportResponse {
   bytes file = 1;
 }

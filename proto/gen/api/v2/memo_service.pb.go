@@ -1537,7 +1537,7 @@ func (x *GetUserMemosStatsResponse) GetStats() map[string]int32 {
 	return nil
 }
 
-type ExportMemosRequest struct {
+type MemosExportRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -1546,8 +1546,8 @@ type ExportMemosRequest struct {
 	Filter string `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 
-func (x *ExportMemosRequest) Reset() {
-	*x = ExportMemosRequest{}
+func (x *MemosExportRequest) Reset() {
+	*x = MemosExportRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_v2_memo_service_proto_msgTypes[27]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1555,13 +1555,13 @@ func (x *ExportMemosRequest) Reset() {
 	}
 }
 
-func (x *ExportMemosRequest) String() string {
+func (x *MemosExportRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ExportMemosRequest) ProtoMessage() {}
+func (*MemosExportRequest) ProtoMessage() {}
 
-func (x *ExportMemosRequest) ProtoReflect() protoreflect.Message {
+func (x *MemosExportRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v2_memo_service_proto_msgTypes[27]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1573,19 +1573,19 @@ func (x *ExportMemosRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExportMemosRequest.ProtoReflect.Descriptor instead.
-func (*ExportMemosRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use MemosExportRequest.ProtoReflect.Descriptor instead.
+func (*MemosExportRequest) Descriptor() ([]byte, []int) {
 	return file_api_v2_memo_service_proto_rawDescGZIP(), []int{27}
 }
 
-func (x *ExportMemosRequest) GetFilter() string {
+func (x *MemosExportRequest) GetFilter() string {
 	if x != nil {
 		return x.Filter
 	}
 	return ""
 }
 
-type ExportMemosResponse struct {
+type MemosExportResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -1593,8 +1593,8 @@ type ExportMemosResponse struct {
 	File []byte `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
 }
 
-func (x *ExportMemosResponse) Reset() {
-	*x = ExportMemosResponse{}
+func (x *MemosExportResponse) Reset() {
+	*x = MemosExportResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_v2_memo_service_proto_msgTypes[28]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1602,13 +1602,13 @@ func (x *ExportMemosResponse) Reset() {
 	}
 }
 
-func (x *ExportMemosResponse) String() string {
+func (x *MemosExportResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ExportMemosResponse) ProtoMessage() {}
+func (*MemosExportResponse) ProtoMessage() {}
 
-func (x *ExportMemosResponse) ProtoReflect() protoreflect.Message {
+func (x *MemosExportResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v2_memo_service_proto_msgTypes[28]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1620,12 +1620,12 @@ func (x *ExportMemosResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExportMemosResponse.ProtoReflect.Descriptor instead.
-func (*ExportMemosResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use MemosExportResponse.ProtoReflect.Descriptor instead.
+func (*MemosExportResponse) Descriptor() ([]byte, []int) {
 	return file_api_v2_memo_service_proto_rawDescGZIP(), []int{28}
 }
 
-func (x *ExportMemosResponse) GetFile() []byte {
+func (x *MemosExportResponse) GetFile() []byte {
 	if x != nil {
 		return x.File
 	}
@@ -1815,10 +1815,10 @@ var file_api_v2_memo_service_proto_rawDesc = []byte{
 	0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b,
 	0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
 	0x05, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x2c, 0x0a, 0x12,
-	0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x4d, 0x65, 0x6d, 0x6f, 0x73, 0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
 	0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0x29, 0x0a, 0x13, 0x45, 0x78,
-	0x70, 0x6f, 0x72, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x28, 0x09, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0x29, 0x0a, 0x13, 0x4d, 0x65,
+	0x6d, 0x6f, 0x73, 0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x12, 0x12, 0x0a, 0x04, 0x66, 0x69, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52,
 	0x04, 0x66, 0x69, 0x6c, 0x65, 0x2a, 0x50, 0x0a, 0x0a, 0x56, 0x69, 0x73, 0x69, 0x62, 0x69, 0x6c,
 	0x69, 0x74, 0x79, 0x12, 0x1a, 0x0a, 0x16, 0x56, 0x49, 0x53, 0x49, 0x42, 0x49, 0x4c, 0x49, 0x54,
@@ -1934,10 +1934,10 @@ var file_api_v2_memo_service_proto_rawDesc = []byte{
 	0xd3, 0xe4, 0x93, 0x02, 0x15, 0x12, 0x13, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x32, 0x2f, 0x6d,
 	0x65, 0x6d, 0x6f, 0x73, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x73, 0x12, 0x72, 0x0a, 0x0b, 0x4d, 0x65,
 	0x6d, 0x6f, 0x73, 0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x20, 0x2e, 0x6d, 0x65, 0x6d, 0x6f,
-	0x73, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x32, 0x2e, 0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x4d,
-	0x65, 0x6d, 0x6f, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x6d, 0x65,
-	0x6d, 0x6f, 0x73, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x32, 0x2e, 0x45, 0x78, 0x70, 0x6f, 0x72,
-	0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c,
+	0x73, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x65, 0x6d, 0x6f, 0x73, 0x45, 0x78,
+	0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x6d, 0x65,
+	0x6d, 0x6f, 0x73, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x32, 0x2e, 0x4d, 0x65, 0x6d, 0x6f, 0x73,
+	0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c,
 	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x16, 0x12, 0x14, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x32, 0x2f,
 	0x6d, 0x65, 0x6d, 0x6f, 0x73, 0x2f, 0x65, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x30, 0x01, 0x42, 0xa8,
 	0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x6d, 0x65, 0x6d, 0x6f, 0x73, 0x2e, 0x61, 0x70, 0x69,
@@ -1997,8 +1997,8 @@ var file_api_v2_memo_service_proto_goTypes = []interface{}{
 	(*ListMemoCommentsResponse)(nil),  // 25: memos.api.v2.ListMemoCommentsResponse
 	(*GetUserMemosStatsRequest)(nil),  // 26: memos.api.v2.GetUserMemosStatsRequest
 	(*GetUserMemosStatsResponse)(nil), // 27: memos.api.v2.GetUserMemosStatsResponse
-	(*ExportMemosRequest)(nil),        // 28: memos.api.v2.ExportMemosRequest
-	(*ExportMemosResponse)(nil),       // 29: memos.api.v2.ExportMemosResponse
+	(*MemosExportRequest)(nil),        // 28: memos.api.v2.MemosExportRequest
+	(*MemosExportResponse)(nil),       // 29: memos.api.v2.MemosExportResponse
 	nil,                               // 30: memos.api.v2.GetUserMemosStatsResponse.StatsEntry
 	(RowStatus)(0),                    // 31: memos.api.v2.RowStatus
 	(*timestamppb.Timestamp)(nil),     // 32: google.protobuf.Timestamp
@@ -2045,7 +2045,7 @@ var file_api_v2_memo_service_proto_depIdxs = []int32{
 	22, // 34: memos.api.v2.MemoService.CreateMemoComment:input_type -> memos.api.v2.CreateMemoCommentRequest
 	24, // 35: memos.api.v2.MemoService.ListMemoComments:input_type -> memos.api.v2.ListMemoCommentsRequest
 	26, // 36: memos.api.v2.MemoService.GetUserMemosStats:input_type -> memos.api.v2.GetUserMemosStatsRequest
-	28, // 37: memos.api.v2.MemoService.MemosExport:input_type -> memos.api.v2.ExportMemosRequest
+	28, // 37: memos.api.v2.MemoService.MemosExport:input_type -> memos.api.v2.MemosExportRequest
 	3,  // 38: memos.api.v2.MemoService.CreateMemo:output_type -> memos.api.v2.CreateMemoResponse
 	5,  // 39: memos.api.v2.MemoService.ListMemos:output_type -> memos.api.v2.ListMemosResponse
 	7,  // 40: memos.api.v2.MemoService.GetMemo:output_type -> memos.api.v2.GetMemoResponse
@@ -2059,7 +2059,7 @@ var file_api_v2_memo_service_proto_depIdxs = []int32{
 	23, // 48: memos.api.v2.MemoService.CreateMemoComment:output_type -> memos.api.v2.CreateMemoCommentResponse
 	25, // 49: memos.api.v2.MemoService.ListMemoComments:output_type -> memos.api.v2.ListMemoCommentsResponse
 	27, // 50: memos.api.v2.MemoService.GetUserMemosStats:output_type -> memos.api.v2.GetUserMemosStatsResponse
-	29, // 51: memos.api.v2.MemoService.MemosExport:output_type -> memos.api.v2.ExportMemosResponse
+	29, // 51: memos.api.v2.MemoService.MemosExport:output_type -> memos.api.v2.MemosExportResponse
 	38, // [38:52] is the sub-list for method output_type
 	24, // [24:38] is the sub-list for method input_type
 	24, // [24:24] is the sub-list for extension type_name
@@ -2402,7 +2402,7 @@ func file_api_v2_memo_service_proto_init() {
 			}
 		}
 		file_api_v2_memo_service_proto_msgTypes[27].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ExportMemosRequest); i {
+			switch v := v.(*MemosExportRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2414,7 +2414,7 @@ func file_api_v2_memo_service_proto_init() {
 			}
 		}
 		file_api_v2_memo_service_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ExportMemosResponse); i {
+			switch v := v.(*MemosExportResponse); i {
 			case 0:
 				return &v.state
 			case 1:

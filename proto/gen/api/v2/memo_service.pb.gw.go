@@ -728,7 +728,7 @@ var (
 )
 
 func request_MemoService_MemosExport_0(ctx context.Context, marshaler runtime.Marshaler, client MemoServiceClient, req *http.Request, pathParams map[string]string) (MemoService_MemosExportClient, runtime.ServerMetadata, error) {
-	var protoReq ExportMemosRequest
+	var protoReq MemosExportRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {

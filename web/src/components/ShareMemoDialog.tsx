@@ -137,6 +137,6 @@ export default function showShareMemoDialog(memo: Memo): void {
       dialogName: "share-memo-dialog",
     },
     ShareMemoDialog,
-    { memo }
+    { memo },
   );
 }

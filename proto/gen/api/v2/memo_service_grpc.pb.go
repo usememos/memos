@@ -65,7 +65,7 @@ type MemoServiceClient interface {
 	ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error)
 	// GetUserMemosStats gets stats of memos for a user.
 	GetUserMemosStats(ctx context.Context, in *GetUserMemosStatsRequest, opts ...grpc.CallOption) (*GetUserMemosStatsResponse, error)
-	MemosExport(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (MemoService_MemosExportClient, error)
+	MemosExport(ctx context.Context, in *MemosExportRequest, opts ...grpc.CallOption) (MemoService_MemosExportClient, error)
 }
 
 type memoServiceClient struct {
@@ -193,7 +193,7 @@ func (c *memoServiceClient) GetUserMemosStats(ctx context.Context, in *GetUserMe
 	return out, nil
 }
 
-func (c *memoServiceClient) MemosExport(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (MemoService_MemosExportClient, error) {
+func (c *memoServiceClient) MemosExport(ctx context.Context, in *MemosExportRequest, opts ...grpc.CallOption) (MemoService_MemosExportClient, error) {
 	stream, err := c.cc.NewStream(ctx, &MemoService_ServiceDesc.Streams[0], MemoService_MemosExport_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
@@ -209,7 +209,7 @@ func (c *memoServiceClient) MemosExport(ctx context.Context, in *ExportMemosRequ
 }
 
 type MemoService_MemosExportClient interface {
-	Recv() (*ExportMemosResponse, error)
+	Recv() (*MemosExportResponse, error)
 	grpc.ClientStream
 }
 
@@ -217,8 +217,8 @@ type memoServiceMemosExportClient struct {
 	grpc.ClientStream
 }
 
-func (x *memoServiceMemosExportClient) Recv() (*ExportMemosResponse, error) {
-	m := new(ExportMemosResponse)
+func (x *memoServiceMemosExportClient) Recv() (*MemosExportResponse, error) {
+	m := new(MemosExportResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -255,7 +255,7 @@ type MemoServiceServer interface {
 	ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error)
 	// GetUserMemosStats gets stats of memos for a user.
 	GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error)
-	MemosExport(*ExportMemosRequest, MemoService_MemosExportServer) error
+	MemosExport(*MemosExportRequest, MemoService_MemosExportServer) error
 	mustEmbedUnimplementedMemoServiceServer()
 }
 
@@ -302,7 +302,7 @@ func (UnimplementedMemoServiceServer) ListMemoComments(context.Context, *ListMem
 func (UnimplementedMemoServiceServer) GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserMemosStats not implemented")
 }
-func (UnimplementedMemoServiceServer) MemosExport(*ExportMemosRequest, MemoService_MemosExportServer) error {
+func (UnimplementedMemoServiceServer) MemosExport(*MemosExportRequest, MemoService_MemosExportServer) error {
 	return status.Errorf(codes.Unimplemented, "method MemosExport not implemented")
 }
 func (UnimplementedMemoServiceServer) mustEmbedUnimplementedMemoServiceServer() {}
@@ -553,7 +553,7 @@ func _MemoService_GetUserMemosStats_Handler(srv interface{}, ctx context.Context
 }
 
 func _MemoService_MemosExport_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ExportMemosRequest)
+	m := new(MemosExportRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -561,7 +561,7 @@ func _MemoService_MemosExport_Handler(srv interface{}, stream grpc.ServerStream)
 }
 
 type MemoService_MemosExportServer interface {
-	Send(*ExportMemosResponse) error
+	Send(*MemosExportResponse) error
 	grpc.ServerStream
 }
 
@@ -569,7 +569,7 @@ type memoServiceMemosExportServer struct {
 	grpc.ServerStream
 }
 
-func (x *memoServiceMemosExportServer) Send(m *ExportMemosResponse) error {
+func (x *memoServiceMemosExportServer) Send(m *MemosExportResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 

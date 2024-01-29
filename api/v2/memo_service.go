@@ -549,7 +549,7 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 	return response, nil
 }
 
-func (s *APIV2Service) MemosExport(request *apiv2pb.ExportMemosRequest, srv apiv2pb.MemoService_MemosExportServer) error {
+func (s *APIV2Service) MemosExport(request *apiv2pb.MemosExportRequest, srv apiv2pb.MemoService_MemosExportServer) error {
 	ctx := srv.Context()
 	fmt.Printf("%+v\n", ctx)
 	memoFind, err := s.buildFindMemosWithFilter(ctx, request.Filter, true)
@@ -586,7 +586,7 @@ func (s *APIV2Service) MemosExport(request *apiv2pb.ExportMemosRequest, srv apiv
 		return status.Errorf(codes.Internal, "Failed to close zip file writer")
 	}
 
-	exportChunk := &apiv2pb.ExportMemosResponse{}
+	exportChunk := &apiv2pb.MemosExportResponse{}
 	sizeOfFile := len(buf.Bytes())
 	for currentByte := 0; currentByte < sizeOfFile; currentByte += ChunkSize {
 		if currentByte+ChunkSize > sizeOfFile {
@@ -597,7 +597,7 @@ func (s *APIV2Service) MemosExport(request *apiv2pb.ExportMemosRequest, srv apiv
 
 		err := srv.Send(exportChunk)
 		if err != nil {
-			return status.Error(codes.Internal, "Unable to stream ExportMemosResponse chunk")
+			return status.Error(codes.Internal, "Unable to stream MemosExportResponse chunk")
 		}
 	}
 
