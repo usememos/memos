@@ -115,7 +115,7 @@ func (client *Client) PreSignLink(ctx context.Context, sourceLink string) (strin
 	// the empty hostname is corner-case for AWS native endpoint.
 	endpointUrl, err := url.Parse(client.Config.EndPoint)
 	if err != nil {
-		return "", errors2.Wrapf(err, "parse Endpoint URL")
+		return "", errors.Wrapf(err, "parse Endpoint URL")
 	}
 	endpointHost := endpointUrl.Hostname()
 	if client.Config.Bucket != "" && !strings.Contains(endpointHost, client.Config.Bucket) {
