@@ -113,11 +113,11 @@ func (client *Client) PreSignLink(ctx context.Context, sourceLink string) (strin
 	}
 	// if link doesn't belong to storage, then return as-is.
 	// the empty hostname is corner-case for AWS native endpoint.
-	endpointUrl, err := url.Parse(client.Config.EndPoint)
+	endpointURL, err := url.Parse(client.Config.EndPoint)
 	if err != nil {
 		return "", errors.Wrapf(err, "parse Endpoint URL")
 	}
-	endpointHost := endpointUrl.Hostname()
+	endpointHost := endpointURL.Hostname()
 	if client.Config.Bucket != "" && !strings.Contains(endpointHost, client.Config.Bucket) {
 		endpointHost = fmt.Sprintf("%s.%s", client.Config.Bucket, endpointHost)
 	}
