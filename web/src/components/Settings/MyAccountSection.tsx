@@ -20,6 +20,7 @@ const MyAccountSection = () => {
     const blob = new Blob(chunks);
     const downloadUrl = window.URL.createObjectURL(blob);
     downloadFileFromUrl(downloadUrl, "memos-export.zip");
+    URL.revokeObjectURL(downloadUrl);
   };
 
   return (

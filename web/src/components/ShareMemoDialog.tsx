@@ -52,6 +52,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       .then((url) => {
         downloadFileFromUrl(url, `memos-${getDateTimeString(Date.now())}.png`);
         downloadingImageState.setFinish();
+        URL.revokeObjectURL(url);
       })
       .catch((err) => {
         console.error(err);
@@ -60,7 +61,9 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
 
   const handleDownloadTextFileBtnClick = () => {
     const blob = new Blob([memo.content], { type: "text/plain;charset=utf-8" });
-    downloadFileFromUrl(URL.createObjectURL(blob), `memos-${getDateTimeString(Date.now())}.md`);
+    const url = URL.createObjectURL(blob);
+    downloadFileFromUrl(url, `memos-${getDateTimeString(Date.now())}.md`);
+    URL.revokeObjectURL(url);
   };
 
   const handleCopyLinkBtnClick = () => {
