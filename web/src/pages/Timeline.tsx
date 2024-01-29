@@ -148,9 +148,9 @@ const Timeline = () => {
                   <div className={classNames("flex shrink-0", md ? "flex-col w-40 pr-4 pl-2 pb-8" : "flex-row w-full pl-1 mt-2 mb-2")}>
                     <div className={classNames("w-full flex flex-col", md && "mt-4 mb-2")}>
                       <span className="font-medium text-3xl leading-none mb-1">
-                        {new Date(group.month).toLocaleString(i18n.language, { month: "short" })}
+                        {new Date(group.month).toLocaleString(i18n.language, { month: "short", timeZone: "UTC" })}
                       </span>
-                      <span className="opacity-60">{new Date(group.month).getFullYear()}</span>
+                      <span className="opacity-60">{new Date(group.month).getUTCFullYear()}</span>
                       <span className="text-xs opacity-40">Total: {sum(Object.values(group.data))}</span>
                     </div>
                     <ActivityCalendar month={group.month} data={group.data} onClick={(date) => setSelectedDay(date)} />
