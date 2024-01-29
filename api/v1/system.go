@@ -97,7 +97,7 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		systemStatus.Host = &User{ID: hostUser.ID}
 	}
 
-	systemSettingList, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})
+	systemSettingList, err := s.Store.ListWorkspaceSettings(ctx, &store.FindWorkspaceSetting{})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
 	}

@@ -209,7 +209,7 @@ func (s *APIV1Service) DeleteStorage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("storageId"))).SetInternal(err)
 	}
 
-	systemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
+	systemSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{Name: SystemSettingStorageServiceIDName.String()})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 	}

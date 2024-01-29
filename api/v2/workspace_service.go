@@ -37,7 +37,7 @@ func (s *APIV2Service) UpdateWorkspaceProfile(ctx context.Context, request *apiv
 	// Update system settings.
 	for _, field := range request.UpdateMask.Paths {
 		if field == "allow_registration" {
-			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+			_, err := s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 				Name:  "allow-signup",
 				Value: strconv.FormatBool(request.WorkspaceProfile.AllowRegistration),
 			})
@@ -45,7 +45,7 @@ func (s *APIV2Service) UpdateWorkspaceProfile(ctx context.Context, request *apiv
 				return nil, status.Errorf(codes.Internal, "failed to update allow_registration system setting: %v", err)
 			}
 		} else if field == "disable_password_login" {
-			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+			_, err := s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 				Name:  "disable-password-login",
 				Value: strconv.FormatBool(request.WorkspaceProfile.DisablePasswordLogin),
 			})
@@ -53,7 +53,7 @@ func (s *APIV2Service) UpdateWorkspaceProfile(ctx context.Context, request *apiv
 				return nil, status.Errorf(codes.Internal, "failed to update disable_password_login system setting: %v", err)
 			}
 		} else if field == "additional_script" {
-			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+			_, err := s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 				Name:  "additional-script",
 				Value: request.WorkspaceProfile.AdditionalScript,
 			})
@@ -61,7 +61,7 @@ func (s *APIV2Service) UpdateWorkspaceProfile(ctx context.Context, request *apiv
 				return nil, status.Errorf(codes.Internal, "failed to update additional_script system setting: %v", err)
 			}
 		} else if field == "additional_style" {
-			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+			_, err := s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 				Name:  "additional-style",
 				Value: request.WorkspaceProfile.AdditionalStyle,
 			})

@@ -50,6 +50,14 @@
 - [api/v2/auth_service.proto](#api_v2_auth_service-proto)
     - [GetAuthStatusRequest](#memos-api-v2-GetAuthStatusRequest)
     - [GetAuthStatusResponse](#memos-api-v2-GetAuthStatusResponse)
+    - [SignInRequest](#memos-api-v2-SignInRequest)
+    - [SignInResponse](#memos-api-v2-SignInResponse)
+    - [SignInWithSSORequest](#memos-api-v2-SignInWithSSORequest)
+    - [SignInWithSSOResponse](#memos-api-v2-SignInWithSSOResponse)
+    - [SignOutRequest](#memos-api-v2-SignOutRequest)
+    - [SignOutResponse](#memos-api-v2-SignOutResponse)
+    - [SignUpRequest](#memos-api-v2-SignUpRequest)
+    - [SignUpResponse](#memos-api-v2-SignUpResponse)
   
     - [AuthService](#memos-api-v2-AuthService)
   
@@ -804,6 +812,120 @@ Used internally for obfuscating the page token.
 
 
 
+
+<a name="memos-api-v2-SignInRequest"></a>
+
+### SignInRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| username | [string](#string) |  |  |
+| password | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SignInResponse"></a>
+
+### SignInResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [User](#memos-api-v2-User) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SignInWithSSORequest"></a>
+
+### SignInWithSSORequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| idp_id | [int32](#int32) |  |  |
+| code | [string](#string) |  |  |
+| redirect_uri | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SignInWithSSOResponse"></a>
+
+### SignInWithSSOResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [User](#memos-api-v2-User) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SignOutRequest"></a>
+
+### SignOutRequest
+
+
+
+
+
+
+
+<a name="memos-api-v2-SignOutResponse"></a>
+
+### SignOutResponse
+
+
+
+
+
+
+
+<a name="memos-api-v2-SignUpRequest"></a>
+
+### SignUpRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| username | [string](#string) |  |  |
+| password | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SignUpResponse"></a>
+
+### SignUpResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [User](#memos-api-v2-User) |  |  |
+
+
+
+
+
  
 
  
@@ -818,7 +940,11 @@ Used internally for obfuscating the page token.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetAuthStatus | [GetAuthStatusRequest](#memos-api-v2-GetAuthStatusRequest) | [GetAuthStatusResponse](#memos-api-v2-GetAuthStatusResponse) |  |
+| GetAuthStatus | [GetAuthStatusRequest](#memos-api-v2-GetAuthStatusRequest) | [GetAuthStatusResponse](#memos-api-v2-GetAuthStatusResponse) | GetAuthStatus returns the current auth status of the user. |
+| SignIn | [SignInRequest](#memos-api-v2-SignInRequest) | [SignInResponse](#memos-api-v2-SignInResponse) | SignIn signs in the user with the given username and password. |
+| SignInWithSSO | [SignInWithSSORequest](#memos-api-v2-SignInWithSSORequest) | [SignInWithSSOResponse](#memos-api-v2-SignInWithSSOResponse) | SignInWithSSO signs in the user with the given SSO code. |
+| SignUp | [SignUpRequest](#memos-api-v2-SignUpRequest) | [SignUpResponse](#memos-api-v2-SignUpResponse) | SignUp signs up the user with the given username and password. |
+| SignOut | [SignOutRequest](#memos-api-v2-SignOutRequest) | [SignOutResponse](#memos-api-v2-SignOutResponse) | SignOut signs out the user. |
 
  
 

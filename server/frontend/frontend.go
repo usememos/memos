@@ -81,7 +81,7 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 }
 
 func (s *FrontendService) registerFileRoutes(ctx context.Context, e *echo.Echo) {
-	instanceURLSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+	instanceURLSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: apiv1.SystemSettingInstanceURLName.String(),
 	})
 	if err != nil || instanceURLSetting == nil {

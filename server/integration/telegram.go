@@ -26,7 +26,7 @@ func NewTelegramHandler(store *store.Store) *TelegramHandler {
 }
 
 func (t *TelegramHandler) BotToken(ctx context.Context) string {
-	return t.store.GetSystemSettingValueWithDefault(ctx, apiv1.SystemSettingTelegramBotTokenName.String(), "")
+	return t.store.GetWorkspaceSettingWithDefaultValue(ctx, apiv1.SystemSettingTelegramBotTokenName.String(), "")
 }
 
 const (

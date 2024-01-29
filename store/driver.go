@@ -49,9 +49,9 @@ type Driver interface {
 	ListMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) ([]*MemoOrganizer, error)
 	DeleteMemoOrganizer(ctx context.Context, delete *DeleteMemoOrganizer) error
 
-	// SystemSetting model related methods.
-	UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error)
-	ListSystemSettings(ctx context.Context, find *FindSystemSetting) ([]*SystemSetting, error)
+	// WorkspaceSetting model related methods.
+	UpsertWorkspaceSetting(ctx context.Context, upsert *WorkspaceSetting) (*WorkspaceSetting, error)
+	ListWorkspaceSettings(ctx context.Context, find *FindWorkspaceSetting) ([]*WorkspaceSetting, error)
 
 	// User model related methods.
 	CreateUser(ctx context.Context, create *User) (*User, error)

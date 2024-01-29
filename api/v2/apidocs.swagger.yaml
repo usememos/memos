@@ -18,8 +18,101 @@ consumes:
 produces:
   - application/json
 paths:
+  /api/v2/auth/signin:
+    post:
+      summary: SignIn signs in the user with the given username and password.
+      operationId: AuthService_SignIn
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SignInResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: username
+          in: query
+          required: false
+          type: string
+        - name: password
+          in: query
+          required: false
+          type: string
+      tags:
+        - AuthService
+  /api/v2/auth/signin/sso:
+    post:
+      summary: SignInWithSSO signs in the user with the given SSO code.
+      operationId: AuthService_SignInWithSSO
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SignInWithSSOResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: idpId
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: code
+          in: query
+          required: false
+          type: string
+        - name: redirectUri
+          in: query
+          required: false
+          type: string
+      tags:
+        - AuthService
+  /api/v2/auth/signout:
+    post:
+      summary: SignOut signs out the user.
+      operationId: AuthService_SignOut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SignOutResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - AuthService
+  /api/v2/auth/signup:
+    post:
+      summary: SignUp signs up the user with the given username and password.
+      operationId: AuthService_SignUp
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SignUpResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: username
+          in: query
+          required: false
+          type: string
+        - name: password
+          in: query
+          required: false
+          type: string
+      tags:
+        - AuthService
   /api/v2/auth/status:
     post:
+      summary: GetAuthStatus returns the current auth status of the user.
       operationId: AuthService_GetAuthStatus
       responses:
         "200":
@@ -1922,6 +2015,23 @@ definitions:
     type: object
   v2SetMemoResourcesResponse:
     type: object
+  v2SignInResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v2User'
+  v2SignInWithSSOResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v2User'
+  v2SignOutResponse:
+    type: object
+  v2SignUpResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v2User'
   v2StrikethroughNode:
     type: object
     properties:
