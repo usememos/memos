@@ -30,24 +30,24 @@ const (
 	thumbnailImagePath = ".thumbnail_cache"
 )
 
-type Service struct {
+type ResourceService struct {
 	Profile *profile.Profile
 	Store   *store.Store
 }
 
-func NewService(profile *profile.Profile, store *store.Store) *Service {
-	return &Service{
+func NewResourceService(profile *profile.Profile, store *store.Store) *ResourceService {
+	return &ResourceService{
 		Profile: profile,
 		Store:   store,
 	}
 }
 
-func (s *Service) RegisterResourcePublicRoutes(g *echo.Group) {
+func (s *ResourceService) RegisterRoutes(g *echo.Group) {
 	g.GET("/r/:resourceName", s.streamResource)
 	g.GET("/r/:resourceName/*", s.streamResource)
 }
 
-func (s *Service) streamResource(c echo.Context) error {
+func (s *ResourceService) streamResource(c echo.Context) error {
 	ctx := c.Request().Context()
 	resourceName := c.Param("resourceName")
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
