@@ -27,10 +27,10 @@ const (
 	usernameContextKey ContextKey = iota
 )
 
-// Used to set modified context of ServerStream
+// Used to set modified context of ServerStream.
 type WrappedStream struct {
-	stream grpc.ServerStream
 	ctx    context.Context
+	stream grpc.ServerStream
 }
 
 func (w *WrappedStream) RecvMsg(m any) error {
@@ -57,8 +57,8 @@ func (w *WrappedStream) Context() context.Context {
 	return w.ctx
 }
 
-func newWrappedStream(stream grpc.ServerStream, ctx context.Context) grpc.ServerStream {
-	return &WrappedStream{stream, ctx}
+func newWrappedStream(ctx context.Context, stream grpc.ServerStream) grpc.ServerStream {
+	return &WrappedStream{ctx, stream}
 }
 
 // GRPCAuthInterceptor is the auth interceptor for gRPC server.
@@ -150,7 +150,7 @@ func (in *GRPCAuthInterceptor) StreamAuthenticationInterceptor(srv any, stream g
 	// Stores userID into context.
 	childCtx := context.WithValue(stream.Context(), usernameContextKey, username)
 
-	return handler(srv, newWrappedStream(stream, childCtx))
+	return handler(srv, newWrappedStream(childCtx, stream))
 }
 
 func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessToken string) (string, error) {
