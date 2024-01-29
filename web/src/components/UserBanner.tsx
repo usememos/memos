@@ -1,6 +1,6 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import classNames from "classnames";
-import * as api from "@/helpers/api";
+import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
@@ -21,7 +21,7 @@ const UserBanner = (props: Props) => {
   const avatarUrl = user ? user.avatarUrl : systemStatus.customizedProfile.logoUrl;
 
   const handleSignOut = async () => {
-    await api.signout();
+    await authServiceClient.signOut({});
     window.location.href = "/auth";
   };
 

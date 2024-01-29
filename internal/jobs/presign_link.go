@@ -97,7 +97,7 @@ func signExternalLinks(ctx context.Context, dataStore *store.Store) error {
 // Returns error only in case of internal problems (ie: database or configuration issues).
 // May return nil client and nil error.
 func findObjectStorage(ctx context.Context, dataStore *store.Store) (*s3.Client, error) {
-	systemSettingStorageServiceID, err := dataStore.GetSystemSetting(ctx, &store.FindSystemSetting{Name: apiv1.SystemSettingStorageServiceIDName.String()})
+	systemSettingStorageServiceID, err := dataStore.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{Name: apiv1.SystemSettingStorageServiceIDName.String()})
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to find SystemSettingStorageServiceIDName")
 	}

@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import AppearanceSelect from "@/components/AppearanceSelect";
 import LocaleSelect from "@/components/LocaleSelect";
-import * as api from "@/helpers/api";
+import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore } from "@/store/module";
@@ -55,7 +55,7 @@ const SignUp = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      const { data: user } = await api.signup(username, password);
+      const { user } = await authServiceClient.signUp({ username, password });
       if (user) {
         await userStore.fetchCurrentUser();
         navigateTo("/");

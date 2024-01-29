@@ -7,7 +7,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (d *DB) UpsertSystemSetting(ctx context.Context, upsert *store.SystemSetting) (*store.SystemSetting, error) {
+func (d *DB) UpsertWorkspaceSetting(ctx context.Context, upsert *store.WorkspaceSetting) (*store.WorkspaceSetting, error) {
 	stmt := `
 		INSERT INTO system_setting (
 			name, value, description
@@ -25,7 +25,7 @@ func (d *DB) UpsertSystemSetting(ctx context.Context, upsert *store.SystemSettin
 	return upsert, nil
 }
 
-func (d *DB) ListSystemSettings(ctx context.Context, find *store.FindSystemSetting) ([]*store.SystemSetting, error) {
+func (d *DB) ListWorkspaceSettings(ctx context.Context, find *store.FindWorkspaceSetting) ([]*store.WorkspaceSetting, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.Name != "" {
 		where, args = append(where, "name = ?"), append(args, find.Name)
@@ -45,9 +45,9 @@ func (d *DB) ListSystemSettings(ctx context.Context, find *store.FindSystemSetti
 	}
 	defer rows.Close()
 
-	list := []*store.SystemSetting{}
+	list := []*store.WorkspaceSetting{}
 	for rows.Next() {
-		systemSettingMessage := &store.SystemSetting{}
+		systemSettingMessage := &store.WorkspaceSetting{}
 		if err := rows.Scan(
 			&systemSettingMessage.Name,
 			&systemSettingMessage.Value,

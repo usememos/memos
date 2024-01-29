@@ -110,7 +110,7 @@ func (s *APIV1Service) GetSystemSettingList(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 	}
 
-	list, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})
+	list, err := s.Store.ListWorkspaceSettings(ctx, &store.FindWorkspaceSetting{})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
 	}
@@ -174,7 +174,7 @@ func (s *APIV1Service) CreateSystemSetting(c echo.Context) error {
 		}
 	}
 
-	systemSetting, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+	systemSetting, err := s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 		Name:        systemSettingUpsert.Name.String(),
 		Value:       systemSettingUpsert.Value,
 		Description: systemSettingUpsert.Description,
@@ -289,7 +289,7 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 	return nil
 }
 
-func convertSystemSettingFromStore(systemSetting *store.SystemSetting) *SystemSetting {
+func convertSystemSettingFromStore(systemSetting *store.WorkspaceSetting) *SystemSetting {
 	return &SystemSetting{
 		Name:        SystemSettingName(systemSetting.Name),
 		Value:       systemSetting.Value,

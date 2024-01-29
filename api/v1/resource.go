@@ -186,7 +186,7 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	}
 
 	// This is the backend default max upload size limit.
-	maxUploadSetting := s.Store.GetSystemSettingValueWithDefault(ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
+	maxUploadSetting := s.Store.GetWorkspaceSettingWithDefaultValue(ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
 	var settingMaxUploadSizeBytes int
 	if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
 		settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
@@ -390,7 +390,7 @@ func convertResourceFromStore(resource *store.Resource) *Resource {
 // 2. *LocalStorage*: `create.InternalPath`.
 // 3. Others( external service): `create.ExternalLink`.
 func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resource, r io.Reader) error {
-	systemSettingStorageServiceID, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
+	systemSettingStorageServiceID, err := s.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{Name: SystemSettingStorageServiceIDName.String()})
 	if err != nil {
 		return errors.Wrap(err, "Failed to find SystemSettingStorageServiceIDName")
 	}
@@ -413,7 +413,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		return nil
 	} else if storageServiceID == LocalStorage {
 		// `LocalStorage` means save blob into local disk
-		systemSettingLocalStoragePath, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingLocalStoragePathName.String()})
+		systemSettingLocalStoragePath, err := s.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{Name: SystemSettingLocalStoragePathName.String()})
 		if err != nil {
 			return errors.Wrap(err, "Failed to find SystemSettingLocalStoragePathName")
 		}

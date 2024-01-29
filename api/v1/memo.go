@@ -277,7 +277,7 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 	}
 
 	// Find disable public memos system setting.
-	disablePublicMemosSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+	disablePublicMemosSystemSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: SystemSettingDisablePublicMemosName.String(),
 	})
 	if err != nil {
@@ -714,7 +714,7 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 		visibility := store.Visibility(patchMemoRequest.Visibility.String())
 		updateMemoMessage.Visibility = &visibility
 		// Find disable public memos system setting.
-		disablePublicMemosSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+		disablePublicMemosSystemSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 			Name: SystemSettingDisablePublicMemosName.String(),
 		})
 		if err != nil {
@@ -905,7 +905,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 }
 
 func (s *APIV1Service) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (bool, error) {
-	memoDisplayWithUpdatedTsSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+	memoDisplayWithUpdatedTsSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: SystemSettingMemoDisplayWithUpdatedTsName.String(),
 	})
 	if err != nil {

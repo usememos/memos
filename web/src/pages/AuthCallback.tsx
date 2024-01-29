@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import Icon from "@/components/Icon";
-import * as api from "@/helpers/api";
+import { authServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore } from "@/store/v1";
@@ -32,9 +32,13 @@ const AuthCallback = () => {
       const redirectUri = absolutifyLink("/auth/callback");
       const identityProviderId = Number(last(state.split("-")));
       if (identityProviderId) {
-        api
-          .signinWithSSO(identityProviderId, code, redirectUri)
-          .then(async ({ data: user }) => {
+        authServiceClient
+          .signInWithSSO({
+            idpId: identityProviderId,
+            code,
+            redirectUri,
+          })
+          .then(async ({ user }) => {
             setState({
               loading: false,
               errorMessage: "",

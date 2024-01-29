@@ -8,8 +8,25 @@ import "google/api/annotations.proto";
 option go_package = "gen/api/v2";
 
 service AuthService {
+  // GetAuthStatus returns the current auth status of the user.
   rpc GetAuthStatus(GetAuthStatusRequest) returns (GetAuthStatusResponse) {
     option (google.api.http) = {post: "/api/v2/auth/status"};
+  }
+  // SignIn signs in the user with the given username and password.
+  rpc SignIn(SignInRequest) returns (SignInResponse) {
+    option (google.api.http) = {post: "/api/v2/auth/signin"};
+  }
+  // SignInWithSSO signs in the user with the given SSO code.
+  rpc SignInWithSSO(SignInWithSSORequest) returns (SignInWithSSOResponse) {
+    option (google.api.http) = {post: "/api/v2/auth/signin/sso"};
+  }
+  // SignUp signs up the user with the given username and password.
+  rpc SignUp(SignUpRequest) returns (SignUpResponse) {
+    option (google.api.http) = {post: "/api/v2/auth/signup"};
+  }
+  // SignOut signs out the user.
+  rpc SignOut(SignOutRequest) returns (SignOutResponse) {
+    option (google.api.http) = {post: "/api/v2/auth/signout"};
   }
 }
 
@@ -18,3 +35,36 @@ message GetAuthStatusRequest {}
 message GetAuthStatusResponse {
   User user = 1;
 }
+
+message SignInRequest {
+  string username = 1;
+  string password = 2;
+  bool never_expire = 3;
+}
+
+message SignInResponse {
+  User user = 1;
+}
+
+message SignInWithSSORequest {
+  int32 idp_id = 1;
+  string code = 2;
+  string redirect_uri = 3;
+}
+
+message SignInWithSSOResponse {
+  User user = 1;
+}
+
+message SignUpRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message SignUpResponse {
+  User user = 1;
+}
+
+message SignOutRequest {}
+
+message SignOutResponse {}

@@ -5,6 +5,10 @@ import "strings"
 var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v2.WorkspaceService/GetWorkspaceProfile": true,
 	"/memos.api.v2.AuthService/GetAuthStatus":            true,
+	"/memos.api.v2.AuthService/SignIn":                   true,
+	"/memos.api.v2.AuthService/SignInWithSSO":            true,
+	"/memos.api.v2.AuthService/SignOut":                  true,
+	"/memos.api.v2.AuthService/SignUp":                   true,
 	"/memos.api.v2.UserService/GetUser":                  true,
 	"/memos.api.v2.MemoService/ListMemos":                true,
 	"/memos.api.v2.MemoService/GetMemo":                  true,

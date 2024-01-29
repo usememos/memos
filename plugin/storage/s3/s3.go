@@ -2,7 +2,6 @@ package s3
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net/url"
@@ -15,7 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	errors2 "github.com/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 const LinkLifetime = 24 * time.Hour
@@ -110,7 +109,7 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 func (client *Client) PreSignLink(ctx context.Context, sourceLink string) (string, error) {
 	u, err := url.Parse(sourceLink)
 	if err != nil {
-		return "", errors2.Wrapf(err, "parse URL")
+		return "", errors.Wrapf(err, "parse URL")
 	}
 	// if link doesn't belong to storage, then return as-is.
 	// the empty hostname is corner-case for AWS native endpoint.
@@ -143,7 +142,7 @@ func (client *Client) PreSignLink(ctx context.Context, sourceLink string) (strin
 		Key:    aws.String(filename),
 	}, awss3.WithPresignExpires(LinkLifetime))
 	if err != nil {
-		return "", errors2.Wrapf(err, "pre-sign link")
+		return "", errors.Wrapf(err, "pre-sign link")
 	}
 	return req.URL, nil
 }
