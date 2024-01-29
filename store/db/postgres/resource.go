@@ -118,6 +118,9 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (
 	if v := update.InternalPath; v != nil {
 		set, args = append(set, "internal_path = "+placeholder(len(args)+1)), append(args, *v)
 	}
+	if v := update.ExternalLink; v != nil {
+		set, args = append(set, "external_link = "+placeholder(len(args)+1)), append(args, *v)
+	}
 	if v := update.MemoID; v != nil {
 		set, args = append(set, "memo_id = "+placeholder(len(args)+1)), append(args, *v)
 	}

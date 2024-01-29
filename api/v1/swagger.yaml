@@ -238,6 +238,8 @@ definitions:
         type: string
       urlSuffix:
         type: string
+      presign:
+        type: boolean
     type: object
   api_v1.StorageType:
     enum:
@@ -668,6 +670,8 @@ definitions:
         type: string
       urlSuffix:
         type: string
+      presign:
+        type: boolean
     type: object
   github_com_usememos_memos_api_v1.StorageType:
     enum:

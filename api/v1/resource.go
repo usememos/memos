@@ -480,6 +480,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		Bucket:    s3Config.Bucket,
 		URLPrefix: s3Config.URLPrefix,
 		URLSuffix: s3Config.URLSuffix,
+		PreSign:   s3Config.PreSign,
 	})
 	if err != nil {
 		return errors.Wrap(err, "Failed to create s3 client")

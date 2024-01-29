@@ -53,6 +53,7 @@ type UpdateResource struct {
 	UpdatedTs    *int64
 	Filename     *string
 	InternalPath *string
+	ExternalLink *string
 	MemoID       *int32
 	Blob         []byte
 }
