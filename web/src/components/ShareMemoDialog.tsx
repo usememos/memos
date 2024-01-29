@@ -3,6 +3,7 @@ import copy from "copy-to-clipboard";
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { getDateTimeString } from "@/helpers/datetime";
+import { downloadFileFromUrl } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
 import { useUserStore, extractUsernameFromName } from "@/store/v1";
@@ -60,13 +61,6 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const handleDownloadTextFileBtnClick = () => {
     const blob = new Blob([memo.content], { type: "text/plain;charset=utf-8" });
     downloadFileFromUrl(URL.createObjectURL(blob), `memos-${getDateTimeString(Date.now())}.md`);
-  };
-
-  const downloadFileFromUrl = (url: string, filename: string) => {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
   };
 
   const handleCopyLinkBtnClick = () => {
@@ -140,6 +134,6 @@ export default function showShareMemoDialog(memo: Memo): void {
       dialogName: "share-memo-dialog",
     },
     ShareMemoDialog,
-    { memo },
+    { memo }
   );
 }

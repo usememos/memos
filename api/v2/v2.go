@@ -47,6 +47,9 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 		grpc.ChainUnaryInterceptor(
 			authProvider.AuthenticationInterceptor,
 		),
+		grpc.ChainStreamInterceptor(
+			authProvider.StreamAuthenticationInterceptor,
+		),
 	)
 	apiv2Service := &APIV2Service{
 		Secret:         secret,

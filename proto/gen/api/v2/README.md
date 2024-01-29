@@ -134,6 +134,8 @@
     - [CreateMemoResponse](#memos-api-v2-CreateMemoResponse)
     - [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest)
     - [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse)
+    - [ExportMemosRequest](#memos-api-v2-ExportMemosRequest)
+    - [ExportMemosResponse](#memos-api-v2-ExportMemosResponse)
     - [GetMemoByNameRequest](#memos-api-v2-GetMemoByNameRequest)
     - [GetMemoByNameResponse](#memos-api-v2-GetMemoByNameResponse)
     - [GetMemoRequest](#memos-api-v2-GetMemoRequest)
@@ -1939,6 +1941,36 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-ExportMemosRequest"></a>
+
+### ExportMemosRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [string](#string) |  | Same as ListMemosRequest.filter |
+
+
+
+
+
+
+<a name="memos-api-v2-ExportMemosResponse"></a>
+
+### ExportMemosResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| file | [bytes](#bytes) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-GetMemoByNameRequest"></a>
 
 ### GetMemoByNameRequest
@@ -2323,6 +2355,7 @@ Used internally for obfuscating the page token.
 | CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) | CreateMemoComment creates a comment for a memo. |
 | ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) | ListMemoComments lists comments for a memo. |
 | GetUserMemosStats | [GetUserMemosStatsRequest](#memos-api-v2-GetUserMemosStatsRequest) | [GetUserMemosStatsResponse](#memos-api-v2-GetUserMemosStatsResponse) | GetUserMemosStats gets stats of memos for a user. |
+| MemosExport | [ExportMemosRequest](#memos-api-v2-ExportMemosRequest) | [ExportMemosResponse](#memos-api-v2-ExportMemosResponse) stream |  |
 
  
 

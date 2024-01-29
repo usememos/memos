@@ -92,3 +92,11 @@ export const isValidUrl = (url: string): boolean => {
     return false;
   }
 };
+
+export const downloadFileFromUrl = (url: string, filename: string) => {
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  a.remove();
+};
