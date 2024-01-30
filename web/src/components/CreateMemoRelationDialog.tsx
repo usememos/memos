@@ -1,118 +1,145 @@
-import { Button, IconButton, Input } from "@mui/joy";
-import { isNaN, unionBy } from "lodash-es";
+import { Autocomplete, AutocompleteOption, Button, Checkbox, Chip, IconButton } from "@mui/joy";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
+import useDebounce from "react-use/lib/useDebounce";
 import { memoServiceClient } from "@/grpcweb";
+import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
+import { getDateTimeString } from "@/helpers/datetime";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 
 interface Props extends DialogProps {
-  onCancel?: () => void;
-  onConfirm?: (memoIdList: number[]) => void;
+  onConfirm: (memoIdList: number[], embedded?: boolean) => void;
 }
 
 const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
-  const { destroy, onCancel, onConfirm } = props;
+  const { destroy, onConfirm } = props;
   const t = useTranslate();
-  const [memoId, setMemoId] = useState<string>("");
-  const [memoList, setMemoList] = useState<Memo[]>([]);
+  const user = useCurrentUser();
+  const [searchText, setSearchText] = useState<string>("");
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const [fetchedMemos, setFetchedMemos] = useState<Memo[]>([]);
+  const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
+  const [embedded, setEmbedded] = useState<boolean>(false);
+  const filteredMemos = fetchedMemos.filter((memo) => !selectedMemos.includes(memo));
 
-  const handleMemoIdInputKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      handleSaveBtnClick();
-    }
-  };
-
-  const handleMemoIdChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const memoId = event.target.value;
-    setMemoId(memoId.trim());
-  };
-
-  const handleSaveBtnClick = async () => {
-    const id = Number(memoId);
-    if (isNaN(id)) {
-      toast.error("Invalid memo id");
-      return;
-    }
-
-    try {
-      const { memo } = await memoServiceClient.getMemo({
-        id,
-      });
-      if (!memo) {
-        toast.error("Not found memo");
-        return;
+  useDebounce(
+    async () => {
+      setIsFetching(true);
+      try {
+        const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
+        if (searchText) {
+          filters.push(`content_search == [${JSON.stringify(searchText)}]`);
+        }
+        const { memos } = await memoServiceClient.listMemos({
+          pageSize: DEFAULT_MEMO_LIMIT,
+          filter: filters.length > 0 ? filters.join(" && ") : undefined,
+        });
+        setFetchedMemos(memos);
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.response.data.message);
       }
+      setIsFetching(false);
+    },
+    300,
+    [searchText],
+  );
 
-      setMemoId("");
-      setMemoList(unionBy([memo, ...memoList], "id"));
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response.data.message);
+  const getHighlightedContent = (content: string) => {
+    const index = content.toLowerCase().indexOf(searchText.toLowerCase());
+    if (index === -1) {
+      return content;
     }
-  };
+    let before = content.slice(0, index);
+    if (before.length > 20) {
+      before = "..." + before.slice(before.length - 20);
+    }
+    const highlighted = content.slice(index, index + searchText.length);
+    let after = content.slice(index + searchText.length);
+    if (after.length > 20) {
+      after = after.slice(0, 20) + "...";
+    }
 
-  const handleDeleteMemoRelation = async (memo: Memo) => {
-    setMemoList(memoList.filter((m) => m !== memo));
+    return (
+      <>
+        {before}
+        <mark className="font-medium">{highlighted}</mark>
+        {after}
+      </>
+    );
   };
 
   const handleCloseDialog = () => {
-    if (onCancel) {
-      onCancel();
-    }
     destroy();
   };
 
   const handleConfirmBtnClick = async () => {
-    if (onConfirm) {
-      onConfirm(memoList.map((memo) => memo.id));
-    }
+    onConfirm(
+      selectedMemos.map((memo) => memo.id),
+      embedded,
+    );
     destroy();
   };
 
   return (
     <>
-      <div className="dialog-header-container">
+      <div className="dialog-header-container !w-96">
         <p className="title-text">{"Add references"}</p>
         <IconButton size="sm" onClick={() => destroy()}>
           <Icon.X className="w-5 h-auto" />
         </IconButton>
       </div>
-      <div className="dialog-content-container !w-80">
-        <Input
-          className="mb-2"
+      <div className="dialog-content-container max-w-[24rem]">
+        <Autocomplete
+          className="w-full"
           size="md"
-          placeholder={"Input memo ID. e.g. 26"}
-          value={memoId}
-          onChange={handleMemoIdChanged}
-          onKeyDown={handleMemoIdInputKeyDown}
-          fullWidth
-          endDecorator={<Icon.Check onClick={handleSaveBtnClick} className="w-4 h-auto cursor-pointer hover:opacity-80" />}
-        />
-        {memoList.length > 0 && (
-          <>
-            <div className="w-full flex flex-row justify-start items-start flex-wrap gap-2 mt-1">
-              {memoList.map((memo) => (
-                <div
-                  className="max-w-[50%] text-sm px-3 py-1 flex flex-row justify-start items-center border rounded-md cursor-pointer truncate opacity-80 dark:text-gray-300 dark:border-zinc-700 hover:opacity-60 hover:line-through"
-                  key={memo.id}
-                  onClick={() => handleDeleteMemoRelation(memo)}
-                >
-                  <span className="opacity-60 shrink-0">#{memo.id}</span>
-                  <span className="mx-1 max-w-full text-ellipsis whitespace-nowrap overflow-hidden">{memo.content}</span>
-                  <Icon.X className="opacity-80 w-4 h-auto shrink-0 ml-1" />
+          clearOnBlur
+          disableClearable
+          placeholder={"Search content"}
+          noOptionsText={"No memos found"}
+          options={filteredMemos}
+          loading={isFetching}
+          inputValue={searchText}
+          value={selectedMemos}
+          multiple
+          onInputChange={(_, value) => setSearchText(value.trim())}
+          getOptionKey={(option) => option.name}
+          getOptionLabel={(option) => option.content}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          renderOption={(props, option) => (
+            <AutocompleteOption {...props}>
+              <div className="w-full flex flex-col justify-start items-start">
+                <p className="text-xs text-gray-400 select-none">{getDateTimeString(option.displayTime)}</p>
+                <p className="mt-0.5 text-sm leading-5 line-clamp-2">
+                  {searchText ? getHighlightedContent(option.content) : option.content}
+                </p>
+              </div>
+            </AutocompleteOption>
+          )}
+          renderTags={(memos) =>
+            memos.map((memo) => (
+              <Chip key={memo.name} className="!max-w-full !rounded" variant="outlined" color="neutral">
+                <div className="w-full flex flex-col justify-start items-start">
+                  <p className="text-xs text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</p>
+                  <span className="w-full text-sm leading-5 truncate">{memo.content}</span>
                 </div>
-              ))}
-            </div>
-          </>
-        )}
-        <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
+              </Chip>
+            ))
+          }
+          onChange={(_, value) => setSelectedMemos(value)}
+        />
+        <div className="mt-3">
+          <Checkbox label={"Use as Embedded Content"} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
+        </div>
+        <div className="mt-4 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseDialog}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={handleConfirmBtnClick} disabled={memoList.length === 0}>
+          <Button onClick={handleConfirmBtnClick} disabled={selectedMemos.length === 0}>
             {t("common.confirm")}
           </Button>
         </div>
@@ -128,7 +155,7 @@ function showCreateMemoRelationDialog(props: Omit<Props, "destroy" | "hide">) {
       dialogName: "create-memo-relation-dialog",
     },
     CreateMemoRelationDialog,
-    props
+    props,
   );
 }
 

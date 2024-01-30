@@ -169,3 +169,15 @@ export function isFutureDate(t?: Date | number | string): boolean {
   const timestamp = getTimeStampByDate(t ? t : Date.now());
   return timestamp > Date.now();
 }
+
+/**
+ * Calculates a new Date object by adjusting the provided date, timestamp, or date string
+ * based on the current timezone offset.
+ *
+ * @param t - The input date, timestamp, or date string (optional). If not provided,
+ *            the current date and time will be used.
+ * @returns A new Date object adjusted by the current timezone offset.
+ */
+export function getDateWithOffset(t?: Date | number | string): Date {
+  return new Date(getTimeStampByDate(t) + new Date().getTimezoneOffset() * 60 * 1000);
+}

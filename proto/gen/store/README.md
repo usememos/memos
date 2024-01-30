@@ -27,7 +27,7 @@
     - [Webhook](#memos-store-Webhook)
   
 - [store/workspace_setting.proto](#store_workspace_setting-proto)
-    - [WorkspaceProfileSetting](#memos-store-WorkspaceProfileSetting)
+    - [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting)
   
     - [WorkspaceSettingKey](#memos-store-WorkspaceSettingKey)
   
@@ -300,9 +300,9 @@
 
 
 
-<a name="memos-store-WorkspaceProfileSetting"></a>
+<a name="memos-store-WorkspaceGeneralSetting"></a>
 
-### WorkspaceProfileSetting
+### WorkspaceGeneralSetting
 
 
 
@@ -310,6 +310,7 @@
 | ----- | ---- | ----- | ----------- |
 | instance_url | [string](#string) |  |  |
 | disallow_signup | [bool](#bool) |  |  |
+| disallow_password_login | [bool](#bool) |  |  |
 
 
 
@@ -326,7 +327,7 @@
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | WORKSPACE_SETTING_KEY_UNSPECIFIED | 0 |  |
-| WORKSPACE_SETTING_PROFILE | 1 |  |
+| WORKSPACE_SETTING_GENERAL | 1 |  |
 
 
  

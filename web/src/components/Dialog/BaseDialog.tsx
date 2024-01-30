@@ -68,7 +68,7 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
 export function generateDialog<T extends DialogProps>(
   config: DialogConfig,
   DialogComponent: React.FC<T>,
-  props?: Omit<T, "destroy" | "hide">
+  props?: Omit<T, "destroy" | "hide">,
 ): DialogCallback {
   const tempDiv = document.createElement("div");
   const dialog = createRoot(tempDiv);

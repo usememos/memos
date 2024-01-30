@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "gen/api/v2";
+
+service WorkspaceService {
+  rpc GetWorkspaceProfile(GetWorkspaceProfileRequest) returns (GetWorkspaceProfileResponse) {
+    option (google.api.http) = {get: "/api/v2/workspace/profile"};
+  }
+  rpc UpdateWorkspaceProfile(UpdateWorkspaceProfileRequest) returns (UpdateWorkspaceProfileResponse) {
+    option (google.api.http) = {
+      patch: "/api/v2/workspace/profile",
+      body: "workspace_profile"
+    };
+    option (google.api.method_signature) = "workspace_profile,update_mask";
+  }
+}
+
+message WorkspaceProfile {
+  string version = 1;
+  string mode = 2;
+  bool allow_registration = 3;
+  bool disable_password_login = 4;
+  string additional_script = 5;
+  string additional_style = 6;
+}
+
+message GetWorkspaceProfileRequest {}
+
+message GetWorkspaceProfileResponse {
+  WorkspaceProfile workspace_profile = 1;
+}
+
+message UpdateWorkspaceProfileRequest {
+  // System info is the updated data.
+  WorkspaceProfile workspace_profile = 1;
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UpdateWorkspaceProfileResponse {
+  WorkspaceProfile workspace_profile = 1;
+}

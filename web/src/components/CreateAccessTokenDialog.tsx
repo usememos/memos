@@ -139,7 +139,7 @@ function showCreateAccessTokenDialog(onConfirm: () => void) {
     CreateAccessTokenDialog,
     {
       onConfirm,
-    }
+    },
   );
 }
 

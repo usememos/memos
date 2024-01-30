@@ -20,7 +20,7 @@ const SearchBar = () => {
       filterStore.setTextFilter(queryText.length === 0 ? undefined : queryText);
     },
     1000,
-    [queryText]
+    [queryText],
   );
 
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {

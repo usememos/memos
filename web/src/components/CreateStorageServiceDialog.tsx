@@ -1,5 +1,5 @@
-import { Button, IconButton, Input, Typography } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { Button, IconButton, Input, Checkbox, Typography } from "@mui/joy";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import * as api from "@/helpers/api";
 import { useTranslate } from "@/utils/i18n";
@@ -29,6 +29,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     bucket: "",
     urlPrefix: "",
     urlSuffix: "",
+    presign: false,
   });
   const isCreating = storage === undefined;
 
@@ -220,6 +221,12 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           onChange={(e) => setPartialS3Config({ urlSuffix: e.target.value })}
           fullWidth
         />
+        <Checkbox
+          className="mb-2"
+          label={t("setting.storage-section.presign-placeholder")}
+          checked={s3Config.presign}
+          onChange={(e) => setPartialS3Config({ presign: e.target.checked })}
+        />
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
@@ -240,7 +247,7 @@ function showCreateStorageServiceDialog(storage?: ObjectStorage, confirmCallback
       dialogName: "create-storage-service-dialog",
     },
     CreateStorageServiceDialog,
-    { storage, confirmCallback }
+    { storage, confirmCallback },
   );
 }
 

@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
@@ -26,7 +27,8 @@ import (
 )
 
 type Resource struct {
-	ID int32 `json:"id"`
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
 
 	// Standard fields
 	CreatorID int32 `json:"creatorId"`
@@ -139,6 +141,7 @@ func (s *APIV1Service) CreateResource(c echo.Context) error {
 	}
 
 	create := &store.Resource{
+		ResourceName: shortuuid.New(),
 		CreatorID:    userID,
 		Filename:     request.Filename,
 		ExternalLink: request.ExternalLink,
@@ -183,7 +186,7 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	}
 
 	// This is the backend default max upload size limit.
-	maxUploadSetting := s.Store.GetSystemSettingValueWithDefault(ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
+	maxUploadSetting := s.Store.GetWorkspaceSettingWithDefaultValue(ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
 	var settingMaxUploadSizeBytes int
 	if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
 		settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
@@ -215,10 +218,11 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	defer sourceFile.Close()
 
 	create := &store.Resource{
-		CreatorID: userID,
-		Filename:  file.Filename,
-		Type:      file.Header.Get("Content-Type"),
-		Size:      file.Size,
+		ResourceName: shortuuid.New(),
+		CreatorID:    userID,
+		Filename:     file.Filename,
+		Type:         file.Header.Get("Content-Type"),
+		Size:         file.Size,
 	}
 	err = SaveResourceBlob(ctx, s.Store, create, sourceFile)
 	if err != nil {
@@ -229,6 +233,7 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 	}
+	metric.Enqueue("resource create")
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 }
 
@@ -365,6 +370,7 @@ func replacePathTemplate(path, filename string) string {
 func convertResourceFromStore(resource *store.Resource) *Resource {
 	return &Resource{
 		ID:           resource.ID,
+		Name:         resource.ResourceName,
 		CreatorID:    resource.CreatorID,
 		CreatedTs:    resource.CreatedTs,
 		UpdatedTs:    resource.UpdatedTs,
@@ -384,7 +390,7 @@ func convertResourceFromStore(resource *store.Resource) *Resource {
 // 2. *LocalStorage*: `create.InternalPath`.
 // 3. Others( external service): `create.ExternalLink`.
 func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resource, r io.Reader) error {
-	systemSettingStorageServiceID, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
+	systemSettingStorageServiceID, err := s.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{Name: SystemSettingStorageServiceIDName.String()})
 	if err != nil {
 		return errors.Wrap(err, "Failed to find SystemSettingStorageServiceIDName")
 	}
@@ -407,7 +413,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		return nil
 	} else if storageServiceID == LocalStorage {
 		// `LocalStorage` means save blob into local disk
-		systemSettingLocalStoragePath, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingLocalStoragePathName.String()})
+		systemSettingLocalStoragePath, err := s.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{Name: SystemSettingLocalStoragePathName.String()})
 		if err != nil {
 			return errors.Wrap(err, "Failed to find SystemSettingLocalStoragePathName")
 		}
@@ -474,6 +480,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		Bucket:    s3Config.Bucket,
 		URLPrefix: s3Config.URLPrefix,
 		URLSuffix: s3Config.URLSuffix,
+		PreSign:   s3Config.PreSign,
 	})
 	if err != nil {
 		return errors.Wrap(err, "Failed to create s3 client")

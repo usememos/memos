@@ -1,6 +1,6 @@
-import { ClickAwayListener } from "@mui/base/ClickAwayListener";
 import { Dropdown, IconButton, Menu, MenuButton } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import useClickAway from "react-use/lib/useClickAway";
 import Icon from "@/components/Icon";
 import OverflowTip from "@/components/kit/OverflowTip";
 import { useTagStore } from "@/store/module";
@@ -14,6 +14,7 @@ const TagSelector = (props: Props) => {
   const { editorRef } = props;
   const tagStore = useTagStore();
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const tags = tagStore.state.tags;
 
   useEffect(() => {
@@ -25,6 +26,10 @@ const TagSelector = (props: Props) => {
       }
     })();
   }, []);
+
+  useClickAway(containerRef, () => {
+    setOpen(false);
+  });
 
   const handleTagClick = (tag: string) => {
     editorRef.current?.insertText(`#${tag} `);
@@ -42,12 +47,8 @@ const TagSelector = (props: Props) => {
       >
         <Icon.Hash className="w-5 h-5 mx-auto" />
       </MenuButton>
-      <Menu className="relative text-sm" size="sm" placement="bottom-start">
-        <ClickAwayListener
-          onClickAway={() => {
-            setOpen(false);
-          }}
-        >
+      <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">
+        <div ref={containerRef}>
           {tags.length > 0 ? (
             <div className="flex-row justify-start items-start flex-wrap px-1 max-w-[12rem] h-auto max-h-48 overflow-y-auto font-mono">
               {tags.map((tag) => {
@@ -63,11 +64,11 @@ const TagSelector = (props: Props) => {
               })}
             </div>
           ) : (
-            <p className="italic mx-1" onClick={(e) => e.stopPropagation()}>
+            <p className="italic mx-2" onClick={(e) => e.stopPropagation()}>
               No tag found
             </p>
           )}
-        </ClickAwayListener>
+        </div>
       </Menu>
     </Dropdown>
   );

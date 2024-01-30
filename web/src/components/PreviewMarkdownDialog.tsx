@@ -53,6 +53,6 @@ export default function showPreviewMarkdownDialog(content: string): void {
     PreviewMarkdownDialog,
     {
       content,
-    }
+    },
   );
 }

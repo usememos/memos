@@ -230,6 +230,8 @@ definitions:
         type: string
       path:
         type: string
+      presign:
+        type: boolean
       region:
         type: string
       secretKey:
@@ -660,6 +662,8 @@ definitions:
         type: string
       path:
         type: string
+      presign:
+        type: boolean
       region:
         type: string
       secretKey:
@@ -932,9 +936,13 @@ definitions:
         type: integer
       id:
         type: integer
+      parentID:
+        type: integer
       pinned:
         description: Composed fields
         type: boolean
+      resourceName:
+        type: string
       rowStatus:
         allOf:
         - $ref: '#/definitions/store.RowStatus'
@@ -983,6 +991,8 @@ definitions:
         type: string
       memoID:
         type: integer
+      resourceName:
+        type: string
       size:
         type: integer
       type:
@@ -1583,7 +1593,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api_v1.UpsertMemoRelationRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpsertMemoRelationRequest'
       produces:
       - application/json
       responses:
@@ -1743,7 +1753,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateResourceRequest'
+          $ref: '#/definitions/api_v1.CreateResourceRequest'
       produces:
       - application/json
       responses:
@@ -1801,7 +1811,7 @@ paths:
         name: patch
         required: true
         schema:
-          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpdateResourceRequest'
+          $ref: '#/definitions/api_v1.UpdateResourceRequest'
       produces:
       - application/json
       responses:
@@ -1856,7 +1866,7 @@ paths:
         "200":
           description: System GetSystemStatus
           schema:
-            $ref: '#/definitions/github_com_usememos_memos_api_v1.SystemStatus'
+            $ref: '#/definitions/api_v1.SystemStatus'
         "401":
           description: Missing user in session | Unauthorized
         "500":
@@ -1892,7 +1902,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateStorageRequest'
+          $ref: '#/definitions/api_v1.CreateStorageRequest'
       produces:
       - application/json
       responses:
@@ -1947,7 +1957,7 @@ paths:
         name: patch
         required: true
         schema:
-          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpdateStorageRequest'
+          $ref: '#/definitions/api_v1.UpdateStorageRequest'
       produces:
       - application/json
       responses:
@@ -2283,19 +2293,6 @@ paths:
       summary: Get user by username
       tags:
       - user
-  /explore/rss.xml:
-    get:
-      produces:
-      - text/xml
-      responses:
-        "200":
-          description: RSS
-        "500":
-          description: Failed to get system customized profile | Failed to find memo
-            list | Failed to generate rss
-      summary: Get RSS
-      tags:
-      - rss
   /o/get/GetImage:
     get:
       parameters:
@@ -2317,25 +2314,4 @@ paths:
       summary: Get GetImage from URL
       tags:
       - image-url
-  /u/{id}/rss.xml:
-    get:
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - text/xml
-      responses:
-        "200":
-          description: RSS
-        "400":
-          description: User id is not a number
-        "500":
-          description: Failed to get system customized profile | Failed to find memo
-            list | Failed to generate rss
-      summary: Get RSS for a user
-      tags:
-      - rss
 swagger: "2.0"

@@ -75,7 +75,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     if (event.altKey) {
       showChangeMemoCreatedTsDialog(memo.id);
     } else {
-      navigateTo(`/m/${memo.id}`);
+      navigateTo(`/m/${memo.name}`);
     }
   };
 
@@ -87,7 +87,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             id: memo.id,
             pinned: false,
           },
-          ["pinned"]
+          ["pinned"],
         );
       } else {
         await memoStore.updateMemo(
@@ -95,7 +95,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             id: memo.id,
             pinned: true,
           },
-          ["pinned"]
+          ["pinned"],
         );
       }
     } catch (error) {
@@ -129,7 +129,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           id: memo.id,
           rowStatus: RowStatus.ARCHIVED,
         },
-        ["row_status"]
+        ["row_status"],
       );
     } catch (error: any) {
       console.error(error);
@@ -150,7 +150,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   };
 
   const handleCopyMemoId = () => {
-    copy(String(memo.id));
+    copy(memo.name);
     toast.success("Copied to clipboard!");
   };
 
@@ -246,10 +246,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     {t("common.delete")}
                   </span>
                   <Divider className="!my-1" />
-                  <div className="w-full px-3 text-xs text-gray-400">
-                    <span className="cursor-pointer" onClick={handleCopyMemoId}>
-                      ID: <span className="font-mono">{memo.id}</span>
-                    </span>
+                  <div className="w-full pl-3 pr-2 text-xs text-gray-400">
+                    <div className="font-mono max-w-20 cursor-pointer truncate" onClick={handleCopyMemoId}>
+                      ID: {memo.name}
+                    </div>
                   </div>
                 </div>
               </div>

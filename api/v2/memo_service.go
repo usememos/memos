@@ -1,13 +1,20 @@
 package v2
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/google/cel-go/cel"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
+	"github.com/usememos/gomark/ast"
+	"github.com/usememos/gomark/parser"
+	"github.com/usememos/gomark/parser/tokenizer"
+	"github.com/usememos/gomark/restore"
 	"go.uber.org/zap"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
@@ -16,10 +23,7 @@ import (
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/log"
-	"github.com/usememos/memos/plugin/gomark/ast"
-	"github.com/usememos/memos/plugin/gomark/parser"
-	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
-	"github.com/usememos/memos/plugin/gomark/restore"
+	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/webhook"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -28,7 +32,9 @@ import (
 )
 
 const (
+	DefaultPageSize  = 10
 	MaxContentLength = 8 * 1024
+	ChunkSize        = 64 * 1024 // 64 KiB
 )
 
 func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMemoRequest) (*apiv2pb.CreateMemoResponse, error) {
@@ -49,9 +55,10 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	}
 
 	create := &store.Memo{
-		CreatorID:  user.ID,
-		Content:    request.Content,
-		Visibility: store.Visibility(request.Visibility.String()),
+		ResourceName: shortuuid.New(),
+		CreatorID:    user.ID,
+		Content:      request.Content,
+		Visibility:   convertVisibilityToStore(request.Visibility),
 	}
 	// Find disable public memos system setting.
 	disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
@@ -96,107 +103,56 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 }
 
 func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemosRequest) (*apiv2pb.ListMemosResponse, error) {
-	memoFind := &store.FindMemo{
-		// Exclude comments by default.
-		ExcludeComments: true,
-	}
-	if request.Filter != "" {
-		filter, err := parseListMemosFilter(request.Filter)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
-		}
-		if len(filter.ContentSearch) > 0 {
-			memoFind.ContentSearch = filter.ContentSearch
-		}
-		if len(filter.Visibilities) > 0 {
-			memoFind.VisibilityList = filter.Visibilities
-		}
-		if filter.OrderByPinned {
-			memoFind.OrderByPinned = filter.OrderByPinned
-		}
-		if filter.DisplayTimeAfter != nil {
-			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
-			}
-			if displayWithUpdatedTs {
-				memoFind.UpdatedTsAfter = filter.DisplayTimeAfter
-			} else {
-				memoFind.CreatedTsAfter = filter.DisplayTimeAfter
-			}
-		}
-		if filter.DisplayTimeBefore != nil {
-			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
-			}
-			if displayWithUpdatedTs {
-				memoFind.UpdatedTsBefore = filter.DisplayTimeBefore
-			} else {
-				memoFind.CreatedTsBefore = filter.DisplayTimeBefore
-			}
-		}
-		if filter.Creator != nil {
-			username, err := ExtractUsernameFromName(*filter.Creator)
-			if err != nil {
-				return nil, status.Errorf(codes.InvalidArgument, "invalid creator name")
-			}
-			user, err := s.Store.GetUser(ctx, &store.FindUser{
-				Username: &username,
-			})
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get user")
-			}
-			if user == nil {
-				return nil, status.Errorf(codes.NotFound, "user not found")
-			}
-			memoFind.CreatorID = &user.ID
-		}
-		if filter.RowStatus != nil {
-			memoFind.RowStatus = filter.RowStatus
-		}
-	} else {
-		return nil, status.Errorf(codes.InvalidArgument, "filter is required")
-	}
-
-	user, _ := getCurrentUser(ctx, s.Store)
-	// If the user is not authenticated, only public memos are visible.
-	if user == nil {
-		memoFind.VisibilityList = []store.Visibility{store.Public}
-	}
-	if user != nil && memoFind.CreatorID != nil && *memoFind.CreatorID != user.ID {
-		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
-	}
-
-	displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	memoFind, err := s.buildFindMemosWithFilter(ctx, request.Filter, true)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
-	}
-	if displayWithUpdatedTs {
-		memoFind.OrderByUpdatedTs = true
+		return nil, err
 	}
 
-	if request.Limit != 0 {
-		offset, limit := int(request.Offset), int(request.Limit)
-		memoFind.Offset = &offset
-		memoFind.Limit = &limit
+	var limit, offset int
+	if request.PageToken != "" {
+		var pageToken apiv2pb.PageToken
+		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
+		}
+		if pageToken.Limit < 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "page size cannot be negative")
+		}
+		limit = int(pageToken.Limit)
+		offset = int(pageToken.Offset)
+	} else {
+		limit = int(request.PageSize)
 	}
+	if limit <= 0 {
+		limit = DefaultPageSize
+	}
+	limitPlusOne := limit + 1
+	memoFind.Offset = &offset
+	memoFind.Limit = &limitPlusOne
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return nil, err
 	}
 
-	memoMessages := make([]*apiv2pb.Memo, len(memos))
-	for i, memo := range memos {
+	memoMessages := []*apiv2pb.Memo{}
+	nextPageToken := ""
+	if len(memos) == limitPlusOne {
+		memos = memos[:limit]
+		nextPageToken, err = getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
+		}
+	}
+	for _, memo := range memos {
 		memoMessage, err := s.convertMemoFromStore(ctx, memo)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
-		memoMessages[i] = memoMessage
+		memoMessages = append(memoMessages, memoMessage)
 	}
 
 	response := &apiv2pb.ListMemosResponse{
-		Memos: memoMessages,
+		Memos:         memoMessages,
+		NextPageToken: nextPageToken,
 	}
 	return response, nil
 }
@@ -229,6 +185,39 @@ func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequ
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
 	response := &apiv2pb.GetMemoResponse{
+		Memo: memoMessage,
+	}
+	return response, nil
+}
+
+func (s *APIV2Service) GetMemoByName(ctx context.Context, request *apiv2pb.GetMemoByNameRequest) (*apiv2pb.GetMemoByNameResponse, error) {
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+		ResourceName: &request.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+	if memo.Visibility != store.Public {
+		user, err := getCurrentUser(ctx, s.Store)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get user")
+		}
+		if user == nil {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+		if memo.Visibility == store.Private && memo.CreatorID != user.ID {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
+	memoMessage, err := s.convertMemoFromStore(ctx, memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert memo")
+	}
+	response := &apiv2pb.GetMemoByNameResponse{
 		Memo: memoMessage,
 	}
 	return response, nil
@@ -282,8 +271,21 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 			nodes := convertToASTNodes(request.Memo.Nodes)
 			content := restore.Restore(nodes)
 			update.Content = &content
+		} else if path == "resource_name" {
+			update.ResourceName = &request.Memo.Name
+			if !util.ResourceNameMatcher.MatchString(*update.ResourceName) {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name")
+			}
 		} else if path == "visibility" {
 			visibility := convertVisibilityToStore(request.Memo.Visibility)
+			// Find disable public memos system setting.
+			disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get system setting")
+			}
+			if disablePublicMemosSystem && visibility == store.Public {
+				return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
+			}
 			update.Visibility = &visibility
 		} else if path == "row_status" {
 			rowStatus := convertRowStatusToStore(request.Memo.RowStatus)
@@ -547,6 +549,61 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 	return response, nil
 }
 
+func (s *APIV2Service) ExportMemos(request *apiv2pb.ExportMemosRequest, srv apiv2pb.MemoService_ExportMemosServer) error {
+	ctx := srv.Context()
+	fmt.Printf("%+v\n", ctx)
+	memoFind, err := s.buildFindMemosWithFilter(ctx, request.Filter, true)
+	if err != nil {
+		return err
+	}
+
+	memos, err := s.Store.ListMemos(ctx, memoFind)
+	if err != nil {
+		return err
+	}
+
+	buf := new(bytes.Buffer)
+	writer := zip.NewWriter(buf)
+
+	for _, memo := range memos {
+		memoMessage, err := s.convertMemoFromStore(ctx, memo)
+		log.Info(memoMessage.Content)
+		if err != nil {
+			return errors.Wrap(err, "failed to convert memo")
+		}
+		file, err := writer.Create(time.Unix(memo.CreatedTs, 0).Format(time.RFC3339) + ".md")
+		if err != nil {
+			return status.Errorf(codes.Internal, "Failed to create memo file")
+		}
+		_, err = file.Write([]byte(memoMessage.Content))
+		if err != nil {
+			return status.Errorf(codes.Internal, "Failed to write to memo file")
+		}
+	}
+
+	err = writer.Close()
+	if err != nil {
+		return status.Errorf(codes.Internal, "Failed to close zip file writer")
+	}
+
+	exportChunk := &apiv2pb.ExportMemosResponse{}
+	sizeOfFile := len(buf.Bytes())
+	for currentByte := 0; currentByte < sizeOfFile; currentByte += ChunkSize {
+		if currentByte+ChunkSize > sizeOfFile {
+			exportChunk.File = buf.Bytes()[currentByte:sizeOfFile]
+		} else {
+			exportChunk.File = buf.Bytes()[currentByte : currentByte+ChunkSize]
+		}
+
+		err := srv.Send(exportChunk)
+		if err != nil {
+			return status.Error(codes.Internal, "Unable to stream ExportMemosResponse chunk")
+		}
+	}
+
+	return nil
+}
+
 func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*apiv2pb.Memo, error) {
 	rawNodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
 	if err != nil {
@@ -574,6 +631,7 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 
 	return &apiv2pb.Memo{
 		Id:          int32(memo.ID),
+		Name:        memo.ResourceName,
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
 		Creator:     fmt.Sprintf("%s%s", UserNamePrefix, creator.Username),
 		CreatorId:   int32(memo.CreatorID),
@@ -591,7 +649,7 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 }
 
 func (s *APIV2Service) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (bool, error) {
-	memoDisplayWithUpdatedTsSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+	memoDisplayWithUpdatedTsSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: apiv1.SystemSettingMemoDisplayWithUpdatedTsName.String(),
 	})
 	if err != nil {
@@ -609,7 +667,7 @@ func (s *APIV2Service) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Conte
 }
 
 func (s *APIV2Service) getDisablePublicMemosSystemSettingValue(ctx context.Context) (bool, error) {
-	disablePublicMemosSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+	disablePublicMemosSystemSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: apiv1.SystemSettingDisablePublicMemosName.String(),
 	})
 	if err != nil {
@@ -770,6 +828,90 @@ func (s *APIV2Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *api
 		}
 	}
 	return nil
+}
+
+func (s *APIV2Service) buildFindMemosWithFilter(ctx context.Context, filter string, excludeComments bool) (*store.FindMemo, error) {
+	memoFind := &store.FindMemo{
+		// Exclude comments by default.
+		ExcludeComments: excludeComments,
+	}
+	if filter != "" {
+		filter, err := parseListMemosFilter(filter)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		}
+		if len(filter.ContentSearch) > 0 {
+			memoFind.ContentSearch = filter.ContentSearch
+		}
+		if len(filter.Visibilities) > 0 {
+			memoFind.VisibilityList = filter.Visibilities
+		}
+		if filter.OrderByPinned {
+			memoFind.OrderByPinned = filter.OrderByPinned
+		}
+		if filter.DisplayTimeAfter != nil {
+			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+			}
+			if displayWithUpdatedTs {
+				memoFind.UpdatedTsAfter = filter.DisplayTimeAfter
+			} else {
+				memoFind.CreatedTsAfter = filter.DisplayTimeAfter
+			}
+		}
+		if filter.DisplayTimeBefore != nil {
+			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+			}
+			if displayWithUpdatedTs {
+				memoFind.UpdatedTsBefore = filter.DisplayTimeBefore
+			} else {
+				memoFind.CreatedTsBefore = filter.DisplayTimeBefore
+			}
+		}
+		if filter.Creator != nil {
+			username, err := ExtractUsernameFromName(*filter.Creator)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid creator name")
+			}
+			user, err := s.Store.GetUser(ctx, &store.FindUser{
+				Username: &username,
+			})
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get user")
+			}
+			if user == nil {
+				return nil, status.Errorf(codes.NotFound, "user not found")
+			}
+			memoFind.CreatorID = &user.ID
+		}
+		if filter.RowStatus != nil {
+			memoFind.RowStatus = filter.RowStatus
+		}
+	} else {
+		return nil, status.Errorf(codes.InvalidArgument, "filter is required")
+	}
+
+	user, _ := getCurrentUser(ctx, s.Store)
+	// If the user is not authenticated, only public memos are visible.
+	if user == nil {
+		memoFind.VisibilityList = []store.Visibility{store.Public}
+	}
+	if user != nil && memoFind.CreatorID != nil && *memoFind.CreatorID != user.ID {
+		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+	}
+
+	displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+	}
+	if displayWithUpdatedTs {
+		memoFind.OrderByUpdatedTs = true
+	}
+
+	return memoFind, nil
 }
 
 func convertMemoToWebhookPayload(memo *apiv2pb.Memo) *webhook.WebhookPayload {

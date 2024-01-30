@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	TagService_UpsertTag_FullMethodName         = "/memos.api.v2.TagService/UpsertTag"
 	TagService_ListTags_FullMethodName          = "/memos.api.v2.TagService/ListTags"
+	TagService_RenameTag_FullMethodName         = "/memos.api.v2.TagService/RenameTag"
 	TagService_DeleteTag_FullMethodName         = "/memos.api.v2.TagService/DeleteTag"
 	TagService_GetTagSuggestions_FullMethodName = "/memos.api.v2.TagService/GetTagSuggestions"
 )
@@ -31,6 +32,7 @@ const (
 type TagServiceClient interface {
 	UpsertTag(ctx context.Context, in *UpsertTagRequest, opts ...grpc.CallOption) (*UpsertTagResponse, error)
 	ListTags(ctx context.Context, in *ListTagsRequest, opts ...grpc.CallOption) (*ListTagsResponse, error)
+	RenameTag(ctx context.Context, in *RenameTagRequest, opts ...grpc.CallOption) (*RenameTagResponse, error)
 	DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*DeleteTagResponse, error)
 	GetTagSuggestions(ctx context.Context, in *GetTagSuggestionsRequest, opts ...grpc.CallOption) (*GetTagSuggestionsResponse, error)
 }
@@ -61,6 +63,15 @@ func (c *tagServiceClient) ListTags(ctx context.Context, in *ListTagsRequest, op
 	return out, nil
 }
 
+func (c *tagServiceClient) RenameTag(ctx context.Context, in *RenameTagRequest, opts ...grpc.CallOption) (*RenameTagResponse, error) {
+	out := new(RenameTagResponse)
+	err := c.cc.Invoke(ctx, TagService_RenameTag_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *tagServiceClient) DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*DeleteTagResponse, error) {
 	out := new(DeleteTagResponse)
 	err := c.cc.Invoke(ctx, TagService_DeleteTag_FullMethodName, in, out, opts...)
@@ -85,6 +96,7 @@ func (c *tagServiceClient) GetTagSuggestions(ctx context.Context, in *GetTagSugg
 type TagServiceServer interface {
 	UpsertTag(context.Context, *UpsertTagRequest) (*UpsertTagResponse, error)
 	ListTags(context.Context, *ListTagsRequest) (*ListTagsResponse, error)
+	RenameTag(context.Context, *RenameTagRequest) (*RenameTagResponse, error)
 	DeleteTag(context.Context, *DeleteTagRequest) (*DeleteTagResponse, error)
 	GetTagSuggestions(context.Context, *GetTagSuggestionsRequest) (*GetTagSuggestionsResponse, error)
 	mustEmbedUnimplementedTagServiceServer()
@@ -99,6 +111,9 @@ func (UnimplementedTagServiceServer) UpsertTag(context.Context, *UpsertTagReques
 }
 func (UnimplementedTagServiceServer) ListTags(context.Context, *ListTagsRequest) (*ListTagsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTags not implemented")
+}
+func (UnimplementedTagServiceServer) RenameTag(context.Context, *RenameTagRequest) (*RenameTagResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RenameTag not implemented")
 }
 func (UnimplementedTagServiceServer) DeleteTag(context.Context, *DeleteTagRequest) (*DeleteTagResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTag not implemented")
@@ -155,6 +170,24 @@ func _TagService_ListTags_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TagService_RenameTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RenameTagRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServiceServer).RenameTag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TagService_RenameTag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServiceServer).RenameTag(ctx, req.(*RenameTagRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TagService_DeleteTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteTagRequest)
 	if err := dec(in); err != nil {
@@ -205,6 +238,10 @@ var TagService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListTags",
 			Handler:    _TagService_ListTags_Handler,
+		},
+		{
+			MethodName: "RenameTag",
+			Handler:    _TagService_RenameTag_Handler,
 		},
 		{
 			MethodName: "DeleteTag",

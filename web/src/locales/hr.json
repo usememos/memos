@@ -81,10 +81,6 @@
     "visibility": "Vidljivost",
     "yourself": "Ti"
   },
-  "daily-review": {
-    "no-memos": "Ups. Ovdje nema ničega.",
-    "title": "Pregled dana"
-  },
   "days": {
     "fri": "Pet",
     "mon": "Prijava lozinkom je onemogućena, budi pažljiv kad mičeš identity providers",

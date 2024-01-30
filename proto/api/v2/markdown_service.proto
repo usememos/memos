@@ -52,6 +52,7 @@ enum NodeType {
   HIGHLIGHT = 25;
   SUBSCRIPT = 26;
   SUPERSCRIPT = 27;
+  REFERENCED_CONTENT = 28;
 }
 
 message Node {
@@ -84,6 +85,7 @@ message Node {
     HighlightNode highlight_node = 26;
     SubscriptNode subscript_node = 27;
     SuperscriptNode superscript_node = 28;
+    ReferencedContentNode referenced_content_node = 29;
   }
 }
 
@@ -213,4 +215,9 @@ message SubscriptNode {
 
 message SuperscriptNode {
   string content = 1;
+}
+
+message ReferencedContentNode {
+  string resource_name = 1;
+  string params = 2;
 }

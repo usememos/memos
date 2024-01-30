@@ -81,10 +81,6 @@
     "visibility": "공개 범위",
     "yourself": "자기 자신"
   },
-  "daily-review": {
-    "no-memos": "앗, 아무것도 없네요.",
-    "title": "날마다 돌아보기"
-  },
   "days": {
     "fri": "금",
     "mon": "월",

@@ -46,6 +46,8 @@ jobs:
             ghcr.io/usememos/memos
           tags: |
             type=raw,value=stable
+          flavor: |
+            latest=true
 
       - name: Build and Push
         id: docker_build

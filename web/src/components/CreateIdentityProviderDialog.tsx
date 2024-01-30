@@ -426,7 +426,7 @@ function showCreateIdentityProviderDialog(identityProvider?: IdentityProvider, c
       dialogName: "create-identity-provider-dialog",
     },
     CreateIdentityProviderDialog,
-    { identityProvider, confirmCallback }
+    { identityProvider, confirmCallback },
   );
 }
 

@@ -64,7 +64,8 @@
     "mark": "Mark",
     "profile": "Profile",
     "inbox": "Inbox",
-    "search": "Search"
+    "search": "Search",
+    "role": "Role"
   },
   "router": {
     "go-to-home": "Go to Home",
@@ -176,6 +177,7 @@
       "email-note": "Optional",
       "update-information": "Update Information",
       "change-password": "Change password",
+      "export-memos": "Export Memos",
       "reset-api": "Reset API",
       "openapi-title": "OpenAPI",
       "openapi-reset": "Reset OpenAPI Key",
@@ -227,7 +229,8 @@
       "url-prefix": "URL prefix",
       "url-prefix-placeholder": "Custom URL prefix, optional",
       "url-suffix": "URL suffix",
-      "url-suffix-placeholder": "Custom URL suffix, optional"
+      "url-suffix-placeholder": "Custom URL suffix, optional",
+      "presign-placeholder": "Pre-sign URL, optional"
     },
     "member-section": {
       "create-a-member": "Create a member",

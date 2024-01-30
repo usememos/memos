@@ -299,7 +299,7 @@ function showCreateResourceDialog(props: Omit<Props, "destroy" | "hide">) {
       dialogName: "create-resource-dialog",
     },
     CreateResourceDialog,
-    props
+    props,
   );
 }
 

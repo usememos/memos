@@ -12,8 +12,8 @@ import SearchBar from "@/components/SearchBar";
 import { memoServiceClient } from "@/grpcweb";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useLoading from "@/hooks/useLoading";
-import { useFilterStore } from "@/store/module";
 import { useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { Memo } from "@/types/proto/api/v2/memo_service";
@@ -23,10 +23,9 @@ const Archived = () => {
   const t = useTranslate();
   const loadingState = useLoading();
   const user = useCurrentUser();
-  const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
-  const { tag: tagQuery, text: textQuery } = filterStore.state;
+  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
 
   useEffect(() => {
     (async () => {
@@ -34,10 +33,10 @@ const Archived = () => {
         const filters = [`creator == "${user.name}"`, "row_status == 'ARCHIVED'"];
         const contentSearch: string[] = [];
         if (tagQuery) {
-          contentSearch.push(`"#${tagQuery}"`);
+          contentSearch.push(JSON.stringify(`#${tagQuery}`));
         }
         if (textQuery) {
-          contentSearch.push(`"${textQuery}"`);
+          contentSearch.push(JSON.stringify(textQuery));
         }
         if (contentSearch.length > 0) {
           filters.push(`content_search == [${contentSearch.join(", ")}]`);
@@ -73,7 +72,7 @@ const Archived = () => {
           id: memo.id,
           rowStatus: RowStatus.ACTIVE,
         },
-        ["row_status"]
+        ["row_status"],
       );
       setArchivedMemos((prev) => prev.filter((m) => m.id !== memo.id));
       toast(t("message.restored-successfully"));

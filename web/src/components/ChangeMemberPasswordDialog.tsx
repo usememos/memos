@@ -54,7 +54,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
           name: user.name,
           password: newPassword,
         },
-        ["password"]
+        ["password"],
       );
       toast(t("message.password-changed"));
       handleCloseBtnClick();
@@ -111,7 +111,7 @@ function showChangeMemberPasswordDialog(user: User) {
       dialogName: "change-member-password-dialog",
     },
     ChangeMemberPasswordDialog,
-    { user }
+    { user },
   );
 }
 

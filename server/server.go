@@ -135,14 +135,14 @@ func (s *Server) GetEcho() *echo.Echo {
 }
 
 func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
-	serverIDSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+	serverIDSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: apiv1.SystemSettingServerIDName.String(),
 	})
 	if err != nil {
 		return "", err
 	}
 	if serverIDSetting == nil || serverIDSetting.Value == "" {
-		serverIDSetting, err = s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+		serverIDSetting, err = s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 			Name:  apiv1.SystemSettingServerIDName.String(),
 			Value: uuid.NewString(),
 		})
@@ -154,14 +154,14 @@ func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
 }
 
 func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error) {
-	secretSessionNameValue, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+	secretSessionNameValue, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: apiv1.SystemSettingSecretSessionName.String(),
 	})
 	if err != nil {
 		return "", err
 	}
 	if secretSessionNameValue == nil || secretSessionNameValue.Value == "" {
-		secretSessionNameValue, err = s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+		secretSessionNameValue, err = s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 			Name:  apiv1.SystemSettingSecretSessionName.String(),
 			Value: uuid.NewString(),
 		})

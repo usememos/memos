@@ -137,7 +137,7 @@ function showUpdateCustomizedProfileDialog() {
       className: "update-customized-profile-dialog",
       dialogName: "update-customized-profile-dialog",
     },
-    UpdateCustomizedProfileDialog
+    UpdateCustomizedProfileDialog,
   );
 }
 

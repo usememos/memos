@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/usememos/memos/api/resource"
+	"github.com/usememos/memos/api/rss"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -44,9 +45,6 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 }
 
 func (s *APIV1Service) Register(rootGroup *echo.Group) {
-	// Register RSS routes.
-	s.registerRSSRoutes(rootGroup)
-
 	// Register API v1 routes.
 	apiV1Group := rootGroup.Group("/api/v1")
 	apiV1Group.Use(middleware.RateLimiterWithConfig(middleware.RateLimiterConfig{
@@ -85,9 +83,12 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 		return JWTMiddleware(s, next, s.Secret)
 	})
 	s.registerGetterPublicRoutes(publicGroup)
+
 	// Create and register resource public routes.
-	resourceService := resource.NewService(s.Profile, s.Store)
-	resourceService.RegisterResourcePublicRoutes(publicGroup)
+	resource.NewResourceService(s.Profile, s.Store).RegisterRoutes(publicGroup)
+
+	// Create and register rss public routes.
+	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
 	// programmatically set API version same as the server version
 	SwaggerInfo.Version = s.Profile.Version

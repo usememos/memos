@@ -136,7 +136,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         }
       },
     }),
-    []
+    [],
   );
 
   const handleEditorInput = useCallback(() => {

@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
+	"github.com/usememos/gomark/ast"
+	"github.com/usememos/gomark/parser"
+	"github.com/usememos/gomark/parser/tokenizer"
 
-	"github.com/usememos/memos/plugin/gomark/ast"
-	"github.com/usememos/memos/plugin/gomark/parser"
-	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 )
 
@@ -98,6 +98,8 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 		node.Node = &apiv2pb.Node_SubscriptNode{SubscriptNode: &apiv2pb.SubscriptNode{Content: n.Content}}
 	case *ast.Superscript:
 		node.Node = &apiv2pb.Node_SuperscriptNode{SuperscriptNode: &apiv2pb.SuperscriptNode{Content: n.Content}}
+	case *ast.ReferencedContent:
+		node.Node = &apiv2pb.Node_ReferencedContentNode{ReferencedContentNode: &apiv2pb.ReferencedContentNode{ResourceName: n.ResourceName, Params: n.Params}}
 	default:
 		node.Node = &apiv2pb.Node_TextNode{TextNode: &apiv2pb.TextNode{}}
 	}
@@ -177,6 +179,8 @@ func convertToASTNode(node *apiv2pb.Node) ast.Node {
 		return &ast.Subscript{Content: n.SubscriptNode.Content}
 	case *apiv2pb.Node_SuperscriptNode:
 		return &ast.Superscript{Content: n.SuperscriptNode.Content}
+	case *apiv2pb.Node_ReferencedContentNode:
+		return &ast.ReferencedContent{ResourceName: n.ReferencedContentNode.ResourceName, Params: n.ReferencedContentNode.Params}
 	default:
 		return &ast.Text{}
 	}

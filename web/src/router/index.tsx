@@ -112,7 +112,7 @@ const router = createBrowserRouter([
             element: <Explore />,
           },
           {
-            path: "m/:memoId",
+            path: "m/:memoName",
             element: <MemoDetail />,
           },
           {

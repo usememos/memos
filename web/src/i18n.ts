@@ -11,6 +11,7 @@ export const availableLocales = [
   "fr",
   "hi",
   "hr",
+  "hu",
   "it",
   "ja",
   "ko",
@@ -57,4 +58,4 @@ for (const locale of availableLocales) {
 }
 
 export default i18n;
-export type TLocale = typeof availableLocales[number];
+export type TLocale = (typeof availableLocales)[number];

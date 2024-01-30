@@ -13,37 +13,6 @@ export function upsertSystemSetting(systemSetting: SystemSetting) {
   return axios.post<SystemSetting>("/api/v1/system/setting", systemSetting);
 }
 
-export function vacuumDatabase() {
-  return axios.post("/api/v1/system/vacuum");
-}
-
-export function signin(username: string, password: string, remember: boolean) {
-  return axios.post<User>("/api/v1/auth/signin", {
-    username,
-    password,
-    remember,
-  });
-}
-
-export function signinWithSSO(identityProviderId: IdentityProviderId, code: string, redirectUri: string) {
-  return axios.post<User>("/api/v1/auth/signin/sso", {
-    identityProviderId,
-    code,
-    redirectUri,
-  });
-}
-
-export function signup(username: string, password: string) {
-  return axios.post<User>("/api/v1/auth/signup", {
-    username,
-    password,
-  });
-}
-
-export function signout() {
-  return axios.post("/api/v1/auth/signout");
-}
-
 export function createResourceWithBlob(formData: FormData) {
   return axios.post<Resource>("/api/v1/resource/blob", formData);
 }

@@ -18,6 +18,7 @@ import {
   NodeType,
   OrderedListNode,
   ParagraphNode,
+  ReferencedContentNode,
   StrikethroughNode,
   SubscriptNode,
   SuperscriptNode,
@@ -44,6 +45,7 @@ import Link from "./Link";
 import Math from "./Math";
 import OrderedList from "./OrderedList";
 import Paragraph from "./Paragraph";
+import ReferencedContent from "./ReferencedContent";
 import Strikethrough from "./Strikethrough";
 import Subscript from "./Subscript";
 import Superscript from "./Superscript";
@@ -114,6 +116,8 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
       return <Subscript {...(node.subscriptNode as SubscriptNode)} />;
     case NodeType.SUPERSCRIPT:
       return <Superscript {...(node.superscriptNode as SuperscriptNode)} />;
+    case NodeType.REFERENCED_CONTENT:
+      return <ReferencedContent {...(node.referencedContentNode as ReferencedContentNode)} />;
     default:
       return null;
   }

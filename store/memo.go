@@ -2,6 +2,9 @@ package store
 
 import (
 	"context"
+	"errors"
+
+	"github.com/usememos/memos/internal/util"
 )
 
 // Visibility is the type of a visibility.
@@ -29,7 +32,8 @@ func (v Visibility) String() string {
 }
 
 type Memo struct {
-	ID int32
+	ID           int32
+	ResourceName string
 
 	// Standard fields
 	RowStatus RowStatus
@@ -47,7 +51,8 @@ type Memo struct {
 }
 
 type FindMemo struct {
-	ID *int32
+	ID           *int32
+	ResourceName *string
 
 	// Standard fields
 	RowStatus       *RowStatus
@@ -71,12 +76,13 @@ type FindMemo struct {
 }
 
 type UpdateMemo struct {
-	ID         int32
-	CreatedTs  *int64
-	UpdatedTs  *int64
-	RowStatus  *RowStatus
-	Content    *string
-	Visibility *Visibility
+	ID           int32
+	ResourceName *string
+	CreatedTs    *int64
+	UpdatedTs    *int64
+	RowStatus    *RowStatus
+	Content      *string
+	Visibility   *Visibility
 }
 
 type DeleteMemo struct {
@@ -84,6 +90,9 @@ type DeleteMemo struct {
 }
 
 func (s *Store) CreateMemo(ctx context.Context, create *Memo) (*Memo, error) {
+	if !util.ResourceNameMatcher.MatchString(create.ResourceName) {
+		return nil, errors.New("resource name is invalid")
+	}
 	return s.driver.CreateMemo(ctx, create)
 }
 
@@ -105,6 +114,9 @@ func (s *Store) GetMemo(ctx context.Context, find *FindMemo) (*Memo, error) {
 }
 
 func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
+	if update.ResourceName != nil && !util.ResourceNameMatcher.MatchString(*update.ResourceName) {
+		return errors.New("resource name is invalid")
+	}
 	return s.driver.UpdateMemo(ctx, update)
 }
 

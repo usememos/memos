@@ -31,6 +31,11 @@ service MemoService {
     option (google.api.http) = {get: "/api/v2/memos/{id}"};
     option (google.api.method_signature) = "id";
   }
+  // GetMemoByName gets a memo by name.
+  rpc GetMemoByName(GetMemoByNameRequest) returns (GetMemoByNameResponse) {
+    option (google.api.http) = {get: "/api/v2/memos/{name}"};
+    option (google.api.method_signature) = "name";
+  }
   // UpdateMemo updates a memo.
   rpc UpdateMemo(UpdateMemoRequest) returns (UpdateMemoResponse) {
     option (google.api.http) = {
@@ -85,6 +90,10 @@ service MemoService {
     option (google.api.http) = {get: "/api/v2/memos/stats"};
     option (google.api.method_signature) = "username";
   }
+
+  rpc ExportMemos(ExportMemosRequest) returns (stream ExportMemosResponse) {
+    option (google.api.http) = {get: "/api/v2/memos/export"};
+  }
 }
 
 enum Visibility {
@@ -98,35 +107,39 @@ enum Visibility {
 }
 
 message Memo {
+  // id is the system generated unique identifier.
   int32 id = 1;
 
-  RowStatus row_status = 2;
+  // name is the user provided name.
+  string name = 2;
+
+  RowStatus row_status = 3;
 
   // The name of the creator.
   // Format: users/{username}
-  string creator = 3;
+  string creator = 4;
 
-  int32 creator_id = 4;
+  int32 creator_id = 5;
 
-  google.protobuf.Timestamp create_time = 5;
+  google.protobuf.Timestamp create_time = 6;
 
-  google.protobuf.Timestamp update_time = 6;
+  google.protobuf.Timestamp update_time = 7;
 
-  google.protobuf.Timestamp display_time = 7;
+  google.protobuf.Timestamp display_time = 8;
 
-  string content = 8;
+  string content = 9;
 
-  repeated Node nodes = 9;
+  repeated Node nodes = 10;
 
-  Visibility visibility = 10;
+  Visibility visibility = 11;
 
-  bool pinned = 11;
+  bool pinned = 12;
 
-  optional int32 parent_id = 12;
+  optional int32 parent_id = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated Resource resources = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated Resource resources = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated MemoRelation relations = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {
@@ -140,11 +153,12 @@ message CreateMemoResponse {
 }
 
 message ListMemosRequest {
-  // offset is the offset of the first memo to return.
-  int32 offset = 1;
+  // The maximum number of memos to return.
+  int32 page_size = 1;
 
-  // limit is the maximum number of memos to return.
-  int32 limit = 2;
+  // A page token, received from a previous `ListMemos` call.
+  // Provide this to retrieve the subsequent page.
+  string page_token = 2;
 
   // Filter is used to filter memos returned in the list.
   // Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
@@ -153,6 +167,10 @@ message ListMemosRequest {
 
 message ListMemosResponse {
   repeated Memo memos = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
 }
 
 message GetMemoRequest {
@@ -160,6 +178,14 @@ message GetMemoRequest {
 }
 
 message GetMemoResponse {
+  Memo memo = 1;
+}
+
+message GetMemoByNameRequest {
+  string name = 1;
+}
+
+message GetMemoByNameResponse {
   Memo memo = 1;
 }
 
@@ -250,4 +276,13 @@ message GetUserMemosStatsResponse {
   // stats is the stats of memo creating/updating activities.
   // key is the year-month-day string. e.g. "2020-01-01".
   map<string, int32> stats = 1;
+}
+
+message ExportMemosRequest {
+  // Same as ListMemosRequest.filter
+  string filter = 1;
+}
+
+message ExportMemosResponse {
+  bytes file = 1;
 }

@@ -1,9 +1,10 @@
-import { Button, Dropdown, Input, Menu, MenuButton } from "@mui/joy";
+import { Button, Dropdown, Input, Menu, MenuButton, Radio, RadioGroup } from "@mui/joy";
+import { sortBy } from "lodash-es";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { UserNamePrefix, useUserStore } from "@/store/v1";
+import { UserNamePrefix, stringifyUserRole, useUserStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { User, User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -12,8 +13,7 @@ import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 
 interface State {
-  createUserUsername: string;
-  createUserPassword: string;
+  creatingUser: User;
 }
 
 const MemberSection = () => {
@@ -21,36 +21,56 @@ const MemberSection = () => {
   const currentUser = useCurrentUser();
   const userStore = useUserStore();
   const [state, setState] = useState<State>({
-    createUserUsername: "",
-    createUserPassword: "",
+    creatingUser: User.fromPartial({
+      username: "",
+      password: "",
+      role: User_Role.USER,
+    }),
   });
-  const [userList, setUserList] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const sortedUsers = sortBy(users, "id");
 
   useEffect(() => {
-    fetchUserList();
+    fetchUsers();
   }, []);
 
-  const fetchUserList = async () => {
+  const fetchUsers = async () => {
     const users = await userStore.fetchUsers();
-    setUserList(users);
+    setUsers(users);
   };
 
   const handleUsernameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
       ...state,
-      createUserUsername: event.target.value,
+      creatingUser: {
+        ...state.creatingUser,
+        username: event.target.value,
+      },
     });
   };
 
   const handlePasswordInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
       ...state,
-      createUserPassword: event.target.value,
+      creatingUser: {
+        ...state.creatingUser,
+        password: event.target.value,
+      },
+    });
+  };
+
+  const handleUserRoleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setState({
+      ...state,
+      creatingUser: {
+        ...state.creatingUser,
+        role: Number(event.target.value) as User_Role,
+      },
     });
   };
 
   const handleCreateUserBtnClick = async () => {
-    if (state.createUserUsername === "" || state.createUserPassword === "") {
+    if (state.creatingUser.username === "" || state.creatingUser.password === "") {
       toast.error(t("message.fill-form"));
       return;
     }
@@ -58,18 +78,22 @@ const MemberSection = () => {
     try {
       await userServiceClient.createUser({
         user: {
-          name: `${UserNamePrefix}${state.createUserUsername}`,
-          password: state.createUserPassword,
-          role: User_Role.USER,
+          name: `${UserNamePrefix}${state.creatingUser.username}`,
+          password: state.creatingUser.password,
+          role: state.creatingUser.role,
         },
       });
     } catch (error: any) {
       toast.error(error.details);
     }
-    await fetchUserList();
+    await fetchUsers();
     setState({
-      createUserUsername: "",
-      createUserPassword: "",
+      ...state,
+      creatingUser: User.fromPartial({
+        username: "",
+        password: "",
+        role: User_Role.USER,
+      }),
     });
   };
 
@@ -91,7 +115,7 @@ const MemberSection = () => {
           },
           updateMask: ["row_status"],
         });
-        fetchUserList();
+        fetchUsers();
       },
     });
   };
@@ -104,7 +128,7 @@ const MemberSection = () => {
       },
       updateMask: ["row_status"],
     });
-    fetchUserList();
+    fetchUsers();
   };
 
   const handleDeleteUserClick = (user: User) => {
@@ -115,7 +139,7 @@ const MemberSection = () => {
       dialogName: "delete-user-dialog",
       onConfirm: async () => {
         await userStore.deleteUser(user.name);
-        fetchUserList();
+        fetchUsers();
       },
     });
   };
@@ -126,13 +150,25 @@ const MemberSection = () => {
       <div className="w-full flex flex-col justify-start items-start gap-2">
         <div className="flex flex-col justify-start items-start gap-1">
           <span className="text-sm">{t("common.username")}</span>
-          <Input type="text" placeholder={t("common.username")} value={state.createUserUsername} onChange={handleUsernameInputChange} />
+          <Input type="text" placeholder={t("common.username")} value={state.creatingUser.username} onChange={handleUsernameInputChange} />
         </div>
         <div className="flex flex-col justify-start items-start gap-1">
           <span className="text-sm">{t("common.password")}</span>
-          <Input type="password" placeholder={t("common.password")} value={state.createUserPassword} onChange={handlePasswordInputChange} />
+          <Input
+            type="password"
+            placeholder={t("common.password")}
+            value={state.creatingUser.password}
+            onChange={handlePasswordInputChange}
+          />
         </div>
-        <div className="btns-container">
+        <div className="flex flex-col justify-start items-start gap-1">
+          <span className="text-sm">{t("common.role")}</span>
+          <RadioGroup size="sm" orientation="horizontal" defaultValue={User_Role.USER} onChange={handleUserRoleInputChange}>
+            <Radio value={User_Role.USER} label="User" />
+            <Radio value={User_Role.ADMIN} label="Admin" />
+          </RadioGroup>
+        </div>
+        <div className="mt-2">
           <Button onClick={handleCreateUserBtnClick}>{t("common.create")}</Button>
         </div>
       </div>
@@ -144,8 +180,11 @@ const MemberSection = () => {
           <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
             <thead>
               <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-400">
-                <th scope="col" className="py-2 pl-4 pr-3">
+                <th scope="col" className="px-3 py-2">
                   ID
+                </th>
+                <th scope="col" className="px-3 py-2">
+                  {t("common.role")}
                 </th>
                 <th scope="col" className="px-3 py-2">
                   {t("common.username")}
@@ -160,9 +199,10 @@ const MemberSection = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
-              {userList.map((user) => (
+              {sortedUsers.map((user) => (
                 <tr key={user.id}>
-                  <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-400">{user.id}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400">{user.id}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{stringifyUserRole(user.role)}</td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
                     {user.username}
                     <span className="ml-1 italic">{user.rowStatus === RowStatus.ARCHIVED && "(Archived)"}</span>

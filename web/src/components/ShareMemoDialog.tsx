@@ -3,6 +3,7 @@ import copy from "copy-to-clipboard";
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { getDateTimeString } from "@/helpers/datetime";
+import { downloadFileFromUrl } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
 import { useUserStore, extractUsernameFromName } from "@/store/v1";
@@ -51,6 +52,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       .then((url) => {
         downloadFileFromUrl(url, `memos-${getDateTimeString(Date.now())}.png`);
         downloadingImageState.setFinish();
+        URL.revokeObjectURL(url);
       })
       .catch((err) => {
         console.error(err);
@@ -59,18 +61,13 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
 
   const handleDownloadTextFileBtnClick = () => {
     const blob = new Blob([memo.content], { type: "text/plain;charset=utf-8" });
-    downloadFileFromUrl(URL.createObjectURL(blob), `memos-${getDateTimeString(Date.now())}.md`);
-  };
-
-  const downloadFileFromUrl = (url: string, filename: string) => {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
+    const url = URL.createObjectURL(blob);
+    downloadFileFromUrl(url, `memos-${getDateTimeString(Date.now())}.md`);
+    URL.revokeObjectURL(url);
   };
 
   const handleCopyLinkBtnClick = () => {
-    copy(`${window.location.origin}/m/${memo.id}`);
+    copy(`${window.location.origin}/m/${memo.name}`);
     if (memo.visibility !== Visibility.PUBLIC) {
       toast.success(t("message.succeed-copy-link-not-public"));
     } else {
@@ -144,6 +141,6 @@ export default function showShareMemoDialog(memo: Memo): void {
       dialogName: "share-memo-dialog",
     },
     ShareMemoDialog,
-    { memo }
+    { memo },
   );
 }

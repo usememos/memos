@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MemoFilter from "@/components/MemoFilter";
@@ -8,22 +8,22 @@ import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useFilterStore } from "@/store/module";
+import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import { useMemoList, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const Explore = () => {
   const t = useTranslate();
   const user = useCurrentUser();
-  const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
-  const [isComplete, setIsComplete] = useState(false);
-  const { tag: tagQuery, text: textQuery } = filterStore.state;
+  const nextPageTokenRef = useRef<string | undefined>(undefined);
+  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
 
   useEffect(() => {
+    nextPageTokenRef.current = undefined;
     memoList.reset();
     fetchMemos();
   }, [tagQuery, textQuery]);
@@ -32,22 +32,22 @@ const Explore = () => {
     const filters = [`row_status == "NORMAL"`, `visibilities == [${user ? "'PUBLIC', 'PROTECTED'" : "'PUBLIC'"}]`];
     const contentSearch: string[] = [];
     if (tagQuery) {
-      contentSearch.push(`"#${tagQuery}"`);
+      contentSearch.push(JSON.stringify(`#${tagQuery}`));
     }
     if (textQuery) {
-      contentSearch.push(`"${textQuery}"`);
+      contentSearch.push(JSON.stringify(textQuery));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
     }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
+      pageSize: DEFAULT_MEMO_LIMIT,
       filter: filters.join(" && "),
-      limit: DEFAULT_MEMO_LIMIT,
-      offset: memoList.size(),
+      pageToken: nextPageTokenRef.current,
     });
     setIsRequesting(false);
-    setIsComplete(data.length < DEFAULT_MEMO_LIMIT);
+    nextPageTokenRef.current = data.nextPageToken;
   };
 
   return (
@@ -56,13 +56,14 @@ const Explore = () => {
       <div className="relative w-full h-auto flex flex-col justify-start items-start px-4 sm:px-6">
         <MemoFilter className="px-2 pb-2" />
         {sortedMemos.map((memo) => (
-          <MemoView key={memo.id} memo={memo} showCreator />
+          <MemoView key={`${memo.id}-${memo.displayTime}`} memo={memo} showCreator />
         ))}
         {isRequesting ? (
-          <div className="flex flex-col justify-start items-center w-full my-4">
-            <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
+          <div className="flex flex-row justify-center items-center w-full my-4 text-gray-400">
+            <Icon.Loader className="w-4 h-auto animate-spin mr-1" />
+            <p className="text-sm italic">{t("memo.fetching-data")}</p>
           </div>
-        ) : isComplete ? (
+        ) : !nextPageTokenRef.current ? (
           sortedMemos.length === 0 && (
             <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
               <Empty />

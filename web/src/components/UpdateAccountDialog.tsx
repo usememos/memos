@@ -113,7 +113,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
           email: state.email,
           avatarUrl: state.avatarUrl,
         }),
-        updateMask
+        updateMask,
       );
       toast.success(t("message.update-succeed"));
       handleCloseBtnClick();
@@ -183,7 +183,7 @@ function showUpdateAccountDialog() {
       className: "update-account-dialog",
       dialogName: "update-account-dialog",
     },
-    UpdateAccountDialog
+    UpdateAccountDialog,
   );
 }
 

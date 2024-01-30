@@ -9,12 +9,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/usememos/gomark/parser"
+	"github.com/usememos/gomark/parser/tokenizer"
+	"github.com/usememos/gomark/renderer"
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/util"
-	"github.com/usememos/memos/plugin/gomark/parser"
-	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
-	"github.com/usememos/memos/plugin/gomark/renderer"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -43,7 +43,7 @@ func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 		Root:  "dist",
 		HTML5: true,
 		Skipper: func(c echo.Context) bool {
-			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v2", "/robots.txt", "/sitemap.xml", "/m/:memoID")
+			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v2", "/robots.txt", "/sitemap.xml", "/m/:name")
 		},
 	}))
 
@@ -54,16 +54,11 @@ func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 func (s *FrontendService) registerRoutes(e *echo.Echo) {
 	rawIndexHTML := getRawIndexHTML()
 
-	e.GET("/m/:memoID", func(c echo.Context) error {
+	e.GET("/m/:name", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		memoID, err := util.ConvertStringToInt32(c.Param("memoID"))
-		if err != nil {
-			// Redirect to `index.html` if any error occurs.
-			return c.HTML(http.StatusOK, rawIndexHTML)
-		}
-
+		resourceName := c.Param("name")
 		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-			ID: &memoID,
+			ResourceName: &resourceName,
 		})
 		if err != nil {
 			return c.HTML(http.StatusOK, rawIndexHTML)
@@ -86,7 +81,7 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 }
 
 func (s *FrontendService) registerFileRoutes(ctx context.Context, e *echo.Echo) {
-	instanceURLSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+	instanceURLSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: apiv1.SystemSettingInstanceURLName.String(),
 	})
 	if err != nil || instanceURLSetting == nil {
@@ -116,7 +111,7 @@ Sitemap: %s/sitemap.xml`, instanceURL, instanceURL)
 			return err
 		}
 		for _, memo := range memoList {
-			urlsets = append(urlsets, fmt.Sprintf(`<url><loc>%s</loc></url>`, fmt.Sprintf("%s/m/%d", instanceURL, memo.ID)))
+			urlsets = append(urlsets, fmt.Sprintf(`<url><loc>%s</loc></url>`, fmt.Sprintf("%s/m/%s", instanceURL, memo.ResourceName)))
 		}
 		sitemap := fmt.Sprintf(`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">%s</urlset>`, strings.Join(urlsets, "\n"))
 		return c.XMLBlob(http.StatusOK, []byte(sitemap))

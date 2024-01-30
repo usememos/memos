@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { authServiceClient, userServiceClient } from "@/grpcweb";
-import { User, UserSetting } from "@/types/proto/api/v2/user_service";
+import { User, UserSetting, User_Role } from "@/types/proto/api/v2/user_service";
 import { UserNamePrefix, extractUsernameFromName } from "./resourceName";
 
 interface State {
@@ -123,5 +123,15 @@ export const useUserStore = create(
       set({ userSetting: updatedUserSetting });
       return updatedUserSetting;
     },
-  }))
+  })),
 );
+
+export const stringifyUserRole = (role: User_Role) => {
+  if (role === User_Role.HOST) {
+    return "Host";
+  } else if (role === User_Role.ADMIN) {
+    return "Admin";
+  } else {
+    return "User";
+  }
+};

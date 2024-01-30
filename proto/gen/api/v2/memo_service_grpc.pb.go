@@ -22,6 +22,7 @@ const (
 	MemoService_CreateMemo_FullMethodName        = "/memos.api.v2.MemoService/CreateMemo"
 	MemoService_ListMemos_FullMethodName         = "/memos.api.v2.MemoService/ListMemos"
 	MemoService_GetMemo_FullMethodName           = "/memos.api.v2.MemoService/GetMemo"
+	MemoService_GetMemoByName_FullMethodName     = "/memos.api.v2.MemoService/GetMemoByName"
 	MemoService_UpdateMemo_FullMethodName        = "/memos.api.v2.MemoService/UpdateMemo"
 	MemoService_DeleteMemo_FullMethodName        = "/memos.api.v2.MemoService/DeleteMemo"
 	MemoService_SetMemoResources_FullMethodName  = "/memos.api.v2.MemoService/SetMemoResources"
@@ -31,6 +32,7 @@ const (
 	MemoService_CreateMemoComment_FullMethodName = "/memos.api.v2.MemoService/CreateMemoComment"
 	MemoService_ListMemoComments_FullMethodName  = "/memos.api.v2.MemoService/ListMemoComments"
 	MemoService_GetUserMemosStats_FullMethodName = "/memos.api.v2.MemoService/GetUserMemosStats"
+	MemoService_ExportMemos_FullMethodName       = "/memos.api.v2.MemoService/ExportMemos"
 )
 
 // MemoServiceClient is the client API for MemoService service.
@@ -43,6 +45,8 @@ type MemoServiceClient interface {
 	ListMemos(ctx context.Context, in *ListMemosRequest, opts ...grpc.CallOption) (*ListMemosResponse, error)
 	// GetMemo gets a memo by id.
 	GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*GetMemoResponse, error)
+	// GetMemoByName gets a memo by name.
+	GetMemoByName(ctx context.Context, in *GetMemoByNameRequest, opts ...grpc.CallOption) (*GetMemoByNameResponse, error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*UpdateMemoResponse, error)
 	// DeleteMemo deletes a memo by id.
@@ -61,6 +65,7 @@ type MemoServiceClient interface {
 	ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error)
 	// GetUserMemosStats gets stats of memos for a user.
 	GetUserMemosStats(ctx context.Context, in *GetUserMemosStatsRequest, opts ...grpc.CallOption) (*GetUserMemosStatsResponse, error)
+	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (MemoService_ExportMemosClient, error)
 }
 
 type memoServiceClient struct {
@@ -92,6 +97,15 @@ func (c *memoServiceClient) ListMemos(ctx context.Context, in *ListMemosRequest,
 func (c *memoServiceClient) GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*GetMemoResponse, error) {
 	out := new(GetMemoResponse)
 	err := c.cc.Invoke(ctx, MemoService_GetMemo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) GetMemoByName(ctx context.Context, in *GetMemoByNameRequest, opts ...grpc.CallOption) (*GetMemoByNameResponse, error) {
+	out := new(GetMemoByNameResponse)
+	err := c.cc.Invoke(ctx, MemoService_GetMemoByName_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -179,6 +193,38 @@ func (c *memoServiceClient) GetUserMemosStats(ctx context.Context, in *GetUserMe
 	return out, nil
 }
 
+func (c *memoServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (MemoService_ExportMemosClient, error) {
+	stream, err := c.cc.NewStream(ctx, &MemoService_ServiceDesc.Streams[0], MemoService_ExportMemos_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &memoServiceExportMemosClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type MemoService_ExportMemosClient interface {
+	Recv() (*ExportMemosResponse, error)
+	grpc.ClientStream
+}
+
+type memoServiceExportMemosClient struct {
+	grpc.ClientStream
+}
+
+func (x *memoServiceExportMemosClient) Recv() (*ExportMemosResponse, error) {
+	m := new(ExportMemosResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // MemoServiceServer is the server API for MemoService service.
 // All implementations must embed UnimplementedMemoServiceServer
 // for forward compatibility
@@ -189,6 +235,8 @@ type MemoServiceServer interface {
 	ListMemos(context.Context, *ListMemosRequest) (*ListMemosResponse, error)
 	// GetMemo gets a memo by id.
 	GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error)
+	// GetMemoByName gets a memo by name.
+	GetMemoByName(context.Context, *GetMemoByNameRequest) (*GetMemoByNameResponse, error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(context.Context, *UpdateMemoRequest) (*UpdateMemoResponse, error)
 	// DeleteMemo deletes a memo by id.
@@ -207,6 +255,7 @@ type MemoServiceServer interface {
 	ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error)
 	// GetUserMemosStats gets stats of memos for a user.
 	GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error)
+	ExportMemos(*ExportMemosRequest, MemoService_ExportMemosServer) error
 	mustEmbedUnimplementedMemoServiceServer()
 }
 
@@ -222,6 +271,9 @@ func (UnimplementedMemoServiceServer) ListMemos(context.Context, *ListMemosReque
 }
 func (UnimplementedMemoServiceServer) GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemo not implemented")
+}
+func (UnimplementedMemoServiceServer) GetMemoByName(context.Context, *GetMemoByNameRequest) (*GetMemoByNameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMemoByName not implemented")
 }
 func (UnimplementedMemoServiceServer) UpdateMemo(context.Context, *UpdateMemoRequest) (*UpdateMemoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemo not implemented")
@@ -249,6 +301,9 @@ func (UnimplementedMemoServiceServer) ListMemoComments(context.Context, *ListMem
 }
 func (UnimplementedMemoServiceServer) GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserMemosStats not implemented")
+}
+func (UnimplementedMemoServiceServer) ExportMemos(*ExportMemosRequest, MemoService_ExportMemosServer) error {
+	return status.Errorf(codes.Unimplemented, "method ExportMemos not implemented")
 }
 func (UnimplementedMemoServiceServer) mustEmbedUnimplementedMemoServiceServer() {}
 
@@ -313,6 +368,24 @@ func _MemoService_GetMemo_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemoServiceServer).GetMemo(ctx, req.(*GetMemoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_GetMemoByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMemoByNameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).GetMemoByName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_GetMemoByName_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).GetMemoByName(ctx, req.(*GetMemoByNameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -479,6 +552,27 @@ func _MemoService_GetUserMemosStats_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemoService_ExportMemos_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ExportMemosRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(MemoServiceServer).ExportMemos(m, &memoServiceExportMemosServer{stream})
+}
+
+type MemoService_ExportMemosServer interface {
+	Send(*ExportMemosResponse) error
+	grpc.ServerStream
+}
+
+type memoServiceExportMemosServer struct {
+	grpc.ServerStream
+}
+
+func (x *memoServiceExportMemosServer) Send(m *ExportMemosResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // MemoService_ServiceDesc is the grpc.ServiceDesc for MemoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -497,6 +591,10 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMemo",
 			Handler:    _MemoService_GetMemo_Handler,
+		},
+		{
+			MethodName: "GetMemoByName",
+			Handler:    _MemoService_GetMemoByName_Handler,
 		},
 		{
 			MethodName: "UpdateMemo",
@@ -535,6 +633,12 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemoService_GetUserMemosStats_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "ExportMemos",
+			Handler:       _MemoService_ExportMemos_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "api/v2/memo_service.proto",
 }

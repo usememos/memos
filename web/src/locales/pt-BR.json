@@ -40,6 +40,7 @@
     "email": "Email",
     "expand": "Expandir",
     "explore": "Explorar",
+    "file": "Arquivo",
     "filter": "Filtro",
     "filter-period": "{{from}} até {{to}}",
     "fold": "Recolher",
@@ -70,7 +71,7 @@
     "settings": "Configurações",
     "share": "Compartilhar",
     "sign-in": "Entrar",
-    "sign-in-with": "Entrar usando {{provider}}",
+    "sign-in-with": "Entrar com {{provider}}",
     "sign-out": "Sair",
     "sign-up": "Registrar",
     "tags": "Tags",
@@ -133,7 +134,7 @@
     "delete-confirm": "Tem certeza de que deseja deletar este memo?\n\nESTA AÇÃO É IRREVERSÍVEL❗",
     "delete-memo": "Deletar memo",
     "embed": "Incorporar",
-    "fetch-more": "Clique para carregar mais dados",
+    "fetch-more": "Clique para carregar mais",
     "fetching-data": "Obtendo dados…",
     "no-archived-memos": "Nenhum memo arquivado.",
     "search-placeholder": "Pesquisar memos",
@@ -356,7 +357,8 @@
       "server-name": "Nome do servidor",
       "telegram-bot-token": "Token de Bot do Telegram",
       "telegram-bot-token-description": "Token de Bot do Telegram ou Proxy de API, tipo `http…/bot<token>`",
-      "telegram-bot-token-placeholder": "Seu token de Bot do Telegram"
+      "telegram-bot-token-placeholder": "Seu token de Bot do Telegram",
+      "vacuum-hint": "Limpa dados não utilizados."
     }
   },
   "tag-list": {
@@ -369,5 +371,8 @@
     "tag-name": "NOME_DA_TAG",
     "tag-suggestions": "Sugestões de Tag",
     "tip-text": "Insira `#tag` para criar uma nova"
+  },
+  "timeline": {
+    "title": "Linha do tempo"
   }
 }

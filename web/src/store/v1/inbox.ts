@@ -30,5 +30,5 @@ export const useInboxStore = create(
       set({ inboxes: inboxes.map((i) => (i.name === updatedInbox.name ? updatedInbox : i)) });
       return updatedInbox;
     },
-  }))
+  })),
 );

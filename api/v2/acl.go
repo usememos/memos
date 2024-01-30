@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -26,6 +26,40 @@ const (
 	// user id is extracted from the jwt token subject field.
 	usernameContextKey ContextKey = iota
 )
+
+// Used to set modified context of ServerStream.
+type WrappedStream struct {
+	ctx    context.Context
+	stream grpc.ServerStream
+}
+
+func (w *WrappedStream) RecvMsg(m any) error {
+	return w.stream.RecvMsg(m)
+}
+
+func (w *WrappedStream) SendMsg(m any) error {
+	return w.stream.SendMsg(m)
+}
+
+func (w *WrappedStream) SendHeader(md metadata.MD) error {
+	return w.stream.SendHeader(md)
+}
+
+func (w *WrappedStream) SetHeader(md metadata.MD) error {
+	return w.stream.SetHeader(md)
+}
+
+func (w *WrappedStream) SetTrailer(md metadata.MD) {
+	w.stream.SetTrailer(md)
+}
+
+func (w *WrappedStream) Context() context.Context {
+	return w.ctx
+}
+
+func newWrappedStream(ctx context.Context, stream grpc.ServerStream) grpc.ServerStream {
+	return &WrappedStream{ctx, stream}
+}
 
 // GRPCAuthInterceptor is the auth interceptor for gRPC server.
 type GRPCAuthInterceptor struct {
@@ -78,6 +112,45 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 	// Stores userID into context.
 	childCtx := context.WithValue(ctx, usernameContextKey, username)
 	return handler(childCtx, request)
+}
+
+func (in *GRPCAuthInterceptor) StreamAuthenticationInterceptor(srv any, stream grpc.ServerStream, serverInfo *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	md, ok := metadata.FromIncomingContext(stream.Context())
+	if !ok {
+		return status.Errorf(codes.Unauthenticated, "failed to parse metadata from incoming context")
+	}
+	accessToken, err := getTokenFromMetadata(md)
+	if err != nil {
+		return status.Errorf(codes.Unauthenticated, err.Error())
+	}
+
+	username, err := in.authenticate(stream.Context(), accessToken)
+	if err != nil {
+		if isUnauthorizeAllowedMethod(serverInfo.FullMethod) {
+			return handler(stream.Context(), stream)
+		}
+		return err
+	}
+	user, err := in.Store.GetUser(stream.Context(), &store.FindUser{
+		Username: &username,
+	})
+	if err != nil {
+		return errors.Wrap(err, "failed to get user")
+	}
+	if user == nil {
+		return errors.Errorf("user %q not exists", username)
+	}
+	if user.RowStatus == store.Archived {
+		return errors.Errorf("user %q is archived", username)
+	}
+	if isOnlyForAdminAllowedMethod(serverInfo.FullMethod) && user.Role != store.RoleHost && user.Role != store.RoleAdmin {
+		return errors.Errorf("user %q is not admin", username)
+	}
+
+	// Stores userID into context.
+	childCtx := context.WithValue(stream.Context(), usernameContextKey, username)
+
+	return handler(srv, newWrappedStream(childCtx, stream))
 }
 
 func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessToken string) (string, error) {

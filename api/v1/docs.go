@@ -838,7 +838,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.UpsertMemoRelationRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertMemoRelationRequest"
                         }
                     }
                 ],
@@ -992,7 +992,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateResourceRequest"
+                            "$ref": "#/definitions/api_v1.CreateResourceRequest"
                         }
                     }
                 ],
@@ -1116,7 +1116,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateResourceRequest"
+                            "$ref": "#/definitions/api_v1.UpdateResourceRequest"
                         }
                     }
                 ],
@@ -1155,7 +1155,7 @@ const docTemplate = `{
                     "200": {
                         "description": "System GetSystemStatus",
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemStatus"
+                            "$ref": "#/definitions/api_v1.SystemStatus"
                         }
                     },
                     "401": {
@@ -1212,7 +1212,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateStorageRequest"
+                            "$ref": "#/definitions/api_v1.CreateStorageRequest"
                         }
                     }
                 ],
@@ -1293,7 +1293,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateStorageRequest"
+                            "$ref": "#/definitions/api_v1.UpdateStorageRequest"
                         }
                     }
                 ],
@@ -1799,25 +1799,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/explore/rss.xml": {
-            "get": {
-                "produces": [
-                    "text/xml"
-                ],
-                "tags": [
-                    "rss"
-                ],
-                "summary": "Get RSS",
-                "responses": {
-                    "200": {
-                        "description": "RSS"
-                    },
-                    "500": {
-                        "description": "Failed to get system customized profile | Failed to find memo list | Failed to generate rss"
-                    }
-                }
-            }
-        },
         "/o/get/GetImage": {
             "get": {
                 "produces": [
@@ -1845,37 +1826,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to write GetImage blob"
-                    }
-                }
-            }
-        },
-        "/u/{id}/rss.xml": {
-            "get": {
-                "produces": [
-                    "text/xml"
-                ],
-                "tags": [
-                    "rss"
-                ],
-                "summary": "Get RSS for a user",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "RSS"
-                    },
-                    "400": {
-                        "description": "User id is not a number"
-                    },
-                    "500": {
-                        "description": "Failed to get system customized profile | Failed to find memo list | Failed to generate rss"
                     }
                 }
             }
@@ -2227,6 +2177,9 @@ const docTemplate = `{
                 },
                 "path": {
                     "type": "string"
+                },
+                "presign": {
+                    "type": "boolean"
                 },
                 "region": {
                     "type": "string"
@@ -2859,6 +2812,9 @@ const docTemplate = `{
                 "path": {
                     "type": "string"
                 },
+                "presign": {
+                    "type": "boolean"
+                },
                 "region": {
                     "type": "string"
                 },
@@ -3253,9 +3209,15 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "parentID": {
+                    "type": "integer"
+                },
                 "pinned": {
                     "description": "Composed fields",
                     "type": "boolean"
+                },
+                "resourceName": {
+                    "type": "string"
                 },
                 "rowStatus": {
                     "description": "Standard fields",
@@ -3329,6 +3291,9 @@ const docTemplate = `{
                 },
                 "memoID": {
                     "type": "integer"
+                },
+                "resourceName": {
+                    "type": "string"
                 },
                 "size": {
                     "type": "integer"

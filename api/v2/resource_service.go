@@ -5,11 +5,13 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/lithammer/shortuuid/v4"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -30,6 +32,7 @@ func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.Crea
 	}
 
 	create := &store.Resource{
+		ResourceName: shortuuid.New(),
 		CreatorID:    user.ID,
 		Filename:     request.Filename,
 		ExternalLink: request.ExternalLink,
@@ -42,6 +45,8 @@ func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.Crea
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create resource: %v", err)
 	}
+
+	metric.Enqueue("resource create")
 	return &apiv2pb.CreateResourceResponse{
 		Resource: s.convertResourceFromStore(ctx, resource),
 	}, nil
@@ -71,13 +76,29 @@ func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetReso
 		ID: &request.Id,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
 	}
 	if resource == nil {
 		return nil, status.Errorf(codes.NotFound, "resource not found")
 	}
 
 	return &apiv2pb.GetResourceResponse{
+		Resource: s.convertResourceFromStore(ctx, resource),
+	}, nil
+}
+
+func (s *APIV2Service) GetResourceByName(ctx context.Context, request *apiv2pb.GetResourceByNameRequest) (*apiv2pb.GetResourceByNameResponse, error) {
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{
+		ResourceName: &request.Name,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+	}
+	if resource == nil {
+		return nil, status.Errorf(codes.NotFound, "resource not found")
+	}
+
+	return &apiv2pb.GetResourceByNameResponse{
 		Resource: s.convertResourceFromStore(ctx, resource),
 	}, nil
 }
@@ -146,6 +167,7 @@ func (s *APIV2Service) convertResourceFromStore(ctx context.Context, resource *s
 
 	return &apiv2pb.Resource{
 		Id:           resource.ID,
+		Name:         resource.ResourceName,
 		CreateTime:   timestamppb.New(time.Unix(resource.CreatedTs, 0)),
 		Filename:     resource.Filename,
 		ExternalLink: resource.ExternalLink,
