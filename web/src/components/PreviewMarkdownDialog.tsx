@@ -1,7 +1,7 @@
 import { IconButton } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { memoServiceClient } from "@/grpcweb";
-import { Node } from "@/types/proto/api/v2/markdown_service";
+import { Node } from "@/types/proto/api/v2/node";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
