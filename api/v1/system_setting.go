@@ -159,6 +159,16 @@ func (s *APIV1Service) CreateSystemSetting(c echo.Context) error {
 	if err := systemSettingUpsert.Validate(); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
 	}
+	if s.Profile.Mode == "demo" {
+		switch systemSettingUpsert.Name {
+		case SystemSettingAdditionalStyleName:
+			return echo.NewHTTPError(http.StatusForbidden, "additional style is not allowed in demo mode")
+		case SystemSettingAdditionalScriptName:
+			return echo.NewHTTPError(http.StatusForbidden, "additional script is not allowed in demo mode")
+		case SystemSettingDisablePasswordLoginName:
+			return echo.NewHTTPError(http.StatusForbidden, "disabling password login is not allowed in demo mode")
+		}
+	}
 	if systemSettingUpsert.Name == SystemSettingDisablePasswordLoginName {
 		var disablePasswordLogin bool
 		if err := json.Unmarshal([]byte(systemSettingUpsert.Value), &disablePasswordLogin); err != nil {

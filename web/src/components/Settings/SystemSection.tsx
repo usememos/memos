@@ -152,7 +152,8 @@ const SystemSection = () => {
         name: "additional-style",
         value: JSON.stringify(state.additionalStyle),
       });
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error.response.data.message);
       console.error(error);
       return;
     }
@@ -172,7 +173,8 @@ const SystemSection = () => {
         name: "additional-script",
         value: JSON.stringify(state.additionalScript),
       });
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error.response.data.message);
       console.error(error);
       return;
     }
