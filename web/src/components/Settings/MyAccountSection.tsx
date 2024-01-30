@@ -14,7 +14,7 @@ const MyAccountSection = () => {
 
   const downloadExportedMemos = async (user: any) => {
     const chunks = [];
-    for await (const response of memoServiceClient.memosExport({ filter: `creator == "${user.name}"` })) {
+    for await (const response of memoServiceClient.exportMemos({ filter: `creator == "${user.name}"` })) {
       chunks.push(response.file.buffer);
     }
     const blob = new Blob(chunks);
