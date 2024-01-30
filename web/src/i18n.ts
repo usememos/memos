@@ -7,7 +7,6 @@ export const availableLocales = [
   "ar",
   "de",
   "en",
-  "en-GB",
   "es",
   "fr",
   "hi",
