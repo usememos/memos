@@ -90,6 +90,10 @@ service MemoService {
     option (google.api.http) = {get: "/api/v2/memos/stats"};
     option (google.api.method_signature) = "username";
   }
+
+  rpc ExportMemos(ExportMemosRequest) returns (stream ExportMemosResponse) {
+    option (google.api.http) = {get: "/api/v2/memos/export"};
+  }
 }
 
 enum Visibility {
@@ -272,4 +276,13 @@ message GetUserMemosStatsResponse {
   // stats is the stats of memo creating/updating activities.
   // key is the year-month-day string. e.g. "2020-01-01".
   map<string, int32> stats = 1;
+}
+
+message ExportMemosRequest {
+  // Same as ListMemosRequest.filter
+  string filter = 1;
+}
+
+message ExportMemosResponse {
+  bytes file = 1;
 }

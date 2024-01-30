@@ -177,6 +177,7 @@
       "email-note": "Optional",
       "update-information": "Update Information",
       "change-password": "Change password",
+      "export-memos": "Export Memos",
       "reset-api": "Reset API",
       "openapi-title": "OpenAPI",
       "openapi-reset": "Reset OpenAPI Key",
