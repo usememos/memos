@@ -2,26 +2,7 @@ syntax = "proto3";
 
 package memos.api.v2;
 
-import "google/api/annotations.proto";
-
 option go_package = "gen/api/v2";
-
-service MarkdownService {
-  rpc ParseMarkdown(ParseMarkdownRequest) returns (ParseMarkdownResponse) {
-    option (google.api.http) = {
-      post: "/api/v2/markdown"
-      body: "*"
-    };
-  }
-}
-
-message ParseMarkdownRequest {
-  string markdown = 1;
-}
-
-message ParseMarkdownResponse {
-  repeated Node nodes = 1;
-}
 
 enum NodeType {
   NODE_UNSPECIFIED = 0;

@@ -1,26 +1,10 @@
 package v2
 
 import (
-	"context"
-
-	"github.com/pkg/errors"
 	"github.com/usememos/gomark/ast"
-	"github.com/usememos/gomark/parser"
-	"github.com/usememos/gomark/parser/tokenizer"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 )
-
-func (*APIV2Service) ParseMarkdown(_ context.Context, request *apiv2pb.ParseMarkdownRequest) (*apiv2pb.ParseMarkdownResponse, error) {
-	rawNodes, err := parser.Parse(tokenizer.Tokenize(request.Markdown))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse memo content")
-	}
-	nodes := convertFromASTNodes(rawNodes)
-	return &apiv2pb.ParseMarkdownResponse{
-		Nodes: nodes,
-	}, nil
-}
 
 func convertFromASTNodes(rawNodes []ast.Node) []*apiv2pb.Node {
 	nodes := []*apiv2pb.Node{}

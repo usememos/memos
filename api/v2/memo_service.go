@@ -549,6 +549,18 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 	return response, nil
 }
 
+func (*APIV2Service) PreviewMemoContent(_ context.Context, request *apiv2pb.PreviewMemoContentRequest) (*apiv2pb.PreviewMemoContentResponse, error) {
+	rawNodes, err := parser.Parse(tokenizer.Tokenize(request.Content))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse memo content")
+	}
+
+	nodes := convertFromASTNodes(rawNodes)
+	return &apiv2pb.PreviewMemoContentResponse{
+		Nodes: nodes,
+	}, nil
+}
+
 func (s *APIV2Service) ExportMemos(request *apiv2pb.ExportMemosRequest, srv apiv2pb.MemoService_ExportMemosServer) error {
 	ctx := srv.Context()
 	fmt.Printf("%+v\n", ctx)
