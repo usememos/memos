@@ -91,6 +91,17 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 	return node
 }
 
+func convertTableFromASTNode(node *ast.Table) *apiv2pb.TableNode {
+	table := &apiv2pb.TableNode{
+		Header:    node.Header,
+		Delimiter: node.Delimiter,
+	}
+	for _, row := range node.Rows {
+		table.Rows = append(table.Rows, &apiv2pb.TableNode_Row{Cells: row})
+	}
+	return table
+}
+
 func convertToASTNodes(nodes []*apiv2pb.Node) []ast.Node {
 	rawNodes := []ast.Node{}
 	for _, node := range nodes {
@@ -177,17 +188,6 @@ func convertTableToASTNode(node *apiv2pb.Node) *ast.Table {
 	}
 	for _, row := range node.GetTableNode().Rows {
 		table.Rows = append(table.Rows, row.Cells)
-	}
-	return table
-}
-
-func convertTableFromASTNode(node *ast.Table) *apiv2pb.TableNode {
-	table := &apiv2pb.TableNode{
-		Header:    node.Header,
-		Delimiter: node.Delimiter,
-	}
-	for _, row := range node.Rows {
-		table.Rows = append(table.Rows, &apiv2pb.TableNode_Row{Cells: row})
 	}
 	return table
 }
