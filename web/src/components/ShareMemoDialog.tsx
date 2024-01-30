@@ -7,7 +7,7 @@ import { downloadFileFromUrl } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
 import { useUserStore, extractUsernameFromName } from "@/store/v1";
-import { Memo } from "@/types/proto/api/v2/memo_service";
+import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -68,7 +68,11 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
 
   const handleCopyLinkBtnClick = () => {
     copy(`${window.location.origin}/m/${memo.name}`);
-    toast.success(t("message.succeed-copy-link"));
+    if (memo.visibility !== Visibility.PUBLIC) {
+      toast.success(t("message.succeed-copy-link-not-public"));
+    } else {
+      toast.success(t("message.succeed-copy-link"));
+    }
   };
 
   if (loadingState.isLoading) {
