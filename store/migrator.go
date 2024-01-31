@@ -33,9 +33,8 @@ func (s *Store) MigrateResourceInternalPath(ctx context.Context) error {
 		if rows == 0 || err == sql.ErrNoRows {
 			log.Debug("Resource internal path migration is not required.")
 			return nil
-		} else {
-			return errors.Wrap(err, "failed to check resource internal_path")
 		}
+		return errors.Wrap(err, "failed to check resource internal_path")
 	}
 
 	log.Info("Migrating resource internal paths. This may take a while.")
@@ -125,9 +124,8 @@ func (s *Store) MigrateResourceName(ctx context.Context) error {
 		if rows == 0 || err == sql.ErrNoRows {
 			log.Debug("Resource migration to UUIDs is not required.")
 			return nil
-		} else {
-			return errors.Wrap(err, "failed to check resource.resource_name")
 		}
+		return errors.Wrap(err, "failed to check resource.resource_name")
 	}
 
 	log.Info("Migrating resource IDs to UUIDs. This may take a while.")
@@ -199,9 +197,8 @@ func (s *Store) MigrateMemoName(ctx context.Context) error {
 		if rows == 0 || err == sql.ErrNoRows {
 			log.Debug("Memo migration to UUIDs is not required.")
 			return nil
-		} else {
-			return errors.Wrap(err, "failed to check memo.resource_name")
 		}
+		return errors.Wrap(err, "failed to check memo.resource_name")
 	}
 
 	log.Info("Migrating memo ids to uuids. This may take a while.")
