@@ -45,6 +45,9 @@ func (s *APIV2Service) UpdateWorkspaceProfile(ctx context.Context, request *apiv
 				return nil, status.Errorf(codes.Internal, "failed to update allow_registration system setting: %v", err)
 			}
 		} else if field == "disable_password_login" {
+			if s.Profile.Mode == "demo" {
+				return nil, status.Errorf(codes.PermissionDenied, "disabling password login is not allowed in demo mode")
+			}
 			_, err := s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 				Name:  "disable-password-login",
 				Value: strconv.FormatBool(request.WorkspaceProfile.DisablePasswordLogin),
@@ -53,6 +56,9 @@ func (s *APIV2Service) UpdateWorkspaceProfile(ctx context.Context, request *apiv
 				return nil, status.Errorf(codes.Internal, "failed to update disable_password_login system setting: %v", err)
 			}
 		} else if field == "additional_script" {
+			if s.Profile.Mode == "demo" {
+				return nil, status.Errorf(codes.PermissionDenied, "additional script is not allowed in demo mode")
+			}
 			_, err := s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 				Name:  "additional-script",
 				Value: request.WorkspaceProfile.AdditionalScript,
@@ -61,6 +67,9 @@ func (s *APIV2Service) UpdateWorkspaceProfile(ctx context.Context, request *apiv
 				return nil, status.Errorf(codes.Internal, "failed to update additional_script system setting: %v", err)
 			}
 		} else if field == "additional_style" {
+			if s.Profile.Mode == "demo" {
+				return nil, status.Errorf(codes.PermissionDenied, "additional style is not allowed in demo mode")
+			}
 			_, err := s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 				Name:  "additional-style",
 				Value: request.WorkspaceProfile.AdditionalStyle,
