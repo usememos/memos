@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/usememos/gomark/ast"
+	"github.com/yourselfhosted/gomark/ast"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 )

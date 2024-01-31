@@ -1,7 +1,7 @@
 package v2
 
 import (
-	"github.com/usememos/gomark/ast"
+	"github.com/yourselfhosted/gomark/ast"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 )

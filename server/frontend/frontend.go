@@ -9,9 +9,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/usememos/gomark/parser"
-	"github.com/usememos/gomark/parser/tokenizer"
-	"github.com/usememos/gomark/renderer"
+	"github.com/yourselfhosted/gomark/parser"
+	"github.com/yourselfhosted/gomark/parser/tokenizer"
+	"github.com/yourselfhosted/gomark/renderer"
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/util"

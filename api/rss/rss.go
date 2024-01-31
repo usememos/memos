@@ -9,9 +9,9 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/gomark"
-	"github.com/usememos/gomark/ast"
-	"github.com/usememos/gomark/renderer"
+	"github.com/yourselfhosted/gomark"
+	"github.com/yourselfhosted/gomark/ast"
+	"github.com/yourselfhosted/gomark/renderer"
 
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/server/profile"
