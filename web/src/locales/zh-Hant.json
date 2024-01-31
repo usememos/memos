@@ -177,6 +177,7 @@
     "succeed-copy-code": "複製程式碼到剪貼簿成功。",
     "succeed-copy-content": "複製內容到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
+    "succeed-copy-link-not-public": "複製連結到剪貼簿成功，請注意本條備忘錄在未登入情況下無法瀏覽。",
     "succeed-copy-resource-link": "複製資源連結到剪貼簿成功。",
     "succeed-update-additional-script": "更新附加腳本成功。",
     "succeed-update-additional-style": "更新附加樣式成功。",

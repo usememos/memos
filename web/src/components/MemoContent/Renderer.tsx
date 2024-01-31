@@ -27,7 +27,7 @@ import {
   TaskListNode,
   TextNode,
   UnorderedListNode,
-} from "@/types/proto/api/v2/markdown_service";
+} from "@/types/proto/api/v2/node";
 import Blockquote from "./Blockquote";
 import Bold from "./Bold";
 import BoldItalic from "./BoldItalic";

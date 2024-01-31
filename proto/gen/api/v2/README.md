@@ -75,7 +75,12 @@
   
     - [InboxService](#memos-api-v2-InboxService)
   
-- [api/v2/markdown_service.proto](#api_v2_markdown_service-proto)
+- [api/v2/memo_relation_service.proto](#api_v2_memo_relation_service-proto)
+    - [MemoRelation](#memos-api-v2-MemoRelation)
+  
+    - [MemoRelation.Type](#memos-api-v2-MemoRelation-Type)
+  
+- [api/v2/node.proto](#api_v2_node-proto)
     - [AutoLinkNode](#memos-api-v2-AutoLinkNode)
     - [BlockquoteNode](#memos-api-v2-BlockquoteNode)
     - [BoldItalicNode](#memos-api-v2-BoldItalicNode)
@@ -96,8 +101,6 @@
     - [Node](#memos-api-v2-Node)
     - [OrderedListNode](#memos-api-v2-OrderedListNode)
     - [ParagraphNode](#memos-api-v2-ParagraphNode)
-    - [ParseMarkdownRequest](#memos-api-v2-ParseMarkdownRequest)
-    - [ParseMarkdownResponse](#memos-api-v2-ParseMarkdownResponse)
     - [ReferencedContentNode](#memos-api-v2-ReferencedContentNode)
     - [StrikethroughNode](#memos-api-v2-StrikethroughNode)
     - [SubscriptNode](#memos-api-v2-SubscriptNode)
@@ -110,13 +113,6 @@
     - [UnorderedListNode](#memos-api-v2-UnorderedListNode)
   
     - [NodeType](#memos-api-v2-NodeType)
-  
-    - [MarkdownService](#memos-api-v2-MarkdownService)
-  
-- [api/v2/memo_relation_service.proto](#api_v2_memo_relation_service-proto)
-    - [MemoRelation](#memos-api-v2-MemoRelation)
-  
-    - [MemoRelation.Type](#memos-api-v2-MemoRelation-Type)
   
 - [api/v2/resource_service.proto](#api_v2_resource_service-proto)
     - [CreateResourceRequest](#memos-api-v2-CreateResourceRequest)
@@ -142,6 +138,8 @@
     - [CreateMemoResponse](#memos-api-v2-CreateMemoResponse)
     - [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest)
     - [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse)
+    - [ExportMemosRequest](#memos-api-v2-ExportMemosRequest)
+    - [ExportMemosResponse](#memos-api-v2-ExportMemosResponse)
     - [GetMemoByNameRequest](#memos-api-v2-GetMemoByNameRequest)
     - [GetMemoByNameResponse](#memos-api-v2-GetMemoByNameResponse)
     - [GetMemoRequest](#memos-api-v2-GetMemoRequest)
@@ -158,6 +156,8 @@
     - [ListMemosRequest](#memos-api-v2-ListMemosRequest)
     - [ListMemosResponse](#memos-api-v2-ListMemosResponse)
     - [Memo](#memos-api-v2-Memo)
+    - [PreviewMemoContentRequest](#memos-api-v2-PreviewMemoContentRequest)
+    - [PreviewMemoContentResponse](#memos-api-v2-PreviewMemoContentResponse)
     - [SetMemoRelationsRequest](#memos-api-v2-SetMemoRelationsRequest)
     - [SetMemoRelationsResponse](#memos-api-v2-SetMemoRelationsResponse)
     - [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest)
@@ -1112,10 +1112,56 @@ Used internally for obfuscating the page token.
 
 
 
-<a name="api_v2_markdown_service-proto"></a>
+<a name="api_v2_memo_relation_service-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## api/v2/markdown_service.proto
+## api/v2/memo_relation_service.proto
+
+
+
+<a name="memos-api-v2-MemoRelation"></a>
+
+### MemoRelation
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo_id | [int32](#int32) |  |  |
+| related_memo_id | [int32](#int32) |  |  |
+| type | [MemoRelation.Type](#memos-api-v2-MemoRelation-Type) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-api-v2-MemoRelation-Type"></a>
+
+### MemoRelation.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| REFERENCE | 1 |  |
+| COMMENT | 2 |  |
+
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="api_v2_node-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/node.proto
 
 
 
@@ -1453,36 +1499,6 @@ Used internally for obfuscating the page token.
 
 
 
-<a name="memos-api-v2-ParseMarkdownRequest"></a>
-
-### ParseMarkdownRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| markdown | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-ParseMarkdownResponse"></a>
-
-### ParseMarkdownResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| nodes | [Node](#memos-api-v2-Node) | repeated |  |
-
-
-
-
-
-
 <a name="memos-api-v2-ReferencedContentNode"></a>
 
 ### ReferencedContentNode
@@ -1679,62 +1695,6 @@ Used internally for obfuscating the page token.
 | SUBSCRIPT | 26 |  |
 | SUPERSCRIPT | 27 |  |
 | REFERENCED_CONTENT | 28 |  |
-
-
- 
-
- 
-
-
-<a name="memos-api-v2-MarkdownService"></a>
-
-### MarkdownService
-
-
-| Method Name | Request Type | Response Type | Description |
-| ----------- | ------------ | ------------- | ------------|
-| ParseMarkdown | [ParseMarkdownRequest](#memos-api-v2-ParseMarkdownRequest) | [ParseMarkdownResponse](#memos-api-v2-ParseMarkdownResponse) |  |
-
- 
-
-
-
-<a name="api_v2_memo_relation_service-proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## api/v2/memo_relation_service.proto
-
-
-
-<a name="memos-api-v2-MemoRelation"></a>
-
-### MemoRelation
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| memo_id | [int32](#int32) |  |  |
-| related_memo_id | [int32](#int32) |  |  |
-| type | [MemoRelation.Type](#memos-api-v2-MemoRelation-Type) |  |  |
-
-
-
-
-
- 
-
-
-<a name="memos-api-v2-MemoRelation-Type"></a>
-
-### MemoRelation.Type
-
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| TYPE_UNSPECIFIED | 0 |  |
-| REFERENCE | 1 |  |
-| COMMENT | 2 |  |
 
 
  
@@ -2066,6 +2026,36 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-ExportMemosRequest"></a>
+
+### ExportMemosRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [string](#string) |  | Same as ListMemosRequest.filter |
+
+
+
+
+
+
+<a name="memos-api-v2-ExportMemosResponse"></a>
+
+### ExportMemosResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| file | [bytes](#bytes) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-GetMemoByNameRequest"></a>
 
 ### GetMemoByNameRequest
@@ -2326,6 +2316,36 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-PreviewMemoContentRequest"></a>
+
+### PreviewMemoContentRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-PreviewMemoContentResponse"></a>
+
+### PreviewMemoContentResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| nodes | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+
 <a name="memos-api-v2-SetMemoRelationsRequest"></a>
 
 ### SetMemoRelationsRequest
@@ -2449,6 +2469,8 @@ Used internally for obfuscating the page token.
 | ListMemoRelations | [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest) | [ListMemoRelationsResponse](#memos-api-v2-ListMemoRelationsResponse) | ListMemoRelations lists relations for a memo. |
 | CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) | CreateMemoComment creates a comment for a memo. |
 | ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) | ListMemoComments lists comments for a memo. |
+| PreviewMemoContent | [PreviewMemoContentRequest](#memos-api-v2-PreviewMemoContentRequest) | [PreviewMemoContentResponse](#memos-api-v2-PreviewMemoContentResponse) | PreviewMemoContent previews memo content. |
+| ExportMemos | [ExportMemosRequest](#memos-api-v2-ExportMemosRequest) | [ExportMemosResponse](#memos-api-v2-ExportMemosResponse) stream | ExportMemos exports memos. |
 | GetUserMemosStats | [GetUserMemosStatsRequest](#memos-api-v2-GetUserMemosStatsRequest) | [GetUserMemosStatsResponse](#memos-api-v2-GetUserMemosStatsResponse) | GetUserMemosStats gets stats of memos for a user. |
 
  

@@ -1,7 +1,7 @@
 import { memo, useRef } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
-import { Node, NodeType } from "@/types/proto/api/v2/markdown_service";
+import { Node, NodeType } from "@/types/proto/api/v2/node";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 

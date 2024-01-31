@@ -175,6 +175,7 @@
     "succeed-copy-code": "复制代码到剪贴板成功。",
     "succeed-copy-content": "复制内容到剪贴板成功。",
     "succeed-copy-link": "复制链接到剪贴板成功。",
+    "succeed-copy-link-not-public": "复制链接到剪贴板成功，请注意本条备忘录在未登录情况下不可访问。",
     "succeed-copy-resource-link": "复制资源链接到剪贴板成功。",
     "succeed-update-additional-script": "更新附加脚本成功。",
     "succeed-update-additional-style": "更新附加样式成功。",

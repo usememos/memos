@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -16,6 +16,13 @@
       if (appearance === `"dark"`) {
         document.documentElement.classList.add("dark");
       }
+    </script>
+    <script src="wasm_exec.js"></script>
+    <script>
+      const go = new Go();
+      WebAssembly.instantiateStreaming(fetch("gomark.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+      });
     </script>
   </head>
   <body>

@@ -77,7 +77,7 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 		ContentType: aws.String(fileType),
 	}
 	// Set ACL according to if url prefix is set.
-	if client.Config.URLPrefix == "" {
+	if client.Config.URLPrefix == "" && !client.Config.PreSign {
 		putInput.ACL = types.ObjectCannedACL(*aws.String("public-read"))
 	}
 	uploadOutput, err := uploader.Upload(ctx, &putInput)
@@ -113,7 +113,15 @@ func (client *Client) PreSignLink(ctx context.Context, sourceLink string) (strin
 	}
 	// if link doesn't belong to storage, then return as-is.
 	// the empty hostname is corner-case for AWS native endpoint.
-	if client.Config.EndPoint != "" && !strings.Contains(client.Config.EndPoint, u.Hostname()) {
+	endpointURL, err := url.Parse(client.Config.EndPoint)
+	if err != nil {
+		return "", errors.Wrapf(err, "parse Endpoint URL")
+	}
+	endpointHost := endpointURL.Hostname()
+	if client.Config.Bucket != "" && !strings.Contains(endpointHost, client.Config.Bucket) {
+		endpointHost = fmt.Sprintf("%s.%s", client.Config.Bucket, endpointHost)
+	}
+	if client.Config.EndPoint != "" && !strings.Contains(endpointHost, u.Hostname()) {
 		return sourceLink, nil
 	}
 

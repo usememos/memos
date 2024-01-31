@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { repeat } from "lodash-es";
 import { useContext } from "react";
 import { useMemoStore } from "@/store/v1";
-import { Node, NodeType } from "@/types/proto/api/v2/markdown_service";
+import { Node, NodeType } from "@/types/proto/api/v2/node";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 

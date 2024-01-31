@@ -1,7 +1,7 @@
 import { IconButton } from "@mui/joy";
 import { useEffect, useState } from "react";
-import { markdownServiceClient } from "@/grpcweb";
-import { Node } from "@/types/proto/api/v2/markdown_service";
+import { memoServiceClient } from "@/grpcweb";
+import { Node } from "@/types/proto/api/v2/node";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
@@ -15,8 +15,8 @@ const PreviewMarkdownDialog: React.FC<Props> = ({ content, destroy }: Props) => 
 
   useEffect(() => {
     (async () => {
-      const { nodes } = await markdownServiceClient.parseMarkdown({
-        markdown: content,
+      const { nodes } = await memoServiceClient.previewMemoContent({
+        content,
       });
       setNodes(nodes);
     })();

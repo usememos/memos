@@ -7,7 +7,6 @@ tags:
   - name: UserService
   - name: AuthService
   - name: InboxService
-  - name: MarkdownService
   - name: ResourceService
   - name: MemoService
   - name: TagService
@@ -149,26 +148,6 @@ paths:
           type: string
       tags:
         - InboxService
-  /api/v2/markdown:
-    post:
-      operationId: MarkdownService_ParseMarkdown
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2ParseMarkdownResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v2ParseMarkdownRequest'
-      tags:
-        - MarkdownService
   /api/v2/memos:
     get:
       summary: ListMemos lists memos with pagination and filter.
@@ -492,6 +471,53 @@ paths:
         - name: name
           in: path
           required: true
+          type: string
+      tags:
+        - MemoService
+  /api/v2/memos:export:
+    post:
+      summary: ExportMemos exports memos.
+      operationId: MemoService_ExportMemos
+      responses:
+        "200":
+          description: A successful response.(streaming responses)
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/definitions/v2ExportMemosResponse'
+              error:
+                $ref: '#/definitions/googlerpcStatus'
+            title: Stream result of v2ExportMemosResponse
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: filter
+          description: Same as ListMemosRequest.filter
+          in: query
+          required: false
+          type: string
+      tags:
+        - MemoService
+  /api/v2/memos:preview:
+    post:
+      summary: PreviewMemoContent previews memo content.
+      operationId: MemoService_PreviewMemoContent
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2PreviewMemoContentResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: content
+          in: query
+          required: false
           type: string
       tags:
         - MemoService
@@ -1531,6 +1557,12 @@ definitions:
     properties:
       symbol:
         type: string
+  v2ExportMemosResponse:
+    type: object
+    properties:
+      file:
+        type: string
+        format: byte
   v2GetActivityResponse:
     type: object
     properties:
@@ -1965,12 +1997,7 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v2Node'
-  v2ParseMarkdownRequest:
-    type: object
-    properties:
-      markdown:
-        type: string
-  v2ParseMarkdownResponse:
+  v2PreviewMemoContentResponse:
     type: object
     properties:
       nodes:
