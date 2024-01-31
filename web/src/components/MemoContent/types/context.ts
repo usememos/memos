@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Node } from "@/types/proto/api/v2/node";
+import { Node } from "@/types/node";
 
 interface Context {
   nodes: Node[];

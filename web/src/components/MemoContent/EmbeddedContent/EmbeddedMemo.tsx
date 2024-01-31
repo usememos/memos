@@ -42,7 +42,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   if (inlineMode) {
     return (
       <div className="w-full">
-        <MemoContent nodes={memo.nodes} memoId={memo.id} embeddedMemos={context.embeddedMemos} />
+        <MemoContent memoId={memo.id} content={memo.content} embeddedMemos={context.embeddedMemos} />
         <MemoResourceListView resources={memo.resources} />
       </div>
     );
@@ -56,7 +56,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
           <Icon.ArrowUpRight className="w-5 h-auto opacity-80 text-gray-400" />
         </Link>
       </div>
-      <MemoContent nodes={memo.nodes} memoId={memo.id} embeddedMemos={context.embeddedMemos} />
+      <MemoContent memoId={memo.id} content={memo.content} embeddedMemos={context.embeddedMemos} />
       <MemoResourceListView resources={memo.resources} />
     </div>
   );

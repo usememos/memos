@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { repeat } from "lodash-es";
 import { useContext } from "react";
 import { useMemoStore } from "@/store/v1";
-import { Node, NodeType } from "@/types/proto/api/v2/node";
+import { Node, NodeType } from "@/types/node";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
@@ -35,12 +35,13 @@ const TaskList: React.FC<Props> = ({ index, indent, complete, children }: Props)
     }
 
     node.taskListNode!.complete = on;
+    const content = window.restore(context.nodes);
     await memoStore.updateMemo(
       {
         id: context.memoId,
-        nodes: context.nodes,
+        content,
       },
-      ["nodes"],
+      ["content"],
     );
   };
 

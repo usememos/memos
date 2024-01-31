@@ -125,7 +125,7 @@ const Archived = () => {
                     </Tooltip>
                   </div>
                 </div>
-                <MemoContent memoId={memo.id} nodes={memo.nodes} readonly={true} />
+                <MemoContent memoId={memo.id} content={memo.content} readonly={true} />
               </div>
             ))
           )}

@@ -27,7 +27,7 @@ import {
   TaskListNode,
   TextNode,
   UnorderedListNode,
-} from "@/types/proto/api/v2/node";
+} from "@/types/node";
 import Blockquote from "./Blockquote";
 import Bold from "./Bold";
 import BoldItalic from "./BoldItalic";

@@ -1,12 +1,12 @@
 import { memo, useRef } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
-import { Node, NodeType } from "@/types/proto/api/v2/node";
+import { Node, NodeType } from "@/types/node";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
 interface Props {
-  nodes: Node[];
+  content: string;
   memoId?: number;
   readonly?: boolean;
   disableFilter?: boolean;
@@ -18,10 +18,11 @@ interface Props {
 }
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, memoId, nodes, embeddedMemos, onClick } = props;
+  const { className, content, memoId, embeddedMemos, onClick } = props;
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
+  const nodes = window.parse(content);
   const allowEdit = !props.readonly && memoId && currentUser?.id === memoStore.getMemoById(memoId)?.creatorId;
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {

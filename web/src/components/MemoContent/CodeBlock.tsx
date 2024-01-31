@@ -12,7 +12,7 @@ interface Props extends BaseProps {
 }
 
 const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
-  const formatedLanguage = language.toLowerCase() || "plaintext";
+  const formatedLanguage = (language || "").toLowerCase() || "plaintext";
   let highlightedCode = hljs.highlightAuto(content).value;
 
   // Users can set Markdown code blocks as `__html` to render HTML directly.
