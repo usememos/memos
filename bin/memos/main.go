@@ -61,12 +61,6 @@ var (
 			}
 
 			storeInstance := store.New(dbDriver, profile)
-			if err := storeInstance.MigrateManually(ctx); err != nil {
-				cancel()
-				log.Error("failed to migrate manually", zap.Error(err))
-				return
-			}
-
 			s, err := server.NewServer(ctx, profile, storeInstance)
 			if err != nil {
 				cancel()
