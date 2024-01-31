@@ -179,7 +179,7 @@ func (s *APIV2Service) SignUp(ctx context.Context, request *apiv2pb.SignUpReques
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace setting, err: %s", err))
 	}
-	if workspaceGeneralSetting.DisallowSignup {
+	if workspaceGeneralSetting.DisallowSignup || workspaceGeneralSetting.DisallowPasswordLogin {
 		return nil, status.Errorf(codes.PermissionDenied, "sign up is not allowed")
 	}
 
@@ -193,13 +193,17 @@ func (s *APIV2Service) SignUp(ctx context.Context, request *apiv2pb.SignUpReques
 		Nickname:     request.Username,
 		PasswordHash: string(passwordHash),
 	}
-	existingUsers, err := s.Store.ListUsers(ctx, &store.FindUser{})
+
+	hostUserType := store.RoleHost
+	existedHostUsers, err := s.Store.ListUsers(ctx, &store.FindUser{
+		Role: &hostUserType,
+	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to list users, err: %s", err))
 	}
-	// The first user to sign up is an admin by default.
-	if len(existingUsers) == 0 {
-		create.Role = store.RoleAdmin
+	if len(existedHostUsers) == 0 {
+		// Change the default role to host if there is no host user.
+		create.Role = store.RoleHost
 	} else {
 		create.Role = store.RoleUser
 	}
