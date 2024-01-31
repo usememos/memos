@@ -501,26 +501,6 @@ paths:
           type: string
       tags:
         - MemoService
-  /api/v2/memos:preview:
-    post:
-      summary: PreviewMemoContent previews memo content.
-      operationId: MemoService_PreviewMemoContent
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2PreviewMemoContentResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: content
-          in: query
-          required: false
-          type: string
-      tags:
-        - MemoService
   /api/v2/resources:
     get:
       operationId: ResourceService_ListResources
@@ -1291,13 +1271,6 @@ definitions:
         $ref: '#/definitions/v2Memo'
       updateMask:
         type: string
-  TableNodeRow:
-    type: object
-    properties:
-      cells:
-        type: array
-        items:
-          type: string
   UserRole:
     type: string
     enum:
@@ -1443,50 +1416,6 @@ definitions:
         format: date-time
       payload:
         $ref: '#/definitions/apiv2ActivityPayload'
-  v2AutoLinkNode:
-    type: object
-    properties:
-      url:
-        type: string
-      isRawText:
-        type: boolean
-  v2BlockquoteNode:
-    type: object
-    properties:
-      children:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v2Node'
-  v2BoldItalicNode:
-    type: object
-    properties:
-      symbol:
-        type: string
-      content:
-        type: string
-  v2BoldNode:
-    type: object
-    properties:
-      symbol:
-        type: string
-      children:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v2Node'
-  v2CodeBlockNode:
-    type: object
-    properties:
-      language:
-        type: string
-      content:
-        type: string
-  v2CodeNode:
-    type: object
-    properties:
-      content:
-        type: string
   v2CreateMemoCommentResponse:
     type: object
     properties:
@@ -1545,18 +1474,6 @@ definitions:
     type: object
   v2DeleteWebhookResponse:
     type: object
-  v2EmbeddedContentNode:
-    type: object
-    properties:
-      resourceName:
-        type: string
-      params:
-        type: string
-  v2EscapingCharacterNode:
-    type: object
-    properties:
-      symbol:
-        type: string
   v2ExportMemosResponse:
     type: object
     properties:
@@ -1631,34 +1548,6 @@ definitions:
     properties:
       workspaceProfile:
         $ref: '#/definitions/v2WorkspaceProfile'
-  v2HeadingNode:
-    type: object
-    properties:
-      level:
-        type: integer
-        format: int32
-      children:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v2Node'
-  v2HighlightNode:
-    type: object
-    properties:
-      content:
-        type: string
-  v2HorizontalRuleNode:
-    type: object
-    properties:
-      symbol:
-        type: string
-  v2ImageNode:
-    type: object
-    properties:
-      altText:
-        type: string
-      url:
-        type: string
   v2Inbox:
     type: object
     properties:
@@ -1697,22 +1586,6 @@ definitions:
       - TYPE_MEMO_COMMENT
       - TYPE_VERSION_UPDATE
     default: TYPE_UNSPECIFIED
-  v2ItalicNode:
-    type: object
-    properties:
-      symbol:
-        type: string
-      content:
-        type: string
-  v2LineBreakNode:
-    type: object
-  v2LinkNode:
-    type: object
-    properties:
-      text:
-        type: string
-      url:
-        type: string
   v2ListInboxesResponse:
     type: object
     properties:
@@ -1798,16 +1671,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/apiv2Webhook'
-  v2MathBlockNode:
-    type: object
-    properties:
-      content:
-        type: string
-  v2MathNode:
-    type: object
-    properties:
-      content:
-        type: string
   v2Memo:
     type: object
     properties:
@@ -1839,11 +1702,6 @@ definitions:
         format: date-time
       content:
         type: string
-      nodes:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v2Node'
       visibility:
         $ref: '#/definitions/v2Visibility'
       pinned:
@@ -1882,136 +1740,6 @@ definitions:
       - REFERENCE
       - COMMENT
     default: TYPE_UNSPECIFIED
-  v2Node:
-    type: object
-    properties:
-      type:
-        $ref: '#/definitions/v2NodeType'
-      lineBreakNode:
-        $ref: '#/definitions/v2LineBreakNode'
-      paragraphNode:
-        $ref: '#/definitions/v2ParagraphNode'
-      codeBlockNode:
-        $ref: '#/definitions/v2CodeBlockNode'
-      headingNode:
-        $ref: '#/definitions/v2HeadingNode'
-      horizontalRuleNode:
-        $ref: '#/definitions/v2HorizontalRuleNode'
-      blockquoteNode:
-        $ref: '#/definitions/v2BlockquoteNode'
-      orderedListNode:
-        $ref: '#/definitions/v2OrderedListNode'
-      unorderedListNode:
-        $ref: '#/definitions/v2UnorderedListNode'
-      taskListNode:
-        $ref: '#/definitions/v2TaskListNode'
-      mathBlockNode:
-        $ref: '#/definitions/v2MathBlockNode'
-      tableNode:
-        $ref: '#/definitions/v2TableNode'
-      embeddedContentNode:
-        $ref: '#/definitions/v2EmbeddedContentNode'
-      textNode:
-        $ref: '#/definitions/v2TextNode'
-      boldNode:
-        $ref: '#/definitions/v2BoldNode'
-      italicNode:
-        $ref: '#/definitions/v2ItalicNode'
-      boldItalicNode:
-        $ref: '#/definitions/v2BoldItalicNode'
-      codeNode:
-        $ref: '#/definitions/v2CodeNode'
-      imageNode:
-        $ref: '#/definitions/v2ImageNode'
-      linkNode:
-        $ref: '#/definitions/v2LinkNode'
-      autoLinkNode:
-        $ref: '#/definitions/v2AutoLinkNode'
-      tagNode:
-        $ref: '#/definitions/v2TagNode'
-      strikethroughNode:
-        $ref: '#/definitions/v2StrikethroughNode'
-      escapingCharacterNode:
-        $ref: '#/definitions/v2EscapingCharacterNode'
-      mathNode:
-        $ref: '#/definitions/v2MathNode'
-      highlightNode:
-        $ref: '#/definitions/v2HighlightNode'
-      subscriptNode:
-        $ref: '#/definitions/v2SubscriptNode'
-      superscriptNode:
-        $ref: '#/definitions/v2SuperscriptNode'
-      referencedContentNode:
-        $ref: '#/definitions/v2ReferencedContentNode'
-  v2NodeType:
-    type: string
-    enum:
-      - NODE_UNSPECIFIED
-      - LINE_BREAK
-      - PARAGRAPH
-      - CODE_BLOCK
-      - HEADING
-      - HORIZONTAL_RULE
-      - BLOCKQUOTE
-      - ORDERED_LIST
-      - UNORDERED_LIST
-      - TASK_LIST
-      - MATH_BLOCK
-      - TABLE
-      - EMBEDDED_CONTENT
-      - TEXT
-      - BOLD
-      - ITALIC
-      - BOLD_ITALIC
-      - CODE
-      - IMAGE
-      - LINK
-      - AUTO_LINK
-      - TAG
-      - STRIKETHROUGH
-      - ESCAPING_CHARACTER
-      - MATH
-      - HIGHLIGHT
-      - SUBSCRIPT
-      - SUPERSCRIPT
-      - REFERENCED_CONTENT
-    default: NODE_UNSPECIFIED
-  v2OrderedListNode:
-    type: object
-    properties:
-      number:
-        type: string
-      indent:
-        type: integer
-        format: int32
-      children:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v2Node'
-  v2ParagraphNode:
-    type: object
-    properties:
-      children:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v2Node'
-  v2PreviewMemoContentResponse:
-    type: object
-    properties:
-      nodes:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v2Node'
-  v2ReferencedContentNode:
-    type: object
-    properties:
-      resourceName:
-        type: string
-      params:
-        type: string
   v2RenameTagResponse:
     type: object
     properties:
@@ -2063,37 +1791,6 @@ definitions:
     properties:
       user:
         $ref: '#/definitions/v2User'
-  v2StrikethroughNode:
-    type: object
-    properties:
-      content:
-        type: string
-  v2SubscriptNode:
-    type: object
-    properties:
-      content:
-        type: string
-  v2SuperscriptNode:
-    type: object
-    properties:
-      content:
-        type: string
-  v2TableNode:
-    type: object
-    properties:
-      header:
-        type: array
-        items:
-          type: string
-      delimiter:
-        type: array
-        items:
-          type: string
-      rows:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/TableNodeRow'
   v2Tag:
     type: object
     properties:
@@ -2104,44 +1801,6 @@ definitions:
         title: |-
           The creator of tags.
           Format: users/{username}
-  v2TagNode:
-    type: object
-    properties:
-      content:
-        type: string
-  v2TaskListNode:
-    type: object
-    properties:
-      symbol:
-        type: string
-      indent:
-        type: integer
-        format: int32
-      complete:
-        type: boolean
-      children:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v2Node'
-  v2TextNode:
-    type: object
-    properties:
-      content:
-        type: string
-  v2UnorderedListNode:
-    type: object
-    properties:
-      symbol:
-        type: string
-      indent:
-        type: integer
-        format: int32
-      children:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v2Node'
   v2UpdateInboxResponse:
     type: object
     properties:

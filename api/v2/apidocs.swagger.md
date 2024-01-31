@@ -4,9 +4,92 @@
 ---
 ## AuthService
 
+### /api/v2/auth/signin
+
+#### POST
+##### Summary
+
+SignIn signs in the user with the given username and password.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| username | query |  | No | string |
+| password | query |  | No | string |
+| neverExpire | query |  | No | boolean |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SignInResponse](#v2signinresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/auth/signin/sso
+
+#### POST
+##### Summary
+
+SignInWithSSO signs in the user with the given SSO code.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| idpId | query |  | No | integer |
+| code | query |  | No | string |
+| redirectUri | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SignInWithSSOResponse](#v2signinwithssoresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/auth/signout
+
+#### POST
+##### Summary
+
+SignOut signs out the user.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SignOutResponse](#v2signoutresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/auth/signup
+
+#### POST
+##### Summary
+
+SignUp signs up the user with the given username and password.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| username | query |  | No | string |
+| password | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SignUpResponse](#v2signupresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
 ### /api/v2/auth/status
 
 #### POST
+##### Summary
+
+GetAuthStatus returns the current auth status of the user.
+
 ##### Responses
 
 | Code | Description | Schema |
@@ -63,25 +146,6 @@
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | A successful response. | [v2DeleteInboxResponse](#v2deleteinboxresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
----
-## MarkdownService
-
-### /api/v2/markdown
-
-#### POST
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| body | body |  | Yes | [v2ParseMarkdownRequest](#v2parsemarkdownrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2ParseMarkdownResponse](#v2parsemarkdownresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
@@ -342,6 +406,26 @@ GetMemoByName gets a memo by name.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | A successful response. | [v2GetMemoByNameResponse](#v2getmemobynameresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/memos:export
+
+#### POST
+##### Summary
+
+ExportMemos exports memos.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| filter | query | Same as ListMemosRequest.filter | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response.(streaming responses) | { **"result"**: [v2ExportMemosResponse](#v2exportmemosresponse), **"error"**: [googlerpcStatus](#googlerpcstatus) } |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
@@ -856,12 +940,6 @@ CreateUser creates a new user.
 | memo | [v2Memo](#v2memo) |  | No |
 | updateMask | string |  | No |
 
-#### TableNodeRow
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| cells | [ string ] |  | No |
-
 #### UserRole
 
 | Name | Type | Description | Required |
@@ -955,46 +1033,6 @@ CreateUser creates a new user.
 | createTime | dateTime |  | No |
 | payload | [apiv2ActivityPayload](#apiv2activitypayload) |  | No |
 
-#### v2AutoLinkNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| url | string |  | No |
-| isRawText | boolean |  | No |
-
-#### v2BlockquoteNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| children | [ [v2Node](#v2node) ] |  | No |
-
-#### v2BoldItalicNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| symbol | string |  | No |
-| content | string |  | No |
-
-#### v2BoldNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| symbol | string |  | No |
-| children | [ [v2Node](#v2node) ] |  | No |
-
-#### v2CodeBlockNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| language | string |  | No |
-| content | string |  | No |
-
-#### v2CodeNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| content | string |  | No |
-
 #### v2CreateMemoCommentResponse
 
 | Name | Type | Description | Required |
@@ -1087,18 +1125,11 @@ CreateUser creates a new user.
 | ---- | ---- | ----------- | -------- |
 | v2DeleteWebhookResponse | object |  |  |
 
-#### v2EmbeddedContentNode
+#### v2ExportMemosResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| resourceName | string |  | No |
-| params | string |  | No |
-
-#### v2EscapingCharacterNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| symbol | string |  | No |
+| file | byte |  | No |
 
 #### v2GetActivityResponse
 
@@ -1172,32 +1203,6 @@ CreateUser creates a new user.
 | ---- | ---- | ----------- | -------- |
 | workspaceProfile | [v2WorkspaceProfile](#v2workspaceprofile) |  | No |
 
-#### v2HeadingNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| level | integer |  | No |
-| children | [ [v2Node](#v2node) ] |  | No |
-
-#### v2HighlightNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| content | string |  | No |
-
-#### v2HorizontalRuleNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| symbol | string |  | No |
-
-#### v2ImageNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| altText | string |  | No |
-| url | string |  | No |
-
 #### v2Inbox
 
 | Name | Type | Description | Required |
@@ -1221,26 +1226,6 @@ CreateUser creates a new user.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | v2InboxType | string |  |  |
-
-#### v2ItalicNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| symbol | string |  | No |
-| content | string |  | No |
-
-#### v2LineBreakNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| v2LineBreakNode | object |  |  |
-
-#### v2LinkNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| text | string |  | No |
-| url | string |  | No |
 
 #### v2ListInboxesResponse
 
@@ -1303,18 +1288,6 @@ CreateUser creates a new user.
 | ---- | ---- | ----------- | -------- |
 | webhooks | [ [apiv2Webhook](#apiv2webhook) ] |  | No |
 
-#### v2MathBlockNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| content | string |  | No |
-
-#### v2MathNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| content | string |  | No |
-
 #### v2Memo
 
 | Name | Type | Description | Required |
@@ -1328,7 +1301,6 @@ CreateUser creates a new user.
 | updateTime | dateTime |  | No |
 | displayTime | dateTime |  | No |
 | content | string |  | No |
-| nodes | [ [v2Node](#v2node) ] |  | No |
 | visibility | [v2Visibility](#v2visibility) |  | No |
 | pinned | boolean |  | No |
 | parentId | integer |  | No |
@@ -1348,79 +1320,6 @@ CreateUser creates a new user.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | v2MemoRelationType | string |  |  |
-
-#### v2Node
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| type | [v2NodeType](#v2nodetype) |  | No |
-| lineBreakNode | [v2LineBreakNode](#v2linebreaknode) |  | No |
-| paragraphNode | [v2ParagraphNode](#v2paragraphnode) |  | No |
-| codeBlockNode | [v2CodeBlockNode](#v2codeblocknode) |  | No |
-| headingNode | [v2HeadingNode](#v2headingnode) |  | No |
-| horizontalRuleNode | [v2HorizontalRuleNode](#v2horizontalrulenode) |  | No |
-| blockquoteNode | [v2BlockquoteNode](#v2blockquotenode) |  | No |
-| orderedListNode | [v2OrderedListNode](#v2orderedlistnode) |  | No |
-| unorderedListNode | [v2UnorderedListNode](#v2unorderedlistnode) |  | No |
-| taskListNode | [v2TaskListNode](#v2tasklistnode) |  | No |
-| mathBlockNode | [v2MathBlockNode](#v2mathblocknode) |  | No |
-| tableNode | [v2TableNode](#v2tablenode) |  | No |
-| embeddedContentNode | [v2EmbeddedContentNode](#v2embeddedcontentnode) |  | No |
-| textNode | [v2TextNode](#v2textnode) |  | No |
-| boldNode | [v2BoldNode](#v2boldnode) |  | No |
-| italicNode | [v2ItalicNode](#v2italicnode) |  | No |
-| boldItalicNode | [v2BoldItalicNode](#v2bolditalicnode) |  | No |
-| codeNode | [v2CodeNode](#v2codenode) |  | No |
-| imageNode | [v2ImageNode](#v2imagenode) |  | No |
-| linkNode | [v2LinkNode](#v2linknode) |  | No |
-| autoLinkNode | [v2AutoLinkNode](#v2autolinknode) |  | No |
-| tagNode | [v2TagNode](#v2tagnode) |  | No |
-| strikethroughNode | [v2StrikethroughNode](#v2strikethroughnode) |  | No |
-| escapingCharacterNode | [v2EscapingCharacterNode](#v2escapingcharacternode) |  | No |
-| mathNode | [v2MathNode](#v2mathnode) |  | No |
-| highlightNode | [v2HighlightNode](#v2highlightnode) |  | No |
-| subscriptNode | [v2SubscriptNode](#v2subscriptnode) |  | No |
-| superscriptNode | [v2SuperscriptNode](#v2superscriptnode) |  | No |
-| referencedContentNode | [v2ReferencedContentNode](#v2referencedcontentnode) |  | No |
-
-#### v2NodeType
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| v2NodeType | string |  |  |
-
-#### v2OrderedListNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| number | string |  | No |
-| indent | integer |  | No |
-| children | [ [v2Node](#v2node) ] |  | No |
-
-#### v2ParagraphNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| children | [ [v2Node](#v2node) ] |  | No |
-
-#### v2ParseMarkdownRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| markdown | string |  | No |
-
-#### v2ParseMarkdownResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| nodes | [ [v2Node](#v2node) ] |  | No |
-
-#### v2ReferencedContentNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| resourceName | string |  | No |
-| params | string |  | No |
 
 #### v2RenameTagResponse
 
@@ -1453,31 +1352,29 @@ CreateUser creates a new user.
 | ---- | ---- | ----------- | -------- |
 | v2SetMemoResourcesResponse | object |  |  |
 
-#### v2StrikethroughNode
+#### v2SignInResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| content | string |  | No |
+| user | [v2User](#v2user) |  | No |
 
-#### v2SubscriptNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| content | string |  | No |
-
-#### v2SuperscriptNode
+#### v2SignInWithSSOResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| content | string |  | No |
+| user | [v2User](#v2user) |  | No |
 
-#### v2TableNode
+#### v2SignOutResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| header | [ string ] |  | No |
-| delimiter | [ string ] |  | No |
-| rows | [ [TableNodeRow](#tablenoderow) ] |  | No |
+| v2SignOutResponse | object |  |  |
+
+#### v2SignUpResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| user | [v2User](#v2user) |  | No |
 
 #### v2Tag
 
@@ -1485,35 +1382,6 @@ CreateUser creates a new user.
 | ---- | ---- | ----------- | -------- |
 | name | string |  | No |
 | creator | string |  | No |
-
-#### v2TagNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| content | string |  | No |
-
-#### v2TaskListNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| symbol | string |  | No |
-| indent | integer |  | No |
-| complete | boolean |  | No |
-| children | [ [v2Node](#v2node) ] |  | No |
-
-#### v2TextNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| content | string |  | No |
-
-#### v2UnorderedListNode
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| symbol | string |  | No |
-| indent | integer |  | No |
-| children | [ [v2Node](#v2node) ] |  | No |
 
 #### v2UpdateInboxResponse
 

@@ -14,7 +14,6 @@ import (
 	"github.com/yourselfhosted/gomark/ast"
 	"github.com/yourselfhosted/gomark/parser"
 	"github.com/yourselfhosted/gomark/parser/tokenizer"
-	"github.com/yourselfhosted/gomark/restore"
 	"go.uber.org/zap"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
@@ -267,10 +266,6 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 					}
 				}
 			})
-		} else if path == "nodes" {
-			nodes := convertToASTNodes(request.Memo.Nodes)
-			content := restore.Restore(nodes)
-			update.Content = &content
 		} else if path == "resource_name" {
 			update.ResourceName = &request.Memo.Name
 			if !util.ResourceNameMatcher.MatchString(*update.ResourceName) {
@@ -549,18 +544,6 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 	return response, nil
 }
 
-func (*APIV2Service) PreviewMemoContent(_ context.Context, request *apiv2pb.PreviewMemoContentRequest) (*apiv2pb.PreviewMemoContentResponse, error) {
-	rawNodes, err := parser.Parse(tokenizer.Tokenize(request.Content))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse memo content")
-	}
-
-	nodes := convertFromASTNodes(rawNodes)
-	return &apiv2pb.PreviewMemoContentResponse{
-		Nodes: nodes,
-	}, nil
-}
-
 func (s *APIV2Service) ExportMemos(request *apiv2pb.ExportMemosRequest, srv apiv2pb.MemoService_ExportMemosServer) error {
 	ctx := srv.Context()
 	fmt.Printf("%+v\n", ctx)
@@ -617,10 +600,6 @@ func (s *APIV2Service) ExportMemos(request *apiv2pb.ExportMemosRequest, srv apiv
 }
 
 func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*apiv2pb.Memo, error) {
-	rawNodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse memo content")
-	}
 	displayTs := memo.CreatedTs
 	if displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx); err == nil && displayWithUpdatedTs {
 		displayTs = memo.UpdatedTs
@@ -651,7 +630,6 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
 		Content:     memo.Content,
-		Nodes:       convertFromASTNodes(rawNodes),
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
 		ParentId:    memo.ParentID,

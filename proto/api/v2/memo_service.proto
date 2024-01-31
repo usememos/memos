@@ -4,7 +4,6 @@ package memos.api.v2;
 
 import "api/v2/common.proto";
 import "api/v2/memo_relation_service.proto";
-import "api/v2/node.proto";
 import "api/v2/resource_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
@@ -85,10 +84,6 @@ service MemoService {
     option (google.api.http) = {get: "/api/v2/memos/{id}/comments"};
     option (google.api.method_signature) = "id";
   }
-  // PreviewMemoContent previews memo content.
-  rpc PreviewMemoContent(PreviewMemoContentRequest) returns (PreviewMemoContentResponse) {
-    option (google.api.http) = {post: "/api/v2/memos:preview"};
-  }
   // ExportMemos exports memos.
   rpc ExportMemos(ExportMemosRequest) returns (stream ExportMemosResponse) {
     option (google.api.http) = {post: "/api/v2/memos:export"};
@@ -133,17 +128,15 @@ message Memo {
 
   string content = 9;
 
-  repeated Node nodes = 10;
+  Visibility visibility = 10;
 
-  Visibility visibility = 11;
+  bool pinned = 11;
 
-  bool pinned = 12;
+  optional int32 parent_id = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  optional int32 parent_id = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated Resource resources = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated Resource resources = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  repeated MemoRelation relations = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {
@@ -280,14 +273,6 @@ message GetUserMemosStatsResponse {
   // stats is the stats of memo creating/updating activities.
   // key is the year-month-day string. e.g. "2020-01-01".
   map<string, int32> stats = 1;
-}
-
-message PreviewMemoContentRequest {
-  string content = 1;
-}
-
-message PreviewMemoContentResponse {
-  repeated Node nodes = 1;
 }
 
 message ExportMemosRequest {
