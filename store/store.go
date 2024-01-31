@@ -32,6 +32,9 @@ func (s *Store) MigrateManually(ctx context.Context) error {
 	if err := s.MigrateResourceName(ctx); err != nil {
 		return err
 	}
+	if err := s.MigrateMemoName(ctx); err != nil {
+		return err
+	}
 	return nil
 }
 
