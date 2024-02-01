@@ -18,12 +18,6 @@
       }
     </script>
     <script src="wasm_exec.js"></script>
-    <script>
-      const go = new Go();
-      WebAssembly.instantiateStreaming(fetch("gomark.wasm"), go.importObject).then((result) => {
-        go.run(result.instance);
-      });
-    </script>
   </head>
   <body>
     <div id="root"></div>
