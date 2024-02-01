@@ -13,7 +13,7 @@
     "sourceType": "module"
   },
   "plugins": ["react", "@typescript-eslint", "prettier"],
-  "ignorePatterns": ["node_modules", "dist", "public"],
+  "ignorePatterns": ["node_modules", "dist", "public", "src/wasm"],
   "rules": {
     "prettier/prettier": [
       "error",
