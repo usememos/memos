@@ -46,8 +46,7 @@ message BatchUpsertTagRequest {
   repeated UpsertTagRequest requests = 1;
 }
 
-message BatchUpsertTagResponse {
-}
+message BatchUpsertTagResponse {}
 
 message ListTagsRequest {
   // The creator of tags.
