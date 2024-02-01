@@ -1,4 +1,4 @@
-import { Button, Dropdown, Input, Menu, MenuButton, Radio, RadioGroup } from "@mui/joy";
+import { Button, Dropdown, Input, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/joy";
 import { sortBy } from "lodash-es";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -217,34 +217,16 @@ const MemberSection = () => {
                         <MenuButton size="sm">
                           <Icon.MoreVertical className="w-4 h-auto" />
                         </MenuButton>
-                        <Menu>
-                          <button
-                            className="w-full text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                            onClick={() => handleChangePasswordClick(user)}
-                          >
+                        <Menu placement="bottom-end" size="sm">
+                          <MenuItem onClick={() => handleChangePasswordClick(user)}>
                             {t("setting.account-section.change-password")}
-                          </button>
+                          </MenuItem>
                           {user.rowStatus === RowStatus.ACTIVE ? (
-                            <button
-                              className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                              onClick={() => handleArchiveUserClick(user)}
-                            >
-                              {t("setting.member-section.archive-member")}
-                            </button>
+                            <MenuItem onClick={() => handleArchiveUserClick(user)}>{t("setting.member-section.archive-member")}</MenuItem>
                           ) : (
                             <>
-                              <button
-                                className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                                onClick={() => handleRestoreUserClick(user)}
-                              >
-                                {t("common.restore")}
-                              </button>
-                              <button
-                                className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
-                                onClick={() => handleDeleteUserClick(user)}
-                              >
-                                {t("setting.member-section.delete-member")}
-                              </button>
+                              <MenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</MenuItem>
+                              <MenuItem onClick={() => handleDeleteUserClick(user)}>{t("setting.member-section.delete-member")}</MenuItem>
                             </>
                           )}
                         </Menu>

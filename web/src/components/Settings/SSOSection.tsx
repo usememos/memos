@@ -1,4 +1,4 @@
-import { Button, Divider, List, ListItem } from "@mui/joy";
+import { Button, Divider, Dropdown, List, ListItem, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -7,8 +7,8 @@ import { useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
+import Icon from "../Icon";
 import LearnMore from "../LearnMore";
-import Dropdown from "../kit/Dropdown";
 
 interface State {
   disablePasswordLogin: boolean;
@@ -78,25 +78,17 @@ const SSOSection = () => {
             </p>
           </div>
           <div className="flex flex-row items-center">
-            <Dropdown
-              actionsClassName="!w-28"
-              actions={
-                <>
-                  <button
-                    className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                    onClick={() => showCreateIdentityProviderDialog(identityProvider, fetchIdentityProviderList)}
-                  >
-                    {t("common.edit")}
-                  </button>
-                  <button
-                    className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
-                    onClick={() => handleDeleteIdentityProvider(identityProvider)}
-                  >
-                    {t("common.delete")}
-                  </button>
-                </>
-              }
-            />
+            <Dropdown>
+              <MenuButton size="sm">
+                <Icon.MoreVertical className="w-4 h-auto" />
+              </MenuButton>
+              <Menu placement="bottom-end" size="sm">
+                <MenuItem onClick={() => showCreateIdentityProviderDialog(identityProvider, fetchIdentityProviderList)}>
+                  {t("common.edit")}
+                </MenuItem>
+                <MenuItem onClick={() => handleDeleteIdentityProvider(identityProvider)}>{t("common.delete")}</MenuItem>
+              </Menu>
+            </Dropdown>
           </div>
         </div>
       ))}

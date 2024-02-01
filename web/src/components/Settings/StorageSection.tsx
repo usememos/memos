@@ -1,4 +1,4 @@
-import { Button, Divider, IconButton, List, ListItem, Radio, RadioGroup } from "@mui/joy";
+import { Button, Divider, Dropdown, IconButton, List, ListItem, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -10,7 +10,6 @@ import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 import showUpdateLocalStorageDialog from "../UpdateLocalStorageDialog";
-import Dropdown from "../kit/Dropdown";
 
 const StorageSection = () => {
   const t = useTranslate();
@@ -100,25 +99,15 @@ const StorageSection = () => {
               <p className="ml-2">{storage.name}</p>
             </div>
             <div className="flex flex-row items-center">
-              <Dropdown
-                actionsClassName="!w-28"
-                actions={
-                  <>
-                    <button
-                      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                      onClick={() => showCreateStorageServiceDialog(storage, fetchStorageList)}
-                    >
-                      {t("common.edit")}
-                    </button>
-                    <button
-                      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
-                      onClick={() => handleDeleteStorage(storage)}
-                    >
-                      {t("common.delete")}
-                    </button>
-                  </>
-                }
-              />
+              <Dropdown>
+                <MenuButton size="sm">
+                  <Icon.MoreVertical className="w-4 h-auto" />
+                </MenuButton>
+                <Menu placement="bottom-end" size="sm">
+                  <MenuItem onClick={() => showCreateStorageServiceDialog(storage, fetchStorageList)}>{t("common.edit")}</MenuItem>
+                  <MenuItem onClick={() => handleDeleteStorage(storage)}>{t("common.delete")}</MenuItem>
+                </Menu>
+              </Dropdown>
             </div>
           </div>
         ))}
