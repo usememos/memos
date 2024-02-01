@@ -5,13 +5,14 @@ import { Provider } from "react-redux";
 import { RouterProvider } from "react-router-dom";
 import "./css/global.css";
 import "./css/tailwind.css";
-import wasmUrl from "./gomark.wasm?url";
 import "./helpers/polyfill";
 import "./i18n";
 import "./less/highlight.less";
 import router from "./router";
 import store from "./store";
 import theme from "./theme";
+import wasmUrl from "./wasm/gomark.wasm?url";
+import "./wasm/wasm_exec.js";
 
 (async () => {
   const go = new window.Go();
