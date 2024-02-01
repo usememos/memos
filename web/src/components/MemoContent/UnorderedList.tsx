@@ -12,9 +12,11 @@ const UnorderedList: React.FC<Props> = ({ indent, children }: Props) => {
   return (
     <ul>
       <li className="w-full flex flex-row">
-        <div className="block font-mono shrink-0">
-          <span>{repeat(" ", indent)}</span>
-        </div>
+        {indent > 0 && (
+          <div className="block font-mono shrink-0">
+            <span>{repeat(" ", indent)}</span>
+          </div>
+        )}
         <div className="w-auto grid grid-cols-[24px_1fr] gap-1">
           <div className="w-7 h-6 flex justify-center items-center">
             <span className="opacity-80">•</span>
