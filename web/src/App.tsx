@@ -26,11 +26,6 @@ const App = () => {
   }, [systemStatus.host]);
 
   useEffect(() => {
-    const initialGoWASMExec = async () => {
-      const go = new window.Go();
-      const result = await WebAssembly.instantiateStreaming(fetch("/gomark.wasm"), go.importObject);
-      go.run(result.instance);
-    };
     const initialState = async () => {
       try {
         await userStore.fetchCurrentUser();
@@ -39,7 +34,7 @@ const App = () => {
       }
     };
 
-    Promise.all([initialGoWASMExec(), initialState()]).then(() => setLoading(false));
+    Promise.all([initialState()]).then(() => setLoading(false));
   }, []);
 
   useEffect(() => {
