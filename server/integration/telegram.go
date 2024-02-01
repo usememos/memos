@@ -113,7 +113,7 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	keyboard := generateKeyboardForMemoID(memoMessage.ID)
 	_, err = bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Saved as %s Memo %d", memoMessage.Visibility, memoMessage.ID), keyboard)
 
-	t.dispatchMemoRelatedWebhook(ctx, *memoMessage, "memos.memo.created")
+	_ = t.dispatchMemoRelatedWebhook(ctx, *memoMessage, "memos.memo.created")
 
 	return err
 }
@@ -143,11 +143,11 @@ func (t *TelegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 
 	err = bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Success changing Memo %d to %s", memoID, visibility))
 
-	memo, webhook_err := t.store.GetMemo(ctx, &store.FindMemo{
+	memo, webhookErr := t.store.GetMemo(ctx, &store.FindMemo{
 		ID: &memoID,
 	})
-	if webhook_err == nil {
-		t.dispatchMemoRelatedWebhook(ctx, *memo, "memos.memo.updated")
+	if webhookErr == nil {
+		_ = t.dispatchMemoRelatedWebhook(ctx, *memo, "memos.memo.updated")
 	}
 	return err
 }
@@ -240,7 +240,6 @@ func (t *TelegramHandler) dispatchMemoRelatedWebhook(ctx context.Context, memo s
 }
 
 func (t *TelegramHandler) convertMemoToWebhookPayload(ctx context.Context, memo store.Memo) (payload *webhook.WebhookPayload) {
-
 	payload = &webhook.WebhookPayload{
 		CreatorID: memo.CreatorID,
 		CreatedTs: time.Now().Unix(),
@@ -257,14 +256,14 @@ func (t *TelegramHandler) convertMemoToWebhookPayload(ctx context.Context, memo 
 		},
 	}
 
-	resource_list, err := t.store.ListResources(ctx, &store.FindResource{
+	resourceList, err := t.store.ListResources(ctx, &store.FindResource{
 		MemoID: &memo.ID,
 	})
 
 	if err != nil {
-		return
+		return payload
 	}
-	for _, resource := range resource_list {
+	for _, resource := range resourceList {
 		payload.Memo.ResourceList = append(payload.Memo.ResourceList, &webhook.Resource{
 			ID:           resource.ID,
 			CreatorID:    resource.CreatorID,
@@ -278,20 +277,20 @@ func (t *TelegramHandler) convertMemoToWebhookPayload(ctx context.Context, memo 
 		})
 	}
 
-	relation_list, err := t.store.ListMemoRelations(ctx, &store.FindMemoRelation{
+	relationList, err := t.store.ListMemoRelations(ctx, &store.FindMemoRelation{
 		MemoID: &memo.ID,
 	})
 
 	if err != nil {
-		return
+		return payload
 	}
 
-	for _, relation := range relation_list {
+	for _, relation := range relationList {
 		payload.Memo.RelationList = append(payload.Memo.RelationList, &webhook.MemoRelation{
 			MemoID:        relation.MemoID,
 			RelatedMemoID: relation.RelatedMemoID,
 			Type:          string(relation.Type),
 		})
 	}
-	return
+	return payload
 }
