@@ -15,8 +15,15 @@ import { Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 
 function groupResourcesByDate(resources: Resource[]) {
+  const tmp_resources: Resource[] = resources.slice();
+  tmp_resources.sort((a: Resource, b: Resource) => {
+    const a_date = new Date(a.createTime as any);
+    const b_date = new Date(b.createTime as any);
+    return b_date.getTime() - a_date.getTime();
+  });
+
   const grouped = new Map<number, Resource[]>();
-  resources.forEach((item) => {
+  tmp_resources.forEach((item) => {
     const date = new Date(item.createTime as any);
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -41,15 +48,15 @@ const Resources = () => {
   });
   const memoStore = useMemoStore();
   const [resources, setResources] = useState<Resource[]>([]);
-  const filteredResources = resources.filter((resource) => includes(resource.filename, state.searchQuery));
-  const groupedResources = groupResourcesByDate(filteredResources.filter((resoure) => resoure.memoId));
-  const unusedResources = filteredResources.filter((resoure) => !resoure.memoId);
+  const filteredResources = resources.filter((resource: any) => includes(resource.filename, state.searchQuery));
+  const groupedResources = groupResourcesByDate(filteredResources.filter((resource: any) => resource.memoId));
+  const unusedResources = filteredResources.filter((resource: any) => !resource.memoId);
 
   useEffect(() => {
     resourceServiceClient.listResources({}).then(({ resources }) => {
       setResources(resources);
       loadingState.setFinish();
-      Promise.all(resources.map((resource) => (resource.memoId ? memoStore.getOrFetchMemoById(resource.memoId) : null)));
+      Promise.all(resources.map((resource: any) => (resource.memoId ? memoStore.getOrFetchMemoById(resource.memoId) : null)));
     });
   }, []);
 
@@ -63,7 +70,7 @@ const Resources = () => {
         for (const resource of unusedResources) {
           await resourceServiceClient.deleteResource({ id: resource.id });
         }
-        setResources(resources.filter((resoure) => resoure.memoId));
+        setResources(resources.filter((resource) => resource.memoId));
       },
     });
   };

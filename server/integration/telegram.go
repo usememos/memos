@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strconv"
+	"time"
 	"unicode/utf16"
 
 	"github.com/lithammer/shortuuid/v4"
@@ -13,7 +14,9 @@ import (
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/plugin/telegram"
+	"github.com/usememos/memos/plugin/webhook"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -109,6 +112,9 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 
 	keyboard := generateKeyboardForMemoID(memoMessage.ID)
 	_, err = bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Saved as %s Memo %d", memoMessage.Visibility, memoMessage.ID), keyboard)
+
+	_ = t.dispatchMemoRelatedWebhook(ctx, *memoMessage, "memos.memo.created")
+
 	return err
 }
 
@@ -135,7 +141,15 @@ func (t *TelegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to EditMessage %s", err))
 	}
 
-	return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Success changing Memo %d to %s", memoID, visibility))
+	err = bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Success changing Memo %d to %s", memoID, visibility))
+
+	memo, webhookErr := t.store.GetMemo(ctx, &store.FindMemo{
+		ID: &memoID,
+	})
+	if webhookErr == nil {
+		_ = t.dispatchMemoRelatedWebhook(ctx, *memo, "memos.memo.updated")
+	}
+	return err
 }
 
 func generateKeyboardForMemoID(id int32) [][]telegram.InlineKeyboardButton {
@@ -203,4 +217,80 @@ func convertToMarkdown(text string, messageEntities []telegram.MessageEntity) st
 	output = append(output, []rune(insertions[utf16pos])...)
 
 	return string(output)
+}
+
+func (t *TelegramHandler) dispatchMemoRelatedWebhook(ctx context.Context, memo store.Memo, activityType string) error {
+	webhooks, err := t.store.ListWebhooks(ctx, &store.FindWebhook{
+		CreatorID: &memo.CreatorID,
+	})
+	if err != nil {
+		return err
+	}
+	metric.Enqueue("webhook dispatch")
+	for _, hook := range webhooks {
+		payload := t.convertMemoToWebhookPayload(ctx, memo)
+		payload.ActivityType = activityType
+		payload.URL = hook.Url
+		err := webhook.Post(*payload)
+		if err != nil {
+			return errors.Wrap(err, "failed to post webhook")
+		}
+	}
+	return nil
+}
+
+func (t *TelegramHandler) convertMemoToWebhookPayload(ctx context.Context, memo store.Memo) (payload *webhook.WebhookPayload) {
+	payload = &webhook.WebhookPayload{
+		CreatorID: memo.CreatorID,
+		CreatedTs: time.Now().Unix(),
+		Memo: &webhook.Memo{
+			ID:           memo.ID,
+			CreatorID:    memo.CreatorID,
+			CreatedTs:    memo.CreatedTs,
+			UpdatedTs:    memo.UpdatedTs,
+			Content:      memo.Content,
+			Visibility:   memo.Visibility.String(),
+			Pinned:       memo.Pinned,
+			ResourceList: make([]*webhook.Resource, 0),
+			RelationList: make([]*webhook.MemoRelation, 0),
+		},
+	}
+
+	resourceList, err := t.store.ListResources(ctx, &store.FindResource{
+		MemoID: &memo.ID,
+	})
+
+	if err != nil {
+		return payload
+	}
+	for _, resource := range resourceList {
+		payload.Memo.ResourceList = append(payload.Memo.ResourceList, &webhook.Resource{
+			ID:           resource.ID,
+			CreatorID:    resource.CreatorID,
+			CreatedTs:    resource.CreatedTs,
+			UpdatedTs:    resource.UpdatedTs,
+			Filename:     resource.Filename,
+			Type:         resource.Type,
+			Size:         resource.Size,
+			InternalPath: resource.InternalPath,
+			ExternalLink: resource.ExternalLink,
+		})
+	}
+
+	relationList, err := t.store.ListMemoRelations(ctx, &store.FindMemoRelation{
+		MemoID: &memo.ID,
+	})
+
+	if err != nil {
+		return payload
+	}
+
+	for _, relation := range relationList {
+		payload.Memo.RelationList = append(payload.Memo.RelationList, &webhook.MemoRelation{
+			MemoID:        relation.MemoID,
+			RelatedMemoID: relation.RelatedMemoID,
+			Type:          string(relation.Type),
+		})
+	}
+	return payload
 }
