@@ -585,6 +585,16 @@ ExportMemos exports memos.
 | 200 | A successful response. | [v2GetTagSuggestionsResponse](#v2gettagsuggestionsresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
+### /api/v2/tags:batchUpsert
+
+#### POST
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2BatchUpsertTagResponse](#v2batchupserttagresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
 ### /api/v2/tags:rename
 
 #### PATCH
@@ -1033,6 +1043,12 @@ CreateUser creates a new user.
 | createTime | dateTime |  | No |
 | payload | [apiv2ActivityPayload](#apiv2activitypayload) |  | No |
 
+#### v2BatchUpsertTagResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| v2BatchUpsertTagResponse | object |  |  |
+
 #### v2CreateMemoCommentResponse
 
 | Name | Type | Description | Required |
@@ -1424,6 +1440,12 @@ CreateUser creates a new user.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | workspaceProfile | [v2WorkspaceProfile](#v2workspaceprofile) |  | No |
+
+#### v2UpsertTagRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| name | string |  | No |
 
 #### v2UpsertTagResponse
 

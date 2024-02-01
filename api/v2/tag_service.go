@@ -3,7 +3,7 @@ package v2
 import (
 	"context"
 	"fmt"
-	"regexp"
+	"slices"
 	"sort"
 
 	"github.com/pkg/errors"
@@ -11,7 +11,6 @@ import (
 	"github.com/yourselfhosted/gomark/parser"
 	"github.com/yourselfhosted/gomark/parser/tokenizer"
 	"github.com/yourselfhosted/gomark/restore"
-	"golang.org/x/exp/slices"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -40,6 +39,15 @@ func (s *APIV2Service) UpsertTag(ctx context.Context, request *apiv2pb.UpsertTag
 	return &apiv2pb.UpsertTagResponse{
 		Tag: t,
 	}, nil
+}
+
+func (s *APIV2Service) BatchUpsertTag(ctx context.Context, request *apiv2pb.BatchUpsertTagRequest) (*apiv2pb.BatchUpsertTagResponse, error) {
+	for _, r := range request.Requests {
+		if _, err := s.UpsertTag(ctx, r); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to batch upsert tags: %v", err)
+		}
+	}
+	return &apiv2pb.BatchUpsertTagResponse{}, nil
 }
 
 func (s *APIV2Service) ListTags(ctx context.Context, request *apiv2pb.ListTagsRequest) (*apiv2pb.ListTagsResponse, error) {
@@ -183,7 +191,7 @@ func (s *APIV2Service) GetTagSuggestions(ctx context.Context, request *apiv2pb.G
 		ContentSearch: []string{"#"},
 		RowStatus:     &normalRowStatus,
 	}
-	memoList, err := s.Store.ListMemos(ctx, memoFind)
+	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
 	}
@@ -200,12 +208,21 @@ func (s *APIV2Service) GetTagSuggestions(ctx context.Context, request *apiv2pb.G
 		tagNameList = append(tagNameList, tag.Name)
 	}
 	tagMapSet := make(map[string]bool)
-	for _, memo := range memoList {
-		for _, tag := range findTagListFromMemoContent(memo.Content) {
-			if !slices.Contains(tagNameList, tag) {
-				tagMapSet[tag] = true
-			}
+	for _, memo := range memos {
+		nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to parse memo content")
 		}
+
+		// Dynamically upsert tags from memo content.
+		traverseASTNodes(nodes, func(node ast.Node) {
+			if tagNode, ok := node.(*ast.Tag); ok {
+				tag := tagNode.Content
+				if !slices.Contains(tagNameList, tag) {
+					tagMapSet[tag] = true
+				}
+			}
+		})
 	}
 	suggestions := []string{}
 	for tag := range tagMapSet {
@@ -231,20 +248,24 @@ func (s *APIV2Service) convertTagFromStore(ctx context.Context, tag *store.Tag) 
 	}, nil
 }
 
-var tagRegexp = regexp.MustCompile(`#([^\s#,]+)`)
-
-func findTagListFromMemoContent(memoContent string) []string {
-	tagMapSet := make(map[string]bool)
-	matches := tagRegexp.FindAllStringSubmatch(memoContent, -1)
-	for _, v := range matches {
-		tagName := v[1]
-		tagMapSet[tagName] = true
+func traverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {
+	for _, node := range nodes {
+		fn(node)
+		switch n := node.(type) {
+		case *ast.Paragraph:
+			traverseASTNodes(n.Children, fn)
+		case *ast.Heading:
+			traverseASTNodes(n.Children, fn)
+		case *ast.Blockquote:
+			traverseASTNodes(n.Children, fn)
+		case *ast.OrderedList:
+			traverseASTNodes(n.Children, fn)
+		case *ast.UnorderedList:
+			traverseASTNodes(n.Children, fn)
+		case *ast.TaskList:
+			traverseASTNodes(n.Children, fn)
+		case *ast.Bold:
+			traverseASTNodes(n.Children, fn)
+		}
 	}
-
-	tagList := []string{}
-	for tag := range tagMapSet {
-		tagList = append(tagList, tag)
-	}
-	sort.Strings(tagList)
-	return tagList
 }

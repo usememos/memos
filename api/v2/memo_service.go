@@ -11,9 +11,6 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
-	"github.com/yourselfhosted/gomark/ast"
-	"github.com/yourselfhosted/gomark/parser"
-	"github.com/yourselfhosted/gomark/parser/tokenizer"
 	"go.uber.org/zap"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
@@ -48,11 +45,6 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		return nil, status.Errorf(codes.InvalidArgument, "content too long")
 	}
 
-	nodes, err := parser.Parse(tokenizer.Tokenize(request.Content))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse memo content")
-	}
-
 	create := &store.Memo{
 		ResourceName: shortuuid.New(),
 		CreatorID:    user.ID,
@@ -73,18 +65,6 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		return nil, err
 	}
 	metric.Enqueue("memo create")
-
-	// Dynamically upsert tags from memo content.
-	traverseASTNodes(nodes, func(node ast.Node) {
-		if tag, ok := node.(*ast.Tag); ok {
-			if _, err := s.Store.UpsertTag(ctx, &store.Tag{
-				Name:      tag.Content,
-				CreatorID: user.ID,
-			}); err != nil {
-				log.Warn("Failed to create tag", zap.Error(err))
-			}
-		}
-	})
 
 	memoMessage, err := s.convertMemoFromStore(ctx, memo)
 	if err != nil {
@@ -250,22 +230,6 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 	for _, path := range request.UpdateMask.Paths {
 		if path == "content" {
 			update.Content = &request.Memo.Content
-			nodes, err := parser.Parse(tokenizer.Tokenize(*update.Content))
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to parse memo content")
-			}
-
-			// Dynamically upsert tags from memo content.
-			traverseASTNodes(nodes, func(node ast.Node) {
-				if tag, ok := node.(*ast.Tag); ok {
-					if _, err := s.Store.UpsertTag(ctx, &store.Tag{
-						Name:      tag.Content,
-						CreatorID: user.ID,
-					}); err != nil {
-						log.Warn("Failed to create tag", zap.Error(err))
-					}
-				}
-			})
 		} else if path == "resource_name" {
 			update.ResourceName = &request.Memo.Name
 			if !util.ResourceNameMatcher.MatchString(*update.ResourceName) {

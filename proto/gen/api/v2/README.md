@@ -134,6 +134,8 @@
     - [MemoService](#memos-api-v2-MemoService)
   
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
+    - [BatchUpsertTagRequest](#memos-api-v2-BatchUpsertTagRequest)
+    - [BatchUpsertTagResponse](#memos-api-v2-BatchUpsertTagResponse)
     - [DeleteTagRequest](#memos-api-v2-DeleteTagRequest)
     - [DeleteTagResponse](#memos-api-v2-DeleteTagResponse)
     - [GetTagSuggestionsRequest](#memos-api-v2-GetTagSuggestionsRequest)
@@ -1869,6 +1871,31 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-BatchUpsertTagRequest"></a>
+
+### BatchUpsertTagRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| requests | [UpsertTagRequest](#memos-api-v2-UpsertTagRequest) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-BatchUpsertTagResponse"></a>
+
+### BatchUpsertTagResponse
+
+
+
+
+
+
+
 <a name="memos-api-v2-DeleteTagRequest"></a>
 
 ### DeleteTagRequest
@@ -2046,6 +2073,7 @@ Used internally for obfuscating the page token.
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | UpsertTag | [UpsertTagRequest](#memos-api-v2-UpsertTagRequest) | [UpsertTagResponse](#memos-api-v2-UpsertTagResponse) |  |
+| BatchUpsertTag | [BatchUpsertTagRequest](#memos-api-v2-BatchUpsertTagRequest) | [BatchUpsertTagResponse](#memos-api-v2-BatchUpsertTagResponse) |  |
 | ListTags | [ListTagsRequest](#memos-api-v2-ListTagsRequest) | [ListTagsResponse](#memos-api-v2-ListTagsResponse) |  |
 | RenameTag | [RenameTagRequest](#memos-api-v2-RenameTagRequest) | [RenameTagResponse](#memos-api-v2-RenameTagResponse) |  |
 | DeleteTag | [DeleteTagRequest](#memos-api-v2-DeleteTagRequest) | [DeleteTagResponse](#memos-api-v2-DeleteTagResponse) |  |

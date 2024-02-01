@@ -736,6 +736,20 @@ paths:
           type: string
       tags:
         - TagService
+  /api/v2/tags:batchUpsert:
+    post:
+      operationId: TagService_BatchUpsertTag
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2BatchUpsertTagResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - TagService
   /api/v2/tags:rename:
     patch:
       operationId: TagService_RenameTag
@@ -1416,6 +1430,8 @@ definitions:
         format: date-time
       payload:
         $ref: '#/definitions/apiv2ActivityPayload'
+  v2BatchUpsertTagResponse:
+    type: object
   v2CreateMemoCommentResponse:
     type: object
     properties:
@@ -1836,6 +1852,11 @@ definitions:
     properties:
       workspaceProfile:
         $ref: '#/definitions/v2WorkspaceProfile'
+  v2UpsertTagRequest:
+    type: object
+    properties:
+      name:
+        type: string
   v2UpsertTagResponse:
     type: object
     properties:

@@ -6,7 +6,7 @@ import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
-import { useGlobalStore, useResourceStore } from "@/store/module";
+import { useGlobalStore, useResourceStore, useTagStore } from "@/store/module";
 import { useMemoStore, useUserStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
@@ -14,6 +14,7 @@ import { Resource } from "@/types/proto/api/v2/resource_service";
 import { UserSetting } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
+import { extractTagsFromContent } from "@/utils/tag";
 import showCreateResourceDialog from "../CreateResourceDialog";
 import Icon from "../Icon";
 import VisibilityIcon from "../VisibilityIcon";
@@ -57,6 +58,7 @@ const MemoEditor = (props: Props) => {
   const userStore = useUserStore();
   const memoStore = useMemoStore();
   const resourceStore = useResourceStore();
+  const tagStore = useTagStore();
   const [state, setState] = useState<State>({
     memoVisibility: Visibility.PRIVATE,
     resourceList: [],
@@ -325,6 +327,10 @@ const MemoEditor = (props: Props) => {
       console.error(error);
       toast.error(error.details);
     }
+
+    // Batch upsert tags.
+    const tags = extractTagsFromContent(content);
+    await tagStore.batchUpsertTag(tags);
 
     setState((state) => {
       return {

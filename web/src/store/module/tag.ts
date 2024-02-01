@@ -25,6 +25,17 @@ export const useTagStore = () => {
     store.dispatch(upsertTagAction(tagName));
   };
 
+  const batchUpsertTag = async (tagNames: string[]) => {
+    await tagServiceClient.batchUpsertTag({
+      requests: tagNames.map((name) => ({
+        name,
+      })),
+    });
+    for (const tagName of tagNames) {
+      store.dispatch(upsertTagAction(tagName));
+    }
+  };
+
   const deleteTag = async (tagName: string) => {
     await tagServiceClient.deleteTag({
       tag: {
@@ -40,6 +51,7 @@ export const useTagStore = () => {
     getState,
     fetchTags,
     upsertTag,
+    batchUpsertTag,
     deleteTag,
   };
 };
