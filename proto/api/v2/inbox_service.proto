@@ -10,10 +10,11 @@ import "google/protobuf/timestamp.proto";
 option go_package = "gen/api/v2";
 
 service InboxService {
+  // ListInboxes lists inboxes for a user.
   rpc ListInboxes(ListInboxesRequest) returns (ListInboxesResponse) {
     option (google.api.http) = {get: "/api/v2/inboxes"};
   }
-
+  // UpdateInbox updates an inbox.
   rpc UpdateInbox(UpdateInboxRequest) returns (UpdateInboxResponse) {
     option (google.api.http) = {
       patch: "/v2/inboxes"
@@ -21,7 +22,7 @@ service InboxService {
     };
     option (google.api.method_signature) = "inbox,update_mask";
   }
-
+  // DeleteInbox deletes an inbox.
   rpc DeleteInbox(DeleteInboxRequest) returns (DeleteInboxResponse) {
     option (google.api.http) = {delete: "/v2/{name=inboxes/*}"};
     option (google.api.method_signature) = "name";

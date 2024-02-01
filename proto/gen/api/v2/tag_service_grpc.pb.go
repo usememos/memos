@@ -31,11 +31,18 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TagServiceClient interface {
+	// UpsertTag upserts a tag.
 	UpsertTag(ctx context.Context, in *UpsertTagRequest, opts ...grpc.CallOption) (*UpsertTagResponse, error)
+	// BatchUpsertTag upserts multiple tags.
 	BatchUpsertTag(ctx context.Context, in *BatchUpsertTagRequest, opts ...grpc.CallOption) (*BatchUpsertTagResponse, error)
+	// ListTags lists tags.
 	ListTags(ctx context.Context, in *ListTagsRequest, opts ...grpc.CallOption) (*ListTagsResponse, error)
+	// RenameTag renames a tag.
+	// All related memos will be updated.
 	RenameTag(ctx context.Context, in *RenameTagRequest, opts ...grpc.CallOption) (*RenameTagResponse, error)
+	// DeleteTag deletes a tag.
 	DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*DeleteTagResponse, error)
+	// GetTagSuggestions gets tag suggestions from the user's memos.
 	GetTagSuggestions(ctx context.Context, in *GetTagSuggestionsRequest, opts ...grpc.CallOption) (*GetTagSuggestionsResponse, error)
 }
 
@@ -105,11 +112,18 @@ func (c *tagServiceClient) GetTagSuggestions(ctx context.Context, in *GetTagSugg
 // All implementations must embed UnimplementedTagServiceServer
 // for forward compatibility
 type TagServiceServer interface {
+	// UpsertTag upserts a tag.
 	UpsertTag(context.Context, *UpsertTagRequest) (*UpsertTagResponse, error)
+	// BatchUpsertTag upserts multiple tags.
 	BatchUpsertTag(context.Context, *BatchUpsertTagRequest) (*BatchUpsertTagResponse, error)
+	// ListTags lists tags.
 	ListTags(context.Context, *ListTagsRequest) (*ListTagsResponse, error)
+	// RenameTag renames a tag.
+	// All related memos will be updated.
 	RenameTag(context.Context, *RenameTagRequest) (*RenameTagResponse, error)
+	// DeleteTag deletes a tag.
 	DeleteTag(context.Context, *DeleteTagRequest) (*DeleteTagResponse, error)
+	// GetTagSuggestions gets tag suggestions from the user's memos.
 	GetTagSuggestions(context.Context, *GetTagSuggestionsRequest) (*GetTagSuggestionsResponse, error)
 	mustEmbedUnimplementedTagServiceServer()
 }

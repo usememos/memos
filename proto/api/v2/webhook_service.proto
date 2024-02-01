@@ -10,24 +10,29 @@ import "google/protobuf/timestamp.proto";
 option go_package = "gen/api/v2";
 
 service WebhookService {
+  // CreateWebhook creates a new webhook.
   rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse) {
     option (google.api.http) = {
       post: "/api/v2/webhooks"
       body: "*"
     };
   }
+  // GetWebhook returns a webhook by id.
   rpc GetWebhook(GetWebhookRequest) returns (GetWebhookResponse) {
     option (google.api.http) = {get: "/api/v2/webhooks/{id}"};
   }
+  // ListWebhooks returns a list of webhooks.
   rpc ListWebhooks(ListWebhooksRequest) returns (ListWebhooksResponse) {
     option (google.api.http) = {get: "/api/v2/webhooks"};
   }
+  // UpdateWebhook updates a webhook.
   rpc UpdateWebhook(UpdateWebhookRequest) returns (UpdateWebhookResponse) {
     option (google.api.http) = {
       patch: "/api/v2/webhooks/{webhook.id}"
       body: "*"
     };
   }
+  // DeleteWebhook deletes a webhook by id.
   rpc DeleteWebhook(DeleteWebhookRequest) returns (DeleteWebhookResponse) {
     option (google.api.http) = {delete: "/api/v2/webhooks/{id}"};
   }

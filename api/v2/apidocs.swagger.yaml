@@ -130,6 +130,7 @@ paths:
         - AuthService
   /api/v2/inboxes:
     get:
+      summary: ListInboxes lists inboxes for a user.
       operationId: InboxService_ListInboxes
       responses:
         "200":
@@ -503,6 +504,7 @@ paths:
         - MemoService
   /api/v2/resources:
     get:
+      summary: ListResources lists all resources.
       operationId: ResourceService_ListResources
       responses:
         "200":
@@ -516,6 +518,7 @@ paths:
       tags:
         - ResourceService
     post:
+      summary: CreateResource creates a new resource.
       operationId: ResourceService_CreateResource
       responses:
         "200":
@@ -548,6 +551,7 @@ paths:
         - ResourceService
   /api/v2/resources/{id}:
     get:
+      summary: GetResource returns a resource by id.
       operationId: ResourceService_GetResource
       responses:
         "200":
@@ -567,6 +571,7 @@ paths:
       tags:
         - ResourceService
     delete:
+      summary: DeleteResource deletes a resource by id.
       operationId: ResourceService_DeleteResource
       responses:
         "200":
@@ -587,6 +592,7 @@ paths:
         - ResourceService
   /api/v2/resources/{name}:
     get:
+      summary: GetResourceByName returns a resource by name.
       operationId: ResourceService_GetResourceByName
       responses:
         "200":
@@ -606,6 +612,7 @@ paths:
         - ResourceService
   /api/v2/resources/{resource.id}:
     patch:
+      summary: UpdateResource updates a resource.
       operationId: ResourceService_UpdateResource
       responses:
         "200":
@@ -651,6 +658,7 @@ paths:
         - ResourceService
   /api/v2/tags:
     get:
+      summary: ListTags lists tags.
       operationId: TagService_ListTags
       responses:
         "200":
@@ -672,6 +680,7 @@ paths:
       tags:
         - TagService
     delete:
+      summary: DeleteTag deletes a tag.
       operationId: TagService_DeleteTag
       responses:
         "200":
@@ -697,6 +706,7 @@ paths:
       tags:
         - TagService
     post:
+      summary: UpsertTag upserts a tag.
       operationId: TagService_UpsertTag
       responses:
         "200":
@@ -716,6 +726,7 @@ paths:
         - TagService
   /api/v2/tags/suggestion:
     get:
+      summary: GetTagSuggestions gets tag suggestions from the user's memos.
       operationId: TagService_GetTagSuggestions
       responses:
         "200":
@@ -738,6 +749,7 @@ paths:
         - TagService
   /api/v2/tags:batchUpsert:
     post:
+      summary: BatchUpsertTag upserts multiple tags.
       operationId: TagService_BatchUpsertTag
       responses:
         "200":
@@ -752,6 +764,9 @@ paths:
         - TagService
   /api/v2/tags:rename:
     patch:
+      summary: |-
+        RenameTag renames a tag.
+        All related memos will be updated.
       operationId: TagService_RenameTag
       responses:
         "200":
@@ -797,6 +812,7 @@ paths:
         - UserService
   /api/v2/webhooks:
     get:
+      summary: ListWebhooks returns a list of webhooks.
       operationId: WebhookService_ListWebhooks
       responses:
         "200":
@@ -816,6 +832,7 @@ paths:
       tags:
         - WebhookService
     post:
+      summary: CreateWebhook creates a new webhook.
       operationId: WebhookService_CreateWebhook
       responses:
         "200":
@@ -836,6 +853,7 @@ paths:
         - WebhookService
   /api/v2/webhooks/{id}:
     get:
+      summary: GetWebhook returns a webhook by id.
       operationId: WebhookService_GetWebhook
       responses:
         "200":
@@ -855,6 +873,7 @@ paths:
       tags:
         - WebhookService
     delete:
+      summary: DeleteWebhook deletes a webhook by id.
       operationId: WebhookService_DeleteWebhook
       responses:
         "200":
@@ -875,6 +894,7 @@ paths:
         - WebhookService
   /api/v2/webhooks/{webhook.id}:
     patch:
+      summary: UpdateWebhook updates a webhook.
       operationId: WebhookService_UpdateWebhook
       responses:
         "200":
@@ -900,6 +920,7 @@ paths:
         - WebhookService
   /api/v2/workspace/profile:
     get:
+      summary: GetWorkspaceProfile returns the workspace profile.
       operationId: WorkspaceService_GetWorkspaceProfile
       responses:
         "200":
@@ -913,6 +934,7 @@ paths:
       tags:
         - WorkspaceService
     patch:
+      summary: UpdateWorkspaceProfile updates the workspace profile.
       operationId: WorkspaceService_UpdateWorkspaceProfile
       responses:
         "200":
@@ -1062,6 +1084,7 @@ paths:
         - UserService
   /api/v2/{name}/setting:
     get:
+      summary: GetUserSetting gets the setting of a user.
       operationId: UserService_GetUserSetting
       responses:
         "200":
@@ -1085,6 +1108,7 @@ paths:
         - UserService
   /api/v2/{setting.name}:
     patch:
+      summary: UpdateUserSetting updates the setting of a user.
       operationId: UserService_UpdateUserSetting
       responses:
         "200":
@@ -1200,6 +1224,7 @@ paths:
         - UserService
   /v2/activities:
     get:
+      summary: GetActivity returns the activity with the given id.
       operationId: ActivityService_GetActivity
       responses:
         "200":
@@ -1220,6 +1245,7 @@ paths:
         - ActivityService
   /v2/inboxes:
     patch:
+      summary: UpdateInbox updates an inbox.
       operationId: InboxService_UpdateInbox
       responses:
         "200":
@@ -1240,6 +1266,7 @@ paths:
         - InboxService
   /v2/{name}:
     delete:
+      summary: DeleteInbox deletes an inbox.
       operationId: InboxService_DeleteInbox
       responses:
         "200":

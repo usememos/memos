@@ -42,10 +42,12 @@ service UserService {
     option (google.api.http) = {delete: "/api/v2/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
+  // GetUserSetting gets the setting of a user.
   rpc GetUserSetting(GetUserSettingRequest) returns (GetUserSettingResponse) {
     option (google.api.http) = {get: "/api/v2/{name=users/*}/setting"};
     option (google.api.method_signature) = "name";
   }
+  // UpdateUserSetting updates the setting of a user.
   rpc UpdateUserSetting(UpdateUserSettingRequest) returns (UpdateUserSettingResponse) {
     option (google.api.http) = {
       patch: "/api/v2/{setting.name=users/*/setting}"

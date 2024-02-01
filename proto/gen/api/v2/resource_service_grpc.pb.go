@@ -31,11 +31,17 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ResourceServiceClient interface {
+	// CreateResource creates a new resource.
 	CreateResource(ctx context.Context, in *CreateResourceRequest, opts ...grpc.CallOption) (*CreateResourceResponse, error)
+	// ListResources lists all resources.
 	ListResources(ctx context.Context, in *ListResourcesRequest, opts ...grpc.CallOption) (*ListResourcesResponse, error)
+	// GetResource returns a resource by id.
 	GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error)
+	// GetResourceByName returns a resource by name.
 	GetResourceByName(ctx context.Context, in *GetResourceByNameRequest, opts ...grpc.CallOption) (*GetResourceByNameResponse, error)
+	// UpdateResource updates a resource.
 	UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error)
+	// DeleteResource deletes a resource by id.
 	DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*DeleteResourceResponse, error)
 }
 
@@ -105,11 +111,17 @@ func (c *resourceServiceClient) DeleteResource(ctx context.Context, in *DeleteRe
 // All implementations must embed UnimplementedResourceServiceServer
 // for forward compatibility
 type ResourceServiceServer interface {
+	// CreateResource creates a new resource.
 	CreateResource(context.Context, *CreateResourceRequest) (*CreateResourceResponse, error)
+	// ListResources lists all resources.
 	ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error)
+	// GetResource returns a resource by id.
 	GetResource(context.Context, *GetResourceRequest) (*GetResourceResponse, error)
+	// GetResourceByName returns a resource by name.
 	GetResourceByName(context.Context, *GetResourceByNameRequest) (*GetResourceByNameResponse, error)
+	// UpdateResource updates a resource.
 	UpdateResource(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error)
+	// DeleteResource deletes a resource by id.
 	DeleteResource(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error)
 	mustEmbedUnimplementedResourceServiceServer()
 }

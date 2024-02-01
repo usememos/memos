@@ -30,10 +30,15 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WebhookServiceClient interface {
+	// CreateWebhook creates a new webhook.
 	CreateWebhook(ctx context.Context, in *CreateWebhookRequest, opts ...grpc.CallOption) (*CreateWebhookResponse, error)
+	// GetWebhook returns a webhook by id.
 	GetWebhook(ctx context.Context, in *GetWebhookRequest, opts ...grpc.CallOption) (*GetWebhookResponse, error)
+	// ListWebhooks returns a list of webhooks.
 	ListWebhooks(ctx context.Context, in *ListWebhooksRequest, opts ...grpc.CallOption) (*ListWebhooksResponse, error)
+	// UpdateWebhook updates a webhook.
 	UpdateWebhook(ctx context.Context, in *UpdateWebhookRequest, opts ...grpc.CallOption) (*UpdateWebhookResponse, error)
+	// DeleteWebhook deletes a webhook by id.
 	DeleteWebhook(ctx context.Context, in *DeleteWebhookRequest, opts ...grpc.CallOption) (*DeleteWebhookResponse, error)
 }
 
@@ -94,10 +99,15 @@ func (c *webhookServiceClient) DeleteWebhook(ctx context.Context, in *DeleteWebh
 // All implementations must embed UnimplementedWebhookServiceServer
 // for forward compatibility
 type WebhookServiceServer interface {
+	// CreateWebhook creates a new webhook.
 	CreateWebhook(context.Context, *CreateWebhookRequest) (*CreateWebhookResponse, error)
+	// GetWebhook returns a webhook by id.
 	GetWebhook(context.Context, *GetWebhookRequest) (*GetWebhookResponse, error)
+	// ListWebhooks returns a list of webhooks.
 	ListWebhooks(context.Context, *ListWebhooksRequest) (*ListWebhooksResponse, error)
+	// UpdateWebhook updates a webhook.
 	UpdateWebhook(context.Context, *UpdateWebhookRequest) (*UpdateWebhookResponse, error)
+	// DeleteWebhook deletes a webhook by id.
 	DeleteWebhook(context.Context, *DeleteWebhookRequest) (*DeleteWebhookResponse, error)
 	mustEmbedUnimplementedWebhookServiceServer()
 }

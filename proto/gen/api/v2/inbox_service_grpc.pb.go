@@ -28,8 +28,11 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type InboxServiceClient interface {
+	// ListInboxes lists inboxes for a user.
 	ListInboxes(ctx context.Context, in *ListInboxesRequest, opts ...grpc.CallOption) (*ListInboxesResponse, error)
+	// UpdateInbox updates an inbox.
 	UpdateInbox(ctx context.Context, in *UpdateInboxRequest, opts ...grpc.CallOption) (*UpdateInboxResponse, error)
+	// DeleteInbox deletes an inbox.
 	DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*DeleteInboxResponse, error)
 }
 
@@ -72,8 +75,11 @@ func (c *inboxServiceClient) DeleteInbox(ctx context.Context, in *DeleteInboxReq
 // All implementations must embed UnimplementedInboxServiceServer
 // for forward compatibility
 type InboxServiceServer interface {
+	// ListInboxes lists inboxes for a user.
 	ListInboxes(context.Context, *ListInboxesRequest) (*ListInboxesResponse, error)
+	// UpdateInbox updates an inbox.
 	UpdateInbox(context.Context, *UpdateInboxRequest) (*UpdateInboxResponse, error)
+	// DeleteInbox deletes an inbox.
 	DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error)
 	mustEmbedUnimplementedInboxServiceServer()
 }

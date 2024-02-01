@@ -8,6 +8,7 @@ import "google/protobuf/timestamp.proto";
 option go_package = "gen/api/v2";
 
 service ActivityService {
+  // GetActivity returns the activity with the given id.
   rpc GetActivity(GetActivityRequest) returns (GetActivityResponse) {
     option (google.api.http) = {get: "/v2/activities"};
   }

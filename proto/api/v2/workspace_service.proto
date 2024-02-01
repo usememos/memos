@@ -9,9 +9,11 @@ import "google/protobuf/field_mask.proto";
 option go_package = "gen/api/v2";
 
 service WorkspaceService {
+  // GetWorkspaceProfile returns the workspace profile.
   rpc GetWorkspaceProfile(GetWorkspaceProfileRequest) returns (GetWorkspaceProfileResponse) {
     option (google.api.http) = {get: "/api/v2/workspace/profile"};
   }
+  // UpdateWorkspaceProfile updates the workspace profile.
   rpc UpdateWorkspaceProfile(UpdateWorkspaceProfileRequest) returns (UpdateWorkspaceProfileResponse) {
     option (google.api.http) = {
       patch: "/api/v2/workspace/profile",

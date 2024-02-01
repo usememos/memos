@@ -26,6 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActivityServiceClient interface {
+	// GetActivity returns the activity with the given id.
 	GetActivity(ctx context.Context, in *GetActivityRequest, opts ...grpc.CallOption) (*GetActivityResponse, error)
 }
 
@@ -50,6 +51,7 @@ func (c *activityServiceClient) GetActivity(ctx context.Context, in *GetActivity
 // All implementations must embed UnimplementedActivityServiceServer
 // for forward compatibility
 type ActivityServiceServer interface {
+	// GetActivity returns the activity with the given id.
 	GetActivity(context.Context, *GetActivityRequest) (*GetActivityResponse, error)
 	mustEmbedUnimplementedActivityServiceServer()
 }

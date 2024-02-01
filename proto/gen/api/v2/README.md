@@ -295,7 +295,7 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetActivity | [GetActivityRequest](#memos-api-v2-GetActivityRequest) | [GetActivityResponse](#memos-api-v2-GetActivityResponse) |  |
+| GetActivity | [GetActivityRequest](#memos-api-v2-GetActivityRequest) | [GetActivityResponse](#memos-api-v2-GetActivityResponse) | GetActivity returns the activity with the given id. |
 
  
 
@@ -737,8 +737,8 @@ Used internally for obfuscating the page token.
 | CreateUser | [CreateUserRequest](#memos-api-v2-CreateUserRequest) | [CreateUserResponse](#memos-api-v2-CreateUserResponse) | CreateUser creates a new user. |
 | UpdateUser | [UpdateUserRequest](#memos-api-v2-UpdateUserRequest) | [UpdateUserResponse](#memos-api-v2-UpdateUserResponse) | UpdateUser updates a user. |
 | DeleteUser | [DeleteUserRequest](#memos-api-v2-DeleteUserRequest) | [DeleteUserResponse](#memos-api-v2-DeleteUserResponse) | DeleteUser deletes a user. |
-| GetUserSetting | [GetUserSettingRequest](#memos-api-v2-GetUserSettingRequest) | [GetUserSettingResponse](#memos-api-v2-GetUserSettingResponse) |  |
-| UpdateUserSetting | [UpdateUserSettingRequest](#memos-api-v2-UpdateUserSettingRequest) | [UpdateUserSettingResponse](#memos-api-v2-UpdateUserSettingResponse) |  |
+| GetUserSetting | [GetUserSettingRequest](#memos-api-v2-GetUserSettingRequest) | [GetUserSettingResponse](#memos-api-v2-GetUserSettingResponse) | GetUserSetting gets the setting of a user. |
+| UpdateUserSetting | [UpdateUserSettingRequest](#memos-api-v2-UpdateUserSettingRequest) | [UpdateUserSettingResponse](#memos-api-v2-UpdateUserSettingResponse) | UpdateUserSetting updates the setting of a user. |
 | ListUserAccessTokens | [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest) | [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse) | ListUserAccessTokens returns a list of access tokens for a user. |
 | CreateUserAccessToken | [CreateUserAccessTokenRequest](#memos-api-v2-CreateUserAccessTokenRequest) | [CreateUserAccessTokenResponse](#memos-api-v2-CreateUserAccessTokenResponse) | CreateUserAccessToken creates a new access token for a user. |
 | DeleteUserAccessToken | [DeleteUserAccessTokenRequest](#memos-api-v2-DeleteUserAccessTokenRequest) | [DeleteUserAccessTokenResponse](#memos-api-v2-DeleteUserAccessTokenResponse) | DeleteUserAccessToken deletes an access token for a user. |
@@ -1070,9 +1070,9 @@ Used internally for obfuscating the page token.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| ListInboxes | [ListInboxesRequest](#memos-api-v2-ListInboxesRequest) | [ListInboxesResponse](#memos-api-v2-ListInboxesResponse) |  |
-| UpdateInbox | [UpdateInboxRequest](#memos-api-v2-UpdateInboxRequest) | [UpdateInboxResponse](#memos-api-v2-UpdateInboxResponse) |  |
-| DeleteInbox | [DeleteInboxRequest](#memos-api-v2-DeleteInboxRequest) | [DeleteInboxResponse](#memos-api-v2-DeleteInboxResponse) |  |
+| ListInboxes | [ListInboxesRequest](#memos-api-v2-ListInboxesRequest) | [ListInboxesResponse](#memos-api-v2-ListInboxesResponse) | ListInboxes lists inboxes for a user. |
+| UpdateInbox | [UpdateInboxRequest](#memos-api-v2-UpdateInboxRequest) | [UpdateInboxResponse](#memos-api-v2-UpdateInboxResponse) | UpdateInbox updates an inbox. |
+| DeleteInbox | [DeleteInboxRequest](#memos-api-v2-DeleteInboxRequest) | [DeleteInboxResponse](#memos-api-v2-DeleteInboxResponse) | DeleteInbox deletes an inbox. |
 
  
 
@@ -1340,12 +1340,12 @@ Used internally for obfuscating the page token.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateResource | [CreateResourceRequest](#memos-api-v2-CreateResourceRequest) | [CreateResourceResponse](#memos-api-v2-CreateResourceResponse) |  |
-| ListResources | [ListResourcesRequest](#memos-api-v2-ListResourcesRequest) | [ListResourcesResponse](#memos-api-v2-ListResourcesResponse) |  |
-| GetResource | [GetResourceRequest](#memos-api-v2-GetResourceRequest) | [GetResourceResponse](#memos-api-v2-GetResourceResponse) |  |
-| GetResourceByName | [GetResourceByNameRequest](#memos-api-v2-GetResourceByNameRequest) | [GetResourceByNameResponse](#memos-api-v2-GetResourceByNameResponse) |  |
-| UpdateResource | [UpdateResourceRequest](#memos-api-v2-UpdateResourceRequest) | [UpdateResourceResponse](#memos-api-v2-UpdateResourceResponse) |  |
-| DeleteResource | [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest) | [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse) |  |
+| CreateResource | [CreateResourceRequest](#memos-api-v2-CreateResourceRequest) | [CreateResourceResponse](#memos-api-v2-CreateResourceResponse) | CreateResource creates a new resource. |
+| ListResources | [ListResourcesRequest](#memos-api-v2-ListResourcesRequest) | [ListResourcesResponse](#memos-api-v2-ListResourcesResponse) | ListResources lists all resources. |
+| GetResource | [GetResourceRequest](#memos-api-v2-GetResourceRequest) | [GetResourceResponse](#memos-api-v2-GetResourceResponse) | GetResource returns a resource by id. |
+| GetResourceByName | [GetResourceByNameRequest](#memos-api-v2-GetResourceByNameRequest) | [GetResourceByNameResponse](#memos-api-v2-GetResourceByNameResponse) | GetResourceByName returns a resource by name. |
+| UpdateResource | [UpdateResourceRequest](#memos-api-v2-UpdateResourceRequest) | [UpdateResourceResponse](#memos-api-v2-UpdateResourceResponse) | UpdateResource updates a resource. |
+| DeleteResource | [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest) | [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse) | DeleteResource deletes a resource by id. |
 
  
 
@@ -2072,12 +2072,12 @@ Used internally for obfuscating the page token.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| UpsertTag | [UpsertTagRequest](#memos-api-v2-UpsertTagRequest) | [UpsertTagResponse](#memos-api-v2-UpsertTagResponse) |  |
-| BatchUpsertTag | [BatchUpsertTagRequest](#memos-api-v2-BatchUpsertTagRequest) | [BatchUpsertTagResponse](#memos-api-v2-BatchUpsertTagResponse) |  |
-| ListTags | [ListTagsRequest](#memos-api-v2-ListTagsRequest) | [ListTagsResponse](#memos-api-v2-ListTagsResponse) |  |
-| RenameTag | [RenameTagRequest](#memos-api-v2-RenameTagRequest) | [RenameTagResponse](#memos-api-v2-RenameTagResponse) |  |
-| DeleteTag | [DeleteTagRequest](#memos-api-v2-DeleteTagRequest) | [DeleteTagResponse](#memos-api-v2-DeleteTagResponse) |  |
-| GetTagSuggestions | [GetTagSuggestionsRequest](#memos-api-v2-GetTagSuggestionsRequest) | [GetTagSuggestionsResponse](#memos-api-v2-GetTagSuggestionsResponse) |  |
+| UpsertTag | [UpsertTagRequest](#memos-api-v2-UpsertTagRequest) | [UpsertTagResponse](#memos-api-v2-UpsertTagResponse) | UpsertTag upserts a tag. |
+| BatchUpsertTag | [BatchUpsertTagRequest](#memos-api-v2-BatchUpsertTagRequest) | [BatchUpsertTagResponse](#memos-api-v2-BatchUpsertTagResponse) | BatchUpsertTag upserts multiple tags. |
+| ListTags | [ListTagsRequest](#memos-api-v2-ListTagsRequest) | [ListTagsResponse](#memos-api-v2-ListTagsResponse) | ListTags lists tags. |
+| RenameTag | [RenameTagRequest](#memos-api-v2-RenameTagRequest) | [RenameTagResponse](#memos-api-v2-RenameTagResponse) | RenameTag renames a tag. All related memos will be updated. |
+| DeleteTag | [DeleteTagRequest](#memos-api-v2-DeleteTagRequest) | [DeleteTagResponse](#memos-api-v2-DeleteTagResponse) | DeleteTag deletes a tag. |
+| GetTagSuggestions | [GetTagSuggestionsRequest](#memos-api-v2-GetTagSuggestionsRequest) | [GetTagSuggestionsResponse](#memos-api-v2-GetTagSuggestionsResponse) | GetTagSuggestions gets tag suggestions from the user&#39;s memos. |
 
  
 
@@ -2271,11 +2271,11 @@ Used internally for obfuscating the page token.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateWebhook | [CreateWebhookRequest](#memos-api-v2-CreateWebhookRequest) | [CreateWebhookResponse](#memos-api-v2-CreateWebhookResponse) |  |
-| GetWebhook | [GetWebhookRequest](#memos-api-v2-GetWebhookRequest) | [GetWebhookResponse](#memos-api-v2-GetWebhookResponse) |  |
-| ListWebhooks | [ListWebhooksRequest](#memos-api-v2-ListWebhooksRequest) | [ListWebhooksResponse](#memos-api-v2-ListWebhooksResponse) |  |
-| UpdateWebhook | [UpdateWebhookRequest](#memos-api-v2-UpdateWebhookRequest) | [UpdateWebhookResponse](#memos-api-v2-UpdateWebhookResponse) |  |
-| DeleteWebhook | [DeleteWebhookRequest](#memos-api-v2-DeleteWebhookRequest) | [DeleteWebhookResponse](#memos-api-v2-DeleteWebhookResponse) |  |
+| CreateWebhook | [CreateWebhookRequest](#memos-api-v2-CreateWebhookRequest) | [CreateWebhookResponse](#memos-api-v2-CreateWebhookResponse) | CreateWebhook creates a new webhook. |
+| GetWebhook | [GetWebhookRequest](#memos-api-v2-GetWebhookRequest) | [GetWebhookResponse](#memos-api-v2-GetWebhookResponse) | GetWebhook returns a webhook by id. |
+| ListWebhooks | [ListWebhooksRequest](#memos-api-v2-ListWebhooksRequest) | [ListWebhooksResponse](#memos-api-v2-ListWebhooksResponse) | ListWebhooks returns a list of webhooks. |
+| UpdateWebhook | [UpdateWebhookRequest](#memos-api-v2-UpdateWebhookRequest) | [UpdateWebhookResponse](#memos-api-v2-UpdateWebhookResponse) | UpdateWebhook updates a webhook. |
+| DeleteWebhook | [DeleteWebhookRequest](#memos-api-v2-DeleteWebhookRequest) | [DeleteWebhookResponse](#memos-api-v2-DeleteWebhookResponse) | DeleteWebhook deletes a webhook by id. |
 
  
 
@@ -2377,8 +2377,8 @@ Used internally for obfuscating the page token.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetWorkspaceProfile | [GetWorkspaceProfileRequest](#memos-api-v2-GetWorkspaceProfileRequest) | [GetWorkspaceProfileResponse](#memos-api-v2-GetWorkspaceProfileResponse) |  |
-| UpdateWorkspaceProfile | [UpdateWorkspaceProfileRequest](#memos-api-v2-UpdateWorkspaceProfileRequest) | [UpdateWorkspaceProfileResponse](#memos-api-v2-UpdateWorkspaceProfileResponse) |  |
+| GetWorkspaceProfile | [GetWorkspaceProfileRequest](#memos-api-v2-GetWorkspaceProfileRequest) | [GetWorkspaceProfileResponse](#memos-api-v2-GetWorkspaceProfileResponse) | GetWorkspaceProfile returns the workspace profile. |
+| UpdateWorkspaceProfile | [UpdateWorkspaceProfileRequest](#memos-api-v2-UpdateWorkspaceProfileRequest) | [UpdateWorkspaceProfileResponse](#memos-api-v2-UpdateWorkspaceProfileResponse) | UpdateWorkspaceProfile updates the workspace profile. |
 
  
 
