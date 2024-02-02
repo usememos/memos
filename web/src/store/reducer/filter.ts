@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface State {
   tag?: string;
   text?: string;
+  ignore?: string;
   visibility?: Visibility;
 }
 

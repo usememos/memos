@@ -28,6 +28,13 @@ export const useFilterStore = () => {
         }),
       );
     },
+    setIgnoreFilter: (ignore?: string) => {
+      store.dispatch(
+        setFilter({
+          ignore: ignore,
+        }),
+      );
+    },
     setTagFilter: (tag?: string) => {
       store.dispatch(
         setFilter({

@@ -71,6 +71,11 @@ const TagList = () => {
     setTags(root.subTags as Tag[]);
   }, [tagsText]);
 
+  const filterUntagged = async () => {
+    let filter = filterStore.getState().ignore ? undefined : "#";
+    filterStore.setIgnoreFilter(filter);
+  }
+
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-start items-center w-full">
@@ -83,6 +88,9 @@ const TagList = () => {
         </button>
       </div>
       <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap">
+
+        <button style={{color: "white"}} onClick={filterUntagged}> # Untagged </button>
+
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
         ))}

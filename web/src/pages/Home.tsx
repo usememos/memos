@@ -26,7 +26,7 @@ const Home = () => {
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
   const nextPageTokenRef = useRef<string | undefined>(undefined);
-  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
+  const { tag: tagQuery, text: textQuery, ignore: ignoreQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
@@ -36,7 +36,7 @@ const Home = () => {
     nextPageTokenRef.current = undefined;
     memoList.reset();
     fetchMemos();
-  }, [tagQuery, textQuery]);
+  }, [tagQuery, textQuery, ignoreQuery]);
 
   const fetchMemos = async () => {
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
@@ -47,23 +47,12 @@ const Home = () => {
     if (textQuery) {
       contentSearch.push(JSON.stringify(textQuery));
     }
-    /*
-    // Add setExcludeFilter() to filterStore
-    // Go into the backend, add ContentSearchExclude to FindMemo struct
-    // We don't actually need to add anything in the protobuf api spec
-    // Add 'NOT LIKE' to sql drivers when calling ListMemos api
-    // Check ListMemos() in memo_server.go to make sure everything is ok
-    // Add demo button to pull everything togeher
-    if (exclusionQuery) {
-      results.push("content_exclude == ['#']");
+    if (ignoreQuery) {
+      filters.push(`content_ignore == ['${ignoreQuery}']`);
     }
-    */
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
     }
-
-    filters.push(`content_ignore == ["#",]`);
-    console.log(filters)
 
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({

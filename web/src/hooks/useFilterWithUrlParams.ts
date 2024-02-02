@@ -5,7 +5,7 @@ import { useFilterStore } from "@/store/module";
 const useFilterWithUrlParams = () => {
   const location = useLocation();
   const filterStore = useFilterStore();
-  const { tag, text } = filterStore.state;
+  const { tag, text, ignore } = filterStore.state;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -16,6 +16,9 @@ const useFilterWithUrlParams = () => {
     }
     if (text) {
       filterStore.setTextFilter(text);
+    }
+    if (ignore) {
+      filterStore.setIgnoreFilter(ignore);
     }
   }, []);
 
@@ -31,13 +34,19 @@ const useFilterWithUrlParams = () => {
     } else {
       urlParams.delete("text");
     }
+    if (ignore) {
+      urlParams.set("ignore", ignore);
+    } else {
+      urlParams.delete("ignore");
+    }
     const params = urlParams.toString();
     window.history.replaceState({}, "", `${location.pathname}${params?.length > 0 ? `?${params}` : ""}`);
-  }, [tag, text]);
+  }, [tag, text, ignore]);
 
   return {
     tag,
     text,
+    ignore,
   };
 };
 
