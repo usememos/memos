@@ -61,6 +61,10 @@ const Home = () => {
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
     }
+
+    filters.push(`content_ignore == ["#",]`);
+    console.log(filters)
+
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
       pageSize: DEFAULT_MEMO_LIMIT,

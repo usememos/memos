@@ -59,6 +59,11 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			where, args = append(where, "`memo`.`content` LIKE ?"), append(args, fmt.Sprintf("%%%s%%", s))
 		}
 	}
+	if v := find.ContentIgnore; len(v) != 0 {
+		for _, s := range v {
+			where, args = append(where, "`memo`.`content` NOT LIKE ?"), append(args, fmt.Sprintf("%%%s%%", s))
+		}
+	}
 	if v := find.VisibilityList; len(v) != 0 {
 		placeholder := []string{}
 		for _, visibility := range v {

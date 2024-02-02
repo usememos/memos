@@ -64,6 +64,7 @@ type FindMemo struct {
 
 	// Domain specific fields
 	ContentSearch   []string
+	ContentIgnore   []string
 	VisibilityList  []Visibility
 	ExcludeContent  bool
 	ExcludeComments bool

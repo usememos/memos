@@ -667,6 +667,7 @@ func convertVisibilityToStore(visibility apiv2pb.Visibility) store.Visibility {
 // ListMemosFilterCELAttributes are the CEL attributes for ListMemosFilter.
 var ListMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content_search", cel.ListType(cel.StringType)),
+	cel.Variable("content_ignore", cel.ListType(cel.StringType)),
 	cel.Variable("visibilities", cel.ListType(cel.StringType)),
 	cel.Variable("order_by_pinned", cel.BoolType),
 	cel.Variable("display_time_before", cel.IntType),
@@ -677,6 +678,7 @@ var ListMemosFilterCELAttributes = []cel.EnvOption{
 
 type ListMemosFilter struct {
 	ContentSearch     []string
+	ContentIgnore     []string
 	Visibilities      []store.Visibility
 	OrderByPinned     bool
 	DisplayTimeBefore *int64
@@ -715,6 +717,13 @@ func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 					contentSearch = append(contentSearch, value)
 				}
 				filter.ContentSearch = contentSearch
+			} else if idExpr.Name == "content_ignore" {
+				contentIgnore := []string{}
+				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
+					value := expr.GetConstExpr().GetStringValue()
+					contentIgnore = append(contentIgnore, value)
+				}
+				filter.ContentIgnore = contentIgnore
 			} else if idExpr.Name == "visibilities" {
 				visibilities := []store.Visibility{}
 				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
@@ -793,6 +802,9 @@ func (s *APIV2Service) buildFindMemosWithFilter(ctx context.Context, filter stri
 		filter, err := parseListMemosFilter(filter)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		}
+		if len(filter.ContentIgnore) > 0 {
+			memoFind.ContentIgnore = filter.ContentIgnore
 		}
 		if len(filter.ContentSearch) > 0 {
 			memoFind.ContentSearch = filter.ContentSearch
