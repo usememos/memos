@@ -47,6 +47,17 @@ const Home = () => {
     if (textQuery) {
       contentSearch.push(JSON.stringify(textQuery));
     }
+    /*
+    // Add setExcludeFilter() to filterStore
+    // Go into the backend, add ContentSearchExclude to FindMemo struct
+    // We don't actually need to add anything in the protobuf api spec
+    // Add 'NOT LIKE' to sql drivers when calling ListMemos api
+    // Check ListMemos() in memo_server.go to make sure everything is ok
+    // Add demo button to pull everything togeher
+    if (exclusionQuery) {
+      results.push("content_exclude == ['#']");
+    }
+    */
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
     }
