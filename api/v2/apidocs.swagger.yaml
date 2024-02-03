@@ -179,7 +179,7 @@ paths:
         - name: filter
           description: |-
             Filter is used to filter memos returned in the list.
-            Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
+            Format: "creator == 'users/{username}' && visibilities == ['PUBLIC', 'PROTECTED', 'PRIVATE'] && content_search == [''] && content_ignore == [''] && order_by_pinned == 'true' && display_time_before == '0' && display_time_after == '0' && row_status == 'NORMAL' or 'ARCHIVED'"
           in: query
           required: false
           type: string

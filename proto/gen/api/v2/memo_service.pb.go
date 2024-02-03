@@ -343,7 +343,7 @@ type ListMemosRequest struct {
 	// Provide this to retrieve the subsequent page.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Filter is used to filter memos returned in the list.
-	// Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
+	// Format: "creator == 'users/{username}' && visibilities == ['PUBLIC', 'PROTECTED', 'PRIVATE'] && content_search == [”] && content_ignore == [”] && order_by_pinned == 'true' && display_time_before == '0' && display_time_after == '0' && row_status == 'NORMAL' or 'ARCHIVED'"
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 

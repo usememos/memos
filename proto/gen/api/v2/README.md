@@ -1683,7 +1683,7 @@ Used internally for obfuscating the page token.
 | ----- | ---- | ----- | ----------- |
 | page_size | [int32](#int32) |  | The maximum number of memos to return. |
 | page_token | [string](#string) |  | A page token, received from a previous `ListMemos` call. Provide this to retrieve the subsequent page. |
-| filter | [string](#string) |  | Filter is used to filter memos returned in the list. Format: &#34;creator == users/{username} &amp;&amp; visibilities == [&#39;PUBLIC&#39;, &#39;PROTECTED&#39;]&#34; |
+| filter | [string](#string) |  | Filter is used to filter memos returned in the list. Format: &#34;creator == &#39;users/{username}&#39; &amp;&amp; visibilities == [&#39;PUBLIC&#39;, &#39;PROTECTED&#39;, &#39;PRIVATE&#39;] &amp;&amp; content_search == [&#39;&#39;] &amp;&amp; content_ignore == [&#39;&#39;] &amp;&amp; order_by_pinned == &#39;true&#39; &amp;&amp; display_time_before == &#39;0&#39; &amp;&amp; display_time_after == &#39;0&#39; &amp;&amp; row_status == &#39;NORMAL&#39; or &#39;ARCHIVED&#39;&#34; |
 
 
 
