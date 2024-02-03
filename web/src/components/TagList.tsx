@@ -107,7 +107,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
   const [showSubTags, toggleSubTags] = useToggle(false);
 
   const handleTagClick = () => {
-    let filter = isActive ? undefined : tag.text;
+    const filter = isActive ? undefined : tag.text;
     if (props.filterIgnore) {
       filterStore.setIgnoreFilter(filter);
       filterStore.setTagFilter(undefined);
