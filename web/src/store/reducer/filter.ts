@@ -14,11 +14,15 @@ const getInitialState = (): State => {
   const urlParams = new URLSearchParams(location.search);
   const tag = urlParams.get("tag");
   const text = urlParams.get("text");
+  const ignore = urlParams.get("ignore");
   if (tag) {
     state.tag = tag;
   }
   if (text) {
     state.text = text;
+  }
+  if (ignore) {
+    state.ignore = ignore;
   }
   return state;
 };
