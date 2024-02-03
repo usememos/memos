@@ -1,7 +1,7 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
-import { DEFAULT_UNTAGGED_FILTER_NAME, useFilterStore, useTagStore } from "@/store/module";
+import { useFilterStore, useTagStore } from "@/store/module";
 import { useMemoList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showCreateTagDialog from "./CreateTagDialog";
@@ -22,7 +22,7 @@ const TagList = () => {
   const tagsText = tagStore.state.tags;
   const filter = filterStore.state;
   const [tags, setTags] = useState<Tag[]>([]);
-  const untagged: Tag = { key: DEFAULT_UNTAGGED_FILTER_NAME, text: "#", subTags: [] };
+  const untagged: Tag = { key: t("common.untagged"), text: "#", subTags: [] };
 
   useEffect(() => {
     tagStore.fetchTags();

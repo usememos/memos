@@ -42,6 +42,7 @@
     "filter": "Filter",
     "filter-period": "{{from}} to {{to}}",
     "tags": "Tags",
+    "untagged": "Uncategorized",
     "yourself": "Yourself",
     "changed": "changed",
     "fold": "Fold",

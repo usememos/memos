@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { DEFAULT_UNTAGGED_FILTER_NAME, useFilterStore } from "@/store/module";
+import { useFilterStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
 
@@ -57,7 +57,7 @@ const MemoFilter = (props: Props) => {
           filterStore.setIgnoreFilter(undefined);
         }}
       >
-        <Icon.Tag className="w-4 h-auto mr-1 text-gray-500 dark:text-gray-400" /> {DEFAULT_UNTAGGED_FILTER_NAME}
+        <Icon.Tag className="w-4 h-auto mr-1 text-gray-500 dark:text-gray-400" /> {t("common.untagged")}
         <Icon.X className="w-4 h-auto ml-1 opacity-40" />
       </div>
       <div
