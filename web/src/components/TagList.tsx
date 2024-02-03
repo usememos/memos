@@ -1,7 +1,7 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
-import { useFilterStore, useTagStore } from "@/store/module";
+import { DEFAULT_UNTAGGED_FILTER_NAME, useFilterStore, useTagStore } from "@/store/module";
 import { useMemoList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showCreateTagDialog from "./CreateTagDialog";
@@ -22,6 +22,7 @@ const TagList = () => {
   const tagsText = tagStore.state.tags;
   const filter = filterStore.state;
   const [tags, setTags] = useState<Tag[]>([]);
+  const untagged: Tag = { key: DEFAULT_UNTAGGED_FILTER_NAME, text: "#", subTags: [] };
 
   useEffect(() => {
     tagStore.fetchTags();
@@ -71,11 +72,6 @@ const TagList = () => {
     setTags(root.subTags as Tag[]);
   }, [tagsText]);
 
-  const filterUntagged = async () => {
-    let filter = filterStore.getState().ignore ? undefined : "#";
-    filterStore.setIgnoreFilter(filter);
-  }
-
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-start items-center w-full">
@@ -88,9 +84,7 @@ const TagList = () => {
         </button>
       </div>
       <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap">
-
-        <button style={{color: "white"}} onClick={filterUntagged}> # Untagged </button>
-
+        <TagItemContainer tag={untagged} tagQuery={filter.ignore} filterIgnore={true} />
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
         ))}
@@ -102,6 +96,7 @@ const TagList = () => {
 interface TagItemContainerProps {
   tag: Tag;
   tagQuery?: string;
+  filterIgnore?: boolean;
 }
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
@@ -112,10 +107,13 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
   const [showSubTags, toggleSubTags] = useToggle(false);
 
   const handleTagClick = () => {
-    if (isActive) {
+    let filter = isActive ? undefined : tag.text;
+    if (props.filterIgnore) {
+      filterStore.setIgnoreFilter(filter);
       filterStore.setTagFilter(undefined);
     } else {
-      filterStore.setTagFilter(tag.text);
+      filterStore.setTagFilter(filter);
+      filterStore.setIgnoreFilter(undefined);
     }
   };
 

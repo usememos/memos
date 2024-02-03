@@ -1,6 +1,7 @@
 import store, { useAppSelector } from "..";
 import { Filter, setFilter } from "../reducer/filter";
 
+export const DEFAULT_UNTAGGED_FILTER_NAME = "Untagged";
 export const useFilterStore = () => {
   const state = useAppSelector((state) => state.filter);
 
