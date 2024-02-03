@@ -1,5 +1,5 @@
 import store, { useAppSelector } from "..";
-import { Filter, setFilter } from "../reducer/filter";
+import { setFilter } from "../reducer/filter";
 
 export const useFilterStore = () => {
   const state = useAppSelector((state) => state.filter);
@@ -8,9 +8,6 @@ export const useFilterStore = () => {
     state,
     getState: () => {
       return store.getState().filter;
-    },
-    setFilter: (filter: Filter) => {
-      store.dispatch(setFilter(filter));
     },
     clearFilter: () => {
       store.dispatch(
