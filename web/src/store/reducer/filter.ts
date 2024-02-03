@@ -8,9 +8,23 @@ interface State {
 
 export type Filter = State;
 
+const getInitialState = (): State => {
+  const state: State = {};
+  const urlParams = new URLSearchParams(location.search);
+  const tag = urlParams.get("tag");
+  const text = urlParams.get("text");
+  if (tag) {
+    state.tag = tag;
+  }
+  if (text) {
+    state.text = text;
+  }
+  return state;
+};
+
 const filterSlice = createSlice({
   name: "filter",
-  initialState: {} as State,
+  initialState: getInitialState(),
   reducers: {
     setFilter: (state, action: PayloadAction<Partial<State>>) => {
       if (JSON.stringify(action.payload) === state) {
