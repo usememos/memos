@@ -65,7 +65,9 @@
     "profile": "Profile",
     "inbox": "Inbox",
     "search": "Search",
-    "role": "Role"
+    "role": "Role",
+    "expand-content": "Expand Content",
+    "shrink-content": "Shrink Content"
   },
   "router": {
     "go-to-home": "Go to Home",
@@ -104,6 +106,10 @@
       "protected": "Workspace",
       "public": "Public",
       "disabled": "Public memos are disabled"
+    },
+    "mode": {
+      "full": "FULL",
+      "compact": "COMPACT"
     },
     "delete-memo": "Delete Memo",
     "delete-confirm": "Are you sure you want to delete this memo?\n\nTHIS ACTION IS IRREVERSIBLE",
@@ -186,6 +192,7 @@
     "preference-section": {
       "theme": "Theme",
       "default-memo-visibility": "Default memo visibility",
+      "memo-mode": "Memo Mode",
       "default-resource-visibility": "Default resource visibility",
       "enable-folding-memo": "Enable folding memo",
       "enable-double-click": "Enable double-click to edit",

@@ -6,8 +6,10 @@ import { useGlobalStore } from "@/store/module";
 import { useUserStore } from "@/store/v1";
 import { Visibility } from "@/types/proto/api/v2/memo_service";
 import { UserSetting } from "@/types/proto/api/v2/user_service";
+import { Mode } from "@/types/proto/store/user_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
+import { convertMemoModeToString } from "@/utils/user_setting";
 import AppearanceSelect from "../AppearanceSelect";
 import Icon from "../Icon";
 import LocaleSelect from "../LocaleSelect";
@@ -69,6 +71,15 @@ const PreferencesSection = () => {
     setTelegramUserId(value);
   };
 
+  const handleMemoModeChanged = async (value: string) => {
+    await userStore.updateUserSetting(
+      {
+        memoMode: value,
+      },
+      ["memo_mode"],
+    );
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
@@ -98,6 +109,26 @@ const PreferencesSection = () => {
             .map((item) => (
               <Option key={item} value={item} className="whitespace-nowrap">
                 {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
+              </Option>
+            ))}
+        </Select>
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="truncate">{t("setting.preference-section.memo-mode")}</span>
+        <Select
+          className="!min-w-fit"
+          value={setting.memoMode}
+          onChange={(_, expand) => {
+            if (expand) {
+              handleMemoModeChanged(expand);
+            }
+          }}
+        >
+          {[Mode.FULL, Mode.COMPACT]
+            .map((v) => convertMemoModeToString(v))
+            .map((item) => (
+              <Option key={item} value={item} className="whitespace-nowrap">
+                {t(`memo.mode.${item.toLowerCase() as Lowercase<typeof item>}`)}
               </Option>
             ))}
         </Select>
