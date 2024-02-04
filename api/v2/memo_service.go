@@ -96,9 +96,6 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
-		if pageToken.Limit < 0 {
-			return nil, status.Errorf(codes.InvalidArgument, "page size cannot be negative")
-		}
 		limit = int(pageToken.Limit)
 		offset = int(pageToken.Offset)
 	} else {
@@ -108,11 +105,11 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		limit = DefaultPageSize
 	}
 	limitPlusOne := limit + 1
-	memoFind.Offset = &offset
 	memoFind.Limit = &limitPlusOne
+	memoFind.Offset = &offset
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to list memos")
 	}
 
 	memoMessages := []*apiv2pb.Memo{}
@@ -613,6 +610,90 @@ func convertVisibilityToStore(visibility apiv2pb.Visibility) store.Visibility {
 	}
 }
 
+func (s *APIV2Service) buildMemoFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
+	user, _ := getCurrentUser(ctx, s.Store)
+	if find == nil {
+		find = &store.FindMemo{}
+	}
+	if filter != "" {
+		filter, err := parseListMemosFilter(filter)
+		if err != nil {
+			return status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		}
+		if len(filter.ContentSearch) > 0 {
+			find.ContentSearch = filter.ContentSearch
+		}
+		if len(filter.Visibilities) > 0 {
+			find.VisibilityList = filter.Visibilities
+		}
+		if filter.OrderByPinned {
+			find.OrderByPinned = filter.OrderByPinned
+		}
+		if filter.DisplayTimeAfter != nil {
+			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			if err != nil {
+				return status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+			}
+			if displayWithUpdatedTs {
+				find.UpdatedTsAfter = filter.DisplayTimeAfter
+			} else {
+				find.CreatedTsAfter = filter.DisplayTimeAfter
+			}
+		}
+		if filter.DisplayTimeBefore != nil {
+			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			if err != nil {
+				return status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+			}
+			if displayWithUpdatedTs {
+				find.UpdatedTsBefore = filter.DisplayTimeBefore
+			} else {
+				find.CreatedTsBefore = filter.DisplayTimeBefore
+			}
+		}
+		if filter.Creator != nil {
+			username, err := ExtractUsernameFromName(*filter.Creator)
+			if err != nil {
+				return status.Errorf(codes.InvalidArgument, "invalid creator name")
+			}
+			user, err := s.Store.GetUser(ctx, &store.FindUser{
+				Username: &username,
+			})
+			if err != nil {
+				return status.Errorf(codes.Internal, "failed to get user")
+			}
+			if user == nil {
+				return status.Errorf(codes.NotFound, "user not found")
+			}
+			find.CreatorID = &user.ID
+		}
+		if filter.RowStatus != nil {
+			find.RowStatus = filter.RowStatus
+		}
+	}
+
+	// If the user is not authenticated, only public memos are visible.
+	if user == nil {
+		if filter == "" {
+			// If no filter is provided, return an error.
+			return status.Errorf(codes.InvalidArgument, "filter is required")
+		}
+
+		find.VisibilityList = []store.Visibility{store.Public}
+	} else if find.CreatorID != nil && *find.CreatorID != user.ID {
+		find.VisibilityList = []store.Visibility{store.Public, store.Protected}
+	}
+
+	displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+	}
+	if displayWithUpdatedTs {
+		find.OrderByUpdatedTs = true
+	}
+	return nil
+}
+
 // ListMemosFilterCELAttributes are the CEL attributes for ListMemosFilter.
 var ListMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content_search", cel.ListType(cel.StringType)),
@@ -730,90 +811,6 @@ func (s *APIV2Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *api
 			return errors.Wrap(err, "failed to post webhook")
 		}
 	}
-	return nil
-}
-
-func (s *APIV2Service) buildMemoFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
-	user, _ := getCurrentUser(ctx, s.Store)
-	if find == nil {
-		find = &store.FindMemo{}
-	}
-	if filter != "" {
-		filter, err := parseListMemosFilter(filter)
-		if err != nil {
-			return status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
-		}
-		if len(filter.ContentSearch) > 0 {
-			find.ContentSearch = filter.ContentSearch
-		}
-		if len(filter.Visibilities) > 0 {
-			find.VisibilityList = filter.Visibilities
-		}
-		if filter.OrderByPinned {
-			find.OrderByPinned = filter.OrderByPinned
-		}
-		if filter.DisplayTimeAfter != nil {
-			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-			if err != nil {
-				return status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
-			}
-			if displayWithUpdatedTs {
-				find.UpdatedTsAfter = filter.DisplayTimeAfter
-			} else {
-				find.CreatedTsAfter = filter.DisplayTimeAfter
-			}
-		}
-		if filter.DisplayTimeBefore != nil {
-			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-			if err != nil {
-				return status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
-			}
-			if displayWithUpdatedTs {
-				find.UpdatedTsBefore = filter.DisplayTimeBefore
-			} else {
-				find.CreatedTsBefore = filter.DisplayTimeBefore
-			}
-		}
-		if filter.Creator != nil {
-			username, err := ExtractUsernameFromName(*filter.Creator)
-			if err != nil {
-				return status.Errorf(codes.InvalidArgument, "invalid creator name")
-			}
-			user, err := s.Store.GetUser(ctx, &store.FindUser{
-				Username: &username,
-			})
-			if err != nil {
-				return status.Errorf(codes.Internal, "failed to get user")
-			}
-			if user == nil {
-				return status.Errorf(codes.NotFound, "user not found")
-			}
-			find.CreatorID = &user.ID
-		}
-		if filter.RowStatus != nil {
-			find.RowStatus = filter.RowStatus
-		}
-	} else if user == nil {
-		// If no filter is provided, check if the user is authenticated.
-		return status.Errorf(codes.InvalidArgument, "filter is required")
-	}
-
-	// If the user is not authenticated, only public memos are visible.
-	if user == nil {
-		find.VisibilityList = []store.Visibility{store.Public}
-	}
-	if user != nil && find.CreatorID != nil && *find.CreatorID != user.ID {
-		find.VisibilityList = []store.Visibility{store.Public, store.Protected}
-	}
-
-	displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
-	}
-	if displayWithUpdatedTs {
-		find.OrderByUpdatedTs = true
-	}
-
 	return nil
 }
 
