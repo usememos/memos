@@ -4,7 +4,7 @@ services:
   db:
     image: mysql
     volumes:
-      - ./../.air/mysql:/var/lib/mysql
+      - ../.air/mysql:/var/lib/mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_DATABASE: memos 
@@ -16,8 +16,8 @@ services:
       - "MEMOS_DSN=root@tcp(db)/memos"
       - "MEMOS_DRIVER=mysql"
     volumes:
-      - ./..:/work/
-      - ./../.air/go-build:/root/.cache/go-build
+      - ../:/work/
+      - ../.air/go-build:/root/.cache/go-build
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
   web:
     image: node:20-alpine
@@ -26,10 +26,10 @@ services:
     ports: ["3001:3001"]
     environment: ["DEV_PROXY_SERVER=http://api:8081/"]
     entrypoint: ["/bin/sh", "-c"]
-    command: ["corepack enable && pnpm i --frozen-lockfile && pnpm dev"]
-    tmpfs: /work/node_modules/:exec # To avoid pnpm ERR_PNPM_LINKING_FAILED error
+    command: ["npm install && npm run dev"]
     volumes:
-      - ./../web:/work
+      - ../web:/work
+      - ../.air/node_modules/:/work/node_modules/
 
   # Services below are used for developers to run once
   #
@@ -48,8 +48,8 @@ services:
     working_dir: /work/proto
     command: generate
     volumes:
-      - ./../proto:/work/proto
-      - ./../web/src/types/:/work/web/src/types/
+      - ../proto:/work/proto
+      - ../web/src/types/:/work/web/src/types/
 
   # Do golang static code check before create PR
   golangci-lint:
@@ -60,8 +60,8 @@ services:
     command: run -v
     volumes:
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
-      - ./../.air/go-build:/root/.cache/go-build
-      - ./..:/work/
+      - ../.air/go-build:/root/.cache/go-build
+      - ..:/work/
 
   # run npm
   npm:
@@ -71,4 +71,5 @@ services:
     environment: ["NPM_CONFIG_UPDATE_NOTIFIER=false"]
     entrypoint: "npm"
     volumes:
-      - ./../web:/work
+      - ../web:/work
+      - ../.air/node_modules/:/work/node_modules/
