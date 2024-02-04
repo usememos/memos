@@ -7,6 +7,7 @@ import { useTranslate } from "@/utils/i18n";
 import showCreateTagDialog from "./CreateTagDialog";
 import Icon from "./Icon";
 import showRenameTagDialog from "./RenameTagDialog";
+import "@/less/memo.less";
 
 interface Tag {
   key: string;
@@ -72,19 +73,35 @@ const TagList = () => {
     setTags(root.subTags as Tag[]);
   }, [tagsText]);
 
+  const filterUntagged = () => {
+    const filter = filterStore.getState().ignore ? undefined : "#";
+    filterStore.setIgnoreFilter(filter);
+    filterStore.setTagFilter(undefined);
+  }
+
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-start items-center w-full">
         <span className="text-sm leading-6 font-mono text-gray-400">{t("common.tags")}</span>
-        <button
-          onClick={() => showCreateTagDialog()}
-          className="flex flex-col justify-center items-center w-5 h-5 bg-gray-200 dark:bg-zinc-800 rounded ml-2 hover:shadow"
-        >
-          <Icon.Plus className="w-4 h-4 text-gray-400" />
-        </button>
-      </div>
-      <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap">
-        <TagItemContainer tag={untagged} tagQuery={filter.ignore} filterIgnore={true} />
+        <div className="ml-auto">
+          <Dropdown>
+            <MenuButton size="sm" variant="plain">
+              <p className="ml-auto text-gray-500">
+                <Icon.MoreVertical />
+              </p>
+            </MenuButton>
+            <Menu size="sm" placement="bottom-end" variant="soft">
+              <MenuItem onClick={showCreateTagDialog}>
+                <span className="text-sm text-gray-400 select-none"> Create </span>
+              </MenuItem>
+              <MenuItem onClick={filterUntagged}>
+                <span className="text-sm text-gray-400 select-none"> Uncategorized </span>
+              </MenuItem>
+            </Menu>
+          </Dropdown>
+        </div>
+     </div>
+     <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap">
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
         ))}
@@ -96,7 +113,6 @@ const TagList = () => {
 interface TagItemContainerProps {
   tag: Tag;
   tagQuery?: string;
-  filterIgnore?: boolean;
 }
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
@@ -108,13 +124,8 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
 
   const handleTagClick = () => {
     const filter = isActive ? undefined : tag.text;
-    if (props.filterIgnore) {
-      filterStore.setIgnoreFilter(filter);
-      filterStore.setTagFilter(undefined);
-    } else {
-      filterStore.setTagFilter(filter);
-      filterStore.setIgnoreFilter(undefined);
-    }
+    filterStore.setTagFilter(filter);
+    filterStore.setIgnoreFilter(undefined);
   };
 
   const handleToggleBtnClick = (event: React.MouseEvent) => {
