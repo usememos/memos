@@ -162,7 +162,7 @@ message UserSetting {
   // The telegram user id of the user.
   string telegram_user_id = 5;
   //The mode of the memo.
-  string memo_mode = 8;
+  string memo_mode = 6;
 }
 
 message GetUserSettingRequest {
