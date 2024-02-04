@@ -219,6 +219,7 @@ func getDefaultUserSetting() *apiv2pb.UserSetting {
 		Locale:         "en",
 		Appearance:     "system",
 		MemoVisibility: "PRIVATE",
+		MemoMode: "FULL",
 	}
 }
 
@@ -244,6 +245,8 @@ func (s *APIV2Service) GetUserSetting(ctx context.Context, _ *apiv2pb.GetUserSet
 			userSettingMessage.MemoVisibility = setting.GetMemoVisibility()
 		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID {
 			userSettingMessage.TelegramUserId = setting.GetTelegramUserId()
+		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_MEMO_MODE {
+			userSettingMessage.MemoMode = setting.GetMemoMode()
 		}
 	}
 	return &apiv2pb.GetUserSettingResponse{
@@ -298,6 +301,16 @@ func (s *APIV2Service) UpdateUserSetting(ctx context.Context, request *apiv2pb.U
 				Key:    storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID,
 				Value: &storepb.UserSetting_TelegramUserId{
 					TelegramUserId: request.Setting.TelegramUserId,
+				},
+			}); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
+			}
+		} else if field == "memo_mode" {
+			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
+				UserId: user.ID,
+				Key:    storepb.UserSettingKey_USER_SETTING_MEMO_MODE,
+				Value: &storepb.UserSetting_MemoMode{
+					MemoMode: request.Setting.MemoMode,
 				},
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
