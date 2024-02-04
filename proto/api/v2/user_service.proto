@@ -161,6 +161,8 @@ message UserSetting {
   string memo_visibility = 4;
   // The telegram user id of the user.
   string telegram_user_id = 5;
+  //The mode of the memo.
+  string memo_mode = 8;
 }
 
 message GetUserSettingRequest {

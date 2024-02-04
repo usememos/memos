@@ -4,6 +4,12 @@ package memos.store;
 
 option go_package = "gen/store";
 
+enum Mode {
+  FULL = 0;
+
+  COMPACT = 1;
+}
+
 message UserSetting {
   int32 user_id = 1;
 
@@ -15,6 +21,7 @@ message UserSetting {
     string appearance = 5;
     string memo_visibility = 6;
     string telegram_user_id = 7;
+    string memo_mode = 8;
   }
 }
 
@@ -35,6 +42,9 @@ enum UserSettingKey {
 
   // The telegram user id of the user.
   USER_SETTING_TELEGRAM_USER_ID = 5;
+
+  //The mode of the memo.
+  USER_SETTING_MEMO_MODE = 6;
 }
 
 message AccessTokensUserSetting {
