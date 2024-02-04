@@ -165,7 +165,7 @@ func (s *APIV2Service) doSignIn(ctx context.Context, user *store.User, expireTim
 		cookieExpires = time.Now().AddDate(100, 0, 0)
 	}
 	if err := grpc.SetHeader(ctx, metadata.New(map[string]string{
-		"Set-Cookie": fmt.Sprintf("%s=%s; Path=/; Expires=%s; HttpOnly; SameSite=Strict", auth.AccessTokenCookieName, accessToken, cookieExpires.Format(time.RFC1123)),
+		"Set-Cookie": fmt.Sprintf("%s=%s; Path=/; Expires=%s; HttpOnly; SameSite=None; Secure", auth.AccessTokenCookieName, accessToken, cookieExpires.Format(time.RFC1123)),
 	})); err != nil {
 		return status.Errorf(codes.Internal, "failed to set grpc header, error: %v", err)
 	}
