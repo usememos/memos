@@ -4,8 +4,10 @@
 
 @layer utilities {
   .hide-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 
   /* Chrome, Safari and Opera */
@@ -17,4 +19,22 @@
     overflow-wrap: anywhere;
     word-break: normal;
   }
+}
+
+.custom-memo-content-wrapper {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  /* Adjust the border-radius as needed */
+}
+
+.full-height {
+  height: 100%;
+}
+
+.half-height {
+  max-height: 2cap;
+  /* Adjust the max-height as needed */
+  overflow-y: hidden;
 }

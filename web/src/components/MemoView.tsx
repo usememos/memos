@@ -165,6 +165,27 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
+  const [expand, setExpand] = useState(false);
+
+  const [showExpandButton, setShowExpandButton] = useState(false);
+
+  useEffect(() => {
+    //if a memo has more than 2 nodes then show expand button and show partial view of memo
+    if (userStore.userSetting?.memoMode === "COMPACT") {
+      setExpand(true);
+      setShowExpandButton(true);
+    }
+    // otherwise dont show expand button
+    else {
+      setExpand(false);
+      setShowExpandButton(false);
+    }
+  }, [userStore.userSetting?.memoMode]);
+
+  const handleMemoModeChanged = () => {
+    setExpand(!expand);
+  };
+
   return (
     <div
       className={classNames("group memo-wrapper", "memos-" + memo.id, memo.pinned && props.showPinned ? "pinned" : "", className)}
@@ -224,6 +245,22 @@ const MemoView: React.FC<Props> = (props: Props) => {
                       {memo.pinned ? t("common.unpin") : t("common.pin")}
                     </span>
                   )}
+                  {showExpandButton && (
+                    <>
+                      <span className="btn" onClick={handleMemoModeChanged}>
+                        {expand === false ? (
+                          <>
+                            {" "}
+                            <Icon.Shrink className="w-4 h-auto mr-2" /> {t("common.shrink-content")}
+                          </>
+                        ) : (
+                          <>
+                            <Icon.Expand className="w-4 h-auto mr-2" /> {t("common.expand-content")}
+                          </>
+                        )}
+                      </span>
+                    </>
+                  )}
                   <span className="btn" onClick={handleEditMemoClick}>
                     <Icon.Edit3 className="w-4 h-auto mr-2" />
                     {t("common.edit")}
@@ -257,15 +294,11 @@ const MemoView: React.FC<Props> = (props: Props) => {
           )}
         </div>
       </div>
-      <MemoContent
-        key={`${memo.id}-${memo.updateTime}`}
-        memoId={memo.id}
-        content={memo.content}
-        readonly={readonly}
-        onClick={handleMemoContentClick}
-      />
-      <MemoResourceListView resources={memo.resources} />
-      <MemoRelationListView memo={memo} relationList={referenceRelations} />
+      <div className={`z-0 custom-memo-content-wrapper ${!expand ? "full-height" : "half-height"}`}>
+        <MemoContent memoId={memo.id} content={memo.content} readonly={readonly} onClick={handleMemoContentClick} />
+        <MemoResourceListView resources={memo.resources} />
+        <MemoRelationListView memo={memo} relationList={referenceRelations} />
+      </div>
     </div>
   );
 };
