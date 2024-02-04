@@ -56,12 +56,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 			`"status":${status},"error":"${error}"}` + "\n",
 	}))
 
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		Skipper:      grpcRequestSkipper,
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
-	}))
-
 	e.Use(CORSMiddleware())
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
@@ -198,7 +192,7 @@ func CORSMiddleware() echo.MiddlewareFunc {
 			w := c.Response().Writer
 
 			w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
 
@@ -207,10 +201,7 @@ func CORSMiddleware() echo.MiddlewareFunc {
 				w.WriteHeader(http.StatusOK)
 				return nil
 			}
-
-			// Continue processing request.
-			next(c)
-			return nil
+			return next(c)
 		}
 	}
 }
