@@ -5,9 +5,11 @@ package memos.store;
 option go_package = "gen/store";
 
 enum Mode {
-  FULL = 0;
+  MODE_UNSPECIFIED = 0;
 
-  COMPACT = 1;
+  FULL = 1;
+
+  COMPACT = 2;
 }
 
 message UserSetting {
