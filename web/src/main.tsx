@@ -11,12 +11,12 @@ import "./less/highlight.less";
 import router from "./router";
 import store from "./store";
 import theme from "./theme";
-import wasmUrl from "./wasm/gomark.wasm?url";
-import "./wasm/wasm_exec.js";
+import gomarkWasm from "./assets/gomark.wasm?url";
+import "./assets/wasm_exec.js";
 
 (async () => {
   const go = new window.Go();
-  const responsePromise = fetch(wasmUrl);
+  const responsePromise = fetch(gomarkWasm);
   const { instance } = await WebAssembly.instantiateStreaming(responsePromise, go.importObject);
   go.run(instance);
 
