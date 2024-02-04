@@ -231,7 +231,7 @@ func (*APIV2Service) SignOut(ctx context.Context, _ *apiv2pb.SignOutRequest) (*a
 
 func clearAccessTokenCookie(ctx context.Context) error {
 	if err := grpc.SetHeader(ctx, metadata.New(map[string]string{
-		"Set-Cookie": fmt.Sprintf("%s=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Strict", auth.AccessTokenCookieName),
+		"Set-Cookie": fmt.Sprintf("%s=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=None; Secure", auth.AccessTokenCookieName),
 	})); err != nil {
 		return errors.Wrap(err, "failed to set grpc header")
 	}
