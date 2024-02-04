@@ -18,7 +18,7 @@ const About = () => {
             </Link>
             <Icon.Dot className="w-4 h-auto opacity-60" />
             <Link underline="always" href="https://www.usememos.com/" target="_blank">
-              Offical Website
+              Official Website
             </Link>
             <Icon.Dot className="w-4 h-auto opacity-60" />
             <Link underline="always" href="https://www.usememos.com/blog" target="_blank">
