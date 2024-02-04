@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Resource } from "@/types/proto/api/v2/resource_service";
 
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || window.location.origin;
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || "";
 axios.defaults.withCredentials = true;
 
 export function getSystemStatus() {
