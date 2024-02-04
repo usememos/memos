@@ -793,11 +793,9 @@ func (s *APIV2Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if filter.RowStatus != nil {
 			find.RowStatus = filter.RowStatus
 		}
-	} else {
+	} else if user == nil {
 		// If no filter is provided, check if the user is authenticated.
-		if user == nil {
-			return status.Errorf(codes.InvalidArgument, "filter is required")
-		}
+		return status.Errorf(codes.InvalidArgument, "filter is required")
 	}
 
 	// If the user is not authenticated, only public memos are visible.
