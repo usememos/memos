@@ -481,15 +481,9 @@ paths:
       operationId: MemoService_ExportMemos
       responses:
         "200":
-          description: A successful response.(streaming responses)
+          description: A successful response.
           schema:
-            type: object
-            properties:
-              result:
-                $ref: '#/definitions/v2ExportMemosResponse'
-              error:
-                $ref: '#/definitions/googlerpcStatus'
-            title: Stream result of v2ExportMemosResponse
+            $ref: '#/definitions/v2ExportMemosResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1520,7 +1514,7 @@ definitions:
   v2ExportMemosResponse:
     type: object
     properties:
-      file:
+      content:
         type: string
         format: byte
   v2GetActivityResponse:

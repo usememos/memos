@@ -13,12 +13,8 @@ const MyAccountSection = () => {
   const user = useCurrentUser();
 
   const downloadExportedMemos = async (user: any) => {
-    const chunks = [];
-    for await (const response of memoServiceClient.exportMemos({ filter: `creator == "${user.name}"` })) {
-      chunks.push(response.file.buffer);
-    }
-    const blob = new Blob(chunks);
-    const downloadUrl = window.URL.createObjectURL(blob);
+    const { content } = await memoServiceClient.exportMemos({ filter: `creator == "${user.name}"` });
+    const downloadUrl = window.URL.createObjectURL(new Blob([content]));
     downloadFileFromUrl(downloadUrl, "memos-export.zip");
     URL.revokeObjectURL(downloadUrl);
   };

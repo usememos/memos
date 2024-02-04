@@ -1468,7 +1468,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| file | [bytes](#bytes) |  |  |
+| content | [bytes](#bytes) |  |  |
 
 
 
@@ -1857,7 +1857,7 @@ Used internally for obfuscating the page token.
 | ListMemoRelations | [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest) | [ListMemoRelationsResponse](#memos-api-v2-ListMemoRelationsResponse) | ListMemoRelations lists relations for a memo. |
 | CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) | CreateMemoComment creates a comment for a memo. |
 | ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) | ListMemoComments lists comments for a memo. |
-| ExportMemos | [ExportMemosRequest](#memos-api-v2-ExportMemosRequest) | [ExportMemosResponse](#memos-api-v2-ExportMemosResponse) stream | ExportMemos exports memos. |
+| ExportMemos | [ExportMemosRequest](#memos-api-v2-ExportMemosRequest) | [ExportMemosResponse](#memos-api-v2-ExportMemosResponse) | ExportMemos exports memos. |
 | GetUserMemosStats | [GetUserMemosStatsRequest](#memos-api-v2-GetUserMemosStatsRequest) | [GetUserMemosStatsResponse](#memos-api-v2-GetUserMemosStatsResponse) | GetUserMemosStats gets stats of memos for a user. |
 
  

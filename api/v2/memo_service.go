@@ -508,17 +508,15 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 	return response, nil
 }
 
-func (s *APIV2Service) ExportMemos(request *apiv2pb.ExportMemosRequest, srv apiv2pb.MemoService_ExportMemosServer) error {
-	ctx := srv.Context()
-	fmt.Printf("%+v\n", ctx)
+func (s *APIV2Service) ExportMemos(ctx context.Context, request *apiv2pb.ExportMemosRequest) (*apiv2pb.ExportMemosResponse, error) {
 	memoFind, err := s.buildFindMemosWithFilter(ctx, request.Filter, true)
 	if err != nil {
-		return err
+		return nil, status.Errorf(codes.Internal, "failed to build find memos with filter")
 	}
 
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
-		return err
+		return nil, status.Errorf(codes.Internal, "failed to list memos")
 	}
 
 	buf := new(bytes.Buffer)
@@ -526,41 +524,27 @@ func (s *APIV2Service) ExportMemos(request *apiv2pb.ExportMemosRequest, srv apiv
 
 	for _, memo := range memos {
 		memoMessage, err := s.convertMemoFromStore(ctx, memo)
-		log.Info(memoMessage.Content)
 		if err != nil {
-			return errors.Wrap(err, "failed to convert memo")
+			return nil, errors.Wrap(err, "failed to convert memo")
 		}
 		file, err := writer.Create(time.Unix(memo.CreatedTs, 0).Format(time.RFC3339) + ".md")
 		if err != nil {
-			return status.Errorf(codes.Internal, "Failed to create memo file")
+			return nil, status.Errorf(codes.Internal, "Failed to create memo file")
 		}
 		_, err = file.Write([]byte(memoMessage.Content))
 		if err != nil {
-			return status.Errorf(codes.Internal, "Failed to write to memo file")
+			return nil, status.Errorf(codes.Internal, "Failed to write to memo file")
 		}
 	}
 
 	err = writer.Close()
 	if err != nil {
-		return status.Errorf(codes.Internal, "Failed to close zip file writer")
+		return nil, status.Errorf(codes.Internal, "Failed to close zip file writer")
 	}
 
-	exportChunk := &apiv2pb.ExportMemosResponse{}
-	sizeOfFile := len(buf.Bytes())
-	for currentByte := 0; currentByte < sizeOfFile; currentByte += ChunkSize {
-		if currentByte+ChunkSize > sizeOfFile {
-			exportChunk.File = buf.Bytes()[currentByte:sizeOfFile]
-		} else {
-			exportChunk.File = buf.Bytes()[currentByte : currentByte+ChunkSize]
-		}
-
-		err := srv.Send(exportChunk)
-		if err != nil {
-			return status.Error(codes.Internal, "Unable to stream ExportMemosResponse chunk")
-		}
-	}
-
-	return nil
+	return &apiv2pb.ExportMemosResponse{
+		Content: buf.Bytes(),
+	}, nil
 }
 
 func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*apiv2pb.Memo, error) {

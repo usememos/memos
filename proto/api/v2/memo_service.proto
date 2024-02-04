@@ -85,7 +85,7 @@ service MemoService {
     option (google.api.method_signature) = "id";
   }
   // ExportMemos exports memos.
-  rpc ExportMemos(ExportMemosRequest) returns (stream ExportMemosResponse) {
+  rpc ExportMemos(ExportMemosRequest) returns (ExportMemosResponse) {
     option (google.api.http) = {post: "/api/v2/memos:export"};
   }
   // GetUserMemosStats gets stats of memos for a user.
@@ -281,5 +281,5 @@ message ExportMemosRequest {
 }
 
 message ExportMemosResponse {
-  bytes file = 1;
+  bytes content = 1;
 }
