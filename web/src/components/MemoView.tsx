@@ -84,9 +84,13 @@ const MemoView: React.FC<Props> = (props: Props) => {
       }
     }
 
-    if (e.detail === 2) {
-      handleEditMemoClick();
-    }
+    // Use setTimeout for double-click recognition, as pointed out by @daveclinton on GitHub.
+    setTimeout(() => {
+      if (e.detail === 2) {
+        e.preventDefault();
+        handleEditMemoClick();
+      }
+    }, 500);
   }, []);
 
   return (
