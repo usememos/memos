@@ -219,7 +219,7 @@ func getDefaultUserSetting() *apiv2pb.UserSetting {
 		Locale:         "en",
 		Appearance:     "system",
 		MemoVisibility: "PRIVATE",
-		MemoMode: "FULL",
+		MemoMode:       "FULL",
 	}
 }
 

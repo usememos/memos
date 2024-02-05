@@ -38,7 +38,7 @@ func (d *DB) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting)
 		valueString = upsert.GetTelegramUserId()
 	} else if upsert.Key == storepb.UserSettingKey_USER_SETTING_MEMO_MODE {
 		valueString = upsert.GetMemoMode()
-	}  else {
+	} else {
 		return nil, errors.Errorf("unknown user setting key: %s", upsert.Key.String())
 	}
 
