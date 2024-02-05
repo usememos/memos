@@ -4,8 +4,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint --ext .js,.ts,.tsx, src",
-    "type-gen": "cd ../proto && buf generate",
-    "type-check": "tsc"
+    "type-check": "tsc",
+    "postinstall": "cd ../proto && buf generate"
   },
   "packageManager": "pnpm@8.7.0",
   "dependencies": {
