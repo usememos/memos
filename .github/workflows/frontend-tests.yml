@@ -25,8 +25,6 @@ jobs:
           cache-dependency-path: "web/pnpm-lock.yaml"
       - run: pnpm install
         working-directory: web
-      - run: pnpm type-gen
-        working-directory: web
       - name: Run eslint check
         run: pnpm lint
         working-directory: web
@@ -44,8 +42,6 @@ jobs:
           cache: pnpm
           cache-dependency-path: "web/pnpm-lock.yaml"
       - run: pnpm install
-        working-directory: web
-      - run: pnpm type-gen
         working-directory: web
       - name: Run frontend build
         run: pnpm build

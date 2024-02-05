@@ -73,11 +73,7 @@ if (!$?) {
     Write-Host "Frontend built!" -f green
 }
 
-Write-Host "`nGenerating buf types..." -f DarkYellow
-$frontendTime = Measure-Command {
-    &pnpm type-gen | Out-Host
-}
-if (!$?) {
+f (!$?) {
     Write-Host -BackgroundColor red -ForegroundColor white "Could not generate buf types. See above."
     Exit 1
 } else {
