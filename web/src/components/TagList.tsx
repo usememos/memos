@@ -23,7 +23,6 @@ const TagList = () => {
   const tagsText = tagStore.state.tags;
   const filter = filterStore.state;
   const [tags, setTags] = useState<Tag[]>([]);
-  const untagged: Tag = { key: t("common.untagged"), text: "#", subTags: [] };
 
   useEffect(() => {
     tagStore.fetchTags();
@@ -77,7 +76,7 @@ const TagList = () => {
     const filter = filterStore.getState().ignore ? undefined : "#";
     filterStore.setIgnoreFilter(filter);
     filterStore.setTagFilter(undefined);
-  }
+  };
 
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
@@ -100,7 +99,7 @@ const TagList = () => {
             </Menu>
           </Dropdown>
         </div>
-     </div>
+      </div>
      <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap">
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
