@@ -21,6 +21,7 @@
     - [AccessTokensUserSetting.AccessToken](#memos-store-AccessTokensUserSetting-AccessToken)
     - [UserSetting](#memos-store-UserSetting)
   
+    - [Mode](#memos-store-Mode)
     - [UserSettingKey](#memos-store-UserSettingKey)
   
 - [store/webhook.proto](#store_webhook-proto)
@@ -225,12 +226,26 @@
 | appearance | [string](#string) |  |  |
 | memo_visibility | [string](#string) |  |  |
 | telegram_user_id | [string](#string) |  |  |
+| memo_mode | [string](#string) |  |  |
 
 
 
 
 
  
+
+
+<a name="memos-store-Mode"></a>
+
+### Mode
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| MODE_UNSPECIFIED | 0 |  |
+| FULL | 1 |  |
+| COMPACT | 2 |  |
+
 
 
 <a name="memos-store-UserSettingKey"></a>
@@ -246,6 +261,7 @@
 | USER_SETTING_APPEARANCE | 3 | The appearance of the user. |
 | USER_SETTING_MEMO_VISIBILITY | 4 | The visibility of the memo. |
 | USER_SETTING_TELEGRAM_USER_ID | 5 | The telegram user id of the user. |
+| USER_SETTING_MEMO_MODE | 6 | The mode of the memo. |
 
 
  
