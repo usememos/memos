@@ -1,11 +1,11 @@
 import { Resource } from "@/types/proto/api/v2/resource_service";
 
-export const getResourceUrl = (resource: Resource, withOrigin = true) => {
+export const getResourceUrl = (resource: Resource) => {
   if (resource.externalLink) {
     return resource.externalLink;
   }
 
-  return `${withOrigin ? window.location.origin : ""}/o/r/${resource.name}`;
+  return `${import.meta.env.VITE_API_BASE_URL || window.location.origin}/o/r/${resource.name}`;
 };
 
 export const getResourceType = (resource: Resource) => {
