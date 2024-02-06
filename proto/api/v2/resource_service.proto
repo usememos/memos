@@ -25,7 +25,7 @@ service ResourceService {
   }
   // GetResourceByName returns a resource by name.
   rpc GetResourceByName(GetResourceByNameRequest) returns (GetResourceByNameResponse) {
-    option (google.api.http) = {get: "/api/v2/resources/{name}"};
+    option (google.api.http) = {get: "/api/v2/resources/name/{name}"};
     option (google.api.method_signature) = "name";
   }
   // UpdateResource updates a resource.

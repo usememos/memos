@@ -24,7 +24,7 @@ service UserService {
   // CreateUser creates a new user.
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
-      post: "/v1/users"
+      post: "/api/v2/users"
       body: "user"
     };
     option (google.api.method_signature) = "user";

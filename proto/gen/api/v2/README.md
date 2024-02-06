@@ -932,7 +932,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the inbox to delete. Format: inboxes/{inbox} |
+| name | [string](#string) |  | The name of the inbox to delete. Format: inboxes/{uid} |
 
 
 
@@ -957,7 +957,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the inbox. Format: inboxes/{id} |
+| name | [string](#string) |  | The name of the inbox. Format: inboxes/{uid} |
 | sender | [string](#string) |  | Format: users/{username} |
 | receiver | [string](#string) |  | Format: users/{username} |
 | status | [Inbox.Status](#memos-api-v2-Inbox-Status) |  |  |
@@ -1008,7 +1008,6 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the inbox to delete. Format: inboxes/{inbox} |
 | inbox | [Inbox](#memos-api-v2-Inbox) |  |  |
 | update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
 
@@ -1795,7 +1794,6 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
 | memo | [Memo](#memos-api-v2-Memo) |  |  |
 | update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
 

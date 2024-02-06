@@ -32,16 +32,16 @@ service MemoService {
   }
   // GetMemoByName gets a memo by name.
   rpc GetMemoByName(GetMemoByNameRequest) returns (GetMemoByNameResponse) {
-    option (google.api.http) = {get: "/api/v2/memos/{name}"};
+    option (google.api.http) = {get: "/api/v2/memos/name/{name}"};
     option (google.api.method_signature) = "name";
   }
   // UpdateMemo updates a memo.
   rpc UpdateMemo(UpdateMemoRequest) returns (UpdateMemoResponse) {
     option (google.api.http) = {
-      patch: "/api/v2/memos/{id}"
-      body: "*"
+      patch: "/api/v2/memos/{memo.id}"
+      body: "memo"
     };
-    option (google.api.method_signature) = "id, update_mask";
+    option (google.api.method_signature) = "memo,update_mask";
   }
   // DeleteMemo deletes a memo by id.
   rpc DeleteMemo(DeleteMemoRequest) returns (DeleteMemoResponse) {
@@ -187,11 +187,9 @@ message GetMemoByNameResponse {
 }
 
 message UpdateMemoRequest {
-  int32 id = 1;
+  Memo memo = 1;
 
-  Memo memo = 2;
-
-  google.protobuf.FieldMask update_mask = 3;
+  google.protobuf.FieldMask update_mask = 2;
 }
 
 message UpdateMemoResponse {

@@ -20,7 +20,6 @@ export const useInboxStore = create(
     },
     updateInbox: async (inbox: Partial<Inbox>, updateMask: string[]) => {
       const { inbox: updatedInbox } = await inboxServiceClient.updateInbox({
-        name: inbox.name,
         inbox,
         updateMask,
       });

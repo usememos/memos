@@ -208,7 +208,7 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 	}
 
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-		ID: &request.Id,
+		ID: &request.Memo.Id,
 	})
 	if err != nil {
 		return nil, err
@@ -224,7 +224,7 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 
 	currentTs := time.Now().Unix()
 	update := &store.UpdateMemo{
-		ID:        request.Id,
+		ID:        request.Memo.Id,
 		UpdatedTs: &currentTs,
 	}
 	for _, path := range request.UpdateMask.Paths {
@@ -255,7 +255,7 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 			update.CreatedTs = &createdTs
 		} else if path == "pinned" {
 			if _, err := s.Store.UpsertMemoOrganizer(ctx, &store.MemoOrganizer{
-				MemoID: request.Id,
+				MemoID: request.Memo.Id,
 				UserID: user.ID,
 				Pinned: request.Memo.Pinned,
 			}); err != nil {
@@ -272,7 +272,7 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 	}
 
 	memo, err = s.Store.GetMemo(ctx, &store.FindMemo{
-		ID: &request.Id,
+		ID: &request.Memo.Id,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get memo")

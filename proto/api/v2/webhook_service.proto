@@ -4,6 +4,7 @@ package memos.api.v2;
 
 import "api/v2/common.proto";
 import "google/api/annotations.proto";
+import "google/api/client.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -20,6 +21,7 @@ service WebhookService {
   // GetWebhook returns a webhook by id.
   rpc GetWebhook(GetWebhookRequest) returns (GetWebhookResponse) {
     option (google.api.http) = {get: "/api/v2/webhooks/{id}"};
+    option (google.api.method_signature) = "id";
   }
   // ListWebhooks returns a list of webhooks.
   rpc ListWebhooks(ListWebhooksRequest) returns (ListWebhooksResponse) {
@@ -29,12 +31,14 @@ service WebhookService {
   rpc UpdateWebhook(UpdateWebhookRequest) returns (UpdateWebhookResponse) {
     option (google.api.http) = {
       patch: "/api/v2/webhooks/{webhook.id}"
-      body: "*"
+      body: "webhook"
     };
+    option (google.api.method_signature) = "webhook,update_mask";
   }
   // DeleteWebhook deletes a webhook by id.
   rpc DeleteWebhook(DeleteWebhookRequest) returns (DeleteWebhookResponse) {
     option (google.api.http) = {delete: "/api/v2/webhooks/{id}"};
+    option (google.api.method_signature) = "id";
   }
 }
 
