@@ -46,7 +46,7 @@ func (s *APIV2Service) UpdateInbox(ctx context.Context, request *apiv2pb.UpdateI
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
 
-	inboxID, err := ExtractInboxIDFromName(request.Inbox.Name)
+	inboxID, err := ExtractInboxIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid inbox name: %v", err)
 	}

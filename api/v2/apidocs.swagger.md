@@ -120,27 +120,7 @@ ListInboxes lists inboxes for a user.
 | 200 | A successful response. | [v2ListInboxesResponse](#v2listinboxesresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /v2/inboxes
-
-#### PATCH
-##### Summary
-
-UpdateInbox updates an inbox.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| inbox | body |  | Yes | [v2Inbox](#v2inbox) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2UpdateInboxResponse](#v2updateinboxresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-### /v2/{name}
+### /api/v2/{name_1}
 
 #### DELETE
 ##### Summary
@@ -151,13 +131,70 @@ DeleteInbox deletes an inbox.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the inbox to delete. Format: inboxes/{inbox} | Yes | string |
+| name_1 | path | The name of the inbox to delete. Format: inboxes/{inbox} | Yes | string |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | A successful response. | [v2DeleteInboxResponse](#v2deleteinboxresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name}
+
+#### GET
+##### Summary
+
+GetUser gets a user by name.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the user. Format: users/{username} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2GetUserResponse](#v2getuserresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### DELETE
+##### Summary
+
+DeleteUser deletes a user.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the user. Format: users/{username} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteUserResponse](#v2deleteuserresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### PATCH
+##### Summary
+
+UpdateInbox updates an inbox.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the inbox to delete. Format: inboxes/{inbox} | Yes | string |
+| inbox | body |  | Yes | [v2Inbox](#v2inbox) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2UpdateInboxResponse](#v2updateinboxresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
@@ -437,7 +474,7 @@ ExportMemos exports memos.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | A successful response.(streaming responses) | { **"result"**: [v2ExportMemosResponse](#v2exportmemosresponse), **"error"**: [googlerpcStatus](#googlerpcstatus) } |
+| 200 | A successful response. | [v2ExportMemosResponse](#v2exportmemosresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
@@ -727,6 +764,25 @@ DeleteUser deletes a user.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | A successful response. | [v2DeleteUserResponse](#v2deleteuserresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### PATCH
+##### Summary
+
+UpdateInbox updates an inbox.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the inbox to delete. Format: inboxes/{inbox} | Yes | string |
+| inbox | body |  | Yes | [v2Inbox](#v2inbox) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2UpdateInboxResponse](#v2updateinboxresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ### /api/v2/{name}/access_tokens
@@ -1246,7 +1302,7 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| file | byte |  | No |
+| content | byte |  | No |
 
 #### v2GetActivityResponse
 

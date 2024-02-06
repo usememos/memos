@@ -948,6 +948,30 @@ paths:
             $ref: '#/definitions/v2WorkspaceProfile'
       tags:
         - WorkspaceService
+  /api/v2/{name_1}:
+    delete:
+      summary: DeleteInbox deletes an inbox.
+      operationId: InboxService_DeleteInbox
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteInboxResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            The name of the inbox to delete.
+            Format: inboxes/{inbox}
+          in: path
+          required: true
+          type: string
+          pattern: inboxes/[^/]+
+      tags:
+        - InboxService
   /api/v2/{name}:
     get:
       summary: GetUser gets a user by name.
@@ -995,6 +1019,34 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
+    patch:
+      summary: UpdateInbox updates an inbox.
+      operationId: InboxService_UpdateInbox
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateInboxResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the inbox to delete.
+            Format: inboxes/{inbox}
+          in: path
+          required: true
+          type: string
+          pattern: inboxes/[^/]+
+        - name: inbox
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2Inbox'
+      tags:
+        - InboxService
   /api/v2/{name}/access_tokens:
     get:
       summary: ListUserAccessTokens returns a list of access tokens for a user.
@@ -1237,51 +1289,6 @@ paths:
           format: int32
       tags:
         - ActivityService
-  /v2/inboxes:
-    patch:
-      summary: UpdateInbox updates an inbox.
-      operationId: InboxService_UpdateInbox
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2UpdateInboxResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: inbox
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v2Inbox'
-      tags:
-        - InboxService
-  /v2/{name}:
-    delete:
-      summary: DeleteInbox deletes an inbox.
-      operationId: InboxService_DeleteInbox
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2DeleteInboxResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The name of the inbox to delete.
-            Format: inboxes/{inbox}
-          in: path
-          required: true
-          type: string
-          pattern: inboxes/[^/]+
-      tags:
-        - InboxService
 definitions:
   MemoServiceSetMemoRelationsBody:
     type: object

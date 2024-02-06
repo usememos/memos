@@ -1008,6 +1008,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the inbox to delete. Format: inboxes/{inbox} |
 | inbox | [Inbox](#memos-api-v2-Inbox) |  |  |
 | update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
 
