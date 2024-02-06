@@ -110,7 +110,7 @@ const Archived = () => {
               >
                 <div className="w-full mb-1 flex flex-row justify-between items-center">
                   <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
-                    <span className="text-sm text-gray-400 select-none">{getDateTimeString(memo.updateTime)}</span>
+                    <span className="text-sm text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</span>
                   </div>
                   <div className="flex flex-row justify-end items-center gap-x-2">
                     <Tooltip title={t("common.restore")} placement="top">
@@ -125,7 +125,7 @@ const Archived = () => {
                     </Tooltip>
                   </div>
                 </div>
-                <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} content={memo.content} readonly={true} />
+                <MemoContent key={`${memo.id}-${memo.displayTime}`} memoId={memo.id} content={memo.content} readonly={true} />
               </div>
             ))
           )}
