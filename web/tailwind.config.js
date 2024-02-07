@@ -32,15 +32,6 @@ module.exports = {
       gridTemplateRows: {
         7: "repeat(7, minmax(0, 1fr))",
       },
-      keyframes: {
-        wiggle: {
-          "0%, 100%": { transform: "translateY(-25%);" },
-          //"50%": { transform: "rotate(3deg)" },
-        },
-      },
-      animation: {
-        wiggle: "wiggle 1s ease-in-out",
-      },
     },
   },
   plugins: [],

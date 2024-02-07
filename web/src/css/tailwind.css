@@ -45,7 +45,6 @@
 
   100% {
     max-height: 1000px;
-    /* Adjust this value based on your content's height */
   }
 }
 
@@ -56,7 +55,6 @@
 @keyframes slideUp {
   0% {
     max-height: 1000px;
-    /* Adjust this value based on your content's height */
   }
 
   100% {
