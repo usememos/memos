@@ -4,8 +4,10 @@
 
 @layer utilities {
   .hide-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 
   /* Chrome, Safari and Opera */
@@ -17,4 +19,51 @@
     overflow-wrap: anywhere;
     word-break: normal;
   }
+}
+
+.custom-memo-content-wrapper {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+
+.full-height {
+  height: 100%;
+}
+
+.half-height {
+  max-height: 6cap;
+  overflow-y: hidden;
+}
+
+@keyframes slideDown {
+  0% {
+    max-height: 0;
+  }
+
+  100% {
+    max-height: 1000px;
+    /* Adjust this value based on your content's height */
+  }
+}
+
+.slide-down {
+  animation: slideDown 1s ease-in-out;
+}
+
+@keyframes slideUp {
+  0% {
+    max-height: 1000px;
+    /* Adjust this value based on your content's height */
+  }
+
+  100% {
+    max-height: 6cap;
+  }
+}
+
+.slide-up {
+  animation: slideUp 1s ease-in-out;
 }

@@ -60,7 +60,9 @@
     "profile": "Profile",
     "inbox": "Inbox",
     "search": "Search",
-    "role": "Role"
+    "role": "Role",
+    "expand-content": "Expand Content",
+    "shrink-content": "Shrink Content"
   },
   "router": {
     "go-to-home": "Go to Home",
@@ -178,6 +180,7 @@
     "preference-section": {
       "theme": "Theme",
       "default-memo-visibility": "Default memo visibility",
+      "compact-view": "Compact View",
       "default-resource-visibility": "Default resource visibility",
       "enable-folding-memo": "Enable folding memo",
       "enable-double-click": "Enable double-click to edit",

@@ -1,4 +1,4 @@
-import { Button, Divider, Input, Option, Select } from "@mui/joy";
+import { Button, Divider, Input, Option, Select, Switch } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -69,6 +69,15 @@ const PreferencesSection = () => {
     setTelegramUserId(value);
   };
 
+  const handleCompactViewChanged = async (value: boolean) => {
+    await userStore.updateUserSetting(
+      {
+        compactView: value,
+      },
+      ["compact_view"],
+    );
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
@@ -101,6 +110,13 @@ const PreferencesSection = () => {
               </Option>
             ))}
         </Select>
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="truncate">{t("setting.preference-section.compact-view")}</span>
+        <Switch
+          checked={setting.compactView}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleCompactViewChanged(event.target.checked)}
+        />
       </div>
 
       <Divider className="!my-3" />

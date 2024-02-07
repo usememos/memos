@@ -86,6 +86,24 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
+  const [expand, setExpand] = useState(false);
+
+  const [showExpandButton, setShowExpandButton] = useState(false);
+
+  useEffect(() => {
+    if (userStore.userSetting?.compactView) {
+      setExpand(true);
+      setShowExpandButton(true);
+    } else {
+      setExpand(false);
+      setShowExpandButton(false);
+    }
+  }, [userStore.userSetting?.compactView]);
+
+  const handleCompactModeChanged = () => {
+    setExpand(!expand);
+  };
+
   return (
     <div
       className={classNames(
@@ -150,16 +168,18 @@ const MemoView: React.FC<Props> = (props: Props) => {
           {!readonly && <MemoActionMenu memo={memo} hiddenActions={props.showPinned ? [] : ["pin"]} />}
         </div>
       </div>
-      <MemoContent
-        key={`${memo.id}-${memo.updateTime}`}
-        memoId={memo.id}
-        content={memo.content}
-        readonly={readonly}
-        onClick={handleMemoContentClick}
-      />
-      <MemoResourceListView resources={memo.resources} />
-      <MemoRelationListView memo={memo} relations={referencedMemos} />
-      <MemoReactionistView memo={memo} reactions={memo.reactions} />
+      <div className={`z-0 custom-memo-content-wrapper ${!expand ? "full-height slide-down" : "half-height slide-up"}`}>
+        <MemoContent
+          key={`${memo.id}-${memo.updateTime}`}
+          memoId={memo.id}
+          content={memo.content}
+          readonly={readonly}
+          onClick={handleMemoContentClick}
+        />
+        <MemoResourceListView resources={memo.resources} />
+        <MemoRelationListView memo={memo} relations={referenceRelations} />
+        <MemoReactionistView memo={memo} reactions={memo.reactions} />
+      </div>
     </div>
   );
 };
