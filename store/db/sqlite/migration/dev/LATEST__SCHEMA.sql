@@ -144,3 +144,11 @@ CREATE TABLE webhook (
 );
 
 CREATE INDEX idx_webhook_creator_id ON webhook (creator_id);
+
+CREATE TABLE reaction (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  creator_id INTEGER NOT NULL,
+  content_id TEXT NOT NULL,
+  reaction_type TEXT NOT NULL
+);
