@@ -16,6 +16,11 @@
   
     - [InboxMessage.Type](#memos-store-InboxMessage-Type)
   
+- [store/reaction.proto](#store_reaction-proto)
+    - [Reaction](#memos-store-Reaction)
+  
+    - [Reaction.Type](#memos-store-Reaction-Type)
+  
 - [store/user_setting.proto](#store_user_setting-proto)
     - [AccessTokensUserSetting](#memos-store-AccessTokensUserSetting)
     - [AccessTokensUserSetting.AccessToken](#memos-store-AccessTokensUserSetting-AccessToken)
@@ -162,6 +167,57 @@
 | TYPE_UNSPECIFIED | 0 |  |
 | TYPE_MEMO_COMMENT | 1 |  |
 | TYPE_VERSION_UPDATE | 2 |  |
+
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="store_reaction-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## store/reaction.proto
+
+
+
+<a name="memos-store-Reaction"></a>
+
+### Reaction
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| created_ts | [int64](#int64) |  |  |
+| creator_id | [int32](#int32) |  |  |
+| content_id | [string](#string) |  | content_id is the id of the content that the reaction is for. This can be a memo. e.g. memos/101 |
+| reaction_type | [Reaction.Type](#memos-store-Reaction-Type) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-store-Reaction-Type"></a>
+
+### Reaction.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| HEART | 1 |  |
+| THUMBS_UP | 2 |  |
+| THUMBS_DOWN | 3 |  |
+| LAUGH | 4 |  |
+| ROCKET | 5 |  |
 
 
  

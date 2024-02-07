@@ -31,10 +31,10 @@ func (d *DB) CreateWebhook(ctx context.Context, create *storepb.Webhook) (*store
 func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*storepb.Webhook, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.ID != nil {
-		where, args = append(where, "id = ?"), append(args, *find.ID)
+		where, args = append(where, "`id` = ?"), append(args, *find.ID)
 	}
 	if find.CreatorID != nil {
-		where, args = append(where, "creator_id = ?"), append(args, *find.CreatorID)
+		where, args = append(where, "`creator_id` = ?"), append(args, *find.CreatorID)
 	}
 
 	rows, err := d.db.QueryContext(ctx, `
