@@ -140,6 +140,10 @@
       "private": "私有",
       "protected": "工作区",
       "public": "公开"
+    },
+    "change-visibility": {
+      "title": "此备忘录为私有备忘录，是否修改可见性？",
+      "public": "设置为公开"
     }
   },
   "message": {

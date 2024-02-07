@@ -9,6 +9,7 @@ import toImage from "@/labs/html2image";
 import { useUserStore, extractUsernameFromName } from "@/store/v1";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
+import showChangeVisibilityDialog from "./ChangeVisibilityDialog";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
@@ -66,11 +67,23 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
     URL.revokeObjectURL(url);
   };
 
-  const handleCopyLinkBtnClick = () => {
+  const copyLinkHandler = (visibility: Visibility) => {
     copy(`${window.location.origin}/m/${memo.name}`);
-    if (memo.visibility !== Visibility.PUBLIC) {
+    if (visibility !== Visibility.PUBLIC) {
       toast.success(t("message.succeed-copy-link-not-public"));
     } else {
+      toast.success(t("message.succeed-copy-link"));
+    }
+  };
+
+  const handleCopyLinkBtnClick = async () => {
+    if (memo.visibility !== Visibility.PUBLIC) {
+      await showChangeVisibilityDialog({
+        memoId: memo.id,
+        copyLink: copyLinkHandler,
+      });
+    } else {
+      copy(`${window.location.origin}/m/${memo.name}`);
       toast.success(t("message.succeed-copy-link"));
     }
   };

@@ -110,6 +110,10 @@
     "comment": {
       "self": "Comments",
       "no-comment": "No comment"
+    },
+    "change-visibility": {
+      "title": "Priavte memo. Change Visibility?",
+      "public": "Set to public"
     }
   },
   "resource": {
