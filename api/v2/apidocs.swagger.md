@@ -842,7 +842,7 @@ UpdateUserSetting updates the setting of a user.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | setting.name | path | The name of the user. Format: users/{username} | Yes | string |
-| setting | body |  | Yes | { **"locale"**: string, **"appearance"**: string, **"memoVisibility"**: string, **"telegramUserId"**: string } |
+| setting | body |  | Yes | { **"locale"**: string, **"appearance"**: string, **"memoVisibility"**: string, **"telegramUserId"**: string, **"compactView"**: boolean } |
 
 ##### Responses
 
@@ -1093,6 +1093,7 @@ GetActivity returns the activity with the given id.
 | appearance | string | The preferred appearance of the user. | No |
 | memoVisibility | string | The default visibility of the memo. | No |
 | telegramUserId | string | The telegram user id of the user. | No |
+| compactView | boolean | The compact view for a memo. | No |
 
 #### apiv2Webhook
 

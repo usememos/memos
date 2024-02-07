@@ -170,12 +170,16 @@ paths:
           type: integer
           format: int32
         - name: pageToken
-          description: "A page token, received from a previous `ListMemos` call.\r\nProvide this to retrieve the subsequent page."
+          description: |-
+            A page token, received from a previous `ListMemos` call.
+            Provide this to retrieve the subsequent page.
           in: query
           required: false
           type: string
         - name: filter
-          description: "Filter is used to filter memos returned in the list.\r\nFormat: \"creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']\""
+          description: |-
+            Filter is used to filter memos returned in the list.
+            Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -236,12 +240,17 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "name is the name of the user to get stats for.\r\nFormat: users/{username}"
+          description: |-
+            name is the name of the user to get stats for.
+            Format: users/{username}
           in: query
           required: false
           type: string
         - name: timezone
-          description: "timezone location\r\nFormat: uses tz identifier\r\nhttps://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
+          description: |-
+            timezone location
+            Format: uses tz identifier
+            https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
           in: query
           required: false
           type: string
@@ -474,7 +483,9 @@ paths:
                 $ref: '#/definitions/apiv2RowStatus'
               creator:
                 type: string
-                title: "The name of the creator.\r\nFormat: users/{username}"
+                title: |-
+                  The name of the creator.
+                  Format: users/{username}
               creatorId:
                 type: integer
                 format: int32
@@ -701,7 +712,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user
-          description: "The creator of tags.\r\nFormat: users/{username}"
+          description: |-
+            The creator of tags.
+            Format: users/{username}
           in: query
           required: false
           type: string
@@ -725,7 +738,9 @@ paths:
           required: false
           type: string
         - name: tag.creator
-          description: "The creator of tags.\r\nFormat: users/{username}"
+          description: |-
+            The creator of tags.
+            Format: users/{username}
           in: query
           required: false
           type: string
@@ -765,7 +780,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user
-          description: "The creator of tags.\r\nFormat: users/{username}"
+          description: |-
+            The creator of tags.
+            Format: users/{username}
           in: query
           required: false
           type: string
@@ -788,7 +805,9 @@ paths:
         - TagService
   /api/v2/tags:rename:
     patch:
-      summary: "RenameTag renames a tag.\r\nAll related memos will be updated."
+      summary: |-
+        RenameTag renames a tag.
+        All related memos will be updated.
       operationId: TagService_RenameTag
       responses:
         "200":
@@ -801,7 +820,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user
-          description: "The creator of tags.\r\nFormat: users/{username}"
+          description: |-
+            The creator of tags.
+            Format: users/{username}
           in: query
           required: false
           type: string
@@ -1025,7 +1046,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: inbox.name
-          description: "The name of the inbox.\r\nFormat: inboxes/{uid}"
+          description: |-
+            The name of the inbox.
+            Format: inboxes/{uid}
           in: path
           required: true
           type: string
@@ -1069,7 +1092,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_1
-          description: "The name of the inbox to delete.\r\nFormat: inboxes/{uid}"
+          description: |-
+            The name of the inbox to delete.
+            Format: inboxes/{uid}
           in: path
           required: true
           type: string
@@ -1091,7 +1116,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{username}"
+          description: |-
+            The name of the user.
+            Format: users/{username}
           in: path
           required: true
           type: string
@@ -1112,7 +1139,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{username}"
+          description: |-
+            The name of the user.
+            Format: users/{username}
           in: path
           required: true
           type: string
@@ -1134,7 +1163,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{username}"
+          description: |-
+            The name of the user.
+            Format: users/{username}
           in: path
           required: true
           type: string
@@ -1155,7 +1186,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{username}"
+          description: |-
+            The name of the user.
+            Format: users/{username}
           in: path
           required: true
           type: string
@@ -1182,7 +1215,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{username}"
+          description: |-
+            The name of the user.
+            Format: users/{username}
           in: path
           required: true
           type: string
@@ -1209,7 +1244,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{username}"
+          description: |-
+            The name of the user.
+            Format: users/{username}
           in: path
           required: true
           type: string
@@ -1231,7 +1268,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: setting.name
-          description: "The name of the user.\r\nFormat: users/{username}"
+          description: |-
+            The name of the user.
+            Format: users/{username}
           in: path
           required: true
           type: string
@@ -1274,7 +1313,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user.name
-          description: "The name of the user.\r\nFormat: users/{username}"
+          description: |-
+            The name of the user.
+            Format: users/{username}
           in: path
           required: true
           type: string
@@ -1397,7 +1438,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the user.\r\nFormat: users/{username}"
+        title: |-
+          The name of the user.
+          Format: users/{username}
       locale:
         type: string
         description: The preferred locale of the user.
@@ -1582,7 +1625,9 @@ definitions:
         additionalProperties:
           type: integer
           format: int32
-        description: "stats is the stats of memo creating/updating activities.\r\nkey is the year-month-day string. e.g. \"2020-01-01\"."
+        description: |-
+          stats is the stats of memo creating/updating activities.
+          key is the year-month-day string. e.g. "2020-01-01".
   v2GetUserResponse:
     type: object
     properties:
@@ -1608,7 +1653,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the inbox.\r\nFormat: inboxes/{uid}"
+        title: |-
+          The name of the inbox.
+          Format: inboxes/{uid}
       sender:
         type: string
         title: 'Format: users/{username}'
@@ -1681,7 +1728,9 @@ definitions:
           $ref: '#/definitions/v2Memo'
       nextPageToken:
         type: string
-        description: "A token, which can be sent as `page_token` to retrieve the next page.\r\nIf this field is omitted, there are no subsequent pages."
+        description: |-
+          A token, which can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
   v2ListResourcesResponse:
     type: object
     properties:
@@ -1736,7 +1785,9 @@ definitions:
         $ref: '#/definitions/apiv2RowStatus'
       creator:
         type: string
-        title: "The name of the creator.\r\nFormat: users/{username}"
+        title: |-
+          The name of the creator.
+          Format: users/{username}
       creatorId:
         type: integer
         format: int32
@@ -1847,7 +1898,9 @@ definitions:
         type: string
       creator:
         type: string
-        title: "The creator of tags.\r\nFormat: users/{username}"
+        title: |-
+          The creator of tags.
+          Format: users/{username}
   v2UpdateInboxResponse:
     type: object
     properties:
@@ -1898,7 +1951,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the user.\r\nFormat: users/{username}"
+        title: |-
+          The name of the user.
+          Format: users/{username}
       id:
         type: integer
         format: int32
