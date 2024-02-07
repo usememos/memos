@@ -15,6 +15,7 @@ message UserSetting {
     string appearance = 5;
     string memo_visibility = 6;
     string telegram_user_id = 7;
+    bool compact_view = 8;
   }
 }
 
@@ -35,6 +36,9 @@ enum UserSettingKey {
 
   // The telegram user id of the user.
   USER_SETTING_TELEGRAM_USER_ID = 5;
+
+  // The compact view for a memo.
+  USER_SETTING_COMPACT_VIEW = 6;
 }
 
 message AccessTokensUserSetting {
