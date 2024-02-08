@@ -16,8 +16,8 @@ type DeleteReaction struct {
 	ID int32
 }
 
-func (s *Store) CreateReaction(ctx context.Context, create *storepb.Reaction) (*storepb.Reaction, error) {
-	return s.driver.CreateReaction(ctx, create)
+func (s *Store) UpsertReaction(ctx context.Context, upsert *storepb.Reaction) (*storepb.Reaction, error) {
+	return s.driver.UpsertReaction(ctx, upsert)
 }
 
 func (s *Store) ListReactions(ctx context.Context, find *FindReaction) ([]*storepb.Reaction, error) {

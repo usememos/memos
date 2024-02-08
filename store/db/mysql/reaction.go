@@ -8,19 +8,19 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (d *DB) CreateReaction(ctx context.Context, create *storepb.Reaction) (*storepb.Reaction, error) {
+func (d *DB) UpsertReaction(ctx context.Context, upsert *storepb.Reaction) (*storepb.Reaction, error) {
 	fields := []string{"`creator_id`", "`content_id`", "`reaction_type`"}
 	placeholder := []string{"?", "?", "?"}
-	args := []interface{}{create.CreatorId, create.ContentId, create.ReactionType.String()}
+	args := []interface{}{upsert.CreatorId, upsert.ContentId, upsert.ReactionType.String()}
 	stmt := "INSERT INTO `reaction` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
-		&create.Id,
-		&create.CreatedTs,
+		&upsert.Id,
+		&upsert.CreatedTs,
 	); err != nil {
 		return nil, err
 	}
 
-	reaction := create
+	reaction := upsert
 	return reaction, nil
 }
 

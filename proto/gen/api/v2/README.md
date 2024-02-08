@@ -80,6 +80,11 @@
   
     - [MemoRelation.Type](#memos-api-v2-MemoRelation-Type)
   
+- [api/v2/reaction_service.proto](#api_v2_reaction_service-proto)
+    - [Reaction](#memos-api-v2-Reaction)
+  
+    - [Reaction.Type](#memos-api-v2-Reaction-Type)
+  
 - [api/v2/resource_service.proto](#api_v2_resource_service-proto)
     - [CreateResourceRequest](#memos-api-v2-CreateResourceRequest)
     - [CreateResourceResponse](#memos-api-v2-CreateResourceResponse)
@@ -102,6 +107,8 @@
     - [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse)
     - [CreateMemoRequest](#memos-api-v2-CreateMemoRequest)
     - [CreateMemoResponse](#memos-api-v2-CreateMemoResponse)
+    - [DeleteMemoReactionRequest](#memos-api-v2-DeleteMemoReactionRequest)
+    - [DeleteMemoReactionResponse](#memos-api-v2-DeleteMemoReactionResponse)
     - [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest)
     - [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse)
     - [ExportMemosRequest](#memos-api-v2-ExportMemosRequest)
@@ -115,6 +122,8 @@
     - [GetUserMemosStatsResponse.StatsEntry](#memos-api-v2-GetUserMemosStatsResponse-StatsEntry)
     - [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest)
     - [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse)
+    - [ListMemoReactionsRequest](#memos-api-v2-ListMemoReactionsRequest)
+    - [ListMemoReactionsResponse](#memos-api-v2-ListMemoReactionsResponse)
     - [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest)
     - [ListMemoRelationsResponse](#memos-api-v2-ListMemoRelationsResponse)
     - [ListMemoResourcesRequest](#memos-api-v2-ListMemoResourcesRequest)
@@ -128,6 +137,8 @@
     - [SetMemoResourcesResponse](#memos-api-v2-SetMemoResourcesResponse)
     - [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest)
     - [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse)
+    - [UpsertMemoReactionRequest](#memos-api-v2-UpsertMemoReactionRequest)
+    - [UpsertMemoReactionResponse](#memos-api-v2-UpsertMemoReactionResponse)
   
     - [Visibility](#memos-api-v2-Visibility)
   
@@ -1125,6 +1136,57 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="api_v2_reaction_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/reaction_service.proto
+
+
+
+<a name="memos-api-v2-Reaction"></a>
+
+### Reaction
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| creator | [string](#string) |  |  |
+| content_id | [string](#string) |  |  |
+| reaction_type | [Reaction.Type](#memos-api-v2-Reaction-Type) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-api-v2-Reaction-Type"></a>
+
+### Reaction.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| EYES | 1 |  |
+| HEART | 2 |  |
+| LAUGH | 3 |  |
+| ROCKET | 4 |  |
+| THUMBS_DOWN | 5 |  |
+| THUMBS_UP | 6 |  |
+
+
+ 
+
+ 
+
+ 
+
+
+
 <a name="api_v2_resource_service-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -1421,6 +1483,32 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-DeleteMemoReactionRequest"></a>
+
+### DeleteMemoReactionRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| reaction_id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteMemoReactionResponse"></a>
+
+### DeleteMemoReactionResponse
+
+
+
+
+
+
+
 <a name="memos-api-v2-DeleteMemoRequest"></a>
 
 ### DeleteMemoRequest
@@ -1614,6 +1702,36 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-ListMemoReactionsRequest"></a>
+
+### ListMemoReactionsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListMemoReactionsResponse"></a>
+
+### ListMemoReactionsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| reactions | [Reaction](#memos-api-v2-Reaction) | repeated |  |
+
+
+
+
+
+
 <a name="memos-api-v2-ListMemoRelationsRequest"></a>
 
 ### ListMemoRelationsRequest
@@ -1729,6 +1847,7 @@ Used internally for obfuscating the page token.
 | parent_id | [int32](#int32) | optional |  |
 | resources | [Resource](#memos-api-v2-Resource) | repeated |  |
 | relations | [MemoRelation](#memos-api-v2-MemoRelation) | repeated |  |
+| reactions | [Reaction](#memos-api-v2-Reaction) | repeated |  |
 
 
 
@@ -1817,6 +1936,37 @@ Used internally for obfuscating the page token.
 
 
 
+
+<a name="memos-api-v2-UpsertMemoReactionRequest"></a>
+
+### UpsertMemoReactionRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| reaction | [Reaction](#memos-api-v2-Reaction) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpsertMemoReactionResponse"></a>
+
+### UpsertMemoReactionResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| reaction | [Reaction](#memos-api-v2-Reaction) |  |  |
+
+
+
+
+
  
 
 
@@ -1851,14 +2001,17 @@ Used internally for obfuscating the page token.
 | GetMemoByName | [GetMemoByNameRequest](#memos-api-v2-GetMemoByNameRequest) | [GetMemoByNameResponse](#memos-api-v2-GetMemoByNameResponse) | GetMemoByName gets a memo by name. |
 | UpdateMemo | [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest) | [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse) | UpdateMemo updates a memo. |
 | DeleteMemo | [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest) | [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse) | DeleteMemo deletes a memo by id. |
+| ExportMemos | [ExportMemosRequest](#memos-api-v2-ExportMemosRequest) | [ExportMemosResponse](#memos-api-v2-ExportMemosResponse) | ExportMemos exports memos. |
 | SetMemoResources | [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest) | [SetMemoResourcesResponse](#memos-api-v2-SetMemoResourcesResponse) | SetMemoResources sets resources for a memo. |
 | ListMemoResources | [ListMemoResourcesRequest](#memos-api-v2-ListMemoResourcesRequest) | [ListMemoResourcesResponse](#memos-api-v2-ListMemoResourcesResponse) | ListMemoResources lists resources for a memo. |
 | SetMemoRelations | [SetMemoRelationsRequest](#memos-api-v2-SetMemoRelationsRequest) | [SetMemoRelationsResponse](#memos-api-v2-SetMemoRelationsResponse) | SetMemoRelations sets relations for a memo. |
 | ListMemoRelations | [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest) | [ListMemoRelationsResponse](#memos-api-v2-ListMemoRelationsResponse) | ListMemoRelations lists relations for a memo. |
 | CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) | CreateMemoComment creates a comment for a memo. |
 | ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) | ListMemoComments lists comments for a memo. |
-| ExportMemos | [ExportMemosRequest](#memos-api-v2-ExportMemosRequest) | [ExportMemosResponse](#memos-api-v2-ExportMemosResponse) | ExportMemos exports memos. |
 | GetUserMemosStats | [GetUserMemosStatsRequest](#memos-api-v2-GetUserMemosStatsRequest) | [GetUserMemosStatsResponse](#memos-api-v2-GetUserMemosStatsResponse) | GetUserMemosStats gets stats of memos for a user. |
+| ListMemoReactions | [ListMemoReactionsRequest](#memos-api-v2-ListMemoReactionsRequest) | [ListMemoReactionsResponse](#memos-api-v2-ListMemoReactionsResponse) | ListMemoReactions lists reactions for a memo. |
+| UpsertMemoReaction | [UpsertMemoReactionRequest](#memos-api-v2-UpsertMemoReactionRequest) | [UpsertMemoReactionResponse](#memos-api-v2-UpsertMemoReactionResponse) | UpsertMemoReaction upserts a reaction for a memo. |
+| DeleteMemoReaction | [DeleteMemoReactionRequest](#memos-api-v2-DeleteMemoReactionRequest) | [DeleteMemoReactionResponse](#memos-api-v2-DeleteMemoReactionResponse) | DeleteMemoReaction deletes a reaction for a memo. |
 
  
 

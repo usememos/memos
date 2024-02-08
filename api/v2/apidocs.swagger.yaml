@@ -358,6 +358,99 @@ paths:
           default: VISIBILITY_UNSPECIFIED
       tags:
         - MemoService
+  /api/v2/memos/{id}/reactions:
+    get:
+      summary: ListMemoReactions lists reactions for a memo.
+      operationId: MemoService_ListMemoReactions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListMemoReactionsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - MemoService
+    post:
+      summary: UpsertMemoReaction upserts a reaction for a memo.
+      operationId: MemoService_UpsertMemoReaction
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpsertMemoReactionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: reaction.id
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: reaction.creator
+          in: query
+          required: false
+          type: string
+        - name: reaction.contentId
+          in: query
+          required: false
+          type: string
+        - name: reaction.reactionType
+          in: query
+          required: false
+          type: string
+          enum:
+            - TYPE_UNSPECIFIED
+            - EYES
+            - HEART
+            - LAUGH
+            - ROCKET
+            - THUMBS_DOWN
+            - THUMBS_UP
+          default: TYPE_UNSPECIFIED
+      tags:
+        - MemoService
+  /api/v2/memos/{id}/reactions/{reactionId}:
+    delete:
+      summary: DeleteMemoReaction deletes a reaction for a memo.
+      operationId: MemoService_DeleteMemoReaction
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteMemoReactionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: reactionId
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - MemoService
   /api/v2/memos/{id}/relations:
     get:
       summary: ListMemoRelations lists relations for a memo.
@@ -519,6 +612,12 @@ paths:
                 items:
                   type: object
                   $ref: '#/definitions/v2MemoRelation'
+                readOnly: true
+              reactions:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/definitions/apiv2Reaction'
                 readOnly: true
       tags:
         - MemoService
@@ -1426,6 +1525,29 @@ definitions:
     properties:
       version:
         type: string
+  apiv2Reaction:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      creator:
+        type: string
+      contentId:
+        type: string
+      reactionType:
+        $ref: '#/definitions/apiv2ReactionType'
+  apiv2ReactionType:
+    type: string
+    enum:
+      - TYPE_UNSPECIFIED
+      - EYES
+      - HEART
+      - LAUGH
+      - ROCKET
+      - THUMBS_DOWN
+      - THUMBS_UP
+    default: TYPE_UNSPECIFIED
   apiv2RowStatus:
     type: string
     enum:
@@ -1561,6 +1683,8 @@ definitions:
       webhook:
         $ref: '#/definitions/apiv2Webhook'
   v2DeleteInboxResponse:
+    type: object
+  v2DeleteMemoReactionResponse:
     type: object
   v2DeleteMemoResponse:
     type: object
@@ -1702,6 +1826,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v2Memo'
+  v2ListMemoReactionsResponse:
+    type: object
+    properties:
+      reactions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/apiv2Reaction'
   v2ListMemoRelationsResponse:
     type: object
     properties:
@@ -1822,6 +1954,12 @@ definitions:
           type: object
           $ref: '#/definitions/v2MemoRelation'
         readOnly: true
+      reactions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/apiv2Reaction'
+        readOnly: true
   v2MemoRelation:
     type: object
     properties:
@@ -1936,6 +2074,11 @@ definitions:
     properties:
       workspaceProfile:
         $ref: '#/definitions/v2WorkspaceProfile'
+  v2UpsertMemoReactionResponse:
+    type: object
+    properties:
+      reaction:
+        $ref: '#/definitions/apiv2Reaction'
   v2UpsertTagRequest:
     type: object
     properties:

@@ -530,6 +530,11 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		return nil, errors.Wrap(err, "failed to list memo resources")
 	}
 
+	listMemoReactionsResponse, err := s.ListMemoReactions(ctx, &apiv2pb.ListMemoReactionsRequest{Id: memo.ID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list memo reactions")
+	}
+
 	return &apiv2pb.Memo{
 		Id:          int32(memo.ID),
 		Name:        memo.ResourceName,
@@ -545,6 +550,7 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		ParentId:    memo.ParentID,
 		Relations:   listMemoRelationsResponse.Relations,
 		Resources:   listMemoResourcesResponse.Resources,
+		Reactions:   listMemoReactionsResponse.Reactions,
 	}, nil
 }
 

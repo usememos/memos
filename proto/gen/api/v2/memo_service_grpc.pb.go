@@ -19,20 +19,23 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	MemoService_CreateMemo_FullMethodName        = "/memos.api.v2.MemoService/CreateMemo"
-	MemoService_ListMemos_FullMethodName         = "/memos.api.v2.MemoService/ListMemos"
-	MemoService_GetMemo_FullMethodName           = "/memos.api.v2.MemoService/GetMemo"
-	MemoService_GetMemoByName_FullMethodName     = "/memos.api.v2.MemoService/GetMemoByName"
-	MemoService_UpdateMemo_FullMethodName        = "/memos.api.v2.MemoService/UpdateMemo"
-	MemoService_DeleteMemo_FullMethodName        = "/memos.api.v2.MemoService/DeleteMemo"
-	MemoService_SetMemoResources_FullMethodName  = "/memos.api.v2.MemoService/SetMemoResources"
-	MemoService_ListMemoResources_FullMethodName = "/memos.api.v2.MemoService/ListMemoResources"
-	MemoService_SetMemoRelations_FullMethodName  = "/memos.api.v2.MemoService/SetMemoRelations"
-	MemoService_ListMemoRelations_FullMethodName = "/memos.api.v2.MemoService/ListMemoRelations"
-	MemoService_CreateMemoComment_FullMethodName = "/memos.api.v2.MemoService/CreateMemoComment"
-	MemoService_ListMemoComments_FullMethodName  = "/memos.api.v2.MemoService/ListMemoComments"
-	MemoService_ExportMemos_FullMethodName       = "/memos.api.v2.MemoService/ExportMemos"
-	MemoService_GetUserMemosStats_FullMethodName = "/memos.api.v2.MemoService/GetUserMemosStats"
+	MemoService_CreateMemo_FullMethodName         = "/memos.api.v2.MemoService/CreateMemo"
+	MemoService_ListMemos_FullMethodName          = "/memos.api.v2.MemoService/ListMemos"
+	MemoService_GetMemo_FullMethodName            = "/memos.api.v2.MemoService/GetMemo"
+	MemoService_GetMemoByName_FullMethodName      = "/memos.api.v2.MemoService/GetMemoByName"
+	MemoService_UpdateMemo_FullMethodName         = "/memos.api.v2.MemoService/UpdateMemo"
+	MemoService_DeleteMemo_FullMethodName         = "/memos.api.v2.MemoService/DeleteMemo"
+	MemoService_ExportMemos_FullMethodName        = "/memos.api.v2.MemoService/ExportMemos"
+	MemoService_SetMemoResources_FullMethodName   = "/memos.api.v2.MemoService/SetMemoResources"
+	MemoService_ListMemoResources_FullMethodName  = "/memos.api.v2.MemoService/ListMemoResources"
+	MemoService_SetMemoRelations_FullMethodName   = "/memos.api.v2.MemoService/SetMemoRelations"
+	MemoService_ListMemoRelations_FullMethodName  = "/memos.api.v2.MemoService/ListMemoRelations"
+	MemoService_CreateMemoComment_FullMethodName  = "/memos.api.v2.MemoService/CreateMemoComment"
+	MemoService_ListMemoComments_FullMethodName   = "/memos.api.v2.MemoService/ListMemoComments"
+	MemoService_GetUserMemosStats_FullMethodName  = "/memos.api.v2.MemoService/GetUserMemosStats"
+	MemoService_ListMemoReactions_FullMethodName  = "/memos.api.v2.MemoService/ListMemoReactions"
+	MemoService_UpsertMemoReaction_FullMethodName = "/memos.api.v2.MemoService/UpsertMemoReaction"
+	MemoService_DeleteMemoReaction_FullMethodName = "/memos.api.v2.MemoService/DeleteMemoReaction"
 )
 
 // MemoServiceClient is the client API for MemoService service.
@@ -51,6 +54,8 @@ type MemoServiceClient interface {
 	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*UpdateMemoResponse, error)
 	// DeleteMemo deletes a memo by id.
 	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*DeleteMemoResponse, error)
+	// ExportMemos exports memos.
+	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error)
 	// SetMemoResources sets resources for a memo.
 	SetMemoResources(ctx context.Context, in *SetMemoResourcesRequest, opts ...grpc.CallOption) (*SetMemoResourcesResponse, error)
 	// ListMemoResources lists resources for a memo.
@@ -63,10 +68,14 @@ type MemoServiceClient interface {
 	CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*CreateMemoCommentResponse, error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error)
-	// ExportMemos exports memos.
-	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error)
 	// GetUserMemosStats gets stats of memos for a user.
 	GetUserMemosStats(ctx context.Context, in *GetUserMemosStatsRequest, opts ...grpc.CallOption) (*GetUserMemosStatsResponse, error)
+	// ListMemoReactions lists reactions for a memo.
+	ListMemoReactions(ctx context.Context, in *ListMemoReactionsRequest, opts ...grpc.CallOption) (*ListMemoReactionsResponse, error)
+	// UpsertMemoReaction upserts a reaction for a memo.
+	UpsertMemoReaction(ctx context.Context, in *UpsertMemoReactionRequest, opts ...grpc.CallOption) (*UpsertMemoReactionResponse, error)
+	// DeleteMemoReaction deletes a reaction for a memo.
+	DeleteMemoReaction(ctx context.Context, in *DeleteMemoReactionRequest, opts ...grpc.CallOption) (*DeleteMemoReactionResponse, error)
 }
 
 type memoServiceClient struct {
@@ -131,6 +140,15 @@ func (c *memoServiceClient) DeleteMemo(ctx context.Context, in *DeleteMemoReques
 	return out, nil
 }
 
+func (c *memoServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error) {
+	out := new(ExportMemosResponse)
+	err := c.cc.Invoke(ctx, MemoService_ExportMemos_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *memoServiceClient) SetMemoResources(ctx context.Context, in *SetMemoResourcesRequest, opts ...grpc.CallOption) (*SetMemoResourcesResponse, error) {
 	out := new(SetMemoResourcesResponse)
 	err := c.cc.Invoke(ctx, MemoService_SetMemoResources_FullMethodName, in, out, opts...)
@@ -185,18 +203,36 @@ func (c *memoServiceClient) ListMemoComments(ctx context.Context, in *ListMemoCo
 	return out, nil
 }
 
-func (c *memoServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error) {
-	out := new(ExportMemosResponse)
-	err := c.cc.Invoke(ctx, MemoService_ExportMemos_FullMethodName, in, out, opts...)
+func (c *memoServiceClient) GetUserMemosStats(ctx context.Context, in *GetUserMemosStatsRequest, opts ...grpc.CallOption) (*GetUserMemosStatsResponse, error) {
+	out := new(GetUserMemosStatsResponse)
+	err := c.cc.Invoke(ctx, MemoService_GetUserMemosStats_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *memoServiceClient) GetUserMemosStats(ctx context.Context, in *GetUserMemosStatsRequest, opts ...grpc.CallOption) (*GetUserMemosStatsResponse, error) {
-	out := new(GetUserMemosStatsResponse)
-	err := c.cc.Invoke(ctx, MemoService_GetUserMemosStats_FullMethodName, in, out, opts...)
+func (c *memoServiceClient) ListMemoReactions(ctx context.Context, in *ListMemoReactionsRequest, opts ...grpc.CallOption) (*ListMemoReactionsResponse, error) {
+	out := new(ListMemoReactionsResponse)
+	err := c.cc.Invoke(ctx, MemoService_ListMemoReactions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) UpsertMemoReaction(ctx context.Context, in *UpsertMemoReactionRequest, opts ...grpc.CallOption) (*UpsertMemoReactionResponse, error) {
+	out := new(UpsertMemoReactionResponse)
+	err := c.cc.Invoke(ctx, MemoService_UpsertMemoReaction_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) DeleteMemoReaction(ctx context.Context, in *DeleteMemoReactionRequest, opts ...grpc.CallOption) (*DeleteMemoReactionResponse, error) {
+	out := new(DeleteMemoReactionResponse)
+	err := c.cc.Invoke(ctx, MemoService_DeleteMemoReaction_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -219,6 +255,8 @@ type MemoServiceServer interface {
 	UpdateMemo(context.Context, *UpdateMemoRequest) (*UpdateMemoResponse, error)
 	// DeleteMemo deletes a memo by id.
 	DeleteMemo(context.Context, *DeleteMemoRequest) (*DeleteMemoResponse, error)
+	// ExportMemos exports memos.
+	ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error)
 	// SetMemoResources sets resources for a memo.
 	SetMemoResources(context.Context, *SetMemoResourcesRequest) (*SetMemoResourcesResponse, error)
 	// ListMemoResources lists resources for a memo.
@@ -231,10 +269,14 @@ type MemoServiceServer interface {
 	CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*CreateMemoCommentResponse, error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error)
-	// ExportMemos exports memos.
-	ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error)
 	// GetUserMemosStats gets stats of memos for a user.
 	GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error)
+	// ListMemoReactions lists reactions for a memo.
+	ListMemoReactions(context.Context, *ListMemoReactionsRequest) (*ListMemoReactionsResponse, error)
+	// UpsertMemoReaction upserts a reaction for a memo.
+	UpsertMemoReaction(context.Context, *UpsertMemoReactionRequest) (*UpsertMemoReactionResponse, error)
+	// DeleteMemoReaction deletes a reaction for a memo.
+	DeleteMemoReaction(context.Context, *DeleteMemoReactionRequest) (*DeleteMemoReactionResponse, error)
 	mustEmbedUnimplementedMemoServiceServer()
 }
 
@@ -260,6 +302,9 @@ func (UnimplementedMemoServiceServer) UpdateMemo(context.Context, *UpdateMemoReq
 func (UnimplementedMemoServiceServer) DeleteMemo(context.Context, *DeleteMemoRequest) (*DeleteMemoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMemo not implemented")
 }
+func (UnimplementedMemoServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExportMemos not implemented")
+}
 func (UnimplementedMemoServiceServer) SetMemoResources(context.Context, *SetMemoResourcesRequest) (*SetMemoResourcesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetMemoResources not implemented")
 }
@@ -278,11 +323,17 @@ func (UnimplementedMemoServiceServer) CreateMemoComment(context.Context, *Create
 func (UnimplementedMemoServiceServer) ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMemoComments not implemented")
 }
-func (UnimplementedMemoServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ExportMemos not implemented")
-}
 func (UnimplementedMemoServiceServer) GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserMemosStats not implemented")
+}
+func (UnimplementedMemoServiceServer) ListMemoReactions(context.Context, *ListMemoReactionsRequest) (*ListMemoReactionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMemoReactions not implemented")
+}
+func (UnimplementedMemoServiceServer) UpsertMemoReaction(context.Context, *UpsertMemoReactionRequest) (*UpsertMemoReactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpsertMemoReaction not implemented")
+}
+func (UnimplementedMemoServiceServer) DeleteMemoReaction(context.Context, *DeleteMemoReactionRequest) (*DeleteMemoReactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMemoReaction not implemented")
 }
 func (UnimplementedMemoServiceServer) mustEmbedUnimplementedMemoServiceServer() {}
 
@@ -405,6 +456,24 @@ func _MemoService_DeleteMemo_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemoService_ExportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportMemosRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).ExportMemos(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_ExportMemos_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).ExportMemos(ctx, req.(*ExportMemosRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MemoService_SetMemoResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetMemoResourcesRequest)
 	if err := dec(in); err != nil {
@@ -513,24 +582,6 @@ func _MemoService_ListMemoComments_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemoService_ExportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ExportMemosRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemoServiceServer).ExportMemos(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MemoService_ExportMemos_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemoServiceServer).ExportMemos(ctx, req.(*ExportMemosRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _MemoService_GetUserMemosStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserMemosStatsRequest)
 	if err := dec(in); err != nil {
@@ -545,6 +596,60 @@ func _MemoService_GetUserMemosStats_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemoServiceServer).GetUserMemosStats(ctx, req.(*GetUserMemosStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_ListMemoReactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMemoReactionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).ListMemoReactions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_ListMemoReactions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).ListMemoReactions(ctx, req.(*ListMemoReactionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_UpsertMemoReaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpsertMemoReactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).UpsertMemoReaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_UpsertMemoReaction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).UpsertMemoReaction(ctx, req.(*UpsertMemoReactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_DeleteMemoReaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMemoReactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).DeleteMemoReaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_DeleteMemoReaction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).DeleteMemoReaction(ctx, req.(*DeleteMemoReactionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -581,6 +686,10 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemoService_DeleteMemo_Handler,
 		},
 		{
+			MethodName: "ExportMemos",
+			Handler:    _MemoService_ExportMemos_Handler,
+		},
+		{
 			MethodName: "SetMemoResources",
 			Handler:    _MemoService_SetMemoResources_Handler,
 		},
@@ -605,12 +714,20 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemoService_ListMemoComments_Handler,
 		},
 		{
-			MethodName: "ExportMemos",
-			Handler:    _MemoService_ExportMemos_Handler,
-		},
-		{
 			MethodName: "GetUserMemosStats",
 			Handler:    _MemoService_GetUserMemosStats_Handler,
+		},
+		{
+			MethodName: "ListMemoReactions",
+			Handler:    _MemoService_ListMemoReactions_Handler,
+		},
+		{
+			MethodName: "UpsertMemoReaction",
+			Handler:    _MemoService_UpsertMemoReaction_Handler,
+		},
+		{
+			MethodName: "DeleteMemoReaction",
+			Handler:    _MemoService_DeleteMemoReaction_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

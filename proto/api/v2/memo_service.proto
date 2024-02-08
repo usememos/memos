@@ -4,6 +4,7 @@ package memos.api.v2;
 
 import "api/v2/common.proto";
 import "api/v2/memo_relation_service.proto";
+import "api/v2/reaction_service.proto";
 import "api/v2/resource_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
@@ -48,6 +49,10 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v2/memos/{id}"};
     option (google.api.method_signature) = "id";
   }
+  // ExportMemos exports memos.
+  rpc ExportMemos(ExportMemosRequest) returns (ExportMemosResponse) {
+    option (google.api.http) = {post: "/api/v2/memos:export"};
+  }
   // SetMemoResources sets resources for a memo.
   rpc SetMemoResources(SetMemoResourcesRequest) returns (SetMemoResourcesResponse) {
     option (google.api.http) = {
@@ -84,14 +89,25 @@ service MemoService {
     option (google.api.http) = {get: "/api/v2/memos/{id}/comments"};
     option (google.api.method_signature) = "id";
   }
-  // ExportMemos exports memos.
-  rpc ExportMemos(ExportMemosRequest) returns (ExportMemosResponse) {
-    option (google.api.http) = {post: "/api/v2/memos:export"};
-  }
   // GetUserMemosStats gets stats of memos for a user.
   rpc GetUserMemosStats(GetUserMemosStatsRequest) returns (GetUserMemosStatsResponse) {
     option (google.api.http) = {get: "/api/v2/memos/stats"};
     option (google.api.method_signature) = "username";
+  }
+  // ListMemoReactions lists reactions for a memo.
+  rpc ListMemoReactions(ListMemoReactionsRequest) returns (ListMemoReactionsResponse) {
+    option (google.api.http) = {get: "/api/v2/memos/{id}/reactions"};
+    option (google.api.method_signature) = "id";
+  }
+  // UpsertMemoReaction upserts a reaction for a memo.
+  rpc UpsertMemoReaction(UpsertMemoReactionRequest) returns (UpsertMemoReactionResponse) {
+    option (google.api.http) = {post: "/api/v2/memos/{id}/reactions"};
+    option (google.api.method_signature) = "id";
+  }
+  // DeleteMemoReaction deletes a reaction for a memo.
+  rpc DeleteMemoReaction(DeleteMemoReactionRequest) returns (DeleteMemoReactionResponse) {
+    option (google.api.http) = {delete: "/api/v2/memos/{id}/reactions/{reaction_id}"};
+    option (google.api.method_signature) = "id,reaction_id";
   }
 }
 
@@ -137,6 +153,8 @@ message Memo {
   repeated Resource resources = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   repeated MemoRelation relations = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  repeated Reaction reactions = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {
@@ -201,6 +219,15 @@ message DeleteMemoRequest {
 }
 
 message DeleteMemoResponse {}
+
+message ExportMemosRequest {
+  // Same as ListMemosRequest.filter
+  string filter = 1;
+}
+
+message ExportMemosResponse {
+  bytes content = 1;
+}
 
 message SetMemoResourcesRequest {
   int32 id = 1;
@@ -273,11 +300,28 @@ message GetUserMemosStatsResponse {
   map<string, int32> stats = 1;
 }
 
-message ExportMemosRequest {
-  // Same as ListMemosRequest.filter
-  string filter = 1;
+message ListMemoReactionsRequest {
+  int32 id = 1;
 }
 
-message ExportMemosResponse {
-  bytes content = 1;
+message ListMemoReactionsResponse {
+  repeated Reaction reactions = 1;
 }
+
+message UpsertMemoReactionRequest {
+  int32 id = 1;
+
+  Reaction reaction = 2;
+}
+
+message UpsertMemoReactionResponse {
+  Reaction reaction = 1;
+}
+
+message DeleteMemoReactionRequest {
+  int32 id = 1;
+
+  int32 reaction_id = 2;
+}
+
+message DeleteMemoReactionResponse {}

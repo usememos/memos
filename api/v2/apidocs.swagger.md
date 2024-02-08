@@ -324,6 +324,69 @@ CreateMemoComment creates a comment for a memo.
 | 200 | A successful response. | [v2CreateMemoCommentResponse](#v2creatememocommentresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
+### /api/v2/memos/{id}/reactions
+
+#### GET
+##### Summary
+
+ListMemoReactions lists reactions for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path |  | Yes | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2ListMemoReactionsResponse](#v2listmemoreactionsresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### POST
+##### Summary
+
+UpsertMemoReaction upserts a reaction for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path |  | Yes | integer |
+| reaction.id | query |  | No | integer |
+| reaction.creator | query |  | No | string |
+| reaction.contentId | query |  | No | string |
+| reaction.reactionType | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2UpsertMemoReactionResponse](#v2upsertmemoreactionresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/memos/{id}/reactions/{reactionId}
+
+#### DELETE
+##### Summary
+
+DeleteMemoReaction deletes a reaction for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path |  | Yes | integer |
+| reactionId | path |  | Yes | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteMemoReactionResponse](#v2deletememoreactionresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
 ### /api/v2/memos/{id}/relations
 
 #### GET
@@ -414,7 +477,7 @@ UpdateMemo updates a memo.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | memo.id | path | id is the system generated unique identifier. | Yes | integer |
-| memo | body |  | Yes | { **"name"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"creator"**: string, **"creatorId"**: integer, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ] } |
+| memo | body |  | Yes | { **"name"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"creator"**: string, **"creatorId"**: integer, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ], **"reactions"**: [ [apiv2Reaction](#apiv2reaction) ] } |
 
 ##### Responses
 
@@ -1078,6 +1141,21 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | version | string |  | No |
 
+#### apiv2Reaction
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| creator | string |  | No |
+| contentId | string |  | No |
+| reactionType | [apiv2ReactionType](#apiv2reactiontype) |  | No |
+
+#### apiv2ReactionType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| apiv2ReactionType | string |  |  |
+
 #### apiv2RowStatus
 
 | Name | Type | Description | Required |
@@ -1193,6 +1271,12 @@ GetActivity returns the activity with the given id.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | v2DeleteInboxResponse | object |  |  |
+
+#### v2DeleteMemoReactionResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| v2DeleteMemoReactionResponse | object |  |  |
 
 #### v2DeleteMemoResponse
 
@@ -1344,6 +1428,12 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | memos | [ [v2Memo](#v2memo) ] |  | No |
 
+#### v2ListMemoReactionsResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| reactions | [ [apiv2Reaction](#apiv2reaction) ] |  | No |
+
 #### v2ListMemoRelationsResponse
 
 | Name | Type | Description | Required |
@@ -1411,6 +1501,7 @@ GetActivity returns the activity with the given id.
 | parentId | integer |  | No |
 | resources | [ [v2Resource](#v2resource) ] |  | No |
 | relations | [ [v2MemoRelation](#v2memorelation) ] |  | No |
+| reactions | [ [apiv2Reaction](#apiv2reaction) ] |  | No |
 
 #### v2MemoRelation
 
@@ -1529,6 +1620,12 @@ GetActivity returns the activity with the given id.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | workspaceProfile | [v2WorkspaceProfile](#v2workspaceprofile) |  | No |
+
+#### v2UpsertMemoReactionResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| reaction | [apiv2Reaction](#apiv2reaction) |  | No |
 
 #### v2UpsertTagRequest
 

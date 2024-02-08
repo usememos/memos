@@ -213,11 +213,12 @@
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | TYPE_UNSPECIFIED | 0 |  |
-| HEART | 1 |  |
-| THUMBS_UP | 2 |  |
-| THUMBS_DOWN | 3 |  |
-| LAUGH | 4 |  |
-| ROCKET | 5 |  |
+| EYES | 1 |  |
+| HEART | 2 |  |
+| LAUGH | 3 |  |
+| ROCKET | 4 |  |
+| THUMBS_DOWN | 5 |  |
+| THUMBS_UP | 6 |  |
 
 
  
