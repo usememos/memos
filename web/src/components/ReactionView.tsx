@@ -96,7 +96,7 @@ const ReactionView = (props: Props) => {
         className={classNames(
           "h-7 border px-2 py-0.5 rounded-full font-memo flex flex-row justify-center items-center gap-1 dark:border-zinc-700",
           currenUser && "cursor-pointer",
-          hasReaction && "bg-blue-50 border-blue-100 dark:bg-zinc-900",
+          hasReaction && "bg-blue-100 border-blue-200 dark:bg-zinc-900",
         )}
         onClick={handleReactionClick}
       >

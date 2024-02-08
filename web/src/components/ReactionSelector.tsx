@@ -56,9 +56,9 @@ const ReactionSelector = (props: Props) => {
 
   return (
     <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
-      <MenuButton slots={{ root: "div" }} slotProps={{}}>
-        <span className="h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-80">
-          <Icon.Smile className="w-4 h-4 mx-auto dark:text-gray-400" />
+      <MenuButton slots={{ root: "div" }}>
+        <span className="h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70">
+          <Icon.SmilePlus className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
       </MenuButton>
       <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">

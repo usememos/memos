@@ -1,33 +1,27 @@
-import { Divider, Tooltip } from "@mui/joy";
+import { Tooltip } from "@mui/joy";
 import classNames from "classnames";
-import copy from "copy-to-clipboard";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { UNKNOWN_ID } from "@/helpers/consts";
 import { getRelativeTimeString, getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
-import { RowStatus } from "@/types/proto/api/v2/common";
+import { useUserStore, extractUsernameFromName } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
-import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
+import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
-import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
 import showPreviewImageDialog from "./PreviewImageDialog";
-import showShareMemoDialog from "./ShareMemoDialog";
+import ReactionSelector from "./ReactionSelector";
 import UserAvatar from "./UserAvatar";
 import VisibilityIcon from "./VisibilityIcon";
-import "@/less/memo.less";
 
 interface Props {
   memo: Memo;
@@ -42,7 +36,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const { i18n } = useTranslation();
-  const memoStore = useMemoStore();
+  const currentUser = useCurrentUser();
   const userStore = useUserStore();
   const user = useCurrentUser();
   const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(getTimeStampByDate(memo.displayTime)));
@@ -80,81 +74,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleTogglePinMemoBtnClick = async () => {
-    try {
-      if (memo.pinned) {
-        await memoStore.updateMemo(
-          {
-            id: memo.id,
-            pinned: false,
-          },
-          ["pinned"],
-        );
-      } else {
-        await memoStore.updateMemo(
-          {
-            id: memo.id,
-            pinned: true,
-          },
-          ["pinned"],
-        );
-      }
-    } catch (error) {
-      // do nth
-    }
-  };
-
-  const handleEditMemoClick = () => {
-    showMemoEditorDialog({
-      memoId: memo.id,
-      cacheKey: `${memo.id}-${memo.updateTime}`,
-    });
-  };
-
-  const handleMarkMemoClick = () => {
-    showMemoEditorDialog({
-      relationList: [
-        {
-          memoId: UNKNOWN_ID,
-          relatedMemoId: memo.id,
-          type: MemoRelation_Type.REFERENCE,
-        },
-      ],
-    });
-  };
-
-  const handleArchiveMemoClick = async () => {
-    try {
-      await memoStore.updateMemo(
-        {
-          id: memo.id,
-          rowStatus: RowStatus.ARCHIVED,
-        },
-        ["row_status"],
-      );
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response.data.message);
-    }
-  };
-
-  const handleDeleteMemoClick = async () => {
-    showCommonDialog({
-      title: t("memo.delete-memo"),
-      content: t("memo.delete-confirm"),
-      style: "danger",
-      dialogName: "delete-memo-dialog",
-      onConfirm: async () => {
-        await memoStore.deleteMemo(memo.id);
-      },
-    });
-  };
-
-  const handleCopyMemoId = () => {
-    copy(memo.name);
-    toast.success("Copied to clipboard!");
-  };
-
   const handleMemoContentClick = useCallback(async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
@@ -168,11 +87,16 @@ const MemoView: React.FC<Props> = (props: Props) => {
 
   return (
     <div
-      className={classNames("group memo-wrapper", "memos-" + memo.id, memo.pinned && props.showPinned ? "pinned" : "", className)}
+      className={classNames(
+        "group relative flex flex-col justify-start items-start w-full px-4 pt-2 pb-3 mb-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
+        "memos-" + memo.id,
+        memo.pinned && props.showPinned && "border-gray-200 border dark:border-zinc-700",
+        className,
+      )}
       ref={memoContainerRef}
     >
-      <div className="memo-top-wrapper mb-1">
-        <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
+      <div className="w-full flex flex-row justify-between items-center mb-1">
+        <div className="w-auto flex flex-row justify-start items-center mr-1">
           {props.showCreator && creator && (
             <>
               <Link to={`/u/${encodeURIComponent(extractUsernameFromName(memo.creator))}`} unstable_viewTransition>
@@ -200,62 +124,20 @@ const MemoView: React.FC<Props> = (props: Props) => {
             </>
           )}
         </div>
-        <div className="btns-container space-x-2">
-          <div className="w-auto hidden group-hover:flex flex-row justify-between items-center">
+        <div className="flex flex-row justify-end items-center">
+          <div className="w-auto hidden group-hover:flex flex-row justify-between items-center gap-1">
             {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
               <>
                 <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
-                  <span>
+                  <span className="h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70">
                     <VisibilityIcon visibility={memo.visibility} />
                   </span>
                 </Tooltip>
               </>
             )}
+            {currentUser && memo.reactions.length === 0 && <ReactionSelector memo={memo} />}
           </div>
-          {!readonly && (
-            <>
-              <span className="btn more-action-btn">
-                <Icon.MoreVertical className="icon-img" />
-              </span>
-              <div className="more-action-btns-wrapper">
-                <div className="more-action-btns-container min-w-[6em]">
-                  {props.showPinned && (
-                    <span className="btn" onClick={handleTogglePinMemoBtnClick}>
-                      {memo.pinned ? <Icon.BookmarkMinus className="w-4 h-auto mr-2" /> : <Icon.BookmarkPlus className="w-4 h-auto mr-2" />}
-                      {memo.pinned ? t("common.unpin") : t("common.pin")}
-                    </span>
-                  )}
-                  <span className="btn" onClick={handleEditMemoClick}>
-                    <Icon.Edit3 className="w-4 h-auto mr-2" />
-                    {t("common.edit")}
-                  </span>
-                  <span className="btn" onClick={handleMarkMemoClick}>
-                    <Icon.Link className="w-4 h-auto mr-2" />
-                    {t("common.mark")}
-                  </span>
-                  <span className="btn" onClick={() => showShareMemoDialog(memo)}>
-                    <Icon.Share className="w-4 h-auto mr-2" />
-                    {t("common.share")}
-                  </span>
-                  <Divider className="!my-1" />
-                  <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>
-                    <Icon.Archive className="w-4 h-auto mr-2" />
-                    {t("common.archive")}
-                  </span>
-                  <span className="btn text-red-600" onClick={handleDeleteMemoClick}>
-                    <Icon.Trash className="w-4 h-auto mr-2" />
-                    {t("common.delete")}
-                  </span>
-                  <Divider className="!my-1" />
-                  <div className="w-full pl-3 pr-2 text-xs text-gray-400">
-                    <div className="font-mono max-w-20 cursor-pointer truncate" onClick={handleCopyMemoId}>
-                      ID: {memo.name}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+          {!readonly && <MemoActionMenu memo={memo} showPinned={props.showPinned} />}
         </div>
       </div>
       <MemoContent
