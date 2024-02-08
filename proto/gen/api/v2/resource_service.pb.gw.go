@@ -430,7 +430,7 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v2.ResourceService/GetResourceByName", runtime.WithHTTPPathPattern("/api/v2/resources/{name}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v2.ResourceService/GetResourceByName", runtime.WithHTTPPathPattern("/api/v2/resources/name/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -610,7 +610,7 @@ func RegisterResourceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v2.ResourceService/GetResourceByName", runtime.WithHTTPPathPattern("/api/v2/resources/{name}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v2.ResourceService/GetResourceByName", runtime.WithHTTPPathPattern("/api/v2/resources/name/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -680,7 +680,7 @@ var (
 
 	pattern_ResourceService_GetResource_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v2", "resources", "id"}, ""))
 
-	pattern_ResourceService_GetResourceByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v2", "resources", "name"}, ""))
+	pattern_ResourceService_GetResourceByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 3}, []string{"api", "v2", "resources", "name"}, ""))
 
 	pattern_ResourceService_UpdateResource_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v2", "resources", "resource.id"}, ""))
 

@@ -82,7 +82,6 @@ export const useMemoStore = create(
     },
     updateMemo: async (update: Partial<Memo>, updateMask: string[]) => {
       const { memo } = await memoServiceClient.updateMemo({
-        id: update.id!,
         memo: update,
         updateMask,
       });

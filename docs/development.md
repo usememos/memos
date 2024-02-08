@@ -30,7 +30,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 3. Install frontend dependencies and generate TypeScript code from protobuf
 
    ```
-   cd web && pnpm i && pnpm type-gen
+   cd web && pnpm i
    ```
 
 4. Start the dev server of frontend

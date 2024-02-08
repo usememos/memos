@@ -91,4 +91,9 @@ type Driver interface {
 	ListWebhooks(ctx context.Context, find *FindWebhook) ([]*storepb.Webhook, error)
 	UpdateWebhook(ctx context.Context, update *UpdateWebhook) (*storepb.Webhook, error)
 	DeleteWebhook(ctx context.Context, delete *DeleteWebhook) error
+
+	// Reaction model related methods.
+	UpsertReaction(ctx context.Context, create *storepb.Reaction) (*storepb.Reaction, error)
+	ListReactions(ctx context.Context, find *FindReaction) ([]*storepb.Reaction, error)
+	DeleteReaction(ctx context.Context, delete *DeleteReaction) error
 }

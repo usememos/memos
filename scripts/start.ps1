@@ -28,16 +28,6 @@ $runTasks = @(
         Dir  = "$repoRoot/web"
         Wait = $true;
     },
-    @{ 
-        Desc = "generate buf types";
-        Exe  = "powershell.exe";
-        Args = (
-            "-Command", 
-            "pnpm type-gen"
-        );
-        Dir  = "$repoRoot/web"
-        Wait = $true;
-    },
     @{
         Desc = "start backend with live reload";
         Exe  = "air.exe";

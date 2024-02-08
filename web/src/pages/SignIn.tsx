@@ -1,4 +1,5 @@
 import { Button, Checkbox, Divider, Input } from "@mui/joy";
+import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -85,7 +86,7 @@ const SignIn = () => {
       }
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message || t("message.login-failed"));
+      toast.error((error as ClientError).details || t("message.login-failed"));
     }
     actionBtnLoadingState.setFinish();
   };

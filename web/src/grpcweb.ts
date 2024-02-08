@@ -10,7 +10,7 @@ import { WebhookServiceDefinition } from "./types/proto/api/v2/webhook_service";
 import { WorkspaceServiceDefinition } from "./types/proto/api/v2/workspace_service";
 
 const channel = createChannel(
-  window.location.origin,
+  import.meta.env.VITE_API_BASE_URL || window.location.origin,
   FetchTransport({
     credentials: "include",
   }),

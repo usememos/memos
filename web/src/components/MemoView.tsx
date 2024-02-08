@@ -20,6 +20,7 @@ import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
+import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
 import showPreviewImageDialog from "./PreviewImageDialog";
@@ -265,7 +266,8 @@ const MemoView: React.FC<Props> = (props: Props) => {
         onClick={handleMemoContentClick}
       />
       <MemoResourceListView resources={memo.resources} />
-      <MemoRelationListView memo={memo} relationList={referenceRelations} />
+      <MemoRelationListView memo={memo} relations={referenceRelations} />
+      <MemoReactionistView memo={memo} reactions={memo.reactions} />
     </div>
   );
 };

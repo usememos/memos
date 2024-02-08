@@ -6,8 +6,12 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+
+	"github.com/pkg/errors"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -87,4 +91,20 @@ func (s *APIV2Service) UpdateWorkspaceProfile(ctx context.Context, request *apiv
 	return &apiv2pb.UpdateWorkspaceProfileResponse{
 		WorkspaceProfile: workspaceProfileMessage.WorkspaceProfile,
 	}, nil
+}
+
+func (s *APIV2Service) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.WorkspaceGeneralSetting, error) {
+	workspaceSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
+		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace setting")
+	}
+	workspaceGeneralSetting := &storepb.WorkspaceGeneralSetting{}
+	if workspaceSetting != nil {
+		if err := proto.Unmarshal([]byte(workspaceSetting.Value), workspaceGeneralSetting); err != nil {
+			return nil, errors.Wrap(err, "failed to unmarshal workspace setting")
+		}
+	}
+	return workspaceGeneralSetting, nil
 }

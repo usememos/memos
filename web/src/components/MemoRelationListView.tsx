@@ -8,11 +8,11 @@ import Icon from "./Icon";
 
 interface Props {
   memo: Memo;
-  relationList: MemoRelation[];
+  relations: MemoRelation[];
 }
 
 const MemoRelationListView = (props: Props) => {
-  const { memo, relationList } = props;
+  const { memo, relations: relationList } = props;
   const memoStore = useMemoStore();
   const [referencingMemoList, setReferencingMemoList] = useState<Memo[]>([]);
   const [referencedMemoList, setReferencedMemoList] = useState<Memo[]>([]);

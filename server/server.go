@@ -56,11 +56,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 			`"status":${status},"error":"${error}"}` + "\n",
 	}))
 
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		Skipper:      grpcRequestSkipper,
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
-	}))
+	e.Use(CORSMiddleware())
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Skipper: timeoutSkipper,
@@ -183,4 +179,29 @@ func timeoutSkipper(c echo.Context) bool {
 
 	// Skip timeout for blob upload which is frequently timed out.
 	return c.Request().Method == http.MethodPost && c.Request().URL.Path == "/api/v1/resource/blob"
+}
+
+func CORSMiddleware() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if grpcRequestSkipper(c) {
+				return next(c)
+			}
+
+			r := c.Request()
+			w := c.Response().Writer
+
+			w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+			// If it's preflight request, return immediately.
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(http.StatusOK)
+				return nil
+			}
+			return next(c)
+		}
+	}
 }

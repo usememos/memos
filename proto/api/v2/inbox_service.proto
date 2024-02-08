@@ -17,21 +17,21 @@ service InboxService {
   // UpdateInbox updates an inbox.
   rpc UpdateInbox(UpdateInboxRequest) returns (UpdateInboxResponse) {
     option (google.api.http) = {
-      patch: "/v2/inboxes"
+      patch: "/api/v2/{inbox.name=inboxes/*}"
       body: "inbox"
     };
     option (google.api.method_signature) = "inbox,update_mask";
   }
   // DeleteInbox deletes an inbox.
   rpc DeleteInbox(DeleteInboxRequest) returns (DeleteInboxResponse) {
-    option (google.api.http) = {delete: "/v2/{name=inboxes/*}"};
+    option (google.api.http) = {delete: "/api/v2/{name=inboxes/*}"};
     option (google.api.method_signature) = "name";
   }
 }
 
 message Inbox {
   // The name of the inbox.
-  // Format: inboxes/{id}
+  // Format: inboxes/{uid}
   string name = 1;
   // Format: users/{username}
   string sender = 2;
@@ -78,7 +78,7 @@ message UpdateInboxResponse {
 
 message DeleteInboxRequest {
   // The name of the inbox to delete.
-  // Format: inboxes/{inbox}
+  // Format: inboxes/{uid}
   string name = 1;
 }
 

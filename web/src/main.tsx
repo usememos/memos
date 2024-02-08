@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { RouterProvider } from "react-router-dom";
+import gomarkWasm from "./assets/gomark.wasm?url";
+import "./assets/wasm_exec.js";
 import "./css/global.css";
 import "./css/tailwind.css";
 import "./helpers/polyfill";
@@ -11,12 +13,10 @@ import "./less/highlight.less";
 import router from "./router";
 import store from "./store";
 import theme from "./theme";
-import wasmUrl from "./wasm/gomark.wasm?url";
-import "./wasm/wasm_exec.js";
 
 (async () => {
   const go = new window.Go();
-  const responsePromise = fetch(wasmUrl);
+  const responsePromise = fetch(gomarkWasm);
   const { instance } = await WebAssembly.instantiateStreaming(responsePromise, go.importObject);
   go.run(instance);
 

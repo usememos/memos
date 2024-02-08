@@ -16,6 +16,11 @@
   
     - [InboxMessage.Type](#memos-store-InboxMessage-Type)
   
+- [store/reaction.proto](#store_reaction-proto)
+    - [Reaction](#memos-store-Reaction)
+  
+    - [Reaction.Type](#memos-store-Reaction-Type)
+  
 - [store/user_setting.proto](#store_user_setting-proto)
     - [AccessTokensUserSetting](#memos-store-AccessTokensUserSetting)
     - [AccessTokensUserSetting.AccessToken](#memos-store-AccessTokensUserSetting-AccessToken)
@@ -172,6 +177,58 @@
 
 
 
+<a name="store_reaction-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## store/reaction.proto
+
+
+
+<a name="memos-store-Reaction"></a>
+
+### Reaction
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| created_ts | [int64](#int64) |  |  |
+| creator_id | [int32](#int32) |  |  |
+| content_id | [string](#string) |  | content_id is the id of the content that the reaction is for. This can be a memo. e.g. memos/101 |
+| reaction_type | [Reaction.Type](#memos-store-Reaction-Type) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-store-Reaction-Type"></a>
+
+### Reaction.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| EYES | 1 |  |
+| HEART | 2 |  |
+| LAUGH | 3 |  |
+| ROCKET | 4 |  |
+| THUMBS_DOWN | 5 |  |
+| THUMBS_UP | 6 |  |
+
+
+ 
+
+ 
+
+ 
+
+
+
 <a name="store_user_setting-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -225,6 +282,7 @@
 | appearance | [string](#string) |  |  |
 | memo_visibility | [string](#string) |  |  |
 | telegram_user_id | [string](#string) |  |  |
+| compact_view | [bool](#bool) |  |  |
 
 
 
@@ -246,6 +304,7 @@
 | USER_SETTING_APPEARANCE | 3 | The appearance of the user. |
 | USER_SETTING_MEMO_VISIBILITY | 4 | The visibility of the memo. |
 | USER_SETTING_TELEGRAM_USER_ID | 5 | The telegram user id of the user. |
+| USER_SETTING_COMPACT_VIEW | 6 | The compact view for a memo. |
 
 
  
