@@ -176,7 +176,7 @@ const MemoDetail = () => {
                 </IconButton>
               </Tooltip>
               <Tooltip title={"Share"} placement="top">
-                <IconButton size="sm" onClick={() => showShareMemoDialog(memo)}>
+                <IconButton size="sm" onClick={() => showShareMemoDialog(memo.id)}>
                   <Icon.Share className="w-4 h-auto text-gray-600 dark:text-gray-400" />
                 </IconButton>
               </Tooltip>

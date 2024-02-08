@@ -101,7 +101,7 @@ const MemoActionMenu = (props: Props) => {
           <Icon.Edit3 className="w-4 h-auto" />
           {t("common.edit")}
         </MenuItem>
-        <MenuItem onClick={() => showShareMemoDialog(memo)}>
+        <MenuItem onClick={() => showShareMemoDialog(memo.id)}>
           <Icon.Share className="w-4 h-auto" />
           {t("common.share")}
         </MenuItem>
