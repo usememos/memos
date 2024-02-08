@@ -101,7 +101,11 @@ const MemoDetail = () => {
 
   const handleCopyLinkBtnClick = () => {
     copy(`${window.location.origin}/m/${memo.name}`);
-    toast.success(t("message.succeed-copy-link"));
+    if (memo.visibility !== Visibility.PUBLIC) {
+      toast.success(t("message.succeed-copy-link-not-public"));
+    } else {
+      toast.success(t("message.succeed-copy-link"));
+    }
   };
 
   const handleCommentCreated = async (commentId: number) => {
