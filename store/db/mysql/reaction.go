@@ -45,7 +45,7 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 			reaction_type
 		FROM reaction
 		WHERE `+strings.Join(where, " AND ")+`
-		ORDER BY id DESC`,
+		ORDER BY id ASC`,
 		args...,
 	)
 	if err != nil {

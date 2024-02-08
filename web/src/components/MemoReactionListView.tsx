@@ -33,12 +33,14 @@ const MemoReactionListView = (props: Props) => {
   }, [reactions]);
 
   return (
-    <div className="w-full mt-2 flex flex-row justify-start items-start flex-wrap gap-1 select-none">
-      {currentUser && <ReactionSelector memo={memo} />}
-      {Array.from(reactionGroup).map(([reactionType, users]) => {
-        return <ReactionView key={`${reactionType.toString()} ${users.length}`} memo={memo} reactionType={reactionType} users={users} />;
-      })}
-    </div>
+    (currentUser || reactionGroup.size > 0) && (
+      <div className="w-full mt-2 flex flex-row justify-start items-start flex-wrap gap-1 select-none">
+        {currentUser && <ReactionSelector memo={memo} />}
+        {Array.from(reactionGroup).map(([reactionType, users]) => {
+          return <ReactionView key={`${reactionType.toString()} ${users.length}`} memo={memo} reactionType={reactionType} users={users} />;
+        })}
+      </div>
+    )
   );
 };
 

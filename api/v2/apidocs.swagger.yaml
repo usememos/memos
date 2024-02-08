@@ -416,12 +416,17 @@ paths:
           type: string
           enum:
             - TYPE_UNSPECIFIED
-            - EYES
-            - HEART
-            - LAUGH
-            - ROCKET
-            - THUMBS_DOWN
             - THUMBS_UP
+            - THUMBS_DOWN
+            - HEART
+            - FIRE
+            - CLAPPING_HANDS
+            - LAUGH
+            - OK_HAND
+            - ROCKET
+            - EYES
+            - THINKING_FACE
+            - CLOWN_FACE
           default: TYPE_UNSPECIFIED
       tags:
         - MemoService
@@ -1541,12 +1546,17 @@ definitions:
     type: string
     enum:
       - TYPE_UNSPECIFIED
-      - EYES
-      - HEART
-      - LAUGH
-      - ROCKET
-      - THUMBS_DOWN
       - THUMBS_UP
+      - THUMBS_DOWN
+      - HEART
+      - FIRE
+      - CLAPPING_HANDS
+      - LAUGH
+      - OK_HAND
+      - ROCKET
+      - EYES
+      - THINKING_FACE
+      - CLOWN_FACE
     default: TYPE_UNSPECIFIED
   apiv2RowStatus:
     type: string

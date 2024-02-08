@@ -1171,12 +1171,17 @@ Used internally for obfuscating the page token.
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | TYPE_UNSPECIFIED | 0 |  |
-| EYES | 1 |  |
-| HEART | 2 |  |
-| LAUGH | 3 |  |
-| ROCKET | 4 |  |
-| THUMBS_DOWN | 5 |  |
-| THUMBS_UP | 6 |  |
+| THUMBS_UP | 1 |  |
+| THUMBS_DOWN | 2 |  |
+| HEART | 3 |  |
+| FIRE | 4 |  |
+| CLAPPING_HANDS | 5 |  |
+| LAUGH | 6 |  |
+| OK_HAND | 7 |  |
+| ROCKET | 8 |  |
+| EYES | 9 |  |
+| THINKING_FACE | 10 |  |
+| CLOWN_FACE | 11 |  |
 
 
  

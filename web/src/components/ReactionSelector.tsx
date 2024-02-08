@@ -15,10 +15,15 @@ interface Props {
 const REACTION_TYPES = [
   Reaction_Type.THUMBS_UP,
   Reaction_Type.THUMBS_DOWN,
-  Reaction_Type.LAUGH,
   Reaction_Type.HEART,
+  Reaction_Type.FIRE,
+  Reaction_Type.CLAPPING_HANDS,
+  Reaction_Type.LAUGH,
+  Reaction_Type.OK_HAND,
   Reaction_Type.ROCKET,
   Reaction_Type.EYES,
+  Reaction_Type.THINKING_FACE,
+  Reaction_Type.CLOWN_FACE,
 ];
 
 const ReactionSelector = (props: Props) => {
@@ -46,6 +51,7 @@ const ReactionSelector = (props: Props) => {
     } catch (error) {
       // skip error.
     }
+    setOpen(false);
   };
 
   return (
@@ -57,16 +63,16 @@ const ReactionSelector = (props: Props) => {
       </MenuButton>
       <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">
         <div ref={containerRef}>
-          <div className="flex-row justify-start items-start py-0.5 px-2 h-auto font-mono space-x-1">
+          <div className="grid grid-cols-6 py-0.5 px-2 h-auto font-mono gap-1">
             {REACTION_TYPES.map((reactionType) => {
               return (
-                <div
+                <span
                   key={reactionType}
                   className="inline-flex w-auto cursor-pointer rounded text-lg px-1 text-gray-500 dark:text-gray-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   onClick={() => handleReactionClick(reactionType)}
                 >
                   {stringifyReactionType(reactionType)}
-                </div>
+                </span>
               );
             })}
           </div>
