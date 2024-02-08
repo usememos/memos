@@ -6,6 +6,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/ent"
+	"github.com/usememos/memos/ent/memorelation"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/store"
 )
@@ -44,23 +46,26 @@ func (s *APIV2Service) SetMemoRelations(ctx context.Context, request *apiv2pb.Se
 
 func (s *APIV2Service) ListMemoRelations(ctx context.Context, request *apiv2pb.ListMemoRelationsRequest) (*apiv2pb.ListMemoRelationsResponse, error) {
 	relationList := []*apiv2pb.MemoRelation{}
-	tempList, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		MemoID: &request.Id,
-	})
+	tempList, err := s.Store.V2.MemoRelation.
+		Query().
+		Where(memorelation.MemoID(int(request.Id))).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, relation := range tempList {
+		relationList = append(relationList, convertMemoRelationFromStoreV2(relation))
+	}
+	tempList, err = s.Store.V2.MemoRelation.
+		Query().
+		Where(memorelation.RelatedMemoID(int(request.Id))).
+		All(ctx)
 	if err != nil {
 		return nil, err
 	}
 	for _, relation := range tempList {
-		relationList = append(relationList, convertMemoRelationFromStore(relation))
-	}
-	tempList, err = s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		RelatedMemoID: &request.Id,
-	})
-	if err != nil {
-		return nil, err
-	}
-	for _, relation := range tempList {
-		relationList = append(relationList, convertMemoRelationFromStore(relation))
+		relationList = append(relationList, convertMemoRelationFromStoreV2(relation))
 	}
 
 	response := &apiv2pb.ListMemoRelationsResponse{
@@ -69,11 +74,11 @@ func (s *APIV2Service) ListMemoRelations(ctx context.Context, request *apiv2pb.L
 	return response, nil
 }
 
-func convertMemoRelationFromStore(memoRelation *store.MemoRelation) *apiv2pb.MemoRelation {
+func convertMemoRelationFromStoreV2(memoRelation *ent.MemoRelation) *apiv2pb.MemoRelation {
 	return &apiv2pb.MemoRelation{
-		MemoId:        memoRelation.MemoID,
-		RelatedMemoId: memoRelation.RelatedMemoID,
-		Type:          convertMemoRelationTypeFromStore(memoRelation.Type),
+		MemoId:        int32(memoRelation.MemoID),
+		RelatedMemoId: int32(memoRelation.RelatedMemoID),
+		Type:          convertMemoRelationTypeFromStore(store.MemoRelationType(memoRelation.Type)),
 	}
 }
 

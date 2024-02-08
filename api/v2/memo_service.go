@@ -25,6 +25,8 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
+	"github.com/usememos/memos/ent"
+	memotype "github.com/usememos/memos/ent/memo"
 )
 
 const (
@@ -137,16 +139,18 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 }
 
 func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequest) (*apiv2pb.GetMemoResponse, error) {
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-		ID: &request.Id,
-	})
+	memo, err := s.Store.V2.Memo.
+		Query().
+		Where(memotype.ID(int(request.Id))).
+		Only(ctx)
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, status.Errorf(codes.NotFound, "memo not found")
+		}
 		return nil, err
 	}
-	if memo == nil {
-		return nil, status.Errorf(codes.NotFound, "memo not found")
-	}
-	if memo.Visibility != store.Public {
+
+	if store.Visibility(memo.Visibility) != store.Public {
 		user, err := getCurrentUser(ctx, s.Store)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get user")
@@ -154,12 +158,13 @@ func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequ
 		if user == nil {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
-		if memo.Visibility == store.Private && memo.CreatorID != user.ID {
+		if store.Visibility(memo.Visibility) == store.Private &&
+			int32(memo.CreatorID) != user.ID {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 	}
 
-	memoMessage, err := s.convertMemoFromStore(ctx, memo)
+	memoMessage, err := s.convertMemoFromStoreV2(ctx, memo)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -506,6 +511,48 @@ func (s *APIV2Service) ExportMemos(ctx context.Context, request *apiv2pb.ExportM
 
 	return &apiv2pb.ExportMemosResponse{
 		Content: buf.Bytes(),
+	}, nil
+}
+
+func (s *APIV2Service) convertMemoFromStoreV2(ctx context.Context, memo *ent.Memo) (*apiv2pb.Memo, error) {
+	displayTs := memo.CreatedTs
+	if displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx); err == nil && displayWithUpdatedTs {
+		displayTs = memo.UpdatedTs
+	}
+
+	creatorID := int32(memo.CreatorID)
+	creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &creatorID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get creator")
+	}
+
+	memoID := int32(memo.ID)
+	listMemoRelationsResponse, err := s.ListMemoRelations(ctx, &apiv2pb.ListMemoRelationsRequest{Id: memoID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list memo relations")
+	}
+
+	listMemoResourcesResponse, err := s.ListMemoResources(ctx, &apiv2pb.ListMemoResourcesRequest{Id: memoID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list memo resources")
+	}
+
+	return &apiv2pb.Memo{
+		Id:          int32(memo.ID),
+		Name:        memo.ResourceName,
+		RowStatus:   convertRowStatusFromStore(store.RowStatus(memo.RowStatus)),
+		Creator:     fmt.Sprintf("%s%s", UserNamePrefix, creator.Username),
+		CreatorId:   int32(memo.CreatorID),
+		CreateTime:  timestamppb.New(memo.CreatedTs),
+		UpdateTime:  timestamppb.New(memo.UpdatedTs),
+		DisplayTime: timestamppb.New(displayTs),
+		Content:     memo.Content,
+		Visibility:  convertVisibilityFromStore(store.Visibility(memo.Visibility)),
+		// TODO(kw): implement pinned
+		// Pinned:      memo.Pinned,
+		// ParentId:    memo.ParentID,
+		Relations: listMemoRelationsResponse.Relations,
+		Resources: listMemoResourcesResponse.Resources,
 	}, nil
 }
 

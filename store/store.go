@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/usememos/memos/ent"
 	"github.com/usememos/memos/server/profile"
 )
 
@@ -15,12 +16,15 @@ type Store struct {
 	userCache          sync.Map // map[int]*User
 	userSettingCache   sync.Map // map[string]*UserSetting
 	idpCache           sync.Map // map[int]*IdentityProvider
+
+	V2 *ent.Client
 }
 
 // New creates a new instance of Store.
-func New(driver Driver, profile *profile.Profile) *Store {
+func New(driver Driver, dbv2 *ent.Client, profile *profile.Profile) *Store {
 	return &Store{
 		driver:  driver,
+		V2:      dbv2,
 		Profile: profile,
 	}
 }

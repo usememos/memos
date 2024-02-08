@@ -20,6 +20,7 @@ import (
 	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
+	"github.com/usememos/memos/store/dbv2"
 )
 
 const (
@@ -60,7 +61,14 @@ var (
 				return
 			}
 
-			storeInstance := store.New(dbDriver, profile)
+			dbv2, err := dbv2.NewDriver(profile)
+			if err != nil {
+				cancel()
+				log.Error("failed to create dbv2 driver", zap.Error(err))
+				return
+			}
+
+			storeInstance := store.New(dbDriver, dbv2, profile)
 			s, err := server.NewServer(ctx, profile, storeInstance)
 			if err != nil {
 				cancel()

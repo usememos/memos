@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
+	"github.com/usememos/memos/ent"
 	"github.com/usememos/memos/internal/log"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/server/profile"
@@ -34,6 +35,7 @@ type APIV2Service struct {
 	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
+	StoreV2 *ent.Client
 
 	grpcServer     *grpc.Server
 	grpcServerPort int
