@@ -98,12 +98,12 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 			}
 		} else if userSetting.Key == storepb.UserSettingKey_USER_SETTING_COMPACT_VIEW {
 			compactView, err := strconv.ParseBool(valueString)
-    		if err != nil {
-        		return nil, errors.Wrapf(err, "failed to parse compact view value: %s", valueString)
-    		}
-    		userSetting.Value = &storepb.UserSetting_CompactView{
-        		CompactView: compactView,
-    		}
+			if err != nil {
+				return nil, errors.Wrapf(err, "failed to parse compact view value: %s", valueString)
+			}
+			userSetting.Value = &storepb.UserSetting_CompactView{
+				CompactView: compactView,
+			}
 		} else {
 			// Skip unknown user setting key.
 			continue
