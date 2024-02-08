@@ -18,7 +18,7 @@ func TestReactionStore(t *testing.T) {
 	require.NoError(t, err)
 
 	contentID := "test_content_id"
-	reaction, err := ts.CreateReaction(ctx, &storepb.Reaction{
+	reaction, err := ts.UpsertReaction(ctx, &storepb.Reaction{
 		CreatorId:    user.ID,
 		ContentId:    contentID,
 		ReactionType: storepb.Reaction_HEART,
