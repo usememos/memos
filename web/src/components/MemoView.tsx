@@ -20,7 +20,7 @@ import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
-import MemoReactionistView from "./MemoReactionistView";
+import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
 import showPreviewImageDialog from "./PreviewImageDialog";

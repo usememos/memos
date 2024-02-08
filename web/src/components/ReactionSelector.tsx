@@ -14,11 +14,11 @@ interface Props {
 
 const REACTION_TYPES = [
   Reaction_Type.THUMBS_UP,
+  Reaction_Type.THUMBS_DOWN,
+  Reaction_Type.LAUGH,
   Reaction_Type.HEART,
   Reaction_Type.ROCKET,
-  Reaction_Type.LAUGH,
   Reaction_Type.EYES,
-  Reaction_Type.THUMBS_DOWN,
 ];
 
 const ReactionSelector = (props: Props) => {

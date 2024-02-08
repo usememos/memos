@@ -40,9 +40,9 @@ const stringifyUsers = (users: User[]): string => {
     return users.map((user) => user.nickname || user.username).join(", ");
   }
   return `${users
-    .slice(0, 5)
+    .slice(0, 4)
     .map((user) => user.nickname || user.username)
-    .join(", ")} and ${users.length - 5} others`;
+    .join(", ")} and ${users.length - 4} others`;
 };
 
 const ReactionView = (props: Props) => {

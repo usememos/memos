@@ -1,5 +1,6 @@
 import { uniq } from "lodash-es";
 import { memo, useEffect, useState } from "react";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { extractUsernameFromName, useUserStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { Reaction, Reaction_Type } from "@/types/proto/api/v2/reaction_service";
@@ -14,6 +15,7 @@ interface Props {
 
 const MemoReactionListView = (props: Props) => {
   const { memo, reactions } = props;
+  const currentUser = useCurrentUser();
   const userStore = useUserStore();
   const [reactionGroup, setReactionGroup] = useState<Map<Reaction_Type, User[]>>(new Map());
 
@@ -31,8 +33,8 @@ const MemoReactionListView = (props: Props) => {
   }, [reactions]);
 
   return (
-    <div className="w-full mt-2 flex flex-row justify-start items-start flex-wrap gap-1">
-      <ReactionSelector memo={memo} />
+    <div className="w-full mt-2 flex flex-row justify-start items-start flex-wrap gap-1 select-none">
+      {currentUser && <ReactionSelector memo={memo} />}
       {Array.from(reactionGroup).map(([reactionType, users]) => {
         return <ReactionView key={`${reactionType.toString()} ${users.length}`} memo={memo} reactionType={reactionType} users={users} />;
       })}
