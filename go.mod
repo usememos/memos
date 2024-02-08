@@ -1,6 +1,6 @@
 module github.com/usememos/memos
 
-go 1.21
+go 1.22
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.24.1
@@ -24,15 +24,15 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
-	github.com/swaggo/swag v1.16.2
-	github.com/yourselfhosted/gomark v0.0.0-20240203134956-f26563ba0069
+	github.com/swaggo/swag v1.16.3
+	github.com/yourselfhosted/gomark v0.0.0-20240203135813-6f2bb7ded891
 	go.uber.org/zap v1.26.0
-	golang.org/x/crypto v0.18.0
-	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a
-	golang.org/x/mod v0.14.0
-	golang.org/x/net v0.20.0
+	golang.org/x/crypto v0.19.0
+	golang.org/x/exp v0.0.0-20240205201215-2c58cdc269a3
+	golang.org/x/mod v0.15.0
+	golang.org/x/net v0.21.0
 	golang.org/x/oauth2 v0.16.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20240125205218-1f4bbc51befe
+	google.golang.org/genproto/googleapis/api v0.0.0-20240205150955-31a09d347014
 	google.golang.org/grpc v1.61.0
 	modernc.org/sqlite v1.28.0
 )
@@ -52,6 +52,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rs/cors v1.10.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
@@ -60,12 +61,12 @@ require (
 	github.com/stoewer/go-strcase v1.3.0 // indirect
 	golang.org/x/image v0.15.0 // indirect
 	golang.org/x/tools v0.17.0 // indirect
-	google.golang.org/genproto v0.0.0-20240125205218-1f4bbc51befe // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
+	google.golang.org/genproto v0.0.0-20240205150955-31a09d347014 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240205150955-31a09d347014 // indirect
 	lukechampine.com/uint128 v1.3.0 // indirect
 	modernc.org/cc/v3 v3.41.0 // indirect
 	modernc.org/ccgo/v3 v3.16.15 // indirect
-	modernc.org/libc v1.40.8 // indirect
+	modernc.org/libc v1.41.0 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.7.2 // indirect
 	modernc.org/opt v0.1.3 // indirect
@@ -104,7 +105,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/posthog/posthog-go v0.0.0-20240115103626-fbd687c18571
+	github.com/posthog/posthog-go v0.0.0-20240202122501-d793288ce2c9
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -112,7 +113,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
