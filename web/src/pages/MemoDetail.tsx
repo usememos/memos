@@ -139,7 +139,7 @@ const MemoDetail = () => {
           )}
           <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} content={memo.content} readonly={readonly} />
           <MemoResourceListView resources={memo.resources} />
-          <MemoRelationListView memo={memo} relationList={referenceRelations} />
+          <MemoRelationListView memo={memo} relations={referenceRelations} />
           <div className="w-full mt-3 flex flex-row justify-between items-center gap-2">
             <div className="flex flex-row justify-start items-center">
               {!readonly && (
