@@ -37,6 +37,8 @@ export const stringifyReactionType = (reactionType: Reaction_Type): string => {
       return "🤔";
     case Reaction_Type.CLOWN_FACE:
       return "🤡";
+    case Reaction_Type.QUESTION_MARK:
+      return "❓";
     default:
       return "";
   }
@@ -57,16 +59,16 @@ const stringifyUsers = (users: User[]): string => {
 
 const ReactionView = (props: Props) => {
   const { memo, reactionType, users } = props;
-  const currenUser = useCurrentUser();
+  const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
-  const hasReaction = users.some((user) => currenUser && user.username === currenUser.username);
+  const hasReaction = users.some((user) => currentUser && user.username === currentUser.username);
 
   const handleReactionClick = async () => {
-    if (!currenUser) {
+    if (!currentUser) {
       return;
     }
 
-    const index = users.findIndex((user) => user.username === currenUser.username);
+    const index = users.findIndex((user) => user.username === currentUser.username);
     try {
       if (index === -1) {
         await memoServiceClient.upsertMemoReaction({
@@ -78,7 +80,7 @@ const ReactionView = (props: Props) => {
         });
       } else {
         const reactions = memo.reactions.filter(
-          (reaction) => reaction.reactionType === reactionType && reaction.creator === currenUser.name,
+          (reaction) => reaction.reactionType === reactionType && reaction.creator === currentUser.name,
         );
         for (const reaction of reactions) {
           await memoServiceClient.deleteMemoReaction({ id: reaction.id });
@@ -95,7 +97,7 @@ const ReactionView = (props: Props) => {
       <div
         className={classNames(
           "h-7 border px-2 py-0.5 rounded-full font-memo flex flex-row justify-center items-center gap-1 dark:border-zinc-700",
-          currenUser && "cursor-pointer",
+          currentUser && "cursor-pointer",
           hasReaction && "bg-blue-100 border-blue-200 dark:bg-zinc-900",
         )}
         onClick={handleReactionClick}

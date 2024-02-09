@@ -427,6 +427,7 @@ paths:
             - EYES
             - THINKING_FACE
             - CLOWN_FACE
+            - QUESTION_MARK
           default: TYPE_UNSPECIFIED
       tags:
         - MemoService
@@ -1557,6 +1558,7 @@ definitions:
       - EYES
       - THINKING_FACE
       - CLOWN_FACE
+      - QUESTION_MARK
     default: TYPE_UNSPECIFIED
   apiv2RowStatus:
     type: string

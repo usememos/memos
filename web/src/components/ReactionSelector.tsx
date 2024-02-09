@@ -1,8 +1,10 @@
 import { Dropdown, Menu, MenuButton } from "@mui/joy";
+import classNames from "classnames";
 import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import Icon from "@/components/Icon";
 import { memoServiceClient } from "@/grpcweb";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { MemoNamePrefix, useMemoStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { Reaction_Type } from "@/types/proto/api/v2/reaction_service";
@@ -10,6 +12,7 @@ import { stringifyReactionType } from "./ReactionView";
 
 interface Props {
   memo: Memo;
+  className?: string;
 }
 
 const REACTION_TYPES = [
@@ -24,10 +27,12 @@ const REACTION_TYPES = [
   Reaction_Type.EYES,
   Reaction_Type.THINKING_FACE,
   Reaction_Type.CLOWN_FACE,
+  Reaction_Type.QUESTION_MARK,
 ];
 
 const ReactionSelector = (props: Props) => {
-  const { memo } = props;
+  const { memo, className } = props;
+  const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,15 +41,28 @@ const ReactionSelector = (props: Props) => {
     setOpen(false);
   });
 
-  const handleReactionClick = async (reaction: Reaction_Type) => {
+  const hasReacted = (reactionType: Reaction_Type) => {
+    return memo.reactions.some((r) => r.reactionType === reactionType && r.creator === currentUser?.name);
+  };
+
+  const handleReactionClick = async (reactionType: Reaction_Type) => {
     try {
-      await memoServiceClient.upsertMemoReaction({
-        id: memo.id,
-        reaction: {
-          contentId: `${MemoNamePrefix}${memo.id}`,
-          reactionType: reaction,
-        },
-      });
+      if (hasReacted(reactionType)) {
+        const reactions = memo.reactions.filter(
+          (reaction) => reaction.reactionType === reactionType && reaction.creator === currentUser.name,
+        );
+        for (const reaction of reactions) {
+          await memoServiceClient.deleteMemoReaction({ id: reaction.id });
+        }
+      } else {
+        await memoServiceClient.upsertMemoReaction({
+          id: memo.id,
+          reaction: {
+            contentId: `${MemoNamePrefix}${memo.id}`,
+            reactionType: reactionType,
+          },
+        });
+      }
       await memoStore.getOrFetchMemoById(memo.id, {
         skipCache: true,
       });
@@ -57,7 +75,12 @@ const ReactionSelector = (props: Props) => {
   return (
     <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
       <MenuButton slots={{ root: "div" }}>
-        <span className="h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70">
+        <span
+          className={classNames(
+            "h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70",
+            className,
+          )}
+        >
           <Icon.SmilePlus className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
       </MenuButton>
@@ -68,7 +91,10 @@ const ReactionSelector = (props: Props) => {
               return (
                 <span
                   key={reactionType}
-                  className="inline-flex w-auto cursor-pointer rounded text-lg px-1 text-gray-500 dark:text-gray-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  className={classNames(
+                    "inline-flex w-auto cursor-pointer rounded text-lg px-1 text-gray-500 dark:text-gray-400 hover:opacity-80",
+                    hasReacted(reactionType) && "bg-blue-100 dark:bg-zinc-800",
+                  )}
                   onClick={() => handleReactionClick(reactionType)}
                 >
                   {stringifyReactionType(reactionType)}

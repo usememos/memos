@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/pkg/errors"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -12,15 +13,24 @@ func (d *DB) UpsertReaction(ctx context.Context, upsert *storepb.Reaction) (*sto
 	fields := []string{"`creator_id`", "`content_id`", "`reaction_type`"}
 	placeholder := []string{"?", "?", "?"}
 	args := []interface{}{upsert.CreatorId, upsert.ContentId, upsert.ReactionType.String()}
-	stmt := "INSERT INTO `reaction` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
-		&upsert.Id,
-		&upsert.CreatedTs,
-	); err != nil {
+	stmt := "INSERT INTO `reaction` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
+	result, err := d.db.ExecContext(ctx, stmt, args...)
+	if err != nil {
 		return nil, err
 	}
 
-	reaction := upsert
+	rawID, err := result.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+	id := int32(rawID)
+	reaction, err := d.GetReaction(ctx, &store.FindReaction{ID: &id})
+	if err != nil {
+		return nil, err
+	}
+	if reaction == nil {
+		return nil, errors.Errorf("failed to create reaction")
+	}
 	return reaction, nil
 }
 
@@ -39,7 +49,7 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	rows, err := d.db.QueryContext(ctx, `
 		SELECT
 			id,
-			created_ts,
+			UNIX_TIMESTAMP(created_ts) AS created_ts,
 			creator_id,
 			content_id,
 			reaction_type
@@ -75,6 +85,19 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	}
 
 	return list, nil
+}
+
+func (d *DB) GetReaction(ctx context.Context, find *store.FindReaction) (*storepb.Reaction, error) {
+	list, err := d.ListReactions(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, nil
+	}
+
+	reaction := list[0]
+	return reaction, nil
 }
 
 func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) error {

@@ -116,7 +116,7 @@ const MemoActionMenu = (props: Props) => {
         </MenuItem>
         <Divider className="!my-1" />
         <div className="-mt-0.5 pl-2 pr-2 text-xs text-gray-400">
-          <div className="font-mono max-w-20 cursor-pointer truncate" onClick={handleCopyMemoId}>
+          <div className="mt-1 font-mono max-w-20 cursor-pointer truncate" onClick={handleCopyMemoId}>
             ID: {memo.name}
           </div>
         </div>

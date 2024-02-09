@@ -124,18 +124,16 @@ const MemoView: React.FC<Props> = (props: Props) => {
             </>
           )}
         </div>
-        <div className="flex flex-row justify-end items-center">
-          <div className="w-auto hidden group-hover:flex flex-row justify-between items-center gap-1">
+        <div className="flex flex-row justify-end items-center select-none">
+          <div className="w-auto invisible group-hover:visible flex flex-row justify-between items-center">
             {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
-              <>
-                <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
-                  <span className="h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70">
-                    <VisibilityIcon visibility={memo.visibility} />
-                  </span>
-                </Tooltip>
-              </>
+              <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
+                <span className="h-7 w-7 flex justify-center items-center hover:opacity-70">
+                  <VisibilityIcon visibility={memo.visibility} />
+                </span>
+              </Tooltip>
             )}
-            {currentUser && memo.reactions.length === 0 && <ReactionSelector memo={memo} />}
+            {currentUser && <ReactionSelector className="border-none" memo={memo} />}
           </div>
           {!readonly && <MemoActionMenu memo={memo} showPinned={props.showPinned} />}
         </div>
