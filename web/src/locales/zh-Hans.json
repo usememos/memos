@@ -367,5 +367,11 @@
     "tag-name": "标签名称",
     "tag-suggestions": "标签建议",
     "tip-text": "输入`#tag`来创建标签"
+  },
+  "statistics":{
+    "Statistics": "统计",
+    "Days": "天数",
+    "Memos": "备忘录",
+    "Tags": "标签"
   }
 }
