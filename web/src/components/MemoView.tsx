@@ -15,6 +15,7 @@ import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import Icon from "./Icon";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
+import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
@@ -72,6 +73,13 @@ const MemoView: React.FC<Props> = (props: Props) => {
     } else {
       navigateTo(`/m/${memo.name}`);
     }
+  };
+
+  const handleEditMemoClick = () => {
+    showMemoEditorDialog({
+      memoId: memo.id,
+      cacheKey: `${memo.id}-${memo.updateTime}`,
+    });
   };
 
   const handleMemoContentClick = useCallback(async (e: React.MouseEvent) => {
