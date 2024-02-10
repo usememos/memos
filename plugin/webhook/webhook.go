@@ -95,7 +95,7 @@ func Post(payload WebhookPayload) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return errors.Errorf("failed to post webhook %s, status code: %d, response body: %s", payload.URL, resp.StatusCode, b)
 	}
 
