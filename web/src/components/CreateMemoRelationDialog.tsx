@@ -1,7 +1,6 @@
 import { Autocomplete, AutocompleteOption, Button, Checkbox, Chip, IconButton } from "@mui/joy";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import useDebounce from "react-use/lib/useDebounce";
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
@@ -20,19 +19,30 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
   const user = useCurrentUser();
   const [searchText, setSearchText] = useState<string>("");
+  const [debouncedSearchText, setDebouncedSearchText] = useState<string>("");
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const [fetchedMemos, setFetchedMemos] = useState<Memo[]>([]);
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
   const [embedded, setEmbedded] = useState<boolean>(false);
   const filteredMemos = fetchedMemos.filter((memo) => !selectedMemos.includes(memo));
 
-  useDebounce(
-    async () => {
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchText(searchText.trim());
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchText]);
+
+  useEffect(() => {
+    const fetchMemos = async () => {
       setIsFetching(true);
       try {
         const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
-        if (searchText) {
-          filters.push(`content_search == [${JSON.stringify(searchText)}]`);
+        if (debouncedSearchText) {
+          filters.push(`content_search == [${JSON.stringify(debouncedSearchText)}]`);
         }
         const { memos } = await memoServiceClient.listMemos({
           pageSize: DEFAULT_MEMO_LIMIT,
@@ -44,10 +54,10 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
         toast.error(error.response.data.message);
       }
       setIsFetching(false);
-    },
-    300,
-    [searchText],
-  );
+    };
+
+    if (debouncedSearchText) fetchMemos();
+  }, [debouncedSearchText]);
 
   const getHighlightedContent = (content: string) => {
     const index = content.toLowerCase().indexOf(searchText.toLowerCase());
@@ -106,7 +116,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           inputValue={searchText}
           value={selectedMemos}
           multiple
-          onInputChange={(_, value) => setSearchText(value.trim())}
+          onInputChange={(_, value) => setSearchText(value)}
           getOptionKey={(option) => option.name}
           getOptionLabel={(option) => option.content}
           isOptionEqualToValue={(option, value) => option.id === value.id}
