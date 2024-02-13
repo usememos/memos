@@ -1,4 +1,4 @@
-import { Tooltip } from "@mui/joy";
+import { Chip, Tooltip } from "@mui/joy";
 import classNames from "classnames";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -101,7 +101,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
   }, [userStore.userSetting?.compactView]);
 
   const handleCompactModeChanged = () => {
-    setExpand(!expand);
+    if (userStore.userSetting?.compactView) {
+      console.log("Expanding/Shrinking only in compact mode.");
+      setExpand(!expand);
+    }
   };
 
   return (
@@ -168,7 +171,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
           {!readonly && <MemoActionMenu memo={memo} hiddenActions={props.showPinned ? [] : ["pin"]} />}
         </div>
       </div>
-      <div className={`z-0 custom-memo-content-wrapper ${!expand ? "full-height slide-down" : "half-height slide-up"}`}>
+      <div
+        onClick={handleCompactModeChanged}
+        className={`z-0 custom-memo-content-wrapper ${!expand ? "full-height slide-down" : "half-height slide-up shadow-2xl"}`}
+      >
         <MemoContent
           key={`${memo.id}-${memo.updateTime}`}
           memoId={memo.id}
@@ -179,6 +185,21 @@ const MemoView: React.FC<Props> = (props: Props) => {
         <MemoResourceListView resources={memo.resources} />
         <MemoRelationListView memo={memo} relations={referenceRelations} />
         <MemoReactionistView memo={memo} reactions={memo.reactions} />
+      </div>
+      <div className="flex items-center justify-center w-full">
+        {showExpandButton && (
+          <div>
+            {!expand ? (
+              <Chip onClick={handleCompactModeChanged} variant="solid" color="primary" size="sm" className="capitalize m-2">
+                show less
+              </Chip>
+            ) : (
+              <Chip onClick={handleCompactModeChanged} variant="solid" color="primary" size="sm" className="capitalize m-2">
+                show more
+              </Chip>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
