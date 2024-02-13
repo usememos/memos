@@ -1,33 +1,40 @@
-import { Button, IconButton } from "@mui/joy";
+import { Button, IconButton, Select, Option } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { getDateTimeString } from "@/helpers/datetime";
 import { downloadFileFromUrl } from "@/helpers/utils";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
-import { useUserStore, extractUsernameFromName } from "@/store/v1";
-import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
+import { useUserStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
+import { Visibility } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
+import { convertVisibilityToString } from "@/utils/memo";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import MemoResourceListView from "./MemoResourceListView";
 import UserAvatar from "./UserAvatar";
+import VisibilityIcon from "./VisibilityIcon";
 import "@/less/share-memo-dialog.less";
 
 interface Props extends DialogProps {
-  memo: Memo;
+  memoId: number;
 }
 
 const ShareMemoDialog: React.FC<Props> = (props: Props) => {
-  const { memo, destroy } = props;
+  const { memoId, destroy } = props;
   const t = useTranslate();
   const userStore = useUserStore();
   const downloadingImageState = useLoading(false);
   const loadingState = useLoading();
   const memoElRef = useRef<HTMLDivElement>(null);
+  const memoStore = useMemoStore();
+  const memo = memoStore.getMemoById(memoId);
   const user = userStore.getUserByUsername(extractUsernameFromName(memo.creator));
+  const currentUser = useCurrentUser();
+  const readonly = memo?.creatorId !== currentUser?.id;
 
   useEffect(() => {
     (async () => {
@@ -75,6 +82,20 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const handleMemoVisibilityOptionChanged = async (visibility: Visibility) => {
+    const updatedMemo = await memoStore.updateMemo(
+      {
+        id: memo.id,
+        visibility: visibility,
+      },
+      ["visibility"],
+    );
+
+    if (updatedMemo.visibility == visibility) {
+      toast.success(t("common.changed"));
+    }
+  };
+
   if (loadingState.isLoading) {
     return null;
   }
@@ -88,23 +109,44 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
         </IconButton>
       </div>
       <div className="dialog-content-container w-full flex flex-col justify-start items-start relative">
-        <div className="px-4 pb-3 w-full flex flex-row justify-start items-center space-x-2">
-          <Button color="neutral" variant="outlined" disabled={downloadingImageState.isLoading} onClick={handleDownloadImageBtnClick}>
-            {downloadingImageState.isLoading ? (
-              <Icon.Loader className="w-4 h-auto mr-1 animate-spin" />
-            ) : (
-              <Icon.Download className="w-4 h-auto mr-1" />
-            )}
-            {t("common.image")}
-          </Button>
-          <Button color="neutral" variant="outlined" onClick={handleDownloadTextFileBtnClick}>
-            <Icon.File className="w-4 h-auto mr-1" />
-            {t("common.file")}
-          </Button>
-          <Button color="neutral" variant="outlined" onClick={handleCopyLinkBtnClick}>
-            <Icon.Link className="w-4 h-auto mr-1" />
-            {t("common.link")}
-          </Button>
+        <div className="px-4 pb-3 w-full flex flex-row justify-between items-center space-x-2">
+          <div className="flex flex-row justify-start items-center space-x-2">
+            <Button color="neutral" variant="outlined" disabled={downloadingImageState.isLoading} onClick={handleDownloadImageBtnClick}>
+              {downloadingImageState.isLoading ? (
+                <Icon.Loader className="w-4 h-auto mr-1 animate-spin" />
+              ) : (
+                <Icon.Download className="w-4 h-auto mr-1" />
+              )}
+              {t("common.image")}
+            </Button>
+            <Button color="neutral" variant="outlined" onClick={handleDownloadTextFileBtnClick}>
+              <Icon.File className="w-4 h-auto mr-1" />
+              {t("common.file")}
+            </Button>
+            <Button color="neutral" variant="outlined" onClick={handleCopyLinkBtnClick}>
+              <Icon.Link className="w-4 h-auto mr-1" />
+              {t("common.link")}
+            </Button>
+          </div>
+          {!readonly && (
+            <Select
+              className="w-auto text-sm"
+              variant="plain"
+              value={memo.visibility}
+              startDecorator={<VisibilityIcon visibility={memo.visibility} />}
+              onChange={(_, visibility) => {
+                if (visibility) {
+                  handleMemoVisibilityOptionChanged(visibility);
+                }
+              }}
+            >
+              {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC].map((item) => (
+                <Option key={item} value={item} className="whitespace-nowrap">
+                  {t(`memo.visibility.${convertVisibilityToString(item).toLowerCase()}` as any)}
+                </Option>
+              ))}
+            </Select>
+          )}
         </div>
         <div className="w-full border-t dark:border-zinc-700 overflow-clip">
           <div
@@ -134,13 +176,13 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default function showShareMemoDialog(memo: Memo): void {
+export default function showShareMemoDialog(memoId: number): void {
   generateDialog(
     {
       className: "share-memo-dialog",
       dialogName: "share-memo-dialog",
     },
     ShareMemoDialog,
-    { memo },
+    { memoId },
   );
 }
