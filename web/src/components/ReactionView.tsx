@@ -44,17 +44,19 @@ export const stringifyReactionType = (reactionType: Reaction_Type): string => {
   }
 };
 
-const stringifyUsers = (users: User[]): string => {
+const stringifyUsers = (users: User[], reactionType: Reaction_Type): string => {
   if (users.length === 0) {
     return "";
   }
   if (users.length < 5) {
-    return users.map((user) => user.nickname || user.username).join(", ");
+    return users.map((user) => user.nickname || user.username).join(", ") + " reacted with " + reactionType.toLowerCase();
   }
-  return `${users
-    .slice(0, 4)
-    .map((user) => user.nickname || user.username)
-    .join(", ")} and ${users.length - 4} others`;
+  return (
+    `${users
+      .slice(0, 4)
+      .map((user) => user.nickname || user.username)
+      .join(", ")} and ${users.length - 4} more reacted with ` + reactionType.toLowerCase()
+  );
 };
 
 const ReactionView = (props: Props) => {
@@ -93,7 +95,7 @@ const ReactionView = (props: Props) => {
   };
 
   return (
-    <Tooltip title={stringifyUsers(users)} placement="top">
+    <Tooltip title={stringifyUsers(users, reactionType)} placement="top">
       <div
         className={classNames(
           "h-7 border px-2 py-0.5 rounded-full font-memo flex flex-row justify-center items-center gap-1 dark:border-zinc-700",

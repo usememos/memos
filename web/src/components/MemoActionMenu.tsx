@@ -87,7 +87,7 @@ const MemoActionMenu = (props: Props) => {
     <Dropdown>
       <MenuButton slots={{ root: "div" }}>
         <span className="h-7 w-7 flex justify-center items-center rounded-full hover:opacity-70">
-          <Icon.MoreHorizontal className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
+          <Icon.MoreVertical className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
       </MenuButton>
       <Menu className="text-sm" size="sm" placement="bottom-end">

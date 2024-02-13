@@ -64,7 +64,7 @@ const MemberSection = () => {
       ...state,
       creatingUser: {
         ...state.creatingUser,
-        role: Number(event.target.value) as User_Role,
+        role: event.target.value as User_Role,
       },
     });
   };

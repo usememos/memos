@@ -5,14 +5,17 @@ import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import VersionUpdateMessage from "@/components/Inbox/VersionUpdateMessage";
 import MobileHeader from "@/components/MobileHeader";
 import { useInboxStore } from "@/store/v1";
-import { Inbox_Type } from "@/types/proto/api/v2/inbox_service";
+import { Inbox_Status, Inbox_Type } from "@/types/proto/api/v2/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 
 const Inboxes = () => {
   const t = useTranslate();
   const inboxStore = useInboxStore();
   const inboxes = inboxStore.inboxes.sort((a, b) => {
-    return a.status - b.status;
+    if (a.status === b.status) {
+      return 0;
+    }
+    return a.status === Inbox_Status.UNREAD ? -1 : 1;
   });
 
   useEffect(() => {
