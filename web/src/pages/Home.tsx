@@ -70,7 +70,7 @@ const Home = () => {
       <div className={classNames("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
         <div className={classNames(md ? "w-[calc(100%-15rem)]" : "w-full")}>
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
-          <div className="flex flex-col justify-start items-start w-full max-w-full pb-28">
+          <div className="flex flex-col justify-start items-start w-full max-w-full">
             <MemoFilter className="px-2 pb-2" />
             {sortedMemos.map((memo) => (
               <MemoView key={`${memo.id}-${memo.updateTime}`} memo={memo} showVisibility showPinned />

@@ -23,13 +23,16 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
       return;
     }
 
-    activityServiceClient
-      .getActivity({
+    (async () => {
+      const { activity } = await activityServiceClient.getActivity({
         id: inbox.activityId,
-      })
-      .then(({ activity }) => {
-        setActivity(activity);
       });
+      if (!activity) {
+        return;
+      }
+
+      setActivity(activity);
+    })();
   }, [inbox.activityId]);
 
   const handleNavigate = () => {

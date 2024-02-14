@@ -57,20 +57,20 @@ const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   return (
     <>
-      <div className="dialog-header-container !w-64">
+      <div className="dialog-header-container">
         <p className="title-text">{t("setting.system-section.disable-password-login")}</p>
         <IconButton size="sm" onClick={handleCloseBtnClick}>
           <Icon.X className="w-5 h-auto" />
         </IconButton>
       </div>
-      <div className="dialog-content-container !w-64">
+      <div className="dialog-content-container !w-72">
         {confirmedOnce ? (
           <>
-            <p className="content-text">{t("setting.system-section.disable-password-login-final-warning")}</p>
-            <Input value={typingConfirmation} onChange={handleTypingConfirmationChanged} />
+            <p className="">{t("setting.system-section.disable-password-login-final-warning")}</p>
+            <Input className="w-full mt-2" value={typingConfirmation} onChange={handleTypingConfirmationChanged} />
           </>
         ) : (
-          <p className="content-text">{t("setting.system-section.disable-password-login-warning")}</p>
+          <p className="">{t("setting.system-section.disable-password-login-warning")}</p>
         )}
         <div className="mt-4 w-full flex flex-row justify-end items-center space-x-2">
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>

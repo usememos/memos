@@ -5,8 +5,8 @@ import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useInboxStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
-import { Activity } from "@/types/proto/api/v2/activity_service";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v2/inbox_service";
+import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 
@@ -19,35 +19,35 @@ const MemoCommentMessage = ({ inbox }: Props) => {
   const navigateTo = useNavigateTo();
   const inboxStore = useInboxStore();
   const memoStore = useMemoStore();
-  const [activity, setActivity] = useState<Activity | undefined>(undefined);
+  const [relatedMemo, setRelatedMemo] = useState<Memo | undefined>(undefined);
 
   useEffect(() => {
     if (!inbox.activityId) {
       return;
     }
 
-    activityServiceClient
-      .getActivity({
+    (async () => {
+      const { activity } = await activityServiceClient.getActivity({
         id: inbox.activityId,
-      })
-      .then(({ activity }) => {
-        setActivity(activity);
       });
+      if (!activity) {
+        return;
+      }
+      if (activity.payload?.memoComment?.relatedMemoId) {
+        const memo = await memoStore.getOrFetchMemoById(activity.payload?.memoComment?.relatedMemoId, {
+          skipStore: true,
+        });
+        setRelatedMemo(memo);
+      }
+    })();
   }, [inbox.activityId]);
 
   const handleNavigateToMemo = async () => {
-    const relatedMemoId = activity?.payload?.memoComment?.relatedMemoId;
-    if (!relatedMemoId) {
+    if (!relatedMemo) {
       return;
     }
 
-    const memo = await memoStore.getOrFetchMemoById(relatedMemoId);
-    if (!memo) {
-      toast.error("Memo not found");
-      return;
-    }
-
-    navigateTo(`/m/${memo.name}`);
+    navigateTo(`/m/${relatedMemo.name}`);
     if (inbox.status === Inbox_Status.UNREAD) {
       handleArchiveMessage(true);
     }
@@ -105,7 +105,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
         >
           {t("inbox.memo-comment", {
             user: extractUsernameFromName(inbox.sender),
-            memo: `memo#${activity?.payload?.memoComment?.relatedMemoId}`,
+            memo: `memos#${relatedMemo?.name}`,
           })}
         </p>
       </div>
