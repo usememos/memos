@@ -135,7 +135,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             )}
             {currentUser && <ReactionSelector className="border-none" memo={memo} />}
           </div>
-          {!readonly && <MemoActionMenu memo={memo} showPinned={props.showPinned} />}
+          {!readonly && <MemoActionMenu memo={memo} hiddenActions={props.showPinned ? [] : ["pin"]} />}
         </div>
       </div>
       <MemoContent

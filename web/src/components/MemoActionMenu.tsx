@@ -12,11 +12,13 @@ import showShareMemoDialog from "./ShareMemoDialog";
 
 interface Props {
   memo: Memo;
-  showPinned?: boolean;
+  hiddenActions?: ("edit" | "archive" | "delete" | "share" | "pin")[];
+  onArchived?: () => void;
+  onDeleted?: () => void;
 }
 
 const MemoActionMenu = (props: Props) => {
-  const { memo, showPinned } = props;
+  const { memo, hiddenActions } = props;
   const t = useTranslate();
   const memoStore = useMemoStore();
 
@@ -64,6 +66,9 @@ const MemoActionMenu = (props: Props) => {
       console.error(error);
       toast.error(error.response.data.message);
     }
+    if (props.onArchived) {
+      props.onArchived();
+    }
   };
 
   const handleDeleteMemoClick = async () => {
@@ -74,6 +79,9 @@ const MemoActionMenu = (props: Props) => {
       dialogName: "delete-memo-dialog",
       onConfirm: async () => {
         await memoStore.deleteMemo(memo.id);
+        if (props.onDeleted) {
+          props.onDeleted();
+        }
       },
     });
   };
@@ -91,20 +99,24 @@ const MemoActionMenu = (props: Props) => {
         </span>
       </MenuButton>
       <Menu className="text-sm" size="sm" placement="bottom-end">
-        {showPinned && (
+        {!hiddenActions?.includes("pin") && (
           <MenuItem onClick={handleTogglePinMemoBtnClick}>
             {memo.pinned ? <Icon.BookmarkMinus className="w-4 h-auto" /> : <Icon.BookmarkPlus className="w-4 h-auto" />}
             {memo.pinned ? t("common.unpin") : t("common.pin")}
           </MenuItem>
         )}
-        <MenuItem onClick={handleEditMemoClick}>
-          <Icon.Edit3 className="w-4 h-auto" />
-          {t("common.edit")}
-        </MenuItem>
-        <MenuItem onClick={() => showShareMemoDialog(memo.id)}>
-          <Icon.Share className="w-4 h-auto" />
-          {t("common.share")}
-        </MenuItem>
+        {!hiddenActions?.includes("edit") && (
+          <MenuItem onClick={handleEditMemoClick}>
+            <Icon.Edit3 className="w-4 h-auto" />
+            {t("common.edit")}
+          </MenuItem>
+        )}
+        {!hiddenActions?.includes("share") && (
+          <MenuItem onClick={() => showShareMemoDialog(memo.id)}>
+            <Icon.Share className="w-4 h-auto" />
+            {t("common.share")}
+          </MenuItem>
+        )}
         <Divider className="!my-1" />
         <MenuItem color="warning" onClick={handleArchiveMemoClick}>
           <Icon.Archive className="w-4 h-auto" />

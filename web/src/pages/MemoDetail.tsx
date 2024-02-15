@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import Icon from "@/components/Icon";
+import MemoActionMenu from "@/components/MemoActionMenu";
 import MemoContent from "@/components/MemoContent";
 import MemoEditor from "@/components/MemoEditor";
 import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
@@ -113,6 +114,16 @@ const MemoDetail = () => {
     await memoStore.getOrFetchMemoById(memo.id, { skipCache: true });
   };
 
+  const handleMemoArchived = () => {
+    navigateTo("/archived");
+    toast.success("Memo archived");
+  };
+
+  const handleMemoDeleted = () => {
+    navigateTo("/");
+    toast.success("Memo deleted");
+  };
+
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
@@ -184,6 +195,14 @@ const MemoDetail = () => {
                   <Icon.Share className="w-4 h-auto text-gray-600 dark:text-gray-400" />
                 </IconButton>
               </Tooltip>
+              {!readonly && (
+                <MemoActionMenu
+                  memo={memo}
+                  hiddenActions={["pin", "share"]}
+                  onArchived={handleMemoArchived}
+                  onDeleted={handleMemoDeleted}
+                />
+              )}
             </div>
           </div>
         </div>
