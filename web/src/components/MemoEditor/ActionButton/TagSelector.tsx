@@ -32,7 +32,16 @@ const TagSelector = (props: Props) => {
   });
 
   const handleTagClick = (tag: string) => {
-    editorRef.current?.insertText(`#${tag} `);
+    const current = editorRef.current;
+    if (current === null) return;
+
+    const line = current.getLine(current.getCursorLineNumber());
+    const lastCharOfLine = line.slice(-1);
+
+    if (lastCharOfLine !== " " && lastCharOfLine !== "　" && line !== "") {
+      current.insertText("\n");
+    }
+    current.insertText(`#${tag} `);
   };
 
   return (
