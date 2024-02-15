@@ -4,6 +4,7 @@ import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
+import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import Icon from "@/components/Icon";
 import MemoContent from "@/components/MemoContent";
 import MemoEditor from "@/components/MemoEditor";
@@ -19,6 +20,7 @@ import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore, useMemoStore, extractUsernameFromName } from "@/store/v1";
+import { RowStatus } from "@/types/proto/api/v2/common";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { User } from "@/types/proto/api/v2/user_service";
@@ -113,6 +115,58 @@ const MemoDetail = () => {
     await memoStore.getOrFetchMemoById(memo.id, { skipCache: true });
   };
 
+  const handleTogglePinMemoBtnClick = async () => {
+    try {
+      if (memo.pinned) {
+        await memoStore.updateMemo(
+          {
+            id: memo.id,
+            pinned: false,
+          },
+          ["pinned"],
+        );
+      } else {
+        await memoStore.updateMemo(
+          {
+            id: memo.id,
+            pinned: true,
+          },
+          ["pinned"],
+        );
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleArchiveMemoClick = async () => {
+    try {
+      await memoStore.updateMemo(
+        {
+          id: memo.id,
+          rowStatus: RowStatus.ARCHIVED,
+        },
+        ["row_status"],
+      );
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleDeleteMemoClick = async () => {
+    showCommonDialog({
+      title: t("memo.delete-memo"),
+      content: t("memo.delete-confirm"),
+      style: "danger",
+      dialogName: "delete-memo-dialog",
+      onConfirm: async () => {
+        await memoStore.deleteMemo(memo.id);
+      },
+    });
+  };
+
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
@@ -167,6 +221,15 @@ const MemoDetail = () => {
               )}
             </div>
             <div className="flex flex-row sm:justify-end items-center">
+              <Tooltip title={memo.pinned ? t("common.unpin") : t("common.pin")} placement="top" onClick={handleTogglePinMemoBtnClick}>
+                <IconButton size="sm">
+                  {memo.pinned ? (
+                    <Icon.BookmarkMinus className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                  ) : (
+                    <Icon.BookmarkPlus className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                  )}
+                </IconButton>
+              </Tooltip>
               {!readonly && (
                 <Tooltip title={"Edit"} placement="top">
                   <IconButton size="sm" onClick={handleEditMemoClick}>
@@ -174,6 +237,7 @@ const MemoDetail = () => {
                   </IconButton>
                 </Tooltip>
               )}
+
               <Tooltip title={"Copy link"} placement="top">
                 <IconButton size="sm" onClick={handleCopyLinkBtnClick}>
                   <Icon.Link className="w-4 h-auto text-gray-600 dark:text-gray-400" />
@@ -182,6 +246,16 @@ const MemoDetail = () => {
               <Tooltip title={"Share"} placement="top">
                 <IconButton size="sm" onClick={() => showShareMemoDialog(memo.id)}>
                   <Icon.Share className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t("common.archive")} placement="top" color="warning">
+                <IconButton size="sm" onClick={handleArchiveMemoClick}>
+                  <Icon.Archive className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t("common.delete")} placement="top" color="danger">
+                <IconButton size="sm" onClick={handleDeleteMemoClick}>
+                  <Icon.Trash className="w-4 h-auto text-gray-600 dark:text-gray-400" />
                 </IconButton>
               </Tooltip>
             </div>
