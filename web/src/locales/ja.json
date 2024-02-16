@@ -277,7 +277,7 @@
     "sso-section": {
       "sso-list": "SSOリスト",
       "delete-sso": "削除を確定",
-      "confirm-delete": "本当に\"{{name}}\"のSSO設定を削除してもいいですか?\n\n削除後の復元は不可能です。",
+      "confirm-delete": "本当に\"{{name}}\"のSSO設定を削除してもいいですか?\n\n消去後、元に戻せません!",
       "create-sso": "SSOを作成する",
       "update-sso": "SSOを更新する",
       "sso-created": "SSO {{name}}を作成しました",
