@@ -1,4 +1,5 @@
 import { useColorScheme } from "@mui/joy";
+import mermaid from "mermaid";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
@@ -17,6 +18,8 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const { appearance, locale, systemStatus } = globalStore.state;
   const userSetting = userStore.userSetting;
+
+  mermaid.initialize({ startOnLoad: false });
 
   // Redirect to sign up page if no host.
   useEffect(() => {
