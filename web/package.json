@@ -39,6 +39,8 @@
   "devDependencies": {
     "@bufbuild/buf": "^1.29.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@types/d3": "^7.4.3",
+    "@types/dompurify": "^3.0.5",
     "@types/katex": "^0.16.7",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.11.16",
