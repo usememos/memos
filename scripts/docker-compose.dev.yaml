@@ -62,6 +62,7 @@ services:
       - pnpm-store:/work/web/.pnpm-store
       - ../proto:/work/proto
       - ../web:/work/web
+      - ../web/node_modules:/work/web/node_modules
     healthcheck:
       test: ["CMD", "wget", "-qO", "-", "http://localhost:3001"]
       interval: 10s
