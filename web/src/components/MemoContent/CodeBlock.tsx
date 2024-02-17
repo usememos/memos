@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
-import mermaid from "mermaid";
 import toast from "react-hot-toast";
 import Icon from "../Icon";
 import MermaidBlock from "./MermaidBlock";
@@ -19,8 +18,6 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   let languageSpecificClasses = "";
 
   let highlightedCode = content;
-  console.log(formatedLanguage);
-  console.log(content);
 
   // Users can set Markdown code blocks as `__html` to render HTML directly.
   if (formatedLanguage === "__html") {
