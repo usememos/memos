@@ -19,7 +19,7 @@ const App = () => {
   const { appearance, locale, systemStatus } = globalStore.state;
   const userSetting = userStore.userSetting;
 
-  mermaid.initialize({ startOnLoad: false, theme: "dark" });
+  mermaid.initialize({ startOnLoad: false, theme: mode });
 
   // Redirect to sign up page if no host.
   useEffect(() => {
