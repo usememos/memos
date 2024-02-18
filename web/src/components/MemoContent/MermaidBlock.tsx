@@ -1,18 +1,25 @@
 import mermaid from "mermaid";
-import { useEffect } from "react";
-import { BaseProps } from "./types";
+import { useEffect, useRef } from "react";
 
-interface Props extends BaseProps {
+interface Props {
   __html: string;
 }
 
-const CodeBlock: React.FC<Props> = ({ __html, className }: Props) => {
+const MermaidBlock: React.FC<Props> = ({ __html }: Props) => {
+  const mermaidDockBlock = useRef<null>(null);
+
   useEffect(() => {
-    // Render mermaid
-    mermaid.run();
+    if (!mermaidDockBlock.current) {
+      return;
+    }
+
+    // Render mermaid when mounted
+    mermaid.run({
+      nodes: [mermaidDockBlock.current],
+    });
   });
 
-  return <pre className={className} dangerouslySetInnerHTML={{ __html }}></pre>;
+  return <pre ref={mermaidDockBlock} className="w-full p-2 whitespace-pre-wrap relative" dangerouslySetInnerHTML={{ __html }}></pre>;
 };
 
-export default CodeBlock;
+export default MermaidBlock;
