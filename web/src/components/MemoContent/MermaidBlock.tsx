@@ -2,7 +2,7 @@ import mermaid from "mermaid";
 import { useEffect, useRef } from "react";
 
 interface Props {
-  __html: string;
+  content: string;
 }
 
 const MermaidBlock: React.FC<Props> = ({ __html }: Props) => {
