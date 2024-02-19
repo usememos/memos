@@ -23,7 +23,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   }
 
   if (formatedLanguage === MERMAID_LANGUAGE) {
-    return <MermaidBlock __html={highlightedCode} />;
+    return <MermaidBlock content={content} />;
   }
 
   try {
