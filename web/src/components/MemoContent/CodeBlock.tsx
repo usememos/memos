@@ -3,7 +3,10 @@ import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import toast from "react-hot-toast";
 import Icon from "../Icon";
+import MermaidBlock from "./MermaidBlock";
 import { BaseProps } from "./types";
+
+const MERMAID_LANGUAGE = "mermaid";
 
 interface Props extends BaseProps {
   language: string;
@@ -17,6 +20,10 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   // Users can set Markdown code blocks as `__html` to render HTML directly.
   if (formatedLanguage === "__html") {
     return <div className="w-full overflow-auto !my-2" dangerouslySetInnerHTML={{ __html: content }} />;
+  }
+
+  if (formatedLanguage === MERMAID_LANGUAGE) {
+    return <MermaidBlock content={content} />;
   }
 
   try {
@@ -39,6 +46,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
         <span className="text-sm font-mono">{formatedLanguage}</span>
         <Icon.Copy className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={handleCopyButtonClick} />
       </div>
+
       <pre className="w-full p-2 bg-amber-50 dark:bg-zinc-700 whitespace-pre-wrap relative">
         <code
           className={classNames(`language-${formatedLanguage}`, "block text-sm leading-5")}
