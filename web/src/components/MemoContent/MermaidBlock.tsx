@@ -5,7 +5,7 @@ interface Props {
   content: string;
 }
 
-const MermaidBlock: React.FC<Props> = ({ __html }: Props) => {
+const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
   const mermaidDockBlock = useRef<null>(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const MermaidBlock: React.FC<Props> = ({ __html }: Props) => {
     });
   });
 
-  return <pre ref={mermaidDockBlock} className="w-full p-2 whitespace-pre-wrap relative" dangerouslySetInnerHTML={{ __html }}></pre>;
+  return <pre ref={mermaidDockBlock} className="w-full p-2 whitespace-pre-wrap relative" dangerouslySetInnerHTML={{ content }}></pre>;
 };
 
 export default MermaidBlock;
