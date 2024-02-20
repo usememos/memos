@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	UserNamePrefix  = "users/"
-	InboxNamePrefix = "inboxes/"
+	WorkspaceSettingNamePrefix = "settings/"
+	UserNamePrefix             = "users/"
+	InboxNamePrefix            = "inboxes/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -32,6 +33,14 @@ func GetNameParentTokens(name string, tokenPrefixes ...string) ([]string, error)
 		tokens = append(tokens, parts[2*i+1])
 	}
 	return tokens, nil
+}
+
+func ExtractWorkspaceSettingKeyFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, WorkspaceSettingNamePrefix)
+	if err != nil {
+		return "", err
+	}
+	return tokens[0], nil
 }
 
 // ExtractUsernameFromName returns the username from a resource name.

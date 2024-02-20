@@ -81,22 +81,22 @@ func (d *DB) Migrate(ctx context.Context) error {
 				if err := os.WriteFile(backupDBFilePath, rawBytes, 0644); err != nil {
 					return errors.Wrap(err, "failed to write raw database file")
 				}
-				println("succeed to copy a backup database file")
-				println("start migrate")
+				fmt.Println("succeed to copy a backup database file")
+				fmt.Println("start migrate")
 				for _, minorVersion := range minorVersionList {
 					normalizedVersion := minorVersion + ".0"
 					if version.IsVersionGreaterThan(normalizedVersion, latestMigrationHistoryVersion) && version.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
-						println("applying migration for", normalizedVersion)
+						fmt.Println("applying migration for", normalizedVersion)
 						if err := d.applyMigrationForMinorVersion(ctx, minorVersion); err != nil {
 							return errors.Wrap(err, "failed to apply minor version migration")
 						}
 					}
 				}
-				println("end migrate")
+				fmt.Println("end migrate")
 
 				// Remove the created backup db file after migrate succeed.
 				if err := os.Remove(backupDBFilePath); err != nil {
-					println(fmt.Sprintf("Failed to remove temp database file, err %v", err))
+					fmt.Printf("Failed to remove temp database file, err %v", err)
 				}
 			}
 		}

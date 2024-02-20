@@ -123,7 +123,6 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 		}
 		userSettingList = append(userSettingList, userSetting)
 	}
-
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}

@@ -30,6 +30,8 @@ type Profile struct {
 	Driver string `json:"-"`
 	// Version is the current version of server
 	Version string `json:"version"`
+	// ServeFrontend indicate the frontend is enabled or not
+	ServeFrontend bool `json:"frontend"`
 	// Metric indicate the metric collection is enabled or not
 	Metric bool `json:"-"`
 }

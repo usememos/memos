@@ -248,7 +248,6 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 			update.Visibility = &visibility
 		} else if path == "row_status" {
 			rowStatus := convertRowStatusToStore(request.Memo.RowStatus)
-			println("rowStatus", rowStatus)
 			update.RowStatus = &rowStatus
 		} else if path == "created_ts" {
 			createdTs := request.Memo.CreateTime.AsTime().Unix()

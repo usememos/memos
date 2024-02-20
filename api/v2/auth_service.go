@@ -255,7 +255,7 @@ func (s *APIV2Service) buildAccessTokenCookie(ctx context.Context, accessToken s
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get workspace setting")
 	}
-	if workspaceGeneralSetting.InstanceUrl != "" && strings.HasPrefix(workspaceGeneralSetting.InstanceUrl, "https://") {
+	if strings.HasPrefix(workspaceGeneralSetting.InstanceUrl, "https://") {
 		attrs = append(attrs, "SameSite=None")
 		attrs = append(attrs, "Secure")
 	} else {

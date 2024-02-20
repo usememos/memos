@@ -33,6 +33,7 @@
   
 - [store/workspace_setting.proto](#store_workspace_setting-proto)
     - [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting)
+    - [WorkspaceSetting](#memos-store-WorkspaceSetting)
   
     - [WorkspaceSettingKey](#memos-store-WorkspaceSettingKey)
   
@@ -373,9 +374,27 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| instance_url | [string](#string) |  |  |
-| disallow_signup | [bool](#bool) |  |  |
-| disallow_password_login | [bool](#bool) |  |  |
+| instance_url | [string](#string) |  | instance_url is the instance URL. |
+| disallow_signup | [bool](#bool) |  | disallow_signup is the flag to disallow signup. |
+| disallow_password_login | [bool](#bool) |  | disallow_password_login is the flag to disallow password login. |
+| additional_script | [string](#string) |  | additional_script is the additional script. |
+| additional_style | [string](#string) |  | additional_style is the additional style. |
+
+
+
+
+
+
+<a name="memos-store-WorkspaceSetting"></a>
+
+### WorkspaceSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [WorkspaceSettingKey](#memos-store-WorkspaceSettingKey) |  |  |
+| general | [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting) |  |  |
 
 
 
@@ -392,7 +411,7 @@
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | WORKSPACE_SETTING_KEY_UNSPECIFIED | 0 |  |
-| WORKSPACE_SETTING_GENERAL | 1 |  |
+| WORKSPACE_SETTING_GENERAL | 1 | WORKSPACE_SETTING_GENERAL is the key for general settings. |
 
 
  

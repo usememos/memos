@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+
+option go_package = "gen/api/v2";
+
+service WorkspaceSettingService {
+  // GetWorkspaceSetting returns the setting by name.
+  rpc GetWorkspaceSetting(GetWorkspaceSettingRequest) returns (GetWorkspaceSettingResponse) {
+    option (google.api.http) = {get: "/api/v2/workspace/{name=settings/*}"};
+    option (google.api.method_signature) = "name";
+  }
+  // SetWorkspaceSetting updates the setting.
+  rpc SetWorkspaceSetting(SetWorkspaceSettingRequest) returns (SetWorkspaceSettingResponse) {
+    option (google.api.http) = {
+      patch: "/api/v2/workspace/{setting.name=settings/*}",
+      body: "setting"
+    };
+    option (google.api.method_signature) = "setting";
+  }
+}
+
+message GetWorkspaceSettingRequest {
+  // The resource name of the workspace setting.
+  // Format: settings/{setting}
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetWorkspaceSettingResponse {
+  WorkspaceSetting setting = 1;
+}
+
+message SetWorkspaceSettingRequest {
+  // setting is the setting to update.
+  WorkspaceSetting setting = 1;
+}
+
+message SetWorkspaceSettingResponse {
+  WorkspaceSetting setting = 1;
+}
+
+message WorkspaceSetting {
+  // name is the name of the setting.
+  // Format: settings/{setting}
+  string name = 1;
+  oneof value {
+    // general_setting is the general setting of workspace.
+    WorkspaceGeneralSetting general_setting = 2;
+  }
+}
+
+message WorkspaceGeneralSetting {
+  // instance_url is the instance URL.
+  string instance_url = 1;
+  // disallow_signup is the flag to disallow signup.
+  bool disallow_signup = 2;
+  // disallow_password_login is the flag to disallow password login.
+  bool disallow_password_login = 3;
+  // additional_script is the additional script.
+  string additional_script = 5;
+  // additional_style is the additional style.
+  string additional_style = 6;
+}

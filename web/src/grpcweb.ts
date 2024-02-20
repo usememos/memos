@@ -8,6 +8,7 @@ import { TagServiceDefinition } from "./types/proto/api/v2/tag_service";
 import { UserServiceDefinition } from "./types/proto/api/v2/user_service";
 import { WebhookServiceDefinition } from "./types/proto/api/v2/webhook_service";
 import { WorkspaceServiceDefinition } from "./types/proto/api/v2/workspace_service";
+import { WorkspaceSettingServiceDefinition } from "./types/proto/api/v2/workspace_setting_service";
 
 const channel = createChannel(
   import.meta.env.VITE_API_BASE_URL || window.location.origin,
@@ -19,6 +20,8 @@ const channel = createChannel(
 const clientFactory = createClientFactory();
 
 export const workspaceServiceClient = clientFactory.create(WorkspaceServiceDefinition, channel);
+
+export const workspaceSettingServiceClient = clientFactory.create(WorkspaceSettingServiceDefinition, channel);
 
 export const authServiceClient = clientFactory.create(AuthServiceDefinition, channel);
 

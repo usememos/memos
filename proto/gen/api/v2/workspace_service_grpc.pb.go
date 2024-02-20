@@ -19,8 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	WorkspaceService_GetWorkspaceProfile_FullMethodName    = "/memos.api.v2.WorkspaceService/GetWorkspaceProfile"
-	WorkspaceService_UpdateWorkspaceProfile_FullMethodName = "/memos.api.v2.WorkspaceService/UpdateWorkspaceProfile"
+	WorkspaceService_GetWorkspaceProfile_FullMethodName = "/memos.api.v2.WorkspaceService/GetWorkspaceProfile"
 )
 
 // WorkspaceServiceClient is the client API for WorkspaceService service.
@@ -29,8 +28,6 @@ const (
 type WorkspaceServiceClient interface {
 	// GetWorkspaceProfile returns the workspace profile.
 	GetWorkspaceProfile(ctx context.Context, in *GetWorkspaceProfileRequest, opts ...grpc.CallOption) (*GetWorkspaceProfileResponse, error)
-	// UpdateWorkspaceProfile updates the workspace profile.
-	UpdateWorkspaceProfile(ctx context.Context, in *UpdateWorkspaceProfileRequest, opts ...grpc.CallOption) (*UpdateWorkspaceProfileResponse, error)
 }
 
 type workspaceServiceClient struct {
@@ -50,23 +47,12 @@ func (c *workspaceServiceClient) GetWorkspaceProfile(ctx context.Context, in *Ge
 	return out, nil
 }
 
-func (c *workspaceServiceClient) UpdateWorkspaceProfile(ctx context.Context, in *UpdateWorkspaceProfileRequest, opts ...grpc.CallOption) (*UpdateWorkspaceProfileResponse, error) {
-	out := new(UpdateWorkspaceProfileResponse)
-	err := c.cc.Invoke(ctx, WorkspaceService_UpdateWorkspaceProfile_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // WorkspaceServiceServer is the server API for WorkspaceService service.
 // All implementations must embed UnimplementedWorkspaceServiceServer
 // for forward compatibility
 type WorkspaceServiceServer interface {
 	// GetWorkspaceProfile returns the workspace profile.
 	GetWorkspaceProfile(context.Context, *GetWorkspaceProfileRequest) (*GetWorkspaceProfileResponse, error)
-	// UpdateWorkspaceProfile updates the workspace profile.
-	UpdateWorkspaceProfile(context.Context, *UpdateWorkspaceProfileRequest) (*UpdateWorkspaceProfileResponse, error)
 	mustEmbedUnimplementedWorkspaceServiceServer()
 }
 
@@ -76,9 +62,6 @@ type UnimplementedWorkspaceServiceServer struct {
 
 func (UnimplementedWorkspaceServiceServer) GetWorkspaceProfile(context.Context, *GetWorkspaceProfileRequest) (*GetWorkspaceProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorkspaceProfile not implemented")
-}
-func (UnimplementedWorkspaceServiceServer) UpdateWorkspaceProfile(context.Context, *UpdateWorkspaceProfileRequest) (*UpdateWorkspaceProfileResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateWorkspaceProfile not implemented")
 }
 func (UnimplementedWorkspaceServiceServer) mustEmbedUnimplementedWorkspaceServiceServer() {}
 
@@ -111,24 +94,6 @@ func _WorkspaceService_GetWorkspaceProfile_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WorkspaceService_UpdateWorkspaceProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateWorkspaceProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WorkspaceServiceServer).UpdateWorkspaceProfile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: WorkspaceService_UpdateWorkspaceProfile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkspaceServiceServer).UpdateWorkspaceProfile(ctx, req.(*UpdateWorkspaceProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // WorkspaceService_ServiceDesc is the grpc.ServiceDesc for WorkspaceService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,10 +104,6 @@ var WorkspaceService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWorkspaceProfile",
 			Handler:    _WorkspaceService_GetWorkspaceProfile_Handler,
-		},
-		{
-			MethodName: "UpdateWorkspaceProfile",
-			Handler:    _WorkspaceService_UpdateWorkspaceProfile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

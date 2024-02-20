@@ -29,7 +29,12 @@ func NewTelegramHandler(store *store.Store) *TelegramHandler {
 }
 
 func (t *TelegramHandler) BotToken(ctx context.Context) string {
-	return t.store.GetWorkspaceSettingWithDefaultValue(ctx, apiv1.SystemSettingTelegramBotTokenName.String(), "")
+	if setting, err := t.store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
+		Name: apiv1.SystemSettingTelegramBotTokenName.String(),
+	}); err == nil && setting != nil {
+		return setting.Value
+	}
+	return ""
 }
 
 const (

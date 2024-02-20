@@ -6,13 +6,26 @@ option go_package = "gen/store";
 
 enum WorkspaceSettingKey {
   WORKSPACE_SETTING_KEY_UNSPECIFIED = 0;
+  // WORKSPACE_SETTING_GENERAL is the key for general settings.
   WORKSPACE_SETTING_GENERAL = 1;
 }
 
+message WorkspaceSetting {
+  WorkspaceSettingKey key = 1;
+  oneof value {
+    WorkspaceGeneralSetting general = 2;
+  }
+}
+
 message WorkspaceGeneralSetting {
+  // instance_url is the instance URL.
   string instance_url = 1;
-
+  // disallow_signup is the flag to disallow signup.
   bool disallow_signup = 2;
-
+  // disallow_password_login is the flag to disallow password login.
   bool disallow_password_login = 3;
+  // additional_script is the additional script.
+  string additional_script = 5;
+  // additional_style is the additional style.
+  string additional_style = 6;
 }

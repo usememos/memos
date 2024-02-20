@@ -34,14 +34,15 @@ const (
 )
 
 var (
-	profile      *_profile.Profile
-	mode         string
-	addr         string
-	port         int
-	data         string
-	driver       string
-	dsn          string
-	enableMetric bool
+	profile       *_profile.Profile
+	mode          string
+	addr          string
+	port          int
+	data          string
+	driver        string
+	dsn           string
+	serveFrontend bool
+	enableMetric  bool
 
 	rootCmd = &cobra.Command{
 		Use:   "memos",
@@ -117,6 +118,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&data, "data", "d", "", "data directory")
 	rootCmd.PersistentFlags().StringVarP(&driver, "driver", "", "", "database driver")
 	rootCmd.PersistentFlags().StringVarP(&dsn, "dsn", "", "", "database source name(aka. DSN)")
+	rootCmd.PersistentFlags().BoolVarP(&serveFrontend, "frontend", "", true, "serve frontend files")
 	rootCmd.PersistentFlags().BoolVarP(&enableMetric, "metric", "", true, "allow metric collection")
 
 	err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode"))
@@ -143,6 +145,10 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	err = viper.BindPFlag("frontend", rootCmd.PersistentFlags().Lookup("frontend"))
+	if err != nil {
+		panic(err)
+	}
 	err = viper.BindPFlag("metric", rootCmd.PersistentFlags().Lookup("metric"))
 	if err != nil {
 		panic(err)
@@ -152,6 +158,7 @@ func init() {
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("addr", "")
 	viper.SetDefault("port", 8081)
+	viper.SetDefault("frontend", true)
 	viper.SetDefault("metric", true)
 	viper.SetEnvPrefix("memos")
 }
@@ -165,17 +172,18 @@ func initConfig() {
 		return
 	}
 
-	println("---")
-	println("Server profile")
-	println("data:", profile.Data)
-	println("dsn:", profile.DSN)
-	println("addr:", profile.Addr)
-	println("port:", profile.Port)
-	println("mode:", profile.Mode)
-	println("driver:", profile.Driver)
-	println("version:", profile.Version)
-	println("metric:", profile.Metric)
-	println("---")
+	fmt.Printf(`---
+Server profile
+data: %s
+dsn: %s
+addr: %s
+port: %d
+mode: %s
+driver: %s
+version: %s
+metric: %t
+---
+`, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver, profile.Version, profile.Metric)
 }
 
 func printGreetings() {
@@ -185,11 +193,12 @@ func printGreetings() {
 	} else {
 		fmt.Printf("Version %s has been started on address '%s' and port %d\n", profile.Version, profile.Addr, profile.Port)
 	}
-	println("---")
-	println("See more in:")
-	fmt.Printf("👉Website: %s\n", "https://usememos.com")
-	fmt.Printf("👉GitHub: %s\n", "https://github.com/usememos/memos")
-	println("---")
+	fmt.Printf(`---
+See more in:
+👉Website: %s
+👉GitHub: %s
+---
+`, "https://usememos.com", "https://github.com/usememos/memos")
 }
 
 func main() {

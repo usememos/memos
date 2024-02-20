@@ -179,11 +179,19 @@
 - [api/v2/workspace_service.proto](#api_v2_workspace_service-proto)
     - [GetWorkspaceProfileRequest](#memos-api-v2-GetWorkspaceProfileRequest)
     - [GetWorkspaceProfileResponse](#memos-api-v2-GetWorkspaceProfileResponse)
-    - [UpdateWorkspaceProfileRequest](#memos-api-v2-UpdateWorkspaceProfileRequest)
-    - [UpdateWorkspaceProfileResponse](#memos-api-v2-UpdateWorkspaceProfileResponse)
     - [WorkspaceProfile](#memos-api-v2-WorkspaceProfile)
   
     - [WorkspaceService](#memos-api-v2-WorkspaceService)
+  
+- [api/v2/workspace_setting_service.proto](#api_v2_workspace_setting_service-proto)
+    - [GetWorkspaceSettingRequest](#memos-api-v2-GetWorkspaceSettingRequest)
+    - [GetWorkspaceSettingResponse](#memos-api-v2-GetWorkspaceSettingResponse)
+    - [SetWorkspaceSettingRequest](#memos-api-v2-SetWorkspaceSettingRequest)
+    - [SetWorkspaceSettingResponse](#memos-api-v2-SetWorkspaceSettingResponse)
+    - [WorkspaceGeneralSetting](#memos-api-v2-WorkspaceGeneralSetting)
+    - [WorkspaceSetting](#memos-api-v2-WorkspaceSetting)
+  
+    - [WorkspaceSettingService](#memos-api-v2-WorkspaceSettingService)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -2472,37 +2480,6 @@ Used internally for obfuscating the page token.
 
 
 
-<a name="memos-api-v2-UpdateWorkspaceProfileRequest"></a>
-
-### UpdateWorkspaceProfileRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| workspace_profile | [WorkspaceProfile](#memos-api-v2-WorkspaceProfile) |  | System info is the updated data. |
-| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-UpdateWorkspaceProfileResponse"></a>
-
-### UpdateWorkspaceProfileResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| workspace_profile | [WorkspaceProfile](#memos-api-v2-WorkspaceProfile) |  |  |
-
-
-
-
-
-
 <a name="memos-api-v2-WorkspaceProfile"></a>
 
 ### WorkspaceProfile
@@ -2511,12 +2488,12 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| version | [string](#string) |  |  |
-| mode | [string](#string) |  |  |
-| allow_registration | [bool](#bool) |  |  |
-| disable_password_login | [bool](#bool) |  |  |
-| additional_script | [string](#string) |  |  |
-| additional_style | [string](#string) |  |  |
+| version | [string](#string) |  | version is the current version of instance |
+| mode | [string](#string) |  | mode is the instance mode (e.g. &#34;prod&#34;, &#34;dev&#34; or &#34;demo&#34;). |
+| allow_registration | [bool](#bool) |  | allow_registration is whether the registration is allowed. |
+| disable_password_login | [bool](#bool) |  | allow_password_login is whether the password login is allowed. |
+| additional_script | [string](#string) |  | additional_script is the additional script. |
+| additional_style | [string](#string) |  | additional_style is the additional style. |
 
 
 
@@ -2537,7 +2514,128 @@ Used internally for obfuscating the page token.
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | GetWorkspaceProfile | [GetWorkspaceProfileRequest](#memos-api-v2-GetWorkspaceProfileRequest) | [GetWorkspaceProfileResponse](#memos-api-v2-GetWorkspaceProfileResponse) | GetWorkspaceProfile returns the workspace profile. |
-| UpdateWorkspaceProfile | [UpdateWorkspaceProfileRequest](#memos-api-v2-UpdateWorkspaceProfileRequest) | [UpdateWorkspaceProfileResponse](#memos-api-v2-UpdateWorkspaceProfileResponse) | UpdateWorkspaceProfile updates the workspace profile. |
+
+ 
+
+
+
+<a name="api_v2_workspace_setting_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/workspace_setting_service.proto
+
+
+
+<a name="memos-api-v2-GetWorkspaceSettingRequest"></a>
+
+### GetWorkspaceSettingRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The resource name of the workspace setting. Format: settings/{setting} |
+
+
+
+
+
+
+<a name="memos-api-v2-GetWorkspaceSettingResponse"></a>
+
+### GetWorkspaceSettingResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| setting | [WorkspaceSetting](#memos-api-v2-WorkspaceSetting) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SetWorkspaceSettingRequest"></a>
+
+### SetWorkspaceSettingRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| setting | [WorkspaceSetting](#memos-api-v2-WorkspaceSetting) |  | setting is the setting to update. |
+
+
+
+
+
+
+<a name="memos-api-v2-SetWorkspaceSettingResponse"></a>
+
+### SetWorkspaceSettingResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| setting | [WorkspaceSetting](#memos-api-v2-WorkspaceSetting) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-WorkspaceGeneralSetting"></a>
+
+### WorkspaceGeneralSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| instance_url | [string](#string) |  | instance_url is the instance URL. |
+| disallow_signup | [bool](#bool) |  | disallow_signup is the flag to disallow signup. |
+| disallow_password_login | [bool](#bool) |  | disallow_password_login is the flag to disallow password login. |
+| additional_script | [string](#string) |  | additional_script is the additional script. |
+| additional_style | [string](#string) |  | additional_style is the additional style. |
+
+
+
+
+
+
+<a name="memos-api-v2-WorkspaceSetting"></a>
+
+### WorkspaceSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | name is the name of the setting. Format: settings/{setting} |
+| general_setting | [WorkspaceGeneralSetting](#memos-api-v2-WorkspaceGeneralSetting) |  | general_setting is the general setting of workspace. |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-WorkspaceSettingService"></a>
+
+### WorkspaceSettingService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| GetWorkspaceSetting | [GetWorkspaceSettingRequest](#memos-api-v2-GetWorkspaceSettingRequest) | [GetWorkspaceSettingResponse](#memos-api-v2-GetWorkspaceSettingResponse) | GetWorkspaceSetting returns the setting by name. |
+| SetWorkspaceSetting | [SetWorkspaceSettingRequest](#memos-api-v2-SetWorkspaceSettingRequest) | [SetWorkspaceSettingResponse](#memos-api-v2-SetWorkspaceSettingResponse) | SetWorkspaceSetting updates the setting. |
 
  
 

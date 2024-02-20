@@ -12,6 +12,7 @@ tags:
   - name: TagService
   - name: WebhookService
   - name: WorkspaceService
+  - name: WorkspaceSettingService
 consumes:
   - application/json
 produces:
@@ -1115,27 +1116,65 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - WorkspaceService
-    patch:
-      summary: UpdateWorkspaceProfile updates the workspace profile.
-      operationId: WorkspaceService_UpdateWorkspaceProfile
+  /api/v2/workspace/{name}:
+    get:
+      summary: GetWorkspaceSetting returns the setting by name.
+      operationId: WorkspaceSettingService_GetWorkspaceSetting
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2UpdateWorkspaceProfileResponse'
+            $ref: '#/definitions/v2GetWorkspaceSettingResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: workspaceProfile
-          description: System info is the updated data.
+        - name: name
+          description: |-
+            The resource name of the workspace setting.
+            Format: settings/{setting}
+          in: path
+          required: true
+          type: string
+          pattern: settings/[^/]+
+      tags:
+        - WorkspaceSettingService
+  /api/v2/workspace/{setting.name}:
+    patch:
+      summary: SetWorkspaceSetting updates the setting.
+      operationId: WorkspaceSettingService_SetWorkspaceSetting
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SetWorkspaceSettingResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: setting.name
+          description: |-
+            name is the name of the setting.
+            Format: settings/{setting}
+          in: path
+          required: true
+          type: string
+          pattern: settings/[^/]+
+        - name: setting
+          description: setting is the setting to update.
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2WorkspaceProfile'
+            type: object
+            properties:
+              generalSetting:
+                $ref: '#/definitions/apiv2WorkspaceGeneralSetting'
+                description: general_setting is the general setting of workspace.
+            title: setting is the setting to update.
       tags:
-        - WorkspaceService
+        - WorkspaceSettingService
   /api/v2/{inbox.name}:
     patch:
       summary: UpdateInbox updates an inbox.
@@ -1611,6 +1650,35 @@ definitions:
         type: string
       url:
         type: string
+  apiv2WorkspaceGeneralSetting:
+    type: object
+    properties:
+      instanceUrl:
+        type: string
+        description: instance_url is the instance URL.
+      disallowSignup:
+        type: boolean
+        description: disallow_signup is the flag to disallow signup.
+      disallowPasswordLogin:
+        type: boolean
+        description: disallow_password_login is the flag to disallow password login.
+      additionalScript:
+        type: string
+        description: additional_script is the additional script.
+      additionalStyle:
+        type: string
+        description: additional_style is the additional style.
+  apiv2WorkspaceSetting:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          name is the name of the setting.
+          Format: settings/{setting}
+      generalSetting:
+        $ref: '#/definitions/apiv2WorkspaceGeneralSetting'
+        description: general_setting is the general setting of workspace.
   googlerpcStatus:
     type: object
     properties:
@@ -1784,6 +1852,11 @@ definitions:
     properties:
       workspaceProfile:
         $ref: '#/definitions/v2WorkspaceProfile'
+  v2GetWorkspaceSettingResponse:
+    type: object
+    properties:
+      setting:
+        $ref: '#/definitions/apiv2WorkspaceSetting'
   v2Inbox:
     type: object
     properties:
@@ -2024,6 +2097,11 @@ definitions:
     type: object
   v2SetMemoResourcesResponse:
     type: object
+  v2SetWorkspaceSettingResponse:
+    type: object
+    properties:
+      setting:
+        $ref: '#/definitions/apiv2WorkspaceSetting'
   v2SignInResponse:
     type: object
     properties:
@@ -2081,11 +2159,6 @@ definitions:
     properties:
       webhook:
         $ref: '#/definitions/apiv2Webhook'
-  v2UpdateWorkspaceProfileResponse:
-    type: object
-    properties:
-      workspaceProfile:
-        $ref: '#/definitions/v2WorkspaceProfile'
   v2UpsertMemoReactionResponse:
     type: object
     properties:
@@ -2158,13 +2231,19 @@ definitions:
     properties:
       version:
         type: string
+        title: version is the current version of instance
       mode:
         type: string
+        description: mode is the instance mode (e.g. "prod", "dev" or "demo").
       allowRegistration:
         type: boolean
+        description: allow_registration is whether the registration is allowed.
       disablePasswordLogin:
         type: boolean
+        description: allow_password_login is whether the password login is allowed.
       additionalScript:
         type: string
+        description: additional_script is the additional script.
       additionalStyle:
         type: string
+        description: additional_style is the additional style.

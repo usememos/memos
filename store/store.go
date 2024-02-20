@@ -9,12 +9,13 @@ import (
 
 // Store provides database access to all raw objects.
 type Store struct {
-	Profile            *profile.Profile
-	driver             Driver
-	systemSettingCache sync.Map // map[string]*SystemSetting
-	userCache          sync.Map // map[int]*User
-	userSettingCache   sync.Map // map[string]*UserSetting
-	idpCache           sync.Map // map[int]*IdentityProvider
+	Profile                 *profile.Profile
+	driver                  Driver
+	workspaceSettingCache   sync.Map // map[string]*WorkspaceSetting
+	workspaceSettingV1Cache sync.Map // map[string]*storepb.WorkspaceSetting
+	userCache               sync.Map // map[int]*User
+	userSettingCache        sync.Map // map[string]*UserSetting
+	idpCache                sync.Map // map[int]*IdentityProvider
 }
 
 // New creates a new instance of Store.

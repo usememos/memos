@@ -3,8 +3,6 @@ syntax = "proto3";
 package memos.api.v2;
 
 import "google/api/annotations.proto";
-import "google/api/client.proto";
-import "google/protobuf/field_mask.proto";
 
 option go_package = "gen/api/v2";
 
@@ -13,37 +11,25 @@ service WorkspaceService {
   rpc GetWorkspaceProfile(GetWorkspaceProfileRequest) returns (GetWorkspaceProfileResponse) {
     option (google.api.http) = {get: "/api/v2/workspace/profile"};
   }
-  // UpdateWorkspaceProfile updates the workspace profile.
-  rpc UpdateWorkspaceProfile(UpdateWorkspaceProfileRequest) returns (UpdateWorkspaceProfileResponse) {
-    option (google.api.http) = {
-      patch: "/api/v2/workspace/profile",
-      body: "workspace_profile"
-    };
-    option (google.api.method_signature) = "workspace_profile,update_mask";
-  }
 }
 
 message WorkspaceProfile {
+  // version is the current version of instance
   string version = 1;
+  // mode is the instance mode (e.g. "prod", "dev" or "demo").
   string mode = 2;
+  // allow_registration is whether the registration is allowed.
   bool allow_registration = 3;
+  // allow_password_login is whether the password login is allowed.
   bool disable_password_login = 4;
+  // additional_script is the additional script.
   string additional_script = 5;
+  // additional_style is the additional style.
   string additional_style = 6;
 }
 
 message GetWorkspaceProfileRequest {}
 
 message GetWorkspaceProfileResponse {
-  WorkspaceProfile workspace_profile = 1;
-}
-
-message UpdateWorkspaceProfileRequest {
-  // System info is the updated data.
-  WorkspaceProfile workspace_profile = 1;
-  google.protobuf.FieldMask update_mask = 2;
-}
-
-message UpdateWorkspaceProfileResponse {
   WorkspaceProfile workspace_profile = 1;
 }

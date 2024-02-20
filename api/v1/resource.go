@@ -185,14 +185,21 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
 
-	// This is the backend default max upload size limit.
-	maxUploadSetting := s.Store.GetWorkspaceSettingWithDefaultValue(ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
+	maxUploadSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{Name: SystemSettingMaxUploadSizeMiBName.String()})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get max upload size").SetInternal(err)
+	}
 	var settingMaxUploadSizeBytes int
-	if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
-		settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
+	if maxUploadSetting != nil {
+		if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting.Value); err == nil {
+			settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
+		} else {
+			log.Warn("Failed to parse max upload size", zap.Error(err))
+			settingMaxUploadSizeBytes = 0
+		}
 	} else {
-		log.Warn("Failed to parse max upload size", zap.Error(err))
-		settingMaxUploadSizeBytes = 0
+		// Default to 32 MiB.
+		settingMaxUploadSizeBytes = 32 * MebiByte
 	}
 
 	file, err := c.FormFile("file")

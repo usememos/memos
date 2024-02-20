@@ -96,17 +96,17 @@ func (d *DB) prodMigrate(ctx context.Context) error {
 		return nil
 	}
 
-	println("start to migrate database schema")
+	fmt.Println("start to migrate database schema")
 	for _, minorVersion := range getMinorVersionList() {
 		normalizedVersion := minorVersion + ".0"
 		if version.IsVersionGreaterThan(normalizedVersion, latestMigrationHistoryVersion) && version.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
-			println("applying migration of", normalizedVersion)
+			fmt.Println("applying migration of", normalizedVersion)
 			if err := d.applyMigrationForMinorVersion(ctx, minorVersion); err != nil {
 				return errors.Wrap(err, "failed to apply minor version migration")
 			}
 		}
 	}
-	println("end migrate")
+	fmt.Println("end migrate")
 	return nil
 }
 
