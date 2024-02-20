@@ -19,6 +19,7 @@ import {
   OrderedListNode,
   ParagraphNode,
   ReferencedContentNode,
+  SpoilerNode,
   StrikethroughNode,
   SubscriptNode,
   SuperscriptNode,
@@ -46,6 +47,7 @@ import Math from "./Math";
 import OrderedList from "./OrderedList";
 import Paragraph from "./Paragraph";
 import ReferencedContent from "./ReferencedContent";
+import Spoiler from "./Spoiler";
 import Strikethrough from "./Strikethrough";
 import Subscript from "./Subscript";
 import Superscript from "./Superscript";
@@ -118,6 +120,8 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
       return <Superscript {...(node.superscriptNode as SuperscriptNode)} />;
     case NodeType.REFERENCED_CONTENT:
       return <ReferencedContent {...(node.referencedContentNode as ReferencedContentNode)} />;
+    case NodeType.SPOILER:
+      return <Spoiler {...(node.spoilerNode as SpoilerNode)} />;
     default:
       return null;
   }

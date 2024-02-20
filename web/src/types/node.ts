@@ -32,6 +32,7 @@ export enum NodeType {
   SUBSCRIPT = "SUBSCRIPT",
   SUPERSCRIPT = "SUPERSCRIPT",
   REFERENCED_CONTENT = "REFERENCED_CONTENT",
+  SPOILER = "SPOILER",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
 
@@ -65,9 +66,11 @@ export interface Node {
   subscriptNode?: SubscriptNode | undefined;
   superscriptNode?: SuperscriptNode | undefined;
   referencedContentNode?: ReferencedContentNode | undefined;
+  spoilerNode?: SpoilerNode | undefined;
 }
 
-export interface LineBreakNode {}
+export interface LineBreakNode {
+}
 
 export interface ParagraphNode {
   children: Node[];
@@ -198,4 +201,8 @@ export interface SuperscriptNode {
 export interface ReferencedContentNode {
   resourceName: string;
   params: string;
+}
+
+export interface SpoilerNode {
+  content: string;
 }
