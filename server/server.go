@@ -59,7 +59,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	e.Use(CORSMiddleware())
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
-		Skipper: timeoutSkipper,
+		Skipper: grpcRequestSkipper,
 		Timeout: 30 * time.Second,
 	}))
 
@@ -69,8 +69,8 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 	s.ID = serverID
 
-	if profile.ServeFrontend {
-		// Register frontend service.
+	// Only serve frontend when it's enabled.
+	if profile.Frontend {
 		frontendService := frontend.NewFrontendService(profile, store)
 		frontendService.Serve(ctx, e)
 	}
@@ -172,15 +172,6 @@ func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error)
 
 func grpcRequestSkipper(c echo.Context) bool {
 	return strings.HasPrefix(c.Request().URL.Path, "/memos.api.v2.")
-}
-
-func timeoutSkipper(c echo.Context) bool {
-	if grpcRequestSkipper(c) {
-		return true
-	}
-
-	// Skip timeout for blob upload which is frequently timed out.
-	return c.Request().Method == http.MethodPost && c.Request().URL.Path == "/api/v1/resource/blob"
 }
 
 func CORSMiddleware() echo.MiddlewareFunc {

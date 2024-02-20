@@ -13,7 +13,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/usememos/memos/internal/jobs"
-
 	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
@@ -174,16 +173,17 @@ func initConfig() {
 
 	fmt.Printf(`---
 Server profile
+version: %s
 data: %s
 dsn: %s
 addr: %s
 port: %d
 mode: %s
 driver: %s
-version: %s
+frontend: %t
 metric: %t
 ---
-`, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver, profile.Version, profile.Metric)
+`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver, profile.Frontend, profile.Metric)
 }
 
 func printGreetings() {
