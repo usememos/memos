@@ -4,9 +4,10 @@ import (
 	"context"
 	"strings"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (d *DB) UpsertWorkspaceSetting(ctx context.Context, upsert *store.WorkspaceSetting) (*store.WorkspaceSetting, error) {
