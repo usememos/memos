@@ -25,6 +25,7 @@ func (s *Store) MigrateWorkspaceSetting(ctx context.Context) error {
 	for _, workspaceSetting := range workspaceSettings {
 		matched := true
 		var baseValue any
+		// nolint
 		json.Unmarshal([]byte(workspaceSetting.Value), &baseValue)
 		if workspaceSetting.Name == "allow-signup" {
 			workspaceGeneralSetting.DisallowSignup = baseValue.(bool)
