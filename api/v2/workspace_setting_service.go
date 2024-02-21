@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -60,7 +60,7 @@ func (s *APIV2Service) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb
 	}
 	workspaceGeneralSetting := &storepb.WorkspaceGeneralSetting{}
 	if workspaceSetting != nil {
-		if err := proto.Unmarshal([]byte(workspaceSetting.Value), workspaceGeneralSetting); err != nil {
+		if err := protojson.Unmarshal([]byte(workspaceSetting.Value), workspaceGeneralSetting); err != nil {
 			return nil, errors.Wrap(err, "failed to unmarshal workspace setting")
 		}
 	}
