@@ -41,8 +41,6 @@ const (
 	SystemSettingTelegramBotTokenName SystemSettingName = "telegram-bot-token"
 	// SystemSettingMemoDisplayWithUpdatedTsName is the name of memo display with updated ts.
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
-	// SystemSettingInstanceURLName is the name of instance url setting.
-	SystemSettingInstanceURLName SystemSettingName = "instance-url"
 )
 const systemSettingUnmarshalError = `failed to unmarshal value from system setting "%v"`
 
@@ -288,7 +286,6 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	case SystemSettingInstanceURLName:
 	default:
 		return errors.New("invalid system setting name")
 	}

@@ -26,6 +26,13 @@ func New(driver Driver, profile *profile.Profile) *Store {
 	}
 }
 
+func (s *Store) MigrateManually(ctx context.Context) error {
+	if err := s.MigrateWorkspaceSetting(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Store) Vacuum(ctx context.Context) error {
 	return s.driver.Vacuum(ctx)
 }

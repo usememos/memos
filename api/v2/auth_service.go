@@ -173,7 +173,7 @@ func (s *APIV2Service) doSignIn(ctx context.Context, user *store.User, expireTim
 }
 
 func (s *APIV2Service) SignUp(ctx context.Context, request *apiv2pb.SignUpRequest) (*apiv2pb.SignUpResponse, error) {
-	workspaceGeneralSetting, err := s.GetWorkspaceGeneralSetting(ctx)
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace setting, err: %s", err))
 	}
@@ -251,7 +251,7 @@ func (s *APIV2Service) buildAccessTokenCookie(ctx context.Context, accessToken s
 	} else {
 		attrs = append(attrs, "Expires="+expireTime.Format(time.RFC1123))
 	}
-	workspaceGeneralSetting, err := s.GetWorkspaceGeneralSetting(ctx)
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get workspace setting")
 	}

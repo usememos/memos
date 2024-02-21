@@ -99,3 +99,18 @@ func (s *Store) GetWorkspaceSettingV1(ctx context.Context, find *FindWorkspaceSe
 	s.workspaceSettingV1Cache.Store(workspaceSetting.Key.String(), workspaceSetting)
 	return workspaceSetting, nil
 }
+
+func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.WorkspaceGeneralSetting, error) {
+	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSettingV1{
+		Key: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace setting")
+	}
+
+	workspaceGeneralSetting := &storepb.WorkspaceGeneralSetting{}
+	if workspaceSetting != nil {
+		workspaceGeneralSetting = workspaceSetting.GetGeneral()
+	}
+	return workspaceGeneralSetting, nil
+}

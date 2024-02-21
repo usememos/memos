@@ -13,7 +13,6 @@ import (
 	"github.com/yourselfhosted/gomark/parser/tokenizer"
 	"github.com/yourselfhosted/gomark/renderer"
 
-	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -81,13 +80,11 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 }
 
 func (s *FrontendService) registerFileRoutes(ctx context.Context, e *echo.Echo) {
-	instanceURLSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: apiv1.SystemSettingInstanceURLName.String(),
-	})
-	if err != nil || instanceURLSetting == nil {
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+	if err != nil {
 		return
 	}
-	instanceURL := instanceURLSetting.Value
+	instanceURL := workspaceGeneralSetting.GetInstanceUrl()
 	if instanceURL == "" {
 		return
 	}
