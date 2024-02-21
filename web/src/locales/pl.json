@@ -227,7 +227,7 @@
       "server-name": "Nazwa serwera"
     }
   },
-  "tag-list": {
+  "tag": {
     "tip-text": "Wprowadź `#tag` aby utworzyć"
   }
 }

@@ -80,7 +80,7 @@
       "disabled": "Las notas públicas están deshabilitadas"
     }
   },
-  "tag-list": {
+  "tag": {
     "tip-text": "Escribe '#etiqueta' para crearlo"
   },
   "setting": {

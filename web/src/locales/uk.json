@@ -78,7 +78,7 @@
       "disabled": "Public memos are disabled"
     }
   },
-  "tag-list": {
+  "tag": {
     "tip-text": "Введіть `#tag` щоб створити"
   },
   "setting": {

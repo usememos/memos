@@ -40,16 +40,11 @@
     "type": "Type",
     "title": "Title",
     "filter": "Filter",
-    "filter-period": "{{from}} to {{to}}",
     "tags": "Tags",
     "yourself": "Yourself",
-    "changed": "changed",
-    "fold": "Fold",
-    "expand": "Expand",
     "image": "Image",
     "file": "File",
     "link": "Link",
-    "vacuum": "Vacuum",
     "select": "Select",
     "database": "Database",
     "upload": "Upload",
@@ -84,10 +79,7 @@
     "cancel-edit": "Cancel edit",
     "save": "Save",
     "placeholder": "Any thoughts...",
-    "only-image-supported": "Only image file supported.",
-    "cant-empty": "Content can't be empty",
-    "local": "Local",
-    "resources": "Resources"
+    "local": "Local"
   },
   "memo": {
     "view-detail": "View Detail",
@@ -106,7 +98,7 @@
       "disabled": "Public memos are disabled"
     },
     "delete-memo": "Delete Memo",
-    "delete-confirm": "Are you sure you want to delete this memo?\n\nTHIS ACTION IS IRREVERSIBLE",
+    "delete-confirm": "Are you sure you want to delete this memo? THIS ACTION IS IRREVERSIBLE",
     "comment": {
       "self": "Comments",
       "no-comment": "No comment"
@@ -118,11 +110,11 @@
     "copy-link": "Copy Link",
     "reset-link": "Reset Link",
     "reset-resource-link": "Reset Resource Link",
-    "reset-link-prompt": "Are you sure to reset the link?\nThis will break all current link usages.\n\nTHIS ACTION IS IRREVERSIBLE",
+    "reset-link-prompt": "Are you sure to reset the link? This will break all current link usages. THIS ACTION IS IRREVERSIBLE",
     "delete-resource": "Delete Resource",
     "linked-amount": "Linked amount",
-    "warning-text": "Are you sure to delete this resource?\n\nTHIS ACTION IS IRREVERSIBLE",
-    "warning-text-unused": "Are you sure to delete these unused resources?\n\nTHIS ACTION IS IRREVERSIBLE",
+    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIBLE",
+    "warning-text-unused": "Are you sure to delete these unused resources? THIS ACTION IS IRREVERSIBLE",
     "no-unused-resources": "No unused resources",
     "delete-selected-resources": "Delete Selected Resources",
     "no-files-selected": "No files selected",
@@ -148,7 +140,7 @@
       }
     }
   },
-  "tag-list": {
+  "tag": {
     "tip-text": "Input `#tag` to create",
     "create-tag": "Create Tag",
     "all-tags": "All Tags",
@@ -206,7 +198,7 @@
       "storage-services": "Storage services",
       "create-a-service": "Create a service",
       "update-a-service": "Update a service",
-      "warning-text": "Are you sure to delete storage service \"{{name}}\"?\n\nTHIS ACTION IS IRREVERSIBLE",
+      "warning-text": "Are you sure to delete storage service \"{{name}}\"? THIS ACTION IS IRREVERSIBLE",
       "delete-storage": "Delete Storage",
       "local-storage-path": "Local storage path",
       "update-local-path": "Update Local Storage Path",
@@ -237,7 +229,7 @@
       "archive-member": "Archive member",
       "archive-warning": "Are you sure to archive {{username}}?",
       "delete-member": "Delete Member",
-      "delete-warning": "Are you sure to delete {{username}}?\n\nTHIS ACTION IS IRREVERSIBLE"
+      "delete-warning": "Are you sure to delete {{username}}? THIS ACTION IS IRREVERSIBLE"
     },
     "system-section": {
       "server-name": "Server Name",
@@ -276,7 +268,7 @@
     "sso-section": {
       "sso-list": "SSO List",
       "delete-sso": "Confirm delete",
-      "confirm-delete": "Are you sure to delete \"{{name}}\" SSO configuration?\n\nTHIS ACTION IS IRREVERSIBLE",
+      "confirm-delete": "Are you sure to delete \"{{name}}\" SSO configuration? THIS ACTION IS IRREVERSIBLE",
       "create-sso": "Create SSO",
       "update-sso": "Update SSO",
       "sso-created": "SSO {{name}} created",
@@ -326,7 +318,6 @@
     "about-memos": "About memos",
     "memos-description": "memos is a web-based note-taking application that you can use to write, organize, and share notes.",
     "no-server-description": "No description configured for this server.",
-    "powered-by": "Powered by",
     "other-projects": "Other Projects"
   },
   "message": {
@@ -366,11 +357,7 @@
     "succeed-update-customized-profile": "Profile successfully customized.",
     "succeed-update-additional-script": "Additional script updated successfully.",
     "update-succeed": "Update succeeded",
-    "page-not-found": "404 - Page Not Found",
-    "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
-    "file-exceeds-upload-limit-of": "File {{file}} exceeds upload limit of {{size}} MiB",
-    "updating-setting-failed": "Updating setting failed",
-    "password-login-disabled": "Can't remove last identity provider when password login is disabled"
+    "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB"
   },
   "inbox": {
     "memo-comment": "{{user}} has a comment on your {{memo}}.",

@@ -262,7 +262,7 @@
     },
     "system": "सिस्टम"
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "सभी टैग",
     "create-tag": "टैग बनाएँ",
     "tag-name": "टैग_नाम",

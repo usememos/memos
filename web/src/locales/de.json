@@ -351,7 +351,7 @@
       "telegram-bot-token-placeholder": "Dein Telegram Bot token"
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "Alle Tags",
     "create-tag": "Tag erstellen",
     "hide": "Ausblenden",

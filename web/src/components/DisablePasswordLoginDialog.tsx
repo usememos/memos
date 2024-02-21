@@ -45,7 +45,7 @@ const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
         handleCloseBtnClick();
       } catch (error: any) {
         console.error(error);
-        toast.error(error.response.data.message || t("message.updating-setting-failed"));
+        toast.error(error.response.data.message);
       }
     }
   };

@@ -6,7 +6,11 @@ import Icon from "../Icon";
 import MermaidBlock from "./MermaidBlock";
 import { BaseProps } from "./types";
 
-const MERMAID_LANGUAGE = "mermaid";
+// Special languages that are rendered differently.
+enum SpecialLanguage {
+  HTML = "__html",
+  MERMAID = "mermaid",
+}
 
 interface Props extends BaseProps {
   language: string;
@@ -15,17 +19,14 @@ interface Props extends BaseProps {
 
 const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   const formatedLanguage = (language || "").toLowerCase() || "text";
-  let highlightedCode = content;
-
   // Users can set Markdown code blocks as `__html` to render HTML directly.
-  if (formatedLanguage === "__html") {
+  if (formatedLanguage === SpecialLanguage.HTML) {
     return <div className="w-full overflow-auto !my-2" dangerouslySetInnerHTML={{ __html: content }} />;
-  }
-
-  if (formatedLanguage === MERMAID_LANGUAGE) {
+  } else if (formatedLanguage === SpecialLanguage.MERMAID) {
     return <MermaidBlock content={content} />;
   }
 
+  let highlightedCode = content;
   try {
     const temp = hljs.highlight(content, {
       language: formatedLanguage,

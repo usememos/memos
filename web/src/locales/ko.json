@@ -351,7 +351,7 @@
       "telegram-bot-token-placeholder": "서버의 텔레그램 봇 토큰"
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "모든 태그",
     "create-tag": "태그 생성",
     "hide": "숨기기",

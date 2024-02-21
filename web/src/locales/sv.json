@@ -78,7 +78,7 @@
       "disabled": "Offentliga anteckningar är inaktiverade"
     }
   },
-  "tag-list": {
+  "tag": {
     "tip-text": "Ange `#tag ` för att skapa"
   },
   "setting": {

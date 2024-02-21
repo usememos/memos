@@ -116,7 +116,7 @@
     },
     "no-archived-memos": "Geen gearchiveerde memos."
   },
-  "tag-list": {
+  "tag": {
     "tip-text": "Typ `#label` om aan te maken",
     "create-tag": "Label maken",
     "all-tags": "Alle labels",

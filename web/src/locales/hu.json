@@ -248,7 +248,7 @@
       "telegram-bot-token-placeholder": "Telegram bot tokened"
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "Minden címke",
     "create-tag": "Címke létrehozása",
     "hide": "Elrejt",

@@ -360,7 +360,7 @@
       "vacuum-hint": "清理未使用的資料"
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "所有標籤",
     "create-tag": "建立標籤",
     "hide": "隱藏",

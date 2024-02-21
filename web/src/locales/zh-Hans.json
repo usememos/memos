@@ -3,8 +3,7 @@
     "about-memos": "关于 Memos",
     "memos-description": "Memos 是一个基于网页的笔记应用程序，您可以使用它来编写、组织和共享笔记。",
     "no-server-description": "没有为此服务器配置描述。",
-    "other-projects": "其他的项目",
-    "powered-by": "Powered by"
+    "other-projects": "其他的项目"
   },
   "amount-text": {
     "memo": "MEMO"
@@ -101,7 +100,7 @@
     "editing": "编辑中...",
     "local": "本地",
     "only-image-supported": "仅支持图片文件。",
-    "placeholder": "任何想法...",
+    "placeholder": "此刻的想法...",
     "resources": "资源库",
     "save": "保存"
   },
@@ -127,7 +126,7 @@
       "self": "评论"
     },
     "copy-link": "复制链接",
-    "delete-confirm": "您确定要删除此备忘录吗？\n\n此操作不可逆",
+    "delete-confirm": "您确定要删除此备忘录吗？此操作不可逆",
     "delete-memo": "删除备忘录",
     "embed": "嵌入",
     "fetch-more": "点击此处获取更多",
@@ -357,7 +356,7 @@
       "telegram-bot-token-placeholder": "您的 Telegram 机器人 Token"
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "全部标签",
     "create-tag": "创建标签",
     "hide": "收起",

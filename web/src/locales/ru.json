@@ -333,7 +333,7 @@
       "telegram-bot-token-placeholder": "Ваш токен Telegram бота"
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "Все теги",
     "create-tag": "Создать тег",
     "tag-name": "Тег",

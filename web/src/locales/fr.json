@@ -360,7 +360,7 @@
       "telegram-bot-token-placeholder": "Votre jeton de Bot Telegram"
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "Toutes les Étiquettes",
     "create-tag": "Créer une Étiquette",
     "hide": "Cacher",

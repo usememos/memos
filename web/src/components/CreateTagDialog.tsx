@@ -62,7 +62,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
 
   const handleSaveBtnClick = async () => {
     if (!validateTagName(tagName)) {
-      toast.error(t("tag-list.invalid-tag-name"));
+      toast.error(t("tag.invalid-tag-name"));
       return;
     }
 
@@ -90,7 +90,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">{t("tag-list.create-tag")}</p>
+        <p className="title-text">{t("tag.create-tag")}</p>
         <IconButton size="sm" onClick={() => destroy()}>
           <Icon.X className="w-5 h-auto" />
         </IconButton>
@@ -99,7 +99,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
         <Input
           className="mb-2"
           size="md"
-          placeholder={t("tag-list.tag-name")}
+          placeholder={t("tag.tag-name")}
           value={tagName}
           onChange={handleTagNameChanged}
           onKeyDown={handleTagNameInputKeyDown}
@@ -109,7 +109,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
         />
         {tagNameList.length > 0 && (
           <>
-            <p className="w-full mt-2 mb-1 text-sm text-gray-400">{t("tag-list.all-tags")}</p>
+            <p className="w-full mt-2 mb-1 text-sm text-gray-400">{t("tag.all-tags")}</p>
             <div className="w-full flex flex-row justify-start items-start flex-wrap">
               {Array.from(tagNameList)
                 .sort()
@@ -130,12 +130,12 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
         {shownSuggestTagNameList.length > 0 && (
           <>
             <div className="mt-4 mb-1 text-sm w-full flex flex-row justify-start items-center">
-              <span className="text-gray-400 mr-2">{t("tag-list.tag-suggestions")}</span>
+              <span className="text-gray-400 mr-2">{t("tag.tag-suggestions")}</span>
               <span
                 className="text-xs border border-gray-200 rounded-md px-1 leading-5 cursor-pointer text-gray-600 hover:shadow dark:border-zinc-700 dark:text-gray-400"
                 onClick={handleToggleShowSuggestionTags}
               >
-                {showTagSuggestions ? t("tag-list.hide") : t("tag-list.show")}
+                {showTagSuggestions ? t("tag.hide") : t("tag.show")}
               </span>
             </div>
             {showTagSuggestions && (
@@ -153,7 +153,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
                   ))}
                 </div>
                 <Button size="sm" variant="outlined" onClick={handleSaveSuggestTagList}>
-                  {t("tag-list.save-all")}
+                  {t("tag.save-all")}
                 </Button>
               </>
             )}

@@ -341,7 +341,7 @@
       "telegram-bot-token-placeholder": "Il token del tuo bot Telegram"
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "Tutti i Tags",
     "create-tag": "Crea Tag",
     "invalid-tag-name": "Nome tag non valido",

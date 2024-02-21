@@ -104,7 +104,7 @@
       "disabled": "Javne beležke so onemogočene"
     }
   },
-  "tag-list": {
+  "tag": {
     "tip-text": "Vnesite `#značka` za izdalavo",
     "create-tag": "Kreiraj značko",
     "all-tags": "Vse značke",

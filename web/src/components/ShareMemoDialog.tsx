@@ -92,7 +92,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
     );
 
     if (updatedMemo.visibility == visibility) {
-      toast.success(t("common.changed"));
+      toast.success(t("message.update-succeed"));
     }
   };
 

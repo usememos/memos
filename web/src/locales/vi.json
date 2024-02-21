@@ -148,7 +148,7 @@
       }
     }
   },
-  "tag-list": {
+  "tag": {
     "tip-text": "Nhập `#tag` để tạo mới",
     "create-tag": "Tạo thẻ",
     "all-tags": "Tất cả thẻ",

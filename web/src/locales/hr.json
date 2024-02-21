@@ -354,7 +354,7 @@
       "telegram-bot-token-placeholder": "Tvoj Telegram Bot token"
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "Svi Tagovi",
     "create-tag": "Stvori Tag",
     "hide": "Sakrij",

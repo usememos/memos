@@ -361,7 +361,7 @@
       "vacuum-hint": "Limpa dados não utilizados."
     }
   },
-  "tag-list": {
+  "tag": {
     "all-tags": "Todas as Tags",
     "create-tag": "Criar Tag",
     "hide": "Ocultar",
