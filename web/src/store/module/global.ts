@@ -23,7 +23,6 @@ export const initialGlobalState = async () => {
         description: "",
         locale: "en",
         appearance: "system",
-        externalUrl: "",
       },
     } as SystemStatus,
   };
@@ -39,7 +38,6 @@ export const initialGlobalState = async () => {
         description: customizedProfile.description,
         locale: customizedProfile.locale || "en",
         appearance: customizedProfile.appearance || "system",
-        externalUrl: "",
       },
     };
     // Use storageLocale > userLocale > customizedProfile.locale (server's default locale)

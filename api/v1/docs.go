@@ -477,7 +477,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateMemoRequest"
+                            "$ref": "#/definitions/api_v1.CreateMemoRequest"
                         }
                     }
                 ],
@@ -695,7 +695,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.PatchMemoRequest"
+                            "$ref": "#/definitions/api_v1.PatchMemoRequest"
                         }
                     }
                 ],
@@ -992,7 +992,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.CreateResourceRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateResourceRequest"
                         }
                     }
                 ],
@@ -1116,7 +1116,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.UpdateResourceRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateResourceRequest"
                         }
                     }
                 ],
@@ -1155,7 +1155,7 @@ const docTemplate = `{
                     "200": {
                         "description": "System GetSystemStatus",
                         "schema": {
-                            "$ref": "#/definitions/api_v1.SystemStatus"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemStatus"
                         }
                     },
                     "401": {
@@ -1331,7 +1331,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/api_v1.SystemSetting"
+                                "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemSetting"
                             }
                         }
                     },
@@ -1361,17 +1361,11 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.UpsertSystemSettingRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertSystemSettingRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Created system setting",
-                        "schema": {
-                            "$ref": "#/definitions/store.SystemSetting"
-                        }
-                    },
                     "400": {
                         "description": "Malformatted post system setting request | invalid system setting"
                     },
@@ -1592,7 +1586,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateUserRequest"
+                            "$ref": "#/definitions/api_v1.CreateUserRequest"
                         }
                     }
                 ],
@@ -1773,7 +1767,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateUserRequest"
+                            "$ref": "#/definitions/api_v1.UpdateUserRequest"
                         }
                     }
                 ],
@@ -1938,10 +1932,6 @@ const docTemplate = `{
                 },
                 "description": {
                     "description": "Description is the server description.",
-                    "type": "string"
-                },
-                "externalUrl": {
-                    "description": "ExternalURL is the external url of server. e.g. https://usermemos.com",
                     "type": "string"
                 },
                 "locale": {
@@ -2572,10 +2562,6 @@ const docTemplate = `{
                 },
                 "description": {
                     "description": "Description is the server description.",
-                    "type": "string"
-                },
-                "externalUrl": {
-                    "description": "ExternalURL is the external url of server. e.g. https://usermemos.com",
                     "type": "string"
                 },
                 "locale": {
@@ -3343,20 +3329,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "store.SystemSetting": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "value": {
                     "type": "string"
                 }
             }

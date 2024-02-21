@@ -111,7 +111,6 @@
       "server-name": "Server Name",
       "customize-server": {
         "title": "Customize Server",
-        "default": "Default is memos",
         "icon-url": "Icon URL"
       },
       "database-file-size": "Databas filstorlek",

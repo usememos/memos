@@ -39,7 +39,7 @@ const UserBanner = (props: Props) => {
             {!collapsed && <span className="ml-2 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{title}</span>}
           </div>
         </MenuButton>
-        <Menu placement="bottom-start" size="sm" style={{ zIndex: "9999" }}>
+        <Menu placement="bottom-start" style={{ zIndex: "9999" }}>
           <MenuItem onClick={handleSignOut}>
             <Icon.LogOut className="w-4 h-auto opacity-60 shrink-0" />
             <span className="truncate">{t("common.sign-out")}</span>

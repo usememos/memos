@@ -1052,22 +1052,48 @@ GetWorkspaceProfile returns the workspace profile.
 | 200 | A successful response. | [v2GetWorkspaceProfileResponse](#v2getworkspaceprofileresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-#### PATCH
+---
+## WorkspaceSettingService
+
+### /api/v2/workspace/{name}
+
+#### GET
 ##### Summary
 
-UpdateWorkspaceProfile updates the workspace profile.
+GetWorkspaceSetting returns the setting by name.
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| workspaceProfile | body | System info is the updated data. | Yes | [v2WorkspaceProfile](#v2workspaceprofile) |
+| name | path | The resource name of the workspace setting. Format: settings/{setting} | Yes | string |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | A successful response. | [v2UpdateWorkspaceProfileResponse](#v2updateworkspaceprofileresponse) |
+| 200 | A successful response. | [v2GetWorkspaceSettingResponse](#v2getworkspacesettingresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/workspace/{setting.name}
+
+#### PATCH
+##### Summary
+
+SetWorkspaceSetting updates the setting.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| setting.name | path | name is the name of the setting. Format: settings/{setting} | Yes | string |
+| setting | body | setting is the setting to update. | Yes | { **"generalSetting"**: [apiv2WorkspaceGeneralSetting](#apiv2workspacegeneralsetting) } |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SetWorkspaceSettingResponse](#v2setworkspacesettingresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
@@ -1184,6 +1210,23 @@ GetActivity returns the activity with the given id.
 | rowStatus | [apiv2RowStatus](#apiv2rowstatus) |  | No |
 | name | string |  | No |
 | url | string |  | No |
+
+#### apiv2WorkspaceGeneralSetting
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| instanceUrl | string | instance_url is the instance URL. | No |
+| disallowSignup | boolean | disallow_signup is the flag to disallow signup. | No |
+| disallowPasswordLogin | boolean | disallow_password_login is the flag to disallow password login. | No |
+| additionalScript | string | additional_script is the additional script. | No |
+| additionalStyle | string | additional_style is the additional style. | No |
+
+#### apiv2WorkspaceSetting
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| name | string |  | No |
+| generalSetting | [apiv2WorkspaceGeneralSetting](#apiv2workspacegeneralsetting) | general_setting is the general setting of workspace. | No |
 
 #### googlerpcStatus
 
@@ -1392,6 +1435,12 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | workspaceProfile | [v2WorkspaceProfile](#v2workspaceprofile) |  | No |
 
+#### v2GetWorkspaceSettingResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| setting | [apiv2WorkspaceSetting](#apiv2workspacesetting) |  | No |
+
 #### v2Inbox
 
 | Name | Type | Description | Required |
@@ -1548,6 +1597,12 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | v2SetMemoResourcesResponse | object |  |  |
 
+#### v2SetWorkspaceSettingResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| setting | [apiv2WorkspaceSetting](#apiv2workspacesetting) |  | No |
+
 #### v2SignInResponse
 
 | Name | Type | Description | Required |
@@ -1615,12 +1670,6 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | webhook | [apiv2Webhook](#apiv2webhook) |  | No |
 
-#### v2UpdateWorkspaceProfileResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| workspaceProfile | [v2WorkspaceProfile](#v2workspaceprofile) |  | No |
-
 #### v2UpsertMemoReactionResponse
 
 | Name | Type | Description | Required |
@@ -1675,8 +1724,8 @@ GetActivity returns the activity with the given id.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | version | string |  | No |
-| mode | string |  | No |
-| allowRegistration | boolean |  | No |
-| disablePasswordLogin | boolean |  | No |
-| additionalScript | string |  | No |
-| additionalStyle | string |  | No |
+| mode | string | mode is the instance mode (e.g. "prod", "dev" or "demo"). | No |
+| allowRegistration | boolean | allow_registration is whether the registration is allowed. | No |
+| disablePasswordLogin | boolean | allow_password_login is whether the password login is allowed. | No |
+| additionalScript | string | additional_script is the additional script. | No |
+| additionalStyle | string | additional_style is the additional style. | No |

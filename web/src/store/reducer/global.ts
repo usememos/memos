@@ -29,7 +29,6 @@ const globalSlice = createSlice({
         description: "",
         locale: "en",
         appearance: "system",
-        externalUrl: "",
       },
     },
   } as State,

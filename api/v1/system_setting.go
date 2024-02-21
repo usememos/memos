@@ -58,8 +58,6 @@ type CustomizedProfile struct {
 	Locale string `json:"locale"`
 	// Appearance is the server default appearance.
 	Appearance string `json:"appearance"`
-	// ExternalURL is the external url of server. e.g. https://usermemos.com
-	ExternalURL string `json:"externalUrl"`
 }
 
 func (key SystemSettingName) String() string {
@@ -129,7 +127,6 @@ func (s *APIV1Service) GetSystemSettingList(c echo.Context) error {
 //	@Accept		json
 //	@Produce	json
 //	@Param		body	body		UpsertSystemSettingRequest	true	"Request object."
-//	@Success	200		{object}	store.SystemSetting			"Created system setting"
 //	@Failure	400		{object}	nil							"Malformatted post system setting request | invalid system setting"
 //	@Failure	401		{object}	nil							"Missing user in session | Unauthorized"
 //	@Failure	403		{object}	nil							"Cannot disable passwords if no SSO identity provider is configured."
@@ -231,12 +228,11 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 		}
 	case SystemSettingCustomizedProfileName:
 		customizedProfile := CustomizedProfile{
-			Name:        "memos",
+			Name:        "Memos",
 			LogoURL:     "",
 			Description: "",
 			Locale:      "en",
 			Appearance:  "system",
-			ExternalURL: "",
 		}
 		if err := json.Unmarshal([]byte(upsert.Value), &customizedProfile); err != nil {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)

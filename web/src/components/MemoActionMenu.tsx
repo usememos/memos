@@ -117,7 +117,6 @@ const MemoActionMenu = (props: Props) => {
             {t("common.share")}
           </MenuItem>
         )}
-        <Divider className="!my-1" />
         <MenuItem color="warning" onClick={handleArchiveMemoClick}>
           <Icon.Archive className="w-4 h-auto" />
           {t("common.archive")}

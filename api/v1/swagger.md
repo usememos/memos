@@ -242,7 +242,7 @@ Visibility can be PUBLIC, PROTECTED or PRIVATE
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| body | body | Request object. | Yes | [github_com_usememos_memos_api_v1.CreateMemoRequest](#github_com_usememos_memos_api_v1creatememorequest) |
+| body | body | Request object. | Yes | [api_v1.CreateMemoRequest](#api_v1creatememorequest) |
 
 ##### Responses
 
@@ -314,7 +314,7 @@ Visibility can be PUBLIC, PROTECTED or PRIVATE
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | memoId | path | ID of memo to update | Yes | integer |
-| body | body | Patched object. | Yes | [github_com_usememos_memos_api_v1.PatchMemoRequest](#github_com_usememos_memos_api_v1patchmemorequest) |
+| body | body | Patched object. | Yes | [api_v1.PatchMemoRequest](#api_v1patchmemorequest) |
 
 ##### Responses
 
@@ -501,7 +501,7 @@ Get system GetSystemStatus
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | System GetSystemStatus | [api_v1.SystemStatus](#api_v1systemstatus) |
+| 200 | System GetSystemStatus | [github_com_usememos_memos_api_v1.SystemStatus](#github_com_usememos_memos_api_v1systemstatus) |
 | 401 | Missing user in session \| Unauthorized |  |
 | 500 | Failed to find host user \| Failed to find system setting list \| Failed to unmarshal system setting customized profile value |  |
 
@@ -552,7 +552,7 @@ Create resource
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| body | body | Request object. | Yes | [api_v1.CreateResourceRequest](#api_v1createresourcerequest) |
+| body | body | Request object. | Yes | [github_com_usememos_memos_api_v1.CreateResourceRequest](#github_com_usememos_memos_api_v1createresourcerequest) |
 
 ##### Responses
 
@@ -596,7 +596,7 @@ Update a resource
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | resourceId | path | Resource ID | Yes | integer |
-| patch | body | Patch resource request | Yes | [api_v1.UpdateResourceRequest](#api_v1updateresourcerequest) |
+| patch | body | Patch resource request | Yes | [github_com_usememos_memos_api_v1.UpdateResourceRequest](#github_com_usememos_memos_api_v1updateresourcerequest) |
 
 ##### Responses
 
@@ -721,7 +721,7 @@ Get a list of system settings
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | System setting list | [ [api_v1.SystemSetting](#api_v1systemsetting) ] |
+| 200 | System setting list | [ [github_com_usememos_memos_api_v1.SystemSetting](#github_com_usememos_memos_api_v1systemsetting) ] |
 | 401 | Missing user in session \| Unauthorized |  |
 | 500 | Failed to find user \| Failed to find system setting list |  |
 
@@ -734,17 +734,16 @@ Create system setting
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| body | body | Request object. | Yes | [api_v1.UpsertSystemSettingRequest](#api_v1upsertsystemsettingrequest) |
+| body | body | Request object. | Yes | [github_com_usememos_memos_api_v1.UpsertSystemSettingRequest](#github_com_usememos_memos_api_v1upsertsystemsettingrequest) |
 
 ##### Responses
 
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Created system setting | [store.SystemSetting](#storesystemsetting) |
-| 400 | Malformatted post system setting request \| invalid system setting |  |
-| 401 | Missing user in session \| Unauthorized |  |
-| 403 | Cannot disable passwords if no SSO identity provider is configured. |  |
-| 500 | Failed to find user \| Failed to upsert system setting |  |
+| Code | Description |
+| ---- | ----------- |
+| 400 | Malformatted post system setting request \| invalid system setting |
+| 401 | Missing user in session \| Unauthorized |
+| 403 | Cannot disable passwords if no SSO identity provider is configured. |
+| 500 | Failed to find user \| Failed to upsert system setting |
 
 ---
 ### /api/v1/tag
@@ -843,7 +842,7 @@ Create a user
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| body | body | Request object | Yes | [github_com_usememos_memos_api_v1.CreateUserRequest](#github_com_usememos_memos_api_v1createuserrequest) |
+| body | body | Request object | Yes | [api_v1.CreateUserRequest](#api_v1createuserrequest) |
 
 ##### Responses
 
@@ -908,7 +907,7 @@ Update a user
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | id | path | User ID | Yes | string |
-| patch | body | Patch request | Yes | [github_com_usememos_memos_api_v1.UpdateUserRequest](#github_com_usememos_memos_api_v1updateuserrequest) |
+| patch | body | Patch request | Yes | [api_v1.UpdateUserRequest](#api_v1updateuserrequest) |
 
 ##### Responses
 
@@ -1032,7 +1031,6 @@ Get GetImage from URL
 | ---- | ---- | ----------- | -------- |
 | appearance | string | Appearance is the server default appearance. | No |
 | description | string | Description is the server description. | No |
-| externalUrl | string | ExternalURL is the external url of server. e.g. https://usermemos.com | No |
 | locale | string | Locale is the server default locale. | No |
 | logoUrl | string | LogoURL is the url of logo image. | No |
 | name | string | Name is the server name, default is `memos` | No |
@@ -1328,7 +1326,6 @@ Get GetImage from URL
 | ---- | ---- | ----------- | -------- |
 | appearance | string | Appearance is the server default appearance. | No |
 | description | string | Description is the server description. | No |
-| externalUrl | string | ExternalURL is the external url of server. e.g. https://usermemos.com | No |
 | locale | string | Locale is the server default locale. | No |
 | logoUrl | string | LogoURL is the url of logo image. | No |
 | name | string | Name is the server name, default is `memos` | No |
@@ -1688,14 +1685,6 @@ Get GetImage from URL
 | id | integer |  | No |
 | name | string |  | No |
 | type | string |  | No |
-
-#### store.SystemSetting
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| description | string |  | No |
-| name | string |  | No |
-| value | string |  | No |
 
 #### store.User
 

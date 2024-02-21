@@ -9,7 +9,6 @@ interface CustomizedProfile {
   description: string;
   locale: Locale;
   appearance: Appearance;
-  externalUrl: string;
 }
 
 interface SystemStatus {

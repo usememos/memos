@@ -62,12 +62,11 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   const handleRestoreButtonClick = () => {
     setPartialState({
-      name: "memos",
+      name: "Memos",
       logoUrl: "/logo.webp",
       description: "",
       locale: "en",
       appearance: "system",
-      externalUrl: "",
     });
   };
 
@@ -100,10 +99,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
         </IconButton>
       </div>
       <div className="dialog-content-container min-w-[16rem]">
-        <p className="text-sm mb-1">
-          {t("setting.system-section.server-name")}
-          <span className="text-sm text-gray-400 ml-1">({t("setting.system-section.customize-server.default")})</span>
-        </p>
+        <p className="text-sm mb-1">{t("setting.system-section.server-name")}</p>
         <Input className="w-full" type="text" value={state.name} onChange={handleNameChanged} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.icon-url")}</p>
         <Input className="w-full" type="text" value={state.logoUrl} onChange={handleLogoUrlChanged} />

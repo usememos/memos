@@ -198,7 +198,7 @@ const MemoDetail = () => {
               {!readonly && (
                 <MemoActionMenu
                   memo={memo}
-                  hiddenActions={["pin", "share"]}
+                  hiddenActions={["pin", "edit", "share"]}
                   onArchived={handleMemoArchived}
                   onDeleted={handleMemoDeleted}
                 />
