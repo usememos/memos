@@ -12,7 +12,7 @@ import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 
 interface Props extends DialogProps {
-  onConfirm: (memoIdList: number[], embedded?: boolean) => void;
+  onConfirm: (memos: Memo[], embedded?: boolean) => void;
 }
 
 const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
@@ -78,10 +78,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleConfirmBtnClick = async () => {
-    onConfirm(
-      selectedMemos.map((memo) => memo.id),
-      embedded,
-    );
+    onConfirm(selectedMemos, embedded);
     destroy();
   };
 

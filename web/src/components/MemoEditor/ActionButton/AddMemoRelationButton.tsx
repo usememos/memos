@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import showCreateMemoRelationDialog from "@/components/CreateMemoRelationDialog";
 import Icon from "@/components/Icon";
 import { UNKNOWN_ID } from "@/helpers/consts";
-import { useMemoStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { EditorRefActions } from "../Editor";
 import { MemoEditorContext } from "../types";
@@ -16,12 +15,11 @@ interface Props {
 
 const AddMemoRelationButton = (props: Props) => {
   const { editorRef } = props;
-  const memoStore = useMemoStore();
   const context = useContext(MemoEditorContext);
 
   const handleAddMemoRelationBtnClick = () => {
     showCreateMemoRelationDialog({
-      onConfirm: (memoIdList, embedded) => {
+      onConfirm: (memos, embedded) => {
         // If embedded mode is enabled, embed the memo instead of creating a relation.
         if (embedded) {
           if (!editorRef.current) {
@@ -34,8 +32,7 @@ const AddMemoRelationButton = (props: Props) => {
           if (prevValue !== "" && !prevValue.endsWith("\n")) {
             editorRef.current.insertText("\n");
           }
-          for (const memoId of memoIdList) {
-            const memo = memoStore.getMemoById(memoId);
+          for (const memo of memos) {
             editorRef.current.insertText(`![[memos/${memo.name}]]\n`);
           }
           setTimeout(() => {
@@ -48,7 +45,7 @@ const AddMemoRelationButton = (props: Props) => {
         context.setRelationList(
           uniqBy(
             [
-              ...memoIdList.map((id) => ({ memoId: context.memoId || UNKNOWN_ID, relatedMemoId: id, type: MemoRelation_Type.REFERENCE })),
+              ...memos.map((memo) => ({ memoId: context.memoId || UNKNOWN_ID, relatedMemoId: memo.id, type: MemoRelation_Type.REFERENCE })),
               ...context.relationList,
             ].filter((relation) => relation.relatedMemoId !== (context.memoId || UNKNOWN_ID)),
             "relatedMemoId",
