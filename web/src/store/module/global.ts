@@ -10,12 +10,9 @@ export const initialGlobalState = async () => {
     locale: "en" as Locale,
     appearance: "system" as Appearance,
     systemStatus: {
-      allowSignUp: false,
       disablePasswordLogin: false,
       disablePublicMemos: false,
       maxUploadSizeMiB: 0,
-      additionalStyle: "",
-      additionalScript: "",
       memoDisplayWithUpdatedTs: false,
       customizedProfile: {
         name: "Memos",

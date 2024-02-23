@@ -72,13 +72,14 @@ const SystemSection = () => {
   };
 
   const handleDisablePasswordLoginChanged = async (value: boolean) => {
-    setWorkspaceGeneralSetting({ ...workspaceGeneralSetting, disallowPasswordLogin: value });
+    const setting = { ...workspaceGeneralSetting, disallowPasswordLogin: value };
     await workspaceSettingServiceClient.setWorkspaceSetting({
       setting: {
         name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
-        generalSetting: workspaceGeneralSetting,
+        generalSetting: setting,
       },
     });
+    setWorkspaceGeneralSetting(setting);
   };
 
   const handleUpdateCustomizedProfileButtonClick = () => {
@@ -223,7 +224,7 @@ const SystemSection = () => {
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.settings")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
-        <Switch checked={workspaceGeneralSetting.disallowSignup} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
+        <Switch checked={!workspaceGeneralSetting.disallowSignup} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span className="normal-text">{t("setting.system-section.disable-password-login")}</span>

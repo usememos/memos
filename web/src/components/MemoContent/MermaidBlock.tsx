@@ -1,3 +1,4 @@
+import { useColorScheme } from "@mui/joy";
 import mermaid from "mermaid";
 import { useEffect, useRef } from "react";
 
@@ -6,14 +7,16 @@ interface Props {
 }
 
 const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
+  const { mode } = useColorScheme();
   const mermaidDockBlock = useRef<null>(null);
+  mermaid.initialize({ startOnLoad: false, theme: mode });
 
   useEffect(() => {
     if (!mermaidDockBlock.current) {
       return;
     }
 
-    // Render mermaid when mounted
+    // Render mermaid when mounted.
     mermaid.run({
       nodes: [mermaidDockBlock.current],
     });

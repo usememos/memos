@@ -5,9 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 
-	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -18,18 +16,12 @@ type SystemStatus struct {
 	DBSize  int64           `json:"dbSize"`
 
 	// System settings
-	// Allow sign up.
-	AllowSignUp bool `json:"allowSignUp"`
 	// Disable password login.
 	DisablePasswordLogin bool `json:"disablePasswordLogin"`
 	// Disable public memos.
 	DisablePublicMemos bool `json:"disablePublicMemos"`
 	// Max upload size.
 	MaxUploadSizeMiB int `json:"maxUploadSizeMiB"`
-	// Additional style.
-	AdditionalStyle string `json:"additionalStyle"`
-	// Additional script.
-	AdditionalScript string `json:"additionalScript"`
 	// Customized server profile, including server name and external url.
 	CustomizedProfile CustomizedProfile `json:"customizedProfile"`
 	// Storage service ID.
@@ -74,8 +66,6 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 			Mode:    s.Profile.Mode,
 			Version: s.Profile.Version,
 		},
-		// Allow sign up by default.
-		AllowSignUp:      true,
 		MaxUploadSizeMiB: 32,
 		CustomizedProfile: CustomizedProfile{
 			Name:       "Memos",
@@ -101,10 +91,7 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find workspace general setting").SetInternal(err)
 	}
-	systemStatus.AllowSignUp = !workspaceGeneralSetting.DisallowSignup
 	systemStatus.DisablePasswordLogin = workspaceGeneralSetting.DisallowPasswordLogin
-	systemStatus.AdditionalStyle = workspaceGeneralSetting.AdditionalStyle
-	systemStatus.AdditionalScript = workspaceGeneralSetting.AdditionalScript
 
 	systemSettingList, err := s.Store.ListWorkspaceSettings(ctx, &store.FindWorkspaceSetting{})
 	if err != nil {
@@ -140,7 +127,7 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		case SystemSettingMemoDisplayWithUpdatedTsName.String():
 			systemStatus.MemoDisplayWithUpdatedTs = baseValue.(bool)
 		default:
-			log.Warn("Unknown system setting name", zap.String("setting name", systemSetting.Name))
+			// Skip unknown system setting.
 		}
 	}
 

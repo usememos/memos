@@ -17,11 +17,8 @@ const globalSlice = createSlice({
         mode: "demo",
         version: "",
       },
-      allowSignUp: false,
       disablePasswordLogin: false,
       disablePublicMemos: false,
-      additionalStyle: "",
-      additionalScript: "",
       memoDisplayWithUpdatedTs: false,
       customizedProfile: {
         name: "Memos",

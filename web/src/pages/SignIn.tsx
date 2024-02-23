@@ -11,13 +11,16 @@ import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore } from "@/store/module";
-import { useUserStore } from "@/store/v1";
+import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
+import { WorkspaceGeneralSetting } from "@/types/proto/api/v2/workspace_setting_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 const SignIn = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const globalStore = useGlobalStore();
+  const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
   const { appearance, locale, systemStatus } = globalStore.state;
@@ -25,8 +28,12 @@ const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
-  const disablePasswordLogin = systemStatus.disablePasswordLogin;
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
+  const workspaceGeneralSetting =
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
+    WorkspaceGeneralSetting.fromPartial({});
+
+  console.log("workspaceGeneralSetting", workspaceGeneralSetting);
 
   useEffect(() => {
     const fetchIdentityProviderList = async () => {
@@ -112,7 +119,7 @@ const SignIn = () => {
           <img className="h-14 w-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
           <p className="ml-2 text-5xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
         </div>
-        {!disablePasswordLogin && (
+        {!workspaceGeneralSetting.disallowPasswordLogin && (
           <>
             <form className="w-full mt-2" onSubmit={handleFormSubmit}>
               <div className="flex flex-col justify-start items-start w-full gap-4">
@@ -164,7 +171,7 @@ const SignIn = () => {
                 </Button>
               </div>
             </form>
-            {systemStatus.allowSignUp && (
+            {!workspaceGeneralSetting.disallowSignup && (
               <p className="w-full mt-4 text-sm">
                 <span className="dark:text-gray-500">{t("auth.sign-up-tip")}</span>
                 <Link to="/auth/signup" className="cursor-pointer ml-2 text-blue-600 hover:underline" unstable_viewTransition>
@@ -176,7 +183,7 @@ const SignIn = () => {
         )}
         {identityProviderList.length > 0 && (
           <>
-            {!disablePasswordLogin && <Divider className="!my-4">{t("common.or")}</Divider>}
+            {!workspaceGeneralSetting.disallowPasswordLogin && <Divider className="!my-4">{t("common.or")}</Divider>}
             <div className="w-full flex flex-col space-y-2">
               {identityProviderList.map((identityProvider) => (
                 <Button
