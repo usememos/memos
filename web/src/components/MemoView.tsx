@@ -95,7 +95,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
       )}
       ref={memoContainerRef}
     >
-      <div className="w-full flex flex-row justify-between items-center mb-1">
+      <div className="w-full h-7 flex flex-row justify-between items-center mb-1">
         <div className="w-auto flex flex-row justify-start items-center mr-1">
           {props.showCreator && creator && (
             <>
