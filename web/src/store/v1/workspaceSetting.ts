@@ -22,8 +22,8 @@ export const useWorkspaceSettingStore = create(
       }
       set({ workspaceSettingByName: { ...get().workspaceSettingByName, [setting.name]: setting } });
     },
-    getWorkspaceSettingByKey: (key: WorkspaceSettingKey) => {
-      return get().workspaceSettingByName[`${WorkspaceSettingPrefix}${key}`];
+    getWorkspaceSettingByKey: (key: WorkspaceSettingKey): WorkspaceSetting => {
+      return get().workspaceSettingByName[`${WorkspaceSettingPrefix}${key}`] || WorkspaceSetting.fromPartial({});
     },
   })),
 );
