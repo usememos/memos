@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Install [buf](https://docs.buf.build/installation)
+- [buf](https://docs.buf.build/installation)
 
 ## Generate
 

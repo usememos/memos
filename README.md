@@ -45,7 +45,7 @@ Contributions are what make the open-source community such an amazing place to l
 
 [![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
 
-## Other resources
+## Other projects
 
+- [**Slash**](https://github.com/yourselfhosted/slash): An open source, self-hosted bookmarks and link sharing platform. Save and share your links very easily.
 - [**Gomark**](https://github.com/yourselfhosted/gomark): A markdown parser written in Go for Memos. And its [WebAssembly version](https://github.com/yourselfhosted/gomark-wasm) is also available.
-- [**Bytebase**](https://www.bytebase.com): World's most advanced database DevOps and CI/CD for Developer, DBA and Platform Engineering teams. The GitLab/GitHub for database DevOps.
