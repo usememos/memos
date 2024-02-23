@@ -466,8 +466,8 @@ github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyC
 github.com/valyala/fasttemplate v1.2.2 h1:lxLXG0uE3Qnshl9QyaK6XJxMXlQZELvChBOCmQD0Loo=
 github.com/valyala/fasttemplate v1.2.2/go.mod h1:KHLXt3tVN2HBp8eijSv/kGJopbvo7S+qRAEEKiv+SiQ=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
-github.com/yourselfhosted/gomark v0.0.0-20240203135813-6f2bb7ded891 h1:XZsVC80Y85+XLp+PtjwDCXI7KAec9S3STmSBOgkwVqQ=
-github.com/yourselfhosted/gomark v0.0.0-20240203135813-6f2bb7ded891/go.mod h1:dfl9FHGIw1oISjPc16u8n6/H/dngiVfdVRtS5+WJ4Js=
+github.com/yourselfhosted/gomark v0.0.0-20240222150908-75b2b15a7837 h1:TAFqMn/ey7NykzAtE0rJCy/4f2OIp8uAJZti7WfVSpo=
+github.com/yourselfhosted/gomark v0.0.0-20240222150908-75b2b15a7837/go.mod h1:dfl9FHGIw1oISjPc16u8n6/H/dngiVfdVRtS5+WJ4Js=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738/go.mod h1:dnLIgRNXwCJa5e+c6mIZCrds/GIG4ncV9HhK5PX7jPg=
