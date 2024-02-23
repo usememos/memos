@@ -28,7 +28,7 @@ func (s *Store) MigrateWorkspaceSetting(ctx context.Context) error {
 		// nolint
 		json.Unmarshal([]byte(workspaceSetting.Value), &baseValue)
 		if workspaceSetting.Name == "allow-signup" {
-			workspaceGeneralSetting.DisallowSignup = baseValue.(bool)
+			workspaceGeneralSetting.DisallowSignup = !baseValue.(bool)
 		} else if workspaceSetting.Name == "disable-password-login" {
 			workspaceGeneralSetting.DisallowPasswordLogin = baseValue.(bool)
 		} else if workspaceSetting.Name == "additional-style" {
