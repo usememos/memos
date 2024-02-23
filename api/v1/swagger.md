@@ -112,7 +112,7 @@ Get a list of identity providers
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | List of available identity providers | [ [github_com_usememos_memos_api_v1.IdentityProvider](#github_com_usememos_memos_api_v1identityprovider) ] |
+| 200 | List of available identity providers | [ [api_v1.IdentityProvider](#api_v1identityprovider) ] |
 | 500 | Failed to find identity provider list \| Failed to find user |  |
 
 #### POST
@@ -124,7 +124,7 @@ Create Identity Provider
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| body | body | Identity provider information | Yes | [github_com_usememos_memos_api_v1.CreateIdentityProviderRequest](#github_com_usememos_memos_api_v1createidentityproviderrequest) |
+| body | body | Identity provider information | Yes | [api_v1.CreateIdentityProviderRequest](#api_v1createidentityproviderrequest) |
 
 ##### Responses
 
@@ -188,7 +188,7 @@ Update an identity provider by ID
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | idpId | path | Identity Provider ID | Yes | integer |
-| body | body | Patched identity provider information | Yes | [github_com_usememos_memos_api_v1.UpdateIdentityProviderRequest](#github_com_usememos_memos_api_v1updateidentityproviderrequest) |
+| body | body | Patched identity provider information | Yes | [api_v1.UpdateIdentityProviderRequest](#api_v1updateidentityproviderrequest) |
 
 ##### Responses
 
@@ -242,7 +242,7 @@ Visibility can be PUBLIC, PROTECTED or PRIVATE
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| body | body | Request object. | Yes | [api_v1.CreateMemoRequest](#api_v1creatememorequest) |
+| body | body | Request object. | Yes | [github_com_usememos_memos_api_v1.CreateMemoRequest](#github_com_usememos_memos_api_v1creatememorequest) |
 
 ##### Responses
 
@@ -314,7 +314,7 @@ Visibility can be PUBLIC, PROTECTED or PRIVATE
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | memoId | path | ID of memo to update | Yes | integer |
-| body | body | Patched object. | Yes | [api_v1.PatchMemoRequest](#api_v1patchmemorequest) |
+| body | body | Patched object. | Yes | [github_com_usememos_memos_api_v1.PatchMemoRequest](#github_com_usememos_memos_api_v1patchmemorequest) |
 
 ##### Responses
 
@@ -501,7 +501,7 @@ Get system GetSystemStatus
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | System GetSystemStatus | [github_com_usememos_memos_api_v1.SystemStatus](#github_com_usememos_memos_api_v1systemstatus) |
+| 200 | System GetSystemStatus | [api_v1.SystemStatus](#api_v1systemstatus) |
 | 401 | Missing user in session \| Unauthorized |  |
 | 500 | Failed to find host user \| Failed to find system setting list \| Failed to unmarshal system setting customized profile value |  |
 
@@ -552,7 +552,7 @@ Create resource
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| body | body | Request object. | Yes | [github_com_usememos_memos_api_v1.CreateResourceRequest](#github_com_usememos_memos_api_v1createresourcerequest) |
+| body | body | Request object. | Yes | [api_v1.CreateResourceRequest](#api_v1createresourcerequest) |
 
 ##### Responses
 
@@ -596,7 +596,7 @@ Update a resource
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | resourceId | path | Resource ID | Yes | integer |
-| patch | body | Patch resource request | Yes | [github_com_usememos_memos_api_v1.UpdateResourceRequest](#github_com_usememos_memos_api_v1updateresourcerequest) |
+| patch | body | Patch resource request | Yes | [api_v1.UpdateResourceRequest](#api_v1updateresourcerequest) |
 
 ##### Responses
 
@@ -655,7 +655,7 @@ Create storage
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| body | body | Request object. | Yes | [api_v1.CreateStorageRequest](#api_v1createstoragerequest) |
+| body | body | Request object. | Yes | [github_com_usememos_memos_api_v1.CreateStorageRequest](#github_com_usememos_memos_api_v1createstoragerequest) |
 
 ##### Responses
 
@@ -698,7 +698,7 @@ Update a storage
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | storageId | path | Storage ID | Yes | integer |
-| patch | body | Patch request | Yes | [api_v1.UpdateStorageRequest](#api_v1updatestoragerequest) |
+| patch | body | Patch request | Yes | [github_com_usememos_memos_api_v1.UpdateStorageRequest](#github_com_usememos_memos_api_v1updatestoragerequest) |
 
 ##### Responses
 
@@ -721,7 +721,7 @@ Get a list of system settings
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | System setting list | [ [github_com_usememos_memos_api_v1.SystemSetting](#github_com_usememos_memos_api_v1systemsetting) ] |
+| 200 | System setting list | [ [api_v1.SystemSetting](#api_v1systemsetting) ] |
 | 401 | Missing user in session \| Unauthorized |  |
 | 500 | Failed to find user \| Failed to find system setting list |  |
 
@@ -734,7 +734,7 @@ Create system setting
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| body | body | Request object. | Yes | [github_com_usememos_memos_api_v1.UpsertSystemSettingRequest](#github_com_usememos_memos_api_v1upsertsystemsettingrequest) |
+| body | body | Request object. | Yes | [api_v1.UpsertSystemSettingRequest](#api_v1upsertsystemsettingrequest) |
 
 ##### Responses
 

@@ -199,7 +199,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProvider"
+                                "$ref": "#/definitions/api_v1.IdentityProvider"
                             }
                         }
                     },
@@ -226,7 +226,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateIdentityProviderRequest"
+                            "$ref": "#/definitions/api_v1.CreateIdentityProviderRequest"
                         }
                     }
                 ],
@@ -354,7 +354,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateIdentityProviderRequest"
+                            "$ref": "#/definitions/api_v1.UpdateIdentityProviderRequest"
                         }
                     }
                 ],
@@ -477,7 +477,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.CreateMemoRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateMemoRequest"
                         }
                     }
                 ],
@@ -695,7 +695,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.PatchMemoRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.PatchMemoRequest"
                         }
                     }
                 ],
@@ -992,7 +992,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateResourceRequest"
+                            "$ref": "#/definitions/api_v1.CreateResourceRequest"
                         }
                     }
                 ],
@@ -1116,7 +1116,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateResourceRequest"
+                            "$ref": "#/definitions/api_v1.UpdateResourceRequest"
                         }
                     }
                 ],
@@ -1155,7 +1155,7 @@ const docTemplate = `{
                     "200": {
                         "description": "System GetSystemStatus",
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemStatus"
+                            "$ref": "#/definitions/api_v1.SystemStatus"
                         }
                     },
                     "401": {
@@ -1212,7 +1212,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.CreateStorageRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateStorageRequest"
                         }
                     }
                 ],
@@ -1293,7 +1293,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.UpdateStorageRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateStorageRequest"
                         }
                     }
                 ],
@@ -1331,7 +1331,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemSetting"
+                                "$ref": "#/definitions/api_v1.SystemSetting"
                             }
                         }
                     },
@@ -1361,7 +1361,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertSystemSettingRequest"
+                            "$ref": "#/definitions/api_v1.UpsertSystemSettingRequest"
                         }
                     }
                 ],
@@ -2214,34 +2214,24 @@ const docTemplate = `{
             "enum": [
                 "server-id",
                 "secret-session",
-                "allow-signup",
-                "disable-password-login",
                 "disable-public-memos",
                 "max-upload-size-mib",
-                "additional-style",
-                "additional-script",
                 "customized-profile",
                 "storage-service-id",
                 "local-storage-path",
                 "telegram-bot-token",
-                "memo-display-with-updated-ts",
-                "instance-url"
+                "memo-display-with-updated-ts"
             ],
             "x-enum-varnames": [
                 "SystemSettingServerIDName",
                 "SystemSettingSecretSessionName",
-                "SystemSettingAllowSignUpName",
-                "SystemSettingDisablePasswordLoginName",
                 "SystemSettingDisablePublicMemosName",
                 "SystemSettingMaxUploadSizeMiBName",
-                "SystemSettingAdditionalStyleName",
-                "SystemSettingAdditionalScriptName",
                 "SystemSettingCustomizedProfileName",
                 "SystemSettingStorageServiceIDName",
                 "SystemSettingLocalStoragePathName",
                 "SystemSettingTelegramBotTokenName",
-                "SystemSettingMemoDisplayWithUpdatedTsName",
-                "SystemSettingInstanceURLName"
+                "SystemSettingMemoDisplayWithUpdatedTsName"
             ]
         },
         "api_v1.SystemStatus": {
@@ -2844,34 +2834,24 @@ const docTemplate = `{
             "enum": [
                 "server-id",
                 "secret-session",
-                "allow-signup",
-                "disable-password-login",
                 "disable-public-memos",
                 "max-upload-size-mib",
-                "additional-style",
-                "additional-script",
                 "customized-profile",
                 "storage-service-id",
                 "local-storage-path",
                 "telegram-bot-token",
-                "memo-display-with-updated-ts",
-                "instance-url"
+                "memo-display-with-updated-ts"
             ],
             "x-enum-varnames": [
                 "SystemSettingServerIDName",
                 "SystemSettingSecretSessionName",
-                "SystemSettingAllowSignUpName",
-                "SystemSettingDisablePasswordLoginName",
                 "SystemSettingDisablePublicMemosName",
                 "SystemSettingMaxUploadSizeMiBName",
-                "SystemSettingAdditionalStyleName",
-                "SystemSettingAdditionalScriptName",
                 "SystemSettingCustomizedProfileName",
                 "SystemSettingStorageServiceIDName",
                 "SystemSettingLocalStoragePathName",
                 "SystemSettingTelegramBotTokenName",
-                "SystemSettingMemoDisplayWithUpdatedTsName",
-                "SystemSettingInstanceURLName"
+                "SystemSettingMemoDisplayWithUpdatedTsName"
             ]
         },
         "github_com_usememos_memos_api_v1.SystemStatus": {

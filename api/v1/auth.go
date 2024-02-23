@@ -60,25 +60,18 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 //	@Router		/api/v1/auth/signin [POST]
 func (s *APIV1Service) SignIn(c echo.Context) error {
 	ctx := c.Request().Context()
-	signin := &SignIn{}
-
-	disablePasswordLoginSystemSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: SystemSettingDisablePasswordLoginName.String(),
-	})
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 	}
-	if disablePasswordLoginSystemSetting != nil {
-		disablePasswordLogin := false
-		err = json.Unmarshal([]byte(disablePasswordLoginSystemSetting.Value), &disablePasswordLogin)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
-		}
-		if disablePasswordLogin {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Password login is deactivated")
-		}
+	if workspaceGeneralSetting.DisallowSignup {
+		return echo.NewHTTPError(http.StatusUnauthorized, "signup is disabled").SetInternal(err)
+	}
+	if workspaceGeneralSetting.DisallowPasswordLogin {
+		return echo.NewHTTPError(http.StatusUnauthorized, "password login is deactivated").SetInternal(err)
 	}
 
+	signin := &SignIn{}
 	if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
 	}
@@ -186,21 +179,11 @@ func (s *APIV1Service) SignInSSO(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 	}
 	if user == nil {
-		allowSignUpSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-			Name: SystemSettingAllowSignUpName.String(),
-		})
+		workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 		}
-
-		allowSignUpSettingValue := true
-		if allowSignUpSetting != nil {
-			err = json.Unmarshal([]byte(allowSignUpSetting.Value), &allowSignUpSettingValue)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting allow signup").SetInternal(err)
-			}
-		}
-		if !allowSignUpSettingValue {
+		if workspaceGeneralSetting.DisallowSignup {
 			return echo.NewHTTPError(http.StatusUnauthorized, "signup is disabled").SetInternal(err)
 		}
 
@@ -303,39 +286,15 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 		// Change the default role to host if there is no host user.
 		userCreate.Role = store.RoleHost
 	} else {
-		allowSignUpSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-			Name: SystemSettingAllowSignUpName.String(),
-		})
+		workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 		}
-
-		allowSignUpSettingValue := true
-		if allowSignUpSetting != nil {
-			err = json.Unmarshal([]byte(allowSignUpSetting.Value), &allowSignUpSettingValue)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting allow signup").SetInternal(err)
-			}
-		}
-		if !allowSignUpSettingValue {
+		if workspaceGeneralSetting.DisallowSignup {
 			return echo.NewHTTPError(http.StatusUnauthorized, "signup is disabled").SetInternal(err)
 		}
-
-		disablePasswordLoginSystemSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-			Name: SystemSettingDisablePasswordLoginName.String(),
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
-		}
-		if disablePasswordLoginSystemSetting != nil {
-			disablePasswordLogin := false
-			err = json.Unmarshal([]byte(disablePasswordLoginSystemSetting.Value), &disablePasswordLogin)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
-			}
-			if disablePasswordLogin {
-				return echo.NewHTTPError(http.StatusUnauthorized, "password login is deactivated")
-			}
+		if workspaceGeneralSetting.DisallowPasswordLogin {
+			return echo.NewHTTPError(http.StatusUnauthorized, "password login is deactivated").SetInternal(err)
 		}
 	}
 

@@ -97,6 +97,15 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		systemStatus.Host = &User{ID: hostUser.ID}
 	}
 
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find workspace general setting").SetInternal(err)
+	}
+	systemStatus.AllowSignUp = !workspaceGeneralSetting.DisallowSignup
+	systemStatus.DisablePasswordLogin = workspaceGeneralSetting.DisallowPasswordLogin
+	systemStatus.AdditionalStyle = workspaceGeneralSetting.AdditionalStyle
+	systemStatus.AdditionalScript = workspaceGeneralSetting.AdditionalScript
+
 	systemSettingList, err := s.Store.ListWorkspaceSettings(ctx, &store.FindWorkspaceSetting{})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
@@ -114,18 +123,10 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		}
 
 		switch systemSetting.Name {
-		case SystemSettingAllowSignUpName.String():
-			systemStatus.AllowSignUp = baseValue.(bool)
-		case SystemSettingDisablePasswordLoginName.String():
-			systemStatus.DisablePasswordLogin = baseValue.(bool)
 		case SystemSettingDisablePublicMemosName.String():
 			systemStatus.DisablePublicMemos = baseValue.(bool)
 		case SystemSettingMaxUploadSizeMiBName.String():
 			systemStatus.MaxUploadSizeMiB = int(baseValue.(float64))
-		case SystemSettingAdditionalStyleName.String():
-			systemStatus.AdditionalStyle = baseValue.(string)
-		case SystemSettingAdditionalScriptName.String():
-			systemStatus.AdditionalScript = baseValue.(string)
 		case SystemSettingCustomizedProfileName.String():
 			customizedProfile := CustomizedProfile{}
 			if err := json.Unmarshal([]byte(systemSetting.Value), &customizedProfile); err != nil {

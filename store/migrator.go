@@ -42,8 +42,10 @@ func (s *Store) MigrateWorkspaceSetting(ctx context.Context) error {
 		}
 
 		if matched {
-			if _, err := s.driver.GetDB().ExecContext(ctx, fmt.Sprintf("DELETE FROM system_setting WHERE name = '%s'", workspaceSetting.Name)); err != nil {
-				return errors.Wrap(err, "failed to delete workspace setting")
+			if err := s.DeleteWorkspaceSetting(ctx, &DeleteWorkspaceSetting{
+				Name: workspaceSetting.Name,
+			}); err != nil {
+				return errors.Wrap(err, fmt.Sprintf("failed to delete workspace setting: %s", workspaceSetting.Name))
 			}
 		}
 	}

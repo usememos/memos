@@ -19,18 +19,10 @@ const (
 	SystemSettingServerIDName SystemSettingName = "server-id"
 	// SystemSettingSecretSessionName is the name of secret session.
 	SystemSettingSecretSessionName SystemSettingName = "secret-session"
-	// SystemSettingAllowSignUpName is the name of allow signup setting.
-	SystemSettingAllowSignUpName SystemSettingName = "allow-signup"
-	// SystemSettingDisablePasswordLoginName is the name of disable password login setting.
-	SystemSettingDisablePasswordLoginName SystemSettingName = "disable-password-login"
 	// SystemSettingDisablePublicMemosName is the name of disable public memos setting.
 	SystemSettingDisablePublicMemosName SystemSettingName = "disable-public-memos"
 	// SystemSettingMaxUploadSizeMiBName is the name of max upload size setting.
 	SystemSettingMaxUploadSizeMiBName SystemSettingName = "max-upload-size-mib"
-	// SystemSettingAdditionalStyleName is the name of additional style.
-	SystemSettingAdditionalStyleName SystemSettingName = "additional-style"
-	// SystemSettingAdditionalScriptName is the name of additional script.
-	SystemSettingAdditionalScriptName SystemSettingName = "additional-script"
 	// SystemSettingCustomizedProfileName is the name of customized server profile.
 	SystemSettingCustomizedProfileName SystemSettingName = "customized-profile"
 	// SystemSettingStorageServiceIDName is the name of storage service ID.
@@ -154,30 +146,6 @@ func (s *APIV1Service) CreateSystemSetting(c echo.Context) error {
 	if err := systemSettingUpsert.Validate(); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
 	}
-	if s.Profile.Mode == "demo" {
-		switch systemSettingUpsert.Name {
-		case SystemSettingAdditionalStyleName:
-			return echo.NewHTTPError(http.StatusForbidden, "additional style is not allowed in demo mode")
-		case SystemSettingAdditionalScriptName:
-			return echo.NewHTTPError(http.StatusForbidden, "additional script is not allowed in demo mode")
-		case SystemSettingDisablePasswordLoginName:
-			return echo.NewHTTPError(http.StatusForbidden, "disabling password login is not allowed in demo mode")
-		}
-	}
-	if systemSettingUpsert.Name == SystemSettingDisablePasswordLoginName {
-		var disablePasswordLogin bool
-		if err := json.Unmarshal([]byte(systemSettingUpsert.Value), &disablePasswordLogin); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
-		}
-
-		identityProviderList, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
-		}
-		if disablePasswordLogin && len(identityProviderList) == 0 {
-			return echo.NewHTTPError(http.StatusForbidden, "Cannot disable passwords if no SSO identity provider is configured.")
-		}
-	}
 
 	systemSetting, err := s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
 		Name:        systemSettingUpsert.Name.String(),
@@ -194,16 +162,6 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 	switch settingName := upsert.Name; settingName {
 	case SystemSettingServerIDName:
 		return errors.Errorf("updating %v is not allowed", settingName)
-	case SystemSettingAllowSignUpName:
-		var value bool
-		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
-			return errors.Errorf(systemSettingUnmarshalError, settingName)
-		}
-	case SystemSettingDisablePasswordLoginName:
-		var value bool
-		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
-			return errors.Errorf(systemSettingUnmarshalError, settingName)
-		}
 	case SystemSettingDisablePublicMemosName:
 		var value bool
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
@@ -211,16 +169,6 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 		}
 	case SystemSettingMaxUploadSizeMiBName:
 		var value int
-		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
-			return errors.Errorf(systemSettingUnmarshalError, settingName)
-		}
-	case SystemSettingAdditionalStyleName:
-		var value string
-		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
-			return errors.Errorf(systemSettingUnmarshalError, settingName)
-		}
-	case SystemSettingAdditionalScriptName:
-		var value string
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)
 		}

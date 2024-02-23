@@ -18,6 +18,10 @@ type FindWorkspaceSetting struct {
 	Name string
 }
 
+type DeleteWorkspaceSetting struct {
+	Name string
+}
+
 func (s *Store) UpsertWorkspaceSetting(ctx context.Context, upsert *WorkspaceSetting) (*WorkspaceSetting, error) {
 	return s.driver.UpsertWorkspaceSetting(ctx, upsert)
 }
@@ -53,6 +57,15 @@ func (s *Store) GetWorkspaceSetting(ctx context.Context, find *FindWorkspaceSett
 	systemSettingMessage := list[0]
 	s.workspaceSettingCache.Store(systemSettingMessage.Name, systemSettingMessage)
 	return systemSettingMessage, nil
+}
+
+func (s *Store) DeleteWorkspaceSetting(ctx context.Context, delete *DeleteWorkspaceSetting) error {
+	err := s.driver.DeleteWorkspaceSetting(ctx, delete)
+	if err != nil {
+		return errors.Wrap(err, "Failed to delete workspace setting")
+	}
+	s.workspaceSettingCache.Delete(delete.Name)
+	return nil
 }
 
 type FindWorkspaceSettingV1 struct {

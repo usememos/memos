@@ -68,6 +68,12 @@ func (d *DB) ListWorkspaceSettings(ctx context.Context, find *store.FindWorkspac
 	return list, nil
 }
 
+func (d *DB) DeleteWorkspaceSetting(ctx context.Context, delete *store.DeleteWorkspaceSetting) error {
+	stmt := "DELETE FROM system_setting WHERE name = ?"
+	_, err := d.db.ExecContext(ctx, stmt, delete.Name)
+	return err
+}
+
 func (d *DB) UpsertWorkspaceSettingV1(ctx context.Context, upsert *storepb.WorkspaceSetting) (*storepb.WorkspaceSetting, error) {
 	stmt := `
 		INSERT INTO system_setting (
