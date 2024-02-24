@@ -17,7 +17,6 @@ import (
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/webhook"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -351,7 +350,6 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 				}
-				metric.Enqueue("memo comment create")
 				if _, err := s.Store.CreateInbox(ctx, &store.Inbox{
 					SenderID:   memo.CreatorID,
 					ReceiverID: relatedMemo.CreatorID,
@@ -410,7 +408,6 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 		log.Warn("Failed to dispatch memo created webhook", zap.Error(err))
 	}
 
-	metric.Enqueue("memo create")
 	return c.JSON(http.StatusOK, memoResponse)
 }
 
@@ -1011,7 +1008,6 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *Mem
 	if err != nil {
 		return err
 	}
-	metric.Enqueue("webhook dispatch")
 	for _, hook := range webhooks {
 		payload := convertMemoToWebhookPayload(memo)
 		payload.ActivityType = activityType

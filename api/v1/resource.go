@@ -22,7 +22,6 @@ import (
 	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/storage/s3"
-	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -162,7 +161,6 @@ func (s *APIV1Service) CreateResource(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 	}
-	metric.Enqueue("resource create")
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 }
 
@@ -240,7 +238,6 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 	}
-	metric.Enqueue("resource create")
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 }
 

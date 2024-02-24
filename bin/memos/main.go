@@ -16,7 +16,6 @@ import (
 	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
-	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 )
@@ -41,7 +40,6 @@ var (
 	driver        string
 	dsn           string
 	serveFrontend bool
-	enableMetric  bool
 
 	rootCmd = &cobra.Command{
 		Use:   "memos",
@@ -72,11 +70,6 @@ var (
 				cancel()
 				log.Error("failed to create server", zap.Error(err))
 				return
-			}
-
-			if profile.Metric {
-				// nolint
-				metric.NewMetricClient(s.ID, *profile)
 			}
 
 			c := make(chan os.Signal, 1)
@@ -124,7 +117,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&driver, "driver", "", "", "database driver")
 	rootCmd.PersistentFlags().StringVarP(&dsn, "dsn", "", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().BoolVarP(&serveFrontend, "frontend", "", true, "serve frontend files")
-	rootCmd.PersistentFlags().BoolVarP(&enableMetric, "metric", "", true, "allow metric collection")
 
 	err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode"))
 	if err != nil {
@@ -154,17 +146,12 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	err = viper.BindPFlag("metric", rootCmd.PersistentFlags().Lookup("metric"))
-	if err != nil {
-		panic(err)
-	}
 
 	viper.SetDefault("mode", "demo")
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("addr", "")
 	viper.SetDefault("port", 8081)
 	viper.SetDefault("frontend", true)
-	viper.SetDefault("metric", true)
 	viper.SetEnvPrefix("memos")
 }
 
@@ -187,9 +174,8 @@ port: %d
 mode: %s
 driver: %s
 frontend: %t
-metric: %t
 ---
-`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver, profile.Frontend, profile.Metric)
+`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver, profile.Frontend)
 }
 
 func printGreetings() {

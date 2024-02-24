@@ -19,7 +19,6 @@ import (
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
-	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -168,7 +167,6 @@ func (s *APIV2Service) doSignIn(ctx context.Context, user *store.User, expireTim
 		return status.Errorf(codes.Internal, "failed to set grpc header, error: %v", err)
 	}
 
-	metric.Enqueue("user sign in")
 	return nil
 }
 
@@ -214,7 +212,6 @@ func (s *APIV2Service) SignUp(ctx context.Context, request *apiv2pb.SignUpReques
 	if err := s.doSignIn(ctx, user, time.Now().Add(auth.AccessTokenDuration)); err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to sign in, err: %s", err))
 	}
-	metric.Enqueue("user sign up")
 	return &apiv2pb.SignUpResponse{
 		User: convertUserFromStore(user),
 	}, nil

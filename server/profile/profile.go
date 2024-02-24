@@ -32,8 +32,6 @@ type Profile struct {
 	Version string `json:"version"`
 	// Frontend indicate the frontend is enabled or not
 	Frontend bool `json:"-"`
-	// Metric indicate the metric collection is enabled or not
-	Metric bool `json:"-"`
 }
 
 func (p *Profile) IsDev() bool {

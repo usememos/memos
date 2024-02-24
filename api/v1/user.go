@@ -12,7 +12,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/usememos/memos/internal/util"
-	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -183,7 +182,6 @@ func (s *APIV1Service) CreateUser(c echo.Context) error {
 	}
 
 	userMessage := convertUserFromStore(user)
-	metric.Enqueue("user create")
 	return c.JSON(http.StatusOK, userMessage)
 }
 

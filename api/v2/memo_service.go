@@ -23,7 +23,6 @@ import (
 	"github.com/usememos/memos/plugin/webhook"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -64,7 +63,6 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	if err != nil {
 		return nil, err
 	}
-	metric.Enqueue("memo create")
 
 	memoMessage, err := s.convertMemoFromStore(ctx, memo)
 	if err != nil {
@@ -371,7 +369,6 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 			return nil, status.Errorf(codes.Internal, "failed to create inbox")
 		}
 	}
-	metric.Enqueue("memo comment create")
 
 	response := &apiv2pb.CreateMemoCommentResponse{
 		Memo: memo,
@@ -806,7 +803,6 @@ func (s *APIV2Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *api
 	if err != nil {
 		return err
 	}
-	metric.Enqueue("webhook dispatch")
 	for _, hook := range webhooks {
 		payload := convertMemoToWebhookPayload(memo)
 		payload.ActivityType = activityType
