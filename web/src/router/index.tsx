@@ -1,11 +1,9 @@
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
+import HomeLayout from "@/layouts/HomeLayout";
 import SuspenseWrapper from "@/layouts/SuspenseWrapper";
-import { initialGlobalState } from "@/store/module";
-import AuthStatusProvider from "./AuthStatusProvider";
 
-const Root = lazy(() => import("@/layouts/Root"));
 const SignIn = lazy(() => import("@/pages/SignIn"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
@@ -22,23 +20,22 @@ const About = lazy(() => import("@/pages/About"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const PermissionDenied = lazy(() => import("@/pages/PermissionDenied"));
 
-const initialGlobalStateLoader = async () => {
-  try {
-    await initialGlobalState();
-  } catch (error) {
-    // do nothing.
-  }
-  return null;
-};
+export enum Routes {
+  HOME = "/",
+  TIMELINE = "/timeline",
+  RESOURCES = "/resources",
+  INBOX = "/inbox",
+  ARCHIVED = "/archived",
+  SETTING = "/setting",
+}
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    loader: () => initialGlobalStateLoader(),
     children: [
       {
-        path: "/auth/",
+        path: "/auth",
         element: <SuspenseWrapper />,
         children: [
           {
@@ -57,55 +54,31 @@ const router = createBrowserRouter([
       },
       {
         path: "/",
-        element: <Root />,
+        element: <HomeLayout />,
         children: [
           {
-            path: "",
-            element: (
-              <AuthStatusProvider>
-                <Home />
-              </AuthStatusProvider>
-            ),
+            path: Routes.HOME,
+            element: <Home />,
           },
           {
-            path: "timeline",
-            element: (
-              <AuthStatusProvider>
-                <Timeline />
-              </AuthStatusProvider>
-            ),
+            path: Routes.TIMELINE,
+            element: <Timeline />,
           },
           {
-            path: "resources",
-            element: (
-              <AuthStatusProvider>
-                <Resources />
-              </AuthStatusProvider>
-            ),
+            path: Routes.RESOURCES,
+            element: <Resources />,
           },
           {
-            path: "inbox",
-            element: (
-              <AuthStatusProvider>
-                <Inboxes />
-              </AuthStatusProvider>
-            ),
+            path: Routes.INBOX,
+            element: <Inboxes />,
           },
           {
-            path: "archived",
-            element: (
-              <AuthStatusProvider>
-                <Archived />
-              </AuthStatusProvider>
-            ),
+            path: Routes.ARCHIVED,
+            element: <Archived />,
           },
           {
-            path: "setting",
-            element: (
-              <AuthStatusProvider>
-                <Setting />
-              </AuthStatusProvider>
-            ),
+            path: Routes.SETTING,
+            element: <Setting />,
           },
           {
             path: "explore",

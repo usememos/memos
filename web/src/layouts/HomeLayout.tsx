@@ -1,16 +1,33 @@
 import { Button, IconButton, Tooltip } from "@mui/joy";
 import classNames from "classnames";
 import { Suspense } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import Icon from "@/components/Icon";
 import Navigation from "@/components/Navigation";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import Loading from "@/pages/Loading";
+import { Routes } from "@/router";
 
-function Root() {
+const HomeLayout = () => {
+  const navigateTo = useNavigateTo();
+  const location = useLocation();
   const { sm } = useResponsiveWidth();
+  const currentUser = useCurrentUser();
   const [collapsed, setCollapsed] = useLocalStorage<boolean>("navigation-collapsed", false);
+
+  // Redirect to explore page if not logged in.
+  if (
+    !currentUser &&
+    ([Routes.HOME, Routes.TIMELINE, Routes.RESOURCES, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(
+      location.pathname,
+    )
+  ) {
+    navigateTo("/explore");
+    return;
+  }
 
   return (
     <div className="w-full min-h-full">
@@ -56,6 +73,6 @@ function Root() {
       </div>
     </div>
   );
-}
+};
 
-export default Root;
+export default HomeLayout;

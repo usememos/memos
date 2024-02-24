@@ -1,5 +1,5 @@
 import { useColorScheme } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import storage from "./helpers/storage";
@@ -16,7 +16,6 @@ const App = () => {
   const globalStore = useGlobalStore();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
-  const [loading, setLoading] = useState(true);
   const { appearance, locale, systemStatus } = globalStore.state;
   const userSetting = userStore.userSetting;
   const workspaceGeneralSetting =
@@ -29,19 +28,6 @@ const App = () => {
       navigateTo("/auth/signup");
     }
   }, [systemStatus.host]);
-
-  useEffect(() => {
-    const initialState = async () => {
-      await workspaceSettingStore.fetchWorkspaceSetting(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL);
-      try {
-        await userStore.fetchCurrentUser();
-      } catch (error) {
-        // Do nothing.
-      }
-    };
-
-    Promise.all([initialState()]).then(() => setLoading(false));
-  }, []);
 
   useEffect(() => {
     const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -132,7 +118,7 @@ const App = () => {
     }
   }, [mode]);
 
-  return loading ? null : <Outlet />;
+  return <Outlet />;
 };
 
 export default App;

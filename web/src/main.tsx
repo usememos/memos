@@ -9,6 +9,7 @@ import "./css/global.css";
 import "./css/tailwind.css";
 import "./helpers/polyfill";
 import "./i18n";
+import CommonContextProvider from "./layouts/CommonContextProvider";
 import "./less/highlight.less";
 import router from "./router";
 import store from "./store";
@@ -25,7 +26,9 @@ import theme from "./theme";
   root.render(
     <Provider store={store}>
       <CssVarsProvider theme={theme}>
-        <RouterProvider router={router} />
+        <CommonContextProvider>
+          <RouterProvider router={router} />
+        </CommonContextProvider>
         <Toaster position="top-right" />
       </CssVarsProvider>
     </Provider>,
