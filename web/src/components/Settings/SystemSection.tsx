@@ -221,18 +221,101 @@ const SystemSection = () => {
         </div>
         <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
       </div>
-      <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.settings")}</p>
+      <p className="font-medium text-gray-700 dark:text-gray-500">General</p>
       <div className="w-full flex flex-row justify-between items-center">
-        <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
+        <span className="mr-1">{t("setting.system-section.allow-user-signup")}</span>
         <Switch checked={!workspaceGeneralSetting.disallowSignup} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span className="normal-text">{t("setting.system-section.disable-password-login")}</span>
+        <span className="mr-1">{t("setting.system-section.disable-password-login")}</span>
         <Switch
           checked={workspaceGeneralSetting.disallowPasswordLogin}
           onChange={(event) => handleDisablePasswordLoginChanged(event.target.checked)}
         />
       </div>
+      <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
+        <div className="w-full flex flex-row justify-between items-center">
+          <div className="flex flex-row items-center">
+            <div className="w-auto flex items-center">
+              <span className="mr-1">Instance URL</span>
+            </div>
+          </div>
+          <Button variant="outlined" color="neutral" onClick={handleSaveInstanceUrl}>
+            {t("common.save")}
+          </Button>
+        </div>
+        <Input
+          className="w-full"
+          sx={{
+            fontFamily: "monospace",
+            fontSize: "14px",
+          }}
+          placeholder={"Should be started with http:// or https://"}
+          value={workspaceGeneralSetting.instanceUrl}
+          onChange={(event) => handleInstanceUrlChanged(event.target.value)}
+        />
+        <div className="w-full">
+          <Link
+            className="text-gray-500 text-sm inline-flex flex-row justify-start items-center hover:underline hover:text-blue-600"
+            to="https://usememos.com/docs/advanced-settings/seo"
+            target="_blank"
+          >
+            {t("common.learn-more")}
+            <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
+          </Link>
+        </div>
+      </div>
+      <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
+        <div className="w-full flex flex-row justify-between items-center">
+          <span className="normal-text">{t("setting.system-section.additional-style")}</span>
+          <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalStyle}>
+            {t("common.save")}
+          </Button>
+        </div>
+        <Textarea
+          className="w-full"
+          sx={{
+            fontFamily: "monospace",
+            fontSize: "14px",
+          }}
+          minRows={2}
+          maxRows={4}
+          placeholder={t("setting.system-section.additional-style-placeholder")}
+          value={workspaceGeneralSetting.additionalStyle}
+          onChange={(event) => handleAdditionalStyleChanged(event.target.value)}
+        />
+        <div className="w-full flex flex-row justify-between items-center">
+          <span className="normal-text">{t("setting.system-section.additional-script")}</span>
+          <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalScript}>
+            {t("common.save")}
+          </Button>
+        </div>
+        <Textarea
+          className="w-full"
+          color="neutral"
+          sx={{
+            fontFamily: "monospace",
+            fontSize: "14px",
+          }}
+          minRows={2}
+          maxRows={4}
+          placeholder={t("setting.system-section.additional-script-placeholder")}
+          value={workspaceGeneralSetting.additionalScript}
+          onChange={(event) => handleAdditionalScriptChanged(event.target.value)}
+        />
+        <div className="w-full">
+          <Link
+            className="text-gray-500 text-sm flex flex-row justify-start items-center hover:underline hover:text-blue-600"
+            to="https://usememos.com/docs/advanced-settings/custom-style-and-script"
+            target="_blank"
+          >
+            {t("common.learn-more")}
+            <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
+          </Link>
+        </div>
+      </div>
+      <Divider className="!my-3" />
+      <p className="font-medium text-gray-700 dark:text-gray-500">Others</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
@@ -258,115 +341,37 @@ const SystemSection = () => {
           onChange={handleMaxUploadSizeChanged}
         />
       </div>
-      <Divider className="!mt-3 !my-4" />
-      <div className="w-full flex flex-row justify-between items-center">
-        <div className="flex flex-row items-center">
-          <div className="w-auto flex items-center">
-            <span className="text-sm mr-1">Instance URL</span>
+      <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
+        <div className="w-full flex flex-row justify-between items-center">
+          <div className="flex flex-row items-center">
+            <div className="w-auto flex items-center">
+              <span className="mr-1">{t("setting.system-section.telegram-bot-token")}</span>
+            </div>
           </div>
+          <Button variant="outlined" color="neutral" onClick={handleSaveTelegramBotToken}>
+            {t("common.save")}
+          </Button>
         </div>
-        <Button variant="outlined" color="neutral" onClick={handleSaveInstanceUrl}>
-          {t("common.save")}
-        </Button>
-      </div>
-      <Input
-        className="w-full"
-        sx={{
-          fontFamily: "monospace",
-          fontSize: "14px",
-        }}
-        placeholder={"Should be started with http:// or https://"}
-        value={workspaceGeneralSetting.instanceUrl}
-        onChange={(event) => handleInstanceUrlChanged(event.target.value)}
-      />
-      <div className="w-full">
-        <Link
-          className="text-gray-500 text-sm inline-flex flex-row justify-start items-center mt-2 hover:underline hover:text-blue-600"
-          to="https://usememos.com/docs/advanced-settings/seo"
-          target="_blank"
-        >
-          {t("common.learn-more")}
-          <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
-        </Link>
-      </div>
-      <Divider className="!mt-3 !my-4" />
-      <div className="w-full flex flex-row justify-between items-center">
-        <div className="flex flex-row items-center">
-          <div className="w-auto flex items-center">
-            <span className="text-sm mr-1">{t("setting.system-section.telegram-bot-token")}</span>
-          </div>
+        <Input
+          className="w-full"
+          sx={{
+            fontFamily: "monospace",
+            fontSize: "14px",
+          }}
+          placeholder={t("setting.system-section.telegram-bot-token-placeholder")}
+          value={telegramBotToken}
+          onChange={(event) => handleTelegramBotTokenChanged(event.target.value)}
+        />
+        <div className="w-full">
+          <Link
+            className="text-gray-500 text-sm inline-flex flex-row justify-start items-center hover:underline hover:text-blue-600"
+            to="https://usememos.com/docs/integration/telegram-bot"
+            target="_blank"
+          >
+            {t("common.learn-more")}
+            <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
+          </Link>
         </div>
-        <Button variant="outlined" color="neutral" onClick={handleSaveTelegramBotToken}>
-          {t("common.save")}
-        </Button>
-      </div>
-      <Input
-        className="w-full"
-        sx={{
-          fontFamily: "monospace",
-          fontSize: "14px",
-        }}
-        placeholder={t("setting.system-section.telegram-bot-token-placeholder")}
-        value={telegramBotToken}
-        onChange={(event) => handleTelegramBotTokenChanged(event.target.value)}
-      />
-      <div className="w-full">
-        <Link
-          className="text-gray-500 text-sm inline-flex flex-row justify-start items-center mt-2 hover:underline hover:text-blue-600"
-          to="https://usememos.com/docs/integration/telegram-bot"
-          target="_blank"
-        >
-          {t("common.learn-more")}
-          <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
-        </Link>
-      </div>
-      <Divider className="!mt-3 !my-4" />
-      <div className="w-full flex flex-row justify-between items-center">
-        <span className="normal-text">{t("setting.system-section.additional-style")}</span>
-        <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalStyle}>
-          {t("common.save")}
-        </Button>
-      </div>
-      <Textarea
-        className="w-full"
-        sx={{
-          fontFamily: "monospace",
-          fontSize: "14px",
-        }}
-        minRows={2}
-        maxRows={4}
-        placeholder={t("setting.system-section.additional-style-placeholder")}
-        value={workspaceGeneralSetting.additionalStyle}
-        onChange={(event) => handleAdditionalStyleChanged(event.target.value)}
-      />
-      <div className="w-full flex flex-row justify-between items-center mt-2">
-        <span className="normal-text">{t("setting.system-section.additional-script")}</span>
-        <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalScript}>
-          {t("common.save")}
-        </Button>
-      </div>
-      <Textarea
-        className="w-full"
-        color="neutral"
-        sx={{
-          fontFamily: "monospace",
-          fontSize: "14px",
-        }}
-        minRows={2}
-        maxRows={4}
-        placeholder={t("setting.system-section.additional-script-placeholder")}
-        value={workspaceGeneralSetting.additionalScript}
-        onChange={(event) => handleAdditionalScriptChanged(event.target.value)}
-      />
-      <div className="w-full">
-        <Link
-          className="text-gray-500 text-sm flex flex-row justify-start items-center mt-2 hover:underline hover:text-blue-600"
-          to="https://usememos.com/docs/advanced-settings/custom-style-and-script"
-          target="_blank"
-        >
-          {t("common.learn-more")}
-          <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
-        </Link>
       </div>
     </div>
   );

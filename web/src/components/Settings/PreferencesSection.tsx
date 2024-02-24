@@ -103,10 +103,10 @@ const PreferencesSection = () => {
         </Select>
       </div>
 
-      <Divider className="!mt-3 !my-4" />
+      <Divider className="!my-3" />
 
-      <div className="w-full flex flex-col justify-start items-start">
-        <div className="mb-2 w-full flex flex-row justify-between items-center">
+      <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
+        <div className="w-full flex flex-row justify-between items-center">
           <div className="w-auto flex items-center">
             <span className="mr-1">{t("setting.preference-section.telegram-user-id")}</span>
           </div>
@@ -126,7 +126,7 @@ const PreferencesSection = () => {
         />
         <div className="w-full">
           <Link
-            className="text-gray-500 text-sm inline-flex flex-row justify-start items-center mt-2 hover:underline hover:text-blue-600"
+            className="text-gray-500 text-sm inline-flex flex-row justify-start items-center hover:underline hover:text-blue-600"
             to="https://usememos.com/docs/integration/telegram-bot"
             target="_blank"
           >
@@ -136,7 +136,7 @@ const PreferencesSection = () => {
         </div>
       </div>
 
-      <Divider className="!my-4" />
+      <Divider className="!my-3" />
 
       <WebhookSection />
     </div>

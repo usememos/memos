@@ -147,13 +147,13 @@ const MemberSection = () => {
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.member-section.create-a-member")}</p>
-      <div className="w-full flex flex-col justify-start items-start gap-2">
+      <div className="w-auto flex flex-col justify-start items-start gap-2 border rounded-md py-2 px-3 dark:border-zinc-700">
         <div className="flex flex-col justify-start items-start gap-1">
-          <span className="text-sm">{t("common.username")}</span>
+          <span>{t("common.username")}</span>
           <Input type="text" placeholder={t("common.username")} value={state.creatingUser.username} onChange={handleUsernameInputChange} />
         </div>
         <div className="flex flex-col justify-start items-start gap-1">
-          <span className="text-sm">{t("common.password")}</span>
+          <span>{t("common.password")}</span>
           <Input
             type="password"
             placeholder={t("common.password")}
@@ -162,8 +162,8 @@ const MemberSection = () => {
           />
         </div>
         <div className="flex flex-col justify-start items-start gap-1">
-          <span className="text-sm">{t("common.role")}</span>
-          <RadioGroup size="sm" orientation="horizontal" defaultValue={User_Role.USER} onChange={handleUserRoleInputChange}>
+          <span>{t("common.role")}</span>
+          <RadioGroup orientation="horizontal" defaultValue={User_Role.USER} onChange={handleUserRoleInputChange}>
             <Radio value={User_Role.USER} label="User" />
             <Radio value={User_Role.ADMIN} label="Admin" />
           </RadioGroup>

@@ -145,9 +145,14 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   }, []);
 
   return (
-    <div className={classNames("flex flex-col justify-start items-start relative w-full h-auto bg-inherit dark:text-gray-300", className)}>
+    <div
+      className={classNames(
+        "flex flex-col justify-start items-start relative w-full h-auto max-h-[256px] bg-inherit dark:text-gray-300",
+        className,
+      )}
+    >
       <textarea
-        className="w-full h-full max-h-[300px] my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap word-break"
+        className="w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap word-break"
         rows={1}
         placeholder={placeholder}
         ref={editorRef}
