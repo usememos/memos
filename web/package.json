@@ -17,6 +17,7 @@
     "axios": "^1.6.7",
     "classnames": "^2.5.1",
     "copy-to-clipboard": "^3.3.3",
+    "fuse.js": "^7.0.0",
     "highlight.js": "^11.9.0",
     "i18next": "^21.10.0",
     "i18next-browser-languagedetector": "^7.2.0",
