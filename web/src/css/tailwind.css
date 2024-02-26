@@ -21,13 +21,6 @@
   }
 }
 
-.custom-memo-content-wrapper {
-  display: block;
-  width: 100%;
-  overflow: hidden;
-}
-
-
 .full-height {
   height: 100%;
 }
@@ -35,32 +28,4 @@
 .half-height {
   max-height: 6cap;
   overflow-y: hidden;
-}
-
-@keyframes slideDown {
-  0% {
-    max-height: 0;
-  }
-
-  100% {
-    max-height: 1000px;
-  }
-}
-
-.slide-down {
-  animation: slideDown 1s ease-in-out;
-}
-
-@keyframes slideUp {
-  0% {
-    max-height: 1000px;
-  }
-
-  100% {
-    max-height: 6cap;
-  }
-}
-
-.slide-up {
-  animation: slideUp 1s ease-in-out;
 }

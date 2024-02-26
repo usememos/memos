@@ -100,13 +100,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
   }, [userStore.userSetting?.compactView]);
 
-  const handleCompactModeChanged = () => {
-    if (userStore.userSetting?.compactView) {
-      console.log("Expanding/Shrinking only in compact mode.");
-      setExpand(!expand);
-    }
-  };
-
   return (
     <div
       className={classNames(
@@ -172,8 +165,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
         </div>
       </div>
       <div
-        onClick={handleCompactModeChanged}
-        className={`z-0 custom-memo-content-wrapper ${!expand ? "full-height slide-down" : "half-height slide-up shadow-2xl"}`}
+        className={`z-0 ${!expand ? "full-height" : "half-height"}`}
       >
         <MemoContent
           key={`${memo.id}-${memo.updateTime}`}
@@ -181,6 +173,9 @@ const MemoView: React.FC<Props> = (props: Props) => {
           content={memo.content}
           readonly={readonly}
           onClick={handleMemoContentClick}
+          className={classNames(
+            expand && "text-black/40 dark:text-white/50"
+          )}
         />
         <MemoResourceListView resources={memo.resources} />
         <MemoRelationListView memo={memo} relations={referenceRelations} />
@@ -189,14 +184,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
       <div className="flex items-center justify-center w-full">
         {showExpandButton && (
           <div>
-            {!expand ? (
-              <Chip onClick={handleCompactModeChanged} variant="solid" color="primary" size="sm" className="capitalize m-2">
-                show less
-              </Chip>
-            ) : (
-              <Chip onClick={handleCompactModeChanged} variant="solid" color="primary" size="sm" className="capitalize m-2">
-                show more
-              </Chip>
+            {expand && (
+              <Chip variant="solid" color="primary" size="sm" className="capitalize m-2 cursor-pointer">
+              <span onClick={handleGotoMemoDetailPage}>show more</span>
+            </Chip>
             )}
           </div>
         )}
