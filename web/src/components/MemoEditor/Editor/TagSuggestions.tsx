@@ -75,12 +75,16 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
   };
 
   const handleInput = () => {
-    if (!editorRef.current) return;
+    const editor = editorRef.current;
+    if (!editor) return;
+
     select(0);
     const [word, index] = getCurrentWord();
-    const isActive = word.startsWith("#") && !word.slice(1).includes("#");
-    const caretCordinates = getCaretCoordinates(editorRef.current, index);
-    caretCordinates.top -= editorRef.current.scrollTop;
+    const currentChar = editor.value[editor.selectionEnd];
+    const isActive = word.startsWith("#") && currentChar !== "#";
+
+    const caretCordinates = getCaretCoordinates(editor, index);
+    caretCordinates.top -= editor.scrollTop;
     isActive ? setPosition(caretCordinates) : hide();
   };
 
