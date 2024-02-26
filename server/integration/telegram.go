@@ -141,7 +141,7 @@ func (t *TelegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 		if err != nil {
 			return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to EditMessage %s", err))
 		}
-		return nil
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Memo %d not found, possibly deleted elsewhere", memoID))
 	}
 
 	update := store.UpdateMemo{
