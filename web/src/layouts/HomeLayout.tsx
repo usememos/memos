@@ -1,6 +1,6 @@
 import { Button, IconButton, Tooltip } from "@mui/joy";
 import classNames from "classnames";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import Icon from "@/components/Icon";
@@ -19,15 +19,16 @@ const HomeLayout = () => {
   const [collapsed, setCollapsed] = useLocalStorage<boolean>("navigation-collapsed", false);
 
   // Redirect to explore page if not logged in.
-  if (
-    !currentUser &&
-    ([Routes.HOME, Routes.TIMELINE, Routes.RESOURCES, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(
-      location.pathname,
-    )
-  ) {
-    navigateTo("/explore");
-    return;
-  }
+  useEffect(() => {
+    if (
+      !currentUser &&
+      ([Routes.HOME, Routes.TIMELINE, Routes.RESOURCES, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(
+        location.pathname,
+      )
+    ) {
+      navigateTo("/explore");
+    }
+  }, []);
 
   return (
     <div className="w-full min-h-full">
