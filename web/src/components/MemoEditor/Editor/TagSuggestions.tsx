@@ -79,7 +79,9 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
     select(0);
     const [word, index] = getCurrentWord();
     const isActive = word.startsWith("#") && !word.slice(1).includes("#");
-    isActive ? setPosition(getCaretCoordinates(editorRef.current, index)) : hide();
+    const caretCordinates = getCaretCoordinates(editorRef.current, index);
+    caretCordinates.top -= editorRef.current.scrollTop;
+    isActive ? setPosition(caretCordinates) : hide();
   };
 
   const listenersAreRegisteredRef = useRef(false);
