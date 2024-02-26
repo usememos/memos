@@ -64,9 +64,6 @@ func (s *APIV1Service) SignIn(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 	}
-	if workspaceGeneralSetting.DisallowSignup {
-		return echo.NewHTTPError(http.StatusUnauthorized, "signup is disabled").SetInternal(err)
-	}
 	if workspaceGeneralSetting.DisallowPasswordLogin {
 		return echo.NewHTTPError(http.StatusUnauthorized, "password login is deactivated").SetInternal(err)
 	}
