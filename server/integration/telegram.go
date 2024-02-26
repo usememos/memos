@@ -130,6 +130,20 @@ func (t *TelegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to parse callbackQuery.Data %s", callbackQuery.Data))
 	}
 
+	memo, err := t.store.GetMemo(ctx, &store.FindMemo{
+		ID: &memoID,
+	})
+	if err != nil {
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to call FindMemo %s", err))
+	}
+	if memo == nil {
+		_, err = bot.EditMessage(ctx, callbackQuery.Message.Chat.ID, callbackQuery.Message.MessageID, fmt.Sprintf("Memo %d not found", memoID), nil)
+		if err != nil {
+			return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to EditMessage %s", err))
+		}
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Memo %d not found, possibly deleted elsewhere", memoID))
+	}
+
 	update := store.UpdateMemo{
 		ID:         memoID,
 		Visibility: &visibility,
