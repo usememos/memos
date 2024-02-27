@@ -164,14 +164,15 @@ const MemoView: React.FC<Props> = (props: Props) => {
           {!readonly && <MemoActionMenu memo={memo} hiddenActions={props.showPinned ? [] : ["pin"]} />}
         </div>
       </div>
-      <div className={`z-0 ${!expand ? "full-height" : "half-height"}`}>
+      <div
+        className={`z-0 ${!expand ? "full-height" : "half-height rounded-b-xl bg-gradient-to-b from-transparent to-zinc-200 dark:to-zinc-700"}`}
+      >
         <MemoContent
           key={`${memo.id}-${memo.updateTime}`}
           memoId={memo.id}
           content={memo.content}
           readonly={readonly}
           onClick={handleMemoContentClick}
-          className={classNames(expand && "text-black/40 dark:text-white/50")}
         />
         <MemoResourceListView resources={memo.resources} />
         <MemoRelationListView memo={memo} relations={referenceRelations} />
