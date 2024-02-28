@@ -12,12 +12,12 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
 
-	apiv1 "github.com/usememos/memos/server/route/api/v1"
-	apiv2 "github.com/usememos/memos/server/route/api/v2"
 	"github.com/usememos/memos/plugin/telegram"
-	"github.com/usememos/memos/server/route/frontend"
 	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
+	apiv1 "github.com/usememos/memos/server/route/api/v1"
+	apiv2 "github.com/usememos/memos/server/route/api/v2"
+	"github.com/usememos/memos/server/route/frontend"
 	versionchecker "github.com/usememos/memos/server/service/version_checker"
 	"github.com/usememos/memos/store"
 )
