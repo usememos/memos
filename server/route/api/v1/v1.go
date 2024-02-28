@@ -7,10 +7,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/usememos/memos/api/resource"
-	"github.com/usememos/memos/api/rss"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/server/route/resource"
+	"github.com/usememos/memos/server/route/rss"
 	"github.com/usememos/memos/store"
 )
 

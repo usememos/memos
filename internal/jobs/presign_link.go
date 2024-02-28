@@ -9,9 +9,9 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/plugin/storage/s3"
+	apiv1 "github.com/usememos/memos/server/route/api/v1"
 	"github.com/usememos/memos/store"
 )
 
