@@ -25,7 +25,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/swag v1.16.3
-	github.com/yourselfhosted/gomark v0.0.0-20240222150908-75b2b15a7837
+	github.com/yourselfhosted/gomark v0.0.0-20240228170507-6a73bfad2eb6
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.19.0
 	golang.org/x/exp v0.0.0-20240213143201-ec583247a57a
