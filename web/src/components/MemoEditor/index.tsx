@@ -7,6 +7,7 @@ import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useMemoParser } from "@/hooks/useMemoParser";
 import { useGlobalStore, useResourceStore, useTagStore } from "@/store/module";
 import { useMemoStore, useUserStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
@@ -15,7 +16,7 @@ import { Resource } from "@/types/proto/api/v2/resource_service";
 import { UserSetting } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
-import { extractTagsFromContent } from "@/utils/tag";
+import { extractTagsFromNodes } from "@/utils/tag";
 import showCreateResourceDialog from "../CreateResourceDialog";
 import Icon from "../Icon";
 import VisibilityIcon from "../VisibilityIcon";
@@ -330,8 +331,10 @@ const MemoEditor = (props: Props) => {
       toast.error(error.details);
     }
 
+    const memoParser = useMemoParser();
     // Batch upsert tags.
-    const tags = extractTagsFromContent(content);
+    const nodes = await memoParser.parseOrFetchNodes(content);
+    const tags = extractTagsFromNodes(nodes);
     await tagStore.batchUpsertTag(tags);
 
     setState((state) => {

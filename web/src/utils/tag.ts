@@ -2,9 +2,8 @@ import { Node } from "@/types/node";
 
 export const TAG_REG = /#([^\s#,]+)/;
 
-// extractTagsFromContent extracts tags from content.
-export const extractTagsFromContent = (content: string) => {
-  const nodes = window.parse(content);
+// extractTagsFromNodes extracts tags from nodes.
+export const extractTagsFromNodes = (nodes: Node[]) => {
   const tags = new Set<string>();
 
   const traverse = (nodes: Node[], handle: (node: Node) => void) => {
