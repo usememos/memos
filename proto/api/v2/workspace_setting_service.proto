@@ -64,6 +64,6 @@ message WorkspaceGeneralSetting {
   string additional_script = 5;
   // additional_style is the additional style.
   string additional_style = 6;
-  // server side markdown processing setting.
+  // server_side_markdown is the setting to enable server side markdown processing.
   bool server_side_markdown = 7;
 }
