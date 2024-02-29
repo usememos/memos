@@ -1,9 +1,10 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Icon from "@/components/Icon";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import { getDateTimeString } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
+import { useMemoParser } from "@/hooks/useMemoParser";
 import { useMemoStore } from "@/store/v1";
 import MemoContent from "..";
 import { RendererContext } from "../types";
@@ -35,6 +36,9 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
     return <Error message={`Nested Rendering Error: ![[${resourceName}]]`} />;
   }
 
+  const memoParser = useMemoParser();
+  const nodes = useMemo(() => (memo !== undefined ? memoParser.getNodes(memo) : []), [memo]);
+
   // Add the memo to the set of embedded memos. This is used to prevent infinite loops when a memo embeds itself.
   context.embeddedMemos.add(resourceName);
   const params = new URLSearchParams(paramsStr);
@@ -42,7 +46,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   if (inlineMode) {
     return (
       <div className="w-full">
-        <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} content={memo.content} embeddedMemos={context.embeddedMemos} />
+        <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} nodes={nodes} embeddedMemos={context.embeddedMemos} />
         <MemoResourceListView resources={memo.resources} />
       </div>
     );
@@ -56,7 +60,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
           <Icon.ArrowUpRight className="w-5 h-auto opacity-80 text-gray-400" />
         </Link>
       </div>
-      <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} content={memo.content} embeddedMemos={context.embeddedMemos} />
+      <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} nodes={nodes} embeddedMemos={context.embeddedMemos} />
       <MemoResourceListView resources={memo.resources} />
     </div>
   );
