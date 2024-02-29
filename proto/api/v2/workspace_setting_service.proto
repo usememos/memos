@@ -64,4 +64,6 @@ message WorkspaceGeneralSetting {
   string additional_script = 5;
   // additional_style is the additional style.
   string additional_style = 6;
+  // server side markdown processing setting.
+  bool server_side_markdown = 7;
 }

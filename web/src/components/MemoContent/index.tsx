@@ -6,7 +6,7 @@ import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
 interface Props {
-  content: string;
+  nodes: Node[];
   memoId?: number;
   readonly?: boolean;
   disableFilter?: boolean;
@@ -18,11 +18,10 @@ interface Props {
 }
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, content, memoId, embeddedMemos, onClick } = props;
+  const { className, nodes, memoId, embeddedMemos, onClick } = props;
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
-  const nodes = window.parse(content);
   const allowEdit = !props.readonly && memoId && currentUser?.id === memoStore.getMemoById(memoId)?.creatorId;
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {

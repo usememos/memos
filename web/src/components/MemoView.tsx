@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { getRelativeTimeString, getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useMemoParser } from "@/hooks/useMemoParser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore, extractUsernameFromName } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
@@ -44,6 +45,8 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referenceRelations = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const readonly = memo.creator !== user?.name;
+  const memoParser = useMemoParser();
+  const nodes = memoParser.getNodes(memo);
 
   useEffect(() => {
     (async () => {
@@ -141,7 +144,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
       <MemoContent
         key={`${memo.id}-${memo.updateTime}`}
         memoId={memo.id}
-        content={memo.content}
+        nodes={nodes}
         readonly={readonly}
         onClick={handleMemoContentClick}
       />

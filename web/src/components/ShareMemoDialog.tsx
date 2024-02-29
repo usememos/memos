@@ -1,11 +1,12 @@
 import { Button, IconButton, Select, Option } from "@mui/joy";
 import copy from "copy-to-clipboard";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { getDateTimeString } from "@/helpers/datetime";
 import { downloadFileFromUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
+import { useMemoParser } from "@/hooks/useMemoParser";
 import toImage from "@/labs/html2image";
 import { useUserStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
 import { Visibility } from "@/types/proto/api/v2/memo_service";
@@ -32,6 +33,8 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const memoElRef = useRef<HTMLDivElement>(null);
   const memoStore = useMemoStore();
   const memo = memoStore.getMemoById(memoId);
+  const memoParser = useMemoParser();
+  const nodes = useMemo(() => memoParser.getNodes(memo), [memo]);
   const user = userStore.getUserByUsername(extractUsernameFromName(memo.creator));
   const currentUser = useCurrentUser();
   const readonly = memo?.creatorId !== currentUser?.id;
@@ -155,7 +158,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
           >
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{getDateTimeString(memo.displayTime)}</span>
             <div className="w-full px-6 text-base pb-4">
-              <MemoContent memoId={memo.id} content={memo.content} readonly={true} disableFilter />
+              <MemoContent memoId={memo.id} nodes={nodes} readonly={true} disableFilter />
               <MemoResourceListView resources={memo.resources} />
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-900 py-4 px-6">

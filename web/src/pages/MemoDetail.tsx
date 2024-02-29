@@ -1,7 +1,7 @@
 import { Select, Tooltip, Option, IconButton } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import { ClientError } from "nice-grpc-web";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import Icon from "@/components/Icon";
@@ -18,6 +18,7 @@ import UserAvatar from "@/components/UserAvatar";
 import VisibilityIcon from "@/components/VisibilityIcon";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useMemoParser } from "@/hooks/useMemoParser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore, useMemoStore, extractUsernameFromName } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
@@ -42,6 +43,8 @@ const MemoDetail = () => {
     memo?.relations.filter((relation) => relation.relatedMemoId === memo?.id && relation.type === MemoRelation_Type.COMMENT) || [];
   const comments = commentRelations.map((relation) => memoStore.getMemoById(relation.memoId)).filter((memo) => memo) as any as Memo[];
   const readonly = memo?.creatorId !== currentUser?.id;
+  const memoParser = useMemoParser();
+  const nodes = useMemo(() => (memo !== undefined ? memoParser.getNodes(memo) : []), [memo]);
 
   // Prepare memo.
   useEffect(() => {
@@ -152,7 +155,7 @@ const MemoDetail = () => {
               </Link>
             </div>
           )}
-          <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} content={memo.content} readonly={readonly} />
+          <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} nodes={nodes} readonly={readonly} />
           <MemoResourceListView resources={memo.resources} />
           <MemoRelationListView memo={memo} relations={referenceRelations} />
           <div className="w-full mt-3 flex flex-row justify-between items-center gap-2">

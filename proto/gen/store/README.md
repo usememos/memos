@@ -379,6 +379,7 @@
 | disallow_password_login | [bool](#bool) |  | disallow_password_login is the flag to disallow password login. |
 | additional_script | [string](#string) |  | additional_script is the additional script. |
 | additional_style | [string](#string) |  | additional_style is the additional style. |
+| server_side_markdown | [bool](#bool) |  | server side markdown processing setting. |
 
 
 
