@@ -73,7 +73,7 @@ if (!$?) {
     Write-Host "Frontend built!" -f green
 }
 
-f (!$?) {
+if (!$?) {
     Write-Host -BackgroundColor red -ForegroundColor white "Could not generate buf types. See above."
     Exit 1
 } else {
