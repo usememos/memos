@@ -9,7 +9,7 @@ import MemoEditor from "@/components/MemoEditor";
 import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
-import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
+import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
@@ -52,7 +52,7 @@ const Home = () => {
     }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
-      pageSize: DEFAULT_MEMO_LIMIT,
+      pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
       filter: filters.join(" && "),
       pageToken: nextPageTokenRef.current,
     });

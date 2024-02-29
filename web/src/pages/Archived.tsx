@@ -9,7 +9,7 @@ import MemoContent from "@/components/MemoContent";
 import MemoFilter from "@/components/MemoFilter";
 import MobileHeader from "@/components/MobileHeader";
 import SearchBar from "@/components/SearchBar";
-import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
+import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -51,7 +51,7 @@ const Archived = () => {
     }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
-      pageSize: DEFAULT_MEMO_LIMIT,
+      pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
       filter: filters.join(" && "),
       pageToken: nextPageTokenRef.current,
     });

@@ -11,7 +11,7 @@ import MobileHeader from "@/components/MobileHeader";
 import TimelineSidebar from "@/components/TimelineSidebar";
 import TimelineSidebarDrawer from "@/components/TimelineSidebarDrawer";
 import { memoServiceClient } from "@/grpcweb";
-import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
+import { DAILY_TIMESTAMP, DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { getNormalizedTimeString, getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
@@ -107,7 +107,7 @@ const Timeline = () => {
     }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
-      pageSize: DEFAULT_MEMO_LIMIT,
+      pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
       filter: filters.join(" && "),
       pageToken: nextPageTokenRef.current,
     });
