@@ -3,12 +3,11 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"log/slog"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -31,7 +30,6 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	driver := DB{profile: profile}
 	driver.config, err = mysql.ParseDSN(dsn)
 	if err != nil {
-		log.Error(fmt.Sprintf("DSN parse error: %s", dsn))
 		return nil, errors.New("Parse DSN eroor")
 	}
 
@@ -87,7 +85,7 @@ func (d *DB) GetCurrentDBSize(ctx context.Context) (int64, error) {
 		" GROUP BY `table_schema`"
 	rows, err := d.db.QueryContext(ctx, query, d.config.DBName)
 	if err != nil {
-		log.Error("Query db size error, make sure you have enough privilege")
+		slog.Error("Query db size error, make sure you have enough privilege", err)
 		return 0, err
 	}
 	defer rows.Close()

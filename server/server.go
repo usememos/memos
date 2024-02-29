@@ -9,7 +9,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/plugin/telegram"
@@ -49,30 +48,14 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		telegramBot: telegram.NewBotWithHandler(integration.NewTelegramHandler(store)),
 	}
 
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: `{"time":"${time_rfc3339}","latency":"${latency_human}",` +
-			`"method":"${method}","uri":"${uri}",` +
-			`"status":${status},"error":"${error}"}` + "\n",
-	}))
-
+	// Register CORS middleware.
 	e.Use(CORSMiddleware())
-
-	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
-		Skipper: grpcRequestSkipper,
-		Timeout: 30 * time.Second,
-	}))
 
 	serverID, err := s.getSystemServerID(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to retrieve system server ID")
 	}
 	s.ID = serverID
-
-	// Only serve frontend when it's enabled.
-	if profile.Frontend {
-		frontendService := frontend.NewFrontendService(profile, store)
-		frontendService.Serve(ctx, e)
-	}
 
 	secret := "usememos"
 	if profile.Mode == "prod" {
@@ -87,6 +70,12 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	e.GET("/healthz", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Service ready.")
 	})
+
+	// Only serve frontend when it's enabled.
+	if profile.Frontend {
+		frontendService := frontend.NewFrontendService(profile, store)
+		frontendService.Serve(ctx, e)
+	}
 
 	// Register API v1 endpoints.
 	rootGroup := e.Group("")

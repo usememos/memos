@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -14,9 +15,7 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 
-	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -99,7 +98,7 @@ func (s *ResourceService) streamResource(c echo.Context) error {
 		thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
 		thumbnailBlob, err := getOrGenerateThumbnailImage(blob, thumbnailPath)
 		if err != nil {
-			log.Warn(fmt.Sprintf("failed to get or generate local thumbnail with path %s", thumbnailPath), zap.Error(err))
+			slog.Warn("failed to get or generate thumbnail image", err)
 		} else {
 			blob = thumbnailBlob
 		}

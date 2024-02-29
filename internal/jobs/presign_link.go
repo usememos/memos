@@ -3,13 +3,12 @@ package jobs
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 	"strings"
 	"time"
 
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 
-	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/plugin/storage/s3"
 	apiv1 "github.com/usememos/memos/server/route/api/v1"
 	"github.com/usememos/memos/store"
@@ -19,11 +18,10 @@ import (
 // It uses S3 client to generate presigned URLs and updates the corresponding resources in the store.
 func RunPreSignLinks(ctx context.Context, dataStore *store.Store) {
 	for {
-		started := time.Now()
 		if err := signExternalLinks(ctx, dataStore); err != nil {
-			log.Warn("failed sign external links", zap.Error(err))
+			slog.Error("failed to pre-sign links", err)
 		} else {
-			log.Info("links pre-signed", zap.Duration("duration", time.Since(started)))
+			slog.Debug("pre-signed links")
 		}
 		select {
 		case <-time.After(s3.LinkLifetime / 2):
@@ -69,7 +67,7 @@ func signExternalLinks(ctx context.Context, dataStore *store.Store) error {
 			}
 			newLink, err := objectStore.PreSignLink(ctx, res.ExternalLink)
 			if err != nil {
-				log.Warn("failed pre-sign link", zap.Int32("resource", res.ID), zap.String("link", res.ExternalLink), zap.Error(err))
+				slog.Error("failed to pre-sign link", err)
 				continue // do not fail - we may want update left over links too
 			}
 			now := time.Now().Unix()

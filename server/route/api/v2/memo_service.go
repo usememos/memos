@@ -6,18 +6,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/google/cel-go/cel"
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/webhook"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
@@ -70,7 +69,7 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	}
 	// Try to dispatch webhook when memo is created.
 	if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
-		log.Warn("Failed to dispatch memo created webhook", zap.Error(err))
+		slog.Warn("Failed to dispatch memo created webhook", err)
 	}
 
 	response := &apiv2pb.CreateMemoResponse{
@@ -280,7 +279,7 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 	}
 	// Try to dispatch webhook when memo is updated.
 	if err := s.DispatchMemoUpdatedWebhook(ctx, memoMessage); err != nil {
-		log.Warn("Failed to dispatch memo updated webhook", zap.Error(err))
+		slog.Warn("Failed to dispatch memo updated webhook", err)
 	}
 
 	return &apiv2pb.UpdateMemoResponse{
@@ -307,7 +306,7 @@ func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMe
 	if memoMessage, err := s.convertMemoFromStore(ctx, memo); err == nil {
 		// Try to dispatch webhook when memo is deleted.
 		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
-			log.Warn("Failed to dispatch memo deleted webhook", zap.Error(err))
+			slog.Warn("Failed to dispatch memo deleted webhook", err)
 		}
 	}
 

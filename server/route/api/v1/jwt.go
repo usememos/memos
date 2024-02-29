@@ -2,15 +2,14 @@ package v1
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 
-	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/internal/util"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/route/api/auth"
@@ -83,7 +82,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		if err != nil {
 			err = removeAccessTokenAndCookies(c, server.Store, userID, accessToken)
 			if err != nil {
-				log.Error("fail to remove AccessToken and Cookies", zap.Error(err))
+				slog.Warn("fail to remove AccessToken and Cookies", err)
 			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired access token")
 		}
@@ -95,7 +94,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		if !validateAccessToken(accessToken, accessTokens) {
 			err = removeAccessTokenAndCookies(c, server.Store, userID, accessToken)
 			if err != nil {
-				log.Error("fail to remove AccessToken and Cookies", zap.Error(err))
+				slog.Warn("fail to remove AccessToken and Cookies", err)
 			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid access token.")
 		}

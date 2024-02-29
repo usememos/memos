@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -11,9 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 
-	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/webhook"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -390,7 +389,6 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 		for _, userSetting := range userSettings {
 			tgUserID, err := strconv.ParseInt(userSetting.GetTelegramUserId(), 10, 64)
 			if err != nil {
-				log.Error("failed to parse Telegram UserID", zap.Error(err))
 				continue
 			}
 
@@ -398,14 +396,13 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 			content := memoResponse.CreatorName + " Says:\n\n" + memoResponse.Content
 			_, err = s.telegramBot.SendMessage(ctx, tgUserID, content)
 			if err != nil {
-				log.Error("Failed to send Telegram notification", zap.Error(err))
 				continue
 			}
 		}
 	}
 	// Try to dispatch webhook when memo is created.
 	if err := s.DispatchMemoCreatedWebhook(ctx, memoResponse); err != nil {
-		log.Warn("Failed to dispatch memo created webhook", zap.Error(err))
+		slog.Warn("Failed to dispatch memo created webhook", err)
 	}
 
 	return c.JSON(http.StatusOK, memoResponse)
@@ -627,7 +624,7 @@ func (s *APIV1Service) DeleteMemo(c echo.Context) error {
 	if memoMessage, err := s.convertMemoFromStore(ctx, memo); err == nil {
 		// Try to dispatch webhook when memo is deleted.
 		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
-			log.Warn("Failed to dispatch memo deleted webhook", zap.Error(err))
+			slog.Warn("Failed to dispatch memo deleted webhook", err)
 		}
 	}
 
@@ -821,7 +818,7 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 	}
 	// Try to dispatch webhook when memo is updated.
 	if err := s.DispatchMemoUpdatedWebhook(ctx, memoResponse); err != nil {
-		log.Warn("Failed to dispatch memo updated webhook", zap.Error(err))
+		slog.Error("Failed to dispatch memo updated webhook", err)
 	}
 
 	return c.JSON(http.StatusOK, memoResponse)

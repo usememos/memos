@@ -17,9 +17,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 
-	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/storage/s3"
 	"github.com/usememos/memos/store"
@@ -192,7 +190,6 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 		if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting.Value); err == nil {
 			settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
 		} else {
-			log.Warn("Failed to parse max upload size", zap.Error(err))
 			settingMaxUploadSizeBytes = 0
 		}
 	} else {

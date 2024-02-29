@@ -3,18 +3,17 @@ package v2
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/usememos/memos/internal/log"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -45,6 +44,7 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 	authProvider := NewGRPCAuthInterceptor(store, secret)
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
+			NewLoggerInterceptor().LoggerInterceptor,
 			authProvider.AuthenticationInterceptor,
 		),
 	)
@@ -138,7 +138,7 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 	}
 	go func() {
 		if err := s.grpcServer.Serve(listen); err != nil {
-			log.Error("grpc server listen error", zap.Error(err))
+			slog.Error("failed to start gRPC server", err)
 		}
 	}()
 

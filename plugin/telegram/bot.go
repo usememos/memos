@@ -3,13 +3,9 @@ package telegram
 import (
 	"context"
 	"errors"
-	"fmt"
+	"log/slog"
 	"strings"
 	"time"
-
-	"go.uber.org/zap"
-
-	"github.com/usememos/memos/internal/log"
 )
 
 type Handler interface {
@@ -41,7 +37,6 @@ func (b *Bot) Start(ctx context.Context) {
 			continue
 		}
 		if err != nil {
-			log.Warn("fail to telegram.GetUpdates", zap.Error(err))
 			time.Sleep(errRetryWait)
 			continue
 		}
@@ -56,7 +51,7 @@ func (b *Bot) Start(ctx context.Context) {
 			if update.CallbackQuery != nil {
 				err := b.handler.CallbackQueryHandle(ctx, b, *update.CallbackQuery)
 				if err != nil {
-					log.Error("fail to handle CallbackQuery", zap.Error(err))
+					slog.Error("fail to handle callback query", err)
 				}
 
 				continue
@@ -70,7 +65,7 @@ func (b *Bot) Start(ctx context.Context) {
 				if !message.IsSupported() {
 					_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Supported messages: animation, audio, text, document, photo, video, video note, voice, other messages with caption")
 					if err != nil {
-						log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
+						slog.Error("fail to send reply message", err)
 					}
 					continue
 				}
@@ -88,12 +83,12 @@ func (b *Bot) Start(ctx context.Context) {
 
 		err = b.handleSingleMessages(ctx, singleMessages)
 		if err != nil {
-			log.Error("fail to handle singleMessage", zap.Error(err))
+			slog.Error("fail to handle plain text message", err)
 		}
 
 		err = b.handleGroupMessages(ctx, groupMessages)
 		if err != nil {
-			log.Error("fail to handle plain text message", zap.Error(err))
+			slog.Error("fail to handle media group message", err)
 		}
 	}
 }
