@@ -14,8 +14,8 @@ export const extractTagsFromContent = (content: string) => {
       }
 
       handle(node);
-      if (node.paragraphNode || node.unorderedListNode || node.orderedListNode) {
-        const children = ((node.paragraphNode || node.unorderedListNode || node.orderedListNode) as any).children;
+      if (node.type === "PARAGRAPH" || node.type === "ORDERED_LIST" || node.type === "UNORDERED_LIST") {
+        const children = (node.node as any).children;
         if (Array.isArray(children)) {
           traverse(children, handle);
         }
@@ -24,8 +24,8 @@ export const extractTagsFromContent = (content: string) => {
   };
 
   traverse(nodes, (node) => {
-    if (node.tagNode?.content) {
-      tags.add(node.tagNode.content);
+    if (node.type === "TAG" && node.node) {
+      tags.add((node.node as any).content);
     }
   });
 

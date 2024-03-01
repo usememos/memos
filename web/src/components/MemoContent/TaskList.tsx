@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { repeat } from "lodash-es";
 import { useContext, useState } from "react";
 import { useMemoStore } from "@/store/v1";
-import { Node, NodeType } from "@/types/node";
+import { Node, NodeType, TaskListNode } from "@/types/node";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
@@ -31,11 +31,11 @@ const TaskList: React.FC<Props> = ({ index, indent, complete, children }: Props)
     }
 
     const node = context.nodes[nodeIndex];
-    if (node.type !== NodeType.TASK_LIST || !node.taskListNode) {
+    if (node.type !== NodeType.TASK_LIST || !node.node) {
       return;
     }
 
-    node.taskListNode!.complete = on;
+    (node.node as TaskListNode)!.complete = on;
     const content = window.restore(context.nodes);
     await memoStore.updateMemo(
       {
