@@ -1,9 +1,4 @@
-/* eslint-disable */
-
-export const protobufPackage = "gomark.node.v1";
-
 export enum NodeType {
-  NODE_UNSPECIFIED = "NODE_UNSPECIFIED",
   LINE_BREAK = "LINE_BREAK",
   PARAGRAPH = "PARAGRAPH",
   CODE_BLOCK = "CODE_BLOCK",
@@ -33,44 +28,43 @@ export enum NodeType {
   SUPERSCRIPT = "SUPERSCRIPT",
   REFERENCED_CONTENT = "REFERENCED_CONTENT",
   SPOILER = "SPOILER",
-  UNRECOGNIZED = "UNRECOGNIZED",
 }
 
 export interface Node {
   type: NodeType;
-  lineBreakNode?: LineBreakNode | undefined;
-  paragraphNode?: ParagraphNode | undefined;
-  codeBlockNode?: CodeBlockNode | undefined;
-  headingNode?: HeadingNode | undefined;
-  horizontalRuleNode?: HorizontalRuleNode | undefined;
-  blockquoteNode?: BlockquoteNode | undefined;
-  orderedListNode?: OrderedListNode | undefined;
-  unorderedListNode?: UnorderedListNode | undefined;
-  taskListNode?: TaskListNode | undefined;
-  mathBlockNode?: MathBlockNode | undefined;
-  tableNode?: TableNode | undefined;
-  embeddedContentNode?: EmbeddedContentNode | undefined;
-  textNode?: TextNode | undefined;
-  boldNode?: BoldNode | undefined;
-  italicNode?: ItalicNode | undefined;
-  boldItalicNode?: BoldItalicNode | undefined;
-  codeNode?: CodeNode | undefined;
-  imageNode?: ImageNode | undefined;
-  linkNode?: LinkNode | undefined;
-  autoLinkNode?: AutoLinkNode | undefined;
-  tagNode?: TagNode | undefined;
-  strikethroughNode?: StrikethroughNode | undefined;
-  escapingCharacterNode?: EscapingCharacterNode | undefined;
-  mathNode?: MathNode | undefined;
-  highlightNode?: HighlightNode | undefined;
-  subscriptNode?: SubscriptNode | undefined;
-  superscriptNode?: SuperscriptNode | undefined;
-  referencedContentNode?: ReferencedContentNode | undefined;
-  spoilerNode?: SpoilerNode | undefined;
+  node:
+    | LineBreakNode
+    | ParagraphNode
+    | CodeBlockNode
+    | HeadingNode
+    | HorizontalRuleNode
+    | BlockquoteNode
+    | OrderedListNode
+    | UnorderedListNode
+    | TaskListNode
+    | MathBlockNode
+    | TableNode
+    | EmbeddedContentNode
+    | TextNode
+    | BoldNode
+    | ItalicNode
+    | BoldItalicNode
+    | CodeNode
+    | ImageNode
+    | LinkNode
+    | AutoLinkNode
+    | TagNode
+    | StrikethroughNode
+    | EscapingCharacterNode
+    | MathNode
+    | HighlightNode
+    | SubscriptNode
+    | SuperscriptNode
+    | ReferencedContentNode
+    | SpoilerNode;
 }
 
-export interface LineBreakNode {
-}
+export interface LineBreakNode {}
 
 export interface ParagraphNode {
   children: Node[];
