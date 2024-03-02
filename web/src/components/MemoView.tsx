@@ -1,4 +1,4 @@
-import { Tooltip } from "@mui/joy";
+import { Chip, Tooltip } from "@mui/joy";
 import classNames from "classnames";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -86,6 +86,20 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
+  const [expand, setExpand] = useState(false);
+
+  const [showExpandButton, setShowExpandButton] = useState(false);
+
+  useEffect(() => {
+    if (userStore.userSetting?.compactView) {
+      setExpand(true);
+      setShowExpandButton(true);
+    } else {
+      setExpand(false);
+      setShowExpandButton(false);
+    }
+  }, [userStore.userSetting?.compactView]);
+
   return (
     <div
       className={classNames(
@@ -150,16 +164,32 @@ const MemoView: React.FC<Props> = (props: Props) => {
           {!readonly && <MemoActionMenu memo={memo} hiddenActions={props.showPinned ? [] : ["pin"]} />}
         </div>
       </div>
-      <MemoContent
-        key={`${memo.id}-${memo.updateTime}`}
-        memoId={memo.id}
-        content={memo.content}
-        readonly={readonly}
-        onClick={handleMemoContentClick}
-      />
-      <MemoResourceListView resources={memo.resources} />
-      <MemoRelationListView memo={memo} relations={referencedMemos} />
-      <MemoReactionistView memo={memo} reactions={memo.reactions} />
+      <div
+        className={`z-0 ${!expand ? "h-full" : "h-20 overflow-y-hidden rounded-b-xl bg-gradient-to-b from-transparent to-zinc-200 dark:to-zinc-700 w-full"}`}
+      >
+        <MemoContent
+          key={`${memo.id}-${memo.updateTime}`}
+          memoId={memo.id}
+          content={memo.content}
+          readonly={readonly}
+          onClick={handleMemoContentClick}
+          className={classNames(expand && "text-black/40 dark:text-white/50")}
+        />
+        <MemoResourceListView resources={memo.resources} />
+        <MemoRelationListView memo={memo} relations={referencedMemos} />
+        <MemoReactionistView memo={memo} reactions={memo.reactions} />
+      </div>
+      <div className="flex items-center justify-center w-full">
+        {showExpandButton && (
+          <div className="flex w-full items-center justify-center">
+            {expand && (
+              <Chip variant="solid" color="primary" size="sm" className="capitalize m-2 cursor-pointer">
+                <span onClick={handleGotoMemoDetailPage}>show more</span>
+              </Chip>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

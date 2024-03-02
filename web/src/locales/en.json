@@ -178,6 +178,7 @@
     "preference-section": {
       "theme": "Theme",
       "default-memo-visibility": "Default memo visibility",
+      "compact-mode": "Compact Mode",
       "default-resource-visibility": "Default resource visibility",
       "enable-folding-memo": "Enable folding memo",
       "enable-double-click": "Enable double-click to edit",
