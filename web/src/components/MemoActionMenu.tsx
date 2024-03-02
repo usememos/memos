@@ -1,4 +1,5 @@
 import { Divider, Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
+import classNames from "classnames";
 import copy from "copy-to-clipboard";
 import toast from "react-hot-toast";
 import Icon from "@/components/Icon";
@@ -12,6 +13,7 @@ import showShareMemoDialog from "./ShareMemoDialog";
 
 interface Props {
   memo: Memo;
+  className?: string;
   hiddenActions?: ("edit" | "archive" | "delete" | "share" | "pin")[];
   onArchived?: () => void;
   onDeleted?: () => void;
@@ -94,7 +96,7 @@ const MemoActionMenu = (props: Props) => {
   return (
     <Dropdown>
       <MenuButton slots={{ root: "div" }}>
-        <span className="h-7 w-7 flex justify-center items-center rounded-full hover:opacity-70">
+        <span className={classNames("flex justify-center items-center rounded-full hover:opacity-70", props.className)}>
           <Icon.MoreVertical className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
       </MenuButton>
