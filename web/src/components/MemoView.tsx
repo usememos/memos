@@ -42,15 +42,27 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(getTimeStampByDate(memo.displayTime)));
   const [creator, setCreator] = useState(userStore.getUserByUsername(extractUsernameFromName(memo.creator)));
   const memoContainerRef = useRef<HTMLDivElement>(null);
+  const [showCompactMode, setShowCompactMode] = useState(false);
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter((relation) => relation.type === MemoRelation_Type.COMMENT).length;
   const readonly = memo.creator !== user?.name;
 
+  // Initial related data: creator.
   useEffect(() => {
     (async () => {
       const user = await userStore.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
       setCreator(user);
     })();
+  }, []);
+
+  // Initial compact mode.
+  useEffect(() => {
+    if (!memoContainerRef.current) {
+      return;
+    }
+    if ((memoContainerRef.current as HTMLDivElement).getBoundingClientRect().height > 512) {
+      setShowCompactMode(true);
+    }
   }, []);
 
   // Update display time string.
@@ -151,12 +163,24 @@ const MemoView: React.FC<Props> = (props: Props) => {
         </div>
       </div>
       <MemoContent
+        className={showCompactMode ? "!line-clamp-6" : ""}
         key={`${memo.id}-${memo.updateTime}`}
         memoId={memo.id}
         content={memo.content}
         readonly={readonly}
         onClick={handleMemoContentClick}
       />
+      {showCompactMode && (
+        <div className="w-full mt-2">
+          <Link
+            className="w-auto flex flex-row justify-start items-center text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            to={`/m/${memo.name}`}
+          >
+            <span>{t("memo.show-more")}</span>
+            <Icon.ChevronRight className="w-4 h-auto" />
+          </Link>
+        </div>
+      )}
       <MemoResourceListView resources={memo.resources} />
       <MemoRelationListView memo={memo} relations={referencedMemos} />
       <MemoReactionistView memo={memo} reactions={memo.reactions} />

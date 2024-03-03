@@ -207,7 +207,10 @@ const MemoDetail = () => {
             </div>
           </div>
         </div>
-        <div id="comments" className="pt-8 pb-16 w-full">
+        <div className="pt-8 pb-16 w-full">
+          <h2 id="comments" className="sr-only">
+            Comments
+          </h2>
           <div className="relative mx-auto flex-grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
             {comments.length === 0 ? (
               <div className="w-full flex flex-col justify-center items-center py-6 mb-2">
