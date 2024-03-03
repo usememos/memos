@@ -17,8 +17,7 @@ import theme from "./theme";
 
 (async () => {
   const go = new window.Go();
-  const responsePromise = fetch(gomarkWasm);
-  const { instance } = await WebAssembly.instantiateStreaming(responsePromise, go.importObject);
+  const { instance } = await WebAssembly.instantiateStreaming(fetch(gomarkWasm), go.importObject);
   go.run(instance);
 
   const container = document.getElementById("root");

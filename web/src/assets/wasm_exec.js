@@ -1,561 +1,586 @@
 // Copyright 2018 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
-"use strict";
+//
+// This file has been modified for use by the TinyGo compiler.
 
 (() => {
-	const enosys = () => {
-		const err = new Error("not implemented");
-		err.code = "ENOSYS";
-		return err;
-	};
+  // Map multiple JavaScript environments to a single common API,
+  // preferring web standards over Node.js API.
+  //
+  // Environments considered:
+  // - Browsers
+  // - Node.js
+  // - Electron
+  // - Parcel
 
-	if (!globalThis.fs) {
-		let outputBuf = "";
-		globalThis.fs = {
-			constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
-			writeSync(fd, buf) {
-				outputBuf += decoder.decode(buf);
-				const nl = outputBuf.lastIndexOf("\n");
-				if (nl != -1) {
-					console.log(outputBuf.substring(0, nl));
-					outputBuf = outputBuf.substring(nl + 1);
-				}
-				return buf.length;
-			},
-			write(fd, buf, offset, length, position, callback) {
-				if (offset !== 0 || length !== buf.length || position !== null) {
-					callback(enosys());
-					return;
-				}
-				const n = this.writeSync(fd, buf);
-				callback(null, n);
-			},
-			chmod(path, mode, callback) { callback(enosys()); },
-			chown(path, uid, gid, callback) { callback(enosys()); },
-			close(fd, callback) { callback(enosys()); },
-			fchmod(fd, mode, callback) { callback(enosys()); },
-			fchown(fd, uid, gid, callback) { callback(enosys()); },
-			fstat(fd, callback) { callback(enosys()); },
-			fsync(fd, callback) { callback(null); },
-			ftruncate(fd, length, callback) { callback(enosys()); },
-			lchown(path, uid, gid, callback) { callback(enosys()); },
-			link(path, link, callback) { callback(enosys()); },
-			lstat(path, callback) { callback(enosys()); },
-			mkdir(path, perm, callback) { callback(enosys()); },
-			open(path, flags, mode, callback) { callback(enosys()); },
-			read(fd, buffer, offset, length, position, callback) { callback(enosys()); },
-			readdir(path, callback) { callback(enosys()); },
-			readlink(path, callback) { callback(enosys()); },
-			rename(from, to, callback) { callback(enosys()); },
-			rmdir(path, callback) { callback(enosys()); },
-			stat(path, callback) { callback(enosys()); },
-			symlink(path, link, callback) { callback(enosys()); },
-			truncate(path, length, callback) { callback(enosys()); },
-			unlink(path, callback) { callback(enosys()); },
-			utimes(path, atime, mtime, callback) { callback(enosys()); },
-		};
-	}
+  if (typeof global !== "undefined") {
+    // global already exists
+  } else if (typeof window !== "undefined") {
+    window.global = window;
+  } else if (typeof self !== "undefined") {
+    self.global = self;
+  } else {
+    throw new Error("cannot export Go (neither global, window nor self is defined)");
+  }
 
-	if (!globalThis.process) {
-		globalThis.process = {
-			getuid() { return -1; },
-			getgid() { return -1; },
-			geteuid() { return -1; },
-			getegid() { return -1; },
-			getgroups() { throw enosys(); },
-			pid: -1,
-			ppid: -1,
-			umask() { throw enosys(); },
-			cwd() { throw enosys(); },
-			chdir() { throw enosys(); },
-		}
-	}
+  if (!global.require && typeof require !== "undefined") {
+    global.require = require;
+  }
 
-	if (!globalThis.crypto) {
-		throw new Error("globalThis.crypto is not available, polyfill required (crypto.getRandomValues only)");
-	}
+  if (!global.fs && global.require) {
+    global.fs = require("fs");
+  }
 
-	if (!globalThis.performance) {
-		throw new Error("globalThis.performance is not available, polyfill required (performance.now only)");
-	}
+  const enosys = () => {
+    const err = new Error("not implemented");
+    err.code = "ENOSYS";
+    return err;
+  };
 
-	if (!globalThis.TextEncoder) {
-		throw new Error("globalThis.TextEncoder is not available, polyfill required");
-	}
+  if (!global.fs) {
+    let outputBuf = "";
+    global.fs = {
+      constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
+      writeSync(fd, buf) {
+        outputBuf += decoder.decode(buf);
+        const nl = outputBuf.lastIndexOf("\n");
+        if (nl != -1) {
+          console.log(outputBuf.substr(0, nl));
+          outputBuf = outputBuf.substr(nl + 1);
+        }
+        return buf.length;
+      },
+      write(fd, buf, offset, length, position, callback) {
+        if (offset !== 0 || length !== buf.length || position !== null) {
+          callback(enosys());
+          return;
+        }
+        const n = this.writeSync(fd, buf);
+        callback(null, n);
+      },
+      chmod(path, mode, callback) {
+        callback(enosys());
+      },
+      chown(path, uid, gid, callback) {
+        callback(enosys());
+      },
+      close(fd, callback) {
+        callback(enosys());
+      },
+      fchmod(fd, mode, callback) {
+        callback(enosys());
+      },
+      fchown(fd, uid, gid, callback) {
+        callback(enosys());
+      },
+      fstat(fd, callback) {
+        callback(enosys());
+      },
+      fsync(fd, callback) {
+        callback(null);
+      },
+      ftruncate(fd, length, callback) {
+        callback(enosys());
+      },
+      lchown(path, uid, gid, callback) {
+        callback(enosys());
+      },
+      link(path, link, callback) {
+        callback(enosys());
+      },
+      lstat(path, callback) {
+        callback(enosys());
+      },
+      mkdir(path, perm, callback) {
+        callback(enosys());
+      },
+      open(path, flags, mode, callback) {
+        callback(enosys());
+      },
+      read(fd, buffer, offset, length, position, callback) {
+        callback(enosys());
+      },
+      readdir(path, callback) {
+        callback(enosys());
+      },
+      readlink(path, callback) {
+        callback(enosys());
+      },
+      rename(from, to, callback) {
+        callback(enosys());
+      },
+      rmdir(path, callback) {
+        callback(enosys());
+      },
+      stat(path, callback) {
+        callback(enosys());
+      },
+      symlink(path, link, callback) {
+        callback(enosys());
+      },
+      truncate(path, length, callback) {
+        callback(enosys());
+      },
+      unlink(path, callback) {
+        callback(enosys());
+      },
+      utimes(path, atime, mtime, callback) {
+        callback(enosys());
+      },
+    };
+  }
 
-	if (!globalThis.TextDecoder) {
-		throw new Error("globalThis.TextDecoder is not available, polyfill required");
-	}
+  if (!global.process) {
+    global.process = {
+      getuid() {
+        return -1;
+      },
+      getgid() {
+        return -1;
+      },
+      geteuid() {
+        return -1;
+      },
+      getegid() {
+        return -1;
+      },
+      getgroups() {
+        throw enosys();
+      },
+      pid: -1,
+      ppid: -1,
+      umask() {
+        throw enosys();
+      },
+      cwd() {
+        throw enosys();
+      },
+      chdir() {
+        throw enosys();
+      },
+    };
+  }
 
-	const encoder = new TextEncoder("utf-8");
-	const decoder = new TextDecoder("utf-8");
+  if (!global.crypto) {
+    const nodeCrypto = require("crypto");
+    global.crypto = {
+      getRandomValues(b) {
+        nodeCrypto.randomFillSync(b);
+      },
+    };
+  }
 
-	globalThis.Go = class {
-		constructor() {
-			this.argv = ["js"];
-			this.env = {};
-			this.exit = (code) => {
-				if (code !== 0) {
-					console.warn("exit code:", code);
-				}
-			};
-			this._exitPromise = new Promise((resolve) => {
-				this._resolveExitPromise = resolve;
-			});
-			this._pendingEvent = null;
-			this._scheduledTimeouts = new Map();
-			this._nextCallbackTimeoutID = 1;
+  if (!global.performance) {
+    global.performance = {
+      now() {
+        const [sec, nsec] = process.hrtime();
+        return sec * 1000 + nsec / 1000000;
+      },
+    };
+  }
 
-			const setInt64 = (addr, v) => {
-				this.mem.setUint32(addr + 0, v, true);
-				this.mem.setUint32(addr + 4, Math.floor(v / 4294967296), true);
-			}
+  if (!global.TextEncoder) {
+    global.TextEncoder = require("util").TextEncoder;
+  }
 
-			const setInt32 = (addr, v) => {
-				this.mem.setUint32(addr + 0, v, true);
-			}
+  if (!global.TextDecoder) {
+    global.TextDecoder = require("util").TextDecoder;
+  }
 
-			const getInt64 = (addr) => {
-				const low = this.mem.getUint32(addr + 0, true);
-				const high = this.mem.getInt32(addr + 4, true);
-				return low + high * 4294967296;
-			}
+  // End of polyfills for common API.
 
-			const loadValue = (addr) => {
-				const f = this.mem.getFloat64(addr, true);
-				if (f === 0) {
-					return undefined;
-				}
-				if (!isNaN(f)) {
-					return f;
-				}
+  const encoder = new TextEncoder("utf-8");
+  const decoder = new TextDecoder("utf-8");
+  let reinterpretBuf = new DataView(new ArrayBuffer(8));
+  var logLine = [];
 
-				const id = this.mem.getUint32(addr, true);
-				return this._values[id];
-			}
+  global.Go = class {
+    constructor() {
+      this._callbackTimeouts = new Map();
+      this._nextCallbackTimeoutID = 1;
 
-			const storeValue = (addr, v) => {
-				const nanHead = 0x7FF80000;
+      const mem = () => {
+        // The buffer may change when requesting more memory.
+        return new DataView(this._inst.exports.memory.buffer);
+      };
 
-				if (typeof v === "number" && v !== 0) {
-					if (isNaN(v)) {
-						this.mem.setUint32(addr + 4, nanHead, true);
-						this.mem.setUint32(addr, 0, true);
-						return;
-					}
-					this.mem.setFloat64(addr, v, true);
-					return;
-				}
+      const unboxValue = (v_ref) => {
+        reinterpretBuf.setBigInt64(0, v_ref, true);
+        const f = reinterpretBuf.getFloat64(0, true);
+        if (f === 0) {
+          return undefined;
+        }
+        if (!isNaN(f)) {
+          return f;
+        }
 
-				if (v === undefined) {
-					this.mem.setFloat64(addr, 0, true);
-					return;
-				}
+        const id = v_ref & 0xffffffffn;
+        return this._values[id];
+      };
 
-				let id = this._ids.get(v);
-				if (id === undefined) {
-					id = this._idPool.pop();
-					if (id === undefined) {
-						id = this._values.length;
-					}
-					this._values[id] = v;
-					this._goRefCounts[id] = 0;
-					this._ids.set(v, id);
-				}
-				this._goRefCounts[id]++;
-				let typeFlag = 0;
-				switch (typeof v) {
-					case "object":
-						if (v !== null) {
-							typeFlag = 1;
-						}
-						break;
-					case "string":
-						typeFlag = 2;
-						break;
-					case "symbol":
-						typeFlag = 3;
-						break;
-					case "function":
-						typeFlag = 4;
-						break;
-				}
-				this.mem.setUint32(addr + 4, nanHead | typeFlag, true);
-				this.mem.setUint32(addr, id, true);
-			}
+      const loadValue = (addr) => {
+        let v_ref = mem().getBigUint64(addr, true);
+        return unboxValue(v_ref);
+      };
 
-			const loadSlice = (addr) => {
-				const array = getInt64(addr + 0);
-				const len = getInt64(addr + 8);
-				return new Uint8Array(this._inst.exports.mem.buffer, array, len);
-			}
+      const boxValue = (v) => {
+        const nanHead = 0x7ff80000n;
 
-			const loadSliceOfValues = (addr) => {
-				const array = getInt64(addr + 0);
-				const len = getInt64(addr + 8);
-				const a = new Array(len);
-				for (let i = 0; i < len; i++) {
-					a[i] = loadValue(array + i * 8);
-				}
-				return a;
-			}
+        if (typeof v === "number") {
+          if (isNaN(v)) {
+            return nanHead << 32n;
+          }
+          if (v === 0) {
+            return (nanHead << 32n) | 1n;
+          }
+          reinterpretBuf.setFloat64(0, v, true);
+          return reinterpretBuf.getBigInt64(0, true);
+        }
 
-			const loadString = (addr) => {
-				const saddr = getInt64(addr + 0);
-				const len = getInt64(addr + 8);
-				return decoder.decode(new DataView(this._inst.exports.mem.buffer, saddr, len));
-			}
+        switch (v) {
+          case undefined:
+            return 0n;
+          case null:
+            return (nanHead << 32n) | 2n;
+          case true:
+            return (nanHead << 32n) | 3n;
+          case false:
+            return (nanHead << 32n) | 4n;
+        }
 
-			const timeOrigin = Date.now() - performance.now();
-			this.importObject = {
-				_gotest: {
-					add: (a, b) => a + b,
-				},
-				gojs: {
-					// Go's SP does not change as long as no Go code is running. Some operations (e.g. calls, getters and setters)
-					// may synchronously trigger a Go event handler. This makes Go code get executed in the middle of the imported
-					// function. A goroutine can switch to a new stack if the current stack is too small (see morestack function).
-					// This changes the SP, thus we have to update the SP used by the imported function.
+        let id = this._ids.get(v);
+        if (id === undefined) {
+          id = this._idPool.pop();
+          if (id === undefined) {
+            id = BigInt(this._values.length);
+          }
+          this._values[id] = v;
+          this._goRefCounts[id] = 0;
+          this._ids.set(v, id);
+        }
+        this._goRefCounts[id]++;
+        let typeFlag = 1n;
+        switch (typeof v) {
+          case "string":
+            typeFlag = 2n;
+            break;
+          case "symbol":
+            typeFlag = 3n;
+            break;
+          case "function":
+            typeFlag = 4n;
+            break;
+        }
+        return id | ((nanHead | typeFlag) << 32n);
+      };
 
-					// func wasmExit(code int32)
-					"runtime.wasmExit": (sp) => {
-						sp >>>= 0;
-						const code = this.mem.getInt32(sp + 8, true);
-						this.exited = true;
-						delete this._inst;
-						delete this._values;
-						delete this._goRefCounts;
-						delete this._ids;
-						delete this._idPool;
-						this.exit(code);
-					},
+      const storeValue = (addr, v) => {
+        let v_ref = boxValue(v);
+        mem().setBigUint64(addr, v_ref, true);
+      };
 
-					// func wasmWrite(fd uintptr, p unsafe.Pointer, n int32)
-					"runtime.wasmWrite": (sp) => {
-						sp >>>= 0;
-						const fd = getInt64(sp + 8);
-						const p = getInt64(sp + 16);
-						const n = this.mem.getInt32(sp + 24, true);
-						fs.writeSync(fd, new Uint8Array(this._inst.exports.mem.buffer, p, n));
-					},
+      const loadSlice = (array, len, cap) => {
+        return new Uint8Array(this._inst.exports.memory.buffer, array, len);
+      };
 
-					// func resetMemoryDataView()
-					"runtime.resetMemoryDataView": (sp) => {
-						sp >>>= 0;
-						this.mem = new DataView(this._inst.exports.mem.buffer);
-					},
+      const loadSliceOfValues = (array, len, cap) => {
+        const a = new Array(len);
+        for (let i = 0; i < len; i++) {
+          a[i] = loadValue(array + i * 8);
+        }
+        return a;
+      };
 
-					// func nanotime1() int64
-					"runtime.nanotime1": (sp) => {
-						sp >>>= 0;
-						setInt64(sp + 8, (timeOrigin + performance.now()) * 1000000);
-					},
+      const loadString = (ptr, len) => {
+        return decoder.decode(new DataView(this._inst.exports.memory.buffer, ptr, len));
+      };
 
-					// func walltime() (sec int64, nsec int32)
-					"runtime.walltime": (sp) => {
-						sp >>>= 0;
-						const msec = (new Date).getTime();
-						setInt64(sp + 8, msec / 1000);
-						this.mem.setInt32(sp + 16, (msec % 1000) * 1000000, true);
-					},
+      const timeOrigin = Date.now() - performance.now();
+      this.importObject = {
+        wasi_snapshot_preview1: {
+          // https://github.com/WebAssembly/WASI/blob/main/phases/snapshot/docs.md#fd_write
+          fd_write: function (fd, iovs_ptr, iovs_len, nwritten_ptr) {
+            let nwritten = 0;
+            if (fd == 1) {
+              for (let iovs_i = 0; iovs_i < iovs_len; iovs_i++) {
+                let iov_ptr = iovs_ptr + iovs_i * 8; // assuming wasm32
+                let ptr = mem().getUint32(iov_ptr + 0, true);
+                let len = mem().getUint32(iov_ptr + 4, true);
+                nwritten += len;
+                for (let i = 0; i < len; i++) {
+                  let c = mem().getUint8(ptr + i);
+                  if (c == 13) {
+                    // CR
+                    // ignore
+                  } else if (c == 10) {
+                    // LF
+                    // write line
+                    let line = decoder.decode(new Uint8Array(logLine));
+                    logLine = [];
+                    console.log(line);
+                  } else {
+                    logLine.push(c);
+                  }
+                }
+              }
+            } else {
+              console.error("invalid file descriptor:", fd);
+            }
+            mem().setUint32(nwritten_ptr, nwritten, true);
+            return 0;
+          },
+          fd_close: () => 0, // dummy
+          fd_fdstat_get: () => 0, // dummy
+          fd_seek: () => 0, // dummy
+          proc_exit: (code) => {
+            if (global.process) {
+              // Node.js
+              process.exit(code);
+            } else {
+              // Can't exit in a browser.
+              throw "trying to exit with code " + code;
+            }
+          },
+          random_get: (bufPtr, bufLen) => {
+            crypto.getRandomValues(loadSlice(bufPtr, bufLen));
+            return 0;
+          },
+        },
+        gojs: {
+          // func ticks() float64
+          "runtime.ticks": () => {
+            return timeOrigin + performance.now();
+          },
 
-					// func scheduleTimeoutEvent(delay int64) int32
-					"runtime.scheduleTimeoutEvent": (sp) => {
-						sp >>>= 0;
-						const id = this._nextCallbackTimeoutID;
-						this._nextCallbackTimeoutID++;
-						this._scheduledTimeouts.set(id, setTimeout(
-							() => {
-								this._resume();
-								while (this._scheduledTimeouts.has(id)) {
-									// for some reason Go failed to register the timeout event, log and try again
-									// (temporary workaround for https://github.com/golang/go/issues/28975)
-									console.warn("scheduleTimeoutEvent: missed timeout event");
-									this._resume();
-								}
-							},
-							getInt64(sp + 8),
-						));
-						this.mem.setInt32(sp + 16, id, true);
-					},
+          // func sleepTicks(timeout float64)
+          "runtime.sleepTicks": (timeout) => {
+            // Do not sleep, only reactivate scheduler after the given timeout.
+            setTimeout(this._inst.exports.go_scheduler, timeout);
+          },
 
-					// func clearTimeoutEvent(id int32)
-					"runtime.clearTimeoutEvent": (sp) => {
-						sp >>>= 0;
-						const id = this.mem.getInt32(sp + 8, true);
-						clearTimeout(this._scheduledTimeouts.get(id));
-						this._scheduledTimeouts.delete(id);
-					},
+          // func finalizeRef(v ref)
+          "syscall/js.finalizeRef": (v_ref) => {
+            // Note: TinyGo does not support finalizers so this should never be
+            // called.
+          },
 
-					// func getRandomData(r []byte)
-					"runtime.getRandomData": (sp) => {
-						sp >>>= 0;
-						crypto.getRandomValues(loadSlice(sp + 8));
-					},
+          // func stringVal(value string) ref
+          "syscall/js.stringVal": (value_ptr, value_len) => {
+            const s = loadString(value_ptr, value_len);
+            return boxValue(s);
+          },
 
-					// func finalizeRef(v ref)
-					"syscall/js.finalizeRef": (sp) => {
-						sp >>>= 0;
-						const id = this.mem.getUint32(sp + 8, true);
-						this._goRefCounts[id]--;
-						if (this._goRefCounts[id] === 0) {
-							const v = this._values[id];
-							this._values[id] = null;
-							this._ids.delete(v);
-							this._idPool.push(id);
-						}
-					},
+          // func valueGet(v ref, p string) ref
+          "syscall/js.valueGet": (v_ref, p_ptr, p_len) => {
+            let prop = loadString(p_ptr, p_len);
+            let v = unboxValue(v_ref);
+            let result = Reflect.get(v, prop);
+            return boxValue(result);
+          },
 
-					// func stringVal(value string) ref
-					"syscall/js.stringVal": (sp) => {
-						sp >>>= 0;
-						storeValue(sp + 24, loadString(sp + 8));
-					},
+          // func valueSet(v ref, p string, x ref)
+          "syscall/js.valueSet": (v_ref, p_ptr, p_len, x_ref) => {
+            const v = unboxValue(v_ref);
+            const p = loadString(p_ptr, p_len);
+            const x = unboxValue(x_ref);
+            Reflect.set(v, p, x);
+          },
 
-					// func valueGet(v ref, p string) ref
-					"syscall/js.valueGet": (sp) => {
-						sp >>>= 0;
-						const result = Reflect.get(loadValue(sp + 8), loadString(sp + 16));
-						sp = this._inst.exports.getsp() >>> 0; // see comment above
-						storeValue(sp + 32, result);
-					},
+          // func valueDelete(v ref, p string)
+          "syscall/js.valueDelete": (v_ref, p_ptr, p_len) => {
+            const v = unboxValue(v_ref);
+            const p = loadString(p_ptr, p_len);
+            Reflect.deleteProperty(v, p);
+          },
 
-					// func valueSet(v ref, p string, x ref)
-					"syscall/js.valueSet": (sp) => {
-						sp >>>= 0;
-						Reflect.set(loadValue(sp + 8), loadString(sp + 16), loadValue(sp + 32));
-					},
+          // func valueIndex(v ref, i int) ref
+          "syscall/js.valueIndex": (v_ref, i) => {
+            return boxValue(Reflect.get(unboxValue(v_ref), i));
+          },
 
-					// func valueDelete(v ref, p string)
-					"syscall/js.valueDelete": (sp) => {
-						sp >>>= 0;
-						Reflect.deleteProperty(loadValue(sp + 8), loadString(sp + 16));
-					},
+          // valueSetIndex(v ref, i int, x ref)
+          "syscall/js.valueSetIndex": (v_ref, i, x_ref) => {
+            Reflect.set(unboxValue(v_ref), i, unboxValue(x_ref));
+          },
 
-					// func valueIndex(v ref, i int) ref
-					"syscall/js.valueIndex": (sp) => {
-						sp >>>= 0;
-						storeValue(sp + 24, Reflect.get(loadValue(sp + 8), getInt64(sp + 16)));
-					},
+          // func valueCall(v ref, m string, args []ref) (ref, bool)
+          "syscall/js.valueCall": (ret_addr, v_ref, m_ptr, m_len, args_ptr, args_len, args_cap) => {
+            const v = unboxValue(v_ref);
+            const name = loadString(m_ptr, m_len);
+            const args = loadSliceOfValues(args_ptr, args_len, args_cap);
+            try {
+              const m = Reflect.get(v, name);
+              storeValue(ret_addr, Reflect.apply(m, v, args));
+              mem().setUint8(ret_addr + 8, 1);
+            } catch (err) {
+              storeValue(ret_addr, err);
+              mem().setUint8(ret_addr + 8, 0);
+            }
+          },
 
-					// valueSetIndex(v ref, i int, x ref)
-					"syscall/js.valueSetIndex": (sp) => {
-						sp >>>= 0;
-						Reflect.set(loadValue(sp + 8), getInt64(sp + 16), loadValue(sp + 24));
-					},
+          // func valueInvoke(v ref, args []ref) (ref, bool)
+          "syscall/js.valueInvoke": (ret_addr, v_ref, args_ptr, args_len, args_cap) => {
+            try {
+              const v = unboxValue(v_ref);
+              const args = loadSliceOfValues(args_ptr, args_len, args_cap);
+              storeValue(ret_addr, Reflect.apply(v, undefined, args));
+              mem().setUint8(ret_addr + 8, 1);
+            } catch (err) {
+              storeValue(ret_addr, err);
+              mem().setUint8(ret_addr + 8, 0);
+            }
+          },
 
-					// func valueCall(v ref, m string, args []ref) (ref, bool)
-					"syscall/js.valueCall": (sp) => {
-						sp >>>= 0;
-						try {
-							const v = loadValue(sp + 8);
-							const m = Reflect.get(v, loadString(sp + 16));
-							const args = loadSliceOfValues(sp + 32);
-							const result = Reflect.apply(m, v, args);
-							sp = this._inst.exports.getsp() >>> 0; // see comment above
-							storeValue(sp + 56, result);
-							this.mem.setUint8(sp + 64, 1);
-						} catch (err) {
-							sp = this._inst.exports.getsp() >>> 0; // see comment above
-							storeValue(sp + 56, err);
-							this.mem.setUint8(sp + 64, 0);
-						}
-					},
+          // func valueNew(v ref, args []ref) (ref, bool)
+          "syscall/js.valueNew": (ret_addr, v_ref, args_ptr, args_len, args_cap) => {
+            const v = unboxValue(v_ref);
+            const args = loadSliceOfValues(args_ptr, args_len, args_cap);
+            try {
+              storeValue(ret_addr, Reflect.construct(v, args));
+              mem().setUint8(ret_addr + 8, 1);
+            } catch (err) {
+              storeValue(ret_addr, err);
+              mem().setUint8(ret_addr + 8, 0);
+            }
+          },
 
-					// func valueInvoke(v ref, args []ref) (ref, bool)
-					"syscall/js.valueInvoke": (sp) => {
-						sp >>>= 0;
-						try {
-							const v = loadValue(sp + 8);
-							const args = loadSliceOfValues(sp + 16);
-							const result = Reflect.apply(v, undefined, args);
-							sp = this._inst.exports.getsp() >>> 0; // see comment above
-							storeValue(sp + 40, result);
-							this.mem.setUint8(sp + 48, 1);
-						} catch (err) {
-							sp = this._inst.exports.getsp() >>> 0; // see comment above
-							storeValue(sp + 40, err);
-							this.mem.setUint8(sp + 48, 0);
-						}
-					},
+          // func valueLength(v ref) int
+          "syscall/js.valueLength": (v_ref) => {
+            return unboxValue(v_ref).length;
+          },
 
-					// func valueNew(v ref, args []ref) (ref, bool)
-					"syscall/js.valueNew": (sp) => {
-						sp >>>= 0;
-						try {
-							const v = loadValue(sp + 8);
-							const args = loadSliceOfValues(sp + 16);
-							const result = Reflect.construct(v, args);
-							sp = this._inst.exports.getsp() >>> 0; // see comment above
-							storeValue(sp + 40, result);
-							this.mem.setUint8(sp + 48, 1);
-						} catch (err) {
-							sp = this._inst.exports.getsp() >>> 0; // see comment above
-							storeValue(sp + 40, err);
-							this.mem.setUint8(sp + 48, 0);
-						}
-					},
+          // valuePrepareString(v ref) (ref, int)
+          "syscall/js.valuePrepareString": (ret_addr, v_ref) => {
+            const s = String(unboxValue(v_ref));
+            const str = encoder.encode(s);
+            storeValue(ret_addr, str);
+            mem().setInt32(ret_addr + 8, str.length, true);
+          },
 
-					// func valueLength(v ref) int
-					"syscall/js.valueLength": (sp) => {
-						sp >>>= 0;
-						setInt64(sp + 16, parseInt(loadValue(sp + 8).length));
-					},
+          // valueLoadString(v ref, b []byte)
+          "syscall/js.valueLoadString": (v_ref, slice_ptr, slice_len, slice_cap) => {
+            const str = unboxValue(v_ref);
+            loadSlice(slice_ptr, slice_len, slice_cap).set(str);
+          },
 
-					// valuePrepareString(v ref) (ref, int)
-					"syscall/js.valuePrepareString": (sp) => {
-						sp >>>= 0;
-						const str = encoder.encode(String(loadValue(sp + 8)));
-						storeValue(sp + 16, str);
-						setInt64(sp + 24, str.length);
-					},
+          // func valueInstanceOf(v ref, t ref) bool
+          "syscall/js.valueInstanceOf": (v_ref, t_ref) => {
+            return unboxValue(v_ref) instanceof unboxValue(t_ref);
+          },
 
-					// valueLoadString(v ref, b []byte)
-					"syscall/js.valueLoadString": (sp) => {
-						sp >>>= 0;
-						const str = loadValue(sp + 8);
-						loadSlice(sp + 16).set(str);
-					},
+          // func copyBytesToGo(dst []byte, src ref) (int, bool)
+          "syscall/js.copyBytesToGo": (ret_addr, dest_addr, dest_len, dest_cap, src_ref) => {
+            let num_bytes_copied_addr = ret_addr;
+            let returned_status_addr = ret_addr + 4; // Address of returned boolean status variable
 
-					// func valueInstanceOf(v ref, t ref) bool
-					"syscall/js.valueInstanceOf": (sp) => {
-						sp >>>= 0;
-						this.mem.setUint8(sp + 24, (loadValue(sp + 8) instanceof loadValue(sp + 16)) ? 1 : 0);
-					},
+            const dst = loadSlice(dest_addr, dest_len);
+            const src = unboxValue(src_ref);
+            if (!(src instanceof Uint8Array || src instanceof Uint8ClampedArray)) {
+              mem().setUint8(returned_status_addr, 0); // Return "not ok" status
+              return;
+            }
+            const toCopy = src.subarray(0, dst.length);
+            dst.set(toCopy);
+            mem().setUint32(num_bytes_copied_addr, toCopy.length, true);
+            mem().setUint8(returned_status_addr, 1); // Return "ok" status
+          },
 
-					// func copyBytesToGo(dst []byte, src ref) (int, bool)
-					"syscall/js.copyBytesToGo": (sp) => {
-						sp >>>= 0;
-						const dst = loadSlice(sp + 8);
-						const src = loadValue(sp + 32);
-						if (!(src instanceof Uint8Array || src instanceof Uint8ClampedArray)) {
-							this.mem.setUint8(sp + 48, 0);
-							return;
-						}
-						const toCopy = src.subarray(0, dst.length);
-						dst.set(toCopy);
-						setInt64(sp + 40, toCopy.length);
-						this.mem.setUint8(sp + 48, 1);
-					},
+          // copyBytesToJS(dst ref, src []byte) (int, bool)
+          // Originally copied from upstream Go project, then modified:
+          //   https://github.com/golang/go/blob/3f995c3f3b43033013013e6c7ccc93a9b1411ca9/misc/wasm/wasm_exec.js#L404-L416
+          "syscall/js.copyBytesToJS": (ret_addr, dst_ref, src_addr, src_len, src_cap) => {
+            let num_bytes_copied_addr = ret_addr;
+            let returned_status_addr = ret_addr + 4; // Address of returned boolean status variable
 
-					// func copyBytesToJS(dst ref, src []byte) (int, bool)
-					"syscall/js.copyBytesToJS": (sp) => {
-						sp >>>= 0;
-						const dst = loadValue(sp + 8);
-						const src = loadSlice(sp + 16);
-						if (!(dst instanceof Uint8Array || dst instanceof Uint8ClampedArray)) {
-							this.mem.setUint8(sp + 48, 0);
-							return;
-						}
-						const toCopy = src.subarray(0, dst.length);
-						dst.set(toCopy);
-						setInt64(sp + 40, toCopy.length);
-						this.mem.setUint8(sp + 48, 1);
-					},
+            const dst = unboxValue(dst_ref);
+            const src = loadSlice(src_addr, src_len);
+            if (!(dst instanceof Uint8Array || dst instanceof Uint8ClampedArray)) {
+              mem().setUint8(returned_status_addr, 0); // Return "not ok" status
+              return;
+            }
+            const toCopy = src.subarray(0, dst.length);
+            dst.set(toCopy);
+            mem().setUint32(num_bytes_copied_addr, toCopy.length, true);
+            mem().setUint8(returned_status_addr, 1); // Return "ok" status
+          },
+        },
+      };
 
-					"debug": (value) => {
-						console.log(value);
-					},
-				}
-			};
-		}
+      // Go 1.20 uses 'env'. Go 1.21 uses 'gojs'.
+      // For compatibility, we use both as long as Go 1.20 is supported.
+      this.importObject.env = this.importObject.gojs;
+    }
 
-		async run(instance) {
-			if (!(instance instanceof WebAssembly.Instance)) {
-				throw new Error("Go.run: WebAssembly.Instance expected");
-			}
-			this._inst = instance;
-			this.mem = new DataView(this._inst.exports.mem.buffer);
-			this._values = [ // JS values that Go currently has references to, indexed by reference id
-				NaN,
-				0,
-				null,
-				true,
-				false,
-				globalThis,
-				this,
-			];
-			this._goRefCounts = new Array(this._values.length).fill(Infinity); // number of references that Go has to a JS value, indexed by reference id
-			this._ids = new Map([ // mapping from JS values to reference ids
-				[0, 1],
-				[null, 2],
-				[true, 3],
-				[false, 4],
-				[globalThis, 5],
-				[this, 6],
-			]);
-			this._idPool = [];   // unused ids that have been garbage collected
-			this.exited = false; // whether the Go program has exited
+    async run(instance) {
+      this._inst = instance;
+      this._values = [
+        // JS values that Go currently has references to, indexed by reference id
+        NaN,
+        0,
+        null,
+        true,
+        false,
+        global,
+        this,
+      ];
+      this._goRefCounts = []; // number of references that Go has to a JS value, indexed by reference id
+      this._ids = new Map(); // mapping from JS values to reference ids
+      this._idPool = []; // unused ids that have been garbage collected
+      this.exited = false; // whether the Go program has exited
 
-			// Pass command line arguments and environment variables to WebAssembly by writing them to the linear memory.
-			let offset = 4096;
+      while (true) {
+        const callbackPromise = new Promise((resolve) => {
+          this._resolveCallbackPromise = () => {
+            if (this.exited) {
+              throw new Error("bad callback: Go program has already exited");
+            }
+            setTimeout(resolve, 0); // make sure it is asynchronous
+          };
+        });
+        this._inst.exports._start();
+        if (this.exited) {
+          break;
+        }
+        await callbackPromise;
+      }
+    }
 
-			const strPtr = (str) => {
-				const ptr = offset;
-				const bytes = encoder.encode(str + "\0");
-				new Uint8Array(this.mem.buffer, offset, bytes.length).set(bytes);
-				offset += bytes.length;
-				if (offset % 8 !== 0) {
-					offset += 8 - (offset % 8);
-				}
-				return ptr;
-			};
+    _resume() {
+      if (this.exited) {
+        throw new Error("Go program has already exited");
+      }
+      this._inst.exports.resume();
+      if (this.exited) {
+        this._resolveExitPromise();
+      }
+    }
 
-			const argc = this.argv.length;
+    _makeFuncWrapper(id) {
+      const go = this;
+      return function () {
+        const event = { id: id, this: this, args: arguments };
+        go._pendingEvent = event;
+        go._resume();
+        return event.result;
+      };
+    }
+  };
 
-			const argvPtrs = [];
-			this.argv.forEach((arg) => {
-				argvPtrs.push(strPtr(arg));
-			});
-			argvPtrs.push(0);
+  if (global.require && global.require.main === module && global.process && global.process.versions && !global.process.versions.electron) {
+    if (process.argv.length != 3) {
+      console.error("usage: go_js_wasm_exec [wasm binary] [arguments]");
+      process.exit(1);
+    }
 
-			const keys = Object.keys(this.env).sort();
-			keys.forEach((key) => {
-				argvPtrs.push(strPtr(`${key}=${this.env[key]}`));
-			});
-			argvPtrs.push(0);
-
-			const argv = offset;
-			argvPtrs.forEach((ptr) => {
-				this.mem.setUint32(offset, ptr, true);
-				this.mem.setUint32(offset + 4, 0, true);
-				offset += 8;
-			});
-
-			// The linker guarantees global data starts from at least wasmMinDataAddr.
-			// Keep in sync with cmd/link/internal/ld/data.go:wasmMinDataAddr.
-			const wasmMinDataAddr = 4096 + 8192;
-			if (offset >= wasmMinDataAddr) {
-				throw new Error("total length of command line and environment variables exceeds limit");
-			}
-
-			this._inst.exports.run(argc, argv);
-			if (this.exited) {
-				this._resolveExitPromise();
-			}
-			await this._exitPromise;
-		}
-
-		_resume() {
-			if (this.exited) {
-				throw new Error("Go program has already exited");
-			}
-			this._inst.exports.resume();
-			if (this.exited) {
-				this._resolveExitPromise();
-			}
-		}
-
-		_makeFuncWrapper(id) {
-			const go = this;
-			return function () {
-				const event = { id: id, this: this, args: arguments };
-				go._pendingEvent = event;
-				go._resume();
-				return event.result;
-			};
-		}
-	}
+    const go = new Go();
+    WebAssembly.instantiate(fs.readFileSync(process.argv[2]), go.importObject)
+      .then((result) => {
+        return go.run(result.instance);
+      })
+      .catch((err) => {
+        console.error(err);
+        process.exit(1);
+      });
+  }
 })();
