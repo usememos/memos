@@ -129,7 +129,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           <div className="w-auto invisible group-hover:visible flex flex-row justify-between items-center gap-1">
             {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
               <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
-                <span className="h-7 w-7 flex justify-center items-center hover:opacity-70">
+                <span className="flex justify-center items-center hover:opacity-70">
                   <VisibilityIcon visibility={memo.visibility} />
                 </span>
               </Tooltip>
@@ -141,7 +141,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
               "flex flex-row justify-start items-center hover:opacity-70",
               commentAmount === 0 && "invisible group-hover:visible",
             )}
-            to={`/m/${memo.name}`}
+            to={`/m/${memo.name}#comments`}
             unstable_viewTransition
           >
             <Icon.MessageCircleMore className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
