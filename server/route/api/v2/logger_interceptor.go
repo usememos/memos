@@ -41,4 +41,7 @@ func (*LoggerInterceptor) loggerInterceptorDo(ctx context.Context, fullMethod st
 		logMsg = "unknown error"
 	}
 	slog.LogAttrs(ctx, logLevel, logMsg, slog.String("method", fullMethod))
+	if err != nil {
+		slog.LogAttrs(ctx, logLevel, "", slog.String("error", err.Error()))
+	}
 }
