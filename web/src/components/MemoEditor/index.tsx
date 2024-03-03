@@ -45,6 +45,7 @@ interface State {
   relationList: MemoRelation[];
   isUploadingResource: boolean;
   isRequesting: boolean;
+  isComposing: boolean;
 }
 
 const MemoEditor = (props: Props) => {
@@ -65,6 +66,7 @@ const MemoEditor = (props: Props) => {
     relationList: props.relationList ?? [],
     isUploadingResource: false,
     isRequesting: false,
+    isComposing: false,
   });
   const [hasContent, setHasContent] = useState<boolean>(false);
   const editorRef = useRef<EditorRefActions>(null);
@@ -117,6 +119,20 @@ const MemoEditor = (props: Props) => {
     }
   }, [memoId]);
 
+  const handleCompositionStart = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isComposing: true,
+    }));
+  };
+
+  const handleCompositionEnd = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isComposing: false,
+    }));
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (!editorRef.current) {
       return;
@@ -131,7 +147,7 @@ const MemoEditor = (props: Props) => {
 
       handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
     }
-    if (event.key === "Tab") {
+    if (event.key === "Tab" && !state.isComposing) {
       event.preventDefault();
       const tabSpace = " ".repeat(TAB_SPACE_WIDTH);
       const cursorPosition = editorRef.current.getCursorPosition();
@@ -382,6 +398,8 @@ const MemoEditor = (props: Props) => {
         onKeyDown={handleKeyDown}
         onDrop={handleDropEvent}
         onFocus={handleEditorFocus}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
       >
         <Editor ref={editorRef} {...editorConfig} />
         <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
