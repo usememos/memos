@@ -237,7 +237,7 @@ func (s *APIV2Service) clearAccessTokenCookie(ctx context.Context) error {
 	return nil
 }
 
-func (s *APIV2Service) buildAccessTokenCookie(ctx context.Context, accessToken string, expireTime time.Time) (string, error) {
+func (*APIV2Service) buildAccessTokenCookie(ctx context.Context, accessToken string, expireTime time.Time) (string, error) {
 	attrs := []string{
 		fmt.Sprintf("%s=%s", auth.AccessTokenCookieName, accessToken),
 		"Path=/",
