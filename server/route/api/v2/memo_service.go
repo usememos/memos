@@ -12,6 +12,8 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
+	"github.com/yourselfhosted/gomark/parser"
+	"github.com/yourselfhosted/gomark/parser/tokenizer"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -287,6 +289,18 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 	}, nil
 }
 
+func (*APIV2Service) PreviewMemoContent(_ context.Context, request *apiv2pb.PreviewMemoContentRequest) (*apiv2pb.PreviewMemoContentResponse, error) {
+	rawNodes, err := parser.Parse(tokenizer.Tokenize(request.Content))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse memo content")
+	}
+
+	nodes := convertFromASTNodes(rawNodes)
+	return &apiv2pb.PreviewMemoContentResponse{
+		Nodes: nodes,
+	}, nil
+}
+
 func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMemoRequest) (*apiv2pb.DeleteMemoResponse, error) {
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 		ID: &request.Id,
@@ -530,6 +544,21 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		return nil, errors.Wrap(err, "failed to list memo reactions")
 	}
 
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to find system setting")
+	}
+
+	nodes := []*apiv2pb.Node{}
+	if workspaceGeneralSetting.ServerSideMarkdown {
+		rawNodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to parse memo content")
+		}
+
+		nodes = convertFromASTNodes(rawNodes)
+	}
+
 	return &apiv2pb.Memo{
 		Id:          int32(memo.ID),
 		Name:        memo.ResourceName,
@@ -540,6 +569,7 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
 		Content:     memo.Content,
+		Nodes:       nodes,
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
 		ParentId:    memo.ParentID,

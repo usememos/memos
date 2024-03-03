@@ -4,6 +4,7 @@ package memos.api.v2;
 
 import "api/v2/common.proto";
 import "api/v2/memo_relation_service.proto";
+import "api/v2/node.proto";
 import "api/v2/reaction_service.proto";
 import "api/v2/resource_service.proto";
 import "google/api/annotations.proto";
@@ -109,6 +110,10 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v2/memos/{id}/reactions/{reaction_id}"};
     option (google.api.method_signature) = "id,reaction_id";
   }
+  // PreviewMemoContent previews memo content.
+  rpc PreviewMemoContent(PreviewMemoContentRequest) returns (PreviewMemoContentResponse) {
+    option (google.api.http) = {post: "/api/v2/memos:preview"};
+  }
 }
 
 enum Visibility {
@@ -155,6 +160,8 @@ message Memo {
   repeated MemoRelation relations = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   repeated Reaction reactions = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  repeated Node nodes = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {
@@ -325,3 +332,11 @@ message DeleteMemoReactionRequest {
 }
 
 message DeleteMemoReactionResponse {}
+
+message PreviewMemoContentRequest {
+  string content = 1;
+}
+
+message PreviewMemoContentResponse {
+  repeated Node nodes = 1;
+}

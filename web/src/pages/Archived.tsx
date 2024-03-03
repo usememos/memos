@@ -1,6 +1,6 @@
 import { Button, Tooltip } from "@mui/joy";
 import { ClientError } from "nice-grpc-web";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import Empty from "@/components/Empty";
@@ -14,7 +14,9 @@ import { getTimeStampByDate } from "@/helpers/datetime";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
+import { useMemoParser } from "@/hooks/useMemoParser";
 import { useMemoList, useMemoStore } from "@/store/v1";
+import { Node } from "@/types/node";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -27,9 +29,22 @@ const Archived = () => {
   const [isRequesting, setIsRequesting] = useState(true);
   const nextPageTokenRef = useRef<string | undefined>(undefined);
   const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
-  const sortedMemos = memoList.value
-    .filter((memo) => memo.rowStatus === RowStatus.ARCHIVED)
-    .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
+  const sortedMemos = useMemo(
+    () =>
+      memoList.value
+        .filter((memo) => memo.rowStatus === RowStatus.ARCHIVED)
+        .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime)),
+    [memoList],
+  );
+
+  const memoParser = useMemoParser();
+  const mappedNodes = useMemo(() => {
+    const map = new Map<number, Node[]>();
+    for (const memo of sortedMemos) {
+      map.set(memo.id, memoParser.getNodes(memo));
+    }
+    return map;
+  }, [sortedMemos]);
 
   useEffect(() => {
     nextPageTokenRef.current = undefined;
@@ -120,7 +135,7 @@ const Archived = () => {
                   </Tooltip>
                 </div>
               </div>
-              <MemoContent key={`${memo.id}-${memo.displayTime}`} memoId={memo.id} content={memo.content} readonly={true} />
+              <MemoContent key={`${memo.id}-${memo.displayTime}`} memoId={memo.id} nodes={mappedNodes.get(memo.id)!} readonly={true} />
             </div>
           ))}
           {isRequesting ? (

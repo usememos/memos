@@ -80,6 +80,41 @@
   
     - [MemoRelation.Type](#memos-api-v2-MemoRelation-Type)
   
+- [api/v2/node.proto](#api_v2_node-proto)
+    - [AutoLinkNode](#memos-api-v2-AutoLinkNode)
+    - [BlockquoteNode](#memos-api-v2-BlockquoteNode)
+    - [BoldItalicNode](#memos-api-v2-BoldItalicNode)
+    - [BoldNode](#memos-api-v2-BoldNode)
+    - [CodeBlockNode](#memos-api-v2-CodeBlockNode)
+    - [CodeNode](#memos-api-v2-CodeNode)
+    - [EmbeddedContentNode](#memos-api-v2-EmbeddedContentNode)
+    - [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode)
+    - [HeadingNode](#memos-api-v2-HeadingNode)
+    - [HighlightNode](#memos-api-v2-HighlightNode)
+    - [HorizontalRuleNode](#memos-api-v2-HorizontalRuleNode)
+    - [ImageNode](#memos-api-v2-ImageNode)
+    - [ItalicNode](#memos-api-v2-ItalicNode)
+    - [LineBreakNode](#memos-api-v2-LineBreakNode)
+    - [LinkNode](#memos-api-v2-LinkNode)
+    - [MathBlockNode](#memos-api-v2-MathBlockNode)
+    - [MathNode](#memos-api-v2-MathNode)
+    - [Node](#memos-api-v2-Node)
+    - [OrderedListNode](#memos-api-v2-OrderedListNode)
+    - [ParagraphNode](#memos-api-v2-ParagraphNode)
+    - [ReferencedContentNode](#memos-api-v2-ReferencedContentNode)
+    - [SpoilerNode](#memos-api-v2-SpoilerNode)
+    - [StrikethroughNode](#memos-api-v2-StrikethroughNode)
+    - [SubscriptNode](#memos-api-v2-SubscriptNode)
+    - [SuperscriptNode](#memos-api-v2-SuperscriptNode)
+    - [TableNode](#memos-api-v2-TableNode)
+    - [TableNode.Row](#memos-api-v2-TableNode-Row)
+    - [TagNode](#memos-api-v2-TagNode)
+    - [TaskListNode](#memos-api-v2-TaskListNode)
+    - [TextNode](#memos-api-v2-TextNode)
+    - [UnorderedListNode](#memos-api-v2-UnorderedListNode)
+  
+    - [NodeType](#memos-api-v2-NodeType)
+  
 - [api/v2/reaction_service.proto](#api_v2_reaction_service-proto)
     - [Reaction](#memos-api-v2-Reaction)
   
@@ -131,6 +166,8 @@
     - [ListMemosRequest](#memos-api-v2-ListMemosRequest)
     - [ListMemosResponse](#memos-api-v2-ListMemosResponse)
     - [Memo](#memos-api-v2-Memo)
+    - [PreviewMemoContentRequest](#memos-api-v2-PreviewMemoContentRequest)
+    - [PreviewMemoContentResponse](#memos-api-v2-PreviewMemoContentResponse)
     - [SetMemoRelationsRequest](#memos-api-v2-SetMemoRelationsRequest)
     - [SetMemoRelationsResponse](#memos-api-v2-SetMemoRelationsResponse)
     - [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest)
@@ -1144,6 +1181,570 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="api_v2_node-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/node.proto
+
+
+
+<a name="memos-api-v2-AutoLinkNode"></a>
+
+### AutoLinkNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| url | [string](#string) |  |  |
+| is_raw_text | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-BlockquoteNode"></a>
+
+### BlockquoteNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| children | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-BoldItalicNode"></a>
+
+### BoldItalicNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| symbol | [string](#string) |  |  |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-BoldNode"></a>
+
+### BoldNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| symbol | [string](#string) |  |  |
+| children | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CodeBlockNode"></a>
+
+### CodeBlockNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| language | [string](#string) |  |  |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CodeNode"></a>
+
+### CodeNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-EmbeddedContentNode"></a>
+
+### EmbeddedContentNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource_name | [string](#string) |  |  |
+| params | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-EscapingCharacterNode"></a>
+
+### EscapingCharacterNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| symbol | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-HeadingNode"></a>
+
+### HeadingNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| level | [int32](#int32) |  |  |
+| children | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-HighlightNode"></a>
+
+### HighlightNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-HorizontalRuleNode"></a>
+
+### HorizontalRuleNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| symbol | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ImageNode"></a>
+
+### ImageNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| alt_text | [string](#string) |  |  |
+| url | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ItalicNode"></a>
+
+### ItalicNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| symbol | [string](#string) |  |  |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-LineBreakNode"></a>
+
+### LineBreakNode
+
+
+
+
+
+
+
+<a name="memos-api-v2-LinkNode"></a>
+
+### LinkNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| text | [string](#string) |  |  |
+| url | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-MathBlockNode"></a>
+
+### MathBlockNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-MathNode"></a>
+
+### MathNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-Node"></a>
+
+### Node
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| type | [NodeType](#memos-api-v2-NodeType) |  |  |
+| line_break_node | [LineBreakNode](#memos-api-v2-LineBreakNode) |  |  |
+| paragraph_node | [ParagraphNode](#memos-api-v2-ParagraphNode) |  |  |
+| code_block_node | [CodeBlockNode](#memos-api-v2-CodeBlockNode) |  |  |
+| heading_node | [HeadingNode](#memos-api-v2-HeadingNode) |  |  |
+| horizontal_rule_node | [HorizontalRuleNode](#memos-api-v2-HorizontalRuleNode) |  |  |
+| blockquote_node | [BlockquoteNode](#memos-api-v2-BlockquoteNode) |  |  |
+| ordered_list_node | [OrderedListNode](#memos-api-v2-OrderedListNode) |  |  |
+| unordered_list_node | [UnorderedListNode](#memos-api-v2-UnorderedListNode) |  |  |
+| task_list_node | [TaskListNode](#memos-api-v2-TaskListNode) |  |  |
+| math_block_node | [MathBlockNode](#memos-api-v2-MathBlockNode) |  |  |
+| table_node | [TableNode](#memos-api-v2-TableNode) |  |  |
+| embedded_content_node | [EmbeddedContentNode](#memos-api-v2-EmbeddedContentNode) |  |  |
+| text_node | [TextNode](#memos-api-v2-TextNode) |  |  |
+| bold_node | [BoldNode](#memos-api-v2-BoldNode) |  |  |
+| italic_node | [ItalicNode](#memos-api-v2-ItalicNode) |  |  |
+| bold_italic_node | [BoldItalicNode](#memos-api-v2-BoldItalicNode) |  |  |
+| code_node | [CodeNode](#memos-api-v2-CodeNode) |  |  |
+| image_node | [ImageNode](#memos-api-v2-ImageNode) |  |  |
+| link_node | [LinkNode](#memos-api-v2-LinkNode) |  |  |
+| auto_link_node | [AutoLinkNode](#memos-api-v2-AutoLinkNode) |  |  |
+| tag_node | [TagNode](#memos-api-v2-TagNode) |  |  |
+| strikethrough_node | [StrikethroughNode](#memos-api-v2-StrikethroughNode) |  |  |
+| escaping_character_node | [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode) |  |  |
+| math_node | [MathNode](#memos-api-v2-MathNode) |  |  |
+| highlight_node | [HighlightNode](#memos-api-v2-HighlightNode) |  |  |
+| subscript_node | [SubscriptNode](#memos-api-v2-SubscriptNode) |  |  |
+| superscript_node | [SuperscriptNode](#memos-api-v2-SuperscriptNode) |  |  |
+| referenced_content_node | [ReferencedContentNode](#memos-api-v2-ReferencedContentNode) |  |  |
+| spoiler_node | [SpoilerNode](#memos-api-v2-SpoilerNode) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-OrderedListNode"></a>
+
+### OrderedListNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| number | [string](#string) |  |  |
+| indent | [int32](#int32) |  |  |
+| children | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ParagraphNode"></a>
+
+### ParagraphNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| children | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ReferencedContentNode"></a>
+
+### ReferencedContentNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource_name | [string](#string) |  |  |
+| params | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SpoilerNode"></a>
+
+### SpoilerNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-StrikethroughNode"></a>
+
+### StrikethroughNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SubscriptNode"></a>
+
+### SubscriptNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SuperscriptNode"></a>
+
+### SuperscriptNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-TableNode"></a>
+
+### TableNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| header | [string](#string) | repeated |  |
+| delimiter | [string](#string) | repeated |  |
+| rows | [TableNode.Row](#memos-api-v2-TableNode-Row) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-TableNode-Row"></a>
+
+### TableNode.Row
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| cells | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-TagNode"></a>
+
+### TagNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-TaskListNode"></a>
+
+### TaskListNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| symbol | [string](#string) |  |  |
+| indent | [int32](#int32) |  |  |
+| complete | [bool](#bool) |  |  |
+| children | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-TextNode"></a>
+
+### TextNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UnorderedListNode"></a>
+
+### UnorderedListNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| symbol | [string](#string) |  |  |
+| indent | [int32](#int32) |  |  |
+| children | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-api-v2-NodeType"></a>
+
+### NodeType
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| NODE_UNSPECIFIED | 0 |  |
+| LINE_BREAK | 1 |  |
+| PARAGRAPH | 2 |  |
+| CODE_BLOCK | 3 |  |
+| HEADING | 4 |  |
+| HORIZONTAL_RULE | 5 |  |
+| BLOCKQUOTE | 6 |  |
+| ORDERED_LIST | 7 |  |
+| UNORDERED_LIST | 8 |  |
+| TASK_LIST | 9 |  |
+| MATH_BLOCK | 10 |  |
+| TABLE | 11 |  |
+| EMBEDDED_CONTENT | 12 |  |
+| TEXT | 13 |  |
+| BOLD | 14 |  |
+| ITALIC | 15 |  |
+| BOLD_ITALIC | 16 |  |
+| CODE | 17 |  |
+| IMAGE | 18 |  |
+| LINK | 19 |  |
+| AUTO_LINK | 20 |  |
+| TAG | 21 |  |
+| STRIKETHROUGH | 22 |  |
+| ESCAPING_CHARACTER | 23 |  |
+| MATH | 24 |  |
+| HIGHLIGHT | 25 |  |
+| SUBSCRIPT | 26 |  |
+| SUPERSCRIPT | 27 |  |
+| REFERENCED_CONTENT | 28 |  |
+| SPOILER | 29 |  |
+
+
+ 
+
+ 
+
+ 
+
+
+
 <a name="api_v2_reaction_service-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -1862,6 +2463,37 @@ Used internally for obfuscating the page token.
 | resources | [Resource](#memos-api-v2-Resource) | repeated |  |
 | relations | [MemoRelation](#memos-api-v2-MemoRelation) | repeated |  |
 | reactions | [Reaction](#memos-api-v2-Reaction) | repeated |  |
+| nodes | [Node](#memos-api-v2-Node) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-PreviewMemoContentRequest"></a>
+
+### PreviewMemoContentRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-PreviewMemoContentResponse"></a>
+
+### PreviewMemoContentResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| nodes | [Node](#memos-api-v2-Node) | repeated |  |
 
 
 
@@ -2026,6 +2658,7 @@ Used internally for obfuscating the page token.
 | ListMemoReactions | [ListMemoReactionsRequest](#memos-api-v2-ListMemoReactionsRequest) | [ListMemoReactionsResponse](#memos-api-v2-ListMemoReactionsResponse) | ListMemoReactions lists reactions for a memo. |
 | UpsertMemoReaction | [UpsertMemoReactionRequest](#memos-api-v2-UpsertMemoReactionRequest) | [UpsertMemoReactionResponse](#memos-api-v2-UpsertMemoReactionResponse) | UpsertMemoReaction upserts a reaction for a memo. |
 | DeleteMemoReaction | [DeleteMemoReactionRequest](#memos-api-v2-DeleteMemoReactionRequest) | [DeleteMemoReactionResponse](#memos-api-v2-DeleteMemoReactionResponse) | DeleteMemoReaction deletes a reaction for a memo. |
+| PreviewMemoContent | [PreviewMemoContentRequest](#memos-api-v2-PreviewMemoContentRequest) | [PreviewMemoContentResponse](#memos-api-v2-PreviewMemoContentResponse) | PreviewMemoContent previews memo content. |
 
  
 
@@ -2599,6 +3232,7 @@ Used internally for obfuscating the page token.
 | disallow_password_login | [bool](#bool) |  | disallow_password_login is the flag to disallow password login. |
 | additional_script | [string](#string) |  | additional_script is the additional script. |
 | additional_style | [string](#string) |  | additional_style is the additional style. |
+| server_side_markdown | [bool](#bool) |  | server side markdown processing setting. |
 
 
 

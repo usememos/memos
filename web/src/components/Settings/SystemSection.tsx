@@ -188,6 +188,17 @@ const SystemSection = () => {
     });
   };
 
+  const handleServerSideMarkdown = async (value: boolean) => {
+    const setting = { ...workspaceGeneralSetting, serverSideMarkdown: value };
+    await workspaceSettingServiceClient.setWorkspaceSetting({
+      setting: {
+        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+        generalSetting: setting,
+      },
+    });
+    setWorkspaceGeneralSetting(setting);
+  };
+
   const handleMaxUploadSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
     // fixes cursor skipping position on mobile
     event.target.selectionEnd = event.target.value.length;
@@ -323,6 +334,10 @@ const SystemSection = () => {
       <div className="w-full flex flex-row justify-between items-center">
         <span className="normal-text">{t("setting.system-section.display-with-updated-time")}</span>
         <Switch checked={state.memoDisplayWithUpdatedTs} onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)} />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="mr-1">{t("setting.system-section.server-side-markdown")}</span>
+        <Switch checked={workspaceGeneralSetting.serverSideMarkdown} onChange={(event) => handleServerSideMarkdown(event.target.checked)} />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">

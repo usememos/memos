@@ -1701,6 +1701,9 @@ definitions:
       additionalStyle:
         type: string
         description: additional_style is the additional style.
+      serverSideMarkdown:
+        type: boolean
+        description: server side markdown processing setting.
   apiv2WorkspaceSetting:
     type: object
     properties:

@@ -22,6 +22,7 @@ interface SystemStatus {
   storageServiceId: number;
   localStoragePath: string;
   memoDisplayWithUpdatedTs: boolean;
+  serverSideMarkdown: boolean;
 }
 
 interface SystemSetting {
