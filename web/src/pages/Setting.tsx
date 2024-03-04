@@ -22,9 +22,9 @@ interface State {
 }
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
-const AdminSection: SettingSection[] = ["member", "system", "storage", "sso"];
+const ADMIN_SECTION: SettingSection[] = ["member", "system", "storage", "sso"];
 
-const SectionsIconsMap: Record<SettingSection, LucideIcon> = {
+const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": Icon.User,
   preference: Icon.Cog,
   member: Icon.Users,
@@ -44,9 +44,9 @@ const Setting = () => {
   const isHost = user.role === User_Role.HOST;
 
   const settingsSectionList = useMemo(() => {
-    let settingList = [...BasicSection];
+    let settingList = [...BASIC_SECTIONS];
     if (isHost) {
-      settingList = settingList.concat(AdminSection);
+      settingList = settingList.concat(ADMIN_SECTION);
     }
     return settingList;
   }, [isHost]);
@@ -65,11 +65,11 @@ const Setting = () => {
           <div className="hidden sm:flex flex-col justify-start items-start w-40 h-auto shrink-0 py-2">
             <span className="text-sm mt-0.5 pl-3 font-mono select-none text-gray-400 dark:text-gray-500">{t("common.basic")}</span>
             <div className="w-full flex flex-col justify-start items-start mt-1">
-              {BasicSection.map((item) => (
+              {BASIC_SECTIONS.map((item) => (
                 <SectionMenuItem
                   key={item}
                   text={t(`setting.${item}`)}
-                  icon={SectionsIconsMap[item]}
+                  icon={SECTION_ICON_MAP[item]}
                   isSelected={state.selectedSection === item}
                   onClick={() => handleSectionSelectorItemClick(item)}
                 />
@@ -79,11 +79,11 @@ const Setting = () => {
               <>
                 <span className="text-sm mt-4 pl-3 font-mono select-none text-gray-400 dark:text-gray-500">{t("common.admin")}</span>
                 <div className="w-full flex flex-col justify-start items-start mt-1">
-                  {AdminSection.map((item) => (
+                  {ADMIN_SECTION.map((item) => (
                     <SectionMenuItem
                       key={item}
                       text={t(`setting.${item}`)}
-                      icon={SectionsIconsMap[item]}
+                      icon={SECTION_ICON_MAP[item]}
                       isSelected={state.selectedSection === item}
                       onClick={() => handleSectionSelectorItemClick(item)}
                     />
