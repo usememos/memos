@@ -41,7 +41,7 @@ const Setting = () => {
     selectedSection: "my-account",
   });
 
-  const isHost = useMemo(() => user.role === User_Role.HOST, [user]);
+  const isHost = user.role === User_Role.HOST;
 
   const settingsSectionList = useMemo(() => {
     let settingList = [...BasicSection];
