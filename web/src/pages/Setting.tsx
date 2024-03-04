@@ -22,7 +22,7 @@ interface State {
 }
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
-const ADMIN_SECTION: SettingSection[] = ["member", "system", "storage", "sso"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "storage", "sso"];
 
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": Icon.User,
@@ -46,7 +46,7 @@ const Setting = () => {
   const settingsSectionList = useMemo(() => {
     let settingList = [...BASIC_SECTIONS];
     if (isHost) {
-      settingList = settingList.concat(ADMIN_SECTION);
+      settingList = settingList.concat(ADMIN_SECTIONS);
     }
     return settingList;
   }, [isHost]);
@@ -79,7 +79,7 @@ const Setting = () => {
               <>
                 <span className="text-sm mt-4 pl-3 font-mono select-none text-gray-400 dark:text-gray-500">{t("common.admin")}</span>
                 <div className="w-full flex flex-col justify-start items-start mt-1">
-                  {ADMIN_SECTION.map((item) => (
+                  {ADMIN_SECTIONS.map((item) => (
                     <SectionMenuItem
                       key={item}
                       text={t(`setting.${item}`)}
