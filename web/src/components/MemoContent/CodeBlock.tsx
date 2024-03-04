@@ -28,10 +28,13 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
 
   let highlightedCode = content;
   try {
-    const temp = hljs.highlight(content, {
-      language: formatedLanguage,
-    }).value;
-    highlightedCode = temp;
+    const lang = hljs.getLanguage(formatedLanguage);
+    if (lang) {
+      const temp = hljs.highlight(content, {
+        language: formatedLanguage,
+      }).value;
+      highlightedCode = temp;
+    }
   } catch (error) {
     // Skip error and use default highlighted code.
   }

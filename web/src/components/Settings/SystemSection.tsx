@@ -216,7 +216,7 @@ const SystemSection = () => {
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
       <div className="w-full flex flex-row justify-between items-center">
-        <div className="normal-text">
+        <div>
           {t("setting.system-section.server-name")}: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
         </div>
         <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
@@ -267,7 +267,7 @@ const SystemSection = () => {
       </div>
       <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
         <div className="w-full flex flex-row justify-between items-center">
-          <span className="normal-text">{t("setting.system-section.additional-style")}</span>
+          <span>{t("setting.system-section.additional-style")}</span>
           <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalStyle}>
             {t("common.save")}
           </Button>
@@ -285,7 +285,7 @@ const SystemSection = () => {
           onChange={(event) => handleAdditionalStyleChanged(event.target.value)}
         />
         <div className="w-full flex flex-row justify-between items-center">
-          <span className="normal-text">{t("setting.system-section.additional-script")}</span>
+          <span>{t("setting.system-section.additional-script")}</span>
           <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalScript}>
             {t("common.save")}
           </Button>
@@ -317,16 +317,16 @@ const SystemSection = () => {
       <Divider className="!my-3" />
       <p className="font-medium text-gray-700 dark:text-gray-500">Others</p>
       <div className="w-full flex flex-row justify-between items-center">
-        <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>
+        <span>{t("setting.system-section.disable-public-memos")}</span>
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span className="normal-text">{t("setting.system-section.display-with-updated-time")}</span>
+        <span>{t("setting.system-section.display-with-updated-time")}</span>
         <Switch checked={state.memoDisplayWithUpdatedTs} onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)} />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">
-          <span className="text-sm mr-1">{t("setting.system-section.max-upload-size")}</span>
+          <span className="mr-1">{t("setting.system-section.max-upload-size")}</span>
           <Tooltip title={t("setting.system-section.max-upload-size-hint")} placement="top">
             <Icon.HelpCircle className="w-4 h-auto" />
           </Tooltip>

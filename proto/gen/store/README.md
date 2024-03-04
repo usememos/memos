@@ -289,7 +289,6 @@
 | appearance | [string](#string) |  |  |
 | memo_visibility | [string](#string) |  |  |
 | telegram_user_id | [string](#string) |  |  |
-| compact_view | [bool](#bool) |  |  |
 
 
 
@@ -311,7 +310,6 @@
 | USER_SETTING_APPEARANCE | 3 | The appearance of the user. |
 | USER_SETTING_MEMO_VISIBILITY | 4 | The visibility of the memo. |
 | USER_SETTING_TELEGRAM_USER_ID | 5 | The telegram user id of the user. |
-| USER_SETTING_COMPACT_VIEW | 6 | The compact view for a memo. |
 
 
  

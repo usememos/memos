@@ -1,4 +1,4 @@
-import { Node } from "@/types/node";
+import { Node, TagNode } from "@/types/node";
 
 export const TAG_REG = /#([^\s#,]+)/;
 
@@ -15,7 +15,7 @@ export const extractTagsFromContent = (content: string) => {
 
       handle(node);
       if (node.type === "PARAGRAPH" || node.type === "ORDERED_LIST" || node.type === "UNORDERED_LIST") {
-        const children = (node.node as any).children;
+        const children = (node.value as any).children;
         if (Array.isArray(children)) {
           traverse(children, handle);
         }
@@ -24,8 +24,8 @@ export const extractTagsFromContent = (content: string) => {
   };
 
   traverse(nodes, (node) => {
-    if (node.type === "TAG" && node.node) {
-      tags.add((node.node as any).content);
+    if (node.type === "TAG" && node.value) {
+      tags.add((node.value as TagNode).content);
     }
   });
 

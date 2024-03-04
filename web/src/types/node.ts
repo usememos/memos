@@ -32,7 +32,7 @@ export enum NodeType {
 
 export interface Node {
   type: NodeType;
-  node:
+  value:
     | LineBreakNode
     | ParagraphNode
     | CodeBlockNode

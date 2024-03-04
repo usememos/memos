@@ -161,8 +161,6 @@ message UserSetting {
   string memo_visibility = 4;
   // The telegram user id of the user.
   string telegram_user_id = 5;
-  // The compact view for a memo.
-  bool compact_view = 6;
 }
 
 message GetUserSettingRequest {

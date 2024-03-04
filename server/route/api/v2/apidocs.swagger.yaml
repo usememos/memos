@@ -1437,9 +1437,6 @@ paths:
               telegramUserId:
                 type: string
                 description: The telegram user id of the user.
-              compactView:
-                type: boolean
-                description: The compact view for a memo.
       tags:
         - UserService
   /api/v2/{user.name}:
@@ -1626,9 +1623,6 @@ definitions:
       telegramUserId:
         type: string
         description: The telegram user id of the user.
-      compactView:
-        type: boolean
-        description: The compact view for a memo.
   apiv2Webhook:
     type: object
     properties:

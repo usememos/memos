@@ -31,11 +31,11 @@ const TaskList: React.FC<Props> = ({ index, indent, complete, children }: Props)
     }
 
     const node = context.nodes[nodeIndex];
-    if (node.type !== NodeType.TASK_LIST || !node.node) {
+    if (node.type !== NodeType.TASK_LIST || !node.value) {
       return;
     }
 
-    (node.node as TaskListNode)!.complete = on;
+    (node.value as TaskListNode)!.complete = on;
     const content = window.restore(context.nodes);
     await memoStore.updateMemo(
       {

@@ -718,7 +718,6 @@ Used internally for obfuscating the page token.
 | appearance | [string](#string) |  | The preferred appearance of the user. |
 | memo_visibility | [string](#string) |  | The default visibility of the memo. |
 | telegram_user_id | [string](#string) |  | The telegram user id of the user. |
-| compact_view | [bool](#bool) |  | The compact view for a memo. |
 
 
 

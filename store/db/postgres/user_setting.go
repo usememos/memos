@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -37,8 +36,6 @@ func (d *DB) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting)
 		valueString = upsert.GetMemoVisibility()
 	} else if upsert.Key == storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID {
 		valueString = upsert.GetTelegramUserId()
-	} else if upsert.Key == storepb.UserSettingKey_USER_SETTING_COMPACT_VIEW {
-		valueString = strconv.FormatBool(upsert.GetCompactView())
 	} else {
 		return nil, errors.Errorf("unknown user setting key: %s", upsert.Key.String())
 	}
@@ -108,14 +105,6 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 		} else if userSetting.Key == storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID {
 			userSetting.Value = &storepb.UserSetting_TelegramUserId{
 				TelegramUserId: valueString,
-			}
-		} else if userSetting.Key == storepb.UserSettingKey_USER_SETTING_COMPACT_VIEW {
-			compactView, err := strconv.ParseBool(valueString)
-			if err != nil {
-				return nil, errors.Wrapf(err, "failed to parse compact view value: %s", valueString)
-			}
-			userSetting.Value = &storepb.UserSetting_CompactView{
-				CompactView: compactView,
 			}
 		} else {
 			// Skip unknown user setting key.
