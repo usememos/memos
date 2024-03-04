@@ -21,7 +21,7 @@ interface State {
   selectedSection: SettingSection;
 }
 
-const BasicSection: SettingSection[] = ["my-account", "preference"];
+const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
 const AdminSection: SettingSection[] = ["member", "system", "storage", "sso"];
 
 const SectionsIconsMap: Record<SettingSection, LucideIcon> = {
