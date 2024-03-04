@@ -23,7 +23,9 @@ const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
   });
 
   return (
-    <pre ref={mermaidDockBlock} className="w-full p-2 whitespace-pre-wrap relative" dangerouslySetInnerHTML={{ __html: content }}></pre>
+    <pre ref={mermaidDockBlock} className="w-full p-2 whitespace-pre-wrap relative">
+      {content}
+    </pre>
   );
 };
 

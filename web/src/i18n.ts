@@ -41,9 +41,13 @@ const LazyImportPlugin: BackendModule = {
     if (fallbacks[language]) {
       language = fallbacks[language][0];
     }
-    import(`./locales/${language}.json`).then((translation: any) => {
-      callback(null, translation);
-    });
+    import(`./locales/${language}.json`)
+      .then((translation: any) => {
+        callback(null, translation);
+      })
+      .catch(() => {
+        // Fallback to English.
+      });
   },
 };
 
