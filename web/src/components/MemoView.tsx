@@ -43,7 +43,9 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const [creator, setCreator] = useState(userStore.getUserByUsername(extractUsernameFromName(memo.creator)));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
-  const commentAmount = memo.relations.filter((relation) => relation.type === MemoRelation_Type.COMMENT).length;
+  const commentAmount = memo.relations.filter(
+    (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemoId === memo.id,
+  ).length;
   const readonly = memo.creator !== user?.name;
 
   // Initial related data: creator.
