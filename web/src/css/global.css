@@ -5,3 +5,10 @@ body {
 #root {
   @apply relative w-full min-h-full;
 }
+html.dark {
+  color-scheme: dark;
+  scrollbar-color: hsla(0, 0%, 100%, .4) hsla(0, 0%, 100%, .029);
+}
+html.light {
+  color-scheme: light;
+}
