@@ -1,33 +1,29 @@
 import { FallbackLngObjList } from "i18next";
 import { useTranslation } from "react-i18next";
-import i18n, { availableLocales, TLocale } from "@/i18n";
-import locales from "@/locales/en.json";
+import i18n, { locales, TLocale } from "@/i18n";
+import enTranslation from "@/locales/en.json";
 import type { NestedKeyOf } from "@/types/utils/nestedKeyOf.types";
 
-export const findNearestLanguageMatch = (codename: string): Locale => {
-  // Find existing translations for full codes (e.g. "en-US", "zh-Hant")
-  if (codename.length > 2 && availableLocales.includes(codename as TLocale)) {
-    return codename as Locale;
+export const findNearestMatchedLanguage = (language: string): Locale => {
+  if (locales.includes(language as TLocale)) {
+    return language as Locale;
   }
 
-  // Find fallback in src/i18n.ts
-  const i18nfallbacks = Object.entries(i18n.store.options.fallbackLng as FallbackLngObjList);
-  for (const [main, fallbacks] of i18nfallbacks) {
-    if (codename === main) {
+  const i18nFallbacks = Object.entries(i18n.store.options.fallbackLng as FallbackLngObjList);
+  for (const [main, fallbacks] of i18nFallbacks) {
+    if (language === main) {
       return fallbacks[0] as Locale;
     }
   }
 
-  const shortCode = codename.substring(0, 2);
-
-  // Match existing short code translation
-  if (availableLocales.includes(shortCode as TLocale)) {
+  const shortCode = language.substring(0, 2);
+  if (locales.includes(shortCode as TLocale)) {
     return shortCode as Locale;
   }
 
   // Try to match "xx-YY" to existing translation for "xx-ZZ" as a last resort
   // If some match is undesired, it can be overriden in src/i18n.ts `fallbacks` option
-  for (const existing of availableLocales) {
+  for (const existing of locales) {
     if (shortCode == existing.substring(0, 2)) {
       return existing as Locale;
     }
@@ -38,7 +34,7 @@ export const findNearestLanguageMatch = (codename: string): Locale => {
 };
 
 // Represents the keys of nested translation objects.
-export type Translations = NestedKeyOf<typeof locales>;
+export type Translations = NestedKeyOf<typeof enTranslation>;
 
 // Represents a typed translation function.
 type TypedT = (key: Translations, params?: Record<string, any>) => string;

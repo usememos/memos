@@ -1,8 +1,8 @@
 import i18n, { BackendModule, FallbackLng, FallbackLngObjList } from "i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
+import { findNearestMatchedLanguage } from "./utils/i18n";
 
-export const availableLocales = [
+export const locales = [
   "ar",
   "de",
   "en",
@@ -38,10 +38,8 @@ const LazyImportPlugin: BackendModule = {
   type: "backend",
   init: function () {},
   read: function (language, _, callback) {
-    if (fallbacks[language]) {
-      language = fallbacks[language][0];
-    }
-    import(`./locales/${language}.json`)
+    const matchedLanguage = findNearestMatchedLanguage(language);
+    import(`./locales/${matchedLanguage}.json`)
       .then((translation: any) => {
         callback(null, translation);
       })
@@ -53,7 +51,6 @@ const LazyImportPlugin: BackendModule = {
 
 i18n
   .use(LazyImportPlugin)
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     detection: {
@@ -66,4 +63,4 @@ i18n
   });
 
 export default i18n;
-export type TLocale = (typeof availableLocales)[number];
+export type TLocale = (typeof locales)[number];

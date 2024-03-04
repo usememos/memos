@@ -41,9 +41,6 @@ dependencies:
   i18next:
     specifier: ^21.10.0
     version: 21.10.0
-  i18next-browser-languagedetector:
-    specifier: ^7.2.0
-    version: 7.2.0
   katex:
     specifier: ^0.16.9
     version: 0.16.9
@@ -3302,12 +3299,6 @@ packages:
 
   /hyphenate-style-name@1.0.4:
     resolution: {integrity: sha512-ygGZLjmXfPHj+ZWh6LwbC37l43MhfztxetbFCoYTM2VjkIUpeHgSNn7QIyVFj7YQ1Wl9Cbw5sholVJPzWvC2MQ==}
-    dev: false
-
-  /i18next-browser-languagedetector@7.2.0:
-    resolution: {integrity: sha512-U00DbDtFIYD3wkWsr2aVGfXGAj2TgnELzOX9qv8bT0aJtvPV9CRO77h+vgmHFBMe7LAxdwvT/7VkCWGya6L3tA==}
-    dependencies:
-      '@babel/runtime': 7.23.9
     dev: false
 
   /i18next@21.10.0:
