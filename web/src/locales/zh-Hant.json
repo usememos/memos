@@ -3,8 +3,7 @@
     "about-memos": "關於 memos",
     "memos-description": "memos 是一個網頁式的筆記應用程式，您可用它記錄、組織以及分享你的筆記。",
     "no-server-description": "此伺服器未設置說明。",
-    "other-projects": "其他專案",
-    "powered-by": "Powered By"
+    "other-projects": "其他專案"
   },
   "amount-text": {
     "memo": "MEMO"
@@ -27,7 +26,6 @@
     "beta": "測試版",
     "cancel": "取消",
     "change": "變更",
-    "changed": "已變更",
     "clear": "清除",
     "close": "關閉",
     "confirm": "確認",
@@ -36,12 +34,9 @@
     "delete": "刪除",
     "edit": "編輯",
     "email": "信箱",
-    "expand": "展開",
     "explore": "探索",
     "file": "檔案",
     "filter": "過濾器",
-    "filter-period": "{{from}} 至 {{to}}",
-    "fold": "折疊",
     "home": "首頁",
     "image": "圖片",
     "inbox": "通知",
@@ -79,7 +74,6 @@
     "update": "更新",
     "upload": "上傳",
     "username": "帳號",
-    "vacuum": "清理",
     "version": "版本",
     "visibility": "可見度",
     "yourself": "你自己"
@@ -95,12 +89,9 @@
   },
   "editor": {
     "cancel-edit": "取消編輯",
-    "cant-empty": "內容不能為空",
     "editing": "編輯中...",
     "local": "本機",
-    "only-image-supported": "僅支援圖片檔案。",
     "placeholder": "任何想法...",
-    "resources": "資源",
     "save": "儲存"
   },
   "embed-memo": {
@@ -150,7 +141,6 @@
     "click-to-save-the-image": "點選以儲存圖片",
     "copied": "已複製",
     "count-selected-resources": "全部選取",
-    "file-exceeds-upload-limit-of": "檔案 {{file}} 超過上傳限制 {{size}} MiB",
     "fill-all": "請填寫所有欄位。",
     "fill-form": "請填寫此表單",
     "fill-server-name": "請填寫伺服器名稱",
@@ -165,9 +155,7 @@
     "memos-ready": "所有備忘錄已就緒",
     "new-password-not-match": "新密碼不一致。",
     "no-data": "或許尋覓虛空，或者改換選擇之軌跡。",
-    "page-not-found": "404 - 網頁無法顯示",
     "password-changed": "密碼變更完成",
-    "password-login-disabled": "在禁用密碼登入時無法移除最後一個身份識別提供者",
     "password-not-match": "密碼不一致。",
     "private-only": "此備忘錄僅自己可見。",
     "resource-filename-updated": "資源檔名變更成功。",
@@ -184,7 +172,6 @@
     "succeed-update-customized-profile": "更新自訂設定文件成功。",
     "succeed-vacuum-database": "清理資料庫成功。",
     "update-succeed": "更新成功",
-    "updating-setting-failed": "更新設定失敗",
     "user-not-found": "查無該使用者"
   },
   "resource": {
@@ -337,7 +324,6 @@
       "allow-user-signup": "允許使用者註冊",
       "customize-server": {
         "appearance": "伺服器外觀",
-        "default": "預設為 memos",
         "description": "描述",
         "icon-url": "圖示網址",
         "locale": "伺服器語言",

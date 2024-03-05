@@ -3,8 +3,7 @@
     "about-memos": "O Memo aplikaciji",
     "memos-description": "Memo je web bazirana aplikacija koju možeš koristiti za pisanje, organiziranje i dijeljenje bilješki.",
     "no-server-description": "Za ovaj server nije konfiguriran opis.",
-    "other-projects": "Drugi projekti",
-    "powered-by": "Powered by"
+    "other-projects": "Drugi projekti"
   },
   "amount-text": {
     "memo": "MEMO"
@@ -27,7 +26,6 @@
     "beta": "Beta",
     "cancel": "Otkaži",
     "change": "Promijeni",
-    "changed": "promijenjeno",
     "clear": "Očisti",
     "close": "Zatvori",
     "confirm": "Potvrdi",
@@ -36,11 +34,8 @@
     "delete": "Obriši",
     "edit": "Uredi",
     "email": "Email",
-    "expand": "Proširi",
     "explore": "Istraži",
     "filter": "Filtriraj",
-    "filter-period": "{{from}} do {{to}}",
-    "fold": "Skupi",
     "home": "Glavna",
     "image": "Slika",
     "language": "Jezik",
@@ -76,7 +71,6 @@
     "update": "Obnovi",
     "upload": "Prenesi",
     "username": "Korisničko ime",
-    "vacuum": "Vakuumiraj",
     "version": "Verzija",
     "visibility": "Vidljivost",
     "yourself": "Ti"
@@ -92,12 +86,9 @@
   },
   "editor": {
     "cancel-edit": "Otkaži uređivanje",
-    "cant-empty": "Sadržaj ne može biti prazan",
     "editing": "Uređivanje...",
     "local": "Lokalno",
-    "only-image-supported": "Samo slike su podržane.",
     "placeholder": "Piši... piši mi...",
-    "resources": "Resursi",
     "save": "Sačuvaj"
   },
   "embed-memo": {
@@ -147,7 +138,6 @@
     "click-to-save-the-image": "Klikni da spremiš sliku",
     "copied": "Kopirano",
     "count-selected-resources": "Ukupno odabrano",
-    "file-exceeds-upload-limit-of": "Fajl {{file}} premašuje limit za upload koji je {{size}} MiB",
     "fill-all": "Molimo, popuni sva polja.",
     "fill-form": "Please fill out this form",
     "fill-server-name": "Molim, unesi ime servera",
@@ -162,9 +152,7 @@
     "memos-ready": "svi memoi su spremni 🎉",
     "new-password-not-match": "Nove lozinke nisu jednake.",
     "no-data": "Nisu nađeni podaci.",
-    "page-not-found": "404 - Stranica nije nađena 😥",
     "password-changed": "Lozinka je promijenjena",
-    "password-login-disabled": "last identity provider se ne smije maknuti kada je prijava lozinkom onemogućena",
     "password-not-match": "Lozinke nisu jednake.",
     "private-only": "Ovaj je memo privatan.",
     "resource-filename-updated": "Resource filename je promijenjeno.",
@@ -180,7 +168,6 @@
     "succeed-update-customized-profile": "Profil je uspješno izmijenjen.",
     "succeed-vacuum-database": "Vakuumiranje databaze je uspjelo",
     "update-succeed": "Obnavljanje aplikacije je uspjelo!🎉",
-    "updating-setting-failed": "Obnavljanje postavki nije uspjelo",
     "user-not-found": "Korisnik nije nađen"
   },
   "resource": {
@@ -333,7 +320,6 @@
       "allow-user-signup": "Dopusti registraciju drugih korisnika",
       "customize-server": {
         "appearance": "Izgled Servera",
-        "default": "Osnovno je memoi",
         "description": "Opis",
         "icon-url": "URL ikone",
         "locale": "Server Locale",

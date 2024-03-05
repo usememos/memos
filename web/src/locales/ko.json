@@ -3,8 +3,7 @@
     "about-memos": "memos에 대해서",
     "memos-description": "memos는 노트를 쓰고 공유하는 웹 기반의 노트 기록 플랫폼입니다.",
     "no-server-description": "서버 설명이 없습니다.",
-    "other-projects": "다른 프로젝트",
-    "powered-by": "Powered by"
+    "other-projects": "다른 프로젝트"
   },
   "amount-text": {
     "memo": "메모"
@@ -27,7 +26,6 @@
     "beta": "베타",
     "cancel": "취소",
     "change": "변경",
-    "changed": "변경됨",
     "clear": "정리하기",
     "close": "닫기",
     "confirm": "확인",
@@ -36,11 +34,8 @@
     "delete": "삭제",
     "edit": "편집",
     "email": "이메일",
-    "expand": "펼치기",
     "explore": "탐색",
     "filter": "필터",
-    "filter-period": "{{from}} 부터 {{to}}",
-    "fold": "접기",
     "home": "홈",
     "image": "이미지",
     "language": "언어",
@@ -76,7 +71,6 @@
     "update": "수정",
     "upload": "업로드",
     "username": "유저네임",
-    "vacuum": "최적화",
     "version": "버전",
     "visibility": "공개 범위",
     "yourself": "자기 자신"
@@ -92,12 +86,9 @@
   },
   "editor": {
     "cancel-edit": "편집 취소",
-    "cant-empty": "내용이 비어있을 수 없음",
     "editing": "편집 중...",
     "local": "로컬",
-    "only-image-supported": "이미지 파일만 지원합니다.",
     "placeholder": "떠오르는 게 있나요...",
-    "resources": "리소스",
     "save": "저장"
   },
   "embed-memo": {
@@ -143,7 +134,6 @@
     "click-to-save-the-image": "이미지를 저장하려면 클릭하세요",
     "copied": "복사했습니다",
     "count-selected-resources": "선택된 항목",
-    "file-exceeds-upload-limit-of": "파일 {{file}}의 크기가 최대 크기인 {{size}} MiB를 넘습니다",
     "fill-all": "모든 칸을 채워 주세요.",
     "fill-form": "이 칸들을 채워 주세요",
     "fill-server-name": "서버 이름을 적어주세요",
@@ -158,9 +148,7 @@
     "memos-ready": "모든 메모가 준비되었습니다",
     "new-password-not-match": "새 비밀번호가 서로 맞지 않습니다.",
     "no-data": "데이터가 없습니다.",
-    "page-not-found": "404 - 페이지를 찾을 수 없습니다",
     "password-changed": "비밀번호를 변경했습니다",
-    "password-login-disabled": "비밀번호 로그인이 비활성화되어 있어서 마지막으로 남은 SSO를 삭제할 수 없습니다",
     "password-not-match": "비밀번호가 맞지 않습니다.",
     "private-only": "이 메모는 비공개 전용입니다.",
     "resource-filename-updated": "리소스 파일명을 변경했습니다.",
@@ -176,7 +164,6 @@
     "succeed-update-customized-profile": "프로필 정보를 변경했습니다.",
     "succeed-vacuum-database": "데이터베이스 최적화를 마쳤습니다.",
     "update-succeed": "업데이트 성공",
-    "updating-setting-failed": "설정을 업데이트하지 못했습니다",
     "user-not-found": "회원을 찾을 수 없습니다"
   },
   "resource": {
@@ -329,7 +316,6 @@
       "allow-user-signup": "회원등록 허용",
       "customize-server": {
         "appearance": "서버 테마",
-        "default": "기본값은 memos",
         "description": "설명",
         "icon-url": "아이콘 URL",
         "locale": "서버 언어",

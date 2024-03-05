@@ -26,7 +26,6 @@
     "beta": "测试",
     "cancel": "取消",
     "change": "修改",
-    "changed": "已更改",
     "clear": "清除",
     "close": "关闭",
     "confirm": "确定",
@@ -35,16 +34,14 @@
     "delete": "删除",
     "edit": "编辑",
     "email": "邮箱",
-    "expand": "展开",
     "explore": "探索",
+    "file": "文件",
     "filter": "过滤器",
-    "filter-period": "{{from}} 到 {{to}}",
-    "fold": "折叠",
     "home": "主页",
     "image": "图片",
+    "inbox": "通知",
     "language": "语言",
     "learn-more": "了解更多",
-    "file": "文件",
     "link": "链接",
     "mark": "引用",
     "name": "名称",
@@ -76,14 +73,9 @@
     "update": "更新",
     "upload": "上传",
     "username": "用户名",
-    "vacuum": "清理未使用资源",
     "version": "版本",
     "visibility": "可见性",
-    "yourself": "您自己",
-    "inbox": "通知"
-  },
-  "timeline": {
-    "title": "时间线"
+    "yourself": "您自己"
   },
   "days": {
     "fri": "五",
@@ -96,12 +88,9 @@
   },
   "editor": {
     "cancel-edit": "取消编辑",
-    "cant-empty": "内容不能为空",
     "editing": "编辑中...",
     "local": "本地",
-    "only-image-supported": "仅支持图片文件。",
     "placeholder": "此刻的想法...",
-    "resources": "资源库",
     "save": "保存"
   },
   "embed-memo": {
@@ -147,7 +136,6 @@
     "click-to-save-the-image": "点击保存图片",
     "copied": "已复制",
     "count-selected-resources": "所选资源总数",
-    "file-exceeds-upload-limit-of": "文件 {{file}} 超出了 {{size}} MiB 的上传限制",
     "fill-all": "请填写所有栏目。",
     "fill-form": "请填写此表单",
     "fill-server-name": "请填写服务器名称",
@@ -162,9 +150,7 @@
     "memos-ready": "所有备忘录已就绪",
     "new-password-not-match": "新密码不匹配。",
     "no-data": "未找到任何数据。",
-    "page-not-found": "404 - 未找到网页",
     "password-changed": "密码已修改",
-    "password-login-disabled": "在禁用密码登录时无法移除最后一个身份提供程序",
     "password-not-match": "密码不一致。",
     "private-only": "此备忘录仅自己可见。",
     "resource-filename-updated": "资源文件名更改成功。",
@@ -181,7 +167,6 @@
     "succeed-update-customized-profile": "更新自定义配置文件成功。",
     "succeed-vacuum-database": "清理数据库成功。",
     "update-succeed": "更新成功",
-    "updating-setting-failed": "更新设置失败",
     "user-not-found": "未找到该用户"
   },
   "resource": {
@@ -334,7 +319,6 @@
       "allow-user-signup": "允许用户注册",
       "customize-server": {
         "appearance": "服务器外观",
-        "default": "默认为 memos",
         "description": "描述",
         "icon-url": "图标 URL",
         "locale": "服务器语言环境",
@@ -366,5 +350,8 @@
     "tag-name": "标签名称",
     "tag-suggestions": "标签建议",
     "tip-text": "输入`#tag`来创建标签"
+  },
+  "timeline": {
+    "title": "时间线"
   }
 }

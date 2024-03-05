@@ -3,8 +3,7 @@
     "about-memos": "Informazioni su Memos",
     "memos-description": "Memos è un'applicazione per prendere appunti basata sul Web che puoi utilizzare per scrivere, organizzare e condividere appunti.",
     "no-server-description": "Nessuna descrizione configurata per questo server.",
-    "other-projects": "Altri progetti",
-    "powered-by": "Powered by"
+    "other-projects": "Altri progetti"
   },
   "amount-text": {
     "memo_many": "",
@@ -26,7 +25,6 @@
     "beta": "Beta",
     "cancel": "Cancella",
     "change": "Cambia",
-    "changed": "Modificato",
     "clear": "Pulisci",
     "close": "Chiudi",
     "confirm": "Conferma",
@@ -35,12 +33,9 @@
     "delete": "Elimina",
     "edit": "Modifica",
     "email": "Email",
-    "expand": "Espandi",
     "explore": "Esplora",
     "file": "File",
     "filter": "Filtro",
-    "filter-period": "{{from}} a {{to}}",
-    "fold": "Riduci",
     "home": "Home",
     "image": "Immagine",
     "language": "Lingua",
@@ -74,7 +69,6 @@
     "update": "Aggiorna",
     "upload": "Carica",
     "username": "Nome utente",
-    "vacuum": "Ottimizza",
     "version": "Versione",
     "visibility": "Visibilità",
     "yourself": "Te stesso"
@@ -90,12 +84,9 @@
   },
   "editor": {
     "cancel-edit": "Cancella modifica",
-    "cant-empty": "Il contenuto non può essere vuoto",
     "editing": "Modificando...",
     "local": "Locale",
-    "only-image-supported": "Solo immagini supportate.",
     "placeholder": "Qualsiasi cosa pensi...",
-    "resources": "Risorse",
     "save": "Salva"
   },
   "embed-memo": {
@@ -137,7 +128,6 @@
     "click-to-save-the-image": "Clicca per salvare l’immagine",
     "copied": "Copiato",
     "count-selected-resources": "Totale selezionato",
-    "file-exceeds-upload-limit-of": "Il file supera il limite di upload di {{size}} MiB",
     "fill-all": "Per favore riempi tutti i campi",
     "fill-form": "Per favore riempi il form",
     "fill-server-name": "Per favore riempi il nome del server",
@@ -152,9 +142,7 @@
     "memos-ready": "Tutti i memo sono stati caricati 🎉",
     "new-password-not-match": "Le nuove password non corrispondono",
     "no-data": "Nessun dato",
-    "page-not-found": "404 - Pagina non trovata 😥",
     "password-changed": "Password cambiata",
-    "password-login-disabled": "Il login con la password è disattivato",
     "password-not-match": "Le password non corrispondono",
     "private-only": "Questo memo è impostato come privato.",
     "resource-filename-updated": "Nome file aggiornato",
@@ -170,7 +158,6 @@
     "succeed-update-customized-profile": "Profilo personalizzato aggiornato con successo.",
     "succeed-vacuum-database": "Database ottimizzato con successo.",
     "update-succeed": "Aggiornato con successo",
-    "updating-setting-failed": "Aggiornamento impostazioni fallito",
     "user-not-found": "Utente non trovato"
   },
   "resource": {
@@ -319,7 +306,6 @@
       "allow-user-signup": "Consenti registrazione utente",
       "customize-server": {
         "appearance": "Aspetto server",
-        "default": "Preferinito è Memos",
         "description": "Descrizione",
         "icon-url": "URL icona",
         "locale": "Server Locale",
