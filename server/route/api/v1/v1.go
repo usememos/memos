@@ -82,6 +82,8 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 	publicGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return JWTMiddleware(s, next, s.Secret)
 	})
+
+	s.registerMetaPublicRoutes(publicGroup)
 	s.registerGetterPublicRoutes(publicGroup)
 
 	// Create and register resource public routes.
