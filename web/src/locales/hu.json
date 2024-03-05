@@ -16,7 +16,6 @@
     "beta": "Béta",
     "cancel": "Mégsem",
     "change": "Módosítás",
-    "changed": "megváltozott",
     "clear": "Törlés",
     "close": "Bezárás",
     "confirm": "Megerősít",
@@ -25,11 +24,8 @@
     "delete": "Törlés",
     "edit": "Szerkesztés",
     "email": "Email",
-    "expand": "Kibont",
     "explore": "Felfedezés",
     "filter": "Szűrő",
-    "filter-period": "{{from}}-tól {{to}}-ig",
-    "fold": "Összecsuk",
     "home": "Főoldal",
     "image": "Kép",
     "inbox": "Bejövő üzenetek",
@@ -66,19 +62,15 @@
     "update": "Frissítés",
     "upload": "Feltöltés",
     "username": "Felhasználónév",
-    "vacuum": "Tisztítás",
     "version": "Verzió",
     "visibility": "Láthatóság",
     "yourself": "Magad"
   },
   "editor": {
     "cancel-edit": "Szerkesztés visszavonása",
-    "cant-empty": "A tartalom nem lehet üres",
     "editing": "Szerkesztés...",
     "local": "Helyi",
-    "only-image-supported": "Csak képfájlok támogatottak.",
     "placeholder": "Bármi ami a fejedben jár...",
-    "resources": "Állományok",
     "save": "Mentés"
   },
   "memo": {
@@ -227,7 +219,6 @@
       "allow-user-signup": "Regisztráció engedélyezése",
       "customize-server": {
         "appearance": "Szerver témája",
-        "default": "Alapértelmezett: memos",
         "description": "Leírás",
         "icon-url": "Ikon URL",
         "locale": "Szerver nyelve",

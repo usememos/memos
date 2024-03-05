@@ -3,8 +3,7 @@
     "about-memos": "Über Memos",
     "memos-description": "Memos ist eine webbasierte Anwendung zur Erstellung von Notizen, mit der Sie Notizen schreiben, organisieren und teilen können.",
     "no-server-description": "Für diesen Server ist keine Beschreibung konfiguriert.",
-    "other-projects": "Andere Projekte",
-    "powered-by": "Powered by"
+    "other-projects": "Andere Projekte"
   },
   "amount-text": {
     "memo_one": "MEMO",
@@ -28,7 +27,6 @@
     "beta": "Beta",
     "cancel": "Abbrechen",
     "change": "Ändern",
-    "changed": "Verändert",
     "clear": "Leeren",
     "close": "Schließen",
     "confirm": "Bestätigen",
@@ -37,11 +35,8 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "email": "E-Mail",
-    "expand": "Erweitern",
     "explore": "Erkunden",
     "filter": "Filter",
-    "filter-period": "{{from}} bis {{to}}",
-    "fold": "Einklappen",
     "home": "Startseite",
     "image": "Bild",
     "language": "Sprache",
@@ -76,7 +71,6 @@
     "update": "Update",
     "upload": "Hochladen",
     "username": "Nutzername",
-    "vacuum": "Aufräumen",
     "version": "Version",
     "visibility": "Sichtbarkeit",
     "yourself": "Du selbst"
@@ -92,12 +86,9 @@
   },
   "editor": {
     "cancel-edit": "Bearbeiten abbrechen",
-    "cant-empty": "Inhalt kann nicht leer sein",
     "editing": "in Bearbeitung...",
     "local": "Lokal",
-    "only-image-supported": "Nur Bilder werden unterstützt.",
     "placeholder": "Ein Gedanke...",
-    "resources": "Ressourcen",
     "save": "Speichern"
   },
   "embed-memo": {
@@ -143,7 +134,6 @@
     "click-to-save-the-image": "Klicken um Bild zu speichern",
     "copied": "Kopiert",
     "count-selected-resources": "Insgesamt markiert",
-    "file-exceeds-upload-limit-of": "Datei {{file}} überschreitet Upload-Limit von {{size}} MiB",
     "fill-all": "Bitte alle Felder ausfüllen.",
     "fill-form": "Bitte das Formular ausfüllen",
     "fill-server-name": "Bitte Servernamen ausfüllen",
@@ -158,9 +148,7 @@
     "memos-ready": "Alle Memos geladen",
     "new-password-not-match": "Neue Passwörter stimmen nicht überein.",
     "no-data": "Keine Daten gefunden,.",
-    "page-not-found": "404 - Seite nicht gefunden",
     "password-changed": "Passwort geändert",
-    "password-login-disabled": "Der letzte Identitätsanbieter kann nicht entfernt werden, solang die Passwortanmeldung deaktiviert ist",
     "password-not-match": "Passwörter stimmen nicht überein",
     "private-only": "Dieses Memo ist privat.",
     "resource-filename-updated": "Dateiname der Ressource geändert.",
@@ -176,7 +164,6 @@
     "succeed-update-customized-profile": "Server-Einstlelungen wurden erfolgreich gespeichert",
     "succeed-vacuum-database": "Aufräumen der Datenbank erfolgreich",
     "update-succeed": "Update erfolgreich",
-    "updating-setting-failed": "Aktualisierung der Einstellung fehlgeschlagen",
     "user-not-found": "Nutzer nicht gefunden"
   },
   "resource": {
@@ -329,7 +316,6 @@
       "allow-user-signup": "Erlaube Registrierung neuer Mitglieder",
       "customize-server": {
         "appearance": "Erscheinungsbild",
-        "default": "Standard: memos",
         "description": "Beschreibung",
         "icon-url": "Icon-URL",
         "locale": "Sprache",

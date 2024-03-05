@@ -3,8 +3,7 @@
     "about-memos": "À propos des memos",
     "memos-description": "Memos est une application web de prise de notes que vous pouvez utiliser pour écrire, organiser et partager des notes.",
     "no-server-description": "Aucune description n'est configurée pour ce serveur.",
-    "other-projects": "Autres projets",
-    "powered-by": "Propulsé par"
+    "other-projects": "Autres projets"
   },
   "amount-text": {
     "memo_many": "MEMOS",
@@ -29,7 +28,6 @@
     "beta": "Beta",
     "cancel": "Annuler",
     "change": "Changer",
-    "changed": "modifié",
     "clear": "Nettoyer",
     "close": "Fermer",
     "confirm": "Confirmer",
@@ -38,12 +36,9 @@
     "delete": "Supprimer",
     "edit": "Modifier",
     "email": "Email",
-    "expand": "Agrandir",
     "explore": "Explorer",
     "file": "Fichier",
     "filter": "Filtre",
-    "filter-period": "{{from}} à {{to}}",
-    "fold": "Rétracter",
     "home": "Accueil",
     "image": "Image",
     "inbox": "Boîte de réception",
@@ -81,7 +76,6 @@
     "update": "Mise à jour",
     "upload": "Téléverser",
     "username": "Nom d'utilisateur",
-    "vacuum": "Vider",
     "version": "Version",
     "visibility": "Visibilité",
     "yourself": "Vous-même"
@@ -97,12 +91,9 @@
   },
   "editor": {
     "cancel-edit": "Annuler l'édition",
-    "cant-empty": "Le contenu ne doit pas être vide",
     "editing": "Édition...",
     "local": "Local",
-    "only-image-supported": "Seul le fichier image est pris en charge.",
     "placeholder": "Une idée...",
-    "resources": "Ressources",
     "save": "Enregistrer"
   },
   "embed-memo": {
@@ -152,7 +143,6 @@
     "click-to-save-the-image": "Cliquez pour enregistrer l'image",
     "copied": "Copié",
     "count-selected-resources": "Total de la sélection",
-    "file-exceeds-upload-limit-of": "Le fichier {{file}} dépasse la limite de téléversement de {{size}} MiB",
     "fill-all": "Veuillez remplir tous les champs.",
     "fill-form": "Veuillez remplir ce formulaire",
     "fill-server-name": "Veuillez indiquer le nom du serveur",
@@ -167,9 +157,7 @@
     "memos-ready": "tous les memos sont prêts",
     "new-password-not-match": "Les nouveaux mots de passe ne correspondent pas.",
     "no-data": "Aucune donnée n'a été trouvée.",
-    "page-not-found": "404 - Page non trouvée",
     "password-changed": "Mot de passe modifié",
-    "password-login-disabled": "Impossible de supprimer le dernier fournisseur d'identité lorsque la connexion par mot de passe est désactivée",
     "password-not-match": "Les mots de passe ne correspondent pas.",
     "private-only": "Ce memo est uniquement privé.",
     "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
@@ -185,7 +173,6 @@
     "succeed-update-customized-profile": "Profil personnalisé avec succès.",
     "succeed-vacuum-database": "La base de données a été vidée avec succès.",
     "update-succeed": "Mise à jour effectuée",
-    "updating-setting-failed": "La mise à jour des paramètres a échoué",
     "user-not-found": "Utilisateur introuvable"
   },
   "resource": {
@@ -338,7 +325,6 @@
       "allow-user-signup": "Autoriser l'inscription des utilisateurs",
       "customize-server": {
         "appearance": "Apparence du Serveur",
-        "default": "Par défaut memos",
         "description": "Description",
         "icon-url": "URL de l'icône",
         "locale": "Langue du serveur",
