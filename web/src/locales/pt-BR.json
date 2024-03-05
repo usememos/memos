@@ -60,6 +60,7 @@
     "reset": "Redefinir",
     "resources": "Recursos",
     "restore": "Restaurar",
+    "role": "Cargo",
     "save": "Salvar",
     "search": "Pesquisar",
     "select": "Selecionar",
@@ -122,13 +123,14 @@
       "self": "Comentários"
     },
     "copy-link": "Copiar link",
-    "delete-confirm": "Tem certeza de que deseja deletar este memo?\n\nESTA AÇÃO É IRREVERSÍVEL❗",
+    "delete-confirm": "Tem certeza de que deseja deletar este memo?\n\nESTA AÇÃO É IRREVERSÍVEL",
     "delete-memo": "Deletar memo",
     "embed": "Incorporar",
     "fetch-more": "Clique para carregar mais",
     "fetching-data": "Obtendo dados…",
     "no-archived-memos": "Nenhum memo arquivado.",
     "search-placeholder": "Pesquisar memos",
+    "show-more": "Mostrar mais",
     "view-detail": "Ver detalhes",
     "visibility": {
       "disabled": "Memos públicos estão desabilitados",
@@ -167,6 +169,7 @@
     "succeed-copy-code": "Código copiado com êxito.",
     "succeed-copy-content": "Conteúdo copiado com êxito.",
     "succeed-copy-link": "Link copiado com êxito.",
+    "succeed-copy-link-not-public": "Conteúdo copiado com êxito. Este memo não pode ser acessado sem fazer login.",
     "succeed-copy-resource-link": "Link do recurso copiado com êxito.",
     "succeed-update-additional-script": "Script adicional atualizado com êxito.",
     "succeed-update-additional-style": "Folha de estilos adicional atualizada com êxito.",
@@ -204,12 +207,12 @@
     "no-resources": "Nenhum recurso.",
     "no-unused-resources": "Nenhum recurso não utilizado",
     "reset-link": "Redefinir link",
-    "reset-link-prompt": "Tem certeza de que deseja redefinir o link?\nIsso quebrará todos os vínculos atuais.\n\nESTA AÇÃO É IRREVERSÍVEL❗",
+    "reset-link-prompt": "Tem certeza de que deseja redefinir o link?\nIsso quebrará todos os vínculos atuais.\n\nESTA AÇÃO É IRREVERSÍVEL",
     "reset-resource-link": "Redefinir link do recurso",
     "search-bar-placeholder": "Pesquisar recurso",
     "upload-successfully": "Carregado com êxito",
-    "warning-text": "Tem certeza de que deseja deletar este recurso?\n\nESTA AÇÃO É IRREVERSÍVEL❗",
-    "warning-text-unused": "Tem certeza de que deseja deletar este recurso não utilizado?\n\nESTA AÇÃO É IRREVERSÍVEL❗"
+    "warning-text": "Tem certeza de que deseja deletar este recurso?\n\nESTA AÇÃO É IRREVERSÍVEL",
+    "warning-text-unused": "Tem certeza de que deseja deletar este recurso não utilizado?\n\nESTA AÇÃO É IRREVERSÍVEL"
   },
   "router": {
     "back-to-top": "Voltar ao Topo",
@@ -219,6 +222,7 @@
     "account-section": {
       "change-password": "Alterar senha",
       "email-note": "Opcional",
+      "export-memos": "Exportar Memos",
       "nickname-note": "Exibido no banner",
       "openapi-reset": "Redefinir chave OpenAPI",
       "openapi-sample-post": "Olá #memos em {{url}}",
@@ -240,7 +244,7 @@
       "archive-warning": "❗ Tem certeza de que deseja arquivar {{username}}?",
       "create-a-member": "Criar um membro",
       "delete-member": "Deletar membro",
-      "delete-warning": "❗ Tem certeza de que deseja deletar {{username}}?\n\nESTA AÇÃO É IRREVERSÍVEL❗"
+      "delete-warning": "Tem certeza de que deseja deletar {{username}}?\n\nESTA AÇÃO É IRREVERSÍVEL"
     },
     "my-account": "Minha conta",
     "preference": "Preferências",
@@ -265,7 +269,7 @@
       "authorization-endpoint": "Endpoint de autenticação",
       "client-id": "ID do cliente",
       "client-secret": "Segredo do cliente",
-      "confirm-delete": "Tem certeza de que deseja excluir a configuração SSO \"{{name}}\"?\n\nESTA AÇÃO É IRREVERSÍVEL❗",
+      "confirm-delete": "Tem certeza de que deseja excluir a configuração SSO \"{{name}}\"?\n\nESTA AÇÃO É IRREVERSÍVEL",
       "create-sso": "Criar SSO",
       "custom": "Personalizado",
       "delete-sso": "Confirmar exclusão",
@@ -298,6 +302,7 @@
       "path": "Caminho do armazenamento",
       "path-description": "Você pode usar as mesmas variáveis dinâmicas do armazenamento local, como {filename}",
       "path-placeholder": "caminho",
+      "presign-placeholder": "URL pré-assinado, opcional",
       "region": "Região",
       "region-placeholder": "Nome da região",
       "s3-compatible-url": "URL compatível com S3",
@@ -314,7 +319,7 @@
       "url-prefix-placeholder": "Prefixo personalizado da URL, opcional",
       "url-suffix": "Sufixo da URL",
       "url-suffix-placeholder": "Sufixo personalizado da URL, opcional",
-      "warning-text": "Tem certeza de que deseja deletar o serviço de armazenamento \"{{name}}\"?\n\nESTA AÇÃO É IRREVERSÍVEL❗"
+      "warning-text": "Tem certeza de que deseja deletar o serviço de armazenamento \"{{name}}\"?\n\nESTA AÇÃO É IRREVERSÍVEL"
     },
     "system": "Sistema",
     "system-section": {
