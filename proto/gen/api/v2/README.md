@@ -144,6 +144,13 @@
   
     - [MemoService](#memos-api-v2-MemoService)
   
+- [api/v2/metadata_service.proto](#api_v2_metadata_service-proto)
+    - [GetMetadataRequest](#memos-api-v2-GetMetadataRequest)
+    - [GetMetadataResponse](#memos-api-v2-GetMetadataResponse)
+    - [Metadata](#memos-api-v2-Metadata)
+  
+    - [MetadataService](#memos-api-v2-MetadataService)
+  
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
     - [BatchUpsertTagRequest](#memos-api-v2-BatchUpsertTagRequest)
     - [BatchUpsertTagResponse](#memos-api-v2-BatchUpsertTagResponse)
@@ -2025,6 +2032,79 @@ Used internally for obfuscating the page token.
 | ListMemoReactions | [ListMemoReactionsRequest](#memos-api-v2-ListMemoReactionsRequest) | [ListMemoReactionsResponse](#memos-api-v2-ListMemoReactionsResponse) | ListMemoReactions lists reactions for a memo. |
 | UpsertMemoReaction | [UpsertMemoReactionRequest](#memos-api-v2-UpsertMemoReactionRequest) | [UpsertMemoReactionResponse](#memos-api-v2-UpsertMemoReactionResponse) | UpsertMemoReaction upserts a reaction for a memo. |
 | DeleteMemoReaction | [DeleteMemoReactionRequest](#memos-api-v2-DeleteMemoReactionRequest) | [DeleteMemoReactionResponse](#memos-api-v2-DeleteMemoReactionResponse) | DeleteMemoReaction deletes a reaction for a memo. |
+
+ 
+
+
+
+<a name="api_v2_metadata_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/metadata_service.proto
+
+
+
+<a name="memos-api-v2-GetMetadataRequest"></a>
+
+### GetMetadataRequest
+Request message for GetMetadata
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| url | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetMetadataResponse"></a>
+
+### GetMetadataResponse
+Response message for GetMetadata
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| metadata | [Metadata](#memos-api-v2-Metadata) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-Metadata"></a>
+
+### Metadata
+Metadata message
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| title | [string](#string) |  |  |
+| description | [string](#string) |  |  |
+| image | [string](#string) |  |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-MetadataService"></a>
+
+### MetadataService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| GetMetadata | [GetMetadataRequest](#memos-api-v2-GetMetadataRequest) | [GetMetadataResponse](#memos-api-v2-GetMetadataResponse) |  |
 
  
 

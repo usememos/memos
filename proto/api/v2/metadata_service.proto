@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v2";
+
+service MetadataService {
+  rpc GetMetadata(GetMetadataRequest) returns (GetMetadataResponse) {
+    option (google.api.http) = {get: "/api/v2/metadata"};
+  }
+}
+
+// Metadata message
+message Metadata {
+  string title = 1;
+  string description = 2;
+  string image = 3;
+}
+
+// Request message for GetMetadata
+message GetMetadataRequest {
+  string url = 1;
+}
+
+// Response message for GetMetadata
+message GetMetadataResponse {
+  Metadata metadata = 1;
+}
