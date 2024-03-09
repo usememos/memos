@@ -73,6 +73,7 @@ export function generateDialog<T extends DialogProps>(
   const tempDiv = document.createElement("div");
   const dialog = createRoot(tempDiv);
   document.body.append(tempDiv);
+  document.body.style.overflow = "hidden";
 
   setTimeout(() => {
     tempDiv.firstElementChild?.classList.add("showup");
@@ -82,6 +83,7 @@ export function generateDialog<T extends DialogProps>(
     destroy: () => {
       tempDiv.firstElementChild?.classList.remove("showup");
       tempDiv.firstElementChild?.classList.add("showoff");
+      document.body.style.removeProperty("overflow");
       setTimeout(() => {
         dialog.unmount();
         tempDiv.remove();
