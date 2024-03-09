@@ -145,21 +145,21 @@ func (t *TelegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Memo %d not found, possibly deleted elsewhere", memoID))
 	}
 
-	var disablePublicMemo bool
 	setting, err := t.store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: apiv1.SystemSettingDisablePublicMemosName.String(),
 	})
 	if err != nil {
 		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to get workspace setting %s", err))
 	}
-
-	err = json.Unmarshal([]byte(setting.Value), &disablePublicMemo)
-	if err != nil {
-		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to get workspace setting %s", err))
-	}
-
-	if disablePublicMemo && visibility == store.Public {
-		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to changing Memo %d to %s\n(workspace disallowed public memo)", memoID, visibility))
+	if setting != nil && setting.Value != "" {
+		disablePublicMemo := false
+		err = json.Unmarshal([]byte(setting.Value), &disablePublicMemo)
+		if err != nil {
+			return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to get workspace setting %s", err))
+		}
+		if disablePublicMemo && visibility == store.Public {
+			return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to changing Memo %d to %s\n(workspace disallowed public memo)", memoID, visibility))
+		}
 	}
 
 	update := store.UpdateMemo{
