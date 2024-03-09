@@ -35,6 +35,7 @@
     "edit": "편집",
     "email": "이메일",
     "explore": "탐색",
+    "file": "파일",
     "filter": "필터",
     "home": "홈",
     "image": "이미지",
@@ -56,7 +57,9 @@
     "reset": "재설정",
     "resources": "리소스",
     "restore": "복원",
+    "role": "역할",
     "save": "저장",
+    "search": "검색",
     "select": "선택",
     "settings": "설정",
     "share": "공유",
@@ -120,6 +123,7 @@
     "fetching-data": "불러오는 중…",
     "no-archived-memos": "보관처리된 메모가 없습니다.",
     "search-placeholder": "메모 검색하기",
+    "show-more": "더보기",
     "view-detail": "자세히 보기",
     "visibility": {
       "disabled": "공개 메모는 비활성화됨",
@@ -347,5 +351,8 @@
     "tag-name": "TAG_NAME",
     "tag-suggestions": "추천 태그",
     "tip-text": "`#태그명`을 입력하세요"
+  },
+  "timeline": {
+    "title": "타임라인"
   }
 }
