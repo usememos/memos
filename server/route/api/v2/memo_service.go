@@ -450,6 +450,11 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 	}
 	stats := make(map[string]int32)
 	for _, memo := range memos {
+		// Check if the memo exists before processing it
+		if memo == nil {
+			continue
+		}
+
 		displayTs := memo.CreatedTs
 		if displayWithUpdatedTs {
 			displayTs = memo.UpdatedTs
