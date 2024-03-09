@@ -5,6 +5,7 @@ import { useFilterStore, useTagStore } from "@/store/module";
 import { useMemoList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showCreateTagDialog from "./CreateTagDialog";
+import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import showRenameTagDialog from "./RenameTagDialog";
 
@@ -97,7 +98,9 @@ interface TagItemContainerProps {
 }
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
+  const t = useTranslate();
   const filterStore = useFilterStore();
+  const tagStore = useTagStore();
   const { tag, tagQuery } = props;
   const isActive = tagQuery === tag.text;
   const hasSubTags = tag.subTags.length > 0;
@@ -116,6 +119,18 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
     toggleSubTags();
   };
 
+  const handleDeleteTag = async () => {
+    showCommonDialog({
+      title: "Delete Tag",
+      content: "Are you sure to delete this tag?",
+      style: "danger",
+      dialogName: "delete-tag-dialog",
+      onConfirm: async () => {
+        await tagStore.deleteTag(tag.text);
+      },
+    });
+  };
+
   return (
     <>
       <div className="relative group flex flex-row justify-between items-center w-full h-8 py-0 mt-px first:mt-1 rounded-lg text-base sm:text-sm cursor-pointer select-none shrink-0 hover:opacity-80">
@@ -131,7 +146,10 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
               </div>
             </MenuButton>
             <Menu size="sm" placement="bottom-start">
-              <MenuItem onClick={() => showRenameTagDialog({ tag: tag.text })}>Rename</MenuItem>
+              <MenuItem onClick={() => showRenameTagDialog({ tag: tag.text })}>{t("common.rename")}</MenuItem>
+              <MenuItem color="danger" onClick={handleDeleteTag}>
+                {t("common.delete")}
+              </MenuItem>
             </Menu>
           </Dropdown>
           <span className="truncate" onClick={handleTagClick}>
