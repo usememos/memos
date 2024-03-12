@@ -3,7 +3,7 @@ import { ActivityServiceDefinition } from "./types/proto/api/v2/activity_service
 import { AuthServiceDefinition } from "./types/proto/api/v2/auth_service";
 import { InboxServiceDefinition } from "./types/proto/api/v2/inbox_service";
 import { MemoServiceDefinition } from "./types/proto/api/v2/memo_service";
-import { MetadataServiceDefinition } from "./types/proto/api/v2/metadata_service";
+import { LinkServiceDefinition } from "./types/proto/api/v2/metadata_service";
 import { ResourceServiceDefinition } from "./types/proto/api/v2/resource_service";
 import { TagServiceDefinition } from "./types/proto/api/v2/tag_service";
 import { UserServiceDefinition } from "./types/proto/api/v2/user_service";
@@ -40,4 +40,4 @@ export const activityServiceClient = clientFactory.create(ActivityServiceDefinit
 
 export const webhookServiceClient = clientFactory.create(WebhookServiceDefinition, channel);
 
-export const metadataServiceClient = clientFactory.create(MetadataServiceDefinition, channel);
+export const metadataServiceClient = clientFactory.create(LinkServiceDefinition, channel);

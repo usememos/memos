@@ -9,19 +9,18 @@ interface Props {
 }
 
 const Link: React.FC<Props> = ({ text, url }: Props) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [image, setImage] = useState<string>("");
+  const [title, setTitle] = useState<string>();
+  const [description, setDescription] = useState<string>();
+  const [image, setImage] = useState<string>();
 
   const fetchUrlMetadata = async () => {
     try {
-      const response = await metadataServiceClient.getMetadata({ url }, {});
+      const response = await metadataServiceClient.getLinkMetadata({ url }, {});
 
-      setTitle(response.metadata?.title || "No Title.");
-      setDescription(response.metadata?.description || "No Description.");
-      setImage(response.metadata?.image || "No Image.");
+      setTitle(response.metadata?.title);
+      setDescription(response.metadata?.description);
+      setImage(response.metadata?.image);
     } catch (error) {
-      console.log(url);
       console.error("Error fetching URL metadata:", error);
       return null;
     }
@@ -65,7 +64,7 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
                       <div className="flex flex-col justify-between ">
                         <div>
                           <h3 className="text-2xl font-semibold tracking-tight truncate">{title}</h3>
-                          <p className="text-sm truncate">{description}</p>
+                          {description && <p className="text-sm truncate">{description}</p>}
                         </div>
                       </div>
                     </div>
