@@ -58,13 +58,15 @@
     "reset": "重置",
     "resources": "资源库",
     "restore": "恢复",
+    "role": "身份",
     "save": "保存",
+    "search": "搜索",
     "select": "选择",
     "settings": "设置",
     "share": "分享",
     "sign-in": "登录",
     "sign-in-with": "使用 {{provider}} 登录",
-    "sign-out": "注销",
+    "sign-out": "退出",
     "sign-up": "注册",
     "tags": "全部标签",
     "title": "标题",
@@ -102,10 +104,14 @@
   "heatmap": {
     "day": "天中",
     "days": "天中",
-    "memo-in": " 条备忘录，在过去的",
-    "memo-on": "{{date}} 记了 {{amount}} 条备忘录",
-    "memos-in": " 条备忘录，在过去的",
-    "memos-on": "{{date}} 记了 {{amount}} 条备忘录"
+    "memo-in": "条 memo 记录于 {{period}}",
+    "memo-on": "{{date}} 记录了 {{amount}} 条 memo",
+    "memos-in": "条 memos 记录于 {{period}}",
+    "memos-on": "{{date}} 记录了 {{amount}} 条 memos"
+  },
+  "inbox": {
+    "memo-comment": "{{user}} 评论了您的“{{memo}}”。",
+    "version-update": "新版本 {{version}} 现已推出！"
   },
   "memo": {
     "archived-at": "存档于",
@@ -118,10 +124,11 @@
     "delete-confirm": "您确定要删除此备忘录吗？此操作不可逆",
     "delete-memo": "删除备忘录",
     "embed": "嵌入",
-    "fetch-more": "点击此处获取更多",
+    "fetch-more": "点击获取更多",
     "fetching-data": "正在获取数据…",
     "no-archived-memos": "无存档的备忘录。",
     "search-placeholder": "搜索备忘录",
+    "show-more": "查看更多",
     "view-detail": "查看详情",
     "visibility": {
       "disabled": "公共备忘录已禁用",
@@ -198,12 +205,12 @@
     "no-resources": "没有资源。",
     "no-unused-resources": "无可删除的资源",
     "reset-link": "重置链接",
-    "reset-link-prompt": "您确定要重置链接吗？\n这将打破所有当前的链接用法。\n\n此操作不可逆",
+    "reset-link-prompt": "您确定要重置链接吗？这将导致当前使用的链接失效。（此操作不可逆）",
     "reset-resource-link": "重置资源链接",
     "search-bar-placeholder": "搜索资源",
     "upload-successfully": "上传成功",
-    "warning-text": "确定删除这个资源么？\n\n此操作不可逆",
-    "warning-text-unused": "您确定要删除这些无用资源么？\n\n此操作不可逆"
+    "warning-text": "您确定要删除这项资源吗？（此操作不可逆）",
+    "warning-text-unused": "您确定要删除这些未使用的资源吗？（此操作不可逆）"
   },
   "router": {
     "back-to-top": "回到顶部",
@@ -213,6 +220,7 @@
     "account-section": {
       "change-password": "修改密码",
       "email-note": "可选",
+      "export-memos": "导出 Memos",
       "nickname-note": "显示在横幅中",
       "openapi-reset": "重置 OpenAPI 密钥",
       "openapi-sample-post": "您好 #memos 来自 {{url}}",
@@ -234,7 +242,7 @@
       "archive-warning": "您确定要归档 {{username}} 吗？",
       "create-a-member": "创建成员",
       "delete-member": "删除成员",
-      "delete-warning": "您确定要删除 {{username}} 吗？\n\n此操作不可逆"
+      "delete-warning": "您确定要删除 {{username}} 吗？（此操作不可逆）"
     },
     "my-account": "我的账号",
     "preference": "偏好设置",
@@ -259,7 +267,7 @@
       "authorization-endpoint": "授权端点（Authorization Endpoint）",
       "client-id": "客户端ID（Client ID）",
       "client-secret": "客户端密钥（Client Secret）",
-      "confirm-delete": "您确定要删除“{{name}}”单点登录配置吗？\n\n此操作不可逆",
+      "confirm-delete": "您确定要删除“{{name}}”单点登录配置吗？（此操作不可逆）",
       "create-sso": "创建单点登录",
       "custom": "自定义",
       "delete-sso": "确认删除",
@@ -292,6 +300,7 @@
       "path": "存储路径",
       "path-description": "您可以使用本地存储中的相同动态变量，例如 {filename}",
       "path-placeholder": "自定义路径",
+      "presign-placeholder": "预签名 URL（可选）",
       "region": "地区",
       "region-placeholder": "区域名称",
       "s3-compatible-url": "S3 兼容 URL",
@@ -308,7 +317,7 @@
       "url-prefix-placeholder": "自定义 URL 前缀，可选",
       "url-suffix": "URL 后缀",
       "url-suffix-placeholder": "自定义 URL 后缀，可选",
-      "warning-text": "确定删除这个存储服务“{{name}}”么？\n\n此操作不可逆"
+      "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）"
     },
     "system": "系统",
     "system-section": {
@@ -337,7 +346,8 @@
       "server-name": "服务名称",
       "telegram-bot-token": "Telegram 机器人 Token",
       "telegram-bot-token-description": "Telegram 机器人 Token 或 `http…/bot<token>` 格式的代理地址",
-      "telegram-bot-token-placeholder": "您的 Telegram 机器人 Token"
+      "telegram-bot-token-placeholder": "您的 Telegram 机器人 Token",
+      "vacuum-hint": "清理未使用的数据。"
     }
   },
   "tag": {
