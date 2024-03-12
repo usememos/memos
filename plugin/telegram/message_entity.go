@@ -16,6 +16,7 @@ const (
 	Strikethrough = "strikethrough" //  “strikethrough” (strikethrough text)
 	Code          = "code"          //  “code” (monowidth string)
 	Pre           = "pre"           //  “pre” (monowidth block)
+	Spoiler       = "spoiler"       //  “spoiler” (hidden text)
 	TextLink      = "text_link"     //  “text_link” (for clickable text URLs)
 	TextMention   = "text_mention"  //  “text_mention” (for users without usernames)
 )

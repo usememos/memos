@@ -13,7 +13,6 @@ func (b *Bot) handleSingleMessages(ctx context.Context, messages []Message) erro
 		if err != nil {
 			return err
 		}
-
 		if attachment != nil {
 			attachments = append(attachments, *attachment)
 		}
@@ -33,7 +32,7 @@ func (b *Bot) handleGroupMessages(ctx context.Context, groupMessages []Message) 
 	messages := make(map[string]Message, len(groupMessages))
 	attachments := make(map[string][]Attachment, len(groupMessages))
 
-	// Group all captions, blobs and messages
+	// Group all captions, blobs and messages.
 	for _, message := range groupMessages {
 		groupID := *message.MediaGroupID
 
@@ -53,9 +52,9 @@ func (b *Bot) handleGroupMessages(ctx context.Context, groupMessages []Message) 
 		}
 	}
 
-	// Handle each group message
+	// Handle each group message.
 	for groupID, message := range messages {
-		// replace Caption with all Caption in the group
+		// replace Caption with all Caption in the group.
 		caption := captions[groupID]
 		message.Caption = &caption
 		err := b.handler.MessageHandle(ctx, b, message, attachments[groupID])
