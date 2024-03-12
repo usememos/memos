@@ -7,7 +7,7 @@ import (
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 )
 
-func (_ *APIV2Service) GetMetadata(ctx context.Context, request *apiv2pb.GetMetadataRequest) (*apiv2pb.GetMetadataResponse, error) {
+func (_ *APIV2Service) GetMetadata(ctx context.Context, request *apiv2pb.GetLinkMetadataRequest) (*apiv2pb.GetLinkMetadataResponse, error) {
 	urlStr := request.Url
 
 	htmlMeta, err := getter.GetHTMLMeta(urlStr)
@@ -15,7 +15,7 @@ func (_ *APIV2Service) GetMetadata(ctx context.Context, request *apiv2pb.GetMeta
 		return nil, err
 	}
 
-	return &apiv2pb.GetMetadataResponse{
+	return &apiv2pb.GetLinkMetadataResponse{
 		Metadata: &apiv2pb.Metadata{
 			Title:       htmlMeta.Title,
 			Description: htmlMeta.Description,

@@ -9,7 +9,7 @@ tags:
   - name: InboxService
   - name: ResourceService
   - name: MemoService
-  - name: MetadataService
+  - name: LinkService
   - name: TagService
   - name: WebhookService
   - name: WorkspaceService
@@ -641,12 +641,12 @@ paths:
         - MemoService
   /api/v2/metadata:
     get:
-      operationId: MetadataService_GetMetadata
+      operationId: LinkService_GetLinkMetadata
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetMetadataResponse'
+            $ref: '#/definitions/v2GetLinkMetadataResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -657,7 +657,7 @@ paths:
           required: false
           type: string
       tags:
-        - MetadataService
+        - LinkService
   /api/v2/resources:
     get:
       summary: ListResources lists all resources.
@@ -1759,6 +1759,12 @@ definitions:
     properties:
       user:
         $ref: '#/definitions/v2User'
+  v2GetLinkMetadataResponse:
+    type: object
+    properties:
+      metadata:
+        $ref: '#/definitions/v2Metadata'
+    title: Response message for LinkService
   v2GetMemoByNameResponse:
     type: object
     properties:
@@ -1769,12 +1775,6 @@ definitions:
     properties:
       memo:
         $ref: '#/definitions/v2Memo'
-  v2GetMetadataResponse:
-    type: object
-    properties:
-      metadata:
-        $ref: '#/definitions/v2Metadata'
-    title: Response message for GetMetadata
   v2GetResourceByNameResponse:
     type: object
     properties:
