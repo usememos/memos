@@ -5,7 +5,7 @@
     "memo_other": "NOTAS"
   },
   "auth": {
-    "host-tip": "Te estás registrando como Anfitrión del Sitio."
+    "host-tip": "Te estás registrando como anfitrión del sitio."
   },
   "common": {
     "about": "Acerca de",
@@ -67,8 +67,8 @@
     "save": "Guardar"
   },
   "memo": {
-    "copy-link": "Copiar Enlace",
-    "view-detail": "Ver Detalles",
+    "copy-link": "Copiar enlace",
+    "view-detail": "Ver detalles",
     "visibility": {
       "disabled": "Las notas públicas están deshabilitadas",
       "private": "Solo visible para ti",
@@ -91,12 +91,12 @@
     "login-failed": "Error al iniciar sesión",
     "memo-not-found": "Nota no encontrada.",
     "memo-updated-datetime": "Fecha de creación de la nota modificada.",
-    "memos-ready": "todas las notas están listas 🎉",
+    "memos-ready": "Todas las notas están listas 🎉",
     "new-password-not-match": "Las nuevas contraseñas no coinciden.",
     "password-changed": "Contraseña cambiada",
     "password-not-match": "Las contraseñas no coinciden.",
     "private-only": "Esta nota es privada.",
-    "resource-filename-updated": "El nombre del archivo de recursos se ha cambiado correctamente..",
+    "resource-filename-updated": "El nombre del archivo de recursos se ha cambiado correctamente.",
     "restored-successfully": "Restaurado con éxito",
     "signup-failed": "Error al registrarse",
     "succeed-copy-code": "Código copiado con éxito.",
@@ -112,8 +112,8 @@
   },
   "resource": {
     "clear": "Limpiar",
-    "copy-link": "Copiar Enlace",
-    "delete-resource": "Borrar Recurso",
+    "copy-link": "Copiar enlace",
+    "delete-resource": "Borrar recurso",
     "fetching-data": "obteniendo datos...",
     "linked-amount": "Importe de la nota vinculado",
     "no-resources": "Sin recursos.",
@@ -123,10 +123,10 @@
   },
   "setting": {
     "account-section": {
-      "change-password": "Cambiar Contraseña",
-      "export-memos": "Exportar Notas",
-      "title": "Información de la Cuenta",
-      "update-information": "Actualizar Información"
+      "change-password": "Cambiar contraseña",
+      "export-memos": "Exportar notas",
+      "title": "Información de la cuenta",
+      "update-information": "Actualizar información"
     },
     "appearance-option": {
       "dark": "Siempre oscuro",
@@ -138,11 +138,11 @@
     "member-section": {
       "create-a-member": "Crear un miembro"
     },
-    "my-account": "Mi Cuenta",
+    "my-account": "Mi cuenta",
     "preference": "Preferencias",
     "preference-section": {
       "auto-collapse": "Colapso automático",
-      "created_ts": "Hora de Creación",
+      "created_ts": "Hora de creación",
       "default-memo-sort-option": "Hora de visualización de la nota",
       "default-memo-visibility": "Visibilidad predeterminada de las notas",
       "editor-font-style": "Estilo de fuente del editor",
@@ -150,7 +150,7 @@
       "enable-folding-memo": "Habilitar nota plegable",
       "mobile-editor-style": "Estilo del editor móvil",
       "theme": "Tema",
-      "updated_ts": "Hora de Actualización"
+      "updated_ts": "Hora de actualización"
     },
     "sso": "SSO",
     "storage": "Almacenamiento",
@@ -170,12 +170,12 @@
       "allow-user-signup": "Permitir el registro de usuarios",
       "customize-server": {
         "icon-url": "Icono URL",
-        "title": "Personalizar Servidor"
+        "title": "Personalizar servidor"
       },
-      "database-file-size": "Tamaño de la Base de Datos",
+      "database-file-size": "Tamaño de la base de datos",
       "disable-public-memos": "Deshabilitar notas públicas",
-      "display-with-updated-time": "Display with updated time",
-      "server-name": "Nombre del Servidor"
+      "display-with-updated-time": "Mostrar con hora actualizada",
+      "server-name": "Nombre del servidor"
     }
   },
   "tag": {
