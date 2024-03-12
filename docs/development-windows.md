@@ -56,7 +56,7 @@ Memos should now be running at [http://localhost:3001](http://localhost:3001) an
 
 ## Building
 
-Frontend must be built before backend. The built frontend must be placed in the backend ./server/frontend/dist directory. Otherwise, you will get a "No frontend embeded" error.
+Frontend must be built before backend. The built frontend must be placed in the backend ./server/frontend/dist directory. Otherwise, you will get a "No frontend embedded" error.
 
 ### Frontend
 
