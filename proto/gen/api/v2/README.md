@@ -149,7 +149,7 @@
     - [GetMetadataResponse](#memos-api-v2-GetMetadataResponse)
     - [Metadata](#memos-api-v2-Metadata)
   
-    - [MetadataService](#memos-api-v2-MetadataService)
+    - [LinkService](#memos-api-v2-LinkService)
   
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
     - [BatchUpsertTagRequest](#memos-api-v2-BatchUpsertTagRequest)
@@ -2097,14 +2097,14 @@ Metadata message
  
 
 
-<a name="memos-api-v2-MetadataService"></a>
+<a name="memos-api-v2-LinkService"></a>
 
-### MetadataService
+### LinkService
 
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetMetadata | [GetMetadataRequest](#memos-api-v2-GetMetadataRequest) | [GetMetadataResponse](#memos-api-v2-GetMetadataResponse) |  |
+| GetLinkMetadata | [GetMetadataRequest](#memos-api-v2-GetMetadataRequest) | [GetMetadataResponse](#memos-api-v2-GetMetadataResponse) |  |
 
  
 

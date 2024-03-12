@@ -32,48 +32,48 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 var (
-	filter_MetadataService_GetMetadata_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_LinkService_GetLinkMetadata_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_MetadataService_GetMetadata_0(ctx context.Context, marshaler runtime.Marshaler, client MetadataServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_LinkService_GetLinkMetadata_0(ctx context.Context, marshaler runtime.Marshaler, client LinkServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetMetadataRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_MetadataService_GetMetadata_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LinkService_GetLinkMetadata_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.GetMetadata(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetLinkMetadata(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_MetadataService_GetMetadata_0(ctx context.Context, marshaler runtime.Marshaler, server MetadataServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LinkService_GetLinkMetadata_0(ctx context.Context, marshaler runtime.Marshaler, server LinkServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetMetadataRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_MetadataService_GetMetadata_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LinkService_GetLinkMetadata_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.GetMetadata(ctx, &protoReq)
+	msg, err := server.GetLinkMetadata(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-// RegisterMetadataServiceHandlerServer registers the http handlers for service MetadataService to "mux".
-// UnaryRPC     :call MetadataServiceServer directly.
+// RegisterLinkServiceHandlerServer registers the http handlers for service LinkService to "mux".
+// UnaryRPC     :call LinkServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterMetadataServiceHandlerFromEndpoint instead.
-func RegisterMetadataServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server MetadataServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterLinkServiceHandlerFromEndpoint instead.
+func RegisterLinkServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server LinkServiceServer) error {
 
-	mux.Handle("GET", pattern_MetadataService_GetMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_LinkService_GetLinkMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -81,12 +81,12 @@ func RegisterMetadataServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v2.MetadataService/GetMetadata", runtime.WithHTTPPathPattern("/api/v2/metadata"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v2.LinkService/GetLinkMetadata", runtime.WithHTTPPathPattern("/api/v2/metadata"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_MetadataService_GetMetadata_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_LinkService_GetLinkMetadata_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -94,16 +94,16 @@ func RegisterMetadataServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 			return
 		}
 
-		forward_MetadataService_GetMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LinkService_GetLinkMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterMetadataServiceHandlerFromEndpoint is same as RegisterMetadataServiceHandler but
+// RegisterLinkServiceHandlerFromEndpoint is same as RegisterLinkServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterMetadataServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterLinkServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.DialContext(ctx, endpoint, opts...)
 	if err != nil {
 		return err
@@ -123,41 +123,41 @@ func RegisterMetadataServiceHandlerFromEndpoint(ctx context.Context, mux *runtim
 		}()
 	}()
 
-	return RegisterMetadataServiceHandler(ctx, mux, conn)
+	return RegisterLinkServiceHandler(ctx, mux, conn)
 }
 
-// RegisterMetadataServiceHandler registers the http handlers for service MetadataService to "mux".
+// RegisterLinkServiceHandler registers the http handlers for service LinkService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterMetadataServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterMetadataServiceHandlerClient(ctx, mux, NewMetadataServiceClient(conn))
+func RegisterLinkServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterLinkServiceHandlerClient(ctx, mux, NewLinkServiceClient(conn))
 }
 
-// RegisterMetadataServiceHandlerClient registers the http handlers for service MetadataService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "MetadataServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "MetadataServiceClient"
+// RegisterLinkServiceHandlerClient registers the http handlers for service LinkService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "LinkServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "LinkServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "MetadataServiceClient" to call the correct interceptors.
-func RegisterMetadataServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client MetadataServiceClient) error {
+// "LinkServiceClient" to call the correct interceptors.
+func RegisterLinkServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client LinkServiceClient) error {
 
-	mux.Handle("GET", pattern_MetadataService_GetMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_LinkService_GetLinkMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v2.MetadataService/GetMetadata", runtime.WithHTTPPathPattern("/api/v2/metadata"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v2.LinkService/GetLinkMetadata", runtime.WithHTTPPathPattern("/api/v2/metadata"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_MetadataService_GetMetadata_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_LinkService_GetLinkMetadata_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_MetadataService_GetMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LinkService_GetLinkMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -165,9 +165,9 @@ func RegisterMetadataServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 }
 
 var (
-	pattern_MetadataService_GetMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v2", "metadata"}, ""))
+	pattern_LinkService_GetLinkMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v2", "metadata"}, ""))
 )
 
 var (
-	forward_MetadataService_GetMetadata_0 = runtime.ForwardResponseMessage
+	forward_LinkService_GetLinkMetadata_0 = runtime.ForwardResponseMessage
 )

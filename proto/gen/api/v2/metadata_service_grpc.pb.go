@@ -19,89 +19,89 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	MetadataService_GetMetadata_FullMethodName = "/memos.api.v2.MetadataService/GetMetadata"
+	LinkService_GetLinkMetadata_FullMethodName = "/memos.api.v2.LinkService/GetLinkMetadata"
 )
 
-// MetadataServiceClient is the client API for MetadataService service.
+// LinkServiceClient is the client API for LinkService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type MetadataServiceClient interface {
-	GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error)
+type LinkServiceClient interface {
+	GetLinkMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error)
 }
 
-type metadataServiceClient struct {
+type linkServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewMetadataServiceClient(cc grpc.ClientConnInterface) MetadataServiceClient {
-	return &metadataServiceClient{cc}
+func NewLinkServiceClient(cc grpc.ClientConnInterface) LinkServiceClient {
+	return &linkServiceClient{cc}
 }
 
-func (c *metadataServiceClient) GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error) {
+func (c *linkServiceClient) GetLinkMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error) {
 	out := new(GetMetadataResponse)
-	err := c.cc.Invoke(ctx, MetadataService_GetMetadata_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, LinkService_GetLinkMetadata_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// MetadataServiceServer is the server API for MetadataService service.
-// All implementations must embed UnimplementedMetadataServiceServer
+// LinkServiceServer is the server API for LinkService service.
+// All implementations must embed UnimplementedLinkServiceServer
 // for forward compatibility
-type MetadataServiceServer interface {
-	GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error)
-	mustEmbedUnimplementedMetadataServiceServer()
+type LinkServiceServer interface {
+	GetLinkMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error)
+	mustEmbedUnimplementedLinkServiceServer()
 }
 
-// UnimplementedMetadataServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedMetadataServiceServer struct {
+// UnimplementedLinkServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedLinkServiceServer struct {
 }
 
-func (UnimplementedMetadataServiceServer) GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
+func (UnimplementedLinkServiceServer) GetLinkMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLinkMetadata not implemented")
 }
-func (UnimplementedMetadataServiceServer) mustEmbedUnimplementedMetadataServiceServer() {}
+func (UnimplementedLinkServiceServer) mustEmbedUnimplementedLinkServiceServer() {}
 
-// UnsafeMetadataServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to MetadataServiceServer will
+// UnsafeLinkServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to LinkServiceServer will
 // result in compilation errors.
-type UnsafeMetadataServiceServer interface {
-	mustEmbedUnimplementedMetadataServiceServer()
+type UnsafeLinkServiceServer interface {
+	mustEmbedUnimplementedLinkServiceServer()
 }
 
-func RegisterMetadataServiceServer(s grpc.ServiceRegistrar, srv MetadataServiceServer) {
-	s.RegisterService(&MetadataService_ServiceDesc, srv)
+func RegisterLinkServiceServer(s grpc.ServiceRegistrar, srv LinkServiceServer) {
+	s.RegisterService(&LinkService_ServiceDesc, srv)
 }
 
-func _MetadataService_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _LinkService_GetLinkMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetMetadataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MetadataServiceServer).GetMetadata(ctx, in)
+		return srv.(LinkServiceServer).GetLinkMetadata(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MetadataService_GetMetadata_FullMethodName,
+		FullMethod: LinkService_GetLinkMetadata_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MetadataServiceServer).GetMetadata(ctx, req.(*GetMetadataRequest))
+		return srv.(LinkServiceServer).GetLinkMetadata(ctx, req.(*GetMetadataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// MetadataService_ServiceDesc is the grpc.ServiceDesc for MetadataService service.
+// LinkService_ServiceDesc is the grpc.ServiceDesc for LinkService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var MetadataService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.api.v2.MetadataService",
-	HandlerType: (*MetadataServiceServer)(nil),
+var LinkService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "memos.api.v2.LinkService",
+	HandlerType: (*LinkServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetMetadata",
-			Handler:    _MetadataService_GetMetadata_Handler,
+			MethodName: "GetLinkMetadata",
+			Handler:    _LinkService_GetLinkMetadata_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
