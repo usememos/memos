@@ -2,6 +2,7 @@ import { Tooltip, Card, AspectRatio, Box } from "@mui/joy";
 import { Link as MLink } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { metadataServiceClient } from "@/grpcweb";
+import { Metadata } from "@/types/proto/api/v2/link_service";
 
 interface Props {
   url: string;
@@ -9,17 +10,13 @@ interface Props {
 }
 
 const Link: React.FC<Props> = ({ text, url }: Props) => {
-  const [title, setTitle] = useState<string>();
-  const [description, setDescription] = useState<string>();
-  const [image, setImage] = useState<string>();
+
+  const [linkMetadata, setLinkMetadata] = useState<Metadata | undefined>();
 
   const fetchUrlMetadata = async () => {
     try {
       const response = await metadataServiceClient.getLinkMetadata({ url }, {});
-
-      setTitle(response.metadata?.title);
-      setDescription(response.metadata?.description);
-      setImage(response.metadata?.image);
+      setLinkMetadata(response.metadata)
     } catch (error) {
       console.error("Error fetching URL metadata:", error);
       return null;
@@ -54,17 +51,17 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
                 maxHeight: 300,
               }}
             >
-              {image ? (
+              {linkMetadata?.image ? (
                 <a href={url} target="_blank" rel="noopener noreferrer" className="flex w-full">
                   <Card variant="outlined" orientation="vertical" sx={{ width: "100%" }}>
                     <AspectRatio ratio={"21/9"} objectFit="cover" variant="plain">
-                      <img src={image} alt={title} className="pointer-events-none" />
+                      <img src={linkMetadata?.image} alt={linkMetadata?.title} className="pointer-events-none" />
                     </AspectRatio>
                     <div className="flex-1 overflow-auto w-full">
                       <div className="flex flex-col justify-between ">
                         <div>
-                          <h3 className="text-2xl font-semibold tracking-tight truncate">{title}</h3>
-                          {description && <p className="text-sm truncate">{description}</p>}
+                          <h3 className="text-2xl font-semibold tracking-tight truncate">{linkMetadata?.title}</h3>
+                          {linkMetadata?.description && <p className="text-sm truncate">{linkMetadata?.description}</p>}
                         </div>
                       </div>
                     </div>
@@ -75,7 +72,7 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
                   <div className="flex-1 overflow-auto w-full">
                     <div className="flex flex-col justify-between ">
                       <div>
-                        <h3 className="text-2xl font-semibold tracking-tight">{title}</h3>
+                        <h3 className="text-2xl font-semibold tracking-tight">{linkMetadata?.title}</h3>
                         <p className="text-sm text-black/50 dark:text-white/50">No Preview</p>
                       </div>
                     </div>
