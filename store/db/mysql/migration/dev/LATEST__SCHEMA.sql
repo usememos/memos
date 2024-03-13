@@ -22,7 +22,8 @@ CREATE TABLE `user` (
   `email` VARCHAR(256) NOT NULL DEFAULT '',
   `nickname` VARCHAR(256) NOT NULL DEFAULT '',
   `password_hash` VARCHAR(256) NOT NULL,
-  `avatar_url` LONGTEXT NOT NULL
+  `avatar_url` LONGTEXT NOT NULL,
+  `description` VARCHAR(256) NOT NULL DEFAULT ''
 );
 
 -- user_setting

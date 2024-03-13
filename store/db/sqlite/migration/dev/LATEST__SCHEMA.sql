@@ -23,7 +23,8 @@ CREATE TABLE user (
   email TEXT NOT NULL DEFAULT '',
   nickname TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
-  avatar_url TEXT NOT NULL DEFAULT ''
+  avatar_url TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT ''
 );
 
 CREATE INDEX idx_user_username ON user (username);

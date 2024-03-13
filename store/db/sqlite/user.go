@@ -11,10 +11,11 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 	fields := []string{"`username`", "`role`", "`email`", "`nickname`", "`password_hash`"}
 	placeholder := []string{"?", "?", "?", "?", "?"}
 	args := []any{create.Username, create.Role, create.Email, create.Nickname, create.PasswordHash}
-	stmt := "INSERT INTO user (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING id, avatar_url, created_ts, updated_ts, row_status"
+	stmt := "INSERT INTO user (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING id, avatar_url, description, created_ts, updated_ts, row_status"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,
 		&create.AvatarURL,
+		&create.Description,
 		&create.CreatedTs,
 		&create.UpdatedTs,
 		&create.RowStatus,
@@ -48,13 +49,16 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	if v := update.PasswordHash; v != nil {
 		set, args = append(set, "password_hash = ?"), append(args, *v)
 	}
+	if v := update.Description; v != nil {
+		set, args = append(set, "description = ?"), append(args, *v)
+	}
 	args = append(args, update.ID)
 
 	query := `
 		UPDATE user
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, username, role, email, nickname, password_hash, avatar_url, created_ts, updated_ts, row_status
+		RETURNING id, username, role, email, nickname, password_hash, avatar_url, description, created_ts, updated_ts, row_status
 	`
 	user := &store.User{}
 	if err := d.db.QueryRowContext(ctx, query, args...).Scan(
@@ -65,6 +69,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		&user.Nickname,
 		&user.PasswordHash,
 		&user.AvatarURL,
+		&user.Description,
 		&user.CreatedTs,
 		&user.UpdatedTs,
 		&user.RowStatus,
@@ -103,6 +108,7 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 			nickname,
 			password_hash,
 			avatar_url,
+			description,
 			created_ts,
 			updated_ts,
 			row_status
@@ -127,6 +133,7 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 			&user.Nickname,
 			&user.PasswordHash,
 			&user.AvatarURL,
+			&user.Description,
 			&user.CreatedTs,
 			&user.UpdatedTs,
 			&user.RowStatus,

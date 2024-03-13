@@ -57,6 +57,7 @@ type User struct {
 	Nickname     string
 	PasswordHash string
 	AvatarURL    string
+	Description  string
 }
 
 type UpdateUser struct {
@@ -71,6 +72,7 @@ type UpdateUser struct {
 	Password     *string
 	AvatarURL    *string
 	PasswordHash *string
+	Description  *string
 }
 
 type FindUser struct {

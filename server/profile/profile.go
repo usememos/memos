@@ -51,11 +51,9 @@ func checkDataDir(dataDir string) (string, error) {
 
 	// Trim trailing \ or / in case user supplies
 	dataDir = strings.TrimRight(dataDir, "\\/")
-
 	if _, err := os.Stat(dataDir); err != nil {
 		return "", errors.Wrapf(err, "unable to access data folder %s", dataDir)
 	}
-
 	return dataDir, nil
 }
 
