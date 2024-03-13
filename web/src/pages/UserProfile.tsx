@@ -1,4 +1,5 @@
 import { Button } from "@mui/joy";
+import copy from "copy-to-clipboard";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -85,6 +86,15 @@ const UserProfile = () => {
     nextPageTokenRef.current = data.nextPageToken;
   };
 
+  const handleCopyProfileLink = () => {
+    if (!user) {
+      return;
+    }
+
+    copy(`${window.location.origin}/u/${encodeURIComponent(user.username)}`);
+    toast.success(t("message.copied"));
+  };
+
   return (
     <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
@@ -92,17 +102,28 @@ const UserProfile = () => {
         {!loadingState.isLoading &&
           (user ? (
             <>
-              <div className="relative -mt-6 top-8 w-full flex justify-end items-center">
+              <div className="my-4 w-full flex justify-end items-center gap-2">
                 <a className="" href={`/u/${encodeURIComponent(user?.username)}/rss.xml`} target="_blank" rel="noopener noreferrer">
                   <Button color="neutral" variant="outlined" endDecorator={<Icon.Rss className="w-4 h-auto opacity-60" />}>
                     RSS
                   </Button>
                 </a>
+                <Button
+                  color="neutral"
+                  variant="outlined"
+                  endDecorator={<Icon.ExternalLink className="w-4 h-auto opacity-60" />}
+                  onClick={handleCopyProfileLink}
+                >
+                  Share
+                </Button>
               </div>
-              <div className="w-full flex flex-col justify-start items-center py-8">
-                <UserAvatar className="!w-20 !h-20 mb-2 drop-shadow" avatarUrl={user?.avatarUrl} />
-                <div className="w-full flex flex-row justify-center items-center">
-                  <p className="text-3xl text-black leading-none opacity-80 dark:text-gray-200">{user?.nickname}</p>
+              <div className="w-full flex flex-row justify-start items-center pt-4 pb-8 px-4">
+                <UserAvatar className="!w-16 !h-16 drop-shadow mr-3" avatarUrl={user?.avatarUrl} />
+                <div className="w-auto max-w-[calc(100%-6rem)] flex flex-col justify-center items-start">
+                  <p className="w-full text-4xl text-black leading-none opacity-80 dark:text-gray-200 truncate">
+                    {user.nickname || user.username}
+                  </p>
+                  <p className="w-full mt-1 text-gray-500 leading-none opacity-80 dark:text-gray-400 truncate">{user.description}</p>
                 </div>
               </div>
               <MemoFilter className="px-2 pb-3" />
