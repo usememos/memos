@@ -97,14 +97,6 @@
     "text": "Kopieer en plak onderstaande code op je eigen website",
     "title": "Memo insluiten"
   },
-  "heatmap": {
-    "day": "dag",
-    "days": "dagen",
-    "memo-in": "memo in {{period}}",
-    "memo-on": "{{amount}} memo op {{date}}",
-    "memos-in": "memos in {{period}}",
-    "memos-on": "{{amount}} memos op {{date}}"
-  },
   "memo": {
     "archived-at": "Gearchiveerd op",
     "archived-memos": "Gearchiveerde memos",
@@ -204,20 +196,11 @@
     "my-account": "Mijn account",
     "preference": "Voorkeuren",
     "preference-section": {
-      "auto-collapse": "Automatisch samenvouwen",
-      "created_ts": "Tijd van aanmaken",
-      "daily-review-time-offset": "Dagelijkse review tijdscompensatie",
       "default-memo-sort-option": "Sorteer op tijd van aanmaken/wijziging",
       "default-memo-visibility": "Standaard memo zichtbaarheid",
-      "default-resource-visibility": "Standaard bron zichtbaarheid",
-      "editor-font-style": "Editor lettertype",
-      "enable-double-click": "Dubbelklik op memo om te bewerken",
-      "enable-folding-memo": "Vouwende memo aanzetten",
-      "mobile-editor-style": "Mobiele editor uiterlijk",
       "telegram-user-id": "Telegram User ID",
       "telegram-user-id-placeholder": "Stuur je memos naar je Telegram bot",
-      "theme": "Thema",
-      "updated_ts": "Tijd van wijziging"
+      "theme": "Thema"
     },
     "sso": "SSO",
     "sso-section": {

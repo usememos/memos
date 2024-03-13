@@ -103,14 +103,6 @@
     "text": "Copie o código abaixo para incorporar este memo em seu site.",
     "title": "Incorporar memo"
   },
-  "heatmap": {
-    "day": "dia",
-    "days": "dias",
-    "memo-in": "memo em {{period}}",
-    "memo-on": "{{amount}} memo em {{date}}",
-    "memos-in": "memos em {{period}}",
-    "memos-on": "{{amount}} memos em {{date}}"
-  },
   "inbox": {
     "memo-comment": "{{user}} tem um comentário sobre o seu {{memo}}.",
     "version-update": "A nova versão {{version}} já está disponível!"
@@ -249,20 +241,11 @@
     "my-account": "Minha conta",
     "preference": "Preferências",
     "preference-section": {
-      "auto-collapse": "Recolher automaticamente",
-      "created_ts": "Hora de criação",
-      "daily-review-time-offset": "Compensação de tempo do Resumo Diário",
       "default-memo-sort-option": "Exibição de tempo do memo",
       "default-memo-visibility": "Visibilidade padrão do memo",
-      "default-resource-visibility": "Visibilidade padrão do recurso",
-      "editor-font-style": "Estilo de fonte do editor",
-      "enable-double-click": "Habilitar duplo clique para editar",
-      "enable-folding-memo": "Habilitar recolher memo",
-      "mobile-editor-style": "Estilo do editor para dispositivos móveis",
       "telegram-user-id": "ID de usuário do Telegram",
       "telegram-user-id-placeholder": "Envie quaisquer palavras para seu Bot do Telegram como um memo",
-      "theme": "Tema",
-      "updated_ts": "Hora de atualização"
+      "theme": "Tema"
     },
     "sso": "SSO",
     "sso-section": {

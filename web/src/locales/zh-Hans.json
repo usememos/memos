@@ -101,14 +101,6 @@
     "text": "将以下代码复制并粘贴到您的博客或网站中。",
     "title": "嵌入 Memo"
   },
-  "heatmap": {
-    "day": "天中",
-    "days": "天中",
-    "memo-in": "条 memo 记录于 {{period}}",
-    "memo-on": "{{date}} 记录了 {{amount}} 条 memo",
-    "memos-in": "条 memos 记录于 {{period}}",
-    "memos-on": "{{date}} 记录了 {{amount}} 条 memos"
-  },
   "inbox": {
     "memo-comment": "{{user}} 评论了您的“{{memo}}”。",
     "version-update": "新版本 {{version}} 现已推出！"
@@ -243,20 +235,11 @@
     "my-account": "我的账号",
     "preference": "偏好设置",
     "preference-section": {
-      "auto-collapse": "自动折叠",
-      "created_ts": "创建时间",
-      "daily-review-time-offset": "每日回顾时间偏移",
       "default-memo-sort-option": "Memo 显示时间",
       "default-memo-visibility": "默认 Memo 可见性",
-      "default-resource-visibility": "默认资源可见性",
-      "editor-font-style": "编辑器字体样式",
-      "enable-double-click": "开启双击编辑",
-      "enable-folding-memo": "开启折叠 Memo",
-      "mobile-editor-style": "移动端编辑器样式",
       "telegram-user-id": "Telegram UserID",
       "telegram-user-id-placeholder": "向 Telegram 机器人发送任意消息以获取",
-      "theme": "主题",
-      "updated_ts": "更新时间"
+      "theme": "主题"
     },
     "sso": "单点登录",
     "sso-section": {

@@ -132,16 +132,9 @@
     "my-account": "Hesabım",
     "preference": "Tercihler",
     "preference-section": {
-      "auto-collapse": "Otomatik Daralt",
-      "created_ts": "Oluşturulma zamanı",
       "default-memo-sort-option": "Yer İşareti Görüntüleme Zamanı",
       "default-memo-visibility": "Varsayılan not görünürlüğü",
-      "editor-font-style": "Düzenleyici Yazı Stili",
-      "enable-double-click": "Düzenlemek için çift tıklatmayı etkinleştir",
-      "enable-folding-memo": "Notları katlamayı etkinleştir",
-      "mobile-editor-style": "Mobil Düzenleyici Stili",
-      "theme": "Tema",
-      "updated_ts": "Güncelleme zamanı"
+      "theme": "Tema"
     },
     "sso": "SSO",
     "storage": "Depolama",

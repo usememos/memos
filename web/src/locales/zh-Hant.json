@@ -100,14 +100,6 @@
     "text": "將以下程式碼複製並貼上到您的網誌或網站中。",
     "title": "嵌入 Memo"
   },
-  "heatmap": {
-    "day": "天",
-    "days": "天",
-    "memo-in": "條 memo，在過去的 {{period}}",
-    "memo-on": "在 {{date}} 有 {{amount}} 條 memo",
-    "memos-in": "條 memo，在過去的 {{period}}",
-    "memos-on": "在 {{date}} 有 {{amount}} 條 memos"
-  },
   "inbox": {
     "memo-comment": "{{user}} 對您的 {{memo}} 發表了評論。",
     "version-update": "新版本 {{version}} 現已推出！"
@@ -240,7 +232,6 @@
     "my-account": "我的帳號",
     "preference": "偏好設定",
     "preference-section": {
-      "auto-collapse": "自動摺疊",
       "default-memo-sort-option": "Memo 顯示時間",
       "default-memo-visibility": "Memo 預設之能見度",
       "telegram-user-id": "Telegram UserID",

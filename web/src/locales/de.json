@@ -97,14 +97,6 @@
     "text": "Kopiere den unten stehenden Code und füge diesen in deinen Blog oder deine Website ein.",
     "title": "Memo einbetten"
   },
-  "heatmap": {
-    "day": "Tag",
-    "days": "Tagen",
-    "memo-in": "memo in {{period}}",
-    "memo-on": "{{amount}} memo am {{date}}",
-    "memos-in": "memos in {{period}}",
-    "memos-on": "{{amount}} memos am {{date}}"
-  },
   "memo": {
     "archived-at": "Archiviert am",
     "archived-memos": "Archivierte Memos",
@@ -236,20 +228,11 @@
     "my-account": "Mein Konto",
     "preference": "Einstellungen",
     "preference-section": {
-      "auto-collapse": "Automatisch reduzieren",
-      "created_ts": "Erstellungszeitpunkt",
-      "daily-review-time-offset": "Tägliche Überprüfung Zeitverschiebung",
       "default-memo-sort-option": "Angezeigter Memo-Zeitpunkt",
       "default-memo-visibility": "Standard Sichtbarkeit von Memos",
-      "default-resource-visibility": "Standard Sichbarkeit von Ressourcen",
-      "editor-font-style": "Textstil des Editors",
-      "enable-double-click": "Doppelklick zum Bearbeiten aktivieren",
-      "enable-folding-memo": "Einklappen von Memos aktivieren",
-      "mobile-editor-style": "Stil des mobilen Editors",
       "telegram-user-id": "Telegram UserID",
       "telegram-user-id-placeholder": "Sende beliebige Wörter als Memo an deinen Telegram Bot",
-      "theme": "Design",
-      "updated_ts": "Änderungszeitpunkt"
+      "theme": "Design"
     },
     "sso": "SSO",
     "sso-section": {

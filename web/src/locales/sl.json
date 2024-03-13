@@ -171,18 +171,9 @@
     "my-account": "Moj račun",
     "preference": "Nastavitve",
     "preference-section": {
-      "auto-collapse": "Samodejno strni",
-      "created_ts": "Čas ustvarjanja",
-      "daily-review-time-offset": "Časovni odmik dnevnega pregleda",
       "default-memo-sort-option": "Čas prikaza beležke",
       "default-memo-visibility": "Privzeta vidnost beležke",
-      "default-resource-visibility": "Privzeta vidnost vira",
-      "editor-font-style": "Tip pisave urejevalnika",
-      "enable-double-click": "Omogoči dvojni klik za urejanje",
-      "enable-folding-memo": "Omogoči zložljivo beležko",
-      "mobile-editor-style": "Stil mobilnega urejevalnika",
-      "theme": "Tema",
-      "updated_ts": "Čas posodobitve"
+      "theme": "Tema"
     },
     "sso": "SSO",
     "storage": "Shramba",
