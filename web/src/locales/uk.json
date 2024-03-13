@@ -138,16 +138,9 @@
     "my-account": "Мій аккаунт",
     "preference": "Налаштування",
     "preference-section": {
-      "auto-collapse": "Автоматичне згортання",
-      "created_ts": "Час створення",
       "default-memo-sort-option": "Час відображення закладки",
       "default-memo-visibility": "Стандартна видимість нотаток",
-      "editor-font-style": "Стиль шрифта",
-      "enable-double-click": "Enable double-click to edit",
-      "enable-folding-memo": "Згортати нотатки",
-      "mobile-editor-style": "Стиль мобільного редактора",
-      "theme": "Тема",
-      "updated_ts": "Час оновлення"
+      "theme": "Тема"
     },
     "sso": "SSO",
     "storage": "Storage",

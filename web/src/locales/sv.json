@@ -137,16 +137,9 @@
     "my-account": "Mitt konto",
     "preference": "Preferenser",
     "preference-section": {
-      "auto-collapse": "Autokollaps",
-      "created_ts": "Skapade tid",
       "default-memo-sort-option": "Anteckning visningstid",
       "default-memo-visibility": "Standard synlighet för anteckningar",
-      "editor-font-style": "Redigerare teckensnitt",
-      "enable-double-click": "Aktivera dubbelklick för att redigera",
-      "enable-folding-memo": "Aktivera vikbara anteckningar",
-      "mobile-editor-style": "Mobilredigerade stil",
-      "theme": "Tema",
-      "updated_ts": "Upodaterad tid"
+      "theme": "Tema"
     },
     "sso": "SSO",
     "storage": "Lagring",

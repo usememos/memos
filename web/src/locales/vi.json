@@ -171,20 +171,11 @@
     "my-account": "Tài khoản của tôi",
     "preference": "Tùy chọn",
     "preference-section": {
-      "auto-collapse": "Tự động thu gọn",
-      "created_ts": "Thời gian tạo",
-      "daily-review-time-offset": "Khoảng thời gian xem lại hàng ngày",
       "default-memo-sort-option": "Thời gian hiển thị ghi chú",
       "default-memo-visibility": "Hiển thị ghi chú mặc định",
-      "default-resource-visibility": "Hiển thị tài nguyên mặc định",
-      "editor-font-style": "Kiểu chữ trình soạn thảo",
-      "enable-double-click": "Cho phép nhấp đúp để chỉnh sửa",
-      "enable-folding-memo": "Cho phép gập ghi chú",
-      "mobile-editor-style": "Kiểu trình soạn thảo trên di động",
       "telegram-user-id": "Telegram UserID",
       "telegram-user-id-placeholder": "Gửi bất kỳ từ nào đến Telegram Bot của bạn như một ghi chú",
-      "theme": "Giao diện",
-      "updated_ts": "Thời gian cập nhật"
+      "theme": "Giao diện"
     },
     "sso": "SSO",
     "sso-section": {

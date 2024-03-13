@@ -100,14 +100,6 @@
     "text": "아래 코드를 블로그나 웹사이트에 붙여넣으세요.",
     "title": "메모 임베드"
   },
-  "heatmap": {
-    "day": "일간 작성",
-    "days": "일간 작성",
-    "memo-in": "개 메모를 {{period}}",
-    "memo-on": "{{date}} - 메모 {{amount}}개",
-    "memos-in": "개 메모를 {{period}}",
-    "memos-on": "{{date}} - 메모 {{amount}}개"
-  },
   "memo": {
     "archived-at": "보관된 날짜",
     "archived-memos": "보관처리된 메모",
@@ -240,20 +232,11 @@
     "my-account": "내 계정",
     "preference": "개인 설정",
     "preference-section": {
-      "auto-collapse": "자동 축소",
-      "created_ts": "생성된 시각",
-      "daily-review-time-offset": "날마다 돌아보기 기준 시각",
       "default-memo-sort-option": "메모에 표시할 시각",
       "default-memo-visibility": "메모 공개 범위 기본값",
-      "default-resource-visibility": "리소스 공개 범위 기본값",
-      "editor-font-style": "편집기 글꼴 스타일",
-      "enable-double-click": "더블클릭시 편집 모드 활성화",
-      "enable-folding-memo": "메모 접기 활성화",
-      "mobile-editor-style": "모바일 편집기 스타일",
       "telegram-user-id": "텔레그램 유저 ID",
       "telegram-user-id-placeholder": "서버의 텔레그램 봇에 아무 메세지나 보내서 받을 수 있습니다",
-      "theme": "테마",
-      "updated_ts": "변경된 시각"
+      "theme": "테마"
     },
     "sso": "SSO",
     "sso-section": {

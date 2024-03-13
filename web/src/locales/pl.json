@@ -180,16 +180,9 @@
     "my-account": "Moje konto",
     "preference": "Ustawienia",
     "preference-section": {
-      "auto-collapse": "Automatyczne zwijanie",
-      "created_ts": "Data utworzenia",
       "default-memo-sort-option": "Wyświetlana data notatki",
       "default-memo-visibility": "Domyślna widoczność notatki",
-      "editor-font-style": "Styl czcionki w edytorze",
-      "enable-double-click": "Włącz podwójne kliknięcie aby edytować",
-      "enable-folding-memo": "Włącz zawijanie notatek",
-      "mobile-editor-style": "Styl edytora mobilnego",
-      "theme": "Motyw",
-      "updated_ts": "Data aktualizacji"
+      "theme": "Motyw"
     },
     "sso": "SSO",
     "storage": "Przechowywanie",

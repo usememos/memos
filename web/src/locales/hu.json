@@ -161,20 +161,11 @@
     "my-account": "Fiókom",
     "preference": "Preferenciák",
     "preference-section": {
-      "auto-collapse": "Automatikus összecsukás",
-      "created_ts": "Létrehozás ideje",
-      "daily-review-time-offset": "Napi kimutatás időeltolása",
       "default-memo-sort-option": "Memó létrehozási ideje",
       "default-memo-visibility": "Memók alapértelmezett láthatósága",
-      "default-resource-visibility": "Állományok alapértelmezett láthatósága",
-      "editor-font-style": "Szerkesztő betűtípusa",
-      "enable-double-click": "Dupla kattintás szerkesztéshez engedélyezése",
-      "enable-folding-memo": "Memók összecsukásának engedélyezése",
-      "mobile-editor-style": "Mobil szerkesztő stílusa",
       "telegram-user-id": "Telegram fiók neve",
       "telegram-user-id-placeholder": "Küldj bármit a Telegram Bot-nak mint memó",
-      "theme": "Téma",
-      "updated_ts": "Utolsó frissítés ideje"
+      "theme": "Téma"
     },
     "sso": "SSO",
     "storage": "Tárhely",

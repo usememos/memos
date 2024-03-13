@@ -94,14 +94,6 @@
     "text": "Скопируйте и вставьте код в Ваш блог или сайт",
     "title": "Встраивание записи"
   },
-  "heatmap": {
-    "day": "день",
-    "days": "дней",
-    "memo-in": "запись за {{period}}",
-    "memo-on": "{{amount}} запись за {{date}}",
-    "memos-in": "записей за {{period}}",
-    "memos-on": "{{amount}} записей за {{date}}"
-  },
   "memo": {
     "archived-at": "Архив",
     "archived-memos": "Заархивированные записи",
@@ -225,20 +217,11 @@
     "my-account": "Мой аккаунт",
     "preference": "Настройки",
     "preference-section": {
-      "auto-collapse": "Автоматическое свертывание",
-      "created_ts": "Время создания",
-      "daily-review-time-offset": "Смещение времени ежедневного просмотра",
       "default-memo-sort-option": "Отображаемое время записи",
       "default-memo-visibility": "Видимость записей по умолчанию",
-      "default-resource-visibility": "Видимость ресурсов по умолчанию",
-      "editor-font-style": "Стиль шрифта",
-      "enable-double-click": "Разрешить двойной клик для редактирования",
-      "enable-folding-memo": "Включить сворачивание записей",
-      "mobile-editor-style": "Стиль мобильного редактора",
       "telegram-user-id": "ID пользователя Telegram",
       "telegram-user-id-placeholder": "Отправьте любое сообщение своему Telegram-боту, чтобы узнать ID",
-      "theme": "Тема",
-      "updated_ts": "Время обновления"
+      "theme": "Тема"
     },
     "sso": "SSO",
     "sso-section": {

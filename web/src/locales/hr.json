@@ -97,14 +97,6 @@
     "text": "Kopiraj i podijeli kod ispod na svom blogu ili web stranici.",
     "title": "Ugradi Memo"
   },
-  "heatmap": {
-    "day": "dan",
-    "days": "dana",
-    "memo-in": "memo u {{period}}",
-    "memo-on": "{{amount}} memo  {{date}}",
-    "memos-in": "memoa u {{period}}",
-    "memos-on": "{{amount}} memoa  {{date}}"
-  },
   "inbox": {
     "memo-comment": "{{user}} je komentirao tvoj {{memo}}.",
     "version-update": "Nova verzija {{version}} je dostupna!"
@@ -240,20 +232,11 @@
     "my-account": "Moj račun",
     "preference": "Postavke",
     "preference-section": {
-      "auto-collapse": "Auto Collapse",
-      "created_ts": "Vrijeme stvaranja",
-      "daily-review-time-offset": "Daily Review Time Offset",
       "default-memo-sort-option": "Memo display vrijeme",
       "default-memo-visibility": "Zadana vidljivost memoa",
-      "default-resource-visibility": "Zadana resource vidljivost",
-      "editor-font-style": "Editor font stil",
-      "enable-double-click": "Omogući uređivanje duplim klikom",
-      "enable-folding-memo": "Omogući folding memo",
-      "mobile-editor-style": "Mobile editor stil",
       "telegram-user-id": "Telegram UserID",
       "telegram-user-id-placeholder": "Send any words to Your Telegram Bot to get",
-      "theme": "Tema",
-      "updated_ts": "Vrijeme ažuriranja"
+      "theme": "Tema"
     },
     "sso": "SSO",
     "sso-section": {

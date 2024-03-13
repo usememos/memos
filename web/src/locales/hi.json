@@ -93,14 +93,6 @@
     "text": "नीचे दिए गए कोड को अपने ब्लॉग या वेबसाइट में कॉपी और पेस्ट करें।",
     "title": "मेमो एम्बेड करें"
   },
-  "heatmap": {
-    "day": "दिन",
-    "days": "दिनें",
-    "memo-in": "{{period}} में मेमो",
-    "memo-on": "{{date}} को {{amount}} मेमो",
-    "memos-in": "{{period}} में मेमोस",
-    "memos-on": "{{date}} को {{amount}} मेमोस"
-  },
   "memo": {
     "archived-at": "संग्रहीत किया गया",
     "archived-memos": "संग्रहीत मेमो",
@@ -215,20 +207,11 @@
     "my-account": "मेरा खाता",
     "preference": "प्राथमिकता",
     "preference-section": {
-      "auto-collapse": "ऑटो संक्षेपित",
-      "created_ts": "समय बनाया गया",
-      "daily-review-time-offset": "दैनिक समीक्षा समय ऑफ़सेट",
       "default-memo-sort-option": "मेमो प्रदर्शन समय",
       "default-memo-visibility": "डिफ़ॉल्ट मेमो दृश्यता",
-      "default-resource-visibility": "डिफ़ॉल्ट संसाधन दृश्यता",
-      "editor-font-style": "संपादक फ़ॉन्ट शैली",
-      "enable-double-click": "दोहरी क्लिक संपादित करने की सक्षमता",
-      "enable-folding-memo": "मेमो फोल्ड करने की सक्षमता",
-      "mobile-editor-style": "मोबाइल संपादक शैली",
       "telegram-user-id": "टेलीग्राम उपयोगकर्ता आईडी",
       "telegram-user-id-placeholder": "अपने टेलीग्राम बॉट को कोई शब्द भेजें और प्राप्त करें",
-      "theme": "थीम",
-      "updated_ts": "समय अद्यतन किया गया"
+      "theme": "थीम"
     },
     "sso": "एसएसओ",
     "storage": "संग्रहण",

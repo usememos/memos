@@ -101,14 +101,6 @@
     "text": "コードをあなたのサイズにコピーペーストすればメモを埋め込めます",
     "title": "メモを埋め込む"
   },
-  "heatmap": {
-    "day": "日",
-    "days": "日間",
-    "memo-in": "{{period}} 個のメモを作成",
-    "memo-on": "{{date}} に {{amount}} 個のメモを作成",
-    "memos-in": "{{period}} 個のメモを作成",
-    "memos-on": "{{date}} に {{amount}} 個のメモを作成"
-  },
   "inbox": {
     "memo-comment": "{{user}} があなたの {{memo}} にコメントしました。",
     "version-update": "新しいバージョン {{version}} が利用可能です!"
@@ -246,20 +238,11 @@
     "my-account": "アカウント設定",
     "preference": "設定",
     "preference-section": {
-      "auto-collapse": "自動で折りたたむ",
-      "created_ts": "投稿時間",
-      "daily-review-time-offset": "今日のまとめの設定時差",
       "default-memo-sort-option": "メモの表示時間",
       "default-memo-visibility": "公開範囲の初期設定",
-      "default-resource-visibility": "ファイルの保存先の初期設定",
-      "editor-font-style": "フォント設定",
-      "enable-double-click": "ダブルクリックで編集を有効化",
-      "enable-folding-memo": "折りたたみメモの有効化",
-      "mobile-editor-style": "モバイルエディターの設定",
       "telegram-user-id": "TelegramのUserid",
       "telegram-user-id-placeholder": "文章をTelegram Botに送信して取得します。",
-      "theme": "テーマ",
-      "updated_ts": "編集された時間"
+      "theme": "テーマ"
     },
     "sso": "SSO",
     "sso-section": {

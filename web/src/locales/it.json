@@ -95,14 +95,6 @@
     "text": "Copia e incolla il codice qui sotto nel tuo blog o sito web.",
     "title": "Includi memo"
   },
-  "heatmap": {
-    "day": "giorno",
-    "days": "giorni",
-    "memo-in": "memo in {{period}}",
-    "memo-on": "{{amount}} memo il {{date}}",
-    "memos-in": "memos in {{period}}",
-    "memos-on": "{{amount}} memos il {{date}}"
-  },
   "memo": {
     "archived-at": "Archiviato il",
     "archived-memos": "Memo archiviati",
@@ -226,20 +218,11 @@
     "my-account": "Il mio account",
     "preference": "Preferenze",
     "preference-section": {
-      "auto-collapse": "Riduci automaticamente",
-      "created_ts": "Tempo di creazione",
-      "daily-review-time-offset": "Ora di revisione giornaliera",
       "default-memo-sort-option": "Ordinamento memo predefinito",
       "default-memo-visibility": "Visibilità memo predefinita",
-      "default-resource-visibility": "Visibilità risorsa predefinita",
-      "editor-font-style": "Stile font editor",
-      "enable-double-click": "Abilita doppio click per modificare",
-      "enable-folding-memo": "Abilita riduzione memo",
-      "mobile-editor-style": "Stile editor mobile",
       "telegram-user-id": "UserID Telegram",
       "telegram-user-id-placeholder": "Salva i messaggi al tuo bot telegram come memo",
-      "theme": "Tema",
-      "updated_ts": "Tempo di aggiornamento"
+      "theme": "Tema"
     },
     "sso": "SSO",
     "sso-section": {
