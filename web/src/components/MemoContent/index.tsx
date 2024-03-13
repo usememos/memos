@@ -74,7 +74,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           <div
             ref={memoContentContainerRef}
             className={classNames(
-              "w-full max-w-full word-break text-base leading-6 space-y-1 whitespace-pre-wrap",
+              "w-full max-w-full word-break text-base leading-7 space-y-1 whitespace-pre-wrap",
               showCompactMode && "line-clamp-6",
             )}
             onClick={handleMemoContentClick}

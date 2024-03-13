@@ -1,7 +1,9 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import classNames from "classnames";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 import Icon from "@/components/Icon";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { Memo } from "@/types/proto/api/v2/memo_service";
@@ -14,14 +16,15 @@ interface Props {
   memo: Memo;
   className?: string;
   hiddenActions?: ("edit" | "archive" | "delete" | "share" | "pin")[];
-  onArchived?: () => void;
-  onDeleted?: () => void;
 }
 
 const MemoActionMenu = (props: Props) => {
   const { memo, hiddenActions } = props;
   const t = useTranslate();
+  const location = useLocation();
+  const navigateTo = useNavigateTo();
   const memoStore = useMemoStore();
+  const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.name}`);
 
   const handleTogglePinMemoBtnClick = async () => {
     try {
@@ -66,9 +69,12 @@ const MemoActionMenu = (props: Props) => {
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
+      return;
     }
-    if (props.onArchived) {
-      props.onArchived();
+
+    toast.success("Archived successfully");
+    if (isInMemoDetailPage) {
+      navigateTo("/archived");
     }
   };
 
@@ -80,8 +86,9 @@ const MemoActionMenu = (props: Props) => {
       dialogName: "delete-memo-dialog",
       onConfirm: async () => {
         await memoStore.deleteMemo(memo.id);
-        if (props.onDeleted) {
-          props.onDeleted();
+        toast.success("Deleted successfully");
+        if (isInMemoDetailPage) {
+          navigateTo("/");
         }
       },
     });

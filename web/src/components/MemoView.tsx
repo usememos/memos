@@ -1,9 +1,7 @@
 import { Tooltip } from "@mui/joy";
 import classNames from "classnames";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { getRelativeTimeString, getTimeStampByDate } from "@/helpers/datetime";
+import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore, extractUsernameFromName } from "@/store/v1";
@@ -25,6 +23,7 @@ import VisibilityIcon from "./VisibilityIcon";
 
 interface Props {
   memo: Memo;
+  compact?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;
   className?: string;
@@ -33,12 +32,11 @@ interface Props {
 const MemoView: React.FC<Props> = (props: Props) => {
   const { memo, className } = props;
   const t = useTranslate();
+  const location = useLocation();
   const navigateTo = useNavigateTo();
-  const { i18n } = useTranslation();
   const currentUser = useCurrentUser();
   const userStore = useUserStore();
   const user = useCurrentUser();
-  const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(getTimeStampByDate(memo.displayTime)));
   const [creator, setCreator] = useState(userStore.getUserByUsername(extractUsernameFromName(memo.creator)));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
@@ -46,6 +44,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemoId === memo.id,
   ).length;
   const readonly = memo.creator !== user?.name;
+  const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.name}`);
 
   // Initial related data: creator.
   useEffect(() => {
@@ -54,20 +53,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
       setCreator(user);
     })();
   }, []);
-
-  // Update display time string.
-  useEffect(() => {
-    let intervalFlag: any = -1;
-    if (Date.now() - getTimeStampByDate(memo.displayTime) < 1000 * 60 * 60 * 24) {
-      intervalFlag = setInterval(() => {
-        setDisplayTime(getRelativeTimeString(getTimeStampByDate(memo.displayTime)));
-      }, 1000 * 1);
-    }
-
-    return () => {
-      clearInterval(intervalFlag);
-    };
-  }, [i18n.language]);
 
   const handleGotoMemoDetailPage = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.altKey) {
@@ -124,8 +109,8 @@ const MemoView: React.FC<Props> = (props: Props) => {
             </div>
           )}
         </div>
-        <div className="flex flex-row justify-end items-center select-none shrink-0 gap-1">
-          <div className="w-auto invisible group-hover:visible flex flex-row justify-between items-center gap-1">
+        <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
+          <div className="w-auto invisible group-hover:visible flex flex-row justify-between items-center gap-2">
             {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
               <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
                 <span className="flex justify-center items-center hover:opacity-70">
@@ -133,25 +118,27 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 </span>
               </Tooltip>
             )}
-            {currentUser && <ReactionSelector className="border-none" memo={memo} />}
+            {currentUser && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
           </div>
-          <Link
-            className={classNames(
-              "flex flex-row justify-start items-center hover:opacity-70",
-              commentAmount === 0 && "invisible group-hover:visible",
-            )}
-            to={`/m/${memo.name}#comments`}
-            unstable_viewTransition
-          >
-            <Icon.MessageCircleMore className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
-            {commentAmount > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{commentAmount}</span>}
-          </Link>
+          {!isInMemoDetailPage && (
+            <Link
+              className={classNames(
+                "flex flex-row justify-start items-center hover:opacity-70",
+                commentAmount === 0 && "invisible group-hover:visible",
+              )}
+              to={`/m/${memo.name}#comments`}
+              unstable_viewTransition
+            >
+              <Icon.MessageCircleMore className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
+              {commentAmount > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{commentAmount}</span>}
+            </Link>
+          )}
           {props.showPinned && memo.pinned && (
             <Tooltip title={"Pinned"} placement="top">
-              <Icon.Bookmark className="ml-1 w-4 h-auto text-amber-500" />
+              <Icon.Bookmark className="w-4 h-auto text-amber-500" />
             </Tooltip>
           )}
-          {!readonly && <MemoActionMenu memo={memo} hiddenActions={props.showPinned ? [] : ["pin"]} />}
+          {!readonly && <MemoActionMenu className="-ml-1" memo={memo} hiddenActions={props.showPinned ? [] : ["pin"]} />}
         </div>
       </div>
       <MemoContent
@@ -160,13 +147,13 @@ const MemoView: React.FC<Props> = (props: Props) => {
         content={memo.content}
         readonly={readonly}
         onClick={handleMemoContentClick}
-        compact={true}
+        compact={props.compact ?? true}
       />
       <MemoResourceListView resources={memo.resources} />
-      <div className="w-full flex flex-row justify-between items-center mt-1">
-        <span className="text-sm leading-6 text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
-          {displayTime}
-        </span>
+      <div className="w-full flex flex-row justify-between items-center">
+        <div className="text-sm leading-6 text-gray-400 select-none">
+          <relative-time datetime={memo.displayTime?.toISOString()} tense="past" onClick={handleGotoMemoDetailPage}></relative-time>
+        </div>
       </div>
       <MemoRelationListView memo={memo} relations={referencedMemos} />
       <MemoReactionistView memo={memo} reactions={memo.reactions} />

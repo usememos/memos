@@ -81,7 +81,14 @@ const MemoDetail = () => {
             </Link>
           </div>
         )}
-        <MemoView key={`${memo.id}-${memo.displayTime}`} className="shadow hover:shadow-xl transition-all" memo={memo} />
+        <MemoView
+          key={`${memo.id}-${memo.displayTime}`}
+          className="shadow hover:shadow-xl transition-all"
+          memo={memo}
+          compact={false}
+          showVisibility
+          showPinned
+        />
         <div className="pt-8 pb-16 w-full">
           <h2 id="comments" className="sr-only">
             Comments

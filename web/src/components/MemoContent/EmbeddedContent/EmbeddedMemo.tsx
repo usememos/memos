@@ -2,7 +2,6 @@ import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Icon from "@/components/Icon";
 import MemoResourceListView from "@/components/MemoResourceListView";
-import { getDateTimeString } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
 import { useMemoStore } from "@/store/v1";
 import MemoContent from "..";
@@ -51,7 +50,9 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   return (
     <div className="relative flex flex-col justify-start items-start w-full p-4 pt-3 !my-2 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 hover:shadow">
       <div className="w-full mb-1 flex flex-row justify-between items-center">
-        <span className="text-sm text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</span>
+        <div className="text-sm leading-6 text-gray-400 select-none">
+          <relative-time datetime={memo.displayTime?.toISOString()} tense="past"></relative-time>
+        </div>
         <Link className="hover:opacity-80" to={`/m/${memo.name}`} unstable_viewTransition>
           <Icon.ArrowUpRight className="w-5 h-auto opacity-80 text-gray-400" />
         </Link>
