@@ -9,7 +9,6 @@ A privacy-first, lightweight note-taking service. Easily capture and share your 
 
 <p>
   <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg"/></a>
-  <a href="https://hosted.weblate.org/engage/memos-i18n/"><img src="https://hosted.weblate.org/widget/memos-i18n/english/svg-badge.svg" alt="Translation status" /></a>
   <a href="https://discord.gg/tfPJa4UmAv"><img alt="Discord" src="https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5" /></a>
 </p>
 
@@ -39,6 +38,14 @@ Contributions are what make the open-source community such an amazing place to l
 
 <a href="https://github.com/usememos/memos/graphs/contributors">
   <img src="https://contri-graphy.yourselfhosted.com/graph?repo=usememos/memos&format=svg" />
+</a>
+
+## Internationalization
+
+Memos supports multiple languages. You can help us translate Memos into your language. We use Weblate to manage translations.
+
+<a href="https://hosted.weblate.org/engage/memos-i18n/">
+<img src="https://hosted.weblate.org/widget/memos-i18n/english/287x66-grey.png" alt="Translation status" />
 </a>
 
 ## Star history
