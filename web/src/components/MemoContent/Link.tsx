@@ -10,13 +10,12 @@ interface Props {
 }
 
 const Link: React.FC<Props> = ({ text, url }: Props) => {
-
   const [linkMetadata, setLinkMetadata] = useState<Metadata | undefined>();
 
   const fetchUrlMetadata = async () => {
     try {
       const response = await metadataServiceClient.getLinkMetadata({ url }, {});
-      setLinkMetadata(response.metadata)
+      setLinkMetadata(response.metadata);
     } catch (error) {
       console.error("Error fetching URL metadata:", error);
       return null;
