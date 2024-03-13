@@ -11,7 +11,7 @@
 # * node.js
 # * npm
 
-# Usage: 
+# Usage:
 # chmod +x ./scripts/build.sh
 # ./scripts/build.sh
 #
@@ -53,15 +53,15 @@ else
     echo -e "Repository root: \033[0;34m$repo_root\033[0m"
 fi
 
-
+pushd $repo_root
 cd "$repo_root/web"
 
-if ! command -v pnpm &> /dev/null
-then
+if ! command -v pnpm &>/dev/null; then
     echo -e "\n\033[35mInstalling pnpm...\033[0m"
     npm install -g pnpm
     if [ $? -ne 0 ]; then
         echo -e "\033[0;31mFailed to install pnpm! Exiting.\033[0m"
+        popd
         exit 1
     fi
 fi
@@ -70,31 +70,35 @@ echo -e "\n\033[33mInstalling frontend dependencies...\033[0m"
 pnpm i --frozen-lockfile
 if [ $? -ne 0 ]; then
     echo -e "\033[0;31mFrontend dependencies failed to install! Exiting.\033[0m"
+    popd
     exit 1
 fi
 echo -e "\033[32mFrontend dependencies installed!\033[0m"
+
+echo -e "\n\033[35mRemoving previous frontend build from ./build/dist...\033[0m"
+rm -rf $repo_root/build/dist
+if [ $? -ne 0 ]; then
+    echo -e "\033[93mCould not remove frontend from ./build/dist.\033[0m"
+    popd
+    exit 1
+fi
 
 echo -e "\n\033[33mBuilding frontend...\033[0m"
 pnpm build
 if [ $? -ne 0 ]; then
     echo -e "\033[0;31mFrontend build failed! Exiting.\033[0m"
+    popd
     exit 1
 fi
 echo -e "\033[32mFrontend built!\033[0m"
 
 cd $repo_root
 
-echo -e "\n\033[35mBacking up frontend placeholder...\033[0m"
-mv -f "$repo_root/server/frontend/dist" "$repo_root/server/frontend/dist.bak"
-if [ $? -ne 0 ]; then
-    echo -e "\033[0;31mFailed to backup frontend placeholder! Exiting.\033[0m"
-    exit 1
-fi
-
-echo -e "\033[35mMoving frontend build to ./server/frontend/dist...\033[0m"
-mv -f "$repo_root/web/dist" "$repo_root/server/"
+echo -e "\033[35mMoving frontend build to ./build/dist...\033[0m"
+mv -f "$repo_root/web/dist" "$repo_root/build/"
 if [ $? -ne 0 ]; then
     echo -e "\033[0;31mFailed to move frontend build! Exiting.\033[0m"
+    popd
     exit 1
 fi
 
@@ -109,7 +113,7 @@ for build in "${goBuilds[@]}"; do
     if [ "$os" = "windows" ]; then
         output="$output.exe"
     fi
-    
+
     CGO_ENABLED=0 GOOS=$os GOARCH=$arch go build -trimpath -ldflags="${ldFlags[*]}" -o "$output" ./bin/memos/main.go
 
     echo -e "\033[34mBuilding $os/$arch to $output...\033[0m"
@@ -120,22 +124,6 @@ for build in "${goBuilds[@]}"; do
 done
 
 echo -e "\033[32mBackend built!\033[0m"
-
-echo -e "\n\033[35mRemoving frontend from ./server/frontend/dist...\033[0m"
-rm -rf $repo_root/server/frontend/dist
-if [ $? -ne 0 ]
-then
-    echo -e "\033[93mCould not remove frontend from /server/frontend/dist.\033[0m"
-    exit 1
-fi
-
-echo -e "\033[35mRestoring frontend placeholder...\033[0m"
-mv $repo_root/server/frontend/dist.bak $repo_root/server/frontend/dist
-if [ $? -ne 0 ]
-then
-    echo -e "\033[93mCould not restore frontend placeholder.\033e[0m"
-    exit 1
-fi
 
 echo -e "\n\033[37mBuilds:\033[0m"
 for build in "${goBuilds[@]}"; do

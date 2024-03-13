@@ -43,6 +43,7 @@ if ([string]::IsNullOrWhiteSpace($repoRoot)) {
 Write-Host "Repository root: " -NoNewline
 Write-Host $repoRoot -f Blue
 
+Push-Location
 Set-Location "$repoRoot/web"
 
 if (-not (Get-Command pnpm -ErrorAction SilentlyContinue)) {
@@ -50,6 +51,7 @@ if (-not (Get-Command pnpm -ErrorAction SilentlyContinue)) {
     npm install -g pnpm
     if (!$?) {
         Write-Host -BackgroundColor red -ForegroundColor white "Could not install pnpm. See above."
+        Pop-Location
         Exit 1
     }
 }
@@ -58,9 +60,18 @@ Write-Host "`nInstalling frontend dependencies..." -f DarkYellow
 pnpm i --frozen-lockfile
 if (!$?) {
     Write-Host -BackgroundColor red -ForegroundColor white "Could not install frontend dependencies. See above."
+    Pop-Location
     Exit 1
 }
 Write-Host "Frontend dependencies installed!" -f green
+
+Write-Host "`nRemoving previous frontend build from ./build/dist ..." -f Magenta
+Remove-Item "$repoRoot/build/dist" -Recurse -Force -ErrorAction SilentlyContinue
+if (!$?) {
+    Write-Host -BackgroundColor red -ForegroundColor white "Could not remove frontend from ./build/dist. See above."
+    Pop-Location
+    Exit 1
+}
 
 Write-Host "`nBuilding frontend..." -f DarkYellow
 $frontendTime = Measure-Command {
@@ -68,29 +79,18 @@ $frontendTime = Measure-Command {
 }
 if (!$?) {
     Write-Host -BackgroundColor red -ForegroundColor white "Could not build frontend. See above."
+    Pop-Location
     Exit 1
-} else {
+}
+else {
     Write-Host "Frontend built!" -f green
 }
 
+Write-Host "Moving frontend build to ./build/dist..." -f Magenta
+Move-Item "$repoRoot/web/dist" "$repoRoot/build/" -Force -ErrorAction Stop
 if (!$?) {
-    Write-Host -BackgroundColor red -ForegroundColor white "Could not generate buf types. See above."
-    Exit 1
-} else {
-    Write-Host "buf types generated!" -f green
-}
-
-Write-Host "`nBacking up frontend placeholder..." -f Magenta
-Move-Item "$repoRoot/server/frontend/dist" "$repoRoot/server/frontend/dist.bak" -Force -ErrorAction Stop
-if (!$?) {
-    Write-Host -BackgroundColor red -ForegroundColor white "Could not backup frontend placeholder. See above."
-    Exit 1
-}
-
-Write-Host "Moving frontend build to ./server/frontend/dist..." -f Magenta
-Move-Item "$repoRoot/web/dist" "$repoRoot/server/" -Force -ErrorAction Stop
-if (!$?) {
-    Write-Host -BackgroundColor red -ForegroundColor white "Could not move frontend build to /server/frontend/dist. See above."
+    Write-Host -BackgroundColor red -ForegroundColor white "Could not move frontend build to ./build/dist. See above."
+    Pop-Location
     Exit 1
 }
 
@@ -121,20 +121,6 @@ Write-Host "Backend built!" -f green
 
 Write-Host "`nFrontend build took $($frontendTime.TotalSeconds) seconds." -f Cyan
 Write-Host "Backend builds took $($backendTime.TotalSeconds) seconds." -f Cyan
-
-Write-Host "`nRemoving frontend from ./server/frontend/dist ..." -f Magenta
-Remove-Item "$repoRoot/server/frontend/dist" -Recurse -Force -ErrorAction SilentlyContinue
-if (!$?) {
-    Write-Host -BackgroundColor red -ForegroundColor white "Could not remove frontend from /server/frontend/dist. See above."
-    Exit 1
-}
-
-Write-Host "Restoring frontend placeholder..." -f Magenta
-Move-Item "$repoRoot/server/frontend/dist.bak" "$repoRoot/server/frontend/dist" -Force -ErrorAction Stop
-if (!$?) {
-    Write-Host -BackgroundColor red -ForegroundColor white "Could not restore frontend placeholder. See above."
-    Exit 1
-}
 
 Write-Host "`nBuilds:" -f White
 foreach ($build in $goBuilds) {
