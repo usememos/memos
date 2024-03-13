@@ -146,8 +146,12 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
               </div>
             </MenuButton>
             <Menu size="sm" placement="bottom-start">
-              <MenuItem onClick={() => showRenameTagDialog({ tag: tag.text })}>{t("common.rename")}</MenuItem>
+              <MenuItem onClick={() => showRenameTagDialog({ tag: tag.text })}>
+                <Icon.Edit3 className="w-4 h-auto" />
+                {t("common.rename")}
+              </MenuItem>
               <MenuItem color="danger" onClick={handleDeleteTag}>
+                <Icon.Trash className="w-4 h-auto" />
                 {t("common.delete")}
               </MenuItem>
             </Menu>

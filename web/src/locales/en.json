@@ -179,18 +179,9 @@
     "preference-section": {
       "theme": "Theme",
       "default-memo-visibility": "Default memo visibility",
-      "default-resource-visibility": "Default resource visibility",
-      "enable-folding-memo": "Enable folding memo",
-      "enable-double-click": "Enable double-click to edit",
-      "editor-font-style": "Editor font style",
-      "mobile-editor-style": "Mobile editor style",
       "default-memo-sort-option": "Memo display time",
       "telegram-user-id": "Telegram UserID",
-      "telegram-user-id-placeholder": "Send any words to your Telegram Bot as a memo",
-      "created_ts": "Created Time",
-      "updated_ts": "Updated Time",
-      "daily-review-time-offset": "Daily Review Time Offset",
-      "auto-collapse": "Auto Collapse"
+      "telegram-user-id-placeholder": "Send any words to your Telegram Bot as a memo"
     },
     "storage-section": {
       "current-storage": "Current object storage",
@@ -306,14 +297,6 @@
     "text": "Copy and paste the below code into your blog or website.",
     "only-public-supported": "* Only public memos can be embedded.",
     "copy": "Copy"
-  },
-  "heatmap": {
-    "memo-in": "memo in {{period}}",
-    "memos-in": "memos in {{period}}",
-    "memo-on": "{{amount}} memo on {{date}}",
-    "memos-on": "{{amount}} memos on {{date}}",
-    "day": "day",
-    "days": "days"
   },
   "about": {
     "about-memos": "About memos",
