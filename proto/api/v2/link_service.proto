@@ -12,17 +12,16 @@ service LinkService {
   }
 }
 
-// Metadata message
-message Metadata {
+message LinkMetadata {
   string title = 1;
   string description = 2;
   string image = 3;
 }
 
 message GetLinkMetadataRequest {
-  string url = 1;
+  string link = 1;
 }
 
 message GetLinkMetadataResponse {
-  Metadata metadata = 1;
+  LinkMetadata metadata = 1;
 }

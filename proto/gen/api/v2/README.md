@@ -78,7 +78,7 @@
 - [api/v2/link_service.proto](#api_v2_link_service-proto)
     - [GetLinkMetadataRequest](#memos-api-v2-GetLinkMetadataRequest)
     - [GetLinkMetadataResponse](#memos-api-v2-GetLinkMetadataResponse)
-    - [Metadata](#memos-api-v2-Metadata)
+    - [LinkMetadata](#memos-api-v2-LinkMetadata)
   
     - [LinkService](#memos-api-v2-LinkService)
   
@@ -1119,7 +1119,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| url | [string](#string) |  |  |
+| link | [string](#string) |  |  |
 
 
 
@@ -1134,17 +1134,17 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| metadata | [Metadata](#memos-api-v2-Metadata) |  |  |
+| metadata | [LinkMetadata](#memos-api-v2-LinkMetadata) |  |  |
 
 
 
 
 
 
-<a name="memos-api-v2-Metadata"></a>
+<a name="memos-api-v2-LinkMetadata"></a>
 
-### Metadata
-Metadata message
+### LinkMetadata
+
 
 
 | Field | Type | Label | Description |
