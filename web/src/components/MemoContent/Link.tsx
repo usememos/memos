@@ -2,7 +2,7 @@ import { Tooltip, Card, AspectRatio, Box } from "@mui/joy";
 import { Link as MLink } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { metadataServiceClient } from "@/grpcweb";
-import { Metadata } from "@/types/proto/api/v2/link_service";
+import { LinkMetadata } from "@/types/proto/api/v2/link_service";
 
 interface Props {
   url: string;
@@ -10,11 +10,11 @@ interface Props {
 }
 
 const Link: React.FC<Props> = ({ text, url }: Props) => {
-  const [linkMetadata, setLinkMetadata] = useState<Metadata | undefined>();
+  const [linkMetadata, setLinkMetadata] = useState<LinkMetadata | undefined>();
 
   const fetchUrlMetadata = async () => {
     try {
-      const response = await metadataServiceClient.getLinkMetadata({ url }, {});
+      const response = await metadataServiceClient.getLinkMetadata({ link: url }, {});
       setLinkMetadata(response.metadata);
     } catch (error) {
       console.error("Error fetching URL metadata:", error);
