@@ -19,12 +19,10 @@ message Metadata {
   string image = 3;
 }
 
-// Request message for GetMetadata
 message GetLinkMetadataRequest {
   string url = 1;
 }
 
-// Response message for GetMetadata
 message GetLinkMetadataResponse {
   Metadata metadata = 1;
 }

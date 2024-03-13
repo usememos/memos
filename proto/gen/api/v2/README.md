@@ -1114,7 +1114,7 @@ Used internally for obfuscating the page token.
 <a name="memos-api-v2-GetLinkMetadataRequest"></a>
 
 ### GetLinkMetadataRequest
-Request message for GetMetadata
+
 
 
 | Field | Type | Label | Description |
@@ -1129,7 +1129,7 @@ Request message for GetMetadata
 <a name="memos-api-v2-GetLinkMetadataResponse"></a>
 
 ### GetLinkMetadataResponse
-Response message for GetMetadata
+
 
 
 | Field | Type | Label | Description |

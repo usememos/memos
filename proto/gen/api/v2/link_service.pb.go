@@ -85,7 +85,6 @@ func (x *Metadata) GetImage() string {
 	return ""
 }
 
-// Request message for GetMetadata
 type GetLinkMetadataRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -133,7 +132,6 @@ func (x *GetLinkMetadataRequest) GetUrl() string {
 	return ""
 }
 
-// Response message for GetMetadata
 type GetLinkMetadataResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
