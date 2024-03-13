@@ -7,9 +7,9 @@ tags:
   - name: UserService
   - name: AuthService
   - name: InboxService
+  - name: LinkService
   - name: ResourceService
   - name: MemoService
-  - name: LinkService
   - name: TagService
   - name: WebhookService
   - name: WorkspaceService
@@ -1764,7 +1764,6 @@ definitions:
     properties:
       metadata:
         $ref: '#/definitions/v2Metadata'
-    title: Response message for LinkService
   v2GetMemoByNameResponse:
     type: object
     properties:
