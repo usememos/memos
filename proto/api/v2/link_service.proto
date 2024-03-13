@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+
+option go_package = "gen/api/v2";
+
+service LinkService {
+  rpc GetLinkMetadata(GetLinkMetadataRequest) returns (GetLinkMetadataResponse) {
+    option (google.api.http) = {get: "/api/v2/metadata"};
+  }
+}
+
+// Metadata message
+message Metadata {
+  string title = 1;
+  string description = 2;
+  string image = 3;
+}
+
+message GetLinkMetadataRequest {
+  string url = 1;
+}
+
+message GetLinkMetadataResponse {
+  Metadata metadata = 1;
+}
