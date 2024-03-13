@@ -60,7 +60,8 @@
     "profile": "Profile",
     "inbox": "Inbox",
     "search": "Search",
-    "role": "Role"
+    "role": "Role",
+    "description": "Description"
   },
   "router": {
     "go-to-home": "Go to Home",

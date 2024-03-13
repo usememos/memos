@@ -1,6 +1,5 @@
-import { Divider, Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import classNames from "classnames";
-import copy from "copy-to-clipboard";
 import toast from "react-hot-toast";
 import Icon from "@/components/Icon";
 import { useMemoStore } from "@/store/v1";
@@ -88,11 +87,6 @@ const MemoActionMenu = (props: Props) => {
     });
   };
 
-  const handleCopyMemoId = () => {
-    copy(memo.name);
-    toast.success("Copied to clipboard!");
-  };
-
   return (
     <Dropdown>
       <MenuButton slots={{ root: "div" }}>
@@ -127,12 +121,6 @@ const MemoActionMenu = (props: Props) => {
           <Icon.Trash className="w-4 h-auto" />
           {t("common.delete")}
         </MenuItem>
-        <Divider className="!my-1" />
-        <div className="-mt-0.5 pl-2 pr-2 text-xs text-gray-400">
-          <div className="mt-1 font-mono max-w-20 cursor-pointer truncate" onClick={handleCopyMemoId}>
-            ID: {memo.name}
-          </div>
-        </div>
       </Menu>
     </Dropdown>
   );

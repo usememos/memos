@@ -98,13 +98,15 @@ message User {
 
   string avatar_url = 7;
 
-  string password = 8 [(google.api.field_behavior) = INPUT_ONLY];
+  string description = 8;
 
-  RowStatus row_status = 9;
+  string password = 9 [(google.api.field_behavior) = INPUT_ONLY];
 
-  google.protobuf.Timestamp create_time = 10;
+  RowStatus row_status = 10;
 
-  google.protobuf.Timestamp update_time = 11;
+  google.protobuf.Timestamp create_time = 11;
+
+  google.protobuf.Timestamp update_time = 12;
 }
 
 message ListUsersRequest {}

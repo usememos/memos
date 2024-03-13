@@ -1500,6 +1500,8 @@ paths:
                 type: string
               avatarUrl:
                 type: string
+              description:
+                type: string
               password:
                 type: string
               rowStatus:
@@ -2222,6 +2224,8 @@ definitions:
       nickname:
         type: string
       avatarUrl:
+        type: string
+      description:
         type: string
       password:
         type: string

@@ -684,6 +684,7 @@ Used internally for obfuscating the page token.
 | email | [string](#string) |  |  |
 | nickname | [string](#string) |  |  |
 | avatar_url | [string](#string) |  |  |
+| description | [string](#string) |  |  |
 | password | [string](#string) |  |  |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |

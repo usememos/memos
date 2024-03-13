@@ -5,7 +5,8 @@ INSERT INTO
     `role`,
     `email`,
     `nickname`,
-    `password_hash`
+    `password_hash`,
+    `description`
   )
 VALUES
   (
@@ -15,7 +16,8 @@ VALUES
     'demo@usememos.com',
     'Derobot',
     -- raw password: secret
-    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
+    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK',
+    '👋 Welcome to memos.'
   );
 
 INSERT INTO
@@ -25,7 +27,8 @@ INSERT INTO
     `role`,
     `email`,
     `nickname`,
-    `password_hash`
+    `password_hash`,
+    `description`
   )
 VALUES
   (
@@ -35,7 +38,8 @@ VALUES
     'jack@usememos.com',
     'Jack',
     -- raw password: secret
-    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
+    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK',
+    'The REAL Jack.'
   );
 
 INSERT INTO
@@ -46,7 +50,8 @@ INSERT INTO
     `role`,
     `email`,
     `nickname`,
-    `password_hash`
+    `password_hash`,
+    `description`
   )
 VALUES
   (
@@ -57,5 +62,6 @@ VALUES
     'bob@usememos.com',
     'Bob',
     -- raw password: secret
-    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
+    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK',
+    'Sorry, I am busy right now.'
   );

@@ -25,7 +25,6 @@ import VisibilityIcon from "./VisibilityIcon";
 
 interface Props {
   memo: Memo;
-  showCreator?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;
   className?: string;
@@ -92,43 +91,40 @@ const MemoView: React.FC<Props> = (props: Props) => {
   return (
     <div
       className={classNames(
-        "group relative flex flex-col justify-start items-start w-full px-4 pt-2 pb-3 mb-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
+        "group relative flex flex-col justify-start items-start w-full px-4 pt-4 pb-3  mb-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
         "memos-" + memo.id,
         memo.pinned && props.showPinned && "border-gray-200 border dark:border-zinc-700",
         className,
       )}
       ref={memoContainerRef}
     >
-      <div className="w-full h-7 flex flex-row justify-between items-center mb-1">
-        <div className="w-auto flex flex-row justify-start items-center mr-1">
-          {props.showCreator && creator && (
-            <>
-              <Link to={`/u/${encodeURIComponent(extractUsernameFromName(memo.creator))}`} unstable_viewTransition>
-                <Tooltip title={"Creator"} placement="top">
-                  <span className="flex flex-row justify-start items-center">
-                    <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator.avatarUrl} />
-                    <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">
-                      {creator.nickname || creator.username}
-                    </span>
-                  </span>
-                </Tooltip>
+      <div className="w-full h-7 flex flex-row justify-between items-center mb-2 gap-2">
+        <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
+          {creator && (
+            <div className="w-full flex flex-row justify-start items-center">
+              <Link
+                className="w-auto hover:opacity-80"
+                to={`/u/${encodeURIComponent(extractUsernameFromName(memo.creator))}`}
+                unstable_viewTransition
+              >
+                <UserAvatar className="mr-2 shrink-0" avatarUrl={creator.avatarUrl} />
               </Link>
-              <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-            </>
-          )}
-          <span className="text-sm text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
-            {displayTime}
-          </span>
-          {props.showPinned && memo.pinned && (
-            <>
-              <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-              <Tooltip title={"Pinned"} placement="top">
-                <Icon.Bookmark className="w-4 h-auto text-amber-500" />
-              </Tooltip>
-            </>
+              <div className="w-full flex flex-col justify-center items-start">
+                <Link
+                  className="w-auto leading-none hover:opacity-80"
+                  to={`/u/${encodeURIComponent(extractUsernameFromName(memo.creator))}`}
+                  unstable_viewTransition
+                >
+                  <span className="text-gray-600 text-lg leading-none max-w-[80%] truncate dark:text-gray-400">
+                    {creator.nickname || creator.username}
+                  </span>
+                </Link>
+                <span className="text-gray-400 text-sm leading-none max-w-[80%] truncate dark:text-gray-500">{creator.description}</span>
+              </div>
+            </div>
           )}
         </div>
-        <div className="flex flex-row justify-end items-center select-none gap-1">
+        <div className="flex flex-row justify-end items-center select-none shrink-0 gap-1">
           <div className="w-auto invisible group-hover:visible flex flex-row justify-between items-center gap-1">
             {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
               <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
@@ -150,6 +146,11 @@ const MemoView: React.FC<Props> = (props: Props) => {
             <Icon.MessageCircleMore className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
             {commentAmount > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{commentAmount}</span>}
           </Link>
+          {props.showPinned && memo.pinned && (
+            <Tooltip title={"Pinned"} placement="top">
+              <Icon.Bookmark className="ml-1 w-4 h-auto text-amber-500" />
+            </Tooltip>
+          )}
           {!readonly && <MemoActionMenu memo={memo} hiddenActions={props.showPinned ? [] : ["pin"]} />}
         </div>
       </div>
@@ -162,6 +163,11 @@ const MemoView: React.FC<Props> = (props: Props) => {
         compact={true}
       />
       <MemoResourceListView resources={memo.resources} />
+      <div className="w-full flex flex-row justify-between items-center mt-1">
+        <span className="text-sm leading-6 text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
+          {displayTime}
+        </span>
+      </div>
       <MemoRelationListView memo={memo} relations={referencedMemos} />
       <MemoReactionistView memo={memo} reactions={memo.reactions} />
     </div>

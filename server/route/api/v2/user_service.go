@@ -151,6 +151,8 @@ func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUs
 			update.Email = &request.User.Email
 		} else if field == "avatar_url" {
 			update.AvatarURL = &request.User.AvatarUrl
+		} else if field == "description" {
+			update.Description = &request.User.Description
 		} else if field == "role" {
 			role := convertUserRoleToStore(request.User.Role)
 			update.Role = &role
@@ -499,16 +501,17 @@ func (s *APIV2Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 
 func convertUserFromStore(user *store.User) *apiv2pb.User {
 	return &apiv2pb.User{
-		Name:       fmt.Sprintf("%s%s", UserNamePrefix, user.Username),
-		Id:         user.ID,
-		RowStatus:  convertRowStatusFromStore(user.RowStatus),
-		CreateTime: timestamppb.New(time.Unix(user.CreatedTs, 0)),
-		UpdateTime: timestamppb.New(time.Unix(user.UpdatedTs, 0)),
-		Role:       convertUserRoleFromStore(user.Role),
-		Username:   user.Username,
-		Email:      user.Email,
-		Nickname:   user.Nickname,
-		AvatarUrl:  user.AvatarURL,
+		Name:        fmt.Sprintf("%s%s", UserNamePrefix, user.Username),
+		Id:          user.ID,
+		RowStatus:   convertRowStatusFromStore(user.RowStatus),
+		CreateTime:  timestamppb.New(time.Unix(user.CreatedTs, 0)),
+		UpdateTime:  timestamppb.New(time.Unix(user.UpdatedTs, 0)),
+		Role:        convertUserRoleFromStore(user.Role),
+		Username:    user.Username,
+		Email:       user.Email,
+		Nickname:    user.Nickname,
+		AvatarUrl:   user.AvatarURL,
+		Description: user.Description,
 	}
 }
 

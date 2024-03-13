@@ -1,4 +1,4 @@
-import { Button, IconButton, Input } from "@mui/joy";
+import { Button, IconButton, Input, Textarea } from "@mui/joy";
 import { isEqual } from "lodash-es";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -18,6 +18,7 @@ interface State {
   username: string;
   nickname: string;
   email: string;
+  description: string;
 }
 
 const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
@@ -29,6 +30,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     username: currentUser.name.replace(UserNamePrefix, ""),
     nickname: currentUser.nickname,
     email: currentUser.email,
+    description: currentUser.description,
   });
 
   const handleCloseBtnClick = () => {
@@ -85,6 +87,15 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     });
   };
 
+  const handleDescriptionChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setState((state) => {
+      return {
+        ...state,
+        description: e.target.value as string,
+      };
+    });
+  };
+
   const handleSaveBtnClick = async () => {
     if (state.username === "") {
       toast.error(t("message.fill-all"));
@@ -105,6 +116,9 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
       if (!isEqual(currentUser.avatarUrl, state.avatarUrl)) {
         updateMask.push("avatar_url");
       }
+      if (!isEqual(currentUser.description, state.description)) {
+        updateMask.push("description");
+      }
       await userStore.updateUser(
         UserPb.fromPartial({
           name: currentUser.name,
@@ -112,6 +126,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
           nickname: state.nickname,
           email: state.email,
           avatarUrl: state.avatarUrl,
+          description: state.description,
         }),
         updateMask,
       );
@@ -164,6 +179,15 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
           <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.email-note")})</span>
         </p>
         <Input className="w-full" type="email" value={state.email} onChange={handleEmailChanged} />
+        <p className="text-sm">{t("common.description")}</p>
+        <Textarea
+          className="w-full"
+          color="neutral"
+          minRows={2}
+          maxRows={4}
+          value={state.description}
+          onChange={handleDescriptionChanged}
+        />
         <div className="w-full flex flex-row justify-end items-center pt-4 space-x-2">
           <Button color="neutral" variant="plain" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
