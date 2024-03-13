@@ -62,7 +62,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
 
     if (resources.length === 1) {
       return (
-        <div className="mt-2 max-w-full flex justify-center items-center border dark:border-zinc-800 rounded overflow-hidden hide-scrollbar hover:shadow-md">
+        <div className="mt-2 mb-1 max-w-full flex justify-center items-center border dark:border-zinc-800 rounded overflow-hidden hide-scrollbar hover:shadow-md">
           <MediaCard resource={mediaResources[0]} />
         </div>
       );
@@ -78,19 +78,19 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
     ));
 
     if (resources.length === 2 || resources.length === 4) {
-      return <div className="w-full mt-2 grid gap-2 grid-cols-2">{cards}</div>;
+      return <div className="w-full mt-2 mb-1 grid gap-2 grid-cols-2">{cards}</div>;
     }
 
-    return <div className="w-full mt-2 grid gap-2 grid-cols-2 sm:grid-cols-3">{cards}</div>;
+    return <div className="w-full mt-2 mb-1 grid gap-2 grid-cols-2 sm:grid-cols-3">{cards}</div>;
   };
 
   const OtherList = ({ resources = [] }: { resources: Resource[] }) => {
     if (resources.length === 0) return <></>;
 
     return (
-      <div className="w-full flex flex-row justify-start flex-wrap mt-2">
+      <div className="w-full flex flex-row justify-start flex-wrap mt-2 mb-1 gap-2">
         {otherResources.map((resource) => (
-          <MemoResource key={resource.id} className="my-1 mr-2" resource={resource} />
+          <MemoResource key={resource.id} resource={resource} />
         ))}
       </div>
     );
