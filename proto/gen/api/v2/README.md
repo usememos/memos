@@ -75,6 +75,13 @@
   
     - [InboxService](#memos-api-v2-InboxService)
   
+- [api/v2/link_service.proto](#api_v2_link_service-proto)
+    - [GetLinkMetadataRequest](#memos-api-v2-GetLinkMetadataRequest)
+    - [GetLinkMetadataResponse](#memos-api-v2-GetLinkMetadataResponse)
+    - [Metadata](#memos-api-v2-Metadata)
+  
+    - [LinkService](#memos-api-v2-LinkService)
+  
 - [api/v2/memo_relation_service.proto](#api_v2_memo_relation_service-proto)
     - [MemoRelation](#memos-api-v2-MemoRelation)
   
@@ -143,13 +150,6 @@
     - [Visibility](#memos-api-v2-Visibility)
   
     - [MemoService](#memos-api-v2-MemoService)
-  
-- [api/v2/metadata_service.proto](#api_v2_metadata_service-proto)
-    - [GetMetadataRequest](#memos-api-v2-GetMetadataRequest)
-    - [GetMetadataResponse](#memos-api-v2-GetMetadataResponse)
-    - [Metadata](#memos-api-v2-Metadata)
-  
-    - [LinkService](#memos-api-v2-LinkService)
   
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
     - [BatchUpsertTagRequest](#memos-api-v2-BatchUpsertTagRequest)
@@ -1104,6 +1104,79 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="api_v2_link_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/link_service.proto
+
+
+
+<a name="memos-api-v2-GetLinkMetadataRequest"></a>
+
+### GetLinkMetadataRequest
+Request message for GetMetadata
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| url | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetLinkMetadataResponse"></a>
+
+### GetLinkMetadataResponse
+Response message for GetMetadata
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| metadata | [Metadata](#memos-api-v2-Metadata) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-Metadata"></a>
+
+### Metadata
+Metadata message
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| title | [string](#string) |  |  |
+| description | [string](#string) |  |  |
+| image | [string](#string) |  |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-LinkService"></a>
+
+### LinkService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| GetLinkMetadata | [GetLinkMetadataRequest](#memos-api-v2-GetLinkMetadataRequest) | [GetLinkMetadataResponse](#memos-api-v2-GetLinkMetadataResponse) |  |
+
+ 
+
+
+
 <a name="api_v2_memo_relation_service-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -2032,79 +2105,6 @@ Used internally for obfuscating the page token.
 | ListMemoReactions | [ListMemoReactionsRequest](#memos-api-v2-ListMemoReactionsRequest) | [ListMemoReactionsResponse](#memos-api-v2-ListMemoReactionsResponse) | ListMemoReactions lists reactions for a memo. |
 | UpsertMemoReaction | [UpsertMemoReactionRequest](#memos-api-v2-UpsertMemoReactionRequest) | [UpsertMemoReactionResponse](#memos-api-v2-UpsertMemoReactionResponse) | UpsertMemoReaction upserts a reaction for a memo. |
 | DeleteMemoReaction | [DeleteMemoReactionRequest](#memos-api-v2-DeleteMemoReactionRequest) | [DeleteMemoReactionResponse](#memos-api-v2-DeleteMemoReactionResponse) | DeleteMemoReaction deletes a reaction for a memo. |
-
- 
-
-
-
-<a name="api_v2_metadata_service-proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## api/v2/metadata_service.proto
-
-
-
-<a name="memos-api-v2-GetMetadataRequest"></a>
-
-### GetMetadataRequest
-Request message for GetMetadata
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| url | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-GetMetadataResponse"></a>
-
-### GetMetadataResponse
-Response message for GetMetadata
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| metadata | [Metadata](#memos-api-v2-Metadata) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-Metadata"></a>
-
-### Metadata
-Metadata message
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| title | [string](#string) |  |  |
-| description | [string](#string) |  |  |
-| image | [string](#string) |  |  |
-
-
-
-
-
- 
-
- 
-
- 
-
-
-<a name="memos-api-v2-LinkService"></a>
-
-### LinkService
-
-
-| Method Name | Request Type | Response Type | Description |
-| ----------- | ------------ | ------------- | ------------|
-| GetLinkMetadata | [GetMetadataRequest](#memos-api-v2-GetMetadataRequest) | [GetMetadataResponse](#memos-api-v2-GetMetadataResponse) |  |
 
  
 

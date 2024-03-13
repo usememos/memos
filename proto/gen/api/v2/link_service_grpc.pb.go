@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: api/v2/metadata_service.proto
+// source: api/v2/link_service.proto
 
 package apiv2
 
@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LinkServiceClient interface {
-	GetLinkMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error)
+	GetLinkMetadata(ctx context.Context, in *GetLinkMetadataRequest, opts ...grpc.CallOption) (*GetLinkMetadataResponse, error)
 }
 
 type linkServiceClient struct {
@@ -37,8 +37,8 @@ func NewLinkServiceClient(cc grpc.ClientConnInterface) LinkServiceClient {
 	return &linkServiceClient{cc}
 }
 
-func (c *linkServiceClient) GetLinkMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error) {
-	out := new(GetMetadataResponse)
+func (c *linkServiceClient) GetLinkMetadata(ctx context.Context, in *GetLinkMetadataRequest, opts ...grpc.CallOption) (*GetLinkMetadataResponse, error) {
+	out := new(GetLinkMetadataResponse)
 	err := c.cc.Invoke(ctx, LinkService_GetLinkMetadata_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (c *linkServiceClient) GetLinkMetadata(ctx context.Context, in *GetMetadata
 // All implementations must embed UnimplementedLinkServiceServer
 // for forward compatibility
 type LinkServiceServer interface {
-	GetLinkMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error)
+	GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*GetLinkMetadataResponse, error)
 	mustEmbedUnimplementedLinkServiceServer()
 }
 
@@ -58,7 +58,7 @@ type LinkServiceServer interface {
 type UnimplementedLinkServiceServer struct {
 }
 
-func (UnimplementedLinkServiceServer) GetLinkMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error) {
+func (UnimplementedLinkServiceServer) GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*GetLinkMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLinkMetadata not implemented")
 }
 func (UnimplementedLinkServiceServer) mustEmbedUnimplementedLinkServiceServer() {}
@@ -75,7 +75,7 @@ func RegisterLinkServiceServer(s grpc.ServiceRegistrar, srv LinkServiceServer) {
 }
 
 func _LinkService_GetLinkMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMetadataRequest)
+	in := new(GetLinkMetadataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func _LinkService_GetLinkMetadata_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: LinkService_GetLinkMetadata_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LinkServiceServer).GetLinkMetadata(ctx, req.(*GetMetadataRequest))
+		return srv.(LinkServiceServer).GetLinkMetadata(ctx, req.(*GetLinkMetadataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -105,5 +105,5 @@ var LinkService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/v2/metadata_service.proto",
+	Metadata: "api/v2/link_service.proto",
 }
