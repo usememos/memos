@@ -34,6 +34,7 @@
     "create": "Créer",
     "database": "Base de données",
     "delete": "Supprimer",
+    "description": "Description",
     "edit": "Modifier",
     "email": "Email",
     "explore": "Explorer",
@@ -41,7 +42,7 @@
     "filter": "Filtre",
     "home": "Accueil",
     "image": "Image",
-    "inbox": "Boîte de réception",
+    "inbox": "Notifications",
     "language": "Langue",
     "learn-more": "En savoir plus",
     "link": "Lien",
@@ -60,6 +61,7 @@
     "reset": "Réinitialiser",
     "resources": "Ressources",
     "restore": "Restaurer",
+    "role": "Rôle",
     "save": "Enregistrer",
     "search": "Recherche",
     "select": "Sélectionner",
@@ -114,13 +116,14 @@
       "self": "Commentaires"
     },
     "copy-link": "Copier le lien",
-    "delete-confirm": "Êtes-vous sûr de vouloir supprimer ce memo ?\n\nCETTE ACTION EST IRRÉVERSIBLE",
+    "delete-confirm": "Êtes-vous sûr de vouloir supprimer ce memos ? CETTE ACTION EST IRRÉVERSIBLE",
     "delete-memo": "Supprimer Memo",
     "embed": "Intégrer",
-    "fetch-more": "Cliquez ici pour en récupérer plus",
+    "fetch-more": "Cliquez pour en savoir plus",
     "fetching-data": "Récupération des données…",
     "no-archived-memos": "Pas de memos archivés.",
     "search-placeholder": "Recherche de memos",
+    "show-more": "Afficher plus",
     "view-detail": "Voir le détail",
     "visibility": {
       "disabled": "Les memos publics sont désactivés",
@@ -159,6 +162,7 @@
     "succeed-copy-code": "Copie du code dans le presse-papier effectuée.",
     "succeed-copy-content": "Contenu copié avec succès.",
     "succeed-copy-link": "Succeed to copy link to clipboard.",
+    "succeed-copy-link-not-public": "Contenu copié avec succès. Ce memos n'est pas accessible sans connexion.",
     "succeed-copy-resource-link": "Le lien de la ressource a été copié avec succès.",
     "succeed-update-additional-script": "Le script additionnel a été mis à jour avec succès.",
     "succeed-update-additional-style": "Le style additionnel à été mis à jour avec succès.",
@@ -196,12 +200,12 @@
     "no-resources": "Aucune ressource.",
     "no-unused-resources": "Aucune ressource inutilisée",
     "reset-link": "Réinitialiser le lien",
-    "reset-link-prompt": "Êtes-vous sûr de réinitialiser le lien ?\nCette action interrompra toutes les utilisations actuelles du lien.\n\nCETTE ACTION EST IRRÉVERSIBLE",
+    "reset-link-prompt": "Êtes-vous sûr de réinitialiser le lien ? Cette action interrompra toutes les utilisations actuelles du lien. CETTE ACTION EST IRRÉVERSIBLE",
     "reset-resource-link": "Réinitialiser le lien de ressource",
     "search-bar-placeholder": "Recherche de ressources",
     "upload-successfully": "Téléversement réussi",
-    "warning-text": "Êtes-vous sûr de vouloir supprimer cette ressource ?\n\nCETTE ACTION EST IRRÉVERSIBLE",
-    "warning-text-unused": "Êtes-vous sûr de vouloir supprimer les ressources inutilisées ?\n\nCETTE ACTION EST IRRÉVERSIBLE"
+    "warning-text": "Êtes-vous sûr de vouloir supprimer cette ressource ? CETTE ACTION EST IRRÉVERSIBLE",
+    "warning-text-unused": "Êtes-vous sûr de vouloir supprimer ces ressources inutilisées ? CETTE ACTION EST IRRÉVERSIBLE"
   },
   "router": {
     "back-to-top": "Haut de page",
@@ -211,6 +215,7 @@
     "account-section": {
       "change-password": "Modifier le mot de passe",
       "email-note": "Optionnel",
+      "export-memos": "Exporter memos",
       "nickname-note": "Affiché dans le profil",
       "openapi-reset": "Réinitialiser la clé OpenAPI",
       "openapi-sample-post": "Bonjour #memos de {{url}}",
@@ -232,7 +237,7 @@
       "archive-warning": "Êtes-vous sûr d'archiver {{username}} ?",
       "create-a-member": "Créer un membre",
       "delete-member": "Supprimer un membre",
-      "delete-warning": "Êtes-vous sûr de vouloir supprimer {{username}} ?\n\nCETTE ACTION EST IRRÉVERSIBLE"
+      "delete-warning": "Êtes-vous sûr de vouloir supprimer {{username}} ? CETTE ACTION EST IRRÉVERSIBLE"
     },
     "my-account": "Mon compte",
     "preference": "Préférences",
@@ -248,7 +253,7 @@
       "authorization-endpoint": "Autorisation endpoint",
       "client-id": "Client ID",
       "client-secret": "Client secret",
-      "confirm-delete": "Êtes-vous sûr de supprimer la configuration SSO \"{{name}}\" ?\n\nCETTE ACTION EST IRRÉVERSIBLE",
+      "confirm-delete": "Êtes-vous sûr de supprimer la configuration SSO \"{{name}}\" ? CETTE ACTION EST IRRÉVERSIBLE",
       "create-sso": "Créer un SSO",
       "custom": "Personnalisé",
       "delete-sso": "Confirmer la suppression",
@@ -281,6 +286,7 @@
       "path": "Chemin de stockage",
       "path-description": "Vous pouvez utiliser les mêmes variables dynamiques du stockage local, comme {filename}",
       "path-placeholder": "personnalisé/chemin",
+      "presign-placeholder": "URL pré-signé, optionnel",
       "region": "Région",
       "region-placeholder": "Nom de la région",
       "s3-compatible-url": "URL Compatible S3",
@@ -297,7 +303,7 @@
       "url-prefix-placeholder": "Préfixe URL personnalisé, optionnel",
       "url-suffix": "Suffixe URL",
       "url-suffix-placeholder": "Suffixe URL personnalisé, optionnel",
-      "warning-text": "Êtes-vous sûr de vouloir supprimer le service de stockage \"{{name}}\" ?\n\nCETTE ACTION EST IRRÉVERSIBLE"
+      "warning-text": "Êtes-vous sûr de vouloir supprimer le service de stockage \"{{name}}\" ? CETTE ACTION EST IRRÉVERSIBLE"
     },
     "system": "Système",
     "system-section": {
@@ -326,7 +332,8 @@
       "server-name": "Nom du serveur",
       "telegram-bot-token": "Jeton du Bot Telegram",
       "telegram-bot-token-description": "Jeton du Bot Telegram ou API Proxy comme `http…/bot<token>`",
-      "telegram-bot-token-placeholder": "Votre jeton de Bot Telegram"
+      "telegram-bot-token-placeholder": "Votre jeton de Bot Telegram",
+      "vacuum-hint": "Nettoyer les données inutilisées."
     }
   },
   "tag": {
@@ -339,5 +346,8 @@
     "tag-name": "NOM_ÉTIQUETTE",
     "tag-suggestions": "Suggestions d'Étiquettes",
     "tip-text": "Entrez `#tag ` pour créer"
+  },
+  "timeline": {
+    "title": "Timeline"
   }
 }
