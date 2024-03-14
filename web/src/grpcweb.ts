@@ -40,4 +40,4 @@ export const activityServiceClient = clientFactory.create(ActivityServiceDefinit
 
 export const webhookServiceClient = clientFactory.create(WebhookServiceDefinition, channel);
 
-export const metadataServiceClient = clientFactory.create(LinkServiceDefinition, channel);
+export const linkServiceClient = clientFactory.create(LinkServiceDefinition, channel);
