@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { memo, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/node";
@@ -94,13 +93,13 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       </RendererContext.Provider>
       {memo && showCompactMode && (
         <div className="w-full mt-2">
-          <Link
-            className="w-auto inline-flex flex-row justify-start items-center text-sm text-blue-600 dark:text-blue-400 hover:underline"
-            to={`/m/${memo.name}`}
+          <div
+            className="w-auto inline-flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
+            onClick={() => setShowCompactMode(false)}
           >
             <span>{t("memo.show-more")}</span>
             <Icon.ChevronRight className="w-4 h-auto" />
-          </Link>
+          </div>
         </div>
       )}
     </>
