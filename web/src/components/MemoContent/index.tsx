@@ -69,7 +69,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           embeddedMemos: embeddedMemos || new Set(),
         }}
       >
-        <div className={`mt-1 w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-300 ${className || ""}`}>
+        <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-300 ${className || ""}`}>
           <div
             ref={memoContentContainerRef}
             className={classNames(
@@ -89,19 +89,19 @@ const MemoContent: React.FC<Props> = (props: Props) => {
               return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
             })}
           </div>
+          {memo && showCompactMode && (
+            <div className="w-full mt-1">
+              <div
+                className="w-auto inline-flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
+                onClick={() => setShowCompactMode(false)}
+              >
+                <span>{t("memo.show-more")}</span>
+                <Icon.ChevronRight className="w-4 h-auto" />
+              </div>
+            </div>
+          )}
         </div>
       </RendererContext.Provider>
-      {memo && showCompactMode && (
-        <div className="w-full mt-2">
-          <div
-            className="w-auto inline-flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
-            onClick={() => setShowCompactMode(false)}
-          >
-            <span>{t("memo.show-more")}</span>
-            <Icon.ChevronRight className="w-4 h-auto" />
-          </div>
-        </div>
-      )}
     </>
   );
 };

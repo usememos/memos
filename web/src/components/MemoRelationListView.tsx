@@ -37,7 +37,7 @@ const MemoRelationListView = (props: Props) => {
   return (
     <>
       {referencingMemoList.length > 0 && (
-        <div className="w-full mt-2 flex flex-row justify-start items-center flex-wrap gap-2">
+        <div className="w-full flex flex-row justify-start items-center flex-wrap gap-2">
           {referencingMemoList.map((memo) => {
             return (
               <div key={memo.name} className="block w-auto max-w-[50%]">
@@ -57,7 +57,7 @@ const MemoRelationListView = (props: Props) => {
         </div>
       )}
       {referencedMemoList.length > 0 && (
-        <div className="w-full mt-2 flex flex-row justify-start items-center flex-wrap gap-2">
+        <div className="w-full flex flex-row justify-start items-center flex-wrap gap-2">
           {referencedMemoList.map((memo) => {
             return (
               <div key={memo.name} className="block w-auto max-w-[50%]">
