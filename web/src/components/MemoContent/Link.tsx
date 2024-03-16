@@ -12,7 +12,7 @@ interface Props {
 
 const Link: React.FC<Props> = ({ text, url }: Props) => {
   const [linkMetadata, setLinkMetadata] = useState<LinkMetadata | undefined>();
-  const { sm, md } = useResponsiveWidth();
+  const { md } = useResponsiveWidth();
 
   const fetchUrlMetadata = async () => {
     try {
@@ -30,18 +30,8 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
 
   return (
     <>
-      {/* Small screens */}
-      {sm && (
-        <div className="flex md:hidden">
-          <MLink href={url} underline="none" sx={{ fontWeight: "lg" }}>
-            {url || text}
-          </MLink>
-        </div>
-      )}
-
-      {/* Medium & Above screens */}
-      {md && (
-        <div className="hidden md:flex">
+      {md ? (
+        <div>
           <Tooltip
             placement="top-end"
             variant="solid"
@@ -91,6 +81,10 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
             </MLink>
           </Tooltip>
         </div>
+      ) : (
+        <MLink href={url} underline="none" sx={{ fontWeight: "lg" }}>
+          {url || text}
+        </MLink>
       )}
     </>
   );
