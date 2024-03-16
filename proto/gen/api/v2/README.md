@@ -1135,7 +1135,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| metadata | [LinkMetadata](#memos-api-v2-LinkMetadata) |  |  |
+| link_metadata | [LinkMetadata](#memos-api-v2-LinkMetadata) |  |  |
 
 
 

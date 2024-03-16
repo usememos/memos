@@ -8,14 +8,8 @@ option go_package = "gen/api/v2";
 
 service LinkService {
   rpc GetLinkMetadata(GetLinkMetadataRequest) returns (GetLinkMetadataResponse) {
-    option (google.api.http) = {get: "/api/v2/metadata"};
+    option (google.api.http) = {get: "/api/v2/link_metadata"};
   }
-}
-
-message LinkMetadata {
-  string title = 1;
-  string description = 2;
-  string image = 3;
 }
 
 message GetLinkMetadataRequest {
@@ -23,5 +17,11 @@ message GetLinkMetadataRequest {
 }
 
 message GetLinkMetadataResponse {
-  LinkMetadata metadata = 1;
+  LinkMetadata link_metadata = 1;
+}
+
+message LinkMetadata {
+  string title = 1;
+  string description = 2;
+  string image = 3;
 }

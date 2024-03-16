@@ -151,6 +151,25 @@ paths:
           type: string
       tags:
         - InboxService
+  /api/v2/link_metadata:
+    get:
+      operationId: LinkService_GetLinkMetadata
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetLinkMetadataResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: link
+          in: query
+          required: false
+          type: string
+      tags:
+        - LinkService
   /api/v2/memos:
     get:
       summary: ListMemos lists memos with pagination and filter.
@@ -650,25 +669,6 @@ paths:
           type: string
       tags:
         - MemoService
-  /api/v2/metadata:
-    get:
-      operationId: LinkService_GetLinkMetadata
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2GetLinkMetadataResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: link
-          in: query
-          required: false
-          type: string
-      tags:
-        - LinkService
   /api/v2/resources:
     get:
       summary: ListResources lists all resources.
@@ -1813,7 +1813,7 @@ definitions:
   v2GetLinkMetadataResponse:
     type: object
     properties:
-      metadata:
+      linkMetadata:
         $ref: '#/definitions/v2LinkMetadata'
   v2GetMemoByNameResponse:
     type: object
