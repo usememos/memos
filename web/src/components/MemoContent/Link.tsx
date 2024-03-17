@@ -38,19 +38,23 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
         <div className="w-full max-w-64 sm:max-w-96 p-1 flex flex-col">
           <a href={url} target="_blank" rel="noopener noreferrer" className="group w-full flex flex-row justify-start items-center gap-1">
             <img className="w-5 h-5 pointer-events-none" src={getFaviconWithGoogleS2(url)} alt={linkMetadata?.title} />
-            <h3 className="text-base truncate dark:opacity-90 group-hover:opacity-80">{linkMetadata?.title}</h3>
+            <h3 className="text-base truncate dark:opacity-90 group-hover:opacity-80 group-hover:underline">{linkMetadata?.title}</h3>
           </a>
           {linkMetadata.description && (
-            <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-2">{linkMetadata.description}</p>
+            <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>
           )}
         </div>
       }
       arrow
     >
-      <MLink href={url}>{url || text}</MLink>
+      <MLink underline="always" href={url}>
+        {url || text}
+      </MLink>
     </Tooltip>
   ) : (
-    <MLink href={url}>{url || text}</MLink>
+    <MLink underline="always" href={url}>
+      {url || text}
+    </MLink>
   );
 };
 
