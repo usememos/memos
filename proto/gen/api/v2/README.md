@@ -122,8 +122,6 @@
     - [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse)
     - [ExportMemosRequest](#memos-api-v2-ExportMemosRequest)
     - [ExportMemosResponse](#memos-api-v2-ExportMemosResponse)
-    - [GetMemoByNameRequest](#memos-api-v2-GetMemoByNameRequest)
-    - [GetMemoByNameResponse](#memos-api-v2-GetMemoByNameResponse)
     - [GetMemoRequest](#memos-api-v2-GetMemoRequest)
     - [GetMemoResponse](#memos-api-v2-GetMemoResponse)
     - [GetUserMemosStatsRequest](#memos-api-v2-GetUserMemosStatsRequest)
@@ -140,6 +138,8 @@
     - [ListMemosRequest](#memos-api-v2-ListMemosRequest)
     - [ListMemosResponse](#memos-api-v2-ListMemosResponse)
     - [Memo](#memos-api-v2-Memo)
+    - [SearchMemosRequest](#memos-api-v2-SearchMemosRequest)
+    - [SearchMemosResponse](#memos-api-v2-SearchMemosResponse)
     - [SetMemoRelationsRequest](#memos-api-v2-SetMemoRelationsRequest)
     - [SetMemoRelationsResponse](#memos-api-v2-SetMemoRelationsResponse)
     - [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest)
@@ -1556,8 +1556,8 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  | id is the memo id to create comment for. |
-| create | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| comment | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) |  |  |
 
 
 
@@ -1618,7 +1618,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 | reaction_id | [int32](#int32) |  |  |
 
 
@@ -1644,7 +1644,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 
 
 
@@ -1691,36 +1691,6 @@ Used internally for obfuscating the page token.
 
 
 
-<a name="memos-api-v2-GetMemoByNameRequest"></a>
-
-### GetMemoByNameRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-GetMemoByNameResponse"></a>
-
-### GetMemoByNameResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| memo | [Memo](#memos-api-v2-Memo) |  |  |
-
-
-
-
-
-
 <a name="memos-api-v2-GetMemoRequest"></a>
 
 ### GetMemoRequest
@@ -1729,7 +1699,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 
 
 
@@ -1759,7 +1729,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | name is the name of the user to get stats for. Format: users/{username} |
+| name | [string](#string) |  | name is the name of the user to get stats for. Format: users/{uid} |
 | timezone | [string](#string) |  | timezone location Format: uses tz identifier https://en.wikipedia.org/wiki/List_of_tz_database_time_zones |
 | filter | [string](#string) |  | Same as ListMemosRequest.filter |
 
@@ -1807,7 +1777,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 
 
 
@@ -1837,7 +1807,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 
 
 
@@ -1867,7 +1837,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 
 
 
@@ -1897,7 +1867,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 
 
 
@@ -1960,8 +1930,8 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  | id is the system generated unique identifier. |
-| name | [string](#string) |  | name is the user provided name. |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| resource_id | [string](#string) |  |  |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
 | creator | [string](#string) |  | The name of the creator. Format: users/{uid} |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
@@ -1980,6 +1950,36 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-SearchMemosRequest"></a>
+
+### SearchMemosRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [string](#string) |  | Filter is used to filter memos returned. Format: &#34;creator == users/{uid} &amp;&amp; visibilities == [&#39;PUBLIC&#39;, &#39;PROTECTED&#39;]&#34; |
+
+
+
+
+
+
+<a name="memos-api-v2-SearchMemosResponse"></a>
+
+### SearchMemosResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memos | [Memo](#memos-api-v2-Memo) | repeated |  |
+
+
+
+
+
+
 <a name="memos-api-v2-SetMemoRelationsRequest"></a>
 
 ### SetMemoRelationsRequest
@@ -1988,7 +1988,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 | relations | [MemoRelation](#memos-api-v2-MemoRelation) | repeated |  |
 
 
@@ -2014,7 +2014,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 | resources | [Resource](#memos-api-v2-Resource) | repeated |  |
 
 
@@ -2071,7 +2071,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
 | reaction | [Reaction](#memos-api-v2-Reaction) |  |  |
 
 
@@ -2123,10 +2123,10 @@ Used internally for obfuscating the page token.
 | ----------- | ------------ | ------------- | ------------|
 | CreateMemo | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) | [CreateMemoResponse](#memos-api-v2-CreateMemoResponse) | CreateMemo creates a memo. |
 | ListMemos | [ListMemosRequest](#memos-api-v2-ListMemosRequest) | [ListMemosResponse](#memos-api-v2-ListMemosResponse) | ListMemos lists memos with pagination and filter. |
-| GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) | GetMemo gets a memo by id. |
-| GetMemoByName | [GetMemoByNameRequest](#memos-api-v2-GetMemoByNameRequest) | [GetMemoByNameResponse](#memos-api-v2-GetMemoByNameResponse) | GetMemoByName gets a memo by name. |
+| SearchMemos | [SearchMemosRequest](#memos-api-v2-SearchMemosRequest) | [SearchMemosResponse](#memos-api-v2-SearchMemosResponse) | SearchMemosRequest searches memos. |
+| GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) | GetMemo gets a memo. |
 | UpdateMemo | [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest) | [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse) | UpdateMemo updates a memo. |
-| DeleteMemo | [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest) | [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse) | DeleteMemo deletes a memo by id. |
+| DeleteMemo | [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest) | [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse) | DeleteMemo deletes a memo. |
 | ExportMemos | [ExportMemosRequest](#memos-api-v2-ExportMemosRequest) | [ExportMemosResponse](#memos-api-v2-ExportMemosResponse) | ExportMemos exports memos. |
 | SetMemoResources | [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest) | [SetMemoResourcesResponse](#memos-api-v2-SetMemoResourcesResponse) | SetMemoResources sets resources for a memo. |
 | ListMemoResources | [ListMemoResourcesRequest](#memos-api-v2-ListMemoResourcesRequest) | [ListMemoResourcesResponse](#memos-api-v2-ListMemoResourcesResponse) | ListMemoResources lists resources for a memo. |

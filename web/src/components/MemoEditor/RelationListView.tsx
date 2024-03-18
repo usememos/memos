@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMemoStore } from "@/store/v1";
+import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import Icon from "../Icon";
@@ -27,7 +27,7 @@ const RelationListView = (props: Props) => {
   }, [relationList]);
 
   const handleDeleteRelation = async (memo: Memo) => {
-    setRelationList(relationList.filter((relation) => relation.relatedMemoId !== memo.id));
+    setRelationList(relationList.filter((relation) => relation.relatedMemoId !== extractMemoIdFromName(memo.name)));
   };
 
   return (

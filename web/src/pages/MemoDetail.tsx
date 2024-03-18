@@ -8,7 +8,7 @@ import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useMemoStore } from "@/store/v1";
+import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -23,13 +23,15 @@ const MemoDetail = () => {
   const memo = memoStore.getMemoByName(memoName || "");
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const commentRelations =
-    memo?.relations.filter((relation) => relation.relatedMemoId === memo?.id && relation.type === MemoRelation_Type.COMMENT) || [];
+    memo?.relations.filter(
+      (relation) => relation.relatedMemoId === extractMemoIdFromName(memo.name) && relation.type === MemoRelation_Type.COMMENT,
+    ) || [];
   const comments = commentRelations.map((relation) => memoStore.getMemoById(relation.memoId)).filter((memo) => memo) as any as Memo[];
 
   // Prepare memo.
   useEffect(() => {
     if (memoName) {
-      memoStore.getOrFetchMemoByName(memoName).catch((error: ClientError) => {
+      memoStore.searchMemos(`resource_name == "${memoName}"`).catch((error: ClientError) => {
         toast.error(error.details);
         navigateTo("/403");
       });
@@ -62,7 +64,7 @@ const MemoDetail = () => {
 
   const handleCommentCreated = async (commentId: number) => {
     await memoStore.getOrFetchMemoById(commentId);
-    await memoStore.getOrFetchMemoById(memo.id, { skipCache: true });
+    await memoStore.getOrFetchMemoById(extractMemoIdFromName(memo.name), { skipCache: true });
   };
 
   return (
@@ -82,7 +84,7 @@ const MemoDetail = () => {
           </div>
         )}
         <MemoView
-          key={`${memo.id}-${memo.displayTime}`}
+          key={`${memo.name}-${memo.displayTime}`}
           className="shadow hover:shadow-xl transition-all"
           memo={memo}
           compact={false}
@@ -107,14 +109,19 @@ const MemoDetail = () => {
                   <span className="text-gray-400 text-sm ml-0.5">({comments.length})</span>
                 </div>
                 {comments.map((comment) => (
-                  <MemoView key={`${memo.id}-${memo.displayTime}`} memo={comment} />
+                  <MemoView key={`${memo.name}-${memo.displayTime}`} memo={comment} />
                 ))}
               </>
             )}
 
             {/* Only show comment editor when user login */}
             {currentUser && (
-              <MemoEditor key={memo.id} cacheKey={`comment-editor-${memo.id}`} parentMemoId={memo.id} onConfirm={handleCommentCreated} />
+              <MemoEditor
+                key={memo.name}
+                cacheKey={`comment-editor-${memo.name}`}
+                parentMemoId={extractMemoIdFromName(memo.name)}
+                onConfirm={handleCommentCreated}
+              />
             )}
           </div>
         </div>

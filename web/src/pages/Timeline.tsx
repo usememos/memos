@@ -164,7 +164,7 @@ const Timeline = () => {
                     <div className={classNames("w-full flex flex-col justify-start items-start")}>
                       {group.memos.map((memo, index) => (
                         <div
-                          key={`${memo.id}-${memo.displayTime}`}
+                          key={`${memo.name}-${memo.displayTime}`}
                           className={classNames("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
                         >
                           <MemoView className="!border max-w-full !border-gray-100 dark:!border-zinc-700" memo={memo} />

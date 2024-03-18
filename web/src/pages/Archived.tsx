@@ -13,7 +13,7 @@ import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
-import { useMemoList, useMemoStore } from "@/store/v1";
+import { extractMemoIdFromName, useMemoList, useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -65,7 +65,7 @@ const Archived = () => {
       style: "danger",
       dialogName: "delete-memo-dialog",
       onConfirm: async () => {
-        await memoStore.deleteMemo(memo.id);
+        await memoStore.deleteMemo(extractMemoIdFromName(memo.name));
       },
     });
   };
@@ -74,7 +74,7 @@ const Archived = () => {
     try {
       await memoStore.updateMemo(
         {
-          id: memo.id,
+          name: memo.name,
           rowStatus: RowStatus.ACTIVE,
         },
         ["row_status"],
@@ -99,7 +99,7 @@ const Archived = () => {
           <MemoFilter className="px-2 pb-2" />
           {sortedMemos.map((memo) => (
             <div
-              key={memo.id}
+              key={extractMemoIdFromName(memo.name)}
               className="relative flex flex-col justify-start items-start w-full p-4 pt-3 mb-2 bg-white dark:bg-zinc-800 rounded-lg"
             >
               <div className="w-full mb-1 flex flex-row justify-between items-center">
@@ -121,7 +121,12 @@ const Archived = () => {
                   </Tooltip>
                 </div>
               </div>
-              <MemoContent key={`${memo.id}-${memo.displayTime}`} memoId={memo.id} content={memo.content} readonly={true} />
+              <MemoContent
+                key={`${memo.name}-${memo.displayTime}`}
+                memoId={extractMemoIdFromName(memo.name)}
+                content={memo.content}
+                readonly={true}
+              />
             </div>
           ))}
           {isRequesting ? (

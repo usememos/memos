@@ -13,8 +13,12 @@ import (
 )
 
 func (s *APIV2Service) SetMemoResources(ctx context.Context, request *apiv2pb.SetMemoResourcesRequest) (*apiv2pb.SetMemoResourcesResponse, error) {
+	id, err := ExtractMemoIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
 	resources, err := s.Store.ListResources(ctx, &store.FindResource{
-		MemoID: &request.Id,
+		MemoID: &id,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list resources")
@@ -32,7 +36,7 @@ func (s *APIV2Service) SetMemoResources(ctx context.Context, request *apiv2pb.Se
 		if !found {
 			if err = s.Store.DeleteResource(ctx, &store.DeleteResource{
 				ID:     int32(resource.ID),
-				MemoID: &request.Id,
+				MemoID: &id,
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to delete resource")
 			}
@@ -45,7 +49,7 @@ func (s *APIV2Service) SetMemoResources(ctx context.Context, request *apiv2pb.Se
 		updatedTs := time.Now().Unix() + int64(index)
 		if _, err := s.Store.UpdateResource(ctx, &store.UpdateResource{
 			ID:        resource.Id,
-			MemoID:    &request.Id,
+			MemoID:    &id,
 			UpdatedTs: &updatedTs,
 		}); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to update resource: %v", err)
@@ -56,8 +60,12 @@ func (s *APIV2Service) SetMemoResources(ctx context.Context, request *apiv2pb.Se
 }
 
 func (s *APIV2Service) ListMemoResources(ctx context.Context, request *apiv2pb.ListMemoResourcesRequest) (*apiv2pb.ListMemoResourcesResponse, error) {
+	id, err := ExtractMemoIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
 	resources, err := s.Store.ListResources(ctx, &store.FindResource{
-		MemoID: &request.Id,
+		MemoID: &id,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list resources")

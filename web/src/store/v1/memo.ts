@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { memoServiceClient } from "@/grpcweb";
 import { CreateMemoRequest, ListMemosRequest, Memo } from "@/types/proto/api/v2/memo_service";
+import { MemoNamePrefix, extractMemoIdFromName } from ".";
 
 interface State {
   memoMapById: Record<number, Memo>;
@@ -19,7 +20,8 @@ export const useMemoStore = create(
       const { memos, nextPageToken } = await memoServiceClient.listMemos(request);
       const memoMap = get().memoMapById;
       for (const memo of memos) {
-        memoMap[memo.id] = memo;
+        const id = extractMemoIdFromName(memo.name);
+        memoMap[id] = memo;
       }
       set({ memoMapById: memoMap });
       return { memos, nextPageToken };
@@ -32,7 +34,7 @@ export const useMemoStore = create(
       }
 
       const res = await memoServiceClient.getMemo({
-        id,
+        name: `${MemoNamePrefix}${id}`,
       });
       if (!res.memo) {
         throw new Error("Memo not found");
@@ -47,27 +49,21 @@ export const useMemoStore = create(
     getMemoById: (id: number) => {
       return get().memoMapById[id];
     },
-    getOrFetchMemoByName: async (name: string) => {
-      const memoMap = get().memoMapById;
-      const memo = Object.values(memoMap).find((memo) => memo.name === name);
-      if (memo) {
-        return memo;
-      }
-
-      const res = await memoServiceClient.getMemoByName({
-        name,
+    searchMemos: async (filter: string) => {
+      const { memos } = await memoServiceClient.searchMemos({
+        filter,
       });
-      if (!res.memo) {
-        throw new Error("Memo not found");
+      const memoMap = get().memoMapById;
+      for (const memo of memos) {
+        const id = extractMemoIdFromName(memo.name);
+        memoMap[id] = memo;
       }
-
-      memoMap[res.memo.id] = res.memo;
       set({ memoMapById: memoMap });
-      return res.memo;
+      return memos;
     },
     getMemoByName: (name: string) => {
       const memoMap = get().memoMapById;
-      return Object.values(memoMap).find((memo) => memo.name === name);
+      return Object.values(memoMap).find((memo) => memo.resourceId === name);
     },
     createMemo: async (request: CreateMemoRequest) => {
       const { memo } = await memoServiceClient.createMemo(request);
@@ -76,7 +72,8 @@ export const useMemoStore = create(
       }
 
       const memoMap = get().memoMapById;
-      memoMap[memo.id] = memo;
+      const id = extractMemoIdFromName(memo.name);
+      memoMap[id] = memo;
       set({ memoMapById: memoMap });
       return memo;
     },
@@ -90,13 +87,14 @@ export const useMemoStore = create(
       }
 
       const memoMap = get().memoMapById;
-      memoMap[memo.id] = memo;
+      const id = extractMemoIdFromName(memo.name);
+      memoMap[id] = memo;
       set({ memoMapById: memoMap });
       return memo;
     },
     deleteMemo: async (id: number) => {
       await memoServiceClient.deleteMemo({
-        id: id,
+        name: `${MemoNamePrefix}${id}`,
       });
 
       const memoMap = get().memoMapById;

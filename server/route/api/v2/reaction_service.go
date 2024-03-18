@@ -13,9 +13,8 @@ import (
 )
 
 func (s *APIV2Service) ListMemoReactions(ctx context.Context, request *apiv2pb.ListMemoReactionsRequest) (*apiv2pb.ListMemoReactionsResponse, error) {
-	contentID := fmt.Sprintf("memos/%d", request.Id)
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: &contentID,
+		ContentID: &request.Name,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list reactions")
@@ -58,8 +57,12 @@ func (s *APIV2Service) UpsertMemoReaction(ctx context.Context, request *apiv2pb.
 }
 
 func (s *APIV2Service) DeleteMemoReaction(ctx context.Context, request *apiv2pb.DeleteMemoReactionRequest) (*apiv2pb.DeleteMemoReactionResponse, error) {
+	id, err := ExtractMemoIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
 	if err := s.Store.DeleteReaction(ctx, &store.DeleteReaction{
-		ID: request.Id,
+		ID: id,
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete reaction")
 	}
@@ -76,7 +79,7 @@ func (s *APIV2Service) convertReactionFromStore(ctx context.Context, reaction *s
 	}
 	return &apiv2pb.Reaction{
 		Id:           reaction.Id,
-		Creator:      fmt.Sprintf("%s%s", UserNamePrefix, creator.Username),
+		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
 		ContentId:    reaction.ContentId,
 		ReactionType: apiv2pb.Reaction_Type(reaction.ReactionType),
 	}, nil

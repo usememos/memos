@@ -12,6 +12,7 @@ import (
 const (
 	WorkspaceSettingNamePrefix = "settings/"
 	UserNamePrefix             = "users/"
+	MemoNamePrefix             = "memos/"
 	InboxNamePrefix            = "inboxes/"
 )
 
@@ -52,6 +53,19 @@ func ExtractUserIDFromName(name string) (int32, error) {
 	id, err := util.ConvertStringToInt32(tokens[0])
 	if err != nil {
 		return 0, errors.Errorf("invalid user ID %q", tokens[0])
+	}
+	return id, nil
+}
+
+// ExtractMemoIDFromName returns the memo ID from a resource name.
+func ExtractMemoIDFromName(name string) (int32, error) {
+	tokens, err := GetNameParentTokens(name, MemoNamePrefix)
+	if err != nil {
+		return 0, err
+	}
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid memo ID %q", tokens[0])
 	}
 	return id, nil
 }

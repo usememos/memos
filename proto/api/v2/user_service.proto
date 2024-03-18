@@ -19,7 +19,7 @@ service UserService {
 
   // SearchUsers searches users by filter.
   rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {
-    option (google.api.http) = {get: "/api/v2/users/search"};
+    option (google.api.http) = {get: "/api/v2/users:search"};
   }
 
   // GetUser gets a user by name.

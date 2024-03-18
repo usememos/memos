@@ -5,7 +5,7 @@ import useClickAway from "react-use/lib/useClickAway";
 import Icon from "@/components/Icon";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { MemoNamePrefix, useMemoStore } from "@/store/v1";
+import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { Reaction_Type } from "@/types/proto/api/v2/reaction_service";
 import { stringifyReactionType } from "./ReactionView";
@@ -52,18 +52,18 @@ const ReactionSelector = (props: Props) => {
           (reaction) => reaction.reactionType === reactionType && reaction.creator === currentUser.name,
         );
         for (const reaction of reactions) {
-          await memoServiceClient.deleteMemoReaction({ id: reaction.id });
+          await memoServiceClient.deleteMemoReaction({ reactionId: reaction.id });
         }
       } else {
         await memoServiceClient.upsertMemoReaction({
-          id: memo.id,
+          name: memo.name,
           reaction: {
-            contentId: `${MemoNamePrefix}${memo.id}`,
+            contentId: memo.name,
             reactionType: reactionType,
           },
         });
       }
-      await memoStore.getOrFetchMemoById(memo.id, {
+      await memoStore.getOrFetchMemoById(extractMemoIdFromName(memo.name), {
         skipCache: true,
       });
     } catch (error) {

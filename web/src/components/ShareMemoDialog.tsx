@@ -7,7 +7,7 @@ import { downloadFileFromUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
-import { useUserStore, useMemoStore } from "@/store/v1";
+import { useUserStore, useMemoStore, extractMemoIdFromName } from "@/store/v1";
 import { Visibility } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
@@ -85,7 +85,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const handleMemoVisibilityOptionChanged = async (visibility: Visibility) => {
     const updatedMemo = await memoStore.updateMemo(
       {
-        id: memo.id,
+        name: memo.name,
         visibility: visibility,
       },
       ["visibility"],
@@ -155,7 +155,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
           >
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{getDateTimeString(memo.displayTime)}</span>
             <div className="w-full px-6 text-base pb-4 space-y-2">
-              <MemoContent memoId={memo.id} content={memo.content} readonly={true} disableFilter />
+              <MemoContent memoId={extractMemoIdFromName(memo.name)} content={memo.content} readonly={true} disableFilter />
               <MemoResourceListView resources={memo.resources} />
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-900 py-4 px-6">

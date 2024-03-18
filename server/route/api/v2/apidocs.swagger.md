@@ -162,6 +162,25 @@ DeleteInbox deletes an inbox.
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
+## LinkService
+
+### /api/v2/link_metadata
+
+#### GET
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| link | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2GetLinkMetadataResponse](#v2getlinkmetadataresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+---
 ## MemoService
 
 ### /api/v2/memos
@@ -177,7 +196,7 @@ ListMemos lists memos with pagination and filter.
 | ---- | ---------- | ----------- | -------- | ------ |
 | pageSize | query | The maximum number of memos to return. | No | integer |
 | pageToken | query | A page token, received from a previous `ListMemos` call. Provide this to retrieve the subsequent page. | No | string |
-| filter | query | Filter is used to filter memos returned in the list. Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']" | No | string |
+| filter | query | Filter is used to filter memos returned in the list. Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']" | No | string |
 
 ##### Responses
 
@@ -355,7 +374,7 @@ UpsertMemoReaction upserts a reaction for a memo.
 | ---- | ---------- | ----------- | -------- | ------ |
 | id | path |  | Yes | integer |
 | reaction.id | query |  | No | integer |
-| reaction.creator | query |  | No | string |
+| reaction.creator | query | The name of the creator. Format: users/{uid} | No | string |
 | reaction.contentId | query |  | No | string |
 | reaction.reactionType | query |  | No | string |
 
@@ -477,7 +496,7 @@ UpdateMemo updates a memo.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | memo.id | path | id is the system generated unique identifier. | Yes | integer |
-| memo | body |  | Yes | { **"name"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"creator"**: string, **"creatorId"**: integer, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ], **"reactions"**: [ [apiv2Reaction](#apiv2reaction) ] } |
+| memo | body |  | Yes | { **"name"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"creator"**: string, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ], **"reactions"**: [ [apiv2Reaction](#apiv2reaction) ] } |
 
 ##### Responses
 
@@ -504,6 +523,26 @@ ExportMemos exports memos.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | A successful response. | [v2ExportMemosResponse](#v2exportmemosresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/memos:search
+
+#### GET
+##### Summary
+
+SearchMemosRequest searches memos.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| filter | query | Filter is used to filter memos returned. Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']" | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SearchMemosResponse](#v2searchmemosresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
@@ -637,7 +676,7 @@ ListTags lists tags.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | The creator of tags. Format: users/{username} | No | string |
+| user | query | The creator of tags. Format: users/{uid} | No | string |
 
 ##### Responses
 
@@ -656,7 +695,7 @@ DeleteTag deletes a tag.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | tag.name | query |  | No | string |
-| tag.creator | query | The creator of tags. Format: users/{username} | No | string |
+| tag.creator | query | The creator of tags. Format: users/{uid} | No | string |
 
 ##### Responses
 
@@ -694,7 +733,7 @@ GetTagSuggestions gets tag suggestions from the user's memos.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | The creator of tags. Format: users/{username} | No | string |
+| user | query | The creator of tags. Format: users/{uid} | No | string |
 
 ##### Responses
 
@@ -729,7 +768,7 @@ All related memos will be updated.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | The creator of tags. Format: users/{username} | No | string |
+| user | query | The creator of tags. Format: users/{uid} | No | string |
 | oldName | query |  | No | string |
 | newName | query |  | No | string |
 
@@ -775,6 +814,26 @@ CreateUser creates a new user.
 | 200 | A successful response. | [v2CreateUserResponse](#v2createuserresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
+### /api/v2/users:search
+
+#### GET
+##### Summary
+
+SearchUsers searches users by filter.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| filter | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SearchUsersResponse](#v2searchusersresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
 ### /api/v2/{name}
 
 #### GET
@@ -786,7 +845,7 @@ GetUser gets a user by name.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{uid} | Yes | string |
 
 ##### Responses
 
@@ -804,7 +863,7 @@ DeleteUser deletes a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{uid} | Yes | string |
 
 ##### Responses
 
@@ -824,7 +883,7 @@ ListUserAccessTokens returns a list of access tokens for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{uid} | Yes | string |
 
 ##### Responses
 
@@ -842,7 +901,7 @@ CreateUserAccessToken creates a new access token for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{uid} | Yes | string |
 | body | body |  | Yes | [UserServiceCreateUserAccessTokenBody](#userservicecreateuseraccesstokenbody) |
 
 ##### Responses
@@ -863,7 +922,7 @@ DeleteUserAccessToken deletes an access token for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{uid} | Yes | string |
 | accessToken | path | access_token is the access token to delete. | Yes | string |
 
 ##### Responses
@@ -884,7 +943,7 @@ GetUserSetting gets the setting of a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{uid} | Yes | string |
 
 ##### Responses
 
@@ -904,8 +963,8 @@ UpdateUserSetting updates the setting of a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| setting.name | path | The name of the user. Format: users/{username} | Yes | string |
-| setting | body |  | Yes | { **"locale"**: string, **"appearance"**: string, **"memoVisibility"**: string, **"telegramUserId"**: string, **"compactView"**: boolean } |
+| setting.name | path | The name of the user. Format: users/{uid} | Yes | string |
+| setting | body |  | Yes | { **"locale"**: string, **"appearance"**: string, **"memoVisibility"**: string, **"telegramUserId"**: string } |
 
 ##### Responses
 
@@ -925,8 +984,8 @@ UpdateUser updates a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user.name | path | The name of the user. Format: users/{username} | Yes | string |
-| user | body |  | Yes | { **"id"**: integer, **"role"**: [UserRole](#userrole), **"username"**: string, **"email"**: string, **"nickname"**: string, **"avatarUrl"**: string, **"password"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"createTime"**: dateTime, **"updateTime"**: dateTime } |
+| user.name | path | The name of the user. Format: users/{uid} | Yes | string |
+| user | body |  | Yes | { **"id"**: integer, **"role"**: [UserRole](#userrole), **"username"**: string, **"email"**: string, **"nickname"**: string, **"avatarUrl"**: string, **"description"**: string, **"password"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"createTime"**: dateTime, **"updateTime"**: dateTime } |
 
 ##### Responses
 
@@ -1197,7 +1256,6 @@ GetActivity returns the activity with the given id.
 | appearance | string | The preferred appearance of the user. | No |
 | memoVisibility | string | The default visibility of the memo. | No |
 | telegramUserId | string | The telegram user id of the user. | No |
-| compactView | boolean | The compact view for a memo. | No |
 
 #### apiv2Webhook
 
@@ -1375,6 +1433,12 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | user | [v2User](#v2user) |  | No |
 
+#### v2GetLinkMetadataResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| linkMetadata | [v2LinkMetadata](#v2linkmetadata) |  | No |
+
 #### v2GetMemoByNameResponse
 
 | Name | Type | Description | Required |
@@ -1465,6 +1529,14 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | v2InboxType | string |  |  |
 
+#### v2LinkMetadata
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| title | string |  | No |
+| description | string |  | No |
+| image | string |  | No |
+
 #### v2ListInboxesResponse
 
 | Name | Type | Description | Required |
@@ -1540,7 +1612,6 @@ GetActivity returns the activity with the given id.
 | name | string | name is the user provided name. | No |
 | rowStatus | [apiv2RowStatus](#apiv2rowstatus) |  | No |
 | creator | string |  | No |
-| creatorId | integer |  | No |
 | createTime | dateTime |  | No |
 | updateTime | dateTime |  | No |
 | displayTime | dateTime |  | No |
@@ -1584,6 +1655,18 @@ GetActivity returns the activity with the given id.
 | type | string |  | No |
 | size | string (int64) |  | No |
 | memoId | integer |  | No |
+
+#### v2SearchMemosResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| memos | [ [v2Memo](#v2memo) ] |  | No |
+
+#### v2SearchUsersResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| users | [ [v2User](#v2user) ] |  | No |
 
 #### v2SetMemoRelationsResponse
 
@@ -1693,12 +1776,13 @@ GetActivity returns the activity with the given id.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | name | string |  | No |
-| id | integer |  | No |
+| id | integer | The system generated uid of the user. | No |
 | role | [UserRole](#userrole) |  | No |
 | username | string |  | No |
 | email | string |  | No |
 | nickname | string |  | No |
 | avatarUrl | string |  | No |
+| description | string |  | No |
 | password | string |  | No |
 | rowStatus | [apiv2RowStatus](#apiv2rowstatus) |  | No |
 | createTime | dateTime |  | No |

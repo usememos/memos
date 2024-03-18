@@ -244,7 +244,7 @@ func (s *APIV2Service) convertTagFromStore(ctx context.Context, tag *store.Tag) 
 	}
 	return &apiv2pb.Tag{
 		Name:    tag.Name,
-		Creator: fmt.Sprintf("%s%s", UserNamePrefix, user.Username),
+		Creator: fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
 	}, nil
 }
 

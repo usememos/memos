@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore } from "@/store/v1";
+import { extractMemoIdFromName, useUserStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -41,7 +41,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(
-    (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemoId === memo.id,
+    (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemoId === extractMemoIdFromName(memo.name),
   ).length;
   const readonly = memo.creator !== user?.name;
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.name}`);
@@ -56,9 +56,9 @@ const MemoView: React.FC<Props> = (props: Props) => {
 
   const handleGotoMemoDetailPage = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.altKey) {
-      showChangeMemoCreatedTsDialog(memo.id);
+      showChangeMemoCreatedTsDialog(extractMemoIdFromName(memo.name));
     } else {
-      navigateTo(`/m/${memo.name}`);
+      navigateTo(`/m/${memo.resourceId}`);
     }
   };
 
@@ -77,7 +77,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
     <div
       className={classNames(
         "group relative flex flex-col justify-start items-start w-full px-4 pt-4 pb-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
-        "memos-" + memo.id,
         memo.pinned && props.showPinned && "border-gray-200 border dark:border-zinc-700",
         className,
       )}
@@ -122,7 +121,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 "flex flex-row justify-start items-center hover:opacity-70",
                 commentAmount === 0 && "invisible group-hover:visible",
               )}
-              to={`/m/${memo.name}#comments`}
+              to={`/m/${memo.resourceId}#comments`}
               unstable_viewTransition
             >
               <Icon.MessageCircleMore className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
@@ -138,8 +137,8 @@ const MemoView: React.FC<Props> = (props: Props) => {
         </div>
       </div>
       <MemoContent
-        key={`${memo.id}-${memo.updateTime}`}
-        memoId={memo.id}
+        key={`${memo.name}-${memo.updateTime}`}
+        memoId={extractMemoIdFromName(memo.name)}
         content={memo.content}
         readonly={readonly}
         onClick={handleMemoContentClick}

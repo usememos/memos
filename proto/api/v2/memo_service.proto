@@ -26,28 +26,27 @@ service MemoService {
   rpc ListMemos(ListMemosRequest) returns (ListMemosResponse) {
     option (google.api.http) = {get: "/api/v2/memos"};
   }
-  // GetMemo gets a memo by id.
-  rpc GetMemo(GetMemoRequest) returns (GetMemoResponse) {
-    option (google.api.http) = {get: "/api/v2/memos/{id}"};
-    option (google.api.method_signature) = "id";
+  // SearchMemosRequest searches memos.
+  rpc SearchMemos(SearchMemosRequest) returns (SearchMemosResponse) {
+    option (google.api.http) = {get: "/api/v2/memos:search"};
   }
-  // GetMemoByName gets a memo by name.
-  rpc GetMemoByName(GetMemoByNameRequest) returns (GetMemoByNameResponse) {
-    option (google.api.http) = {get: "/api/v2/memos/name/{name}"};
+  // GetMemo gets a memo.
+  rpc GetMemo(GetMemoRequest) returns (GetMemoResponse) {
+    option (google.api.http) = {get: "/api/v2/{name=memos/*}"};
     option (google.api.method_signature) = "name";
   }
   // UpdateMemo updates a memo.
   rpc UpdateMemo(UpdateMemoRequest) returns (UpdateMemoResponse) {
     option (google.api.http) = {
-      patch: "/api/v2/memos/{memo.id}"
+      patch: "/api/v2/{memo.name=memos/*}"
       body: "memo"
     };
     option (google.api.method_signature) = "memo,update_mask";
   }
-  // DeleteMemo deletes a memo by id.
+  // DeleteMemo deletes a memo.
   rpc DeleteMemo(DeleteMemoRequest) returns (DeleteMemoResponse) {
-    option (google.api.http) = {delete: "/api/v2/memos/{id}"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {delete: "/api/v2/{name=memos/*}"};
+    option (google.api.method_signature) = "name";
   }
   // ExportMemos exports memos.
   rpc ExportMemos(ExportMemosRequest) returns (ExportMemosResponse) {
@@ -56,38 +55,38 @@ service MemoService {
   // SetMemoResources sets resources for a memo.
   rpc SetMemoResources(SetMemoResourcesRequest) returns (SetMemoResourcesResponse) {
     option (google.api.http) = {
-      post: "/api/v2/memos/{id}/resources"
+      post: "/api/v2/{name=memos/*}/resources"
       body: "*"
     };
-    option (google.api.method_signature) = "id";
+    option (google.api.method_signature) = "name";
   }
   // ListMemoResources lists resources for a memo.
   rpc ListMemoResources(ListMemoResourcesRequest) returns (ListMemoResourcesResponse) {
-    option (google.api.http) = {get: "/api/v2/memos/{id}/resources"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {get: "/api/v2/{name=memos/*}/resources"};
+    option (google.api.method_signature) = "name";
   }
   // SetMemoRelations sets relations for a memo.
   rpc SetMemoRelations(SetMemoRelationsRequest) returns (SetMemoRelationsResponse) {
     option (google.api.http) = {
-      post: "/api/v2/memos/{id}/relations"
+      post: "/api/v2/{name=memos/*}/relations"
       body: "*"
     };
-    option (google.api.method_signature) = "id";
+    option (google.api.method_signature) = "name";
   }
   // ListMemoRelations lists relations for a memo.
   rpc ListMemoRelations(ListMemoRelationsRequest) returns (ListMemoRelationsResponse) {
-    option (google.api.http) = {get: "/api/v2/memos/{id}/relations"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {get: "/api/v2/{name=memos/*}/relations"};
+    option (google.api.method_signature) = "name";
   }
   // CreateMemoComment creates a comment for a memo.
   rpc CreateMemoComment(CreateMemoCommentRequest) returns (CreateMemoCommentResponse) {
-    option (google.api.http) = {post: "/api/v2/memos/{id}/comments"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {post: "/api/v2/{name=memos/*}/comments"};
+    option (google.api.method_signature) = "name";
   }
   // ListMemoComments lists comments for a memo.
   rpc ListMemoComments(ListMemoCommentsRequest) returns (ListMemoCommentsResponse) {
-    option (google.api.http) = {get: "/api/v2/memos/{id}/comments"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {get: "/api/v2/{name=memos/*}/comments"};
+    option (google.api.method_signature) = "name";
   }
   // GetUserMemosStats gets stats of memos for a user.
   rpc GetUserMemosStats(GetUserMemosStatsRequest) returns (GetUserMemosStatsResponse) {
@@ -96,18 +95,18 @@ service MemoService {
   }
   // ListMemoReactions lists reactions for a memo.
   rpc ListMemoReactions(ListMemoReactionsRequest) returns (ListMemoReactionsResponse) {
-    option (google.api.http) = {get: "/api/v2/memos/{id}/reactions"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {get: "/api/v2/{name=memos/*}/reactions"};
+    option (google.api.method_signature) = "name";
   }
   // UpsertMemoReaction upserts a reaction for a memo.
   rpc UpsertMemoReaction(UpsertMemoReactionRequest) returns (UpsertMemoReactionResponse) {
-    option (google.api.http) = {post: "/api/v2/memos/{id}/reactions"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {post: "/api/v2/{name=memos/*}/reactions"};
+    option (google.api.method_signature) = "name";
   }
   // DeleteMemoReaction deletes a reaction for a memo.
   rpc DeleteMemoReaction(DeleteMemoReactionRequest) returns (DeleteMemoReactionResponse) {
-    option (google.api.http) = {delete: "/api/v2/memos/{id}/reactions/{reaction_id}"};
-    option (google.api.method_signature) = "id,reaction_id";
+    option (google.api.http) = {delete: "/api/v2/{name=memos/*}/reactions/{reaction_id}"};
+    option (google.api.method_signature) = "name,reaction_id";
   }
 }
 
@@ -122,11 +121,11 @@ enum Visibility {
 }
 
 message Memo {
-  // id is the system generated unique identifier.
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 
-  // name is the user provided name.
-  string name = 2;
+  string resource_id = 2;
 
   RowStatus row_status = 3;
 
@@ -186,19 +185,23 @@ message ListMemosResponse {
   string next_page_token = 2;
 }
 
+message SearchMemosRequest {
+  // Filter is used to filter memos returned.
+  // Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+  string filter = 1;
+}
+
+message SearchMemosResponse {
+  repeated Memo memos = 1;
+}
+
 message GetMemoRequest {
-  int32 id = 1;
-}
-
-message GetMemoResponse {
-  Memo memo = 1;
-}
-
-message GetMemoByNameRequest {
+  // The name of the memo.
+  // Format: memos/{uid}
   string name = 1;
 }
 
-message GetMemoByNameResponse {
+message GetMemoResponse {
   Memo memo = 1;
 }
 
@@ -213,7 +216,9 @@ message UpdateMemoResponse {
 }
 
 message DeleteMemoRequest {
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 }
 
 message DeleteMemoResponse {}
@@ -228,7 +233,9 @@ message ExportMemosResponse {
 }
 
 message SetMemoResourcesRequest {
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 
   repeated Resource resources = 2;
 }
@@ -236,7 +243,9 @@ message SetMemoResourcesRequest {
 message SetMemoResourcesResponse {}
 
 message ListMemoResourcesRequest {
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 }
 
 message ListMemoResourcesResponse {
@@ -244,7 +253,9 @@ message ListMemoResourcesResponse {
 }
 
 message SetMemoRelationsRequest {
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 
   repeated MemoRelation relations = 2;
 }
@@ -252,7 +263,9 @@ message SetMemoRelationsRequest {
 message SetMemoRelationsResponse {}
 
 message ListMemoRelationsRequest {
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 }
 
 message ListMemoRelationsResponse {
@@ -260,10 +273,11 @@ message ListMemoRelationsResponse {
 }
 
 message CreateMemoCommentRequest {
-  // id is the memo id to create comment for.
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 
-  CreateMemoRequest create = 2;
+  CreateMemoRequest comment = 2;
 }
 
 message CreateMemoCommentResponse {
@@ -271,7 +285,9 @@ message CreateMemoCommentResponse {
 }
 
 message ListMemoCommentsRequest {
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 }
 
 message ListMemoCommentsResponse {
@@ -280,7 +296,7 @@ message ListMemoCommentsResponse {
 
 message GetUserMemosStatsRequest {
   // name is the name of the user to get stats for.
-  // Format: users/{username}
+  // Format: users/{uid}
   string name = 1;
 
   // timezone location
@@ -299,7 +315,9 @@ message GetUserMemosStatsResponse {
 }
 
 message ListMemoReactionsRequest {
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 }
 
 message ListMemoReactionsResponse {
@@ -307,7 +325,9 @@ message ListMemoReactionsResponse {
 }
 
 message UpsertMemoReactionRequest {
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 
   Reaction reaction = 2;
 }
@@ -317,7 +337,9 @@ message UpsertMemoReactionResponse {
 }
 
 message DeleteMemoReactionRequest {
-  int32 id = 1;
+  // The name of the memo.
+  // Format: memos/{uid}
+  string name = 1;
 
   int32 reaction_id = 2;
 }

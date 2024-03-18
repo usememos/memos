@@ -226,26 +226,6 @@ paths:
             $ref: '#/definitions/v2CreateMemoRequest'
       tags:
         - MemoService
-  /api/v2/memos/name/{name}:
-    get:
-      summary: GetMemoByName gets a memo by name.
-      operationId: MemoService_GetMemoByName
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2GetMemoByNameResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          in: path
-          required: true
-          type: string
-      tags:
-        - MemoService
   /api/v2/memos/stats:
     get:
       summary: GetUserMemosStats gets stats of memos for a user.
@@ -263,7 +243,7 @@ paths:
         - name: name
           description: |-
             name is the name of the user to get stats for.
-            Format: users/{username}
+            Format: users/{uid}
           in: query
           required: false
           type: string
@@ -282,372 +262,6 @@ paths:
           type: string
       tags:
         - MemoService
-  /api/v2/memos/{id}:
-    get:
-      summary: GetMemo gets a memo by id.
-      operationId: MemoService_GetMemo
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2GetMemoResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - MemoService
-    delete:
-      summary: DeleteMemo deletes a memo by id.
-      operationId: MemoService_DeleteMemo
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2DeleteMemoResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - MemoService
-  /api/v2/memos/{id}/comments:
-    get:
-      summary: ListMemoComments lists comments for a memo.
-      operationId: MemoService_ListMemoComments
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2ListMemoCommentsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - MemoService
-    post:
-      summary: CreateMemoComment creates a comment for a memo.
-      operationId: MemoService_CreateMemoComment
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2CreateMemoCommentResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          description: id is the memo id to create comment for.
-          in: path
-          required: true
-          type: integer
-          format: int32
-        - name: create.content
-          in: query
-          required: false
-          type: string
-        - name: create.visibility
-          in: query
-          required: false
-          type: string
-          enum:
-            - VISIBILITY_UNSPECIFIED
-            - PRIVATE
-            - PROTECTED
-            - PUBLIC
-          default: VISIBILITY_UNSPECIFIED
-      tags:
-        - MemoService
-  /api/v2/memos/{id}/reactions:
-    get:
-      summary: ListMemoReactions lists reactions for a memo.
-      operationId: MemoService_ListMemoReactions
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2ListMemoReactionsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - MemoService
-    post:
-      summary: UpsertMemoReaction upserts a reaction for a memo.
-      operationId: MemoService_UpsertMemoReaction
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2UpsertMemoReactionResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-        - name: reaction.id
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: reaction.creator
-          description: |-
-            The name of the creator.
-            Format: users/{uid}
-          in: query
-          required: false
-          type: string
-        - name: reaction.contentId
-          in: query
-          required: false
-          type: string
-        - name: reaction.reactionType
-          in: query
-          required: false
-          type: string
-          enum:
-            - TYPE_UNSPECIFIED
-            - THUMBS_UP
-            - THUMBS_DOWN
-            - HEART
-            - FIRE
-            - CLAPPING_HANDS
-            - LAUGH
-            - OK_HAND
-            - ROCKET
-            - EYES
-            - THINKING_FACE
-            - CLOWN_FACE
-            - QUESTION_MARK
-          default: TYPE_UNSPECIFIED
-      tags:
-        - MemoService
-  /api/v2/memos/{id}/reactions/{reactionId}:
-    delete:
-      summary: DeleteMemoReaction deletes a reaction for a memo.
-      operationId: MemoService_DeleteMemoReaction
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2DeleteMemoReactionResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-        - name: reactionId
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - MemoService
-  /api/v2/memos/{id}/relations:
-    get:
-      summary: ListMemoRelations lists relations for a memo.
-      operationId: MemoService_ListMemoRelations
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2ListMemoRelationsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - MemoService
-    post:
-      summary: SetMemoRelations sets relations for a memo.
-      operationId: MemoService_SetMemoRelations
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2SetMemoRelationsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/MemoServiceSetMemoRelationsBody'
-      tags:
-        - MemoService
-  /api/v2/memos/{id}/resources:
-    get:
-      summary: ListMemoResources lists resources for a memo.
-      operationId: MemoService_ListMemoResources
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2ListMemoResourcesResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - MemoService
-    post:
-      summary: SetMemoResources sets resources for a memo.
-      operationId: MemoService_SetMemoResources
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2SetMemoResourcesResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/MemoServiceSetMemoResourcesBody'
-      tags:
-        - MemoService
-  /api/v2/memos/{memo.id}:
-    patch:
-      summary: UpdateMemo updates a memo.
-      operationId: MemoService_UpdateMemo
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2UpdateMemoResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: memo.id
-          description: id is the system generated unique identifier.
-          in: path
-          required: true
-          type: integer
-          format: int32
-        - name: memo
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                description: name is the user provided name.
-              rowStatus:
-                $ref: '#/definitions/apiv2RowStatus'
-              creator:
-                type: string
-                title: |-
-                  The name of the creator.
-                  Format: users/{uid}
-              createTime:
-                type: string
-                format: date-time
-              updateTime:
-                type: string
-                format: date-time
-              displayTime:
-                type: string
-                format: date-time
-              content:
-                type: string
-              visibility:
-                $ref: '#/definitions/v2Visibility'
-              pinned:
-                type: boolean
-              parentId:
-                type: integer
-                format: int32
-                readOnly: true
-              resources:
-                type: array
-                items:
-                  type: object
-                  $ref: '#/definitions/v2Resource'
-                readOnly: true
-              relations:
-                type: array
-                items:
-                  type: object
-                  $ref: '#/definitions/v2MemoRelation'
-                readOnly: true
-              reactions:
-                type: array
-                items:
-                  type: object
-                  $ref: '#/definitions/apiv2Reaction'
-                readOnly: true
-      tags:
-        - MemoService
   /api/v2/memos:export:
     post:
       summary: ExportMemos exports memos.
@@ -664,6 +278,29 @@ paths:
       parameters:
         - name: filter
           description: Same as ListMemosRequest.filter
+          in: query
+          required: false
+          type: string
+      tags:
+        - MemoService
+  /api/v2/memos:search:
+    get:
+      summary: SearchMemosRequest searches memos.
+      operationId: MemoService_SearchMemos
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SearchMemosResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: filter
+          description: |-
+            Filter is used to filter memos returned.
+            Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -997,7 +634,7 @@ paths:
             $ref: '#/definitions/v2User'
       tags:
         - UserService
-  /api/v2/users/search:
+  /api/v2/users:search:
     get:
       summary: SearchUsers searches users by filter.
       operationId: UserService_SearchUsers
@@ -1261,7 +898,106 @@ paths:
                 format: int32
       tags:
         - InboxService
+  /api/v2/{memo.name}:
+    patch:
+      summary: UpdateMemo updates a memo.
+      operationId: MemoService_UpdateMemo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateMemoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: memo.name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: memo
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              resourceId:
+                type: string
+              rowStatus:
+                $ref: '#/definitions/apiv2RowStatus'
+              creator:
+                type: string
+                title: |-
+                  The name of the creator.
+                  Format: users/{uid}
+              createTime:
+                type: string
+                format: date-time
+              updateTime:
+                type: string
+                format: date-time
+              displayTime:
+                type: string
+                format: date-time
+              content:
+                type: string
+              visibility:
+                $ref: '#/definitions/v2Visibility'
+              pinned:
+                type: boolean
+              parentId:
+                type: integer
+                format: int32
+                readOnly: true
+              resources:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/definitions/v2Resource'
+                readOnly: true
+              relations:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/definitions/v2MemoRelation'
+                readOnly: true
+              reactions:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/definitions/apiv2Reaction'
+                readOnly: true
+      tags:
+        - MemoService
   /api/v2/{name_1}:
+    get:
+      summary: GetMemo gets a memo.
+      operationId: MemoService_GetMemo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetMemoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
     delete:
       summary: DeleteInbox deletes an inbox.
       operationId: InboxService_DeleteInbox
@@ -1285,6 +1021,30 @@ paths:
           pattern: inboxes/[^/]+
       tags:
         - InboxService
+  /api/v2/{name_2}:
+    delete:
+      summary: DeleteMemo deletes a memo.
+      operationId: MemoService_DeleteMemo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteMemoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_2
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
   /api/v2/{name}:
     get:
       summary: GetUser gets a user by name.
@@ -1413,6 +1173,282 @@ paths:
           type: string
       tags:
         - UserService
+  /api/v2/{name}/comments:
+    get:
+      summary: ListMemoComments lists comments for a memo.
+      operationId: MemoService_ListMemoComments
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListMemoCommentsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
+    post:
+      summary: CreateMemoComment creates a comment for a memo.
+      operationId: MemoService_CreateMemoComment
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2CreateMemoCommentResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: comment.content
+          in: query
+          required: false
+          type: string
+        - name: comment.visibility
+          in: query
+          required: false
+          type: string
+          enum:
+            - VISIBILITY_UNSPECIFIED
+            - PRIVATE
+            - PROTECTED
+            - PUBLIC
+          default: VISIBILITY_UNSPECIFIED
+      tags:
+        - MemoService
+  /api/v2/{name}/reactions:
+    get:
+      summary: ListMemoReactions lists reactions for a memo.
+      operationId: MemoService_ListMemoReactions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListMemoReactionsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
+    post:
+      summary: UpsertMemoReaction upserts a reaction for a memo.
+      operationId: MemoService_UpsertMemoReaction
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpsertMemoReactionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: reaction.id
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: reaction.creator
+          description: |-
+            The name of the creator.
+            Format: users/{uid}
+          in: query
+          required: false
+          type: string
+        - name: reaction.contentId
+          in: query
+          required: false
+          type: string
+        - name: reaction.reactionType
+          in: query
+          required: false
+          type: string
+          enum:
+            - TYPE_UNSPECIFIED
+            - THUMBS_UP
+            - THUMBS_DOWN
+            - HEART
+            - FIRE
+            - CLAPPING_HANDS
+            - LAUGH
+            - OK_HAND
+            - ROCKET
+            - EYES
+            - THINKING_FACE
+            - CLOWN_FACE
+            - QUESTION_MARK
+          default: TYPE_UNSPECIFIED
+      tags:
+        - MemoService
+  /api/v2/{name}/reactions/{reactionId}:
+    delete:
+      summary: DeleteMemoReaction deletes a reaction for a memo.
+      operationId: MemoService_DeleteMemoReaction
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteMemoReactionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: reactionId
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - MemoService
+  /api/v2/{name}/relations:
+    get:
+      summary: ListMemoRelations lists relations for a memo.
+      operationId: MemoService_ListMemoRelations
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListMemoRelationsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
+    post:
+      summary: SetMemoRelations sets relations for a memo.
+      operationId: MemoService_SetMemoRelations
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SetMemoRelationsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceSetMemoRelationsBody'
+      tags:
+        - MemoService
+  /api/v2/{name}/resources:
+    get:
+      summary: ListMemoResources lists resources for a memo.
+      operationId: MemoService_ListMemoResources
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListMemoResourcesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
+    post:
+      summary: SetMemoResources sets resources for a memo.
+      operationId: MemoService_SetMemoResources
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SetMemoResourcesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{uid}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceSetMemoResourcesBody'
+      tags:
+        - MemoService
   /api/v2/{name}/setting:
     get:
       summary: GetUserSetting gets the setting of a user.
@@ -1839,11 +1875,6 @@ definitions:
     properties:
       linkMetadata:
         $ref: '#/definitions/v2LinkMetadata'
-  v2GetMemoByNameResponse:
-    type: object
-    properties:
-      memo:
-        $ref: '#/definitions/v2Memo'
   v2GetMemoResponse:
     type: object
     properties:
@@ -2045,13 +2076,13 @@ definitions:
   v2Memo:
     type: object
     properties:
-      id:
-        type: integer
-        format: int32
-        description: id is the system generated unique identifier.
       name:
         type: string
-        description: name is the user provided name.
+        title: |-
+          The name of the memo.
+          Format: memos/{uid}
+      resourceId:
+        type: string
       rowStatus:
         $ref: '#/definitions/apiv2RowStatus'
       creator:
@@ -2144,6 +2175,14 @@ definitions:
       memoId:
         type: integer
         format: int32
+  v2SearchMemosResponse:
+    type: object
+    properties:
+      memos:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Memo'
   v2SearchUsersResponse:
     type: object
     properties:

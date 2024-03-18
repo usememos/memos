@@ -132,7 +132,7 @@ const UserProfile = () => {
               </div>
               <MemoFilter className="px-2 pb-3" />
               {sortedMemos.map((memo) => (
-                <MemoView key={`${memo.id}-${memo.displayTime}`} memo={memo} showVisibility showPinned />
+                <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned />
               ))}
               {isRequesting ? (
                 <div className="flex flex-row justify-center items-center w-full my-4 text-gray-400">
