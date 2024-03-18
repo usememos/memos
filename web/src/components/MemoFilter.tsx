@@ -45,7 +45,7 @@ const MemoFilter = (props: Props) => {
           filterStore.setTagFilter(undefined);
         }}
       >
-        <Icon.Tag className="w-4 h-auto mr-1 text-gray-500 dark:text-gray-400" /> {tagQuery}
+        <Icon.Hash className="w-4 h-auto mr-1 text-gray-500 dark:text-gray-400" /> {tagQuery}
         <Icon.X className="w-4 h-auto ml-1 opacity-40" />
       </div>
       <div

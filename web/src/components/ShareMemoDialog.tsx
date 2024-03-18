@@ -26,14 +26,14 @@ interface Props extends DialogProps {
 const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const { memoId, destroy } = props;
   const t = useTranslate();
+  const currentUser = useCurrentUser();
   const userStore = useUserStore();
+  const memoStore = useMemoStore();
   const downloadingImageState = useLoading(false);
   const loadingState = useLoading();
-  const memoElRef = useRef<HTMLDivElement>(null);
-  const memoStore = useMemoStore();
+  const memoContainerRef = useRef<HTMLDivElement>(null);
   const memo = memoStore.getMemoById(memoId);
   const user = userStore.getUserByUsername(extractUsernameFromName(memo.creator));
-  const currentUser = useCurrentUser();
   const readonly = memo?.creatorId !== currentUser?.id;
 
   useEffect(() => {
@@ -48,12 +48,12 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleDownloadImageBtnClick = () => {
-    if (!memoElRef.current) {
+    if (!memoContainerRef.current) {
       return;
     }
 
     downloadingImageState.setLoading();
-    toImage(memoElRef.current, {
+    toImage(memoContainerRef.current, {
       pixelRatio: window.devicePixelRatio * 2,
     })
       .then((url) => {
@@ -151,10 +151,10 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
         <div className="w-full border-t dark:border-zinc-700 overflow-clip">
           <div
             className="w-full h-auto select-none relative flex flex-col justify-start items-start bg-white dark:bg-zinc-800"
-            ref={memoElRef}
+            ref={memoContainerRef}
           >
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{getDateTimeString(memo.displayTime)}</span>
-            <div className="w-full px-6 text-base pb-4">
+            <div className="w-full px-6 text-base pb-4 space-y-2">
               <MemoContent memoId={memo.id} content={memo.content} readonly={true} disableFilter />
               <MemoResourceListView resources={memo.resources} />
             </div>

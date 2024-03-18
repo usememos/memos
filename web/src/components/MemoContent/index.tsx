@@ -4,7 +4,6 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/node";
 import { useTranslate } from "@/utils/i18n";
-import Icon from "../Icon";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
@@ -89,15 +88,14 @@ const MemoContent: React.FC<Props> = (props: Props) => {
               return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
             })}
           </div>
-          {memo && showCompactMode && (
+          {showCompactMode && (
             <div className="w-full mt-1">
-              <div
-                className="w-auto inline-flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
+              <span
+                className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
                 onClick={() => setShowCompactMode(false)}
               >
                 <span>{t("memo.show-more")}</span>
-                <Icon.ChevronRight className="w-4 h-auto" />
-              </div>
+              </span>
             </div>
           )}
         </div>
