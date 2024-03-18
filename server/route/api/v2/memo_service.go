@@ -343,12 +343,12 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 
 	// Build the relation between the comment memo and the original memo.
 	memo := createMemoResponse.Memo
-	memoId, err := ExtractMemoIDFromName(memo.Name)
+	memoID, err := ExtractMemoIDFromName(memo.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
 	_, err = s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
-		MemoID:        memoId,
+		MemoID:        memoID,
 		RelatedMemoID: relatedMemo.ID,
 		Type:          store.MemoRelationComment,
 	})
@@ -366,7 +366,7 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 			Level:     store.ActivityLevelInfo,
 			Payload: &storepb.ActivityPayload{
 				MemoComment: &storepb.ActivityMemoCommentPayload{
-					MemoId:        memoId,
+					MemoId:        memoID,
 					RelatedMemoId: relatedMemo.ID,
 				},
 			},
