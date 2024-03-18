@@ -131,30 +131,28 @@ message Memo {
   RowStatus row_status = 3;
 
   // The name of the creator.
-  // Format: users/{username}
+  // Format: users/{uid}
   string creator = 4;
 
-  int32 creator_id = 5;
+  google.protobuf.Timestamp create_time = 5;
 
-  google.protobuf.Timestamp create_time = 6;
+  google.protobuf.Timestamp update_time = 6;
 
-  google.protobuf.Timestamp update_time = 7;
+  google.protobuf.Timestamp display_time = 78;
 
-  google.protobuf.Timestamp display_time = 8;
+  string content = 8;
 
-  string content = 9;
+  Visibility visibility = 9;
 
-  Visibility visibility = 10;
+  bool pinned = 10;
 
-  bool pinned = 11;
+  optional int32 parent_id = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  optional int32 parent_id = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated Resource resources = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated Resource resources = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated MemoRelation relations = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  repeated Reaction reactions = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated Reaction reactions = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {
@@ -176,7 +174,7 @@ message ListMemosRequest {
   string page_token = 2;
 
   // Filter is used to filter memos returned in the list.
-  // Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
+  // Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
   string filter = 3;
 }
 

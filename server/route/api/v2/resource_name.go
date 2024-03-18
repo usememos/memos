@@ -43,13 +43,17 @@ func ExtractWorkspaceSettingKeyFromName(name string) (string, error) {
 	return tokens[0], nil
 }
 
-// ExtractUsernameFromName returns the username from a resource name.
-func ExtractUsernameFromName(name string) (string, error) {
+// ExtractUserIDFromName returns the uid from a resource name.
+func ExtractUserIDFromName(name string) (int32, error) {
 	tokens, err := GetNameParentTokens(name, UserNamePrefix)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
-	return tokens[0], nil
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid user ID %q", tokens[0])
+	}
+	return id, nil
 }
 
 // ExtractInboxIDFromName returns the inbox ID from a resource name.

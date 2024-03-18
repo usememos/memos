@@ -35,6 +35,8 @@
     - [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse)
     - [ListUsersRequest](#memos-api-v2-ListUsersRequest)
     - [ListUsersResponse](#memos-api-v2-ListUsersResponse)
+    - [SearchUsersRequest](#memos-api-v2-SearchUsersRequest)
+    - [SearchUsersResponse](#memos-api-v2-SearchUsersResponse)
     - [UpdateUserRequest](#memos-api-v2-UpdateUserRequest)
     - [UpdateUserResponse](#memos-api-v2-UpdateUserResponse)
     - [UpdateUserSettingRequest](#memos-api-v2-UpdateUserSettingRequest)
@@ -387,7 +389,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{username} |
+| name | [string](#string) |  | The name of the user. Format: users/{uid} |
 | description | [string](#string) |  |  |
 | expires_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 
@@ -449,7 +451,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{username} |
+| name | [string](#string) |  | The name of the user. Format: users/{uid} |
 | access_token | [string](#string) |  | access_token is the access token to delete. |
 
 
@@ -475,7 +477,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{username} |
+| name | [string](#string) |  | The name of the user. Format: users/{uid} |
 
 
 
@@ -500,7 +502,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{username} |
+| name | [string](#string) |  | The name of the user. Format: users/{uid} |
 
 
 
@@ -530,7 +532,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{username} |
+| name | [string](#string) |  | The name of the user. Format: users/{uid} |
 
 
 
@@ -560,7 +562,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{username} |
+| name | [string](#string) |  | The name of the user. Format: users/{uid} |
 
 
 
@@ -595,6 +597,36 @@ Used internally for obfuscating the page token.
 <a name="memos-api-v2-ListUsersResponse"></a>
 
 ### ListUsersResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| users | [User](#memos-api-v2-User) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SearchUsersRequest"></a>
+
+### SearchUsersRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SearchUsersResponse"></a>
+
+### SearchUsersResponse
 
 
 
@@ -677,8 +709,8 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{username} |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  | The name of the user. Format: users/{uid} |
+| id | [int32](#int32) |  | The system generated uid of the user. |
 | role | [User.Role](#memos-api-v2-User-Role) |  |  |
 | username | [string](#string) |  |  |
 | email | [string](#string) |  |  |
@@ -721,7 +753,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{username} |
+| name | [string](#string) |  | The name of the user. Format: users/{uid} |
 | locale | [string](#string) |  | The preferred locale of the user. |
 | appearance | [string](#string) |  | The preferred appearance of the user. |
 | memo_visibility | [string](#string) |  | The default visibility of the memo. |
@@ -760,6 +792,7 @@ Used internally for obfuscating the page token.
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | ListUsers | [ListUsersRequest](#memos-api-v2-ListUsersRequest) | [ListUsersResponse](#memos-api-v2-ListUsersResponse) | ListUsers returns a list of users. |
+| SearchUsers | [SearchUsersRequest](#memos-api-v2-SearchUsersRequest) | [SearchUsersResponse](#memos-api-v2-SearchUsersResponse) | SearchUsers searches users by filter. |
 | GetUser | [GetUserRequest](#memos-api-v2-GetUserRequest) | [GetUserResponse](#memos-api-v2-GetUserResponse) | GetUser gets a user by name. |
 | CreateUser | [CreateUserRequest](#memos-api-v2-CreateUserRequest) | [CreateUserResponse](#memos-api-v2-CreateUserResponse) | CreateUser creates a new user. |
 | UpdateUser | [UpdateUserRequest](#memos-api-v2-UpdateUserRequest) | [UpdateUserResponse](#memos-api-v2-UpdateUserResponse) | UpdateUser updates a user. |
@@ -1240,7 +1273,7 @@ Used internally for obfuscating the page token.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int32](#int32) |  |  |
-| creator | [string](#string) |  |  |
+| creator | [string](#string) |  | The name of the creator. Format: users/{uid} |
 | content_id | [string](#string) |  |  |
 | reaction_type | [Reaction.Type](#memos-api-v2-Reaction-Type) |  |  |
 
@@ -1896,7 +1929,7 @@ Used internally for obfuscating the page token.
 | ----- | ---- | ----- | ----------- |
 | page_size | [int32](#int32) |  | The maximum number of memos to return. |
 | page_token | [string](#string) |  | A page token, received from a previous `ListMemos` call. Provide this to retrieve the subsequent page. |
-| filter | [string](#string) |  | Filter is used to filter memos returned in the list. Format: &#34;creator == users/{username} &amp;&amp; visibilities == [&#39;PUBLIC&#39;, &#39;PROTECTED&#39;]&#34; |
+| filter | [string](#string) |  | Filter is used to filter memos returned in the list. Format: &#34;creator == users/{uid} &amp;&amp; visibilities == [&#39;PUBLIC&#39;, &#39;PROTECTED&#39;]&#34; |
 
 
 
@@ -1930,8 +1963,7 @@ Used internally for obfuscating the page token.
 | id | [int32](#int32) |  | id is the system generated unique identifier. |
 | name | [string](#string) |  | name is the user provided name. |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
-| creator | [string](#string) |  | The name of the creator. Format: users/{username} |
-| creator_id | [int32](#int32) |  |  |
+| creator | [string](#string) |  | The name of the creator. Format: users/{uid} |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | display_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
@@ -2176,7 +2208,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| user | [string](#string) |  | The creator of tags. Format: users/{username} |
+| user | [string](#string) |  | The creator of tags. Format: users/{uid} |
 
 
 
@@ -2206,7 +2238,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| user | [string](#string) |  | The creator of tags. Format: users/{username} |
+| user | [string](#string) |  | The creator of tags. Format: users/{uid} |
 
 
 
@@ -2236,7 +2268,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| user | [string](#string) |  | The creator of tags. Format: users/{username} |
+| user | [string](#string) |  | The creator of tags. Format: users/{uid} |
 | old_name | [string](#string) |  |  |
 | new_name | [string](#string) |  |  |
 
@@ -2269,7 +2301,7 @@ Used internally for obfuscating the page token.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  |  |
-| creator | [string](#string) |  | The creator of tags. Format: users/{username} |
+| creator | [string](#string) |  | The creator of tags. Format: users/{uid} |
 
 
 

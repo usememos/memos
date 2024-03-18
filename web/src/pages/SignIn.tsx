@@ -33,8 +33,6 @@ const SignIn = () => {
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
     WorkspaceGeneralSetting.fromPartial({});
 
-  console.log("workspaceGeneralSetting", workspaceGeneralSetting);
-
   useEffect(() => {
     const fetchIdentityProviderList = async () => {
       const { data: identityProviderList } = await api.getIdentityProviderList();

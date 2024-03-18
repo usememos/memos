@@ -341,9 +341,13 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo relation")
 	}
-	if memo.Visibility != apiv2pb.Visibility_PRIVATE && memo.CreatorId != relatedMemo.CreatorID {
+	creatorID, err := ExtractUserIDFromName(memo.Creator)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo creator")
+	}
+	if memo.Visibility != apiv2pb.Visibility_PRIVATE && creatorID != relatedMemo.CreatorID {
 		activity, err := s.Store.CreateActivity(ctx, &store.Activity{
-			CreatorID: memo.CreatorId,
+			CreatorID: creatorID,
 			Type:      store.ActivityTypeMemoComment,
 			Level:     store.ActivityLevelInfo,
 			Payload: &storepb.ActivityPayload{
@@ -357,7 +361,7 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 			return nil, status.Errorf(codes.Internal, "failed to create activity")
 		}
 		if _, err := s.Store.CreateInbox(ctx, &store.Inbox{
-			SenderID:   memo.CreatorId,
+			SenderID:   creatorID,
 			ReceiverID: relatedMemo.CreatorID,
 			Status:     store.UNREAD,
 			Message: &storepb.InboxMessage{
@@ -409,12 +413,12 @@ func (s *APIV2Service) ListMemoComments(ctx context.Context, request *apiv2pb.Li
 }
 
 func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.GetUserMemosStatsRequest) (*apiv2pb.GetUserMemosStatsResponse, error) {
-	username, err := ExtractUsernameFromName(request.Name)
+	userID, err := ExtractUserIDFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid username")
+		return nil, errors.Wrap(err, "invalid user name")
 	}
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Username: &username,
+		ID: &userID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
@@ -534,8 +538,7 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Id:          int32(memo.ID),
 		Name:        memo.ResourceName,
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
-		Creator:     fmt.Sprintf("%s%s", UserNamePrefix, creator.Username),
-		CreatorId:   int32(memo.CreatorID),
+		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
@@ -653,12 +656,12 @@ func (s *APIV2Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 			}
 		}
 		if filter.Creator != nil {
-			username, err := ExtractUsernameFromName(*filter.Creator)
+			userID, err := ExtractUserIDFromName(*filter.Creator)
 			if err != nil {
-				return status.Errorf(codes.InvalidArgument, "invalid creator name")
+				return errors.Wrap(err, "invalid user name")
 			}
 			user, err := s.Store.GetUser(ctx, &store.FindUser{
-				Username: &username,
+				ID: &userID,
 			})
 			if err != nil {
 				return status.Errorf(codes.Internal, "failed to get user")
@@ -731,11 +734,11 @@ func parseListMemosFilter(expression string) (*ListMemosFilter, error) {
 		return nil, err
 	}
 	callExpr := expr.GetExpr().GetCallExpr()
-	findField(callExpr, filter)
+	findListMemosField(callExpr, filter)
 	return filter, nil
 }
 
-func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
+func findListMemosField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 	if len(callExpr.Args) == 2 {
 		idExpr := callExpr.Args[0].GetIdentExpr()
 		if idExpr != nil {
@@ -775,7 +778,7 @@ func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 	for _, arg := range callExpr.Args {
 		callExpr := arg.GetCallExpr()
 		if callExpr != nil {
-			findField(callExpr, filter)
+			findListMemosField(callExpr, filter)
 		}
 	}
 }
@@ -796,31 +799,41 @@ func (s *APIV2Service) DispatchMemoDeletedWebhook(ctx context.Context, memo *api
 }
 
 func (s *APIV2Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *apiv2pb.Memo, activityType string) error {
+	creatorID, err := ExtractUserIDFromName(memo.Creator)
+	if err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid memo creator")
+	}
 	webhooks, err := s.Store.ListWebhooks(ctx, &store.FindWebhook{
-		CreatorID: &memo.CreatorId,
+		CreatorID: &creatorID,
 	})
 	if err != nil {
 		return err
 	}
 	for _, hook := range webhooks {
-		payload := convertMemoToWebhookPayload(memo)
+		payload, err := convertMemoToWebhookPayload(memo)
+		if err != nil {
+			return errors.Wrap(err, "failed to convert memo to webhook payload")
+		}
 		payload.ActivityType = activityType
 		payload.URL = hook.Url
-		err := webhook.Post(*payload)
-		if err != nil {
+		if err := webhook.Post(*payload); err != nil {
 			return errors.Wrap(err, "failed to post webhook")
 		}
 	}
 	return nil
 }
 
-func convertMemoToWebhookPayload(memo *apiv2pb.Memo) *webhook.WebhookPayload {
+func convertMemoToWebhookPayload(memo *apiv2pb.Memo) (*webhook.WebhookPayload, error) {
+	creatorID, err := ExtractUserIDFromName(memo.Creator)
+	if err != nil {
+		return nil, errors.Wrap(err, "invalid memo creator")
+	}
 	return &webhook.WebhookPayload{
-		CreatorID: memo.CreatorId,
+		CreatorID: creatorID,
 		CreatedTs: time.Now().Unix(),
 		Memo: &webhook.Memo{
 			ID:         memo.Id,
-			CreatorID:  memo.CreatorId,
+			CreatorID:  creatorID,
 			CreatedTs:  memo.CreateTime.Seconds,
 			UpdatedTs:  memo.UpdateTime.Seconds,
 			Content:    memo.Content,
@@ -851,5 +864,5 @@ func convertMemoToWebhookPayload(memo *apiv2pb.Memo) *webhook.WebhookPayload {
 				return relations
 			}(),
 		},
-	}
+	}, nil
 }

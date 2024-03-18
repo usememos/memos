@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useInboxStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
+import { useInboxStore, useMemoStore } from "@/store/v1";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v2/inbox_service";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -104,7 +104,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
           onClick={handleNavigateToMemo}
         >
           {t("inbox.memo-comment", {
-            user: extractUsernameFromName(inbox.sender),
+            user: inbox.sender,
             memo: `memos#${relatedMemo?.name}`,
           })}
         </p>

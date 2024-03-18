@@ -1,7 +1,7 @@
 import { uniq } from "lodash-es";
 import { memo, useEffect, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractUsernameFromName, useUserStore } from "@/store/v1";
+import { useUserStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { Reaction, Reaction_Type } from "@/types/proto/api/v2/reaction_service";
 import { User } from "@/types/proto/api/v2/user_service";
@@ -23,7 +23,7 @@ const MemoReactionListView = (props: Props) => {
     (async () => {
       const reactionGroup = new Map<Reaction_Type, User[]>();
       for (const reaction of reactions) {
-        const user = await userStore.getOrFetchUserByUsername(extractUsernameFromName(reaction.creator));
+        const user = await userStore.getOrFetchUserByName(reaction.creator);
         const users = reactionGroup.get(reaction.reactionType) || [];
         users.push(user);
         reactionGroup.set(reaction.reactionType, uniq(users));

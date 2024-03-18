@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore, extractUsernameFromName } from "@/store/v1";
+import { useUserStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -37,7 +37,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const currentUser = useCurrentUser();
   const userStore = useUserStore();
   const user = useCurrentUser();
-  const [creator, setCreator] = useState(userStore.getUserByUsername(extractUsernameFromName(memo.creator)));
+  const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(
@@ -49,7 +49,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   // Initial related data: creator.
   useEffect(() => {
     (async () => {
-      const user = await userStore.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
+      const user = await userStore.getOrFetchUserByName(memo.creator);
       setCreator(user);
     })();
   }, []);
@@ -87,17 +87,13 @@ const MemoView: React.FC<Props> = (props: Props) => {
         <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
           {creator && (
             <div className="w-full flex flex-row justify-start items-center">
-              <Link
-                className="w-auto hover:opacity-80"
-                to={`/u/${encodeURIComponent(extractUsernameFromName(memo.creator))}`}
-                unstable_viewTransition
-              >
+              <Link className="w-auto hover:opacity-80" to={`/u/${encodeURIComponent(creator.username)}`} unstable_viewTransition>
                 <UserAvatar className="mr-2 shrink-0" avatarUrl={creator.avatarUrl} />
               </Link>
               <div className="w-full flex flex-col justify-center items-start">
                 <Link
                   className="w-auto leading-none hover:opacity-80"
-                  to={`/u/${encodeURIComponent(extractUsernameFromName(memo.creator))}`}
+                  to={`/u/${encodeURIComponent(creator.username)}`}
                   unstable_viewTransition
                 >
                   <span className="text-gray-600 text-lg leading-none max-w-[80%] truncate dark:text-gray-400">

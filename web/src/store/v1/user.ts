@@ -2,17 +2,16 @@ import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { authServiceClient, userServiceClient } from "@/grpcweb";
 import { User, UserSetting, User_Role } from "@/types/proto/api/v2/user_service";
-import { UserNamePrefix, extractUsernameFromName } from "./resourceName";
 
 interface State {
-  userMapByUsername: Record<string, User>;
-  // The name of current user. Format: `users/${username}`
+  userMapByName: Record<string, User>;
+  // The name of current user. Format: `users/${uid}`
   currentUser?: string;
   userSetting?: UserSetting;
 }
 
 const getDefaultState = (): State => ({
-  userMapByUsername: {},
+  userMapByName: {},
   currentUser: undefined,
   userSetting: undefined,
 });
@@ -32,40 +31,51 @@ export const useUserStore = create(
   combine(getDefaultState(), (set, get) => ({
     fetchUsers: async () => {
       const { users } = await userServiceClient.listUsers({});
-      const userMap = get().userMapByUsername;
+      const userMap = get().userMapByName;
       for (const user of users) {
-        userMap[user.username] = user;
+        userMap[user.name] = user;
       }
-      set({ userMapByUsername: userMap });
+      set({ userMapByName: userMap });
       return users;
     },
-    getOrFetchUserByUsername: async (username: string) => {
-      const userMap = get().userMapByUsername;
-      if (userMap[username]) {
-        return userMap[username] as User;
+    getOrFetchUserByName: async (name: string) => {
+      const userMap = get().userMapByName;
+      if (userMap[name]) {
+        return userMap[name] as User;
       }
-      if (requestCache.has(username)) {
-        return await requestCache.get(username);
+      if (requestCache.has(name)) {
+        return await requestCache.get(name);
       }
 
       const promisedUser = userServiceClient
         .getUser({
-          name: `${UserNamePrefix}${username}`,
+          name: name,
         })
         .then(({ user }) => user);
-      requestCache.set(username, promisedUser);
+      requestCache.set(name, promisedUser);
       const user = await promisedUser;
       if (!user) {
         throw new Error("User not found");
       }
-      requestCache.delete(username);
-      userMap[username] = user;
-      set({ userMapByUsername: userMap });
+      requestCache.delete(name);
+      userMap[name] = user;
+      set({ userMapByName: userMap });
       return user;
     },
-    getUserByUsername: (username: string) => {
-      const userMap = get().userMapByUsername;
-      return userMap[username];
+    searchUsers: async (filter: string) => {
+      const { users } = await userServiceClient.searchUsers({
+        filter,
+      });
+      const userMap = get().userMapByName;
+      for (const user of users) {
+        userMap[user.name] = user;
+      }
+      set({ userMapByName: userMap });
+      return users;
+    },
+    getUserByName: (name: string) => {
+      const userMap = get().userMapByName;
+      return userMap[name];
     },
     updateUser: async (user: Partial<User>, updateMask: string[]) => {
       const { user: updatedUser } = await userServiceClient.updateUser({
@@ -75,12 +85,12 @@ export const useUserStore = create(
       if (!updatedUser) {
         throw new Error("User not found");
       }
-      const userMap = get().userMapByUsername;
-      if (user.name !== updatedUser.name) {
-        delete userMap[extractUsernameFromName(user.name)];
+      const userMap = get().userMapByName;
+      if (user.name && user.name !== updatedUser.name) {
+        delete userMap[user.name];
       }
-      userMap[updatedUser.username] = updatedUser;
-      set({ userMapByUsername: userMap });
+      userMap[updatedUser.name] = updatedUser;
+      set({ userMapByName: userMap });
       if (user.name === get().currentUser) {
         set({ currentUser: updatedUser.name });
       }
@@ -90,19 +100,18 @@ export const useUserStore = create(
       await userServiceClient.deleteUser({
         name,
       });
-      const username = extractUsernameFromName(name);
-      const userMap = get().userMapByUsername;
-      delete userMap[username];
-      set({ userMapByUsername: userMap });
+      const userMap = get().userMapByName;
+      delete userMap[name];
+      set({ userMapByName: userMap });
     },
     fetchCurrentUser: async () => {
       const { user } = await authServiceClient.getAuthStatus({});
       if (!user) {
         throw new Error("User not found");
       }
-      const userMap = get().userMapByUsername;
-      userMap[user.username] = user;
-      set({ currentUser: user.name, userMapByUsername: userMap });
+      const userMap = get().userMapByName;
+      userMap[user.name] = user;
+      set({ currentUser: user.name, userMapByName: userMap });
       const { setting } = await userServiceClient.getUserSetting({});
       set({
         userSetting: UserSetting.fromPartial({

@@ -7,7 +7,7 @@ import { downloadFileFromUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
-import { useUserStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
+import { useUserStore, useMemoStore } from "@/store/v1";
 import { Visibility } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
@@ -33,12 +33,12 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const loadingState = useLoading();
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const memo = memoStore.getMemoById(memoId);
-  const user = userStore.getUserByUsername(extractUsernameFromName(memo.creator));
-  const readonly = memo?.creatorId !== currentUser?.id;
+  const user = userStore.getUserByName(memo.creator);
+  const readonly = memo?.creator !== currentUser?.name;
 
   useEffect(() => {
     (async () => {
-      await userStore.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
+      await userStore.getOrFetchUserByName(memo.creator);
       loadingState.setFinish();
     })();
   }, []);

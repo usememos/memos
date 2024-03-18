@@ -8,10 +8,12 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/cel-go/cel"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/exp/slices"
+	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -46,13 +48,40 @@ func (s *APIV2Service) ListUsers(ctx context.Context, _ *apiv2pb.ListUsersReques
 	return response, nil
 }
 
-func (s *APIV2Service) GetUser(ctx context.Context, request *apiv2pb.GetUserRequest) (*apiv2pb.GetUserResponse, error) {
-	username, err := ExtractUsernameFromName(request.Name)
+func (s *APIV2Service) SearchUsers(ctx context.Context, request *apiv2pb.SearchUsersRequest) (*apiv2pb.SearchUsersResponse, error) {
+	if request.Filter == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "filter is empty")
+	}
+	filter, err := parseSearchUsersFilter(request.Filter)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "name is required")
+		return nil, status.Errorf(codes.InvalidArgument, "failed to parse filter: %v", err)
+	}
+	userFind := &store.FindUser{}
+	if filter.Username != nil {
+		userFind.Username = filter.Username
+	}
+
+	users, err := s.Store.ListUsers(ctx, userFind)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to search users: %v", err)
+	}
+
+	response := &apiv2pb.SearchUsersResponse{
+		Users: []*apiv2pb.User{},
+	}
+	for _, user := range users {
+		response.Users = append(response.Users, convertUserFromStore(user))
+	}
+	return response, nil
+}
+
+func (s *APIV2Service) GetUser(ctx context.Context, request *apiv2pb.GetUserRequest) (*apiv2pb.GetUserResponse, error) {
+	userID, err := ExtractUserIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Username: &username,
+		ID: &userID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -76,13 +105,8 @@ func (s *APIV2Service) CreateUser(ctx context.Context, request *apiv2pb.CreateUs
 	if currentUser.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-
-	username, err := ExtractUsernameFromName(request.User.Name)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "name is required")
-	}
-	if !util.ResourceNameMatcher.MatchString(strings.ToLower(username)) {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", username)
+	if !util.ResourceNameMatcher.MatchString(strings.ToLower(request.User.Username)) {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 	}
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -90,7 +114,7 @@ func (s *APIV2Service) CreateUser(ctx context.Context, request *apiv2pb.CreateUs
 	}
 
 	user, err := s.Store.CreateUser(ctx, &store.User{
-		Username:     username,
+		Username:     request.User.Username,
 		Role:         convertUserRoleToStore(request.User.Role),
 		Email:        request.User.Email,
 		Nickname:     request.User.Nickname,
@@ -107,22 +131,22 @@ func (s *APIV2Service) CreateUser(ctx context.Context, request *apiv2pb.CreateUs
 }
 
 func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUserRequest) (*apiv2pb.UpdateUserResponse, error) {
-	username, err := ExtractUsernameFromName(request.User.Name)
+	userID, err := ExtractUserIDFromName(request.User.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "name is required")
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
 	currentUser, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
-	if currentUser.Username != username && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
+	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
 
-	user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
+	user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
@@ -179,19 +203,19 @@ func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUs
 }
 
 func (s *APIV2Service) DeleteUser(ctx context.Context, request *apiv2pb.DeleteUserRequest) (*apiv2pb.DeleteUserResponse, error) {
-	username, err := ExtractUsernameFromName(request.Name)
+	userID, err := ExtractUserIDFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "name is required")
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
 	currentUser, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
-	if currentUser.Username != username && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
+	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
+	user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
@@ -311,35 +335,15 @@ func (s *APIV2Service) UpdateUserSetting(ctx context.Context, request *apiv2pb.U
 }
 
 func (s *APIV2Service) ListUserAccessTokens(ctx context.Context, request *apiv2pb.ListUserAccessTokensRequest) (*apiv2pb.ListUserAccessTokensResponse, error) {
-	user, err := getCurrentUser(ctx, s.Store)
+	currentUser, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
-	if user == nil {
+	if currentUser == nil {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	userID := user.ID
-	username, err := ExtractUsernameFromName(request.Name)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "name is required")
-	}
-	// List access token for other users need to be verified.
-	if user.Username != username {
-		// Normal users can only list their access tokens.
-		if user.Role == store.RoleUser {
-			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-		}
-
-		// The request user must be exist.
-		requestUser, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
-		if requestUser == nil || err != nil {
-			return nil, status.Errorf(codes.NotFound, "fail to find user %s", username)
-		}
-		userID = requestUser.ID
-	}
-
-	userAccessTokens, err := s.Store.GetUserAccessTokens(ctx, userID)
+	userAccessTokens, err := s.Store.GetUserAccessTokens(ctx, currentUser.ID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list access tokens: %v", err)
 	}
@@ -493,7 +497,7 @@ func (s *APIV2Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 
 func convertUserFromStore(user *store.User) *apiv2pb.User {
 	return &apiv2pb.User{
-		Name:        fmt.Sprintf("%s%s", UserNamePrefix, user.Username),
+		Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
 		Id:          user.ID,
 		RowStatus:   convertRowStatusFromStore(user.RowStatus),
 		CreateTime:  timestamppb.New(time.Unix(user.CreatedTs, 0)),
@@ -530,5 +534,52 @@ func convertUserRoleToStore(role apiv2pb.User_Role) store.Role {
 		return store.RoleUser
 	default:
 		return store.RoleUser
+	}
+}
+
+// SearchUsersFilterCELAttributes are the CEL attributes for SearchUsersFilter.
+var SearchUsersFilterCELAttributes = []cel.EnvOption{
+	cel.Variable("username", cel.StringType),
+}
+
+type SearchUsersFilter struct {
+	Username *string
+}
+
+func parseSearchUsersFilter(expression string) (*SearchUsersFilter, error) {
+	e, err := cel.NewEnv(SearchUsersFilterCELAttributes...)
+	if err != nil {
+		return nil, err
+	}
+	ast, issues := e.Compile(expression)
+	if issues != nil {
+		return nil, errors.Errorf("found issue %v", issues)
+	}
+	filter := &SearchUsersFilter{}
+	expr, err := cel.AstToParsedExpr(ast)
+	if err != nil {
+		return nil, err
+	}
+	callExpr := expr.GetExpr().GetCallExpr()
+	findSearchUsersField(callExpr, filter)
+	return filter, nil
+}
+
+func findSearchUsersField(callExpr *expr.Expr_Call, filter *SearchUsersFilter) {
+	if len(callExpr.Args) == 2 {
+		idExpr := callExpr.Args[0].GetIdentExpr()
+		if idExpr != nil {
+			if idExpr.Name == "username" {
+				username := callExpr.Args[1].GetConstExpr().GetStringValue()
+				filter.Username = &username
+			}
+			return
+		}
+	}
+	for _, arg := range callExpr.Args {
+		callExpr := arg.GetCallExpr()
+		if callExpr != nil {
+			findSearchUsersField(callExpr, filter)
+		}
 	}
 }

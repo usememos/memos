@@ -32,7 +32,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const [showCompactMode, setShowCompactMode] = useState<boolean>(false);
   const memo = memoId ? memoStore.getMemoById(memoId) : null;
   const nodes = window.parse(content);
-  const allowEdit = !props.readonly && memo && currentUser?.id === memo.creatorId;
+  const allowEdit = !props.readonly && memo && currentUser?.name === memo.creator;
 
   // Initial compact mode.
   useEffect(() => {

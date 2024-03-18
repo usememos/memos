@@ -200,7 +200,7 @@ paths:
         - name: filter
           description: |-
             Filter is used to filter memos returned in the list.
-            Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
+            Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -424,6 +424,9 @@ paths:
           type: integer
           format: int32
         - name: reaction.creator
+          description: |-
+            The name of the creator.
+            Format: users/{uid}
           in: query
           required: false
           type: string
@@ -605,10 +608,7 @@ paths:
                 type: string
                 title: |-
                   The name of the creator.
-                  Format: users/{username}
-              creatorId:
-                type: integer
-                format: int32
+                  Format: users/{uid}
               createTime:
                 type: string
                 format: date-time
@@ -840,7 +840,7 @@ paths:
         - name: user
           description: |-
             The creator of tags.
-            Format: users/{username}
+            Format: users/{uid}
           in: query
           required: false
           type: string
@@ -866,7 +866,7 @@ paths:
         - name: tag.creator
           description: |-
             The creator of tags.
-            Format: users/{username}
+            Format: users/{uid}
           in: query
           required: false
           type: string
@@ -908,7 +908,7 @@ paths:
         - name: user
           description: |-
             The creator of tags.
-            Format: users/{username}
+            Format: users/{uid}
           in: query
           required: false
           type: string
@@ -948,7 +948,7 @@ paths:
         - name: user
           description: |-
             The creator of tags.
-            Format: users/{username}
+            Format: users/{uid}
           in: query
           required: false
           type: string
@@ -995,6 +995,26 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/v2User'
+      tags:
+        - UserService
+  /api/v2/users/search:
+    get:
+      summary: SearchUsers searches users by filter.
+      operationId: UserService_SearchUsers
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2SearchUsersResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          type: string
       tags:
         - UserService
   /api/v2/webhooks:
@@ -1282,7 +1302,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{username}
+            Format: users/{uid}
           in: path
           required: true
           type: string
@@ -1305,7 +1325,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{username}
+            Format: users/{uid}
           in: path
           required: true
           type: string
@@ -1329,7 +1349,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{username}
+            Format: users/{uid}
           in: path
           required: true
           type: string
@@ -1352,7 +1372,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{username}
+            Format: users/{uid}
           in: path
           required: true
           type: string
@@ -1381,7 +1401,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{username}
+            Format: users/{uid}
           in: path
           required: true
           type: string
@@ -1410,7 +1430,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{username}
+            Format: users/{uid}
           in: path
           required: true
           type: string
@@ -1434,7 +1454,7 @@ paths:
         - name: setting.name
           description: |-
             The name of the user.
-            Format: users/{username}
+            Format: users/{uid}
           in: path
           required: true
           type: string
@@ -1476,7 +1496,7 @@ paths:
         - name: user.name
           description: |-
             The name of the user.
-            Format: users/{username}
+            Format: users/{uid}
           in: path
           required: true
           type: string
@@ -1490,6 +1510,7 @@ paths:
               id:
                 type: integer
                 format: int32
+                description: The system generated uid of the user.
               role:
                 $ref: '#/definitions/UserRole'
               username:
@@ -1597,6 +1618,9 @@ definitions:
         format: int32
       creator:
         type: string
+        title: |-
+          The name of the creator.
+          Format: users/{uid}
       contentId:
         type: string
       reactionType:
@@ -1632,7 +1656,7 @@ definitions:
         type: string
         title: |-
           The name of the user.
-          Format: users/{username}
+          Format: users/{uid}
       locale:
         type: string
         description: The preferred locale of the user.
@@ -2034,10 +2058,7 @@ definitions:
         type: string
         title: |-
           The name of the creator.
-          Format: users/{username}
-      creatorId:
-        type: integer
-        format: int32
+          Format: users/{uid}
       createTime:
         type: string
         format: date-time
@@ -2123,6 +2144,14 @@ definitions:
       memoId:
         type: integer
         format: int32
+  v2SearchUsersResponse:
+    type: object
+    properties:
+      users:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2User'
   v2SetMemoRelationsResponse:
     type: object
   v2SetMemoResourcesResponse:
@@ -2158,7 +2187,7 @@ definitions:
         type: string
         title: |-
           The creator of tags.
-          Format: users/{username}
+          Format: users/{uid}
   v2UpdateInboxResponse:
     type: object
     properties:
@@ -2211,10 +2240,11 @@ definitions:
         type: string
         title: |-
           The name of the user.
-          Format: users/{username}
+          Format: users/{uid}
       id:
         type: integer
         format: int32
+        description: The system generated uid of the user.
       role:
         $ref: '#/definitions/UserRole'
       username:

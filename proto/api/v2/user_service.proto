@@ -17,6 +17,11 @@ service UserService {
     option (google.api.http) = {get: "/api/v2/users"};
   }
 
+  // SearchUsers searches users by filter.
+  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {
+    option (google.api.http) = {get: "/api/v2/users/search"};
+  }
+
   // GetUser gets a user by name.
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {get: "/api/v2/{name=users/*}"};
@@ -86,9 +91,10 @@ service UserService {
 
 message User {
   // The name of the user.
-  // Format: users/{username}
+  // Format: users/{uid}
   string name = 1;
 
+  // The system generated uid of the user.
   int32 id = 2;
 
   enum Role {
@@ -124,9 +130,17 @@ message ListUsersResponse {
   repeated User users = 1;
 }
 
+message SearchUsersRequest {
+  string filter = 1;
+}
+
+message SearchUsersResponse {
+  repeated User users = 1;
+}
+
 message GetUserRequest {
   // The name of the user.
-  // Format: users/{username}
+  // Format: users/{uid}
   string name = 1;
 }
 
@@ -154,7 +168,7 @@ message UpdateUserResponse {
 
 message DeleteUserRequest {
   // The name of the user.
-  // Format: users/{username}
+  // Format: users/{uid}
   string name = 1;
 }
 
@@ -162,7 +176,7 @@ message DeleteUserResponse {}
 
 message UserSetting {
   // The name of the user.
-  // Format: users/{username}
+  // Format: users/{uid}
   string name = 1;
   // The preferred locale of the user.
   string locale = 2;
@@ -176,7 +190,7 @@ message UserSetting {
 
 message GetUserSettingRequest {
   // The name of the user.
-  // Format: users/{username}
+  // Format: users/{uid}
   string name = 1;
 }
 
@@ -203,7 +217,7 @@ message UserAccessToken {
 
 message ListUserAccessTokensRequest {
   // The name of the user.
-  // Format: users/{username}
+  // Format: users/{uid}
   string name = 1;
 }
 
@@ -213,7 +227,7 @@ message ListUserAccessTokensResponse {
 
 message CreateUserAccessTokenRequest {
   // The name of the user.
-  // Format: users/{username}
+  // Format: users/{uid}
   string name = 1;
 
   string description = 2;
@@ -227,7 +241,7 @@ message CreateUserAccessTokenResponse {
 
 message DeleteUserAccessTokenRequest {
   // The name of the user.
-  // Format: users/{username}
+  // Format: users/{uid}
   string name = 1;
   // access_token is the access token to delete.
   string access_token = 2;
