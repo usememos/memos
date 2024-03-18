@@ -334,7 +334,7 @@ func (s *APIV2Service) UpdateUserSetting(ctx context.Context, request *apiv2pb.U
 	}, nil
 }
 
-func (s *APIV2Service) ListUserAccessTokens(ctx context.Context, request *apiv2pb.ListUserAccessTokensRequest) (*apiv2pb.ListUserAccessTokensResponse, error) {
+func (s *APIV2Service) ListUserAccessTokens(ctx context.Context, _ *apiv2pb.ListUserAccessTokensRequest) (*apiv2pb.ListUserAccessTokensResponse, error) {
 	currentUser, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
