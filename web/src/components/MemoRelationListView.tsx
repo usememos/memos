@@ -1,7 +1,7 @@
 import { Tooltip } from "@mui/joy";
 import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
+import { MemoNamePrefix, extractMemoIdFromName, useMemoStore } from "@/store/v1";
 import { MemoRelation } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import Icon from "./Icon";
@@ -25,7 +25,7 @@ const MemoRelationListView = (props: Props) => {
             (relation) =>
               relation.memoId === extractMemoIdFromName(memo.name) && relation.relatedMemoId !== extractMemoIdFromName(memo.name),
           )
-          .map((relation) => memoStore.getOrFetchMemoById(relation.relatedMemoId, { skipStore: true })),
+          .map((relation) => memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${relation.relatedMemoId}`, { skipStore: true })),
       );
       setReferencingMemoList(referencingMemoList);
       const referencedMemoList = await Promise.all(
@@ -34,7 +34,7 @@ const MemoRelationListView = (props: Props) => {
             (relation) =>
               relation.memoId !== extractMemoIdFromName(memo.name) && relation.relatedMemoId === extractMemoIdFromName(memo.name),
           )
-          .map((relation) => memoStore.getOrFetchMemoById(relation.memoId, { skipStore: true })),
+          .map((relation) => memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${relation.memoId}`, { skipStore: true })),
       );
       setReferencedMemoList(referencedMemoList);
     })();

@@ -8,7 +8,7 @@ import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
+import { MemoNamePrefix, extractMemoIdFromName, useMemoStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -19,26 +19,28 @@ const MemoDetail = () => {
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
-  const memoName = params.memoName;
-  const memo = memoStore.getMemoByName(memoName || "");
+  const resourceId = params.resourceId;
+  const memo = memoStore.getMemoByResourceId(resourceId || "");
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const commentRelations =
     memo?.relations.filter(
       (relation) => relation.relatedMemoId === extractMemoIdFromName(memo.name) && relation.type === MemoRelation_Type.COMMENT,
     ) || [];
-  const comments = commentRelations.map((relation) => memoStore.getMemoById(relation.memoId)).filter((memo) => memo) as any as Memo[];
+  const comments = commentRelations
+    .map((relation) => memoStore.getMemoByName(`${MemoNamePrefix}${relation.memoId}`))
+    .filter((memo) => memo) as any as Memo[];
 
   // Prepare memo.
   useEffect(() => {
-    if (memoName) {
-      memoStore.searchMemos(`resource_name == "${memoName}"`).catch((error: ClientError) => {
+    if (resourceId) {
+      memoStore.searchMemos(`resource_name == "${resourceId}"`).catch((error: ClientError) => {
         toast.error(error.details);
         navigateTo("/403");
       });
     } else {
       navigateTo("/404");
     }
-  }, [memoName]);
+  }, [resourceId]);
 
   // Prepare memo comments.
   useEffect(() => {
@@ -48,13 +50,13 @@ const MemoDetail = () => {
 
     (async () => {
       if (memo.parentId) {
-        memoStore.getOrFetchMemoById(memo.parentId).then((memo: Memo) => {
+        memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memo.parentId}`).then((memo: Memo) => {
           setParentMemo(memo);
         });
       } else {
         setParentMemo(undefined);
       }
-      await Promise.all(commentRelations.map((relation) => memoStore.getOrFetchMemoById(relation.memoId)));
+      await Promise.all(commentRelations.map((relation) => memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${relation.memoId}`)));
     })();
   }, [memo]);
 
@@ -63,8 +65,8 @@ const MemoDetail = () => {
   }
 
   const handleCommentCreated = async (commentId: number) => {
-    await memoStore.getOrFetchMemoById(commentId);
-    await memoStore.getOrFetchMemoById(extractMemoIdFromName(memo.name), { skipCache: true });
+    await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${commentId}`);
+    await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
   };
 
   return (

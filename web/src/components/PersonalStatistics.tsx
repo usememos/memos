@@ -16,7 +16,7 @@ const PersonalStatistics = (props: Props) => {
   const [memoAmount, setMemoAmount] = useState(0);
   const [isRequesting, setIsRequesting] = useState(false);
   const days = Math.ceil((Date.now() - user.createTime!.getTime()) / 86400000);
-  const memos = Object.values(memoStore.getState().memoMapById);
+  const memos = Object.values(memoStore.getState().memoMapByName);
   const tags = tagStore.state.tags.length;
 
   useEffect(() => {

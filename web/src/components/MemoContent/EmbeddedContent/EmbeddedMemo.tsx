@@ -17,7 +17,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   const context = useContext(RendererContext);
   const loadingState = useLoading();
   const memoStore = useMemoStore();
-  const memo = memoStore.getMemoByName(resourceId);
+  const memo = memoStore.getMemoByResourceId(resourceId);
   const resourceName = `memos/${resourceId}`;
 
   useEffect(() => {

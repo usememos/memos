@@ -102,7 +102,7 @@ const MemoEditor = (props: Props) => {
 
   useEffect(() => {
     if (memoId) {
-      memoStore.getOrFetchMemoById(memoId ?? UNKNOWN_ID).then((memo) => {
+      memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`).then((memo) => {
         if (memo) {
           handleEditorFocus();
           setState((prevState) => ({
@@ -287,7 +287,7 @@ const MemoEditor = (props: Props) => {
     try {
       // Update memo.
       if (memoId && memoId !== UNKNOWN_ID) {
-        const prevMemo = await memoStore.getOrFetchMemoById(memoId ?? UNKNOWN_ID);
+        const prevMemo = await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`);
         if (prevMemo) {
           const memo = await memoStore.updateMemo(
             {
@@ -306,7 +306,7 @@ const MemoEditor = (props: Props) => {
             relations: state.relationList,
           });
           const memoId = extractMemoIdFromName(memo.name);
-          await memoStore.getOrFetchMemoById(memoId, { skipCache: true });
+          await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`, { skipCache: true });
           if (onConfirm) {
             onConfirm(memoId);
           }
@@ -337,7 +337,7 @@ const MemoEditor = (props: Props) => {
           relations: state.relationList,
         });
         const memoId = extractMemoIdFromName(memo.name);
-        await memoStore.getOrFetchMemoById(memoId, { skipCache: true });
+        await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`, { skipCache: true });
         if (onConfirm) {
           onConfirm(memoId);
         }

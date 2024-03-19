@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore } from "@/store/v1";
+import { MemoNamePrefix, useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/node";
 import { useTranslate } from "@/utils/i18n";
 import Renderer from "./Renderer";
@@ -30,7 +30,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<boolean>(false);
-  const memo = memoId ? memoStore.getMemoById(memoId) : null;
+  const memo = memoId ? memoStore.getMemoByName(`${MemoNamePrefix}${memoId}`) : null;
   const nodes = window.parse(content);
   const allowEdit = !props.readonly && memo && currentUser?.name === memo.creator;
 

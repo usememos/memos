@@ -13,7 +13,7 @@ const ReferencedMemo = ({ resourceId, params: paramsStr }: Props) => {
   const navigateTo = useNavigateTo();
   const loadingState = useLoading();
   const memoStore = useMemoStore();
-  const memo = memoStore.getMemoByName(resourceId);
+  const memo = memoStore.getMemoByResourceId(resourceId);
   const params = new URLSearchParams(paramsStr);
 
   useEffect(() => {

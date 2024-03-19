@@ -19,7 +19,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   const maxDatetimeValue = getNormalizedTimeString();
 
   useEffect(() => {
-    memoStore.getOrFetchMemoById(memoId).then((memo) => {
+    memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`).then((memo) => {
       if (memo) {
         const datetime = getNormalizedTimeString(memo.createTime);
         setCreatedAt(datetime);
