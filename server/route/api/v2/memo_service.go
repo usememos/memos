@@ -883,17 +883,6 @@ func convertMemoToWebhookPayload(memo *apiv2pb.Memo) (*webhook.WebhookPayload, e
 				}
 				return resources
 			}(),
-			RelationList: func() []*webhook.MemoRelation {
-				relations := []*webhook.MemoRelation{}
-				for _, relation := range memo.Relations {
-					relations = append(relations, &webhook.MemoRelation{
-						MemoID:        relation.MemoId,
-						RelatedMemoID: relation.RelatedMemoId,
-						Type:          relation.Type.String(),
-					})
-				}
-				return relations
-			}(),
 		},
 	}, nil
 }

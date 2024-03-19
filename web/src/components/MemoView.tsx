@@ -41,7 +41,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(
-    (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemoId === extractMemoIdFromName(memo.name),
+    (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo === memo.name,
   ).length;
   const readonly = memo.creator !== user?.name;
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.name}`);

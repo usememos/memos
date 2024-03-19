@@ -1226,8 +1226,8 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| memo_id | [int32](#int32) |  |  |
-| related_memo_id | [int32](#int32) |  |  |
+| memo | [string](#string) |  | The name of memo. Format: &#34;memos/{uid}&#34; |
+| related_memo | [string](#string) |  | The name of related memo. Format: &#34;memos/{uid}&#34; |
 | type | [MemoRelation.Type](#memos-api-v2-MemoRelation-Type) |  |  |
 
 

@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import showCreateMemoRelationDialog from "@/components/CreateMemoRelationDialog";
 import Icon from "@/components/Icon";
 import { UNKNOWN_ID } from "@/helpers/consts";
-import { extractMemoIdFromName } from "@/store/v1";
+import { MemoNamePrefix } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { EditorRefActions } from "../Editor";
 import { MemoEditorContext } from "../types";
@@ -47,12 +47,12 @@ const AddMemoRelationButton = (props: Props) => {
           uniqBy(
             [
               ...memos.map((memo) => ({
-                memoId: context.memoId || UNKNOWN_ID,
-                relatedMemoId: extractMemoIdFromName(memo.name),
+                memo: `${MemoNamePrefix}${context.memoId || UNKNOWN_ID}`,
+                relatedMemo: memo.name,
                 type: MemoRelation_Type.REFERENCE,
               })),
               ...context.relationList,
-            ].filter((relation) => relation.relatedMemoId !== (context.memoId || UNKNOWN_ID)),
+            ].filter((relation) => relation.relatedMemo !== `${MemoNamePrefix}${context.memoId || UNKNOWN_ID}`),
             "relatedMemoId",
           ),
         );

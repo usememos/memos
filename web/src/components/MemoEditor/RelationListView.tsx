@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MemoNamePrefix, extractMemoIdFromName, useMemoStore } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import Icon from "../Icon";
@@ -19,7 +19,7 @@ const RelationListView = (props: Props) => {
       const requests = relationList
         .filter((relation) => relation.type === MemoRelation_Type.REFERENCE)
         .map(async (relation) => {
-          return await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${relation.relatedMemoId}`, { skipStore: true });
+          return await memoStore.getOrFetchMemoByName(relation.relatedMemo, { skipStore: true });
         });
       const list = await Promise.all(requests);
       setReferencingMemoList(list);
@@ -27,7 +27,7 @@ const RelationListView = (props: Props) => {
   }, [relationList]);
 
   const handleDeleteRelation = async (memo: Memo) => {
-    setRelationList(relationList.filter((relation) => relation.relatedMemoId !== extractMemoIdFromName(memo.name)));
+    setRelationList(relationList.filter((relation) => relation.relatedMemo !== memo.name));
   };
 
   return (

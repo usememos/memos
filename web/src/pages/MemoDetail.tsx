@@ -23,12 +23,8 @@ const MemoDetail = () => {
   const memo = memoStore.getMemoByResourceId(resourceId || "");
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const commentRelations =
-    memo?.relations.filter(
-      (relation) => relation.relatedMemoId === extractMemoIdFromName(memo.name) && relation.type === MemoRelation_Type.COMMENT,
-    ) || [];
-  const comments = commentRelations
-    .map((relation) => memoStore.getMemoByName(`${MemoNamePrefix}${relation.memoId}`))
-    .filter((memo) => memo) as any as Memo[];
+    memo?.relations.filter((relation) => relation.relatedMemo === memo.name && relation.type === MemoRelation_Type.COMMENT) || [];
+  const comments = commentRelations.map((relation) => memoStore.getMemoByName(relation.memo)).filter((memo) => memo) as any as Memo[];
 
   // Prepare memo.
   useEffect(() => {
@@ -56,7 +52,7 @@ const MemoDetail = () => {
       } else {
         setParentMemo(undefined);
       }
-      await Promise.all(commentRelations.map((relation) => memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${relation.memoId}`)));
+      await Promise.all(commentRelations.map((relation) => memoStore.getOrFetchMemoByName(relation.memo)));
     })();
   }, [memo]);
 

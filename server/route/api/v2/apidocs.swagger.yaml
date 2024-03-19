@@ -2130,12 +2130,16 @@ definitions:
   v2MemoRelation:
     type: object
     properties:
-      memoId:
-        type: integer
-        format: int32
-      relatedMemoId:
-        type: integer
-        format: int32
+      memo:
+        type: string
+        title: |-
+          The name of memo.
+          Format: "memos/{uid}"
+      relatedMemo:
+        type: string
+        title: |-
+          The name of related memo.
+          Format: "memos/{uid}"
       type:
         $ref: '#/definitions/v2MemoRelationType'
   v2MemoRelationType:

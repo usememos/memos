@@ -75,7 +75,10 @@ const MemoEditor = (props: Props) => {
   const [contentCache, setContentCache] = useLocalStorage<string>(contentCacheKey, "");
   const referenceRelations = memoId
     ? state.relationList.filter(
-        (relation) => relation.memoId === memoId && relation.relatedMemoId !== memoId && relation.type === MemoRelation_Type.REFERENCE,
+        (relation) =>
+          extractMemoIdFromName(relation.memo) === memoId &&
+          extractMemoIdFromName(relation.relatedMemo) !== memoId &&
+          relation.type === MemoRelation_Type.REFERENCE,
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
 
