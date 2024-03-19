@@ -90,16 +90,14 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 <UserAvatar className="mr-2 shrink-0" avatarUrl={creator.avatarUrl} />
               </Link>
               <div className="w-full flex flex-col justify-center items-start">
-                <Link
-                  className="w-auto leading-none hover:opacity-80"
-                  to={`/u/${encodeURIComponent(creator.username)}`}
-                  unstable_viewTransition
-                >
-                  <span className="text-gray-600 text-lg leading-none max-w-[80%] truncate dark:text-gray-400">
+                <Link className="w-auto hover:opacity-80" to={`/u/${encodeURIComponent(creator.username)}`} unstable_viewTransition>
+                  <span className="text-gray-600 text-lg leading-tight max-w-[80%] truncate dark:text-gray-400">
                     {creator.nickname || creator.username}
                   </span>
                 </Link>
-                <span className="text-gray-400 text-sm leading-none max-w-[80%] truncate dark:text-gray-500">{creator.description}</span>
+                <span className="-mt-1 text-gray-400 text-sm leading-tight max-w-[80%] truncate dark:text-gray-500">
+                  {creator.description}
+                </span>
               </div>
             </div>
           )}
@@ -146,7 +144,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
       />
       <MemoResourceListView resources={memo.resources} />
       <div className="w-full flex flex-row justify-between items-center">
-        <div className="text-sm leading-none text-gray-400 select-none">
+        <div className="text-sm leading-tight text-gray-400 select-none">
           <relative-time datetime={memo.displayTime?.toISOString()} tense="past" onClick={handleGotoMemoDetailPage}></relative-time>
         </div>
       </div>

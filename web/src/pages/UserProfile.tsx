@@ -118,16 +118,16 @@ const UserProfile = () => {
                   endDecorator={<Icon.ExternalLink className="w-4 h-auto opacity-60" />}
                   onClick={handleCopyProfileLink}
                 >
-                  Share
+                  {t("common.share")}
                 </Button>
               </div>
-              <div className="w-full flex flex-row justify-start items-center pt-4 pb-8 px-4">
-                <UserAvatar className="!w-16 !h-16 drop-shadow mr-3" avatarUrl={user?.avatarUrl} />
+              <div className="w-full flex flex-row justify-start items-center pt-4 pb-8 px-3">
+                <UserAvatar className="!w-16 !h-16 drop-shadow mr-3 rounded-3xl" avatarUrl={user?.avatarUrl} />
                 <div className="w-auto max-w-[calc(100%-6rem)] flex flex-col justify-center items-start">
-                  <p className="w-full text-4xl text-black leading-none opacity-80 dark:text-gray-200 truncate">
+                  <p className="w-full text-4xl text-black leading-tight opacity-80 dark:text-gray-200 truncate">
                     {user.nickname || user.username}
                   </p>
-                  <p className="w-full mt-1 text-gray-500 leading-none opacity-80 dark:text-gray-400 truncate">{user.description}</p>
+                  <p className="w-full text-gray-500 opacity-80 dark:text-gray-400 truncate">{user.description}</p>
                 </div>
               </div>
               <MemoFilter className="px-2 pb-3" />

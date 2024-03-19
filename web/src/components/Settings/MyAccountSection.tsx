@@ -26,10 +26,10 @@ const MyAccountSection = () => {
         <UserAvatar className="mr-2 shrink-0 w-10 h-10" avatarUrl={user.avatarUrl} />
         <div className="max-w-[calc(100%-3rem)] flex flex-col justify-center items-start">
           <p className="w-full">
-            <span className="text-xl leading-none font-medium">{user.nickname}</span>
-            <span className="ml-1 text-base leading-none text-gray-500 dark:text-gray-400">({user.username})</span>
+            <span className="text-xl leading-tight font-medium">{user.nickname}</span>
+            <span className="ml-1 text-base leading-tight text-gray-500 dark:text-gray-400">({user.username})</span>
           </p>
-          <p className="w-4/5 leading-none text-sm truncate">{user.description}</p>
+          <p className="w-4/5 leading-tight text-sm truncate">{user.description}</p>
         </div>
       </div>
       <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
