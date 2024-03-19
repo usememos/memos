@@ -216,6 +216,7 @@
       "export-memos": "导出 Memos",
       "nickname-note": "显示在横幅中",
       "openapi-reset": "重置 OpenAPI 密钥（Key）",
+      "openapi-sample-post": "您好 #memos 来自 {{url}}",
       "openapi-title": "OpenAPI",
       "reset-api": "重置 API",
       "title": "账号信息",
