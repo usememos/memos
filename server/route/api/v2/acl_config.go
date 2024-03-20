@@ -1,7 +1,5 @@
 package v2
 
-import "strings"
-
 var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v2.WorkspaceService/GetWorkspaceProfile":        true,
 	"/memos.api.v2.WorkspaceSettingService/GetWorkspaceSetting": true,
@@ -23,9 +21,6 @@ var authenticationAllowlistMethods = map[string]bool{
 
 // isUnauthorizeAllowedMethod returns whether the method is exempted from authentication.
 func isUnauthorizeAllowedMethod(fullMethodName string) bool {
-	if strings.HasPrefix(fullMethodName, "/grpc.reflection") {
-		return true
-	}
 	return authenticationAllowlistMethods[fullMethodName]
 }
 

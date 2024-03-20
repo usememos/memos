@@ -132,8 +132,7 @@ const Resources = () => {
                                     {relatedMemo && (
                                       <Link
                                         className="shrink-0 text-xs ml-1 text-gray-400 hover:underline hover:text-blue-600"
-                                        to={`/m/${relatedMemo.name}`}
-                                        target="_blank"
+                                        to={`/m/${relatedMemo.resourceId}`}
                                       >
                                         #{extractMemoIdFromName(relatedMemo.name)}
                                       </Link>
