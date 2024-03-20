@@ -229,7 +229,7 @@ const MemoEditor = (props: Props) => {
         if (memoId) {
           await resourceStore.updateResource({
             resource: Resource.fromPartial({
-              id: resource.id,
+              name: resource.name,
               memoId,
             }),
             updateMask: ["memo_id"],

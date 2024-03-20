@@ -70,7 +70,7 @@ const Resources = () => {
       dialogName: "delete-unused-resources-dialog",
       onConfirm: async () => {
         for (const resource of unusedResources) {
-          await resourceServiceClient.deleteResource({ id: resource.id });
+          await resourceServiceClient.deleteResource({ name: resource.name });
         }
         setResources(resources.filter((resource) => resource.memoId));
       },
@@ -123,7 +123,7 @@ const Resources = () => {
                             {resources.map((resource) => {
                               const relatedMemo = resource.memoId ? memoStore.getMemoByName(`${MemoNamePrefix}${resource.memoId}`) : null;
                               return (
-                                <div key={resource.id} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
+                                <div key={resource.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
                                   <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
                                     <ResourceIcon resource={resource} strokeWidth={0.5} />
                                   </div>
@@ -163,7 +163,7 @@ const Resources = () => {
                             </div>
                             {unusedResources.map((resource) => {
                               return (
-                                <div key={resource.id} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
+                                <div key={resource.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
                                   <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
                                     <ResourceIcon resource={resource} strokeWidth={0.5} />
                                   </div>

@@ -46,7 +46,7 @@ type MemoServiceClient interface {
 	CreateMemo(ctx context.Context, in *CreateMemoRequest, opts ...grpc.CallOption) (*CreateMemoResponse, error)
 	// ListMemos lists memos with pagination and filter.
 	ListMemos(ctx context.Context, in *ListMemosRequest, opts ...grpc.CallOption) (*ListMemosResponse, error)
-	// SearchMemosRequest searches memos.
+	// SearchMemos searches memos.
 	SearchMemos(ctx context.Context, in *SearchMemosRequest, opts ...grpc.CallOption) (*SearchMemosResponse, error)
 	// GetMemo gets a memo.
 	GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*GetMemoResponse, error)
@@ -247,7 +247,7 @@ type MemoServiceServer interface {
 	CreateMemo(context.Context, *CreateMemoRequest) (*CreateMemoResponse, error)
 	// ListMemos lists memos with pagination and filter.
 	ListMemos(context.Context, *ListMemosRequest) (*ListMemosResponse, error)
-	// SearchMemosRequest searches memos.
+	// SearchMemos searches memos.
 	SearchMemos(context.Context, *SearchMemosRequest) (*SearchMemosResponse, error)
 	// GetMemo gets a memo.
 	GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error)

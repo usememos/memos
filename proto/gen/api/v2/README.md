@@ -99,13 +99,13 @@
     - [CreateResourceResponse](#memos-api-v2-CreateResourceResponse)
     - [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest)
     - [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse)
-    - [GetResourceByNameRequest](#memos-api-v2-GetResourceByNameRequest)
-    - [GetResourceByNameResponse](#memos-api-v2-GetResourceByNameResponse)
     - [GetResourceRequest](#memos-api-v2-GetResourceRequest)
     - [GetResourceResponse](#memos-api-v2-GetResourceResponse)
     - [ListResourcesRequest](#memos-api-v2-ListResourcesRequest)
     - [ListResourcesResponse](#memos-api-v2-ListResourcesResponse)
     - [Resource](#memos-api-v2-Resource)
+    - [SearchResourcesRequest](#memos-api-v2-SearchResourcesRequest)
+    - [SearchResourcesResponse](#memos-api-v2-SearchResourcesResponse)
     - [UpdateResourceRequest](#memos-api-v2-UpdateResourceRequest)
     - [UpdateResourceResponse](#memos-api-v2-UpdateResourceResponse)
   
@@ -1362,7 +1362,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  |  |
 
 
 
@@ -1379,36 +1379,6 @@ Used internally for obfuscating the page token.
 
 
 
-<a name="memos-api-v2-GetResourceByNameRequest"></a>
-
-### GetResourceByNameRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-GetResourceByNameResponse"></a>
-
-### GetResourceByNameResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| resource | [Resource](#memos-api-v2-Resource) |  |  |
-
-
-
-
-
-
 <a name="memos-api-v2-GetResourceRequest"></a>
 
 ### GetResourceRequest
@@ -1417,7 +1387,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
+| name | [string](#string) |  |  |
 
 
 
@@ -1472,14 +1442,44 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  | id is the system generated unique identifier. |
-| name | [string](#string) |  | name is the user provided name. |
+| name | [string](#string) |  | The name of the resource. Format: resources/{id} id is the system generated unique identifier. |
+| uid | [string](#string) |  | The user defined id of the resource. |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | filename | [string](#string) |  |  |
 | external_link | [string](#string) |  |  |
 | type | [string](#string) |  |  |
 | size | [int64](#int64) |  |  |
 | memo_id | [int32](#int32) | optional |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SearchResourcesRequest"></a>
+
+### SearchResourcesRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SearchResourcesResponse"></a>
+
+### SearchResourcesResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resources | [Resource](#memos-api-v2-Resource) | repeated |  |
 
 
 
@@ -1532,10 +1532,10 @@ Used internally for obfuscating the page token.
 | ----------- | ------------ | ------------- | ------------|
 | CreateResource | [CreateResourceRequest](#memos-api-v2-CreateResourceRequest) | [CreateResourceResponse](#memos-api-v2-CreateResourceResponse) | CreateResource creates a new resource. |
 | ListResources | [ListResourcesRequest](#memos-api-v2-ListResourcesRequest) | [ListResourcesResponse](#memos-api-v2-ListResourcesResponse) | ListResources lists all resources. |
-| GetResource | [GetResourceRequest](#memos-api-v2-GetResourceRequest) | [GetResourceResponse](#memos-api-v2-GetResourceResponse) | GetResource returns a resource by id. |
-| GetResourceByName | [GetResourceByNameRequest](#memos-api-v2-GetResourceByNameRequest) | [GetResourceByNameResponse](#memos-api-v2-GetResourceByNameResponse) | GetResourceByName returns a resource by name. |
+| SearchResources | [SearchResourcesRequest](#memos-api-v2-SearchResourcesRequest) | [SearchResourcesResponse](#memos-api-v2-SearchResourcesResponse) | SearchResources searches memos. |
+| GetResource | [GetResourceRequest](#memos-api-v2-GetResourceRequest) | [GetResourceResponse](#memos-api-v2-GetResourceResponse) | GetResource returns a resource by name. |
 | UpdateResource | [UpdateResourceRequest](#memos-api-v2-UpdateResourceRequest) | [UpdateResourceResponse](#memos-api-v2-UpdateResourceResponse) | UpdateResource updates a resource. |
-| DeleteResource | [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest) | [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse) | DeleteResource deletes a resource by id. |
+| DeleteResource | [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest) | [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse) | DeleteResource deletes a resource by name. |
 
  
 
@@ -2123,7 +2123,7 @@ Used internally for obfuscating the page token.
 | ----------- | ------------ | ------------- | ------------|
 | CreateMemo | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) | [CreateMemoResponse](#memos-api-v2-CreateMemoResponse) | CreateMemo creates a memo. |
 | ListMemos | [ListMemosRequest](#memos-api-v2-ListMemosRequest) | [ListMemosResponse](#memos-api-v2-ListMemosResponse) | ListMemos lists memos with pagination and filter. |
-| SearchMemos | [SearchMemosRequest](#memos-api-v2-SearchMemosRequest) | [SearchMemosResponse](#memos-api-v2-SearchMemosResponse) | SearchMemosRequest searches memos. |
+| SearchMemos | [SearchMemosRequest](#memos-api-v2-SearchMemosRequest) | [SearchMemosResponse](#memos-api-v2-SearchMemosResponse) | SearchMemos searches memos. |
 | GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) | GetMemo gets a memo. |
 | UpdateMemo | [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest) | [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse) | UpdateMemo updates a memo. |
 | DeleteMemo | [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest) | [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse) | DeleteMemo deletes a memo. |

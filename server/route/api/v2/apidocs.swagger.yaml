@@ -285,7 +285,7 @@ paths:
         - MemoService
   /api/v2/memos:search:
     get:
-      summary: SearchMemosRequest searches memos.
+      summary: SearchMemos searches memos.
       operationId: MemoService_SearchMemos
       responses:
         "200":
@@ -353,111 +353,24 @@ paths:
           format: int32
       tags:
         - ResourceService
-  /api/v2/resources/name/{name}:
+  /api/v2/resources:search:
     get:
-      summary: GetResourceByName returns a resource by name.
-      operationId: ResourceService_GetResourceByName
+      summary: SearchResources searches memos.
+      operationId: ResourceService_SearchResources
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetResourceByNameResponse'
+            $ref: '#/definitions/v2SearchResourcesResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name
-          in: path
-          required: true
+        - name: filter
+          in: query
+          required: false
           type: string
-      tags:
-        - ResourceService
-  /api/v2/resources/{id}:
-    get:
-      summary: GetResource returns a resource by id.
-      operationId: ResourceService_GetResource
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2GetResourceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - ResourceService
-    delete:
-      summary: DeleteResource deletes a resource by id.
-      operationId: ResourceService_DeleteResource
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2DeleteResourceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - ResourceService
-  /api/v2/resources/{resource.id}:
-    patch:
-      summary: UpdateResource updates a resource.
-      operationId: ResourceService_UpdateResource
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2UpdateResourceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: resource.id
-          description: id is the system generated unique identifier.
-          in: path
-          required: true
-          type: integer
-          format: int32
-        - name: resource
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                description: name is the user provided name.
-              createTime:
-                type: string
-                format: date-time
-              filename:
-                type: string
-              externalLink:
-                type: string
-              type:
-                type: string
-              size:
-                type: string
-                format: int64
-              memoId:
-                type: integer
-                format: int32
       tags:
         - ResourceService
   /api/v2/tags:
@@ -978,28 +891,25 @@ paths:
         - MemoService
   /api/v2/{name_1}:
     get:
-      summary: GetMemo gets a memo.
-      operationId: MemoService_GetMemo
+      summary: GetResource returns a resource by name.
+      operationId: ResourceService_GetResource
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetMemoResponse'
+            $ref: '#/definitions/v2GetResourceResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_1
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
           in: path
           required: true
           type: string
-          pattern: memos/[^/]+
+          pattern: resources/[^/]+
       tags:
-        - MemoService
+        - ResourceService
     delete:
       summary: DeleteInbox deletes an inbox.
       operationId: InboxService_DeleteInbox
@@ -1024,6 +934,50 @@ paths:
       tags:
         - InboxService
   /api/v2/{name_2}:
+    get:
+      summary: GetMemo gets a memo.
+      operationId: MemoService_GetMemo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetMemoResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_2
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
+    delete:
+      summary: DeleteResource deletes a resource by name.
+      operationId: ResourceService_DeleteResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_2
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+
+      tags:
+        - ResourceService
+  /api/v2/{name_3}:
     delete:
       summary: DeleteMemo deletes a memo.
       operationId: MemoService_DeleteMemo
@@ -1037,7 +991,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_2
+        - name: name_3
           description: |-
             The name of the memo.
             Format: memos/{id}
@@ -1475,6 +1429,55 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
+  /api/v2/{resource.name}:
+    patch:
+      summary: UpdateResource updates a resource.
+      operationId: ResourceService_UpdateResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: resource.name
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+
+        - name: resource
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: The user defined id of the resource.
+              createTime:
+                type: string
+                format: date-time
+              filename:
+                type: string
+              externalLink:
+                type: string
+              type:
+                type: string
+              size:
+                type: string
+                format: int64
+              memoId:
+                type: integer
+                format: int32
+      tags:
+        - ResourceService
   /api/v2/{setting.name}:
     patch:
       summary: UpdateUserSetting updates the setting of a user.
@@ -1882,11 +1885,6 @@ definitions:
     properties:
       memo:
         $ref: '#/definitions/v2Memo'
-  v2GetResourceByNameResponse:
-    type: object
-    properties:
-      resource:
-        $ref: '#/definitions/v2Resource'
   v2GetResourceResponse:
     type: object
     properties:
@@ -2161,13 +2159,15 @@ definitions:
   v2Resource:
     type: object
     properties:
-      id:
-        type: integer
-        format: int32
-        description: id is the system generated unique identifier.
       name:
         type: string
-        description: name is the user provided name.
+        description: |-
+          The name of the resource.
+          Format: resources/{id}
+          id is the system generated unique identifier.
+      uid:
+        type: string
+        description: The user defined id of the resource.
       createTime:
         type: string
         format: date-time
@@ -2191,6 +2191,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v2Memo'
+  v2SearchResourcesResponse:
+    type: object
+    properties:
+      resources:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2Resource'
   v2SearchUsersResponse:
     type: object
     properties:

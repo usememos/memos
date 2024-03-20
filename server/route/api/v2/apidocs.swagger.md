@@ -146,19 +146,19 @@ UpdateInbox updates an inbox.
 #### GET
 ##### Summary
 
-GetMemo gets a memo.
+GetResource returns a resource by name.
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_1 | path | The name of the memo. Format: memos/{id} | Yes | string |
+| name_1 | path |  | Yes | string |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | A successful response. | [v2GetMemoResponse](#v2getmemoresponse) |
+| 200 | A successful response. | [v2GetResourceResponse](#v2getresourceresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 #### DELETE
@@ -288,7 +288,7 @@ ExportMemos exports memos.
 #### GET
 ##### Summary
 
-SearchMemosRequest searches memos.
+SearchMemos searches memos.
 
 ##### Parameters
 
@@ -324,7 +324,7 @@ UpdateMemo updates a memo.
 | 200 | A successful response. | [v2UpdateMemoResponse](#v2updatememoresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/{name_1}
+### /api/v2/{name_2}
 
 #### GET
 ##### Summary
@@ -335,7 +335,7 @@ GetMemo gets a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_1 | path | The name of the memo. Format: memos/{id} | Yes | string |
+| name_2 | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -347,22 +347,22 @@ GetMemo gets a memo.
 #### DELETE
 ##### Summary
 
-DeleteInbox deletes an inbox.
+DeleteResource deletes a resource by name.
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_1 | path | The name of the inbox to delete. Format: inboxes/{uid} | Yes | string |
+| name_2 | path |  | Yes | string |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | A successful response. | [v2DeleteInboxResponse](#v2deleteinboxresponse) |
+| 200 | A successful response. | [v2DeleteResourceResponse](#v2deleteresourceresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/{name_2}
+### /api/v2/{name_3}
 
 #### DELETE
 ##### Summary
@@ -373,7 +373,7 @@ DeleteMemo deletes a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_2 | path | The name of the memo. Format: memos/{id} | Yes | string |
+| name_3 | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -601,38 +601,38 @@ CreateResource creates a new resource.
 | 200 | A successful response. | [v2CreateResourceResponse](#v2createresourceresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/resources/name/{name}
+### /api/v2/resources:search
 
 #### GET
 ##### Summary
 
-GetResourceByName returns a resource by name.
+SearchResources searches memos.
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path |  | Yes | string |
+| filter | query |  | No | string |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | A successful response. | [v2GetResourceByNameResponse](#v2getresourcebynameresponse) |
+| 200 | A successful response. | [v2SearchResourcesResponse](#v2searchresourcesresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/resources/{id}
+### /api/v2/{name_1}
 
 #### GET
 ##### Summary
 
-GetResource returns a resource by id.
+GetResource returns a resource by name.
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
+| name_1 | path |  | Yes | string |
 
 ##### Responses
 
@@ -644,13 +644,51 @@ GetResource returns a resource by id.
 #### DELETE
 ##### Summary
 
-DeleteResource deletes a resource by id.
+DeleteInbox deletes an inbox.
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
+| name_1 | path | The name of the inbox to delete. Format: inboxes/{uid} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteInboxResponse](#v2deleteinboxresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name_2}
+
+#### GET
+##### Summary
+
+GetMemo gets a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_2 | path | The name of the memo. Format: memos/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2GetMemoResponse](#v2getmemoresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### DELETE
+##### Summary
+
+DeleteResource deletes a resource by name.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_2 | path |  | Yes | string |
 
 ##### Responses
 
@@ -659,7 +697,7 @@ DeleteResource deletes a resource by id.
 | 200 | A successful response. | [v2DeleteResourceResponse](#v2deleteresourceresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/resources/{resource.id}
+### /api/v2/{resource.name}
 
 #### PATCH
 ##### Summary
@@ -670,8 +708,8 @@ UpdateResource updates a resource.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| resource.id | path | id is the system generated unique identifier. | Yes | integer |
-| resource | body |  | Yes | { **"name"**: string, **"createTime"**: dateTime, **"filename"**: string, **"externalLink"**: string, **"type"**: string, **"size"**: string (int64), **"memoId"**: integer } |
+| resource.name | path | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | Yes | string |
+| resource | body |  | Yes | { **"uid"**: string, **"createTime"**: dateTime, **"filename"**: string, **"externalLink"**: string, **"type"**: string, **"size"**: string (int64), **"memoId"**: integer } |
 
 ##### Responses
 
@@ -1463,12 +1501,6 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | memo | [v2Memo](#v2memo) |  | No |
 
-#### v2GetResourceByNameResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| resource | [v2Resource](#v2resource) |  | No |
-
 #### v2GetResourceResponse
 
 | Name | Type | Description | Required |
@@ -1659,8 +1691,8 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| id | integer | id is the system generated unique identifier. | No |
-| name | string | name is the user provided name. | No |
+| name | string | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | No |
+| uid | string | The user defined id of the resource. | No |
 | createTime | dateTime |  | No |
 | filename | string |  | No |
 | externalLink | string |  | No |
@@ -1673,6 +1705,12 @@ GetActivity returns the activity with the given id.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | memos | [ [v2Memo](#v2memo) ] |  | No |
+
+#### v2SearchResourcesResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| resources | [ [v2Resource](#v2resource) ] |  | No |
 
 #### v2SearchUsersResponse
 

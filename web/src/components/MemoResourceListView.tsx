@@ -70,7 +70,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
 
     const cards = resources.map((resource) => (
       <SquareDiv
-        key={resource.id}
+        key={resource.name}
         className="flex justify-center items-center border dark:border-zinc-900 rounded overflow-hidden hide-scrollbar hover:shadow-md"
       >
         <MediaCard resource={resource} thumbnail />
@@ -90,7 +90,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
     return (
       <div className="w-full flex flex-row justify-start flex-wrap gap-2">
         {otherResources.map((resource) => (
-          <MemoResource key={resource.id} resource={resource} />
+          <MemoResource key={resource.name} resource={resource} />
         ))}
       </div>
     );

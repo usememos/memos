@@ -874,7 +874,7 @@ func convertMemoToWebhookPayload(memo *apiv2pb.Memo) (*webhook.WebhookPayload, e
 				resources := []*webhook.Resource{}
 				for _, resource := range memo.Resources {
 					resources = append(resources, &webhook.Resource{
-						ID:           resource.Id,
+						UID:          resource.Uid,
 						Filename:     resource.Filename,
 						ExternalLink: resource.ExternalLink,
 						Type:         resource.Type,
