@@ -827,7 +827,7 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*Memo, error) {
 	memoMessage := &Memo{
 		ID:         memo.ID,
-		Name:       memo.ResourceName,
+		Name:       memo.UID,
 		RowStatus:  RowStatus(memo.RowStatus.String()),
 		CreatorID:  memo.CreatorID,
 		CreatedTs:  memo.CreatedTs,
@@ -921,11 +921,11 @@ func convertCreateMemoRequestToMemoMessage(memoCreate *CreateMemoRequest) *store
 		createdTs = *memoCreate.CreatedTs
 	}
 	return &store.Memo{
-		ResourceName: shortuuid.New(),
-		CreatorID:    memoCreate.CreatorID,
-		CreatedTs:    createdTs,
-		Content:      memoCreate.Content,
-		Visibility:   store.Visibility(memoCreate.Visibility),
+		UID:        shortuuid.New(),
+		CreatorID:  memoCreate.CreatorID,
+		CreatedTs:  createdTs,
+		Content:    memoCreate.Content,
+		Visibility: store.Visibility(memoCreate.Visibility),
 	}
 }
 

@@ -112,7 +112,7 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 		}
 		feed.Items[i] = &feeds.Item{
 			Title:       getRSSItemTitle(memo.Content),
-			Link:        &feeds.Link{Href: baseURL + "/m/" + memo.ResourceName},
+			Link:        &feeds.Link{Href: baseURL + "/m/" + memo.UID},
 			Description: description,
 			Created:     time.Unix(memo.CreatedTs, 0),
 		}
@@ -128,7 +128,7 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 			if resource.ExternalLink != "" {
 				enclosure.Url = resource.ExternalLink
 			} else {
-				enclosure.Url = baseURL + "/o/r/" + resource.ResourceName
+				enclosure.Url = baseURL + "/o/r/" + resource.UID
 			}
 			enclosure.Length = strconv.Itoa(int(resource.Size))
 			enclosure.Type = resource.Type

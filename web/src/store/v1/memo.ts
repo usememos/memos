@@ -58,9 +58,9 @@ export const useMemoStore = create(
       set({ memoMapByName: memoMap });
       return memos;
     },
-    getMemoByResourceId: (resourceId: string) => {
+    getMemoByUid: (uid: string) => {
       const memoMap = get().memoMapByName;
-      return Object.values(memoMap).find((memo) => memo.resourceId === resourceId);
+      return Object.values(memoMap).find((memo) => memo.uid === uid);
     },
     createMemo: async (request: CreateMemoRequest) => {
       const { memo } = await memoServiceClient.createMemo(request);

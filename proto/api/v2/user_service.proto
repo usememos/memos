@@ -91,7 +91,7 @@ service UserService {
 
 message User {
   // The name of the user.
-  // Format: users/{uid}
+  // Format: users/{id}
   string name = 1;
 
   // The system generated uid of the user.
@@ -140,7 +140,7 @@ message SearchUsersResponse {
 
 message GetUserRequest {
   // The name of the user.
-  // Format: users/{uid}
+  // Format: users/{id}
   string name = 1;
 }
 
@@ -168,7 +168,7 @@ message UpdateUserResponse {
 
 message DeleteUserRequest {
   // The name of the user.
-  // Format: users/{uid}
+  // Format: users/{id}
   string name = 1;
 }
 
@@ -176,7 +176,7 @@ message DeleteUserResponse {}
 
 message UserSetting {
   // The name of the user.
-  // Format: users/{uid}
+  // Format: users/{id}
   string name = 1;
   // The preferred locale of the user.
   string locale = 2;
@@ -190,7 +190,7 @@ message UserSetting {
 
 message GetUserSettingRequest {
   // The name of the user.
-  // Format: users/{uid}
+  // Format: users/{id}
   string name = 1;
 }
 
@@ -217,7 +217,7 @@ message UserAccessToken {
 
 message ListUserAccessTokensRequest {
   // The name of the user.
-  // Format: users/{uid}
+  // Format: users/{id}
   string name = 1;
 }
 
@@ -227,7 +227,7 @@ message ListUserAccessTokensResponse {
 
 message CreateUserAccessTokenRequest {
   // The name of the user.
-  // Format: users/{uid}
+  // Format: users/{id}
   string name = 1;
 
   string description = 2;
@@ -241,7 +241,7 @@ message CreateUserAccessTokenResponse {
 
 message DeleteUserAccessTokenRequest {
   // The name of the user.
-  // Format: users/{uid}
+  // Format: users/{id}
   string name = 1;
   // access_token is the access token to delete.
   string access_token = 2;

@@ -152,7 +152,7 @@ GetMemo gets a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_1 | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name_1 | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -252,7 +252,7 @@ GetUserMemosStats gets stats of memos for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | query | name is the name of the user to get stats for. Format: users/{uid} | No | string |
+| name | query | name is the name of the user to get stats for. Format: users/{id} | No | string |
 | timezone | query | timezone location Format: uses tz identifier https://en.wikipedia.org/wiki/List_of_tz_database_time_zones | No | string |
 | filter | query | Same as ListMemosRequest.filter | No | string |
 
@@ -314,8 +314,8 @@ UpdateMemo updates a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| memo.name | path | The name of the memo. Format: memos/{uid} | Yes | string |
-| memo | body |  | Yes | { **"resourceId"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"creator"**: string, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ], **"reactions"**: [ [apiv2Reaction](#apiv2reaction) ] } |
+| memo.name | path | The name of the memo. Format: memos/{id} id is the system generated id. | Yes | string |
+| memo | body |  | Yes | { **"uid"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"creator"**: string, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ], **"reactions"**: [ [apiv2Reaction](#apiv2reaction) ] } |
 
 ##### Responses
 
@@ -335,7 +335,7 @@ GetMemo gets a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_1 | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name_1 | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -373,7 +373,7 @@ DeleteMemo deletes a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_2 | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name_2 | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -393,7 +393,7 @@ ListMemoComments lists comments for a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -411,7 +411,7 @@ CreateMemoComment creates a comment for a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
 | comment.content | query |  | No | string |
 | comment.visibility | query |  | No | string |
 
@@ -433,7 +433,7 @@ ListMemoReactions lists reactions for a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -451,9 +451,9 @@ UpsertMemoReaction upserts a reaction for a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
 | reaction.id | query |  | No | integer |
-| reaction.creator | query | The name of the creator. Format: users/{uid} | No | string |
+| reaction.creator | query | The name of the creator. Format: users/{id} | No | string |
 | reaction.contentId | query |  | No | string |
 | reaction.reactionType | query |  | No | string |
 
@@ -475,7 +475,7 @@ DeleteMemoReaction deletes a reaction for a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
 | reactionId | path |  | Yes | integer |
 
 ##### Responses
@@ -496,7 +496,7 @@ ListMemoRelations lists relations for a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -514,7 +514,7 @@ SetMemoRelations sets relations for a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
 | body | body |  | Yes | [MemoServiceSetMemoRelationsBody](#memoservicesetmemorelationsbody) |
 
 ##### Responses
@@ -535,7 +535,7 @@ ListMemoResources lists resources for a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -553,7 +553,7 @@ SetMemoResources sets resources for a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{uid} | Yes | string |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
 | body | body |  | Yes | [MemoServiceSetMemoResourcesBody](#memoservicesetmemoresourcesbody) |
 
 ##### Responses
@@ -694,7 +694,7 @@ ListTags lists tags.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | The creator of tags. Format: users/{uid} | No | string |
+| user | query | The creator of tags. Format: users/{id} | No | string |
 
 ##### Responses
 
@@ -713,7 +713,7 @@ DeleteTag deletes a tag.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | tag.name | query |  | No | string |
-| tag.creator | query | The creator of tags. Format: users/{uid} | No | string |
+| tag.creator | query | The creator of tags. Format: users/{id} | No | string |
 
 ##### Responses
 
@@ -751,7 +751,7 @@ GetTagSuggestions gets tag suggestions from the user's memos.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | The creator of tags. Format: users/{uid} | No | string |
+| user | query | The creator of tags. Format: users/{id} | No | string |
 
 ##### Responses
 
@@ -786,7 +786,7 @@ All related memos will be updated.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | The creator of tags. Format: users/{uid} | No | string |
+| user | query | The creator of tags. Format: users/{id} | No | string |
 | oldName | query |  | No | string |
 | newName | query |  | No | string |
 
@@ -863,7 +863,7 @@ GetUser gets a user by name.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{uid} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 
 ##### Responses
 
@@ -881,7 +881,7 @@ DeleteUser deletes a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{uid} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 
 ##### Responses
 
@@ -901,7 +901,7 @@ ListUserAccessTokens returns a list of access tokens for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{uid} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 
 ##### Responses
 
@@ -919,7 +919,7 @@ CreateUserAccessToken creates a new access token for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{uid} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 | body | body |  | Yes | [UserServiceCreateUserAccessTokenBody](#userservicecreateuseraccesstokenbody) |
 
 ##### Responses
@@ -940,7 +940,7 @@ DeleteUserAccessToken deletes an access token for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{uid} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 | accessToken | path | access_token is the access token to delete. | Yes | string |
 
 ##### Responses
@@ -961,7 +961,7 @@ GetUserSetting gets the setting of a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{uid} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 
 ##### Responses
 
@@ -981,7 +981,7 @@ UpdateUserSetting updates the setting of a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| setting.name | path | The name of the user. Format: users/{uid} | Yes | string |
+| setting.name | path | The name of the user. Format: users/{id} | Yes | string |
 | setting | body |  | Yes | { **"locale"**: string, **"appearance"**: string, **"memoVisibility"**: string, **"telegramUserId"**: string } |
 
 ##### Responses
@@ -1002,7 +1002,7 @@ UpdateUser updates a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user.name | path | The name of the user. Format: users/{uid} | Yes | string |
+| user.name | path | The name of the user. Format: users/{id} | Yes | string |
 | user | body |  | Yes | { **"id"**: integer, **"role"**: [UserRole](#userrole), **"username"**: string, **"email"**: string, **"nickname"**: string, **"avatarUrl"**: string, **"description"**: string, **"password"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"createTime"**: dateTime, **"updateTime"**: dateTime } |
 
 ##### Responses
@@ -1620,8 +1620,8 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| name | string |  | No |
-| resourceId | string |  | No |
+| name | string | The name of the memo. Format: memos/{id} id is the system generated id. | No |
+| uid | string | The user defined id of the memo. | No |
 | rowStatus | [apiv2RowStatus](#apiv2rowstatus) |  | No |
 | creator | string |  | No |
 | createTime | dateTime |  | No |

@@ -122,15 +122,17 @@ enum Visibility {
 
 message Memo {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
+  // id is the system generated id.
   string name = 1;
 
-  string resource_id = 2;
+  // The user defined id of the memo.
+  string uid = 2;
 
   RowStatus row_status = 3;
 
   // The name of the creator.
-  // Format: users/{uid}
+  // Format: users/{id}
   string creator = 4;
 
   google.protobuf.Timestamp create_time = 5;
@@ -197,7 +199,7 @@ message SearchMemosResponse {
 
 message GetMemoRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 }
 
@@ -217,7 +219,7 @@ message UpdateMemoResponse {
 
 message DeleteMemoRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 }
 
@@ -234,7 +236,7 @@ message ExportMemosResponse {
 
 message SetMemoResourcesRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 
   repeated Resource resources = 2;
@@ -244,7 +246,7 @@ message SetMemoResourcesResponse {}
 
 message ListMemoResourcesRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 }
 
@@ -254,7 +256,7 @@ message ListMemoResourcesResponse {
 
 message SetMemoRelationsRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 
   repeated MemoRelation relations = 2;
@@ -264,7 +266,7 @@ message SetMemoRelationsResponse {}
 
 message ListMemoRelationsRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 }
 
@@ -274,7 +276,7 @@ message ListMemoRelationsResponse {
 
 message CreateMemoCommentRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 
   CreateMemoRequest comment = 2;
@@ -286,7 +288,7 @@ message CreateMemoCommentResponse {
 
 message ListMemoCommentsRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 }
 
@@ -296,7 +298,7 @@ message ListMemoCommentsResponse {
 
 message GetUserMemosStatsRequest {
   // name is the name of the user to get stats for.
-  // Format: users/{uid}
+  // Format: users/{id}
   string name = 1;
 
   // timezone location
@@ -316,7 +318,7 @@ message GetUserMemosStatsResponse {
 
 message ListMemoReactionsRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 }
 
@@ -326,7 +328,7 @@ message ListMemoReactionsResponse {
 
 message UpsertMemoReactionRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 
   Reaction reaction = 2;
@@ -338,7 +340,7 @@ message UpsertMemoReactionResponse {
 
 message DeleteMemoReactionRequest {
   // The name of the memo.
-  // Format: memos/{uid}
+  // Format: memos/{id}
   string name = 1;
 
   int32 reaction_id = 2;

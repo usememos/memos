@@ -15,10 +15,10 @@ func TestMemoStore(t *testing.T) {
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 	memoCreate := &store.Memo{
-		ResourceName: "test-resource-name",
-		CreatorID:    user.ID,
-		Content:      "test_content",
-		Visibility:   store.Public,
+		UID:        "test-resource-name",
+		CreatorID:  user.ID,
+		Content:    "test_content",
+		Visibility: store.Public,
 	}
 	memo, err := ts.CreateMemo(ctx, memoCreate)
 	require.NoError(t, err)
@@ -68,10 +68,10 @@ func TestDeleteMemoStore(t *testing.T) {
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 	memoCreate := &store.Memo{
-		ResourceName: "test-resource-name",
-		CreatorID:    user.ID,
-		Content:      "test_content",
-		Visibility:   store.Public,
+		UID:        "test-resource-name",
+		CreatorID:  user.ID,
+		Content:    "test_content",
+		Visibility: store.Public,
 	}
 	memo, err := ts.CreateMemo(ctx, memoCreate)
 	require.NoError(t, err)

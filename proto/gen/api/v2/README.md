@@ -389,7 +389,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{uid} |
+| name | [string](#string) |  | The name of the user. Format: users/{id} |
 | description | [string](#string) |  |  |
 | expires_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 
@@ -451,7 +451,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{uid} |
+| name | [string](#string) |  | The name of the user. Format: users/{id} |
 | access_token | [string](#string) |  | access_token is the access token to delete. |
 
 
@@ -477,7 +477,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{uid} |
+| name | [string](#string) |  | The name of the user. Format: users/{id} |
 
 
 
@@ -502,7 +502,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{uid} |
+| name | [string](#string) |  | The name of the user. Format: users/{id} |
 
 
 
@@ -532,7 +532,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{uid} |
+| name | [string](#string) |  | The name of the user. Format: users/{id} |
 
 
 
@@ -562,7 +562,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{uid} |
+| name | [string](#string) |  | The name of the user. Format: users/{id} |
 
 
 
@@ -709,7 +709,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{uid} |
+| name | [string](#string) |  | The name of the user. Format: users/{id} |
 | id | [int32](#int32) |  | The system generated uid of the user. |
 | role | [User.Role](#memos-api-v2-User-Role) |  |  |
 | username | [string](#string) |  |  |
@@ -753,7 +753,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the user. Format: users/{uid} |
+| name | [string](#string) |  | The name of the user. Format: users/{id} |
 | locale | [string](#string) |  | The preferred locale of the user. |
 | appearance | [string](#string) |  | The preferred appearance of the user. |
 | memo_visibility | [string](#string) |  | The default visibility of the memo. |
@@ -1273,7 +1273,7 @@ Used internally for obfuscating the page token.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int32](#int32) |  |  |
-| creator | [string](#string) |  | The name of the creator. Format: users/{uid} |
+| creator | [string](#string) |  | The name of the creator. Format: users/{id} |
 | content_id | [string](#string) |  |  |
 | reaction_type | [Reaction.Type](#memos-api-v2-Reaction-Type) |  |  |
 
@@ -1556,7 +1556,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 | comment | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) |  |  |
 
 
@@ -1618,7 +1618,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 | reaction_id | [int32](#int32) |  |  |
 
 
@@ -1644,7 +1644,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 
 
 
@@ -1699,7 +1699,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 
 
 
@@ -1729,7 +1729,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | name is the name of the user to get stats for. Format: users/{uid} |
+| name | [string](#string) |  | name is the name of the user to get stats for. Format: users/{id} |
 | timezone | [string](#string) |  | timezone location Format: uses tz identifier https://en.wikipedia.org/wiki/List_of_tz_database_time_zones |
 | filter | [string](#string) |  | Same as ListMemosRequest.filter |
 
@@ -1777,7 +1777,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 
 
 
@@ -1807,7 +1807,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 
 
 
@@ -1837,7 +1837,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 
 
 
@@ -1867,7 +1867,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 
 
 
@@ -1930,10 +1930,10 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
-| resource_id | [string](#string) |  |  |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} id is the system generated id. |
+| uid | [string](#string) |  | The user defined id of the memo. |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
-| creator | [string](#string) |  | The name of the creator. Format: users/{uid} |
+| creator | [string](#string) |  | The name of the creator. Format: users/{id} |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | display_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
@@ -1988,7 +1988,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 | relations | [MemoRelation](#memos-api-v2-MemoRelation) | repeated |  |
 
 
@@ -2014,7 +2014,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 | resources | [Resource](#memos-api-v2-Resource) | repeated |  |
 
 
@@ -2071,7 +2071,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{uid} |
+| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 | reaction | [Reaction](#memos-api-v2-Reaction) |  |  |
 
 
@@ -2208,7 +2208,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| user | [string](#string) |  | The creator of tags. Format: users/{uid} |
+| user | [string](#string) |  | The creator of tags. Format: users/{id} |
 
 
 
@@ -2238,7 +2238,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| user | [string](#string) |  | The creator of tags. Format: users/{uid} |
+| user | [string](#string) |  | The creator of tags. Format: users/{id} |
 
 
 
@@ -2268,7 +2268,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| user | [string](#string) |  | The creator of tags. Format: users/{uid} |
+| user | [string](#string) |  | The creator of tags. Format: users/{id} |
 | old_name | [string](#string) |  |  |
 | new_name | [string](#string) |  |  |
 
@@ -2301,7 +2301,7 @@ Used internally for obfuscating the page token.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  |  |
-| creator | [string](#string) |  | The creator of tags. Format: users/{uid} |
+| creator | [string](#string) |  | The creator of tags. Format: users/{id} |
 
 
 

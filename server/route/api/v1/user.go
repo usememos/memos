@@ -157,7 +157,7 @@ func (s *APIV1Service) CreateUser(c echo.Context) error {
 	if err := userCreate.Validate(); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format").SetInternal(err)
 	}
-	if !util.ResourceNameMatcher.MatchString(strings.ToLower(userCreate.Username)) {
+	if !util.UIDMatcher.MatchString(strings.ToLower(userCreate.Username)) {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid username %s", userCreate.Username)).SetInternal(err)
 	}
 	// Disallow host user to be created.
@@ -377,7 +377,7 @@ func (s *APIV1Service) UpdateUser(c echo.Context) error {
 		}
 	}
 	if request.Username != nil {
-		if !util.ResourceNameMatcher.MatchString(strings.ToLower(*request.Username)) {
+		if !util.UIDMatcher.MatchString(strings.ToLower(*request.Username)) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid username %s", *request.Username)).SetInternal(err)
 		}
 		userUpdate.Username = request.Username

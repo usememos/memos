@@ -44,10 +44,10 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	}
 
 	create := &store.Memo{
-		ResourceName: shortuuid.New(),
-		CreatorID:    user.ID,
-		Content:      request.Content,
-		Visibility:   convertVisibilityToStore(request.Visibility),
+		UID:        shortuuid.New(),
+		CreatorID:  user.ID,
+		Content:    request.Content,
+		Visibility: convertVisibilityToStore(request.Visibility),
 	}
 	// Find disable public memos system setting.
 	disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
@@ -231,9 +231,9 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 	for _, path := range request.UpdateMask.Paths {
 		if path == "content" {
 			update.Content = &request.Memo.Content
-		} else if path == "resource_name" {
-			update.ResourceName = &request.Memo.Name
-			if !util.ResourceNameMatcher.MatchString(*update.ResourceName) {
+		} else if path == "uid" {
+			update.UID = &request.Memo.Name
+			if !util.UIDMatcher.MatchString(*update.UID) {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name")
 			}
 		} else if path == "visibility" {
@@ -555,7 +555,7 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 
 	return &apiv2pb.Memo{
 		Name:        name,
-		ResourceId:  memo.ResourceName,
+		Uid:         memo.UID,
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
 		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
@@ -690,8 +690,8 @@ func (s *APIV2Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 			}
 			find.CreatorID = &user.ID
 		}
-		if filter.ResourceName != nil {
-			find.ResourceName = filter.ResourceName
+		if filter.UID != nil {
+			find.UID = filter.UID
 		}
 		if filter.RowStatus != nil {
 			find.RowStatus = filter.RowStatus
@@ -728,7 +728,7 @@ var SearchMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
-	cel.Variable("resource_name", cel.StringType),
+	cel.Variable("uid", cel.StringType),
 	cel.Variable("row_status", cel.StringType),
 }
 
@@ -739,7 +739,7 @@ type SearchMemosFilter struct {
 	DisplayTimeBefore *int64
 	DisplayTimeAfter  *int64
 	Creator           *string
-	ResourceName      *string
+	UID               *string
 	RowStatus         *store.RowStatus
 }
 
@@ -792,9 +792,9 @@ func findSearchMemosField(callExpr *expr.Expr_Call, filter *SearchMemosFilter) {
 			} else if idExpr.Name == "creator" {
 				creator := callExpr.Args[1].GetConstExpr().GetStringValue()
 				filter.Creator = &creator
-			} else if idExpr.Name == "resource_name" {
-				resourceName := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.ResourceName = &resourceName
+			} else if idExpr.Name == "uid" {
+				uid := callExpr.Args[1].GetConstExpr().GetStringValue()
+				filter.UID = &uid
 			} else if idExpr.Name == "row_status" {
 				rowStatus := store.RowStatus(callExpr.Args[1].GetConstExpr().GetStringValue())
 				filter.RowStatus = &rowStatus

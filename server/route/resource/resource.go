@@ -42,22 +42,22 @@ func NewResourceService(profile *profile.Profile, store *store.Store) *ResourceS
 }
 
 func (s *ResourceService) RegisterRoutes(g *echo.Group) {
-	g.GET("/r/:resourceName", s.streamResource)
-	g.GET("/r/:resourceName/*", s.streamResource)
+	g.GET("/r/:uid", s.streamResource)
+	g.GET("/r/:uid/*", s.streamResource)
 }
 
 func (s *ResourceService) streamResource(c echo.Context) error {
 	ctx := c.Request().Context()
-	resourceName := c.Param("resourceName")
+	uid := c.Param("uid")
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
-		ResourceName: &resourceName,
-		GetBlob:      true,
+		UID:     &uid,
+		GetBlob: true,
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by id: %s", resourceName)).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by uid: %s", uid)).SetInternal(err)
 	}
 	if resource == nil {
-		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %s", resourceName))
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %s", uid))
 	}
 	// Check the related memo visibility.
 	if resource.MemoID != nil {

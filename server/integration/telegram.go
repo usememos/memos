@@ -74,9 +74,9 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	}
 
 	create := &store.Memo{
-		ResourceName: shortuuid.New(),
-		CreatorID:    creatorID,
-		Visibility:   store.Private,
+		UID:        shortuuid.New(),
+		CreatorID:  creatorID,
+		Visibility: store.Private,
 	}
 	if message.Text != nil {
 		create.Content = convertToMarkdown(*message.Text, message.Entities)
@@ -121,12 +121,12 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	for _, attachment := range attachments {
 		// Fill the common field of create
 		create := store.Resource{
-			ResourceName: shortuuid.New(),
-			CreatorID:    creatorID,
-			Filename:     filepath.Base(attachment.FileName),
-			Type:         attachment.GetMimeType(),
-			Size:         attachment.FileSize,
-			MemoID:       &memoMessage.ID,
+			UID:       shortuuid.New(),
+			CreatorID: creatorID,
+			Filename:  filepath.Base(attachment.FileName),
+			Type:      attachment.GetMimeType(),
+			Size:      attachment.FileSize,
+			MemoID:    &memoMessage.ID,
 		}
 
 		err := apiv1.SaveResourceBlob(ctx, t.store, &create, bytes.NewReader(attachment.Data))

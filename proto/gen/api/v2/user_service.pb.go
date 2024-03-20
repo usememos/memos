@@ -81,7 +81,7 @@ type User struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the user.
-	// Format: users/{uid}
+	// Format: users/{id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The system generated uid of the user.
 	Id          int32                  `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -398,7 +398,7 @@ type GetUserRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the user.
-	// Format: users/{uid}
+	// Format: users/{id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -690,7 +690,7 @@ type DeleteUserRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the user.
-	// Format: users/{uid}
+	// Format: users/{id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -777,7 +777,7 @@ type UserSetting struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the user.
-	// Format: users/{uid}
+	// Format: users/{id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The preferred locale of the user.
 	Locale string `protobuf:"bytes,2,opt,name=locale,proto3" json:"locale,omitempty"`
@@ -862,7 +862,7 @@ type GetUserSettingRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the user.
-	// Format: users/{uid}
+	// Format: users/{id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1131,7 +1131,7 @@ type ListUserAccessTokensRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the user.
-	// Format: users/{uid}
+	// Format: users/{id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1227,7 +1227,7 @@ type CreateUserAccessTokenRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the user.
-	// Format: users/{uid}
+	// Format: users/{id}
 	Name        string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	ExpiresAt   *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=expires_at,json=expiresAt,proto3,oneof" json:"expires_at,omitempty"`
@@ -1339,7 +1339,7 @@ type DeleteUserAccessTokenRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the user.
-	// Format: users/{uid}
+	// Format: users/{id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// access_token is the access token to delete.
 	AccessToken string `protobuf:"bytes,2,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`

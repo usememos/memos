@@ -243,7 +243,7 @@ paths:
         - name: name
           description: |-
             name is the name of the user to get stats for.
-            Format: users/{uid}
+            Format: users/{id}
           in: query
           required: false
           type: string
@@ -477,7 +477,7 @@ paths:
         - name: user
           description: |-
             The creator of tags.
-            Format: users/{uid}
+            Format: users/{id}
           in: query
           required: false
           type: string
@@ -503,7 +503,7 @@ paths:
         - name: tag.creator
           description: |-
             The creator of tags.
-            Format: users/{uid}
+            Format: users/{id}
           in: query
           required: false
           type: string
@@ -545,7 +545,7 @@ paths:
         - name: user
           description: |-
             The creator of tags.
-            Format: users/{uid}
+            Format: users/{id}
           in: query
           required: false
           type: string
@@ -585,7 +585,7 @@ paths:
         - name: user
           description: |-
             The creator of tags.
-            Format: users/{uid}
+            Format: users/{id}
           in: query
           required: false
           type: string
@@ -915,7 +915,8 @@ paths:
         - name: memo.name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
+            id is the system generated id.
           in: path
           required: true
           type: string
@@ -926,15 +927,16 @@ paths:
           schema:
             type: object
             properties:
-              resourceId:
+              uid:
                 type: string
+                description: The user defined id of the memo.
               rowStatus:
                 $ref: '#/definitions/apiv2RowStatus'
               creator:
                 type: string
                 title: |-
                   The name of the creator.
-                  Format: users/{uid}
+                  Format: users/{id}
               createTime:
                 type: string
                 format: date-time
@@ -991,7 +993,7 @@ paths:
         - name: name_1
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1038,7 +1040,7 @@ paths:
         - name: name_2
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1062,7 +1064,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{uid}
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1085,7 +1087,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{uid}
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1109,7 +1111,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{uid}
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1132,7 +1134,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{uid}
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1161,7 +1163,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{uid}
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1190,7 +1192,7 @@ paths:
         - name: name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1213,7 +1215,7 @@ paths:
         - name: name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1251,7 +1253,7 @@ paths:
         - name: name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1274,7 +1276,7 @@ paths:
         - name: name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1287,7 +1289,7 @@ paths:
         - name: reaction.creator
           description: |-
             The name of the creator.
-            Format: users/{uid}
+            Format: users/{id}
           in: query
           required: false
           type: string
@@ -1333,7 +1335,7 @@ paths:
         - name: name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1362,7 +1364,7 @@ paths:
         - name: name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1385,7 +1387,7 @@ paths:
         - name: name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1414,7 +1416,7 @@ paths:
         - name: name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1437,7 +1439,7 @@ paths:
         - name: name
           description: |-
             The name of the memo.
-            Format: memos/{uid}
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1466,7 +1468,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{uid}
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1490,7 +1492,7 @@ paths:
         - name: setting.name
           description: |-
             The name of the user.
-            Format: users/{uid}
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1532,7 +1534,7 @@ paths:
         - name: user.name
           description: |-
             The name of the user.
-            Format: users/{uid}
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1656,7 +1658,7 @@ definitions:
         type: string
         title: |-
           The name of the creator.
-          Format: users/{uid}
+          Format: users/{id}
       contentId:
         type: string
       reactionType:
@@ -1692,7 +1694,7 @@ definitions:
         type: string
         title: |-
           The name of the user.
-          Format: users/{uid}
+          Format: users/{id}
       locale:
         type: string
         description: The preferred locale of the user.
@@ -2078,18 +2080,20 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
+        description: |-
           The name of the memo.
-          Format: memos/{uid}
-      resourceId:
+          Format: memos/{id}
+          id is the system generated id.
+      uid:
         type: string
+        description: The user defined id of the memo.
       rowStatus:
         $ref: '#/definitions/apiv2RowStatus'
       creator:
         type: string
         title: |-
           The name of the creator.
-          Format: users/{uid}
+          Format: users/{id}
       createTime:
         type: string
         format: date-time
@@ -2230,7 +2234,7 @@ definitions:
         type: string
         title: |-
           The creator of tags.
-          Format: users/{uid}
+          Format: users/{id}
   v2UpdateInboxResponse:
     type: object
     properties:
@@ -2283,7 +2287,7 @@ definitions:
         type: string
         title: |-
           The name of the user.
-          Format: users/{uid}
+          Format: users/{id}
       id:
         type: integer
         format: int32

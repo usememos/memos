@@ -31,7 +31,7 @@ func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.Crea
 	}
 
 	create := &store.Resource{
-		ResourceName: shortuuid.New(),
+		UID:          shortuuid.New(),
 		CreatorID:    user.ID,
 		Filename:     request.Filename,
 		ExternalLink: request.ExternalLink,
@@ -87,7 +87,7 @@ func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetReso
 
 func (s *APIV2Service) GetResourceByName(ctx context.Context, request *apiv2pb.GetResourceByNameRequest) (*apiv2pb.GetResourceByNameResponse, error) {
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
-		ResourceName: &request.Name,
+		UID: &request.Name,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
@@ -165,7 +165,7 @@ func (s *APIV2Service) convertResourceFromStore(ctx context.Context, resource *s
 
 	return &apiv2pb.Resource{
 		Id:           resource.ID,
-		Name:         resource.ResourceName,
+		Name:         resource.UID,
 		CreateTime:   timestamppb.New(time.Unix(resource.CreatedTs, 0)),
 		Filename:     resource.Filename,
 		ExternalLink: resource.ExternalLink,

@@ -19,8 +19,8 @@ const MemoDetail = () => {
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
-  const resourceId = params.resourceId;
-  const memo = memoStore.getMemoByResourceId(resourceId || "");
+  const uid = params.uid;
+  const memo = memoStore.getMemoByUid(uid || "");
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const commentRelations =
     memo?.relations.filter((relation) => relation.relatedMemo === memo.name && relation.type === MemoRelation_Type.COMMENT) || [];
@@ -28,15 +28,15 @@ const MemoDetail = () => {
 
   // Prepare memo.
   useEffect(() => {
-    if (resourceId) {
-      memoStore.searchMemos(`resource_name == "${resourceId}"`).catch((error: ClientError) => {
+    if (uid) {
+      memoStore.searchMemos(`uid == "${uid}"`).catch((error: ClientError) => {
         toast.error(error.details);
         navigateTo("/403");
       });
     } else {
       navigateTo("/404");
     }
-  }, [resourceId]);
+  }, [uid]);
 
   // Prepare memo comments.
   useEffect(() => {

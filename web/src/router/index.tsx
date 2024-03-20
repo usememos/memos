@@ -88,7 +88,7 @@ const router = createBrowserRouter([
             element: <Explore />,
           },
           {
-            path: "m/:resourceId",
+            path: "m/:uid",
             element: <MemoDetail />,
           },
           {

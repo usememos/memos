@@ -58,7 +58,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     if (event.altKey) {
       showChangeMemoCreatedTsDialog(extractMemoIdFromName(memo.name));
     } else {
-      navigateTo(`/m/${memo.resourceId}`);
+      navigateTo(`/m/${memo.uid}`);
     }
   };
 
@@ -119,7 +119,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 "flex flex-row justify-start items-center hover:opacity-70",
                 commentAmount === 0 && "invisible group-hover:visible",
               )}
-              to={`/m/${memo.resourceId}#comments`}
+              to={`/m/${memo.uid}#comments`}
               unstable_viewTransition
             >
               <Icon.MessageCircleMore className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />

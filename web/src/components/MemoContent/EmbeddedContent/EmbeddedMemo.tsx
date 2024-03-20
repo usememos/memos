@@ -17,11 +17,11 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   const context = useContext(RendererContext);
   const loadingState = useLoading();
   const memoStore = useMemoStore();
-  const memo = memoStore.getMemoByResourceId(resourceId);
+  const memo = memoStore.getMemoByUid(resourceId);
   const resourceName = `memos/${resourceId}`;
 
   useEffect(() => {
-    memoStore.searchMemos(`resource_name == "${resourceId}"`).finally(() => loadingState.setFinish());
+    memoStore.searchMemos(`uid == "${resourceId}"`).finally(() => loadingState.setFinish());
   }, [resourceId]);
 
   if (loadingState.isLoading) {
