@@ -22,7 +22,8 @@ CREATE TABLE `user` (
   `email` VARCHAR(256) NOT NULL DEFAULT '',
   `nickname` VARCHAR(256) NOT NULL DEFAULT '',
   `password_hash` VARCHAR(256) NOT NULL,
-  `avatar_url` LONGTEXT NOT NULL
+  `avatar_url` LONGTEXT NOT NULL,
+  `description` VARCHAR(256) NOT NULL DEFAULT ''
 );
 
 -- user_setting
@@ -36,7 +37,7 @@ CREATE TABLE `user_setting` (
 -- memo
 CREATE TABLE `memo` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `resource_name` VARCHAR(256) NOT NULL UNIQUE,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
   `creator_id` INT NOT NULL,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -64,7 +65,7 @@ CREATE TABLE `memo_relation` (
 -- resource
 CREATE TABLE `resource` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `resource_name` VARCHAR(256) NOT NULL UNIQUE,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
   `creator_id` INT NOT NULL,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

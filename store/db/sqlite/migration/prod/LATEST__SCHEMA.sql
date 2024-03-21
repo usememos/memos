@@ -23,7 +23,8 @@ CREATE TABLE user (
   email TEXT NOT NULL DEFAULT '',
   nickname TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
-  avatar_url TEXT NOT NULL DEFAULT ''
+  avatar_url TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT ''
 );
 
 CREATE INDEX idx_user_username ON user (username);
@@ -39,7 +40,7 @@ CREATE TABLE user_setting (
 -- memo
 CREATE TABLE memo (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  resource_name TEXT NOT NULL UNIQUE,
+  uid TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
@@ -71,7 +72,7 @@ CREATE TABLE memo_relation (
 -- resource
 CREATE TABLE resource (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  resource_name TEXT NOT NULL UNIQUE,
+  uid TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),

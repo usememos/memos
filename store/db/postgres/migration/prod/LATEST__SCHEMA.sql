@@ -22,7 +22,8 @@ CREATE TABLE "user" (
   email TEXT NOT NULL DEFAULT '',
   nickname TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
-  avatar_url TEXT NOT NULL
+  avatar_url TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT ''
 );
 
 -- user_setting
@@ -36,7 +37,7 @@ CREATE TABLE user_setting (
 -- memo
 CREATE TABLE memo (
   id SERIAL PRIMARY KEY,
-  resource_name TEXT NOT NULL UNIQUE,
+  uid TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
   updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
@@ -64,7 +65,7 @@ CREATE TABLE memo_relation (
 -- resource
 CREATE TABLE resource (
   id SERIAL PRIMARY KEY,
-  resource_name TEXT NOT NULL UNIQUE,
+  uid TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
   updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
