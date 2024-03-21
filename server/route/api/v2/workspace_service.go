@@ -4,10 +4,11 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
-	"github.com/usememos/memos/store"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	"github.com/usememos/memos/store"
 )
 
 var owner *apiv2pb.User
