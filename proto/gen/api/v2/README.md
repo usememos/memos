@@ -2600,10 +2600,11 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  | The name of intance owner. Format: &#34;users/{id}&#34; |
 | version | [string](#string) |  | version is the current version of instance |
 | mode | [string](#string) |  | mode is the instance mode (e.g. &#34;prod&#34;, &#34;dev&#34; or &#34;demo&#34;). |
-| allow_registration | [bool](#bool) |  | allow_registration is whether the registration is allowed. |
-| disable_password_login | [bool](#bool) |  | allow_password_login is whether the password login is allowed. |
+| disallow_signup | [bool](#bool) |  | disallow_signup is whether the signup is disallowed. |
+| disable_password_login | [bool](#bool) |  | disable_password_login is whether the password login is disabled. |
 | additional_script | [string](#string) |  | additional_script is the additional script. |
 | additional_style | [string](#string) |  | additional_style is the additional style. |
 

@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { WorkspaceProfile } from "@/types/proto/api/v2/workspace_service";
 
 interface State {
   locale: Locale;
   appearance: Appearance;
   systemStatus: SystemStatus;
+  workspaceProfile: WorkspaceProfile;
 }
 
 const globalSlice = createSlice({
@@ -12,11 +14,6 @@ const globalSlice = createSlice({
     locale: "en",
     appearance: "system",
     systemStatus: {
-      host: undefined,
-      profile: {
-        mode: "demo",
-        version: "",
-      },
       disablePasswordLogin: false,
       disablePublicMemos: false,
       memoDisplayWithUpdatedTs: false,
@@ -28,6 +25,7 @@ const globalSlice = createSlice({
         appearance: "system",
       },
     },
+    workspaceProfile: WorkspaceProfile.fromPartial({}),
   } as State,
   reducers: {
     setGlobalState: (state, action: PayloadAction<Partial<State>>) => {

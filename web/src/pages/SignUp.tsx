@@ -17,7 +17,7 @@ const SignUp = () => {
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
-  const { appearance, locale, systemStatus } = globalStore.state;
+  const { appearance, locale, systemStatus, workspaceProfile } = globalStore.state;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -119,7 +119,7 @@ const SignUp = () => {
             </Button>
           </div>
         </form>
-        {!systemStatus.host && <p className="w-full mt-4 text-sm font-medium dark:text-gray-500">{t("auth.host-tip")}</p>}
+        {!workspaceProfile.owner && <p className="w-full mt-4 text-sm font-medium dark:text-gray-500">{t("auth.host-tip")}</p>}
         <p className="w-full mt-4 text-sm">
           <span className="dark:text-gray-500">{t("auth.sign-in-tip")}</span>
           <Link to="/auth" className="cursor-pointer ml-2 text-blue-600 hover:underline" unstable_viewTransition>

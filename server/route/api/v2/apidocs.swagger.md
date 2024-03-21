@@ -1857,9 +1857,10 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| owner | string |  | No |
 | version | string |  | No |
 | mode | string | mode is the instance mode (e.g. "prod", "dev" or "demo"). | No |
-| allowRegistration | boolean | allow_registration is whether the registration is allowed. | No |
-| disablePasswordLogin | boolean | allow_password_login is whether the password login is allowed. | No |
+| disallowSignup | boolean | disallow_signup is whether the signup is disallowed. | No |
+| disablePasswordLogin | boolean | disable_password_login is whether the password login is disabled. | No |
 | additionalScript | string | additional_script is the additional script. | No |
 | additionalStyle | string | additional_style is the additional style. | No |

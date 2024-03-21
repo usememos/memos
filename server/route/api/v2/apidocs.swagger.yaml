@@ -2346,18 +2346,23 @@ definitions:
   v2WorkspaceProfile:
     type: object
     properties:
+      owner:
+        type: string
+        title: |-
+          The name of intance owner.
+          Format: "users/{id}"
       version:
         type: string
         title: version is the current version of instance
       mode:
         type: string
         description: mode is the instance mode (e.g. "prod", "dev" or "demo").
-      allowRegistration:
+      disallowSignup:
         type: boolean
-        description: allow_registration is whether the registration is allowed.
+        description: disallow_signup is whether the signup is disallowed.
       disablePasswordLogin:
         type: boolean
-        description: allow_password_login is whether the password login is allowed.
+        description: disable_password_login is whether the password login is disabled.
       additionalScript:
         type: string
         description: additional_script is the additional script.
