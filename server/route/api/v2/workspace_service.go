@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var owner *apiv2pb.User = nil
+var owner *apiv2pb.User
 
 func (s *APIV2Service) GetWorkspaceProfile(ctx context.Context, _ *apiv2pb.GetWorkspaceProfileRequest) (*apiv2pb.GetWorkspaceProfileResponse, error) {
 	workspaceProfile := &apiv2pb.WorkspaceProfile{
