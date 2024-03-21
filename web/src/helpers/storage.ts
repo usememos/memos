@@ -6,8 +6,6 @@ interface StorageData {
   locale: Locale;
   // appearance
   appearance: Appearance;
-  // local setting
-  localSetting: LocalSetting;
 }
 
 type StorageKey = keyof StorageData;

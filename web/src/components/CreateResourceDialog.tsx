@@ -1,7 +1,7 @@
 import { Autocomplete, Button, IconButton, Input, List, ListItem, Option, Select, Typography } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Resource } from "@/types/proto/api/v2/resource_service";
+import { CreateResourceRequest, Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import { useResourceStore } from "../store/module";
 import { generateDialog } from "./Dialog";
@@ -29,11 +29,13 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
     selectedMode: "local-file",
     uploadingFlag: false,
   });
-  const [resourceCreate, setResourceCreate] = useState<ResourceCreate>({
-    filename: "",
-    externalLink: "",
-    type: "",
-  });
+  const [resourceCreate, setResourceCreate] = useState<CreateResourceRequest>(
+    CreateResourceRequest.fromPartial({
+      filename: "",
+      externalLink: "",
+      type: "",
+    }),
+  );
   const [fileList, setFileList] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 

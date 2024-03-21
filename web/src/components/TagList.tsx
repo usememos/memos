@@ -9,6 +9,10 @@ import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import showRenameTagDialog from "./RenameTagDialog";
 
+interface KVObject<T = any> {
+  [key: string]: T;
+}
+
 interface Tag {
   key: string;
   text: string;
