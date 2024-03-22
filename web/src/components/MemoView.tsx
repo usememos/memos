@@ -43,6 +43,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const commentAmount = memo.relations.filter(
     (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo === memo.name,
   ).length;
+  const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
   const readonly = memo.creator !== user?.name;
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.name}`);
 
@@ -77,7 +78,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     <div
       className={classNames(
         "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
-        memo.pinned && props.showPinned && "border-gray-200 border dark:border-zinc-700",
+        props.showPinned && memo.pinned && "border-gray-200 border dark:border-zinc-700",
         className,
       )}
       ref={memoContainerRef}
@@ -95,9 +96,9 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     {creator.nickname || creator.username}
                   </span>
                 </Link>
-                <span className="-mt-1 text-gray-400 text-sm leading-tight max-w-[80%] truncate dark:text-gray-500">
-                  {creator.description}
-                </span>
+                <div className="w-auto -mt-0.5 text-xs leading-none text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
+                  <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
+                </div>
               </div>
             </div>
           )}
@@ -143,11 +144,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
         compact={props.compact ?? true}
       />
       <MemoResourceListView resources={memo.resources} />
-      <div className="w-full flex flex-row justify-between items-center">
-        <div className="text-sm leading-tight text-gray-400 select-none">
-          <relative-time datetime={memo.displayTime?.toISOString()} tense="past" onClick={handleGotoMemoDetailPage}></relative-time>
-        </div>
-      </div>
       <MemoRelationListView memo={memo} relations={referencedMemos} />
       <MemoReactionistView memo={memo} reactions={memo.reactions} />
     </div>
