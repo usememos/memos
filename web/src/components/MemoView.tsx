@@ -91,12 +91,16 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 <UserAvatar className="mr-2 shrink-0" avatarUrl={creator.avatarUrl} />
               </Link>
               <div className="w-full flex flex-col justify-center items-start">
-                <Link className="w-auto hover:opacity-80" to={`/u/${encodeURIComponent(creator.username)}`} unstable_viewTransition>
-                  <span className="text-gray-600 text-lg leading-tight max-w-[80%] truncate dark:text-gray-400">
+                <Link
+                  className="w-auto leading-tight hover:opacity-80"
+                  to={`/u/${encodeURIComponent(creator.username)}`}
+                  unstable_viewTransition
+                >
+                  <span className="text-gray-600 leading-tight max-w-[80%] truncate dark:text-gray-400">
                     {creator.nickname || creator.username}
                   </span>
                 </Link>
-                <div className="w-auto -mt-0.5 text-xs leading-none text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
+                <div className="w-auto -mt-0.5 text-xs leading-tight text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
                   <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
                 </div>
               </div>
