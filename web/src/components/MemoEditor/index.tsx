@@ -37,6 +37,7 @@ interface Props {
   relationList?: MemoRelation[];
   autoFocus?: boolean;
   onConfirm?: (memoId: number) => void;
+  onEditPrevious?: () => void;
 }
 
 interface State {
@@ -141,7 +142,7 @@ const MemoEditor = (props: Props) => {
     const isMetaKey = event.ctrlKey || event.metaKey;
     if (isMetaKey) {
       if (event.key === "Enter") {
-        handleSaveBtnClick();
+        void handleSaveBtnClick();
         return;
       }
 
@@ -156,6 +157,12 @@ const MemoEditor = (props: Props) => {
       if (selectedContent) {
         editorRef.current.setCursorPosition(cursorPosition + TAB_SPACE_WIDTH);
       }
+      return;
+    }
+
+    if (!!props.onEditPrevious && event.key == "ArrowDown" && !state.isComposing && editorRef.current.getContent() === "") {
+      event.preventDefault();
+      props.onEditPrevious();
       return;
     }
   };
