@@ -19,12 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ResourceService_CreateResource_FullMethodName    = "/memos.api.v2.ResourceService/CreateResource"
-	ResourceService_ListResources_FullMethodName     = "/memos.api.v2.ResourceService/ListResources"
-	ResourceService_GetResource_FullMethodName       = "/memos.api.v2.ResourceService/GetResource"
-	ResourceService_GetResourceByName_FullMethodName = "/memos.api.v2.ResourceService/GetResourceByName"
-	ResourceService_UpdateResource_FullMethodName    = "/memos.api.v2.ResourceService/UpdateResource"
-	ResourceService_DeleteResource_FullMethodName    = "/memos.api.v2.ResourceService/DeleteResource"
+	ResourceService_CreateResource_FullMethodName  = "/memos.api.v2.ResourceService/CreateResource"
+	ResourceService_ListResources_FullMethodName   = "/memos.api.v2.ResourceService/ListResources"
+	ResourceService_SearchResources_FullMethodName = "/memos.api.v2.ResourceService/SearchResources"
+	ResourceService_GetResource_FullMethodName     = "/memos.api.v2.ResourceService/GetResource"
+	ResourceService_UpdateResource_FullMethodName  = "/memos.api.v2.ResourceService/UpdateResource"
+	ResourceService_DeleteResource_FullMethodName  = "/memos.api.v2.ResourceService/DeleteResource"
 )
 
 // ResourceServiceClient is the client API for ResourceService service.
@@ -35,13 +35,13 @@ type ResourceServiceClient interface {
 	CreateResource(ctx context.Context, in *CreateResourceRequest, opts ...grpc.CallOption) (*CreateResourceResponse, error)
 	// ListResources lists all resources.
 	ListResources(ctx context.Context, in *ListResourcesRequest, opts ...grpc.CallOption) (*ListResourcesResponse, error)
-	// GetResource returns a resource by id.
+	// SearchResources searches memos.
+	SearchResources(ctx context.Context, in *SearchResourcesRequest, opts ...grpc.CallOption) (*SearchResourcesResponse, error)
+	// GetResource returns a resource by name.
 	GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error)
-	// GetResourceByName returns a resource by name.
-	GetResourceByName(ctx context.Context, in *GetResourceByNameRequest, opts ...grpc.CallOption) (*GetResourceByNameResponse, error)
 	// UpdateResource updates a resource.
 	UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error)
-	// DeleteResource deletes a resource by id.
+	// DeleteResource deletes a resource by name.
 	DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*DeleteResourceResponse, error)
 }
 
@@ -71,18 +71,18 @@ func (c *resourceServiceClient) ListResources(ctx context.Context, in *ListResou
 	return out, nil
 }
 
-func (c *resourceServiceClient) GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error) {
-	out := new(GetResourceResponse)
-	err := c.cc.Invoke(ctx, ResourceService_GetResource_FullMethodName, in, out, opts...)
+func (c *resourceServiceClient) SearchResources(ctx context.Context, in *SearchResourcesRequest, opts ...grpc.CallOption) (*SearchResourcesResponse, error) {
+	out := new(SearchResourcesResponse)
+	err := c.cc.Invoke(ctx, ResourceService_SearchResources_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *resourceServiceClient) GetResourceByName(ctx context.Context, in *GetResourceByNameRequest, opts ...grpc.CallOption) (*GetResourceByNameResponse, error) {
-	out := new(GetResourceByNameResponse)
-	err := c.cc.Invoke(ctx, ResourceService_GetResourceByName_FullMethodName, in, out, opts...)
+func (c *resourceServiceClient) GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error) {
+	out := new(GetResourceResponse)
+	err := c.cc.Invoke(ctx, ResourceService_GetResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -115,13 +115,13 @@ type ResourceServiceServer interface {
 	CreateResource(context.Context, *CreateResourceRequest) (*CreateResourceResponse, error)
 	// ListResources lists all resources.
 	ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error)
-	// GetResource returns a resource by id.
+	// SearchResources searches memos.
+	SearchResources(context.Context, *SearchResourcesRequest) (*SearchResourcesResponse, error)
+	// GetResource returns a resource by name.
 	GetResource(context.Context, *GetResourceRequest) (*GetResourceResponse, error)
-	// GetResourceByName returns a resource by name.
-	GetResourceByName(context.Context, *GetResourceByNameRequest) (*GetResourceByNameResponse, error)
 	// UpdateResource updates a resource.
 	UpdateResource(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error)
-	// DeleteResource deletes a resource by id.
+	// DeleteResource deletes a resource by name.
 	DeleteResource(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error)
 	mustEmbedUnimplementedResourceServiceServer()
 }
@@ -136,11 +136,11 @@ func (UnimplementedResourceServiceServer) CreateResource(context.Context, *Creat
 func (UnimplementedResourceServiceServer) ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListResources not implemented")
 }
+func (UnimplementedResourceServiceServer) SearchResources(context.Context, *SearchResourcesRequest) (*SearchResourcesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchResources not implemented")
+}
 func (UnimplementedResourceServiceServer) GetResource(context.Context, *GetResourceRequest) (*GetResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetResource not implemented")
-}
-func (UnimplementedResourceServiceServer) GetResourceByName(context.Context, *GetResourceByNameRequest) (*GetResourceByNameResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetResourceByName not implemented")
 }
 func (UnimplementedResourceServiceServer) UpdateResource(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateResource not implemented")
@@ -197,6 +197,24 @@ func _ResourceService_ListResources_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ResourceService_SearchResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchResourcesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResourceServiceServer).SearchResources(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ResourceService_SearchResources_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResourceServiceServer).SearchResources(ctx, req.(*SearchResourcesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ResourceService_GetResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetResourceRequest)
 	if err := dec(in); err != nil {
@@ -211,24 +229,6 @@ func _ResourceService_GetResource_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ResourceServiceServer).GetResource(ctx, req.(*GetResourceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ResourceService_GetResourceByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetResourceByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ResourceServiceServer).GetResourceByName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ResourceService_GetResourceByName_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ResourceServiceServer).GetResourceByName(ctx, req.(*GetResourceByNameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -285,12 +285,12 @@ var ResourceService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ResourceService_ListResources_Handler,
 		},
 		{
-			MethodName: "GetResource",
-			Handler:    _ResourceService_GetResource_Handler,
+			MethodName: "SearchResources",
+			Handler:    _ResourceService_SearchResources_Handler,
 		},
 		{
-			MethodName: "GetResourceByName",
-			Handler:    _ResourceService_GetResourceByName_Handler,
+			MethodName: "GetResource",
+			Handler:    _ResourceService_GetResource_Handler,
 		},
 		{
 			MethodName: "UpdateResource",

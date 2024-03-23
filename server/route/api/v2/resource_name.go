@@ -12,6 +12,8 @@ import (
 const (
 	WorkspaceSettingNamePrefix = "settings/"
 	UserNamePrefix             = "users/"
+	MemoNamePrefix             = "memos/"
+	ResourceNamePrefix         = "resources/"
 	InboxNamePrefix            = "inboxes/"
 )
 
@@ -43,13 +45,43 @@ func ExtractWorkspaceSettingKeyFromName(name string) (string, error) {
 	return tokens[0], nil
 }
 
-// ExtractUsernameFromName returns the username from a resource name.
-func ExtractUsernameFromName(name string) (string, error) {
+// ExtractUserIDFromName returns the uid from a resource name.
+func ExtractUserIDFromName(name string) (int32, error) {
 	tokens, err := GetNameParentTokens(name, UserNamePrefix)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
-	return tokens[0], nil
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid user ID %q", tokens[0])
+	}
+	return id, nil
+}
+
+// ExtractMemoIDFromName returns the memo ID from a resource name.
+func ExtractMemoIDFromName(name string) (int32, error) {
+	tokens, err := GetNameParentTokens(name, MemoNamePrefix)
+	if err != nil {
+		return 0, err
+	}
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid memo ID %q", tokens[0])
+	}
+	return id, nil
+}
+
+// ExtractResourceIDFromName returns the resource ID from a resource name.
+func ExtractResourceIDFromName(name string) (int32, error) {
+	tokens, err := GetNameParentTokens(name, ResourceNamePrefix)
+	if err != nil {
+		return 0, err
+	}
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid resource ID %q", tokens[0])
+	}
+	return id, nil
 }
 
 // ExtractInboxIDFromName returns the inbox ID from a resource name.

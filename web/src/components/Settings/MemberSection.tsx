@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { UserNamePrefix, stringifyUserRole, useUserStore } from "@/store/v1";
+import { stringifyUserRole, useUserStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { User, User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -78,7 +78,7 @@ const MemberSection = () => {
     try {
       await userServiceClient.createUser({
         user: {
-          name: `${UserNamePrefix}${state.creatingUser.username}`,
+          username: state.creatingUser.username,
           password: state.creatingUser.password,
           role: state.creatingUser.role,
         },

@@ -2,6 +2,7 @@ package v2
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,10 +12,14 @@ import (
 )
 
 func (s *APIV2Service) SetMemoRelations(ctx context.Context, request *apiv2pb.SetMemoRelationsRequest) (*apiv2pb.SetMemoRelationsResponse, error) {
+	id, err := ExtractMemoIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
 	referenceType := store.MemoRelationReference
 	// Delete all reference relations first.
 	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{
-		MemoID: &request.Id,
+		MemoID: &id,
 		Type:   &referenceType,
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete memo relation")
@@ -22,7 +27,7 @@ func (s *APIV2Service) SetMemoRelations(ctx context.Context, request *apiv2pb.Se
 
 	for _, relation := range request.Relations {
 		// Ignore reflexive relations.
-		if request.Id == relation.RelatedMemoId {
+		if request.Name == relation.RelatedMemo {
 			continue
 		}
 		// Ignore comment relations as there's no need to update a comment's relation.
@@ -30,9 +35,13 @@ func (s *APIV2Service) SetMemoRelations(ctx context.Context, request *apiv2pb.Se
 		if relation.Type == apiv2pb.MemoRelation_COMMENT {
 			continue
 		}
+		relatedMemoID, err := ExtractMemoIDFromName(relation.RelatedMemo)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid related memo name: %v", err)
+		}
 		if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
-			MemoID:        request.Id,
-			RelatedMemoID: relation.RelatedMemoId,
+			MemoID:        id,
+			RelatedMemoID: relatedMemoID,
 			Type:          convertMemoRelationTypeToStore(relation.Type),
 		}); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to upsert memo relation")
@@ -43,9 +52,13 @@ func (s *APIV2Service) SetMemoRelations(ctx context.Context, request *apiv2pb.Se
 }
 
 func (s *APIV2Service) ListMemoRelations(ctx context.Context, request *apiv2pb.ListMemoRelationsRequest) (*apiv2pb.ListMemoRelationsResponse, error) {
+	id, err := ExtractMemoIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
 	relationList := []*apiv2pb.MemoRelation{}
 	tempList, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		MemoID: &request.Id,
+		MemoID: &id,
 	})
 	if err != nil {
 		return nil, err
@@ -54,7 +67,7 @@ func (s *APIV2Service) ListMemoRelations(ctx context.Context, request *apiv2pb.L
 		relationList = append(relationList, convertMemoRelationFromStore(relation))
 	}
 	tempList, err = s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		RelatedMemoID: &request.Id,
+		RelatedMemoID: &id,
 	})
 	if err != nil {
 		return nil, err
@@ -71,9 +84,9 @@ func (s *APIV2Service) ListMemoRelations(ctx context.Context, request *apiv2pb.L
 
 func convertMemoRelationFromStore(memoRelation *store.MemoRelation) *apiv2pb.MemoRelation {
 	return &apiv2pb.MemoRelation{
-		MemoId:        memoRelation.MemoID,
-		RelatedMemoId: memoRelation.RelatedMemoID,
-		Type:          convertMemoRelationTypeFromStore(memoRelation.Type),
+		Memo:        fmt.Sprintf("%s%d", MemoNamePrefix, memoRelation.MemoID),
+		RelatedMemo: fmt.Sprintf("%s%d", MemoNamePrefix, memoRelation.RelatedMemoID),
+		Type:        convertMemoRelationTypeFromStore(memoRelation.Type),
 	}
 }
 

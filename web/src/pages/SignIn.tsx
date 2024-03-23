@@ -23,8 +23,7 @@ const SignIn = () => {
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
-  const { appearance, locale, systemStatus } = globalStore.state;
-  const mode = systemStatus.profile.mode;
+  const { appearance, locale, systemStatus, workspaceProfile } = globalStore.state;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -32,8 +31,6 @@ const SignIn = () => {
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
     WorkspaceGeneralSetting.fromPartial({});
-
-  console.log("workspaceGeneralSetting", workspaceGeneralSetting);
 
   useEffect(() => {
     const fetchIdentityProviderList = async () => {
@@ -44,11 +41,11 @@ const SignIn = () => {
   }, []);
 
   useEffect(() => {
-    if (mode === "demo") {
+    if (workspaceProfile.mode === "demo") {
       setUsername("memos-demo");
       setPassword("secret");
     }
-  }, [mode]);
+  }, [workspaceProfile.mode]);
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;

@@ -104,7 +104,9 @@ type Reaction struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id           int32         `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// The name of the creator.
+	// Format: users/{id}
 	Creator      string        `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
 	ContentId    string        `protobuf:"bytes,3,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`
 	ReactionType Reaction_Type `protobuf:"varint,4,opt,name=reaction_type,json=reactionType,proto3,enum=memos.api.v2.Reaction_Type" json:"reaction_type,omitempty"`

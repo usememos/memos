@@ -27,6 +27,9 @@ export enum Routes {
   INBOX = "/inbox",
   ARCHIVED = "/archived",
   SETTING = "/setting",
+  EXPLORE = "/explore",
+  ABOUT = "/about",
+  AUTH = "/auth",
 }
 
 const router = createBrowserRouter([
@@ -35,7 +38,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/auth",
+        path: Routes.AUTH,
         element: <SuspenseWrapper />,
         children: [
           {
@@ -81,11 +84,11 @@ const router = createBrowserRouter([
             element: <Setting />,
           },
           {
-            path: "explore",
+            path: Routes.EXPLORE,
             element: <Explore />,
           },
           {
-            path: "m/:memoName",
+            path: "m/:uid",
             element: <MemoDetail />,
           },
           {
@@ -93,7 +96,7 @@ const router = createBrowserRouter([
             element: <UserProfile />,
           },
           {
-            path: "about",
+            path: Routes.ABOUT,
             element: <About />,
           },
           {

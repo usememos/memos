@@ -17,8 +17,10 @@ const (
 )
 
 type Resource struct {
-	ID           int32
-	ResourceName string
+	// ID is the system generated unique identifier for the resource.
+	ID int32
+	// UID is the user defined unique identifier for the resource.
+	UID string
 
 	// Standard fields
 	CreatorID int32
@@ -38,7 +40,7 @@ type Resource struct {
 type FindResource struct {
 	GetBlob        bool
 	ID             *int32
-	ResourceName   *string
+	UID            *string
 	CreatorID      *int32
 	Filename       *string
 	MemoID         *int32
@@ -49,7 +51,7 @@ type FindResource struct {
 
 type UpdateResource struct {
 	ID           int32
-	ResourceName *string
+	UID          *string
 	UpdatedTs    *int64
 	Filename     *string
 	InternalPath *string
@@ -64,8 +66,8 @@ type DeleteResource struct {
 }
 
 func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {
-	if !util.ResourceNameMatcher.MatchString(create.ResourceName) {
-		return nil, errors.New("invalid resource name")
+	if !util.UIDMatcher.MatchString(create.UID) {
+		return nil, errors.New("invalid uid")
 	}
 	return s.driver.CreateResource(ctx, create)
 }
@@ -88,8 +90,8 @@ func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource,
 }
 
 func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Resource, error) {
-	if update.ResourceName != nil && !util.ResourceNameMatcher.MatchString(*update.ResourceName) {
-		return nil, errors.New("invalid resource name")
+	if update.UID != nil && !util.UIDMatcher.MatchString(*update.UID) {
+		return nil, errors.New("invalid uid")
 	}
 	return s.driver.UpdateResource(ctx, update)
 }

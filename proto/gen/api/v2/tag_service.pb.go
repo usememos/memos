@@ -28,7 +28,7 @@ type Tag struct {
 
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The creator of tags.
-	// Format: users/{username}
+	// Format: users/{id}
 	Creator string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
@@ -263,7 +263,7 @@ type ListTagsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The creator of tags.
-	// Format: users/{username}
+	// Format: users/{id}
 	User string `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 }
 
@@ -359,7 +359,7 @@ type RenameTagRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The creator of tags.
-	// Format: users/{username}
+	// Format: users/{id}
 	User    string `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	OldName string `protobuf:"bytes,2,opt,name=old_name,json=oldName,proto3" json:"old_name,omitempty"`
 	NewName string `protobuf:"bytes,3,opt,name=new_name,json=newName,proto3" json:"new_name,omitempty"`
@@ -556,7 +556,7 @@ type GetTagSuggestionsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The creator of tags.
-	// Format: users/{username}
+	// Format: users/{id}
 	User string `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 }
 

@@ -153,7 +153,7 @@ const Timeline = () => {
                   <div className={classNames("flex flex-col justify-start items-start w-full mt-2 last:mb-4")}>
                     <div className={classNames("flex shrink-0 flex-row w-full pl-1 mt-2 mb-2")}>
                       <div className={classNames("w-full flex flex-col")}>
-                        <span className="font-medium text-3xl leading-none mb-1">
+                        <span className="font-medium text-3xl leading-tight mb-1">
                           {new Date(group.month).toLocaleString(i18n.language, { month: "short", timeZone: "UTC" })}
                         </span>
                         <span className="opacity-60">{new Date(group.month).getUTCFullYear()}</span>
@@ -164,7 +164,7 @@ const Timeline = () => {
                     <div className={classNames("w-full flex flex-col justify-start items-start")}>
                       {group.memos.map((memo, index) => (
                         <div
-                          key={`${memo.id}-${memo.displayTime}`}
+                          key={`${memo.name}-${memo.displayTime}`}
                           className={classNames("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
                         >
                           <MemoView className="!border max-w-full !border-gray-100 dark:!border-zinc-700" memo={memo} />

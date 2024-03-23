@@ -32,6 +32,7 @@
     "create": "创建",
     "database": "数据库",
     "delete": "删除",
+    "description": "说明",
     "edit": "编辑",
     "email": "邮箱",
     "explore": "探索",
@@ -214,6 +215,10 @@
       "email-note": "可选",
       "export-memos": "导出 Memos",
       "nickname-note": "显示在横幅中",
+      "openapi-reset": "重置 OpenAPI 密钥（Key）",
+      "openapi-sample-post": "您好 #memos 来自 {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "重置 API",
       "title": "账号信息",
       "update-information": "更新个人信息",
       "username-note": "用于登录"

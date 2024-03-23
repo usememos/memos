@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	UserService_ListUsers_FullMethodName             = "/memos.api.v2.UserService/ListUsers"
+	UserService_SearchUsers_FullMethodName           = "/memos.api.v2.UserService/SearchUsers"
 	UserService_GetUser_FullMethodName               = "/memos.api.v2.UserService/GetUser"
 	UserService_CreateUser_FullMethodName            = "/memos.api.v2.UserService/CreateUser"
 	UserService_UpdateUser_FullMethodName            = "/memos.api.v2.UserService/UpdateUser"
@@ -37,6 +38,8 @@ const (
 type UserServiceClient interface {
 	// ListUsers returns a list of users.
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
+	// SearchUsers searches users by filter.
+	SearchUsers(ctx context.Context, in *SearchUsersRequest, opts ...grpc.CallOption) (*SearchUsersResponse, error)
 	// GetUser gets a user by name.
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	// CreateUser creates a new user.
@@ -68,6 +71,15 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 func (c *userServiceClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error) {
 	out := new(ListUsersResponse)
 	err := c.cc.Invoke(ctx, UserService_ListUsers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) SearchUsers(ctx context.Context, in *SearchUsersRequest, opts ...grpc.CallOption) (*SearchUsersResponse, error) {
+	out := new(SearchUsersResponse)
+	err := c.cc.Invoke(ctx, UserService_SearchUsers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -161,6 +173,8 @@ func (c *userServiceClient) DeleteUserAccessToken(ctx context.Context, in *Delet
 type UserServiceServer interface {
 	// ListUsers returns a list of users.
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
+	// SearchUsers searches users by filter.
+	SearchUsers(context.Context, *SearchUsersRequest) (*SearchUsersResponse, error)
 	// GetUser gets a user by name.
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	// CreateUser creates a new user.
@@ -188,6 +202,9 @@ type UnimplementedUserServiceServer struct {
 
 func (UnimplementedUserServiceServer) ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedUserServiceServer) SearchUsers(context.Context, *SearchUsersRequest) (*SearchUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchUsers not implemented")
 }
 func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
@@ -243,6 +260,24 @@ func _UserService_ListUsers_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).ListUsers(ctx, req.(*ListUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_SearchUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).SearchUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_SearchUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).SearchUsers(ctx, req.(*SearchUsersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -419,6 +454,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUsers",
 			Handler:    _UserService_ListUsers_Handler,
+		},
+		{
+			MethodName: "SearchUsers",
+			Handler:    _UserService_SearchUsers_Handler,
 		},
 		{
 			MethodName: "GetUser",

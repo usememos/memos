@@ -1,8 +1,3 @@
-interface Profile {
-  mode: string;
-  version: string;
-}
-
 interface CustomizedProfile {
   name: string;
   logoUrl: string;
@@ -12,8 +7,6 @@ interface CustomizedProfile {
 }
 
 interface SystemStatus {
-  host?: User;
-  profile: Profile;
   // System settings
   disablePasswordLogin: boolean;
   disablePublicMemos: boolean;

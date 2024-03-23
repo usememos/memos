@@ -4,62 +4,30 @@ import { resourceServiceClient } from "@/grpcweb";
 import { Resource } from "@/types/proto/api/v2/resource_service";
 
 interface State {
-  resourceMapById: Record<number, Resource>;
+  resourceMapByName: Record<string, Resource>;
 }
 
 const getDefaultState = (): State => ({
-  resourceMapById: {},
+  resourceMapByName: {},
 });
 
 export const useResourceStore = create(
   combine(getDefaultState(), (set, get) => ({
     setState: (state: State) => set(state),
     getState: () => get(),
-    getOrFetchResourceById: async (id: number, options?: { skipCache?: boolean; skipStore?: boolean }) => {
-      const resourceMap = get().resourceMapById;
-      const resource = resourceMap[id];
-      if (resource && !options?.skipCache) {
-        return resource;
-      }
-
-      const res = await resourceServiceClient.getResource({
-        id,
+    searchResources: async (filter: string) => {
+      const { resources } = await resourceServiceClient.searchResources({
+        filter,
       });
-      if (!res.resource) {
-        throw new Error("Resource not found");
+      const resourceMap = get().resourceMapByName;
+      for (const resource of resources) {
+        resourceMap[resource.name] = resource;
       }
-
-      if (!options?.skipStore) {
-        resourceMap[id] = res.resource;
-        set({ resourceMapById: resourceMap });
-      }
-      return res.resource;
-    },
-    getResourceById: (id: number) => {
-      return get().resourceMapById[id];
-    },
-    getOrFetchResourceByName: async (name: string, options?: { skipCache?: boolean; skipStore?: boolean }) => {
-      const resourceMap = get().resourceMapById;
-      const cachedResource = Object.values(resourceMap).find((r) => r.name === name);
-      if (cachedResource && !options?.skipCache) {
-        return cachedResource;
-      }
-
-      const { resource } = await resourceServiceClient.getResourceByName({
-        name,
-      });
-      if (!resource) {
-        throw new Error("Resource not found");
-      }
-
-      if (!options?.skipStore) {
-        resourceMap[resource.id] = resource;
-        set({ resourceMapById: resourceMap });
-      }
-      return resource;
+      set({ resourceMapByName: resourceMap });
+      return resources;
     },
     getResourceByName: (name: string) => {
-      const resourceMap = get().resourceMapById;
+      const resourceMap = get().resourceMapByName;
       return Object.values(resourceMap).find((r) => r.name === name);
     },
   })),

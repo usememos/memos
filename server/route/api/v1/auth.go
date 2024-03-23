@@ -269,7 +269,7 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Failed to find users").SetInternal(err)
 	}
-	if !util.ResourceNameMatcher.MatchString(strings.ToLower(signup.Username)) {
+	if !util.UIDMatcher.MatchString(strings.ToLower(signup.Username)) {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid username %s", signup.Username)).SetInternal(err)
 	}
 

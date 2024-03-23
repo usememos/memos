@@ -15,7 +15,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   const currentUser = useCurrentUser();
   const userStore = useUserStore();
   const globalStore = useGlobalStore();
-  const profile = globalStore.state.systemStatus.profile;
+  const profile = globalStore.state.workspaceProfile;
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 

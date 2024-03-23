@@ -26,7 +26,7 @@ const HomeLayout = () => {
         location.pathname,
       )
     ) {
-      navigateTo("/explore");
+      navigateTo(Routes.EXPLORE);
     }
   }, []);
 

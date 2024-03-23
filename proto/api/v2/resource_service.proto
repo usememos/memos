@@ -18,37 +18,38 @@ service ResourceService {
   rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse) {
     option (google.api.http) = {get: "/api/v2/resources"};
   }
-  // GetResource returns a resource by id.
-  rpc GetResource(GetResourceRequest) returns (GetResourceResponse) {
-    option (google.api.http) = {get: "/api/v2/resources/{id}"};
-    option (google.api.method_signature) = "id";
+  // SearchResources searches memos.
+  rpc SearchResources(SearchResourcesRequest) returns (SearchResourcesResponse) {
+    option (google.api.http) = {get: "/api/v2/resources:search"};
   }
-  // GetResourceByName returns a resource by name.
-  rpc GetResourceByName(GetResourceByNameRequest) returns (GetResourceByNameResponse) {
-    option (google.api.http) = {get: "/api/v2/resources/name/{name}"};
+  // GetResource returns a resource by name.
+  rpc GetResource(GetResourceRequest) returns (GetResourceResponse) {
+    option (google.api.http) = {get: "/api/v2/{name=resources/*}"};
     option (google.api.method_signature) = "name";
   }
   // UpdateResource updates a resource.
   rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse) {
     option (google.api.http) = {
-      patch: "/api/v2/resources/{resource.id}",
+      patch: "/api/v2/{resource.name=resources/*}",
       body: "resource"
     };
     option (google.api.method_signature) = "resource,update_mask";
   }
-  // DeleteResource deletes a resource by id.
+  // DeleteResource deletes a resource by name.
   rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse) {
-    option (google.api.http) = {delete: "/api/v2/resources/{id}"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {delete: "/api/v2/{name=resources/*}"};
+    option (google.api.method_signature) = "name";
   }
 }
 
 message Resource {
+  // The name of the resource.
+  // Format: resources/{id}
   // id is the system generated unique identifier.
-  int32 id = 1;
+  string name = 1;
 
-  // name is the user provided name.
-  string name = 2;
+  // The user defined id of the resource.
+  string uid = 2;
 
   google.protobuf.Timestamp create_time = 3;
 
@@ -65,8 +66,11 @@ message Resource {
 
 message CreateResourceRequest {
   string filename = 1;
+
   string external_link = 2;
+
   string type = 3;
+
   optional int32 memo_id = 4;
 }
 
@@ -80,19 +84,19 @@ message ListResourcesResponse {
   repeated Resource resources = 1;
 }
 
+message SearchResourcesRequest {
+  string filter = 1;
+}
+
+message SearchResourcesResponse {
+  repeated Resource resources = 1;
+}
+
 message GetResourceRequest {
-  int32 id = 1;
-}
-
-message GetResourceResponse {
-  Resource resource = 1;
-}
-
-message GetResourceByNameRequest {
   string name = 1;
 }
 
-message GetResourceByNameResponse {
+message GetResourceResponse {
   Resource resource = 1;
 }
 
@@ -107,7 +111,7 @@ message UpdateResourceResponse {
 }
 
 message DeleteResourceRequest {
-  int32 id = 1;
+  string name = 1;
 }
 
 message DeleteResourceResponse {}

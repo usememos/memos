@@ -2,7 +2,7 @@ import { Tooltip } from "@mui/joy";
 import classNames from "classnames";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { MemoNamePrefix, useMemoStore } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { Reaction_Type } from "@/types/proto/api/v2/reaction_service";
 import { User } from "@/types/proto/api/v2/user_service";
@@ -74,9 +74,9 @@ const ReactionView = (props: Props) => {
     try {
       if (index === -1) {
         await memoServiceClient.upsertMemoReaction({
-          id: memo.id,
+          name: memo.name,
           reaction: {
-            contentId: `${MemoNamePrefix}${memo.id}`,
+            contentId: memo.name,
             reactionType,
           },
         });
@@ -85,13 +85,13 @@ const ReactionView = (props: Props) => {
           (reaction) => reaction.reactionType === reactionType && reaction.creator === currentUser.name,
         );
         for (const reaction of reactions) {
-          await memoServiceClient.deleteMemoReaction({ id: reaction.id });
+          await memoServiceClient.deleteMemoReaction({ reactionId: reaction.id });
         }
       }
     } catch (error) {
       // Skip error.
     }
-    await memoStore.getOrFetchMemoById(memo.id, { skipCache: true });
+    await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
   };
 
   return (

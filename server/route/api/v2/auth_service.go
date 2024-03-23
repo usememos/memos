@@ -189,6 +189,9 @@ func (s *APIV2Service) SignUp(ctx context.Context, request *apiv2pb.SignUpReques
 		Nickname:     request.Username,
 		PasswordHash: string(passwordHash),
 	}
+	if !util.UIDMatcher.MatchString(strings.ToLower(create.Username)) {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", create.Username)
+	}
 
 	hostUserType := store.RoleHost
 	existedHostUsers, err := s.Store.ListUsers(ctx, &store.FindUser{

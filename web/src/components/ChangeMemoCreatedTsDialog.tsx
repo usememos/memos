@@ -2,7 +2,7 @@ import { Button, IconButton, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getNormalizedTimeString } from "@/helpers/datetime";
-import { useMemoStore } from "@/store/v1";
+import { MemoNamePrefix, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -19,7 +19,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   const maxDatetimeValue = getNormalizedTimeString();
 
   useEffect(() => {
-    memoStore.getOrFetchMemoById(memoId).then((memo) => {
+    memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`).then((memo) => {
       if (memo) {
         const datetime = getNormalizedTimeString(memo.createTime);
         setCreatedAt(datetime);
@@ -43,7 +43,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
     try {
       await memoStore.updateMemo(
         {
-          id: memoId,
+          name: `${MemoNamePrefix}${memoId}`,
           createTime: new Date(createdAt),
         },
         ["created_ts"],

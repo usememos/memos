@@ -106,7 +106,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           onInputChange={(_, value) => setSearchText(value.trim())}
           getOptionKey={(option) => option.name}
           getOptionLabel={(option) => option.content}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
+          isOptionEqualToValue={(option, value) => option.name === value.name}
           renderOption={(props, option) => (
             <AutocompleteOption {...props}>
               <div className="w-full flex flex-col justify-start items-start">

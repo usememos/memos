@@ -22,7 +22,7 @@ export const findNearestMatchedLanguage = (language: string): Locale => {
   }
 
   // Try to match "xx-YY" to existing translation for "xx-ZZ" as a last resort
-  // If some match is undesired, it can be overriden in src/i18n.ts `fallbacks` option
+  // If some match is undesired, it can be overridden in src/i18n.ts `fallbacks` option
   for (const existing of locales) {
     if (shortCode == existing.substring(0, 2)) {
       return existing as Locale;

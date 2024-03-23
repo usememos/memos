@@ -15,10 +15,10 @@ func TestMemoOrganizerStore(t *testing.T) {
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 	memoCreate := &store.Memo{
-		ResourceName: "main-memo",
-		CreatorID:    user.ID,
-		Content:      "main memo content",
-		Visibility:   store.Public,
+		UID:        "main-memo",
+		CreatorID:  user.ID,
+		Content:    "main memo content",
+		Visibility: store.Public,
 	}
 	memo, err := ts.CreateMemo(ctx, memoCreate)
 	require.NoError(t, err)

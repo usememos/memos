@@ -14,7 +14,7 @@ func TestResourceStore(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	_, err := ts.CreateResource(ctx, &store.Resource{
-		ResourceName: shortuuid.New(),
+		UID:          shortuuid.New(),
 		CreatorID:    101,
 		Filename:     "test.epub",
 		Blob:         []byte("test"),

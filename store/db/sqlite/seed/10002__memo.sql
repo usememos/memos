@@ -1,7 +1,7 @@
 INSERT INTO
   memo (
     `id`,
-    `resource_name`,
+    `uid`,
     `content`,
     `creator_id`
   )
@@ -16,7 +16,7 @@ VALUES
 INSERT INTO
   memo (
     `id`,
-    `resource_name`,
+    `uid`,
     `content`,
     `creator_id`,
     `visibility`
@@ -36,7 +36,7 @@ VALUES
 INSERT INTO
   memo (
     `id`,
-    `resource_name`,
+    `uid`,
     `content`,
     `creator_id`,
     `visibility`
@@ -54,7 +54,7 @@ VALUES
 INSERT INTO
   memo (
     `id`,
-    `resource_name`,
+    `uid`,
     `content`,
     `creator_id`,
     `visibility`
@@ -74,7 +74,7 @@ VALUES
 INSERT INTO
   memo (
     `id`,
-    `resource_name`,
+    `uid`,
     `content`,
     `creator_id`,
     `visibility`

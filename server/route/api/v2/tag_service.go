@@ -51,12 +51,12 @@ func (s *APIV2Service) BatchUpsertTag(ctx context.Context, request *apiv2pb.Batc
 }
 
 func (s *APIV2Service) ListTags(ctx context.Context, request *apiv2pb.ListTagsRequest) (*apiv2pb.ListTagsResponse, error) {
-	username, err := ExtractUsernameFromName(request.User)
+	userID, err := ExtractUserIDFromName(request.User)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Username: &username,
+		ID: &userID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -83,12 +83,12 @@ func (s *APIV2Service) ListTags(ctx context.Context, request *apiv2pb.ListTagsRe
 }
 
 func (s *APIV2Service) RenameTag(ctx context.Context, request *apiv2pb.RenameTagRequest) (*apiv2pb.RenameTagResponse, error) {
-	username, err := ExtractUsernameFromName(request.User)
+	userID, err := ExtractUserIDFromName(request.User)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Username: &username,
+		ID: &userID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -148,12 +148,12 @@ func (s *APIV2Service) RenameTag(ctx context.Context, request *apiv2pb.RenameTag
 }
 
 func (s *APIV2Service) DeleteTag(ctx context.Context, request *apiv2pb.DeleteTagRequest) (*apiv2pb.DeleteTagResponse, error) {
-	username, err := ExtractUsernameFromName(request.Tag.Creator)
+	userID, err := ExtractUserIDFromName(request.Tag.Creator)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Username: &username,
+		ID: &userID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -172,12 +172,12 @@ func (s *APIV2Service) DeleteTag(ctx context.Context, request *apiv2pb.DeleteTag
 }
 
 func (s *APIV2Service) GetTagSuggestions(ctx context.Context, request *apiv2pb.GetTagSuggestionsRequest) (*apiv2pb.GetTagSuggestionsResponse, error) {
-	username, err := ExtractUsernameFromName(request.User)
+	userID, err := ExtractUserIDFromName(request.User)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Username: &username,
+		ID: &userID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -244,7 +244,7 @@ func (s *APIV2Service) convertTagFromStore(ctx context.Context, tag *store.Tag) 
 	}
 	return &apiv2pb.Tag{
 		Name:    tag.Name,
-		Creator: fmt.Sprintf("%s%s", UserNamePrefix, user.Username),
+		Creator: fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
 	}, nil
 }
 

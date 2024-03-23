@@ -16,7 +16,7 @@ const App = () => {
   const globalStore = useGlobalStore();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
-  const { appearance, locale, systemStatus } = globalStore.state;
+  const { appearance, locale, systemStatus, workspaceProfile } = globalStore.state;
   const userSetting = userStore.userSetting;
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
@@ -24,10 +24,10 @@ const App = () => {
 
   // Redirect to sign up page if no host.
   useEffect(() => {
-    if (!systemStatus.host) {
+    if (!workspaceProfile.owner) {
       navigateTo("/auth/signup");
     }
-  }, [systemStatus.host]);
+  }, [workspaceProfile.owner]);
 
   useEffect(() => {
     const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");

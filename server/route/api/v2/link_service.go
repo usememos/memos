@@ -14,7 +14,7 @@ func (*APIV2Service) GetLinkMetadata(_ context.Context, request *apiv2pb.GetLink
 	}
 
 	return &apiv2pb.GetLinkMetadataResponse{
-		Metadata: &apiv2pb.LinkMetadata{
+		LinkMetadata: &apiv2pb.LinkMetadata{
 			Title:       htmlMeta.Title,
 			Description: htmlMeta.Description,
 			Image:       htmlMeta.Image,

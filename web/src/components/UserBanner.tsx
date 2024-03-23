@@ -2,6 +2,8 @@ import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import classNames from "classnames";
 import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useNavigateTo from "@/hooks/useNavigateTo";
+import { Routes } from "@/router";
 import { useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
@@ -14,6 +16,7 @@ interface Props {
 const UserBanner = (props: Props) => {
   const { collapsed } = props;
   const t = useTranslate();
+  const navigateTo = useNavigateTo();
   const globalStore = useGlobalStore();
   const { systemStatus } = globalStore.state;
   const user = useCurrentUser();
@@ -41,8 +44,12 @@ const UserBanner = (props: Props) => {
         </MenuButton>
         <Menu placement="bottom-start" style={{ zIndex: "9999" }}>
           <MenuItem onClick={handleSignOut}>
-            <Icon.LogOut className="w-4 h-auto opacity-60 shrink-0" />
+            <Icon.LogOut className="w-4 h-auto opacity-60" />
             <span className="truncate">{t("common.sign-out")}</span>
+          </MenuItem>
+          <MenuItem onClick={() => navigateTo(Routes.ABOUT)}>
+            <Icon.Smile className="w-4 h-auto opacity-60" />
+            <span className="truncate">{t("common.about")}</span>
           </MenuItem>
         </Menu>
       </Dropdown>

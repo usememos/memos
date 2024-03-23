@@ -7,6 +7,8 @@ option go_package = "gen/api/v2";
 message Reaction {
   int32 id = 1;
 
+  // The name of the creator.
+  // Format: users/{id}
   string creator = 2;
 
   string content_id = 3;

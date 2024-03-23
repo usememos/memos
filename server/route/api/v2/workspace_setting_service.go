@@ -34,6 +34,10 @@ func (s *APIV2Service) GetWorkspaceSetting(ctx context.Context, request *apiv2pb
 }
 
 func (s *APIV2Service) SetWorkspaceSetting(ctx context.Context, request *apiv2pb.SetWorkspaceSettingRequest) (*apiv2pb.SetWorkspaceSettingResponse, error) {
+	if s.Profile.Mode == "demo" {
+		return nil, status.Errorf(codes.InvalidArgument, "setting workspace setting is not allowed in demo mode")
+	}
+
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)

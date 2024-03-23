@@ -14,18 +14,21 @@ service WorkspaceService {
 }
 
 message WorkspaceProfile {
+  // The name of intance owner.
+  // Format: "users/{id}"
+  string owner = 1;
   // version is the current version of instance
-  string version = 1;
+  string version = 2;
   // mode is the instance mode (e.g. "prod", "dev" or "demo").
-  string mode = 2;
-  // allow_registration is whether the registration is allowed.
-  bool allow_registration = 3;
-  // allow_password_login is whether the password login is allowed.
-  bool disable_password_login = 4;
+  string mode = 3;
+  // disallow_signup is whether the signup is disallowed.
+  bool disallow_signup = 4;
+  // disable_password_login is whether the password login is disabled.
+  bool disable_password_login = 5;
   // additional_script is the additional script.
-  string additional_script = 5;
+  string additional_script = 6;
   // additional_style is the additional style.
-  string additional_style = 6;
+  string additional_style = 7;
 }
 
 message GetWorkspaceProfileRequest {}

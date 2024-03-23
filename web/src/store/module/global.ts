@@ -1,6 +1,8 @@
+import { workspaceServiceClient } from "@/grpcweb";
 import * as api from "@/helpers/api";
 import storage from "@/helpers/storage";
 import i18n from "@/i18n";
+import { WorkspaceProfile } from "@/types/proto/api/v2/workspace_service";
 import { findNearestMatchedLanguage } from "@/utils/i18n";
 import store, { useAppSelector } from "../";
 import { setAppearance, setGlobalState, setLocale } from "../reducer/global";
@@ -22,7 +24,13 @@ export const initialGlobalState = async () => {
         appearance: "system",
       },
     } as SystemStatus,
+    workspaceProfile: WorkspaceProfile.fromPartial({}),
   };
+
+  const { workspaceProfile } = await workspaceServiceClient.getWorkspaceProfile({});
+  if (workspaceProfile) {
+    defaultGlobalState.workspaceProfile = workspaceProfile;
+  }
 
   const { data } = await api.getSystemStatus();
   if (data) {
@@ -62,7 +70,7 @@ export const useGlobalStore = () => {
       return store.getState().global.systemStatus.disablePublicMemos;
     },
     isDev: () => {
-      return state.systemStatus.profile.mode !== "prod";
+      return state.workspaceProfile.mode !== "prod";
     },
     fetchSystemStatus: async () => {
       const { data: systemStatus } = await api.getSystemStatus();

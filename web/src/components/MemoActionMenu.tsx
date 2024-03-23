@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import Icon from "@/components/Icon";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useMemoStore } from "@/store/v1";
+import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -31,7 +31,7 @@ const MemoActionMenu = (props: Props) => {
       if (memo.pinned) {
         await memoStore.updateMemo(
           {
-            id: memo.id,
+            name: memo.name,
             pinned: false,
           },
           ["pinned"],
@@ -39,7 +39,7 @@ const MemoActionMenu = (props: Props) => {
       } else {
         await memoStore.updateMemo(
           {
-            id: memo.id,
+            name: memo.name,
             pinned: true,
           },
           ["pinned"],
@@ -52,8 +52,8 @@ const MemoActionMenu = (props: Props) => {
 
   const handleEditMemoClick = () => {
     showMemoEditorDialog({
-      memoId: memo.id,
-      cacheKey: `${memo.id}-${memo.updateTime}`,
+      memoId: extractMemoIdFromName(memo.name),
+      cacheKey: `${memo.name}-${memo.updateTime}`,
     });
   };
 
@@ -61,7 +61,7 @@ const MemoActionMenu = (props: Props) => {
     try {
       await memoStore.updateMemo(
         {
-          id: memo.id,
+          name: memo.name,
           rowStatus: RowStatus.ARCHIVED,
         },
         ["row_status"],
@@ -85,7 +85,7 @@ const MemoActionMenu = (props: Props) => {
       style: "danger",
       dialogName: "delete-memo-dialog",
       onConfirm: async () => {
-        await memoStore.deleteMemo(memo.id);
+        await memoStore.deleteMemo(memo.name);
         toast.success("Deleted successfully");
         if (isInMemoDetailPage) {
           navigateTo("/");
@@ -115,7 +115,7 @@ const MemoActionMenu = (props: Props) => {
           </MenuItem>
         )}
         {!hiddenActions?.includes("share") && (
-          <MenuItem onClick={() => showShareMemoDialog(memo.id)}>
+          <MenuItem onClick={() => showShareMemoDialog(extractMemoIdFromName(memo.name))}>
             <Icon.Share className="w-4 h-auto" />
             {t("common.share")}
           </MenuItem>

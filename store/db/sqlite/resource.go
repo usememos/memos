@@ -10,9 +10,9 @@ import (
 )
 
 func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store.Resource, error) {
-	fields := []string{"`resource_name`", "`filename`", "`blob`", "`external_link`", "`type`", "`size`", "`creator_id`", "`internal_path`", "`memo_id`"}
+	fields := []string{"`uid`", "`filename`", "`blob`", "`external_link`", "`type`", "`size`", "`creator_id`", "`internal_path`", "`memo_id`"}
 	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?", "?"}
-	args := []any{create.ResourceName, create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.MemoID}
+	args := []any{create.UID, create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.MemoID}
 
 	stmt := "INSERT INTO `resource` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`, `updated_ts`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
@@ -28,8 +28,8 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	if v := find.ID; v != nil {
 		where, args = append(where, "`id` = ?"), append(args, *v)
 	}
-	if v := find.ResourceName; v != nil {
-		where, args = append(where, "`resource_name` = ?"), append(args, *v)
+	if v := find.UID; v != nil {
+		where, args = append(where, "`uid` = ?"), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "`creator_id` = ?"), append(args, *v)
@@ -44,7 +44,7 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		where = append(where, "`memo_id` IS NOT NULL")
 	}
 
-	fields := []string{"`id`", "`resource_name`", "`filename`", "`external_link`", "`type`", "`size`", "`creator_id`", "`created_ts`", "`updated_ts`", "`internal_path`", "`memo_id`"}
+	fields := []string{"`id`", "`uid`", "`filename`", "`external_link`", "`type`", "`size`", "`creator_id`", "`created_ts`", "`updated_ts`", "`internal_path`", "`memo_id`"}
 	if find.GetBlob {
 		fields = append(fields, "`blob`")
 	}
@@ -69,7 +69,7 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		var memoID sql.NullInt32
 		dests := []any{
 			&resource.ID,
-			&resource.ResourceName,
+			&resource.UID,
 			&resource.Filename,
 			&resource.ExternalLink,
 			&resource.Type,
@@ -102,8 +102,8 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (*store.Resource, error) {
 	set, args := []string{}, []any{}
 
-	if v := update.ResourceName; v != nil {
-		set, args = append(set, "`resource_name` = ?"), append(args, *v)
+	if v := update.UID; v != nil {
+		set, args = append(set, "`uid` = ?"), append(args, *v)
 	}
 	if v := update.UpdatedTs; v != nil {
 		set, args = append(set, "`updated_ts` = ?"), append(args, *v)
@@ -125,12 +125,12 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (
 	}
 
 	args = append(args, update.ID)
-	fields := []string{"`id`", "`resource_name`", "`filename`", "`external_link`", "`type`", "`size`", "`creator_id`", "`created_ts`", "`updated_ts`", "`internal_path`"}
+	fields := []string{"`id`", "`uid`", "`filename`", "`external_link`", "`type`", "`size`", "`creator_id`", "`created_ts`", "`updated_ts`", "`internal_path`"}
 	stmt := "UPDATE `resource` SET " + strings.Join(set, ", ") + " WHERE `id` = ? RETURNING " + strings.Join(fields, ", ")
 	resource := store.Resource{}
 	dests := []any{
 		&resource.ID,
-		&resource.ResourceName,
+		&resource.UID,
 		&resource.Filename,
 		&resource.ExternalLink,
 		&resource.Type,

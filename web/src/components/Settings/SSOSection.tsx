@@ -3,24 +3,14 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import * as api from "@/helpers/api";
-import { useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 
-interface State {
-  disablePasswordLogin: boolean;
-}
-
 const SSOSection = () => {
   const t = useTranslate();
-  const globalStore = useGlobalStore();
-  const systemStatus = globalStore.state.systemStatus;
-  const [state] = useState<State>({
-    disablePasswordLogin: systemStatus.disablePasswordLogin,
-  });
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
@@ -33,11 +23,7 @@ const SSOSection = () => {
   };
 
   const handleDeleteIdentityProvider = async (identityProvider: IdentityProvider) => {
-    let content = t("setting.sso-section.confirm-delete", { name: identityProvider.name });
-
-    if (state.disablePasswordLogin) {
-      content += "\n\n" + t("setting.sso-section.disabled-password-login-warning");
-    }
+    const content = t("setting.sso-section.confirm-delete", { name: identityProvider.name });
 
     showCommonDialog({
       title: t("setting.sso-section.delete-sso"),

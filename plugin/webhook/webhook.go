@@ -30,7 +30,8 @@ type Memo struct {
 }
 
 type Resource struct {
-	ID int32 `json:"id"`
+	ID  int32  `json:"id"`
+	UID string `json:"uid"`
 
 	// Standard fields
 	CreatorID int32 `json:"creatorId"`

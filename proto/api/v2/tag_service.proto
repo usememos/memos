@@ -37,7 +37,7 @@ service TagService {
 message Tag {
   string name = 1;
   // The creator of tags.
-  // Format: users/{username}
+  // Format: users/{id}
   string creator = 2;
 }
 
@@ -57,7 +57,7 @@ message BatchUpsertTagResponse {}
 
 message ListTagsRequest {
   // The creator of tags.
-  // Format: users/{username}
+  // Format: users/{id}
   string user = 1;
 }
 
@@ -67,7 +67,7 @@ message ListTagsResponse {
 
 message RenameTagRequest {
   // The creator of tags.
-  // Format: users/{username}
+  // Format: users/{id}
   string user = 1;
   string old_name = 2;
   string new_name = 3;
@@ -85,7 +85,7 @@ message DeleteTagResponse {}
 
 message GetTagSuggestionsRequest {
   // The creator of tags.
-  // Format: users/{username}
+  // Format: users/{id}
   string user = 1;
 }
 

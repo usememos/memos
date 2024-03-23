@@ -8,7 +8,7 @@ import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useGlobalStore, useResourceStore, useTagStore } from "@/store/module";
-import { useMemoStore, useUserStore } from "@/store/v1";
+import { MemoNamePrefix, extractMemoIdFromName, useMemoStore, useUserStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { Resource } from "@/types/proto/api/v2/resource_service";
@@ -76,7 +76,10 @@ const MemoEditor = (props: Props) => {
   const [contentCache, setContentCache] = useLocalStorage<string>(contentCacheKey, "");
   const referenceRelations = memoId
     ? state.relationList.filter(
-        (relation) => relation.memoId === memoId && relation.relatedMemoId !== memoId && relation.type === MemoRelation_Type.REFERENCE,
+        (relation) =>
+          extractMemoIdFromName(relation.memo) === memoId &&
+          extractMemoIdFromName(relation.relatedMemo) !== memoId &&
+          relation.type === MemoRelation_Type.REFERENCE,
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
 
@@ -103,7 +106,7 @@ const MemoEditor = (props: Props) => {
 
   useEffect(() => {
     if (memoId) {
-      memoStore.getOrFetchMemoById(memoId ?? UNKNOWN_ID).then((memo) => {
+      memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`).then((memo) => {
         if (memo) {
           handleEditorFocus();
           setState((prevState) => ({
@@ -233,7 +236,7 @@ const MemoEditor = (props: Props) => {
         if (memoId) {
           await resourceStore.updateResource({
             resource: Resource.fromPartial({
-              id: resource.id,
+              name: resource.name,
               memoId,
             }),
             updateMask: ["memo_id"],
@@ -294,27 +297,28 @@ const MemoEditor = (props: Props) => {
     try {
       // Update memo.
       if (memoId && memoId !== UNKNOWN_ID) {
-        const prevMemo = await memoStore.getOrFetchMemoById(memoId ?? UNKNOWN_ID);
+        const prevMemo = await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`);
         if (prevMemo) {
           const memo = await memoStore.updateMemo(
             {
-              id: prevMemo.id,
+              name: prevMemo.name,
               content,
               visibility: state.memoVisibility,
             },
             ["content", "visibility"],
           );
           await memoServiceClient.setMemoResources({
-            id: memo.id,
+            name: memo.name,
             resources: state.resourceList,
           });
           await memoServiceClient.setMemoRelations({
-            id: memo.id,
+            name: memo.name,
             relations: state.relationList,
           });
-          await memoStore.getOrFetchMemoById(memo.id, { skipCache: true });
+          const memoId = extractMemoIdFromName(memo.name);
+          await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`, { skipCache: true });
           if (onConfirm) {
-            onConfirm(memo.id);
+            onConfirm(memoId);
           }
         }
       } else {
@@ -326,8 +330,8 @@ const MemoEditor = (props: Props) => {
             })
           : memoServiceClient
               .createMemoComment({
-                id: parentMemoId,
-                create: {
+                name: `${MemoNamePrefix}${parentMemoId}`,
+                comment: {
                   content,
                   visibility: state.memoVisibility,
                 },
@@ -335,16 +339,17 @@ const MemoEditor = (props: Props) => {
               .then(({ memo }) => memo as Memo);
         const memo = await request;
         await memoServiceClient.setMemoResources({
-          id: memo.id,
+          name: memo.name,
           resources: state.resourceList,
         });
         await memoServiceClient.setMemoRelations({
-          id: memo.id,
+          name: memo.name,
           relations: state.relationList,
         });
-        await memoStore.getOrFetchMemoById(memo.id, { skipCache: true });
+        const memoId = extractMemoIdFromName(memo.name);
+        await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`, { skipCache: true });
         if (onConfirm) {
-          onConfirm(memo.id);
+          onConfirm(memoId);
         }
       }
       editorRef.current?.setContent("");

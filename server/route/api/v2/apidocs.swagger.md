@@ -143,6 +143,24 @@ UpdateInbox updates an inbox.
 
 ### /api/v2/{name_1}
 
+#### GET
+##### Summary
+
+GetResource returns a resource by name.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_1 | path |  | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2GetResourceResponse](#v2getresourceresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
 #### DELETE
 ##### Summary
 
@@ -162,6 +180,25 @@ DeleteInbox deletes an inbox.
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
+## LinkService
+
+### /api/v2/link_metadata
+
+#### GET
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| link | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2GetLinkMetadataResponse](#v2getlinkmetadataresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+---
 ## MemoService
 
 ### /api/v2/memos
@@ -177,7 +214,7 @@ ListMemos lists memos with pagination and filter.
 | ---- | ---------- | ----------- | -------- | ------ |
 | pageSize | query | The maximum number of memos to return. | No | integer |
 | pageToken | query | A page token, received from a previous `ListMemos` call. Provide this to retrieve the subsequent page. | No | string |
-| filter | query | Filter is used to filter memos returned in the list. Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']" | No | string |
+| filter | query | Filter is used to filter memos returned in the list. Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']" | No | string |
 
 ##### Responses
 
@@ -204,26 +241,6 @@ CreateMemo creates a memo.
 | 200 | A successful response. | [v2CreateMemoResponse](#v2creatememoresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/memos/name/{name}
-
-#### GET
-##### Summary
-
-GetMemoByName gets a memo by name.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| name | path |  | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2GetMemoByNameResponse](#v2getmemobynameresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
 ### /api/v2/memos/stats
 
 #### GET
@@ -235,7 +252,7 @@ GetUserMemosStats gets stats of memos for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | query | name is the name of the user to get stats for. Format: users/{username} | No | string |
+| name | query | name is the name of the user to get stats for. Format: users/{id} | No | string |
 | timezone | query | timezone location Format: uses tz identifier https://en.wikipedia.org/wiki/List_of_tz_database_time_zones | No | string |
 | filter | query | Same as ListMemosRequest.filter | No | string |
 
@@ -244,246 +261,6 @@ GetUserMemosStats gets stats of memos for a user.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | A successful response. | [v2GetUserMemosStatsResponse](#v2getusermemosstatsresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-### /api/v2/memos/{id}
-
-#### GET
-##### Summary
-
-GetMemo gets a memo by id.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2GetMemoResponse](#v2getmemoresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-#### DELETE
-##### Summary
-
-DeleteMemo deletes a memo by id.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2DeleteMemoResponse](#v2deletememoresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-### /api/v2/memos/{id}/comments
-
-#### GET
-##### Summary
-
-ListMemoComments lists comments for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2ListMemoCommentsResponse](#v2listmemocommentsresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-#### POST
-##### Summary
-
-CreateMemoComment creates a comment for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path | id is the memo id to create comment for. | Yes | integer |
-| create.content | query |  | No | string |
-| create.visibility | query |  | No | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2CreateMemoCommentResponse](#v2creatememocommentresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-### /api/v2/memos/{id}/reactions
-
-#### GET
-##### Summary
-
-ListMemoReactions lists reactions for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2ListMemoReactionsResponse](#v2listmemoreactionsresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-#### POST
-##### Summary
-
-UpsertMemoReaction upserts a reaction for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-| reaction.id | query |  | No | integer |
-| reaction.creator | query |  | No | string |
-| reaction.contentId | query |  | No | string |
-| reaction.reactionType | query |  | No | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2UpsertMemoReactionResponse](#v2upsertmemoreactionresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-### /api/v2/memos/{id}/reactions/{reactionId}
-
-#### DELETE
-##### Summary
-
-DeleteMemoReaction deletes a reaction for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-| reactionId | path |  | Yes | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2DeleteMemoReactionResponse](#v2deletememoreactionresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-### /api/v2/memos/{id}/relations
-
-#### GET
-##### Summary
-
-ListMemoRelations lists relations for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2ListMemoRelationsResponse](#v2listmemorelationsresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-#### POST
-##### Summary
-
-SetMemoRelations sets relations for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-| body | body |  | Yes | [MemoServiceSetMemoRelationsBody](#memoservicesetmemorelationsbody) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2SetMemoRelationsResponse](#v2setmemorelationsresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-### /api/v2/memos/{id}/resources
-
-#### GET
-##### Summary
-
-ListMemoResources lists resources for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2ListMemoResourcesResponse](#v2listmemoresourcesresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-#### POST
-##### Summary
-
-SetMemoResources sets resources for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
-| body | body |  | Yes | [MemoServiceSetMemoResourcesBody](#memoservicesetmemoresourcesbody) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2SetMemoResourcesResponse](#v2setmemoresourcesresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-### /api/v2/memos/{memo.id}
-
-#### PATCH
-##### Summary
-
-UpdateMemo updates a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| memo.id | path | id is the system generated unique identifier. | Yes | integer |
-| memo | body |  | Yes | { **"name"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"creator"**: string, **"creatorId"**: integer, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ], **"reactions"**: [ [apiv2Reaction](#apiv2reaction) ] } |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2UpdateMemoResponse](#v2updatememoresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ### /api/v2/memos:export
@@ -504,6 +281,286 @@ ExportMemos exports memos.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | A successful response. | [v2ExportMemosResponse](#v2exportmemosresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/memos:search
+
+#### GET
+##### Summary
+
+SearchMemos searches memos.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| filter | query | Filter is used to filter memos returned. Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']" | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SearchMemosResponse](#v2searchmemosresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{memo.name}
+
+#### PATCH
+##### Summary
+
+UpdateMemo updates a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| memo.name | path | The name of the memo. Format: memos/{id} id is the system generated id. | Yes | string |
+| memo | body |  | Yes | { **"uid"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"creator"**: string, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ], **"reactions"**: [ [apiv2Reaction](#apiv2reaction) ] } |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2UpdateMemoResponse](#v2updatememoresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name_2}
+
+#### GET
+##### Summary
+
+GetMemo gets a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_2 | path | The name of the memo. Format: memos/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2GetMemoResponse](#v2getmemoresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### DELETE
+##### Summary
+
+DeleteResource deletes a resource by name.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_2 | path |  | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteResourceResponse](#v2deleteresourceresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name_3}
+
+#### DELETE
+##### Summary
+
+DeleteMemo deletes a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_3 | path | The name of the memo. Format: memos/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteMemoResponse](#v2deletememoresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name}/comments
+
+#### GET
+##### Summary
+
+ListMemoComments lists comments for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2ListMemoCommentsResponse](#v2listmemocommentsresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### POST
+##### Summary
+
+CreateMemoComment creates a comment for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
+| comment.content | query |  | No | string |
+| comment.visibility | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2CreateMemoCommentResponse](#v2creatememocommentresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name}/reactions
+
+#### GET
+##### Summary
+
+ListMemoReactions lists reactions for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2ListMemoReactionsResponse](#v2listmemoreactionsresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### POST
+##### Summary
+
+UpsertMemoReaction upserts a reaction for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
+| reaction.id | query |  | No | integer |
+| reaction.creator | query | The name of the creator. Format: users/{id} | No | string |
+| reaction.contentId | query |  | No | string |
+| reaction.reactionType | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2UpsertMemoReactionResponse](#v2upsertmemoreactionresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name}/reactions/{reactionId}
+
+#### DELETE
+##### Summary
+
+DeleteMemoReaction deletes a reaction for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
+| reactionId | path |  | Yes | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteMemoReactionResponse](#v2deletememoreactionresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name}/relations
+
+#### GET
+##### Summary
+
+ListMemoRelations lists relations for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2ListMemoRelationsResponse](#v2listmemorelationsresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### POST
+##### Summary
+
+SetMemoRelations sets relations for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
+| body | body |  | Yes | [MemoServiceSetMemoRelationsBody](#memoservicesetmemorelationsbody) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SetMemoRelationsResponse](#v2setmemorelationsresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name}/resources
+
+#### GET
+##### Summary
+
+ListMemoResources lists resources for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2ListMemoResourcesResponse](#v2listmemoresourcesresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### POST
+##### Summary
+
+SetMemoResources sets resources for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name | path | The name of the memo. Format: memos/{id} | Yes | string |
+| body | body |  | Yes | [MemoServiceSetMemoResourcesBody](#memoservicesetmemoresourcesbody) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SetMemoResourcesResponse](#v2setmemoresourcesresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
@@ -544,38 +601,38 @@ CreateResource creates a new resource.
 | 200 | A successful response. | [v2CreateResourceResponse](#v2createresourceresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/resources/name/{name}
+### /api/v2/resources:search
 
 #### GET
 ##### Summary
 
-GetResourceByName returns a resource by name.
+SearchResources searches memos.
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path |  | Yes | string |
+| filter | query |  | No | string |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | A successful response. | [v2GetResourceByNameResponse](#v2getresourcebynameresponse) |
+| 200 | A successful response. | [v2SearchResourcesResponse](#v2searchresourcesresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/resources/{id}
+### /api/v2/{name_1}
 
 #### GET
 ##### Summary
 
-GetResource returns a resource by id.
+GetResource returns a resource by name.
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
+| name_1 | path |  | Yes | string |
 
 ##### Responses
 
@@ -587,13 +644,51 @@ GetResource returns a resource by id.
 #### DELETE
 ##### Summary
 
-DeleteResource deletes a resource by id.
+DeleteInbox deletes an inbox.
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| id | path |  | Yes | integer |
+| name_1 | path | The name of the inbox to delete. Format: inboxes/{uid} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteInboxResponse](#v2deleteinboxresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name_2}
+
+#### GET
+##### Summary
+
+GetMemo gets a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_2 | path | The name of the memo. Format: memos/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2GetMemoResponse](#v2getmemoresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### DELETE
+##### Summary
+
+DeleteResource deletes a resource by name.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_2 | path |  | Yes | string |
 
 ##### Responses
 
@@ -602,7 +697,7 @@ DeleteResource deletes a resource by id.
 | 200 | A successful response. | [v2DeleteResourceResponse](#v2deleteresourceresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/resources/{resource.id}
+### /api/v2/{resource.name}
 
 #### PATCH
 ##### Summary
@@ -613,8 +708,8 @@ UpdateResource updates a resource.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| resource.id | path | id is the system generated unique identifier. | Yes | integer |
-| resource | body |  | Yes | { **"name"**: string, **"createTime"**: dateTime, **"filename"**: string, **"externalLink"**: string, **"type"**: string, **"size"**: string (int64), **"memoId"**: integer } |
+| resource.name | path | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | Yes | string |
+| resource | body |  | Yes | { **"uid"**: string, **"createTime"**: dateTime, **"filename"**: string, **"externalLink"**: string, **"type"**: string, **"size"**: string (int64), **"memoId"**: integer } |
 
 ##### Responses
 
@@ -637,7 +732,7 @@ ListTags lists tags.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | The creator of tags. Format: users/{username} | No | string |
+| user | query | The creator of tags. Format: users/{id} | No | string |
 
 ##### Responses
 
@@ -656,7 +751,7 @@ DeleteTag deletes a tag.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | tag.name | query |  | No | string |
-| tag.creator | query | The creator of tags. Format: users/{username} | No | string |
+| tag.creator | query | The creator of tags. Format: users/{id} | No | string |
 
 ##### Responses
 
@@ -694,7 +789,7 @@ GetTagSuggestions gets tag suggestions from the user's memos.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | The creator of tags. Format: users/{username} | No | string |
+| user | query | The creator of tags. Format: users/{id} | No | string |
 
 ##### Responses
 
@@ -729,7 +824,7 @@ All related memos will be updated.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | The creator of tags. Format: users/{username} | No | string |
+| user | query | The creator of tags. Format: users/{id} | No | string |
 | oldName | query |  | No | string |
 | newName | query |  | No | string |
 
@@ -775,6 +870,26 @@ CreateUser creates a new user.
 | 200 | A successful response. | [v2CreateUserResponse](#v2createuserresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
+### /api/v2/users:search
+
+#### GET
+##### Summary
+
+SearchUsers searches users by filter.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| filter | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2SearchUsersResponse](#v2searchusersresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
 ### /api/v2/{name}
 
 #### GET
@@ -786,7 +901,7 @@ GetUser gets a user by name.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 
 ##### Responses
 
@@ -804,7 +919,7 @@ DeleteUser deletes a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 
 ##### Responses
 
@@ -824,7 +939,7 @@ ListUserAccessTokens returns a list of access tokens for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 
 ##### Responses
 
@@ -842,7 +957,7 @@ CreateUserAccessToken creates a new access token for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 | body | body |  | Yes | [UserServiceCreateUserAccessTokenBody](#userservicecreateuseraccesstokenbody) |
 
 ##### Responses
@@ -863,7 +978,7 @@ DeleteUserAccessToken deletes an access token for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 | accessToken | path | access_token is the access token to delete. | Yes | string |
 
 ##### Responses
@@ -884,7 +999,7 @@ GetUserSetting gets the setting of a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the user. Format: users/{username} | Yes | string |
+| name | path | The name of the user. Format: users/{id} | Yes | string |
 
 ##### Responses
 
@@ -904,8 +1019,8 @@ UpdateUserSetting updates the setting of a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| setting.name | path | The name of the user. Format: users/{username} | Yes | string |
-| setting | body |  | Yes | { **"locale"**: string, **"appearance"**: string, **"memoVisibility"**: string, **"telegramUserId"**: string, **"compactView"**: boolean } |
+| setting.name | path | The name of the user. Format: users/{id} | Yes | string |
+| setting | body |  | Yes | { **"locale"**: string, **"appearance"**: string, **"memoVisibility"**: string, **"telegramUserId"**: string } |
 
 ##### Responses
 
@@ -925,8 +1040,8 @@ UpdateUser updates a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user.name | path | The name of the user. Format: users/{username} | Yes | string |
-| user | body |  | Yes | { **"id"**: integer, **"role"**: [UserRole](#userrole), **"username"**: string, **"email"**: string, **"nickname"**: string, **"avatarUrl"**: string, **"password"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"createTime"**: dateTime, **"updateTime"**: dateTime } |
+| user.name | path | The name of the user. Format: users/{id} | Yes | string |
+| user | body |  | Yes | { **"id"**: integer, **"role"**: [UserRole](#userrole), **"username"**: string, **"email"**: string, **"nickname"**: string, **"avatarUrl"**: string, **"description"**: string, **"password"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"createTime"**: dateTime, **"updateTime"**: dateTime } |
 
 ##### Responses
 
@@ -1197,7 +1312,6 @@ GetActivity returns the activity with the given id.
 | appearance | string | The preferred appearance of the user. | No |
 | memoVisibility | string | The default visibility of the memo. | No |
 | telegramUserId | string | The telegram user id of the user. | No |
-| compactView | boolean | The compact view for a memo. | No |
 
 #### apiv2Webhook
 
@@ -1375,23 +1489,17 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | user | [v2User](#v2user) |  | No |
 
-#### v2GetMemoByNameResponse
+#### v2GetLinkMetadataResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| memo | [v2Memo](#v2memo) |  | No |
+| linkMetadata | [v2LinkMetadata](#v2linkmetadata) |  | No |
 
 #### v2GetMemoResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | memo | [v2Memo](#v2memo) |  | No |
-
-#### v2GetResourceByNameResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| resource | [v2Resource](#v2resource) |  | No |
 
 #### v2GetResourceResponse
 
@@ -1465,6 +1573,14 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | v2InboxType | string |  |  |
 
+#### v2LinkMetadata
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| title | string |  | No |
+| description | string |  | No |
+| image | string |  | No |
+
 #### v2ListInboxesResponse
 
 | Name | Type | Description | Required |
@@ -1536,11 +1652,10 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| id | integer | id is the system generated unique identifier. | No |
-| name | string | name is the user provided name. | No |
+| name | string | The name of the memo. Format: memos/{id} id is the system generated id. | No |
+| uid | string | The user defined id of the memo. | No |
 | rowStatus | [apiv2RowStatus](#apiv2rowstatus) |  | No |
 | creator | string |  | No |
-| creatorId | integer |  | No |
 | createTime | dateTime |  | No |
 | updateTime | dateTime |  | No |
 | displayTime | dateTime |  | No |
@@ -1556,8 +1671,8 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| memoId | integer |  | No |
-| relatedMemoId | integer |  | No |
+| memo | string |  | No |
+| relatedMemo | string |  | No |
 | type | [v2MemoRelationType](#v2memorelationtype) |  | No |
 
 #### v2MemoRelationType
@@ -1576,14 +1691,32 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| id | integer | id is the system generated unique identifier. | No |
-| name | string | name is the user provided name. | No |
+| name | string | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | No |
+| uid | string | The user defined id of the resource. | No |
 | createTime | dateTime |  | No |
 | filename | string |  | No |
 | externalLink | string |  | No |
 | type | string |  | No |
 | size | string (int64) |  | No |
 | memoId | integer |  | No |
+
+#### v2SearchMemosResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| memos | [ [v2Memo](#v2memo) ] |  | No |
+
+#### v2SearchResourcesResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| resources | [ [v2Resource](#v2resource) ] |  | No |
+
+#### v2SearchUsersResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| users | [ [v2User](#v2user) ] |  | No |
 
 #### v2SetMemoRelationsResponse
 
@@ -1693,12 +1826,13 @@ GetActivity returns the activity with the given id.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | name | string |  | No |
-| id | integer |  | No |
+| id | integer | The system generated uid of the user. | No |
 | role | [UserRole](#userrole) |  | No |
 | username | string |  | No |
 | email | string |  | No |
 | nickname | string |  | No |
 | avatarUrl | string |  | No |
+| description | string |  | No |
 | password | string |  | No |
 | rowStatus | [apiv2RowStatus](#apiv2rowstatus) |  | No |
 | createTime | dateTime |  | No |
@@ -1723,9 +1857,10 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| owner | string |  | No |
 | version | string |  | No |
 | mode | string | mode is the instance mode (e.g. "prod", "dev" or "demo"). | No |
-| allowRegistration | boolean | allow_registration is whether the registration is allowed. | No |
-| disablePasswordLogin | boolean | allow_password_login is whether the password login is allowed. | No |
+| disallowSignup | boolean | disallow_signup is whether the signup is disallowed. | No |
+| disablePasswordLogin | boolean | disable_password_login is whether the password login is disabled. | No |
 | additionalScript | string | additional_script is the additional script. | No |
 | additionalStyle | string | additional_style is the additional style. | No |

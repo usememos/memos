@@ -1,10 +1,9 @@
 import classNames from "classnames";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore } from "@/store/v1";
+import { MemoNamePrefix, useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/node";
 import { useTranslate } from "@/utils/i18n";
-import Icon from "../Icon";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
@@ -31,9 +30,9 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<boolean>(false);
-  const memo = memoId ? memoStore.getMemoById(memoId) : null;
+  const memo = memoId ? memoStore.getMemoByName(`${MemoNamePrefix}${memoId}`) : null;
   const nodes = window.parse(content);
-  const allowEdit = !props.readonly && memo && currentUser?.id === memo.creatorId;
+  const allowEdit = !props.readonly && memo && currentUser?.name === memo.creator;
 
   // Initial compact mode.
   useEffect(() => {
@@ -69,7 +68,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           embeddedMemos: embeddedMemos || new Set(),
         }}
       >
-        <div className={`mt-1 w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-300 ${className || ""}`}>
+        <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-300 ${className || ""}`}>
           <div
             ref={memoContentContainerRef}
             className={classNames(
@@ -89,19 +88,18 @@ const MemoContent: React.FC<Props> = (props: Props) => {
               return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
             })}
           </div>
+          {showCompactMode && (
+            <div className="w-full mt-1">
+              <span
+                className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
+                onClick={() => setShowCompactMode(false)}
+              >
+                <span>{t("memo.show-more")}</span>
+              </span>
+            </div>
+          )}
         </div>
       </RendererContext.Provider>
-      {memo && showCompactMode && (
-        <div className="w-full mt-2">
-          <div
-            className="w-auto inline-flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
-            onClick={() => setShowCompactMode(false)}
-          >
-            <span>{t("memo.show-more")}</span>
-            <Icon.ChevronRight className="w-4 h-auto" />
-          </div>
-        </div>
-      )}
     </>
   );
 };

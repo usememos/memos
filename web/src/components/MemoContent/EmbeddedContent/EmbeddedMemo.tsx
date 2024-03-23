@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Icon from "@/components/Icon";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import useLoading from "@/hooks/useLoading";
-import { useMemoStore } from "@/store/v1";
+import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
 import MemoContent from "..";
 import { RendererContext } from "../types";
 import Error from "./Error";
@@ -17,11 +17,11 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   const context = useContext(RendererContext);
   const loadingState = useLoading();
   const memoStore = useMemoStore();
-  const memo = memoStore.getMemoByName(resourceId);
+  const memo = memoStore.getMemoByUid(resourceId);
   const resourceName = `memos/${resourceId}`;
 
   useEffect(() => {
-    memoStore.getOrFetchMemoByName(resourceId).finally(() => loadingState.setFinish());
+    memoStore.searchMemos(`uid == "${resourceId}"`).finally(() => loadingState.setFinish());
   }, [resourceId]);
 
   if (loadingState.isLoading) {
@@ -30,7 +30,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   if (!memo) {
     return <Error message={`Memo not found: ${resourceId}`} />;
   }
-  if (memo.id === context.memoId || context.embeddedMemos.has(resourceName)) {
+  if (extractMemoIdFromName(memo.name) === context.memoId || context.embeddedMemos.has(resourceName)) {
     return <Error message={`Nested Rendering Error: ![[${resourceName}]]`} />;
   }
 
@@ -41,7 +41,12 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   if (inlineMode) {
     return (
       <div className="w-full">
-        <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} content={memo.content} embeddedMemos={context.embeddedMemos} />
+        <MemoContent
+          key={`${memo.name}-${memo.updateTime}`}
+          memoId={extractMemoIdFromName(memo.name)}
+          content={memo.content}
+          embeddedMemos={context.embeddedMemos}
+        />
         <MemoResourceListView resources={memo.resources} />
       </div>
     );
@@ -57,7 +62,12 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
           <Icon.ArrowUpRight className="w-5 h-auto opacity-80 text-gray-400" />
         </Link>
       </div>
-      <MemoContent key={`${memo.id}-${memo.updateTime}`} memoId={memo.id} content={memo.content} embeddedMemos={context.embeddedMemos} />
+      <MemoContent
+        key={`${memo.name}-${memo.updateTime}`}
+        memoId={extractMemoIdFromName(memo.name)}
+        content={memo.content}
+        embeddedMemos={context.embeddedMemos}
+      />
       <MemoResourceListView resources={memo.resources} />
     </div>
   );

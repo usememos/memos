@@ -42,7 +42,7 @@ const EmbeddedResource = ({ resourceId, params: paramsStr }: Props) => {
   const params = new URLSearchParams(paramsStr);
 
   useEffect(() => {
-    resourceStore.getOrFetchResourceByName(resourceId).finally(() => loadingState.setFinish());
+    resourceStore.searchResources(`uid == ${resourceId}`).finally(() => loadingState.setFinish());
   }, [resourceId]);
 
   if (loadingState.isLoading) {
