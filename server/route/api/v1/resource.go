@@ -26,6 +26,7 @@ import (
 type Resource struct {
 	ID   int32  `json:"id"`
 	Name string `json:"name"`
+	UID  string `json:"uid"`
 
 	// Standard fields
 	CreatorID int32 `json:"creatorId"`
@@ -371,7 +372,8 @@ func replacePathTemplate(path, filename string) string {
 func convertResourceFromStore(resource *store.Resource) *Resource {
 	return &Resource{
 		ID:           resource.ID,
-		Name:         resource.UID,
+		Name:         fmt.Sprintf("resources/%d", resource.ID),
+		UID:          resource.UID,
 		CreatorID:    resource.CreatorID,
 		CreatedTs:    resource.CreatedTs,
 		UpdatedTs:    resource.UpdatedTs,

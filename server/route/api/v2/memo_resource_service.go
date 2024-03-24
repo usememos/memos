@@ -46,7 +46,7 @@ func (s *APIV2Service) SetMemoResources(ctx context.Context, request *apiv2pb.Se
 	slices.Reverse(request.Resources)
 	// Update resources' memo_id in the request.
 	for index, resource := range request.Resources {
-		id, err := ExtractMemoIDFromName(resource.Name)
+		id, err := ExtractResourceIDFromName(resource.Name)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
 		}

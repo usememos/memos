@@ -105,7 +105,7 @@ func (s *APIV2Service) SearchResources(ctx context.Context, request *apiv2pb.Sea
 func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetResourceRequest) (*apiv2pb.GetResourceResponse, error) {
 	id, err := ExtractResourceIDFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
 	}
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
 		ID: &id,
@@ -125,7 +125,7 @@ func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetReso
 func (s *APIV2Service) UpdateResource(ctx context.Context, request *apiv2pb.UpdateResourceRequest) (*apiv2pb.UpdateResourceResponse, error) {
 	id, err := ExtractResourceIDFromName(request.Resource.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
 	}
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
@@ -156,7 +156,7 @@ func (s *APIV2Service) UpdateResource(ctx context.Context, request *apiv2pb.Upda
 func (s *APIV2Service) DeleteResource(ctx context.Context, request *apiv2pb.DeleteResourceRequest) (*apiv2pb.DeleteResourceResponse, error) {
 	id, err := ExtractResourceIDFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
 	}
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
