@@ -48,12 +48,12 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
       arrow
     >
       <MLink underline="always" href={url}>
-        {url || text}
+        {text || url}
       </MLink>
     </Tooltip>
   ) : (
     <MLink underline="always" href={url}>
-      {url || text}
+      {text || url}
     </MLink>
   );
 };
