@@ -11,7 +11,7 @@ on:
       - "web/**"
 
 jobs:
-  eslint-checks:
+  static-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +27,9 @@ jobs:
         working-directory: web
       - name: Run eslint check
         run: pnpm lint
+        working-directory: web
+      - name: Run type checks
+        run: pnpm type-checks
         working-directory: web
 
   frontend-build:

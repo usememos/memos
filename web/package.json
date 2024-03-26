@@ -4,10 +4,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint --ext .js,.ts,.tsx, src",
-    "type-check": "tsc",
+    "type-check": "tsc --noEmit",
     "postinstall": "cd ../proto && buf generate"
   },
-  "packageManager": "pnpm@8.7.0",
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
@@ -21,7 +20,7 @@
     "fuse.js": "^7.0.0",
     "highlight.js": "^11.9.0",
     "i18next": "^21.10.0",
-    "katex": "^0.16.9",
+    "katex": "^0.16.10",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.309.0",
     "mermaid": "^10.9.0",
@@ -45,15 +44,15 @@
     "@types/katex": "^0.16.7",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.11.30",
-    "@types/qs": "^6.9.13",
-    "@types/react": "^18.2.67",
+    "@types/qs": "^6.9.14",
+    "@types/react": "^18.2.71",
     "@types/react-dom": "^18.2.22",
     "@types/textarea-caret": "^3.0.3",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.18",
+    "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-prettier": "^5.1.3",
@@ -61,13 +60,10 @@
     "less": "^4.2.0",
     "long": "^5.2.3",
     "nice-grpc-web": "^3.3.3",
-    "postcss": "^8.4.37",
+    "postcss": "^8.4.38",
     "prettier": "^3.2.5",
     "protobufjs": "^7.2.6",
-    "typescript": "^5.4.2",
-    "vite": "^5.2.2"
-  },
-  "resolutions": {
-    "csstype": "3.1.2"
+    "typescript": "^5.4.3",
+    "vite": "^5.2.6"
   }
 }
