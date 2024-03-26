@@ -61,7 +61,10 @@
     "inbox": "Inbox",
     "search": "Search",
     "role": "Role",
-    "description": "Description"
+    "description": "Description",
+    "statistics": "Statistics",
+    "days": "Days",
+    "memos": "Memos"
   },
   "router": {
     "go-to-home": "Go to Home",

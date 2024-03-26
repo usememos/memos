@@ -68,7 +68,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           embeddedMemos: embeddedMemos || new Set(),
         }}
       >
-        <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-300 ${className || ""}`}>
+        <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-400 ${className || ""}`}>
           <div
             ref={memoContentContainerRef}
             className={classNames(

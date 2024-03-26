@@ -100,7 +100,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     {creator.nickname || creator.username}
                   </span>
                 </Link>
-                <div className="w-auto -mt-0.5 text-xs leading-tight text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
+                <div
+                  className="w-auto -mt-0.5 text-xs leading-tight text-gray-400 dark:text-gray-500 select-none"
+                  onClick={handleGotoMemoDetailPage}
+                >
                   <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
                 </div>
               </div>
