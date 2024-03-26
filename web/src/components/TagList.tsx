@@ -79,19 +79,23 @@ const TagList = () => {
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-start items-center w-full">
-        <span className="text-sm leading-6 font-mono text-gray-400">{t("common.tags")}</span>
-        <button
-          onClick={() => showCreateTagDialog()}
-          className="flex flex-col justify-center items-center w-5 h-5 bg-gray-200 dark:bg-zinc-800 rounded ml-2 hover:shadow"
-        >
-          <Icon.Plus className="w-4 h-4 text-gray-400" />
-        </button>
+        <span className="text-sm leading-6 font-mono text-gray-400 select-none" onDoubleClick={() => showCreateTagDialog()}>
+          {t("common.tags")}
+        </span>
       </div>
-      <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap gap-1 mt-1">
-        {tags.map((t, idx) => (
-          <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
-        ))}
-      </div>
+      {tags.length > 0 ? (
+        <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap gap-2 mt-1">
+          {tags.map((t, idx) => (
+            <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
+          ))}
+        </div>
+      ) : (
+        <div>
+          <p className="text-sm leading-snug italic text-gray-400 dark:text-gray-500">
+            You can create tags by inputting <code>`#tag`</code>.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
@@ -137,7 +141,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
 
   return (
     <>
-      <div className="relative flex flex-row justify-between items-center w-full leading-6 py-0 mt-px rounded-lg text-base select-none shrink-0">
+      <div className="relative flex flex-row justify-between items-center w-full leading-6 py-0 mt-px rounded-lg text-sm select-none shrink-0">
         <div
           className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-gray-600 dark:text-gray-400 ${
             isActive && "!text-blue-600"
