@@ -163,7 +163,7 @@ const MemoEditor = (props: Props) => {
       return;
     }
 
-    if (!!props.onEditPrevious && event.key == "ArrowDown" && !state.isComposing && editorRef.current.getContent() === "") {
+    if (!!props.onEditPrevious && event.key === "ArrowDown" && !state.isComposing && editorRef.current.getContent() === "") {
       event.preventDefault();
       props.onEditPrevious();
       return;
