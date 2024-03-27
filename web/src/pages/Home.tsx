@@ -1,11 +1,12 @@
 import { Button } from "@mui/joy";
 import classNames from "classnames";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Empty from "@/components/Empty";
 import HomeSidebar from "@/components/HomeSidebar";
 import HomeSidebarDrawer from "@/components/HomeSidebarDrawer";
 import Icon from "@/components/Icon";
 import MemoEditor from "@/components/MemoEditor";
+import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
 import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
@@ -14,7 +15,7 @@ import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { useMemoList, useMemoStore } from "@/store/v1";
+import { extractMemoIdFromName, useMemoList, useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { useTranslate } from "@/utils/i18n";
 
@@ -60,6 +61,14 @@ const Home = () => {
     nextPageTokenRef.current = data.nextPageToken;
   };
 
+  const handleEditPrevious = useCallback(() => {
+    const lastMemo = memoList.value[memoList.value.length - 1];
+    showMemoEditorDialog({
+      memoId: extractMemoIdFromName(lastMemo.name),
+      cacheKey: `${lastMemo.name}-${lastMemo.updateTime}`,
+    });
+  }, [memoList]);
+
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && (
@@ -69,7 +78,7 @@ const Home = () => {
       )}
       <div className={classNames("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
         <div className={classNames(md ? "w-[calc(100%-15rem)]" : "w-full")}>
-          <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
+          <MemoEditor className="mb-2" cacheKey="home-memo-editor" onEditPrevious={handleEditPrevious} />
           <div className="flex flex-col justify-start items-start w-full max-w-full">
             <MemoFilter className="px-2 pb-2" />
             {sortedMemos.map((memo) => (
