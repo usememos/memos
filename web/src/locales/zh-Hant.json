@@ -219,7 +219,7 @@
       "export-memos": "導出 Memos",
       "nickname-note": "顯示於橫幅",
       "openapi-reset": "重置 OpenAPI 密鑰（Key）",
-      "openapi-sample-post": "您好 #memos 來自 {{url}}",
+      "openapi-sample-post": "哈囉 來自 {{url}} 的 #memos",
       "openapi-title": "OpenAPI",
       "reset-api": "重置 API",
       "title": "帳號資訊",
