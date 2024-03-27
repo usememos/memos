@@ -218,10 +218,10 @@
       "email-note": "非必須的",
       "export-memos": "導出 Memos",
       "nickname-note": "顯示於橫幅",
-      "openapi-reset": "重置 OpenAPI 密鑰（Key）",
+      "openapi-reset": "重設 OpenAPI 密鑰（Key）",
       "openapi-sample-post": "哈囉 來自 {{url}} 的 #memos",
       "openapi-title": "OpenAPI",
-      "reset-api": "重置 API",
+      "reset-api": "重設 API",
       "title": "帳號資訊",
       "update-information": "更新個人資訊",
       "username-note": "為登入用途"
