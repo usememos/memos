@@ -11,7 +11,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-var owner *apiv2pb.User
+var ownerCache *apiv2pb.User
 
 func (s *APIV2Service) GetWorkspaceProfile(ctx context.Context, _ *apiv2pb.GetWorkspaceProfileRequest) (*apiv2pb.GetWorkspaceProfileResponse, error) {
 	workspaceProfile := &apiv2pb.WorkspaceProfile{
@@ -39,8 +39,8 @@ func (s *APIV2Service) GetWorkspaceProfile(ctx context.Context, _ *apiv2pb.GetWo
 }
 
 func (s *APIV2Service) GetInstanceOwner(ctx context.Context) (*apiv2pb.User, error) {
-	if owner != nil {
-		return owner, nil
+	if ownerCache != nil {
+		return ownerCache, nil
 	}
 
 	hostUserType := store.RoleHost
@@ -51,9 +51,9 @@ func (s *APIV2Service) GetInstanceOwner(ctx context.Context) (*apiv2pb.User, err
 		return nil, errors.Wrapf(err, "failed to find owner")
 	}
 	if user == nil {
-		return nil, errors.New("owner not found")
+		return nil, nil
 	}
 
-	owner = convertUserFromStore(user)
-	return owner, nil
+	ownerCache = convertUserFromStore(user)
+	return ownerCache, nil
 }
