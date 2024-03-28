@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/microcosm-cc/bluemonday"
 )
 
 type Image struct {
@@ -39,21 +37,9 @@ func GetImage(urlStr string) (*Image, error) {
 		return nil, err
 	}
 
-	bodyBytes, err = SanitizeContent(bodyBytes)
-	if err != nil {
-		return nil, err
-	}
-
 	image := &Image{
 		Blob:      bodyBytes,
 		Mediatype: mediatype,
 	}
 	return image, nil
-}
-
-func SanitizeContent(content []byte) ([]byte, error) {
-	bodyString := string(content)
-
-	bm := bluemonday.UGCPolicy()
-	return []byte(bm.Sanitize(bodyString)), nil
 }
