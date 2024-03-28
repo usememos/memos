@@ -1,8 +1,8 @@
 import classNames from "classnames";
+import PersonalStatistics from "@/components/PersonalStatistics";
+import SearchBar from "@/components/SearchBar";
+import TagList from "@/components/TagList";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import PersonalStatistics from "./PersonalStatistics";
-import SearchBar from "./SearchBar";
-import TagList from "./TagList";
 
 interface Props {
   className?: string;

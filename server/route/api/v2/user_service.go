@@ -60,6 +60,12 @@ func (s *APIV2Service) SearchUsers(ctx context.Context, request *apiv2pb.SearchU
 	if filter.Username != nil {
 		userFind.Username = filter.Username
 	}
+	if filter.Random {
+		userFind.Random = true
+	}
+	if filter.Limit != nil {
+		userFind.Limit = filter.Limit
+	}
 
 	users, err := s.Store.ListUsers(ctx, userFind)
 	if err != nil {
@@ -540,10 +546,14 @@ func convertUserRoleToStore(role apiv2pb.User_Role) store.Role {
 // SearchUsersFilterCELAttributes are the CEL attributes for SearchUsersFilter.
 var SearchUsersFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("username", cel.StringType),
+	cel.Variable("random", cel.BoolType),
+	cel.Variable("limit", cel.IntType),
 }
 
 type SearchUsersFilter struct {
 	Username *string
+	Random   bool
+	Limit    *int
 }
 
 func parseSearchUsersFilter(expression string) (*SearchUsersFilter, error) {
@@ -572,6 +582,12 @@ func findSearchUsersField(callExpr *expr.Expr_Call, filter *SearchUsersFilter) {
 			if idExpr.Name == "username" {
 				username := callExpr.Args[1].GetConstExpr().GetStringValue()
 				filter.Username = &username
+			} else if idExpr.Name == "random" {
+				random := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.Random = random
+			} else if idExpr.Name == "limit" {
+				limit := int(callExpr.Args[1].GetConstExpr().GetInt64Value())
+				filter.Limit = &limit
 			}
 			return
 		}

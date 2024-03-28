@@ -1,10 +1,10 @@
 import { Drawer, IconButton } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import HomeSidebar from "./HomeSidebar";
-import Icon from "./Icon";
+import Icon from "../Icon";
+import ExploreSidebar from "./ExploreSidebar";
 
-const HomeSidebarDrawer = () => {
+const ExploreSidebarDrawer = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -27,11 +27,11 @@ const HomeSidebarDrawer = () => {
       </IconButton>
       <Drawer anchor="right" size="sm" open={open} onClose={toggleDrawer(false)}>
         <div className="w-full h-full px-5 bg-zinc-100 dark:bg-zinc-900">
-          <HomeSidebar className="py-4" />
+          <ExploreSidebar className="py-4" />
         </div>
       </Drawer>
     </>
   );
 };
 
-export default HomeSidebarDrawer;
+export default ExploreSidebarDrawer;

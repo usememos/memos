@@ -82,6 +82,12 @@ type FindUser struct {
 	Role      *Role
 	Email     *string
 	Nickname  *string
+
+	// Random and limit are used in list users.
+	// Whether to return random users.
+	Random bool
+	// The maximum number of users to return.
+	Limit *int
 }
 
 type DeleteUser struct {

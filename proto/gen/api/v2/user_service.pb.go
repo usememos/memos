@@ -303,6 +303,8 @@ type SearchUsersRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// Filter is used to filter users returned in the list.
+	// Format: "username == frank"
 	Filter string `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 

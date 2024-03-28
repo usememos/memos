@@ -617,7 +617,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| filter | [string](#string) |  |  |
+| filter | [string](#string) |  | Filter is used to filter users returned in the list. Format: &#34;username == frank&#34; |
 
 
 
