@@ -74,7 +74,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleCopyLinkBtnClick = () => {
-    copy(`${window.location.origin}/m/${memo.name}`);
+    copy(`${window.location.origin}/m/${memo.uid}`);
     if (memo.visibility !== Visibility.PUBLIC) {
       toast.success(t("message.succeed-copy-link-not-public"));
     } else {
