@@ -47,12 +47,12 @@ const AddMemoRelationButton = (props: Props) => {
           uniqBy(
             [
               ...memos.map((memo) => ({
-                memo: `${MemoNamePrefix}${context.memoId || UNKNOWN_ID}`,
+                memo: context.memoName || "",
                 relatedMemo: memo.name,
                 type: MemoRelation_Type.REFERENCE,
               })),
               ...context.relationList,
-            ].filter((relation) => relation.relatedMemo !== `${MemoNamePrefix}${context.memoId || UNKNOWN_ID}`),
+            ].filter((relation) => relation.relatedMemo !== context.memoName),
             "relatedMemoId",
           ),
         );

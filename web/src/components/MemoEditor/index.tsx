@@ -30,13 +30,12 @@ import { MemoEditorContext } from "./types";
 
 interface Props {
   className?: string;
-  editorClassName?: string;
   cacheKey?: string;
-  memoId?: number;
-  parentMemoId?: number;
+  memoName?: string;
+  parentMemoName?: string;
   relationList?: MemoRelation[];
   autoFocus?: boolean;
-  onConfirm?: (memoId: number) => void;
+  onConfirm?: (memoName: string) => void;
   onEditPrevious?: () => void;
 }
 
@@ -50,7 +49,7 @@ interface State {
 }
 
 const MemoEditor = (props: Props) => {
-  const { className, editorClassName, cacheKey, memoId, parentMemoId, autoFocus, onConfirm } = props;
+  const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm } = props;
   const { i18n } = useTranslation();
   const t = useTranslate();
   const {
@@ -74,12 +73,9 @@ const MemoEditor = (props: Props) => {
   const userSetting = userStore.userSetting as UserSetting;
   const contentCacheKey = `${currentUser.name}-${cacheKey || ""}`;
   const [contentCache, setContentCache] = useLocalStorage<string>(contentCacheKey, "");
-  const referenceRelations = memoId
+  const referenceRelations = memoName
     ? state.relationList.filter(
-        (relation) =>
-          extractMemoIdFromName(relation.memo) === memoId &&
-          extractMemoIdFromName(relation.relatedMemo) !== memoId &&
-          relation.type === MemoRelation_Type.REFERENCE,
+        (relation) => relation.memo === memoName && relation.relatedMemo !== memoName && relation.type === MemoRelation_Type.REFERENCE,
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
 
@@ -105,8 +101,8 @@ const MemoEditor = (props: Props) => {
   }, [userSetting.memoVisibility, systemStatus.disablePublicMemos]);
 
   useEffect(() => {
-    if (memoId) {
-      memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`).then((memo) => {
+    if (memoName) {
+      memoStore.getOrFetchMemoByName(memoName).then((memo) => {
         if (memo) {
           handleEditorFocus();
           setState((prevState) => ({
@@ -121,7 +117,7 @@ const MemoEditor = (props: Props) => {
         }
       });
     }
-  }, [memoId]);
+  }, [memoName]);
 
   const handleCompositionStart = () => {
     setState((prevState) => ({
@@ -233,11 +229,11 @@ const MemoEditor = (props: Props) => {
       const resource = await handleUploadResource(file);
       if (resource) {
         uploadedResourceList.push(resource);
-        if (memoId) {
+        if (memoName) {
           await resourceStore.updateResource({
             resource: Resource.fromPartial({
               name: resource.name,
-              memoId,
+              memoId: extractMemoIdFromName(memoName),
             }),
             updateMask: ["memo_id"],
           });
@@ -296,8 +292,8 @@ const MemoEditor = (props: Props) => {
     const content = editorRef.current?.getContent() ?? "";
     try {
       // Update memo.
-      if (memoId && memoId !== UNKNOWN_ID) {
-        const prevMemo = await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`);
+      if (memoName) {
+        const prevMemo = await memoStore.getOrFetchMemoByName(memoName);
         if (prevMemo) {
           const memo = await memoStore.updateMemo(
             {
@@ -315,22 +311,21 @@ const MemoEditor = (props: Props) => {
             name: memo.name,
             relations: state.relationList,
           });
-          const memoId = extractMemoIdFromName(memo.name);
-          await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`, { skipCache: true });
+          await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
           if (onConfirm) {
-            onConfirm(memoId);
+            onConfirm(memo.name);
           }
         }
       } else {
         // Create memo or memo comment.
-        const request = !parentMemoId
+        const request = !parentMemoName
           ? memoStore.createMemo({
               content,
               visibility: state.memoVisibility,
             })
           : memoServiceClient
               .createMemoComment({
-                name: `${MemoNamePrefix}${parentMemoId}`,
+                name: parentMemoName,
                 comment: {
                   content,
                   visibility: state.memoVisibility,
@@ -346,10 +341,9 @@ const MemoEditor = (props: Props) => {
           name: memo.name,
           relations: state.relationList,
         });
-        const memoId = extractMemoIdFromName(memo.name);
-        await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memoId}`, { skipCache: true });
+        await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
         if (onConfirm) {
-          onConfirm(memoId);
+          onConfirm(memo.name);
         }
       }
       editorRef.current?.setContent("");
@@ -378,7 +372,7 @@ const MemoEditor = (props: Props) => {
 
   const editorConfig = useMemo(
     () => ({
-      className: editorClassName ?? "",
+      className: "",
       initialContent: "",
       placeholder: t("editor.placeholder"),
       onContentChange: handleContentChange,
@@ -399,7 +393,7 @@ const MemoEditor = (props: Props) => {
             relationList,
           }));
         },
-        memoId,
+        memoName,
       }}
     >
       <div

@@ -12,7 +12,7 @@ const MAX_DISPLAY_HEIGHT = 256;
 
 interface Props {
   content: string;
-  memoId?: number;
+  memoName?: string;
   compact?: boolean;
   readonly?: boolean;
   disableFilter?: boolean;
@@ -24,13 +24,13 @@ interface Props {
 }
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, content, memoId, embeddedMemos, onClick } = props;
+  const { className, content, memoName, embeddedMemos, onClick } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<boolean>(false);
-  const memo = memoId ? memoStore.getMemoByName(`${MemoNamePrefix}${memoId}`) : null;
+  const memo = memoName ? memoStore.getMemoByName(memoName) : null;
   const nodes = window.parse(content);
   const allowEdit = !props.readonly && memo && currentUser?.name === memo.creator;
 
@@ -62,7 +62,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       <RendererContext.Provider
         value={{
           nodes,
-          memoId,
+          memoName: memoName,
           readonly: !allowEdit,
           disableFilter: props.disableFilter,
           embeddedMemos: embeddedMemos || new Set(),

@@ -52,8 +52,8 @@ const MemoActionMenu = (props: Props) => {
 
   const handleEditMemoClick = () => {
     showMemoEditorDialog({
-      memoId: extractMemoIdFromName(memo.name),
-      cacheKey: `${memo.name}-${memo.updateTime}`,
+      memoName: memo.name,
+      cacheKey: `${memo.name}-${memo.displayTime}`,
     });
   };
 

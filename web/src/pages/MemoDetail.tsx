@@ -60,8 +60,8 @@ const MemoDetail = () => {
     return null;
   }
 
-  const handleCommentCreated = async (commentId: number) => {
-    await memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${commentId}`);
+  const handleCommentCreated = async (memoCommentName: string) => {
+    await memoStore.getOrFetchMemoByName(memoCommentName);
     await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
   };
 
@@ -117,7 +117,7 @@ const MemoDetail = () => {
               <MemoEditor
                 key={memo.name}
                 cacheKey={`comment-editor-${memo.name}`}
-                parentMemoId={extractMemoIdFromName(memo.name)}
+                parentMemoName={memo.name}
                 onConfirm={handleCommentCreated}
               />
             )}

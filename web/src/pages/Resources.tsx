@@ -48,9 +48,9 @@ const Resources = () => {
   });
   const memoStore = useMemoStore();
   const [resources, setResources] = useState<Resource[]>([]);
-  const filteredResources = resources.filter((resource: any) => includes(resource.filename, state.searchQuery));
-  const groupedResources = groupResourcesByDate(filteredResources.filter((resource: any) => resource.memoId));
-  const unusedResources = filteredResources.filter((resource: any) => !resource.memoId);
+  const filteredResources = resources.filter((resource) => includes(resource.filename, state.searchQuery));
+  const groupedResources = groupResourcesByDate(filteredResources.filter((resource) => resource.memoId));
+  const unusedResources = filteredResources.filter((resource) => !resource.memoId);
 
   useEffect(() => {
     resourceServiceClient.listResources({}).then(({ resources }) => {

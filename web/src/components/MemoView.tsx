@@ -144,7 +144,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
       </div>
       <MemoContent
         key={`${memo.name}-${memo.updateTime}`}
-        memoId={extractMemoIdFromName(memo.name)}
+        memoName={memo.name}
         content={memo.content}
         readonly={readonly}
         onClick={handleMemoContentClick}

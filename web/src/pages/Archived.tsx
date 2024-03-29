@@ -99,7 +99,7 @@ const Archived = () => {
           <MemoFilter className="px-2 pb-2" />
           {sortedMemos.map((memo) => (
             <div
-              key={extractMemoIdFromName(memo.name)}
+              key={memo.name}
               className="relative flex flex-col justify-start items-start w-full p-4 pt-3 mb-2 bg-white dark:bg-zinc-800 rounded-lg"
             >
               <div className="w-full mb-1 flex flex-row justify-between items-center">
@@ -121,12 +121,7 @@ const Archived = () => {
                   </Tooltip>
                 </div>
               </div>
-              <MemoContent
-                key={`${memo.name}-${memo.displayTime}`}
-                memoId={extractMemoIdFromName(memo.name)}
-                content={memo.content}
-                readonly={true}
-              />
+              <MemoContent key={`${memo.name}-${memo.displayTime}`} memoName={memo.name} content={memo.content} readonly={true} />
             </div>
           ))}
           {isRequesting ? (

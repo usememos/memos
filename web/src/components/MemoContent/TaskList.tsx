@@ -21,7 +21,7 @@ const TaskList: React.FC<Props> = ({ index, indent, complete, children }: Props)
   const [checked] = useState(complete);
 
   const handleCheckboxChange = async (on: boolean) => {
-    if (context.readonly || !context.memoId) {
+    if (context.readonly || !context.memoName) {
       return;
     }
 
@@ -39,7 +39,7 @@ const TaskList: React.FC<Props> = ({ index, indent, complete, children }: Props)
     const content = window.restore(context.nodes);
     await memoStore.updateMemo(
       {
-        name: `${MemoNamePrefix}${context.memoId}`,
+        name: `${MemoNamePrefix}${context.memoName}`,
         content,
       },
       ["content"],

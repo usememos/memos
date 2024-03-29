@@ -30,7 +30,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   if (!memo) {
     return <Error message={`Memo not found: ${resourceId}`} />;
   }
-  if (extractMemoIdFromName(memo.name) === context.memoId || context.embeddedMemos.has(resourceName)) {
+  if (memo.name === context.memoName || context.embeddedMemos.has(resourceName)) {
     return <Error message={`Nested Rendering Error: ![[${resourceName}]]`} />;
   }
 
@@ -43,7 +43,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
       <div className="w-full">
         <MemoContent
           key={`${memo.name}-${memo.updateTime}`}
-          memoId={extractMemoIdFromName(memo.name)}
+          memoName={memo.name}
           content={memo.content}
           embeddedMemos={context.embeddedMemos}
         />
@@ -64,7 +64,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
       </div>
       <MemoContent
         key={`${memo.name}-${memo.updateTime}`}
-        memoId={extractMemoIdFromName(memo.name)}
+        memoName={memo.name}
         content={memo.content}
         embeddedMemos={context.embeddedMemos}
       />

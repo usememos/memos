@@ -63,8 +63,8 @@ const Home = () => {
   const handleEditPrevious = useCallback(() => {
     const lastMemo = memoList.value[memoList.value.length - 1];
     showMemoEditorDialog({
-      memoId: extractMemoIdFromName(lastMemo.name),
-      cacheKey: `${lastMemo.name}-${lastMemo.updateTime}`,
+      memoName: lastMemo.name,
+      cacheKey: `${lastMemo.name}-${lastMemo.displayTime}`,
     });
   }, [memoList]);
 

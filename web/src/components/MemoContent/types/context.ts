@@ -6,7 +6,7 @@ interface Context {
   // embeddedMemos is a set of memo resource names that are embedded in the current memo.
   // This is used to prevent infinite loops when a memo embeds itself.
   embeddedMemos: Set<string>;
-  memoId?: number;
+  memoName?: string;
   readonly?: boolean;
   disableFilter?: boolean;
 }
