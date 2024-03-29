@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Icon from "@/components/Icon";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import useLoading from "@/hooks/useLoading";
-import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import MemoContent from "..";
 import { RendererContext } from "../types";
 import Error from "./Error";
