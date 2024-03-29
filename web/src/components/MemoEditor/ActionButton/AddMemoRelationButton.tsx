@@ -34,7 +34,7 @@ const AddMemoRelationButton = (props: Props) => {
             editorRef.current.insertText("\n");
           }
           for (const memo of memos) {
-            editorRef.current.insertText(`![[memos/${memo.name}]]\n`);
+            editorRef.current.insertText(`![[memos/${memo.uid}]]\n`);
           }
           setTimeout(() => {
             editorRef.current?.scrollToCursor();
