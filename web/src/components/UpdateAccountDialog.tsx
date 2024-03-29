@@ -27,7 +27,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
   const userStore = useUserStore();
   const [state, setState] = useState<State>({
     avatarUrl: currentUser.avatarUrl,
-    username: currentUser.name.replace(UserNamePrefix, ""),
+    username: currentUser.username,
     nickname: currentUser.nickname,
     email: currentUser.email,
     description: currentUser.description,
