@@ -29,7 +29,7 @@ const MemoEditorDialog: React.FC<Props> = ({ memoName: memo, cacheKey, relationL
     <>
       <div className="w-full flex flex-row justify-between items-center mb-2">
         <div className="flex flex-row justify-start items-center">
-          <img className="w-6 h-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
+          <img className="w-6 h-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl || "/full-logo.webp"} alt="" />
           <p className="ml-1 text-lg opacity-80 dark:text-gray-300">{systemStatus.customizedProfile.name}</p>
         </div>
         <IconButton size="sm" onClick={handleCloseBtnClick}>
