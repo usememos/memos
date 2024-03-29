@@ -4,10 +4,10 @@ import useToggle from "react-use/lib/useToggle";
 import { useFilterStore, useTagStore } from "@/store/module";
 import { useMemoList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
-import showCreateTagDialog from "./CreateTagDialog";
-import { showCommonDialog } from "./Dialog/CommonDialog";
-import Icon from "./Icon";
-import showRenameTagDialog from "./RenameTagDialog";
+import showCreateTagDialog from "../CreateTagDialog";
+import { showCommonDialog } from "../Dialog/CommonDialog";
+import Icon from "../Icon";
+import showRenameTagDialog from "../RenameTagDialog";
 
 interface KVObject<T = any> {
   [key: string]: T;
@@ -19,7 +19,7 @@ interface Tag {
   subTags: Tag[];
 }
 
-const TagList = () => {
+const TagsSection = () => {
   const t = useTranslate();
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
@@ -195,4 +195,4 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
   );
 };
 
-export default TagList;
+export default TagsSection;

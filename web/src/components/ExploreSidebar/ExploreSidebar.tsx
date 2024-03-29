@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import SearchBar from "@/components/SearchBar";
-import UserList from "../UserList";
+import UsersSection from "./UsersSection";
 
 interface Props {
   className?: string;
@@ -15,7 +15,7 @@ const ExploreSidebar = (props: Props) => {
       )}
     >
       <SearchBar />
-      <UserList />
+      <UsersSection />
     </aside>
   );
 };

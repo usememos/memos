@@ -1,6 +1,6 @@
 import classNames from "classnames";
-import SearchBar from "./SearchBar";
-import TagList from "./TagList";
+import TagsSection from "../HomeSidebar/TagsSection";
+import SearchBar from "../SearchBar";
 
 interface Props {
   className?: string;
@@ -15,7 +15,7 @@ const TimelineSidebar = (props: Props) => {
       )}
     >
       <SearchBar />
-      <TagList />
+      <TagsSection />
     </aside>
   );
 };

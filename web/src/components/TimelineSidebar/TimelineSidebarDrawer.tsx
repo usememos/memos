@@ -1,7 +1,7 @@
 import { Drawer, IconButton } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import Icon from "./Icon";
+import Icon from "../Icon";
 import TimelineSidebar from "./TimelineSidebar";
 
 const TimelineSidebarDrawer = () => {

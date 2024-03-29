@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v2/user_service";
-import Icon from "./Icon";
-import UserAvatar from "./UserAvatar";
+import Icon from "../Icon";
+import UserAvatar from "../UserAvatar";
 
-const UserList = () => {
+const UsersSection = () => {
   const userStore = useUserStore();
   const [users, setUsers] = useState<User[]>([]);
 
@@ -48,4 +48,4 @@ const UserList = () => {
   );
 };
 
-export default UserList;
+export default UsersSection;
