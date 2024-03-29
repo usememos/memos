@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { MemoNamePrefix, useMemoStore } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/node";
 import { useTranslate } from "@/utils/i18n";
 import Renderer from "./Renderer";

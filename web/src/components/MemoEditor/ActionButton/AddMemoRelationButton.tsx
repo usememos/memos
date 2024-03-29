@@ -4,8 +4,6 @@ import { useContext } from "react";
 import toast from "react-hot-toast";
 import showCreateMemoRelationDialog from "@/components/CreateMemoRelationDialog";
 import Icon from "@/components/Icon";
-import { UNKNOWN_ID } from "@/helpers/consts";
-import { MemoNamePrefix } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { EditorRefActions } from "../Editor";
 import { MemoEditorContext } from "../types";
