@@ -24,7 +24,7 @@ const MemoActionMenu = (props: Props) => {
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const memoStore = useMemoStore();
-  const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.name}`);
+  const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
 
   const handleTogglePinMemoBtnClick = async () => {
     try {

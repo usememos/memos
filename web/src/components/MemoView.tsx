@@ -45,7 +45,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   ).length;
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
   const readonly = memo.creator !== user?.name;
-  const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.name}`);
+  const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
 
   // Initial related data: creator.
   useEffect(() => {

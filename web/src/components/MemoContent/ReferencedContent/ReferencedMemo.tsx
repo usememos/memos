@@ -31,7 +31,7 @@ const ReferencedMemo = ({ resourceId, params: paramsStr }: Props) => {
   const displayContent = paramsText || (memo.content.length > 12 ? `${memo.content.slice(0, 12)}...` : memo.content);
 
   const handleGotoMemoDetailPage = () => {
-    navigateTo(`/m/${memo.name}`);
+    navigateTo(`/m/${memo.uid}`);
   };
 
   return (
