@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package memos.store;
+
+option go_package = "gen/store";
+
+message IdentityProviderConfig {
+  message FieldMapping {
+    string identifier = 1;
+    string display_name = 2;
+    string email = 3;
+  }
+
+  message OAuth2 {
+    string client_id = 1;
+    string client_secret = 2;
+    string auth_url = 3;
+    string token_url = 4;
+    string user_info_url = 5;
+    repeated string scopes = 6;
+    FieldMapping field_mapping = 7;
+  }
+
+  oneof config {
+    OAuth2 oauth2 = 1;
+  }
+}

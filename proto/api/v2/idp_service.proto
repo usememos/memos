@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "gen/api/v2";
+
+service IdentityProviderService {
+  rpc ListIdentityProviders(ListIdentityProvidersRequest) returns (ListIdentityProvidersResponse) {
+    option (google.api.http) = {get: "/api/v2/identityProviders"};
+  }
+  rpc GetIdentityProvider(GetIdentityProviderRequest) returns (GetIdentityProviderResponse) {
+    option (google.api.http) = {get: "/api/v2/{name=identityProviders/*}"};
+    option (google.api.method_signature) = "name";
+  }
+  rpc CreateIdentityProvider(CreateIdentityProviderRequest) returns (CreateIdentityProviderResponse) {
+    option (google.api.http) = {post: "/api/v2/identityProviders"};
+  }
+  // UpdateIdentityProvider updates an identity provider.
+  rpc UpdateIdentityProvider(UpdateIdentityProviderRequest) returns (UpdateIdentityProviderResponse) {
+    option (google.api.http) = {
+      patch: "/api/v2/{identity_provider.name=identityProviders/*}"
+      body: "identity_provider"
+    };
+    option (google.api.method_signature) = "identity_provider,update_mask";
+  }
+  // DeleteIdentityProvider deletes an identity provider.
+  rpc DeleteIdentityProvider(DeleteIdentityProviderRequest) returns (DeleteIdentityProviderResponse) {
+    option (google.api.http) = {delete: "/api/v2/{name=identityProviders/*}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+message IdentityProvider {
+  // The name of the identityProvider.
+  // Format: identityProviders/{id}
+  string name = 1;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    OAUTH2 = 1;
+  }
+  Type type = 2;
+
+  string title = 3;
+
+  string identifier_filter = 4;
+
+  message Config {
+    message FieldMapping {
+      string identifier = 1;
+      string display_name = 2;
+      string email = 3;
+    }
+
+    message OAuth2 {
+      string client_id = 1;
+      string client_secret = 2;
+      string auth_url = 3;
+      string token_url = 4;
+      string user_info_url = 5;
+      repeated string scopes = 6;
+      FieldMapping field_mapping = 7;
+    }
+
+    oneof config {
+      OAuth2 oauth2 = 1;
+    }
+  }
+
+  Config config = 5;
+}
+
+message ListIdentityProvidersRequest {}
+
+message ListIdentityProvidersResponse {
+  repeated IdentityProvider identity_providers = 1;
+}
+
+message GetIdentityProviderRequest {
+  // The name of the identityProvider to get.
+  // Format: identityProviders/{id}
+  string name = 1;
+}
+
+message GetIdentityProviderResponse {
+  // The identityProvider.
+  IdentityProvider identity_provider = 1;
+}
+
+message CreateIdentityProviderRequest {
+  // The identityProvider to create.
+  IdentityProvider identity_provider = 1;
+}
+
+message CreateIdentityProviderResponse {
+  // The created identityProvider.
+  IdentityProvider identity_provider = 1;
+}
+
+message UpdateIdentityProviderRequest {
+  // The identityProvider to update.
+  IdentityProvider identity_provider = 1;
+
+  // The update mask applies to the resource. Only the top level fields of
+  // IdentityProvider are supported.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UpdateIdentityProviderResponse {
+  // The updated identityProvider.
+  IdentityProvider identity_provider = 1;
+}
+
+message DeleteIdentityProviderRequest {
+  // The name of the identityProvider to delete.
+  // Format: identityProviders/{id}
+  string name = 1;
+}
+
+message DeleteIdentityProviderResponse {}

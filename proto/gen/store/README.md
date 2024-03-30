@@ -11,6 +11,11 @@
 - [store/common.proto](#store_common-proto)
     - [RowStatus](#memos-store-RowStatus)
   
+- [store/idp.proto](#store_idp-proto)
+    - [IdentityProviderConfig](#memos-store-IdentityProviderConfig)
+    - [IdentityProviderConfig.FieldMapping](#memos-store-IdentityProviderConfig-FieldMapping)
+    - [IdentityProviderConfig.OAuth2](#memos-store-IdentityProviderConfig-OAuth2)
+  
 - [store/inbox.proto](#store_inbox-proto)
     - [InboxMessage](#memos-store-InboxMessage)
   
@@ -124,6 +129,75 @@
 | NORMAL | 1 |  |
 | ARCHIVED | 2 |  |
 
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="store_idp-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## store/idp.proto
+
+
+
+<a name="memos-store-IdentityProviderConfig"></a>
+
+### IdentityProviderConfig
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| oauth2 | [IdentityProviderConfig.OAuth2](#memos-store-IdentityProviderConfig-OAuth2) |  |  |
+
+
+
+
+
+
+<a name="memos-store-IdentityProviderConfig-FieldMapping"></a>
+
+### IdentityProviderConfig.FieldMapping
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| identifier | [string](#string) |  |  |
+| display_name | [string](#string) |  |  |
+| email | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-store-IdentityProviderConfig-OAuth2"></a>
+
+### IdentityProviderConfig.OAuth2
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| client_id | [string](#string) |  |  |
+| client_secret | [string](#string) |  |  |
+| auth_url | [string](#string) |  |  |
+| token_url | [string](#string) |  |  |
+| user_info_url | [string](#string) |  |  |
+| scopes | [string](#string) | repeated |  |
+| field_mapping | [IdentityProviderConfig.FieldMapping](#memos-store-IdentityProviderConfig-FieldMapping) |  |  |
+
+
+
+
+
+ 
 
  
 

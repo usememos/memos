@@ -127,11 +127,11 @@ type Inbox struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the inbox.
-	// Format: inboxes/{uid}
+	// Format: inboxes/{id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Format: users/{username}
+	// Format: users/{id}
 	Sender string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
-	// Format: users/{username}
+	// Format: users/{id}
 	Receiver   string                 `protobuf:"bytes,3,opt,name=receiver,proto3" json:"receiver,omitempty"`
 	Status     Inbox_Status           `protobuf:"varint,4,opt,name=status,proto3,enum=memos.api.v2.Inbox_Status" json:"status,omitempty"`
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -225,7 +225,7 @@ type ListInboxesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Format: users/{username}
+	// Format: users/{id}
 	User string `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 }
 
@@ -423,7 +423,7 @@ type DeleteInboxRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the inbox to delete.
-	// Format: inboxes/{uid}
+	// Format: inboxes/{id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

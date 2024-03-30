@@ -105,9 +105,9 @@ func (s *APIV2Service) convertInboxFromStore(ctx context.Context, inbox *store.I
 	}
 
 	return &apiv2pb.Inbox{
-		Name:       fmt.Sprintf("inboxes/%d", inbox.ID),
-		Sender:     fmt.Sprintf("users/%s", sender.Username),
-		Receiver:   fmt.Sprintf("users/%s", receiver.Username),
+		Name:       fmt.Sprintf("%s%d", InboxNamePrefix, inbox.ID),
+		Sender:     fmt.Sprintf("%s%d", UserNamePrefix, sender.ID),
+		Receiver:   fmt.Sprintf("%s%d", UserNamePrefix, receiver.ID),
 		Status:     convertInboxStatusFromStore(inbox.Status),
 		CreateTime: timestamppb.New(time.Unix(inbox.CreatedTs, 0)),
 		Type:       apiv2pb.Inbox_Type(inbox.Message.Type),

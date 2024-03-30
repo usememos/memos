@@ -31,11 +31,11 @@ service InboxService {
 
 message Inbox {
   // The name of the inbox.
-  // Format: inboxes/{uid}
+  // Format: inboxes/{id}
   string name = 1;
-  // Format: users/{username}
+  // Format: users/{id}
   string sender = 2;
-  // Format: users/{username}
+  // Format: users/{id}
   string receiver = 3;
 
   enum Status {
@@ -58,7 +58,7 @@ message Inbox {
 }
 
 message ListInboxesRequest {
-  // Format: users/{username}
+  // Format: users/{id}
   string user = 1;
 }
 
@@ -78,7 +78,7 @@ message UpdateInboxResponse {
 
 message DeleteInboxRequest {
   // The name of the inbox to delete.
-  // Format: inboxes/{uid}
+  // Format: inboxes/{id}
   string name = 1;
 }
 

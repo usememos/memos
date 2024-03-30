@@ -6,6 +6,7 @@ tags:
   - name: ActivityService
   - name: UserService
   - name: AuthService
+  - name: IdentityProviderService
   - name: InboxService
   - name: LinkService
   - name: ResourceService
@@ -130,6 +131,96 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - AuthService
+  /api/v2/identityProviders:
+    get:
+      operationId: IdentityProviderService_ListIdentityProviders
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListIdentityProvidersResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - IdentityProviderService
+    post:
+      operationId: IdentityProviderService_CreateIdentityProvider
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2CreateIdentityProviderResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: identityProvider.name
+          description: |-
+            The name of the identityProvider.
+            Format: identityProviders/{id}
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.type
+          in: query
+          required: false
+          type: string
+          enum:
+            - TYPE_UNSPECIFIED
+            - OAUTH2
+          default: TYPE_UNSPECIFIED
+        - name: identityProvider.title
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.identifierFilter
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.config.oauth2.clientId
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.config.oauth2.clientSecret
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.config.oauth2.authUrl
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.config.oauth2.tokenUrl
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.config.oauth2.userInfoUrl
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.config.oauth2.scopes
+          in: query
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - name: identityProvider.config.oauth2.fieldMapping.identifier
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.config.oauth2.fieldMapping.displayName
+          in: query
+          required: false
+          type: string
+        - name: identityProvider.config.oauth2.fieldMapping.email
+          in: query
+          required: false
+          type: string
+      tags:
+        - IdentityProviderService
   /api/v2/inboxes:
     get:
       summary: ListInboxes lists inboxes for a user.
@@ -145,7 +236,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user
-          description: 'Format: users/{username}'
+          description: 'Format: users/{id}'
           in: query
           required: false
           type: string
@@ -768,6 +859,46 @@ paths:
             title: setting is the setting to update.
       tags:
         - WorkspaceSettingService
+  /api/v2/{identityProvider.name}:
+    patch:
+      summary: UpdateIdentityProvider updates an identity provider.
+      operationId: IdentityProviderService_UpdateIdentityProvider
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateIdentityProviderResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: identityProvider.name
+          description: |-
+            The name of the identityProvider.
+            Format: identityProviders/{id}
+          in: path
+          required: true
+          type: string
+          pattern: identityProviders/[^/]+
+        - name: identityProvider
+          description: The identityProvider to update.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              type:
+                $ref: '#/definitions/v2IdentityProviderType'
+              title:
+                type: string
+              identifierFilter:
+                type: string
+              config:
+                $ref: '#/definitions/IdentityProviderConfig'
+            title: The identityProvider to update.
+      tags:
+        - IdentityProviderService
   /api/v2/{inbox.name}:
     patch:
       summary: UpdateInbox updates an inbox.
@@ -785,7 +916,7 @@ paths:
         - name: inbox.name
           description: |-
             The name of the inbox.
-            Format: inboxes/{uid}
+            Format: inboxes/{id}
           in: path
           required: true
           type: string
@@ -798,10 +929,10 @@ paths:
             properties:
               sender:
                 type: string
-                title: 'Format: users/{username}'
+                title: 'Format: users/{id}'
               receiver:
                 type: string
-                title: 'Format: users/{username}'
+                title: 'Format: users/{id}'
               status:
                 $ref: '#/definitions/v2InboxStatus'
               createTime:
@@ -894,6 +1025,52 @@ paths:
         - MemoService
   /api/v2/{name_1}:
     get:
+      operationId: IdentityProviderService_GetIdentityProvider
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetIdentityProviderResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            The name of the identityProvider to get.
+            Format: identityProviders/{id}
+          in: path
+          required: true
+          type: string
+          pattern: identityProviders/[^/]+
+      tags:
+        - IdentityProviderService
+    delete:
+      summary: DeleteIdentityProvider deletes an identity provider.
+      operationId: IdentityProviderService_DeleteIdentityProvider
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteIdentityProviderResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            The name of the identityProvider to delete.
+            Format: identityProviders/{id}
+          in: path
+          required: true
+          type: string
+          pattern: identityProviders/[^/]+
+      tags:
+        - IdentityProviderService
+  /api/v2/{name_2}:
+    get:
       summary: GetResource returns a resource by name.
       operationId: ResourceService_GetResource
       responses:
@@ -906,7 +1083,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_1
+        - name: name_2
           in: path
           required: true
           type: string
@@ -926,17 +1103,17 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_1
+        - name: name_2
           description: |-
             The name of the inbox to delete.
-            Format: inboxes/{uid}
+            Format: inboxes/{id}
           in: path
           required: true
           type: string
           pattern: inboxes/[^/]+
       tags:
         - InboxService
-  /api/v2/{name_2}:
+  /api/v2/{name_3}:
     get:
       summary: GetMemo gets a memo.
       operationId: MemoService_GetMemo
@@ -950,7 +1127,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_2
+        - name: name_3
           description: |-
             The name of the memo.
             Format: memos/{id}
@@ -973,14 +1150,14 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_2
+        - name: name_3
           in: path
           required: true
           type: string
           pattern: resources/[^/]+
       tags:
         - ResourceService
-  /api/v2/{name_3}:
+  /api/v2/{name_4}:
     delete:
       summary: DeleteMemo deletes a memo.
       operationId: MemoService_DeleteMemo
@@ -994,7 +1171,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_3
+        - name: name_4
           description: |-
             The name of the memo.
             Format: memos/{id}
@@ -1601,6 +1778,39 @@ paths:
       tags:
         - ActivityService
 definitions:
+  IdentityProviderConfig:
+    type: object
+    properties:
+      oauth2:
+        $ref: '#/definitions/IdentityProviderConfigOAuth2'
+  IdentityProviderConfigFieldMapping:
+    type: object
+    properties:
+      identifier:
+        type: string
+      displayName:
+        type: string
+      email:
+        type: string
+  IdentityProviderConfigOAuth2:
+    type: object
+    properties:
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+      authUrl:
+        type: string
+      tokenUrl:
+        type: string
+      userInfoUrl:
+        type: string
+      scopes:
+        type: array
+        items:
+          type: string
+      fieldMapping:
+        $ref: '#/definitions/IdentityProviderConfigFieldMapping'
   MemoServiceSetMemoRelationsBody:
     type: object
     properties:
@@ -1802,6 +2012,12 @@ definitions:
         $ref: '#/definitions/apiv2ActivityPayload'
   v2BatchUpsertTagResponse:
     type: object
+  v2CreateIdentityProviderResponse:
+    type: object
+    properties:
+      identityProvider:
+        $ref: '#/definitions/v2IdentityProvider'
+        description: The created identityProvider.
   v2CreateMemoCommentResponse:
     type: object
     properties:
@@ -1846,6 +2062,8 @@ definitions:
     properties:
       webhook:
         $ref: '#/definitions/apiv2Webhook'
+  v2DeleteIdentityProviderResponse:
+    type: object
   v2DeleteInboxResponse:
     type: object
   v2DeleteMemoReactionResponse:
@@ -1878,6 +2096,12 @@ definitions:
     properties:
       user:
         $ref: '#/definitions/v2User'
+  v2GetIdentityProviderResponse:
+    type: object
+    properties:
+      identityProvider:
+        $ref: '#/definitions/v2IdentityProvider'
+        description: The identityProvider.
   v2GetLinkMetadataResponse:
     type: object
     properties:
@@ -1936,6 +2160,28 @@ definitions:
     properties:
       setting:
         $ref: '#/definitions/apiv2WorkspaceSetting'
+  v2IdentityProvider:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the identityProvider.
+          Format: identityProviders/{id}
+      type:
+        $ref: '#/definitions/v2IdentityProviderType'
+      title:
+        type: string
+      identifierFilter:
+        type: string
+      config:
+        $ref: '#/definitions/IdentityProviderConfig'
+  v2IdentityProviderType:
+    type: string
+    enum:
+      - TYPE_UNSPECIFIED
+      - OAUTH2
+    default: TYPE_UNSPECIFIED
   v2Inbox:
     type: object
     properties:
@@ -1943,13 +2189,13 @@ definitions:
         type: string
         title: |-
           The name of the inbox.
-          Format: inboxes/{uid}
+          Format: inboxes/{id}
       sender:
         type: string
-        title: 'Format: users/{username}'
+        title: 'Format: users/{id}'
       receiver:
         type: string
-        title: 'Format: users/{username}'
+        title: 'Format: users/{id}'
       status:
         $ref: '#/definitions/v2InboxStatus'
       createTime:
@@ -1983,6 +2229,14 @@ definitions:
         type: string
       image:
         type: string
+  v2ListIdentityProvidersResponse:
+    type: object
+    properties:
+      identityProviders:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2IdentityProvider'
   v2ListInboxesResponse:
     type: object
     properties:
@@ -2246,6 +2500,12 @@ definitions:
         title: |-
           The creator of tags.
           Format: users/{id}
+  v2UpdateIdentityProviderResponse:
+    type: object
+    properties:
+      identityProvider:
+        $ref: '#/definitions/v2IdentityProvider'
+        description: The updated identityProvider.
   v2UpdateInboxResponse:
     type: object
     properties:

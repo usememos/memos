@@ -63,6 +63,26 @@
   
     - [AuthService](#memos-api-v2-AuthService)
   
+- [api/v2/idp_service.proto](#api_v2_idp_service-proto)
+    - [CreateIdentityProviderRequest](#memos-api-v2-CreateIdentityProviderRequest)
+    - [CreateIdentityProviderResponse](#memos-api-v2-CreateIdentityProviderResponse)
+    - [DeleteIdentityProviderRequest](#memos-api-v2-DeleteIdentityProviderRequest)
+    - [DeleteIdentityProviderResponse](#memos-api-v2-DeleteIdentityProviderResponse)
+    - [GetIdentityProviderRequest](#memos-api-v2-GetIdentityProviderRequest)
+    - [GetIdentityProviderResponse](#memos-api-v2-GetIdentityProviderResponse)
+    - [IdentityProvider](#memos-api-v2-IdentityProvider)
+    - [IdentityProvider.Config](#memos-api-v2-IdentityProvider-Config)
+    - [IdentityProvider.Config.FieldMapping](#memos-api-v2-IdentityProvider-Config-FieldMapping)
+    - [IdentityProvider.Config.OAuth2](#memos-api-v2-IdentityProvider-Config-OAuth2)
+    - [ListIdentityProvidersRequest](#memos-api-v2-ListIdentityProvidersRequest)
+    - [ListIdentityProvidersResponse](#memos-api-v2-ListIdentityProvidersResponse)
+    - [UpdateIdentityProviderRequest](#memos-api-v2-UpdateIdentityProviderRequest)
+    - [UpdateIdentityProviderResponse](#memos-api-v2-UpdateIdentityProviderResponse)
+  
+    - [IdentityProvider.Type](#memos-api-v2-IdentityProvider-Type)
+  
+    - [IdentityProviderService](#memos-api-v2-IdentityProviderService)
+  
 - [api/v2/inbox_service.proto](#api_v2_inbox_service-proto)
     - [DeleteInboxRequest](#memos-api-v2-DeleteInboxRequest)
     - [DeleteInboxResponse](#memos-api-v2-DeleteInboxResponse)
@@ -977,6 +997,261 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="api_v2_idp_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/idp_service.proto
+
+
+
+<a name="memos-api-v2-CreateIdentityProviderRequest"></a>
+
+### CreateIdentityProviderRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| identity_provider | [IdentityProvider](#memos-api-v2-IdentityProvider) |  | The identityProvider to create. |
+
+
+
+
+
+
+<a name="memos-api-v2-CreateIdentityProviderResponse"></a>
+
+### CreateIdentityProviderResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| identity_provider | [IdentityProvider](#memos-api-v2-IdentityProvider) |  | The created identityProvider. |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteIdentityProviderRequest"></a>
+
+### DeleteIdentityProviderRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the identityProvider to delete. Format: identityProviders/{id} |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteIdentityProviderResponse"></a>
+
+### DeleteIdentityProviderResponse
+
+
+
+
+
+
+
+<a name="memos-api-v2-GetIdentityProviderRequest"></a>
+
+### GetIdentityProviderRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the identityProvider to get. Format: identityProviders/{id} |
+
+
+
+
+
+
+<a name="memos-api-v2-GetIdentityProviderResponse"></a>
+
+### GetIdentityProviderResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| identity_provider | [IdentityProvider](#memos-api-v2-IdentityProvider) |  | The identityProvider. |
+
+
+
+
+
+
+<a name="memos-api-v2-IdentityProvider"></a>
+
+### IdentityProvider
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the identityProvider. Format: identityProviders/{id} |
+| type | [IdentityProvider.Type](#memos-api-v2-IdentityProvider-Type) |  |  |
+| title | [string](#string) |  |  |
+| identifier_filter | [string](#string) |  |  |
+| config | [IdentityProvider.Config](#memos-api-v2-IdentityProvider-Config) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-IdentityProvider-Config"></a>
+
+### IdentityProvider.Config
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| oauth2 | [IdentityProvider.Config.OAuth2](#memos-api-v2-IdentityProvider-Config-OAuth2) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-IdentityProvider-Config-FieldMapping"></a>
+
+### IdentityProvider.Config.FieldMapping
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| identifier | [string](#string) |  |  |
+| display_name | [string](#string) |  |  |
+| email | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-IdentityProvider-Config-OAuth2"></a>
+
+### IdentityProvider.Config.OAuth2
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| client_id | [string](#string) |  |  |
+| client_secret | [string](#string) |  |  |
+| auth_url | [string](#string) |  |  |
+| token_url | [string](#string) |  |  |
+| user_info_url | [string](#string) |  |  |
+| scopes | [string](#string) | repeated |  |
+| field_mapping | [IdentityProvider.Config.FieldMapping](#memos-api-v2-IdentityProvider-Config-FieldMapping) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListIdentityProvidersRequest"></a>
+
+### ListIdentityProvidersRequest
+
+
+
+
+
+
+
+<a name="memos-api-v2-ListIdentityProvidersResponse"></a>
+
+### ListIdentityProvidersResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| identity_providers | [IdentityProvider](#memos-api-v2-IdentityProvider) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateIdentityProviderRequest"></a>
+
+### UpdateIdentityProviderRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| identity_provider | [IdentityProvider](#memos-api-v2-IdentityProvider) |  | The identityProvider to update. |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  | The update mask applies to the resource. Only the top level fields of IdentityProvider are supported. |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateIdentityProviderResponse"></a>
+
+### UpdateIdentityProviderResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| identity_provider | [IdentityProvider](#memos-api-v2-IdentityProvider) |  | The updated identityProvider. |
+
+
+
+
+
+ 
+
+
+<a name="memos-api-v2-IdentityProvider-Type"></a>
+
+### IdentityProvider.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| OAUTH2 | 1 |  |
+
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-IdentityProviderService"></a>
+
+### IdentityProviderService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| ListIdentityProviders | [ListIdentityProvidersRequest](#memos-api-v2-ListIdentityProvidersRequest) | [ListIdentityProvidersResponse](#memos-api-v2-ListIdentityProvidersResponse) |  |
+| GetIdentityProvider | [GetIdentityProviderRequest](#memos-api-v2-GetIdentityProviderRequest) | [GetIdentityProviderResponse](#memos-api-v2-GetIdentityProviderResponse) |  |
+| CreateIdentityProvider | [CreateIdentityProviderRequest](#memos-api-v2-CreateIdentityProviderRequest) | [CreateIdentityProviderResponse](#memos-api-v2-CreateIdentityProviderResponse) |  |
+| UpdateIdentityProvider | [UpdateIdentityProviderRequest](#memos-api-v2-UpdateIdentityProviderRequest) | [UpdateIdentityProviderResponse](#memos-api-v2-UpdateIdentityProviderResponse) | UpdateIdentityProvider updates an identity provider. |
+| DeleteIdentityProvider | [DeleteIdentityProviderRequest](#memos-api-v2-DeleteIdentityProviderRequest) | [DeleteIdentityProviderResponse](#memos-api-v2-DeleteIdentityProviderResponse) | DeleteIdentityProvider deletes an identity provider. |
+
+ 
+
+
+
 <a name="api_v2_inbox_service-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -992,7 +1267,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the inbox to delete. Format: inboxes/{uid} |
+| name | [string](#string) |  | The name of the inbox to delete. Format: inboxes/{id} |
 
 
 
@@ -1017,9 +1292,9 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the inbox. Format: inboxes/{uid} |
-| sender | [string](#string) |  | Format: users/{username} |
-| receiver | [string](#string) |  | Format: users/{username} |
+| name | [string](#string) |  | The name of the inbox. Format: inboxes/{id} |
+| sender | [string](#string) |  | Format: users/{id} |
+| receiver | [string](#string) |  | Format: users/{id} |
 | status | [Inbox.Status](#memos-api-v2-Inbox-Status) |  |  |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | type | [Inbox.Type](#memos-api-v2-Inbox-Type) |  |  |
@@ -1038,7 +1313,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| user | [string](#string) |  | Format: users/{username} |
+| user | [string](#string) |  | Format: users/{id} |
 
 
 
