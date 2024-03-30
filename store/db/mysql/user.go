@@ -2,6 +2,8 @@ package mysql
 
 import (
 	"context"
+	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -96,7 +98,15 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		where, args = append(where, "`nickname` = ?"), append(args, *v)
 	}
 
-	query := "SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, `description`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE " + strings.Join(where, " AND ") + " ORDER BY `created_ts` DESC, `row_status` DESC"
+	orderBy := []string{"`created_ts` DESC", "`row_status` DESC"}
+	if find.Random {
+		orderBy = slices.Concat([]string{"RAND()"}, orderBy)
+	}
+
+	query := "SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, `description`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE " + strings.Join(where, " AND ") + " ORDER BY " + strings.Join(orderBy, ", ")
+	if v := find.Limit; v != nil {
+		query += fmt.Sprintf(" LIMIT %d", *v)
+	}
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err

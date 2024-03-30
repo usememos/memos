@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/usememos/memos/store"
@@ -98,6 +100,11 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		where, args = append(where, "nickname = "+placeholder(len(args)+1)), append(args, *v)
 	}
 
+	orderBy := []string{"created_ts DESC", "row_status DESC"}
+	if find.Random {
+		orderBy = slices.Concat([]string{"RANDOM()"}, orderBy)
+	}
+
 	query := `
 		SELECT 
 			id,
@@ -112,9 +119,10 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 			updated_ts,
 			row_status
 		FROM "user"
-		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY created_ts DESC, row_status DESC
-	`
+		WHERE ` + strings.Join(where, " AND ") + ` ORDER BY ` + strings.Join(orderBy, ", ")
+	if v := find.Limit; v != nil {
+		query += fmt.Sprintf(" LIMIT %d", *v)
+	}
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
