@@ -134,6 +134,7 @@
     }
   },
   "message": {
+    "archived-successfully": "Arquivado com êxito",
     "change-memo-created-time": "Alterar data de criação do memo",
     "change-resource-filename": "Alterar nome do arquivo do recurso",
     "click-to-save-the-image": "Clique para salvar a imagem",
