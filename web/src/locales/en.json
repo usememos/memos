@@ -312,6 +312,7 @@
     "no-data": "No data found.",
     "memos-ready": "all memos are ready",
     "resource-ready": "all resource are ready",
+    "archived-successfully": "Archived successfully",
     "restored-successfully": "Restored successfully",
     "memo-updated-datetime": "Memo created datetime changed.",
     "invalid-created-datetime": "Invalid created datetime.",
