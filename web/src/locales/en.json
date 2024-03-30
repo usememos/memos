@@ -62,9 +62,7 @@
     "search": "Search",
     "role": "Role",
     "description": "Description",
-    "statistics": "Statistics",
-    "days": "Days",
-    "memos": "Memos"
+    "statistics": "Statistics"
   },
   "router": {
     "go-to-home": "Go to Home",

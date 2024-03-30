@@ -43,21 +43,21 @@ const PersonalStatistics = (props: Props) => {
       <div className="w-full flex justify-between items-center">
         <div className="w-full flex justify-start items-center">
           <Icon.CalendarDays className="w-4 h-auto mr-1" />
-          <span className="block text-base sm:text-sm">{t("common.days")}</span>
+          <span className="block text-base sm:text-sm">Days</span>
         </div>
         <span className="font-mono">{days}</span>
       </div>
       <div className="w-full flex justify-between items-center">
         <div className="w-full flex justify-start items-center">
           <Icon.Library className="w-4 h-auto mr-1" />
-          <span className="block text-base sm:text-sm">{t("common.memos")}</span>
+          <span className="block text-base sm:text-sm">Memos</span>
         </div>
         {isRequesting ? <Icon.Loader className="animate-spin w-4 h-auto text-gray-400" /> : <span className="font-mono">{memoAmount}</span>}
       </div>
       <div className="w-full flex justify-between items-center">
         <div className="w-full flex justify-start items-center">
           <Icon.Hash className="w-4 h-auto mr-1" />
-          <span className="block text-base sm:text-sm">{t("common.tags")}</span>
+          <span className="block text-base sm:text-sm">Tags</span>
         </div>
         <span className="font-mono">{tags}</span>
       </div>

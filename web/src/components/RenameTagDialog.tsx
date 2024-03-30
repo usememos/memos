@@ -75,12 +75,13 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
               onChange={handleTagNameInputChange}
             />
           </div>
-          <List className="!leading-5" size="sm" marker="disc">
-            <ListItem>All your memos with this tag will be updated.</ListItem>
-            <ListItem>If the number of related memos is large, it will take longer and the server load will become higher.</ListItem>
+          <List size="sm" marker="disc">
+            <ListItem>
+              <p className="leading-5">All your memos with this tag will be updated.</p>
+            </ListItem>
           </List>
         </div>
-        <div className="w-full flex flex-row justify-end items-center mt-2 space-x-2">
+        <div className="w-full flex flex-row justify-end items-center space-x-2">
           <Button color="neutral" variant="plain" disabled={requestState.isLoading} loading={requestState.isLoading} onClick={destroy}>
             {t("common.cancel")}
           </Button>
