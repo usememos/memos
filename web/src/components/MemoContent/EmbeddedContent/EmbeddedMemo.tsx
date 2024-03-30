@@ -58,7 +58,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
         <div className="text-sm leading-6 text-gray-400 select-none">
           <relative-time datetime={memo.displayTime?.toISOString()} tense="past"></relative-time>
         </div>
-        <Link className="hover:opacity-80" to={`/m/${memo.name}`} unstable_viewTransition>
+        <Link className="hover:opacity-80" to={`/m/${memo.uid}`} unstable_viewTransition>
           <Icon.ArrowUpRight className="w-5 h-auto opacity-80 text-gray-400" />
         </Link>
       </div>
