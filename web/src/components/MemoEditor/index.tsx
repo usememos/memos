@@ -8,7 +8,7 @@ import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useGlobalStore, useResourceStore, useTagStore } from "@/store/module";
-import { extractMemoIdFromName, useMemoStore, useUserStore } from "@/store/v1";
+import { useMemoStore, useUserStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { Resource } from "@/types/proto/api/v2/resource_service";
@@ -233,9 +233,9 @@ const MemoEditor = (props: Props) => {
           await resourceStore.updateResource({
             resource: Resource.fromPartial({
               name: resource.name,
-              memoId: extractMemoIdFromName(memoName),
+              memo: memoName,
             }),
-            updateMask: ["memo_id"],
+            updateMask: ["memo"],
           });
         }
       }

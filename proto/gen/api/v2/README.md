@@ -1332,7 +1332,7 @@ Used internally for obfuscating the page token.
 | filename | [string](#string) |  |  |
 | external_link | [string](#string) |  |  |
 | type | [string](#string) |  |  |
-| memo_id | [int32](#int32) | optional |  |
+| memo | [string](#string) | optional | Format: memos/{id} |
 
 
 
@@ -1449,7 +1449,7 @@ Used internally for obfuscating the page token.
 | external_link | [string](#string) |  |  |
 | type | [string](#string) |  |  |
 | size | [int64](#int64) |  |  |
-| memo_id | [int32](#int32) | optional |  |
+| memo | [string](#string) | optional | Format: memos/{id} |
 
 
 

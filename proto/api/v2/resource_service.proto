@@ -61,7 +61,8 @@ message Resource {
 
   int64 size = 7;
 
-  optional int32 memo_id = 8;
+  // Format: memos/{id}
+  optional string memo = 8;
 }
 
 message CreateResourceRequest {
@@ -71,7 +72,8 @@ message CreateResourceRequest {
 
   string type = 3;
 
-  optional int32 memo_id = 4;
+  // Format: memos/{id}
+  optional string memo = 4;
 }
 
 message CreateResourceResponse {

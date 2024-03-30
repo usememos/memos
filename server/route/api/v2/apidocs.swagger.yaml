@@ -346,11 +346,11 @@ paths:
           in: query
           required: false
           type: string
-        - name: memoId
+        - name: memo
+          description: 'Format: memos/{id}'
           in: query
           required: false
-          type: integer
-          format: int32
+          type: string
       tags:
         - ResourceService
   /api/v2/resources:search:
@@ -1476,9 +1476,9 @@ paths:
               size:
                 type: string
                 format: int64
-              memoId:
-                type: integer
-                format: int32
+              memo:
+                type: string
+                title: 'Format: memos/{id}'
       tags:
         - ResourceService
   /api/v2/{setting.name}:
@@ -2183,9 +2183,9 @@ definitions:
       size:
         type: string
         format: int64
-      memoId:
-        type: integer
-        format: int32
+      memo:
+        type: string
+        title: 'Format: memos/{id}'
   v2SearchMemosResponse:
     type: object
     properties:

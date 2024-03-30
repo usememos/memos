@@ -41,8 +41,12 @@ func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.Crea
 		ExternalLink: request.ExternalLink,
 		Type:         request.Type,
 	}
-	if request.MemoId != nil {
-		create.MemoID = request.MemoId
+	if request.Memo != nil {
+		memoID, err := ExtractMemoIDFromName(*request.Memo)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid memo id: %v", err)
+		}
+		create.MemoID = &memoID
 	}
 	resource, err := s.Store.CreateResource(ctx, create)
 	if err != nil {
@@ -139,8 +143,15 @@ func (s *APIV2Service) UpdateResource(ctx context.Context, request *apiv2pb.Upda
 	for _, field := range request.UpdateMask.Paths {
 		if field == "filename" {
 			update.Filename = &request.Resource.Filename
-		} else if field == "memo_id" {
-			update.MemoID = request.Resource.MemoId
+		} else if field == "memo" {
+			if request.Resource.Memo == nil {
+				return nil, status.Errorf(codes.InvalidArgument, "memo is required")
+			}
+			memoID, err := ExtractMemoIDFromName(*request.Resource.Memo)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid memo id: %v", err)
+			}
+			update.MemoID = &memoID
 		}
 	}
 
@@ -182,17 +193,7 @@ func (s *APIV2Service) DeleteResource(ctx context.Context, request *apiv2pb.Dele
 }
 
 func (s *APIV2Service) convertResourceFromStore(ctx context.Context, resource *store.Resource) *apiv2pb.Resource {
-	var memoID *int32
-	if resource.MemoID != nil {
-		memo, _ := s.Store.GetMemo(ctx, &store.FindMemo{
-			ID: resource.MemoID,
-		})
-		if memo != nil {
-			memoID = &memo.ID
-		}
-	}
-
-	return &apiv2pb.Resource{
+	resourceMessage := &apiv2pb.Resource{
 		Name:         fmt.Sprintf("%s%d", ResourceNamePrefix, resource.ID),
 		Uid:          resource.UID,
 		CreateTime:   timestamppb.New(time.Unix(resource.CreatedTs, 0)),
@@ -200,8 +201,18 @@ func (s *APIV2Service) convertResourceFromStore(ctx context.Context, resource *s
 		ExternalLink: resource.ExternalLink,
 		Type:         resource.Type,
 		Size:         resource.Size,
-		MemoId:       memoID,
 	}
+	if resource.MemoID != nil {
+		memo, _ := s.Store.GetMemo(ctx, &store.FindMemo{
+			ID: resource.MemoID,
+		})
+		if memo != nil {
+			memoName := fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID)
+			resourceMessage.Memo = &memoName
+		}
+	}
+
+	return resourceMessage
 }
 
 // SearchResourcesFilterCELAttributes are the CEL attributes for SearchResourcesFilter.
