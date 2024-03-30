@@ -57,24 +57,35 @@ const MemoActionMenu = (props: Props) => {
     });
   };
 
-  const handleArchiveMemoClick = async () => {
+  const handleToggleMemoStatusClick = async () => {
     try {
-      await memoStore.updateMemo(
-        {
-          name: memo.name,
-          rowStatus: RowStatus.ARCHIVED,
-        },
-        ["row_status"],
-      );
+      if (memo.rowStatus === RowStatus.ARCHIVED) {
+        await memoStore.updateMemo(
+          {
+            name: memo.name,
+            rowStatus: RowStatus.ACTIVE,
+          },
+          ["row_status"],
+        );
+        toast(t("message.restored-successfully"));
+      } else {
+        await memoStore.updateMemo(
+          {
+            name: memo.name,
+            rowStatus: RowStatus.ARCHIVED,
+          },
+          ["row_status"],
+        );
+        toast.success(t("message.archived-successfully"));
+      }
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
       return;
     }
 
-    toast.success("Archived successfully");
     if (isInMemoDetailPage) {
-      navigateTo("/archived");
+      memo.rowStatus === RowStatus.ARCHIVED ? navigateTo("/") : navigateTo("/archived");
     }
   };
 
@@ -120,9 +131,9 @@ const MemoActionMenu = (props: Props) => {
             {t("common.share")}
           </MenuItem>
         )}
-        <MenuItem color="warning" onClick={handleArchiveMemoClick}>
-          <Icon.Archive className="w-4 h-auto" />
-          {t("common.archive")}
+        <MenuItem color="warning" onClick={handleToggleMemoStatusClick}>
+          {memo.rowStatus === RowStatus.ARCHIVED ? <Icon.ArchiveRestore className="w-4 h-auto" /> : <Icon.Archive className="w-4 h-auto" />}
+          {memo.rowStatus === RowStatus.ARCHIVED ? t("common.restore") : t("common.archive")}
         </MenuItem>
         <MenuItem color="danger" onClick={handleDeleteMemoClick}>
           <Icon.Trash className="w-4 h-auto" />
