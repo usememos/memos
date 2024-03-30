@@ -71,16 +71,19 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		where = append(where, "`parent_id` IS NULL")
 	}
 
-	orders := []string{}
+	orderBy := []string{}
 	if find.OrderByPinned {
-		orders = append(orders, "`pinned` DESC")
+		orderBy = append(orderBy, "`pinned` DESC")
 	}
 	if find.OrderByUpdatedTs {
-		orders = append(orders, "`updated_ts` DESC")
+		orderBy = append(orderBy, "`updated_ts` DESC")
 	} else {
-		orders = append(orders, "`created_ts` DESC")
+		orderBy = append(orderBy, "`created_ts` DESC")
 	}
-	orders = append(orders, "`id` DESC")
+	orderBy = append(orderBy, "`id` DESC")
+	if find.Random {
+		orderBy = []string{"RANDOM()"}
+	}
 
 	fields := []string{
 		"`memo`.`id` AS `id`",
@@ -101,7 +104,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"LEFT JOIN `memo_organizer` ON `memo`.`id` = `memo_organizer`.`memo_id` AND `memo`.`creator_id` = `memo_organizer`.`user_id` " +
 		"LEFT JOIN `memo_relation` ON `memo`.`id` = `memo_relation`.`memo_id` AND `memo_relation`.`type` = \"COMMENT\" " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
-		"ORDER BY " + strings.Join(orders, ", ")
+		"ORDER BY " + strings.Join(orderBy, ", ")
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {

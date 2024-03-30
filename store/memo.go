@@ -69,6 +69,7 @@ type FindMemo struct {
 	VisibilityList  []Visibility
 	ExcludeContent  bool
 	ExcludeComments bool
+	Random          bool
 
 	// Pagination
 	Limit            *int

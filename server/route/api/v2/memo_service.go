@@ -134,16 +134,17 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 }
 
 func (s *APIV2Service) SearchMemos(ctx context.Context, request *apiv2pb.SearchMemosRequest) (*apiv2pb.SearchMemosResponse, error) {
+	defaultSearchLimit := 10
 	memoFind := &store.FindMemo{
 		// Exclude comments by default.
 		ExcludeComments: true,
+		Limit:           &defaultSearchLimit,
 	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
+	err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter)
+	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter")
 	}
 
-	defaultSearchLimit := 10
-	memoFind.Limit = &defaultSearchLimit
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to search memos")
@@ -696,6 +697,12 @@ func (s *APIV2Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if filter.RowStatus != nil {
 			find.RowStatus = filter.RowStatus
 		}
+		if filter.Random {
+			find.Random = filter.Random
+		}
+		if filter.Limit != nil {
+			find.Limit = filter.Limit
+		}
 	}
 
 	// If the user is not authenticated, only public memos are visible.
@@ -730,6 +737,8 @@ var SearchMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("creator", cel.StringType),
 	cel.Variable("uid", cel.StringType),
 	cel.Variable("row_status", cel.StringType),
+	cel.Variable("random", cel.BoolType),
+	cel.Variable("limit", cel.IntType),
 }
 
 type SearchMemosFilter struct {
@@ -741,6 +750,8 @@ type SearchMemosFilter struct {
 	Creator           *string
 	UID               *string
 	RowStatus         *store.RowStatus
+	Random            bool
+	Limit             *int
 }
 
 func parseSearchMemosFilter(expression string) (*SearchMemosFilter, error) {
@@ -798,6 +809,12 @@ func findSearchMemosField(callExpr *expr.Expr_Call, filter *SearchMemosFilter) {
 			} else if idExpr.Name == "row_status" {
 				rowStatus := store.RowStatus(callExpr.Args[1].GetConstExpr().GetStringValue())
 				filter.RowStatus = &rowStatus
+			} else if idExpr.Name == "random" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.Random = value
+			} else if idExpr.Name == "limit" {
+				limit := int(callExpr.Args[1].GetConstExpr().GetInt64Value())
+				filter.Limit = &limit
 			}
 			return
 		}
