@@ -132,6 +132,7 @@
     }
   },
   "message": {
+    "archived-successfully": "封存成功",
     "change-memo-created-time": "變更 Memo 建立時間",
     "change-resource-filename": "變更資源檔名",
     "click-to-save-the-image": "點選以儲存圖片",
