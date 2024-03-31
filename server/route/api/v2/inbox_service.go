@@ -30,11 +30,7 @@ func (s *APIV2Service) ListInboxes(ctx context.Context, _ *apiv2pb.ListInboxesRe
 		Inboxes: []*apiv2pb.Inbox{},
 	}
 	for _, inbox := range inboxes {
-		inboxMessage, err := s.convertInboxFromStore(ctx, inbox)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to convert inbox from store: %v", err)
-		}
-		response.Inboxes = append(response.Inboxes, inboxMessage)
+		response.Inboxes = append(response.Inboxes, convertInboxFromStore(inbox))
 	}
 
 	return response, nil
@@ -66,12 +62,8 @@ func (s *APIV2Service) UpdateInbox(ctx context.Context, request *apiv2pb.UpdateI
 		return nil, status.Errorf(codes.Internal, "failed to update inbox: %v", err)
 	}
 
-	inboxMessage, err := s.convertInboxFromStore(ctx, inbox)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to convert inbox from store: %v", err)
-	}
 	return &apiv2pb.UpdateInboxResponse{
-		Inbox: inboxMessage,
+		Inbox: convertInboxFromStore(inbox),
 	}, nil
 }
 
@@ -89,7 +81,7 @@ func (s *APIV2Service) DeleteInbox(ctx context.Context, request *apiv2pb.DeleteI
 	return &apiv2pb.DeleteInboxResponse{}, nil
 }
 
-func (s *APIV2Service) convertInboxFromStore(_ context.Context, inbox *store.Inbox) (*apiv2pb.Inbox, error) {
+func convertInboxFromStore(inbox *store.Inbox) *apiv2pb.Inbox {
 	return &apiv2pb.Inbox{
 		Name:       fmt.Sprintf("%s%d", InboxNamePrefix, inbox.ID),
 		Sender:     fmt.Sprintf("%s%d", UserNamePrefix, inbox.SenderID),
@@ -98,7 +90,7 @@ func (s *APIV2Service) convertInboxFromStore(_ context.Context, inbox *store.Inb
 		CreateTime: timestamppb.New(time.Unix(inbox.CreatedTs, 0)),
 		Type:       apiv2pb.Inbox_Type(inbox.Message.Type),
 		ActivityId: inbox.Message.ActivityId,
-	}, nil
+	}
 }
 
 func convertInboxStatusFromStore(status store.InboxStatus) apiv2pb.Inbox_Status {
