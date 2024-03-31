@@ -1,4 +1,5 @@
 import { Button, Input } from "@mui/joy";
+import { ClientError } from "nice-grpc-web";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -64,7 +65,7 @@ const SignUp = () => {
       }
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message || error.message || t("message.signup-failed"));
+      toast.error((error as ClientError).details || t("message.signup-failed"));
     }
     actionBtnLoadingState.setFinish();
   };
