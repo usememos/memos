@@ -112,7 +112,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
         >
           {t("inbox.memo-comment", {
             user: sender?.nickname || sender?.username,
-            memo: `memos\/${relatedMemo?.uid}`,
+            memo: `memos/${relatedMemo?.uid}`,
             interpolation: { escapeValue: false },
           })}
         </p>
