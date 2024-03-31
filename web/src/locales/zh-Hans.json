@@ -132,6 +132,7 @@
     }
   },
   "message": {
+    "archived-successfully": "归档成功",
     "change-memo-created-time": "更改 Memo 创建时间",
     "change-resource-filename": "更改资源文件名",
     "click-to-save-the-image": "点击保存图片",
