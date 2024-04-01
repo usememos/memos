@@ -2,7 +2,7 @@ import { Checkbox } from "@mui/joy";
 import classNames from "classnames";
 import { repeat } from "lodash-es";
 import { useContext, useState } from "react";
-import { MemoNamePrefix, useMemoStore } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import { Node, NodeType, TaskListNode } from "@/types/node";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
@@ -39,7 +39,7 @@ const TaskList: React.FC<Props> = ({ index, indent, complete, children }: Props)
     const content = window.restore(context.nodes);
     await memoStore.updateMemo(
       {
-        name: `${MemoNamePrefix}${context.memoName}`,
+        name: context.memoName,
         content,
       },
       ["content"],
