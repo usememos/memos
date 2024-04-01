@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/exp/slices"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
