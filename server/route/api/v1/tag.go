@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"slices"
 	"sort"
 
 	"github.com/labstack/echo/v4"
-	"golang.org/x/exp/slices"
 
 	"github.com/usememos/memos/store"
 )
