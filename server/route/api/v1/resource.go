@@ -223,7 +223,7 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	create := &store.Resource{
 		UID:       shortuuid.New(),
 		CreatorID: userID,
-		Filename:  file.Filename,
+		Filename:  shortuuid.New() + "-" + file.Filename,
 		Type:      file.Header.Get("Content-Type"),
 		Size:      file.Size,
 	}
