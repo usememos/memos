@@ -30,7 +30,7 @@ func (s *APIV2Service) GetAuthStatus(ctx context.Context, _ *apiv2pb.GetAuthStat
 	if user == nil {
 		// Set the cookie header to expire access token.
 		if err := s.clearAccessTokenCookie(ctx); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to set grpc header")
+			return nil, status.Errorf(codes.Internal, "failed to set grpc header: %v", err)
 		}
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
 	}

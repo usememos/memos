@@ -14,7 +14,7 @@ import (
 
 	"github.com/usememos/memos/internal/jobs"
 	"github.com/usememos/memos/server"
-	_profile "github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 )
@@ -31,22 +31,22 @@ const (
 )
 
 var (
-	profile        *_profile.Profile
-	mode           string
-	addr           string
-	port           int
-	data           string
-	driver         string
-	dsn            string
-	serveFrontend  bool
-	allowedOrigins []string
+	mode            string
+	addr            string
+	port            int
+	data            string
+	driver          string
+	dsn             string
+	serveFrontend   bool
+	allowedOrigins  []string
+	instanceProfile *profile.Profile
 
 	rootCmd = &cobra.Command{
 		Use:   "memos",
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		Run: func(_cmd *cobra.Command, _args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
-			dbDriver, err := db.NewDBDriver(profile)
+			dbDriver, err := db.NewDBDriver(instanceProfile)
 			if err != nil {
 				cancel()
 				slog.Error("failed to create db driver", err)
@@ -58,14 +58,14 @@ var (
 				return
 			}
 
-			storeInstance := store.New(dbDriver, profile)
+			storeInstance := store.New(dbDriver, instanceProfile)
 			if err := storeInstance.MigrateManually(ctx); err != nil {
 				cancel()
 				slog.Error("failed to migrate manually", err)
 				return
 			}
 
-			s, err := server.NewServer(ctx, profile, storeInstance)
+			s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 			if err != nil {
 				cancel()
 				slog.Error("failed to create server", err)
@@ -162,7 +162,7 @@ func init() {
 func initConfig() {
 	viper.AutomaticEnv()
 	var err error
-	profile, err = _profile.GetProfile()
+	instanceProfile, err = profile.GetProfile()
 	if err != nil {
 		fmt.Printf("failed to get profile, error: %+v\n", err)
 		return
@@ -179,15 +179,15 @@ mode: %s
 driver: %s
 frontend: %t
 ---
-`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver, profile.Frontend)
+`, instanceProfile.Version, instanceProfile.Data, instanceProfile.DSN, instanceProfile.Addr, instanceProfile.Port, instanceProfile.Mode, instanceProfile.Driver, instanceProfile.Frontend)
 }
 
 func printGreetings() {
 	print(greetingBanner)
-	if len(profile.Addr) == 0 {
-		fmt.Printf("Version %s has been started on port %d\n", profile.Version, profile.Port)
+	if len(instanceProfile.Addr) == 0 {
+		fmt.Printf("Version %s has been started on port %d\n", instanceProfile.Version, instanceProfile.Port)
 	} else {
-		fmt.Printf("Version %s has been started on address '%s' and port %d\n", profile.Version, profile.Addr, profile.Port)
+		fmt.Printf("Version %s has been started on address '%s' and port %d\n", instanceProfile.Version, instanceProfile.Addr, instanceProfile.Port)
 	}
 	fmt.Printf(`---
 See more in:

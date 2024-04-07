@@ -106,7 +106,7 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 	memoFind.Offset = &offset
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos")
+		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
 	}
 
 	memoMessages := []*apiv2pb.Memo{}
@@ -459,7 +459,7 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos")
+		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
 	}
 
 	location, err := time.LoadLocation(request.Timezone)
@@ -494,12 +494,12 @@ func (s *APIV2Service) ExportMemos(ctx context.Context, request *apiv2pb.ExportM
 		ExcludeComments: true,
 	}
 	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to build find memos with filter")
+		return nil, status.Errorf(codes.Internal, "failed to build find memos with filter: %v", err)
 	}
 
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos")
+		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
 	}
 
 	buf := new(bytes.Buffer)
