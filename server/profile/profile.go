@@ -32,6 +32,8 @@ type Profile struct {
 	Version string `json:"version"`
 	// Frontend indicate the frontend is enabled or not
 	Frontend bool `json:"-"`
+	// Origins is the list of allowed origins
+	Origins []string `json:"-"`
 }
 
 func (p *Profile) IsDev() bool {

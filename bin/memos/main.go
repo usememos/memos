@@ -31,18 +31,19 @@ const (
 )
 
 var (
-	profile       *_profile.Profile
-	mode          string
-	addr          string
-	port          int
-	data          string
-	driver        string
-	dsn           string
-	serveFrontend bool
+	profile        *_profile.Profile
+	mode           string
+	addr           string
+	port           int
+	data           string
+	driver         string
+	dsn            string
+	serveFrontend  bool
+	allowedOrigins []string
 
 	rootCmd = &cobra.Command{
 		Use:   "memos",
-		Short: `An open-source, self-hosted memo hub with knowledge management and social networking.`,
+		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		Run: func(_cmd *cobra.Command, _args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
 			dbDriver, err := db.NewDBDriver(profile)
@@ -114,6 +115,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&driver, "driver", "", "", "database driver")
 	rootCmd.PersistentFlags().StringVarP(&dsn, "dsn", "", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().BoolVarP(&serveFrontend, "frontend", "", true, "serve frontend files")
+	rootCmd.PersistentFlags().StringArrayVarP(&allowedOrigins, "origins", "", []string{}, "CORS allowed domain origins")
 
 	err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode"))
 	if err != nil {
@@ -143,12 +145,17 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	err = viper.BindPFlag("origins", rootCmd.PersistentFlags().Lookup("origins"))
+	if err != nil {
+		panic(err)
+	}
 
 	viper.SetDefault("mode", "demo")
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("addr", "")
 	viper.SetDefault("port", 8081)
 	viper.SetDefault("frontend", true)
+	viper.SetDefault("origins", []string{})
 	viper.SetEnvPrefix("memos")
 }
 

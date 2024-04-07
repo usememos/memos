@@ -49,7 +49,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 
 	// Register CORS middleware.
-	e.Use(CORSMiddleware())
+	e.Use(CORSMiddleware(s.Profile.Origins))
 
 	serverID, err := s.getSystemServerID(ctx)
 	if err != nil {
@@ -160,7 +160,7 @@ func grpcRequestSkipper(c echo.Context) bool {
 	return strings.HasPrefix(c.Request().URL.Path, "/memos.api.v2.")
 }
 
-func CORSMiddleware() echo.MiddlewareFunc {
+func CORSMiddleware(origins []string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if grpcRequestSkipper(c) {
@@ -170,7 +170,18 @@ func CORSMiddleware() echo.MiddlewareFunc {
 			r := c.Request()
 			w := c.Response().Writer
 
-			w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+			requestOrigin := r.Header.Get("Origin")
+			if len(origins) == 0 {
+				w.Header().Set("Access-Control-Allow-Origin", requestOrigin)
+			} else {
+				for _, origin := range origins {
+					if origin == requestOrigin {
+						w.Header().Set("Access-Control-Allow-Origin", origin)
+						break
+					}
+				}
+			}
+
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
