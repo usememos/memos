@@ -9,6 +9,7 @@ import { WorkspaceSettingPrefix } from "@/store/v1";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v2/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
+import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 
@@ -72,14 +73,29 @@ const SystemSection = () => {
   };
 
   const handleDisablePasswordLoginChanged = async (value: boolean) => {
-    const setting = { ...workspaceGeneralSetting, disallowPasswordLogin: value };
-    await workspaceSettingServiceClient.setWorkspaceSetting({
-      setting: {
-        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
-        generalSetting: setting,
-      },
-    });
-    setWorkspaceGeneralSetting(setting);
+    const updateSetting = async () => {
+      const setting = { ...workspaceGeneralSetting, disallowPasswordLogin: value };
+      await workspaceSettingServiceClient.setWorkspaceSetting({
+        setting: {
+          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+          generalSetting: setting,
+        },
+      });
+      setWorkspaceGeneralSetting(setting);
+    };
+    if (value) {
+      showCommonDialog({
+        title: "Confirm",
+        content: "Are you sure to disable password login?",
+        style: "danger",
+        dialogName: "disable-password-login-dialog",
+        onConfirm: async () => {
+          await updateSetting();
+        },
+      });
+    } else {
+      await updateSetting();
+    }
   };
 
   const handleUpdateCustomizedProfileButtonClick = () => {
