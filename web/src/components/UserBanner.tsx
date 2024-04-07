@@ -29,7 +29,7 @@ const UserBanner = (props: Props) => {
   };
 
   return (
-    <div className="relative w-auto h-auto px-1 shrink-0">
+    <div className="relative w-full h-auto px-1 shrink-0">
       <Dropdown>
         <MenuButton disabled={!user} slots={{ root: "div" }}>
           <div

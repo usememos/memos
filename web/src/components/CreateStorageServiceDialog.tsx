@@ -107,9 +107,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <span className="title-text ml-auto">
-          {t(isCreating ? "setting.storage-section.create-storage" : "setting.storage-section.update-storage")}
-        </span>
+        <span>{t(isCreating ? "setting.storage-section.create-storage" : "setting.storage-section.update-storage")}</span>
         <IconButton size="sm" onClick={handleCloseBtnClick}>
           <Icon.X className="w-5 h-auto" />
         </IconButton>
