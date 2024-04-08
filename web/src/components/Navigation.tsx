@@ -52,31 +52,31 @@ const Navigation = (props: Props) => {
     id: "header-home",
     path: Routes.HOME,
     title: t("common.home"),
-    icon: <Icon.Home className="w-6 h-auto opacity-70" />,
+    icon: <Icon.Home className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const timelineNavLink: NavLinkItem = {
     id: "header-timeline",
     path: Routes.TIMELINE,
     title: t("timeline.title"),
-    icon: <Icon.GanttChartSquare className="w-6 h-auto opacity-70" />,
+    icon: <Icon.GanttChartSquare className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const resourcesNavLink: NavLinkItem = {
     id: "header-resources",
     path: Routes.RESOURCES,
     title: t("common.resources"),
-    icon: <Icon.Paperclip className="w-6 h-auto opacity-70" />,
+    icon: <Icon.Paperclip className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",
     path: Routes.EXPLORE,
     title: t("common.explore"),
-    icon: <Icon.Globe2 className="w-6 h-auto opacity-70" />,
+    icon: <Icon.Globe2 className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const profileNavLink: NavLinkItem = {
     id: "header-profile",
     path: user ? `/u/${encodeURIComponent(user.username)}` : "",
     title: t("common.profile"),
-    icon: <Icon.User2 className="w-6 h-auto opacity-70" />,
+    icon: <Icon.User2 className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const inboxNavLink: NavLinkItem = {
     id: "header-inbox",
@@ -85,7 +85,7 @@ const Navigation = (props: Props) => {
     icon: (
       <>
         <div className="relative">
-          <Icon.Bell className="w-6 h-auto opacity-70" />
+          <Icon.Bell className="w-6 h-auto opacity-70 shrink-0" />
           {hasUnreadInbox && <div className="absolute top-0 left-5 w-2 h-2 rounded-full bg-blue-500"></div>}
         </div>
       </>
@@ -95,25 +95,25 @@ const Navigation = (props: Props) => {
     id: "header-archived",
     path: Routes.ARCHIVED,
     title: t("common.archived"),
-    icon: <Icon.Archive className="w-6 h-auto opacity-70" />,
+    icon: <Icon.Archive className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const settingNavLink: NavLinkItem = {
     id: "header-setting",
     path: Routes.SETTING,
     title: t("common.settings"),
-    icon: <Icon.Settings className="w-6 h-auto opacity-70" />,
+    icon: <Icon.Settings className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const signInNavLink: NavLinkItem = {
     id: "header-auth",
     path: Routes.AUTH,
     title: t("common.sign-in"),
-    icon: <Icon.LogIn className="w-6 h-auto opacity-70" />,
+    icon: <Icon.LogIn className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const aboutNavLink: NavLinkItem = {
     id: "header-about",
     path: Routes.ABOUT,
     title: t("common.about"),
-    icon: <Icon.Smile className="w-6 h-auto opacity-70" />,
+    icon: <Icon.Smile className="w-6 h-auto opacity-70 shrink-0" />,
   };
 
   const navLinks: NavLinkItem[] = user
