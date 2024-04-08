@@ -1893,7 +1893,6 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the memo. Format: memos/{id} |
 | reaction_id | [int32](#int32) |  |  |
 
 

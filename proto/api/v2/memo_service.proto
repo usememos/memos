@@ -105,8 +105,8 @@ service MemoService {
   }
   // DeleteMemoReaction deletes a reaction for a memo.
   rpc DeleteMemoReaction(DeleteMemoReactionRequest) returns (DeleteMemoReactionResponse) {
-    option (google.api.http) = {delete: "/api/v2/{name=memos/*}/reactions/{reaction_id}"};
-    option (google.api.method_signature) = "name,reaction_id";
+    option (google.api.http) = {delete: "/api/v2/reactions/{reaction_id}"};
+    option (google.api.method_signature) = "reaction_id";
   }
 }
 
@@ -339,11 +339,7 @@ message UpsertMemoReactionResponse {
 }
 
 message DeleteMemoReactionRequest {
-  // The name of the memo.
-  // Format: memos/{id}
-  string name = 1;
-
-  int32 reaction_id = 2;
+  int32 reaction_id = 1;
 }
 
 message DeleteMemoReactionResponse {}

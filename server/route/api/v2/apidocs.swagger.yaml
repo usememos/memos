@@ -397,6 +397,27 @@ paths:
           type: string
       tags:
         - MemoService
+  /api/v2/reactions/{reactionId}:
+    delete:
+      summary: DeleteMemoReaction deletes a reaction for a memo.
+      operationId: MemoService_DeleteMemoReaction
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteMemoReactionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: reactionId
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - MemoService
   /api/v2/resources:
     get:
       summary: ListResources lists all resources.
@@ -1450,35 +1471,6 @@ paths:
             - CLOWN_FACE
             - QUESTION_MARK
           default: TYPE_UNSPECIFIED
-      tags:
-        - MemoService
-  /api/v2/{name}/reactions/{reactionId}:
-    delete:
-      summary: DeleteMemoReaction deletes a reaction for a memo.
-      operationId: MemoService_DeleteMemoReaction
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2DeleteMemoReactionResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
-          in: path
-          required: true
-          type: string
-          pattern: memos/[^/]+
-        - name: reactionId
-          in: path
-          required: true
-          type: integer
-          format: int32
       tags:
         - MemoService
   /api/v2/{name}/relations:

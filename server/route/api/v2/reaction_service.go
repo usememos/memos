@@ -57,12 +57,8 @@ func (s *APIV2Service) UpsertMemoReaction(ctx context.Context, request *apiv2pb.
 }
 
 func (s *APIV2Service) DeleteMemoReaction(ctx context.Context, request *apiv2pb.DeleteMemoReactionRequest) (*apiv2pb.DeleteMemoReactionResponse, error) {
-	id, err := ExtractMemoIDFromName(request.Name)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
-	}
 	if err := s.Store.DeleteReaction(ctx, &store.DeleteReaction{
-		ID: id,
+		ID: request.ReactionId,
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete reaction")
 	}

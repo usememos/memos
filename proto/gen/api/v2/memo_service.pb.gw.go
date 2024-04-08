@@ -908,16 +908,6 @@ func request_MemoService_DeleteMemoReaction_0(ctx context.Context, marshaler run
 		_   = err
 	)
 
-	val, ok = pathParams["name"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
-	}
-
-	protoReq.Name, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
-	}
-
 	val, ok = pathParams["reaction_id"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "reaction_id")
@@ -943,16 +933,6 @@ func local_request_MemoService_DeleteMemoReaction_0(ctx context.Context, marshal
 		err error
 		_   = err
 	)
-
-	val, ok = pathParams["name"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
-	}
-
-	protoReq.Name, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
-	}
 
 	val, ok = pathParams["reaction_id"]
 	if !ok {
@@ -1383,7 +1363,7 @@ func RegisterMemoServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v2.MemoService/DeleteMemoReaction", runtime.WithHTTPPathPattern("/api/v2/{name=memos/*}/reactions/{reaction_id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v2.MemoService/DeleteMemoReaction", runtime.WithHTTPPathPattern("/api/v2/reactions/{reaction_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1799,7 +1779,7 @@ func RegisterMemoServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v2.MemoService/DeleteMemoReaction", runtime.WithHTTPPathPattern("/api/v2/{name=memos/*}/reactions/{reaction_id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v2.MemoService/DeleteMemoReaction", runtime.WithHTTPPathPattern("/api/v2/reactions/{reaction_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1851,7 +1831,7 @@ var (
 
 	pattern_MemoService_UpsertMemoReaction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v2", "memos", "name", "reactions"}, ""))
 
-	pattern_MemoService_DeleteMemoReaction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "v2", "memos", "name", "reactions", "reaction_id"}, ""))
+	pattern_MemoService_DeleteMemoReaction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v2", "reactions", "reaction_id"}, ""))
 )
 
 var (
