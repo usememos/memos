@@ -55,97 +55,90 @@ const AccessTokenSection = () => {
   };
 
   return (
-    <>
-      <div className="mt-4 w-full flex flex-col justify-start items-start space-y-4">
-        <div className="w-full">
-          <div className="sm:flex sm:items-center sm:justify-between">
-            <div className="sm:flex-auto space-y-1">
-              <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">
-                Access Tokens
-                <LearnMore className="ml-2" url="https://usememos.com/docs/security/access-tokens" />
-              </p>
-              <p className="text-sm text-gray-700 dark:text-gray-500">A list of all access tokens for your account.</p>
-            </div>
-            <div className="mt-4 sm:mt-0">
-              <Button
-                variant="outlined"
-                color="neutral"
-                onClick={() => {
-                  showCreateAccessTokenDialog(handleCreateAccessTokenDialogConfirm);
-                }}
-              >
-                {t("common.create")}
-              </Button>
-            </div>
+    <div className="mt-6 w-full flex flex-col justify-start items-start space-y-4">
+      <div className="w-full">
+        <div className="sm:flex sm:items-center sm:justify-between">
+          <div className="sm:flex-auto space-y-1">
+            <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">
+              Access Tokens
+              <LearnMore className="ml-2" url="https://usememos.com/docs/security/access-tokens" />
+            </p>
+            <p className="text-sm text-gray-700 dark:text-gray-500">A list of all access tokens for your account.</p>
           </div>
-          <div className="mt-2 flow-root">
-            <div className="overflow-x-auto">
-              <div className="inline-block min-w-full py-2 align-middle">
-                <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
-                  <thead>
-                    <tr>
-                      <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                        Token
-                      </th>
-                      <th scope="col" className="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                        Description
-                      </th>
-                      <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                        Created At
-                      </th>
-                      <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                        Expires At
-                      </th>
-                      <th scope="col" className="relative py-3.5 pl-3 pr-4">
-                        <span className="sr-only">{t("common.delete")}</span>
-                      </th>
+          <div className="mt-4 sm:mt-0">
+            <Button
+              variant="outlined"
+              color="neutral"
+              onClick={() => {
+                showCreateAccessTokenDialog(handleCreateAccessTokenDialogConfirm);
+              }}
+            >
+              {t("common.create")}
+            </Button>
+          </div>
+        </div>
+        <div className="flow-root">
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full py-2 align-middle">
+              <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
+                <thead>
+                  <tr>
+                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
+                      Token
+                    </th>
+                    <th scope="col" className="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
+                      Description
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
+                      Created At
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
+                      Expires At
+                    </th>
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4">
+                      <span className="sr-only">{t("common.delete")}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-zinc-700">
+                  {userAccessTokens.map((userAccessToken) => (
+                    <tr key={userAccessToken.accessToken}>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400 flex flex-row justify-start items-center gap-x-1">
+                        <span className="font-mono">{getFormatedAccessToken(userAccessToken.accessToken)}</span>
+                        <IconButton color="neutral" variant="plain" size="sm" onClick={() => copyAccessToken(userAccessToken.accessToken)}>
+                          <Icon.Clipboard className="w-4 h-auto text-gray-400" />
+                        </IconButton>
+                      </td>
+                      <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-400">
+                        {userAccessToken.description}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                        {userAccessToken.issuedAt?.toLocaleString()}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                        {userAccessToken.expiresAt?.toLocaleString() ?? "Never"}
+                      </td>
+                      <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm">
+                        <IconButton
+                          color="danger"
+                          variant="plain"
+                          size="sm"
+                          onClick={() => {
+                            handleDeleteAccessToken(userAccessToken.accessToken);
+                          }}
+                        >
+                          <Icon.Trash className="w-4 h-auto" />
+                        </IconButton>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-zinc-700">
-                    {userAccessTokens.map((userAccessToken) => (
-                      <tr key={userAccessToken.accessToken}>
-                        <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400 flex flex-row justify-start items-center gap-x-1">
-                          <span className="font-mono">{getFormatedAccessToken(userAccessToken.accessToken)}</span>
-                          <IconButton
-                            color="neutral"
-                            variant="plain"
-                            size="sm"
-                            onClick={() => copyAccessToken(userAccessToken.accessToken)}
-                          >
-                            <Icon.Clipboard className="w-4 h-auto text-gray-400" />
-                          </IconButton>
-                        </td>
-                        <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-400">
-                          {userAccessToken.description}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
-                          {userAccessToken.issuedAt?.toLocaleString()}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
-                          {userAccessToken.expiresAt?.toLocaleString() ?? "Never"}
-                        </td>
-                        <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm">
-                          <IconButton
-                            color="danger"
-                            variant="plain"
-                            size="sm"
-                            onClick={() => {
-                              handleDeleteAccessToken(userAccessToken.accessToken);
-                            }}
-                          >
-                            <Icon.Trash className="w-4 h-auto" />
-                          </IconButton>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -45,14 +45,8 @@ const MyAccountSection = () => {
             </Button>
           </MenuButton>
           <Menu className="text-sm" size="sm" placement="bottom">
-            <MenuItem onClick={showChangePasswordDialog}>
-              <Icon.ArchiveRestore className="w-4 h-auto" />
-              {t("setting.account-section.change-password")}
-            </MenuItem>
-            <MenuItem onClick={() => downloadExportedMemos(user)}>
-              <Icon.Trash className="w-4 h-auto" />
-              {t("setting.account-section.export-memos")}
-            </MenuItem>
+            <MenuItem onClick={showChangePasswordDialog}>{t("setting.account-section.change-password")}</MenuItem>
+            <MenuItem onClick={() => downloadExportedMemos(user)}>{t("setting.account-section.export-memos")}</MenuItem>
           </Menu>
         </Dropdown>
       </div>

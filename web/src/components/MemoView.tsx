@@ -92,13 +92,11 @@ const MemoView: React.FC<Props> = (props: Props) => {
               </Link>
               <div className="w-full flex flex-col justify-center items-start">
                 <Link
-                  className="w-auto leading-tight hover:opacity-80"
+                  className="w-full block leading-tight hover:opacity-80 truncate text-gray-600 dark:text-gray-400"
                   to={`/u/${encodeURIComponent(creator.username)}`}
                   unstable_viewTransition
                 >
-                  <span className="text-gray-600 leading-tight max-w-[80%] truncate dark:text-gray-400">
-                    {creator.nickname || creator.username}
-                  </span>
+                  {creator.nickname || creator.username}
                 </Link>
                 <div
                   className="w-auto -mt-0.5 text-xs leading-tight text-gray-400 dark:text-gray-500 select-none"
