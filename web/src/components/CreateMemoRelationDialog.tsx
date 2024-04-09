@@ -85,7 +85,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container !w-96">
-        <p className="title-text">{t("reference.title")}</p>
+        <p className="title-text">{t("reference.add-references")}</p>
         <IconButton size="sm" onClick={() => destroy()}>
           <Icon.X className="w-5 h-auto" />
         </IconButton>
