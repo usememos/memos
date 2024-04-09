@@ -62,7 +62,9 @@
     "search": "Search",
     "role": "Role",
     "description": "Description",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "days": "Days",
+    "memos": "Memos"
   },
   "router": {
     "go-to-home": "Go to Home",
@@ -106,6 +108,12 @@
       "no-comment": "No comment"
     },
     "show-more": "Show more"
+  },
+  "reference": {
+    "add-references": "Add references",
+    "search-bar-placeholder": "Search content",
+    "no-memos-found": "No memos found",
+    "embedded-usage": "Use as Embedded Content"
   },
   "resource": {
     "no-resources": "No resources.",

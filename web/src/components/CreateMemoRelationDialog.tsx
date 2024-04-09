@@ -85,7 +85,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container !w-96">
-        <p className="title-text">{"Add references"}</p>
+        <p className="title-text">{t("reference.add-references")}</p>
         <IconButton size="sm" onClick={() => destroy()}>
           <Icon.X className="w-5 h-auto" />
         </IconButton>
@@ -96,8 +96,8 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           size="md"
           clearOnBlur
           disableClearable
-          placeholder={"Search content"}
-          noOptionsText={"No memos found"}
+          placeholder={t("reference.search-bar-placeholder")}
+          noOptionsText={t("reference.no-memos-found")}
           options={filteredMemos}
           loading={isFetching}
           inputValue={searchText}
@@ -130,7 +130,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           onChange={(_, value) => setSelectedMemos(value)}
         />
         <div className="mt-3">
-          <Checkbox label={"Use as Embedded Content"} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
+          <Checkbox label={t("reference.embedded-usage")} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
         </div>
         <div className="mt-4 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseDialog}>
