@@ -118,6 +118,7 @@ const MemoDetail = () => {
               <MemoEditor
                 key={memo.name}
                 cacheKey={`comment-editor-${memo.name}`}
+                placeholder={t("editor.add-your-comment-here")}
                 parentMemoName={memo.name}
                 onConfirm={handleCommentCreated}
               />

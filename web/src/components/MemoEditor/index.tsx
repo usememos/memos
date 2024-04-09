@@ -31,6 +31,7 @@ import { MemoEditorContext } from "./types";
 interface Props {
   className?: string;
   cacheKey?: string;
+  placeholder?: string;
   memoName?: string;
   parentMemoName?: string;
   relationList?: MemoRelation[];
@@ -374,7 +375,7 @@ const MemoEditor = (props: Props) => {
     () => ({
       className: "",
       initialContent: "",
-      placeholder: t("editor.placeholder"),
+      placeholder: props.placeholder ?? t("editor.any-thoughts"),
       onContentChange: handleContentChange,
       onPaste: handlePasteEvent,
     }),

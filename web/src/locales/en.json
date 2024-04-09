@@ -79,11 +79,9 @@
     "repeat-new-password": "Repeat the new password"
   },
   "editor": {
-    "editing": "Editing...",
-    "cancel-edit": "Cancel edit",
     "save": "Save",
-    "placeholder": "Any thoughts...",
-    "local": "Local"
+    "any-thoughts": "Any thoughts...",
+    "add-your-comment-here": "Add your comment here..."
   },
   "memo": {
     "view-detail": "View Detail",
