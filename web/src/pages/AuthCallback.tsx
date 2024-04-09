@@ -1,4 +1,5 @@
 import { last } from "lodash-es";
+import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
@@ -28,46 +29,55 @@ const AuthCallback = () => {
     const code = searchParams.get("code");
     const state = searchParams.get("state");
 
-    if (code && state) {
-      const redirectUri = absolutifyLink("/auth/callback");
-      const identityProviderId = Number(last(state.split("-")));
-      if (identityProviderId) {
-        authServiceClient
-          .signInWithSSO({
-            idpId: identityProviderId,
-            code,
-            redirectUri,
-          })
-          .then(async ({ user }) => {
-            setState({
-              loading: false,
-              errorMessage: "",
-            });
-            if (user) {
-              await userStore.fetchCurrentUser();
-              navigateTo("/");
-            } else {
-              toast.error(t("message.login-failed"));
-            }
-          })
-          .catch((error: any) => {
-            console.error(error);
-            setState({
-              loading: false,
-              errorMessage: JSON.stringify(error.response.data, null, 2),
-            });
-          });
-      }
-    } else {
+    if (!code || !state) {
       setState({
         loading: false,
         errorMessage: "Failed to authorize. Invalid state passed to the auth callback.",
       });
+      return;
     }
+
+    const identityProviderId = Number(last(state.split("-")));
+    if (!identityProviderId) {
+      setState({
+        loading: false,
+        errorMessage: "No identity provider ID found in the state parameter.",
+      });
+      return;
+    }
+
+    const redirectUri = absolutifyLink("/auth/callback");
+    (async () => {
+      try {
+        const { user } = await authServiceClient.signInWithSSO({
+          idpId: identityProviderId,
+          code,
+          redirectUri,
+        });
+
+        setState({
+          loading: false,
+          errorMessage: "",
+        });
+        if (!user) {
+          toast.error(t("message.login-failed"));
+          return;
+        }
+
+        await userStore.fetchCurrentUser();
+        navigateTo("/");
+      } catch (error: any) {
+        console.error(error);
+        setState({
+          loading: false,
+          errorMessage: (error as ClientError).details,
+        });
+      }
+    })();
   }, [searchParams]);
 
   return (
-    <div className="p-4 w-full h-full flex justify-center items-center">
+    <div className="p-4 py-24 w-full h-full flex justify-center items-center">
       {state.loading ? (
         <Icon.Loader className="animate-spin dark:text-gray-200" />
       ) : (
