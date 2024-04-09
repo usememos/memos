@@ -90,9 +90,6 @@
     "wed": "水"
   },
   "editor": {
-    "cancel-edit": "作成をキャンセルする",
-    "editing": "作成中",
-    "local": "ローカル",
     "any-thoughts": "今思ったことは...",
     "save": "保存"
   },
