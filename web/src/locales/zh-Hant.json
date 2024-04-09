@@ -91,9 +91,6 @@
     "wed": "三"
   },
   "editor": {
-    "cancel-edit": "取消編輯",
-    "editing": "編輯中...",
-    "local": "本機",
     "any-thoughts": "任何想法...",
     "save": "儲存"
   },

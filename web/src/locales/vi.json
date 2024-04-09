@@ -72,9 +72,6 @@
     "yourself": "Chính bạn"
   },
   "editor": {
-    "cancel-edit": "Hủy chỉnh sửa",
-    "editing": "Đang chỉnh sửa...",
-    "local": "Cục bộ",
     "any-thoughts": "Bất kỳ suy nghĩ nào...",
     "save": "Lưu"
   },
@@ -102,6 +99,7 @@
     }
   },
   "message": {
+    "archived-successfully": "Lưu trữ thành công",
     "change-memo-created-time": "Thay đổi thời gian tạo ghi chú",
     "change-resource-filename": "Thay đổi tên tệp tài nguyên",
     "click-to-save-the-image": "Nhấp vào hình ảnh để lưu.",
@@ -126,7 +124,6 @@
     "private-only": "Bản ghi chú này là riêng tư",
     "resource-filename-updated": "Tên tệp tài nguyên đã được cập nhật.",
     "resource-ready": "tất cả tài nguyên đã sẵn sàng",
-    "archived-successfully": "Lưu trữ thành công",
     "restored-successfully": "Khôi phục thành công",
     "signup-failed": "Đăng ký thất bại",
     "succeed-copy-code": "Mã đã được sao chép thành công.",
