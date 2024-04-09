@@ -32,6 +32,7 @@
     "confirm": "Onayla",
     "create": "Oluştur",
     "database": "Veritabanı",
+    "days": "Günler",
     "delete": "Sil",
     "description": "Açıklama",
     "edit": "Düzenle",
@@ -46,6 +47,7 @@
     "learn-more": "Daha fazla bilgi edinin",
     "link": "Link",
     "mark": "Mark",
+    "memos": "Notlar",
     "name": "İsim",
     "new": "Yeni",
     "nickname": "Takma ad",
@@ -92,6 +94,7 @@
     "wed": "Çar"
   },
   "editor": {
+    "add-your-comment-here": "Yorumunuzu buraya ekleyin...",
     "any-thoughts": "Düşünceleriniz...",
     "save": "Kaydet"
   },
@@ -168,6 +171,12 @@
     "succeed-vacuum-database": "DB vakumlandı",
     "update-succeed": "Başarıyla güncellendi",
     "user-not-found": "Kullanıcı bulunamadı"
+  },
+  "reference": {
+    "add-references": "Referans ekle",
+    "embedded-usage": "Gömülü İçerik Olarak Kullan",
+    "no-memos-found": "Hiçbir not bulunamadı",
+    "search-bar-placeholder": "İçerik ara"
   },
   "resource": {
     "clear": "Temizle",
