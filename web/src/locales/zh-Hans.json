@@ -31,6 +31,7 @@
     "confirm": "确定",
     "create": "创建",
     "database": "数据库",
+    "days": "天",
     "delete": "删除",
     "description": "说明",
     "edit": "编辑",
@@ -91,6 +92,7 @@
     "wed": "三"
   },
   "editor": {
+    "add-your-comment-here": "请输入你的评论…",
     "any-thoughts": "此刻的想法...",
     "save": "保存"
   },
@@ -167,6 +169,12 @@
     "succeed-vacuum-database": "清理数据库成功。",
     "update-succeed": "更新成功",
     "user-not-found": "未找到该用户"
+  },
+  "reference": {
+    "add-references": "添加引用",
+    "embedded-usage": "作为嵌入内容使用",
+    "no-memos-found": "没有发现备忘录",
+    "search-bar-placeholder": "搜索内容"
   },
   "resource": {
     "clear": "清除",
