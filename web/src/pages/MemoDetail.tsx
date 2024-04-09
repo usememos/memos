@@ -86,6 +86,7 @@ const MemoDetail = () => {
           className="shadow hover:shadow-xl transition-all"
           memo={memo}
           compact={false}
+          showCreator
           showVisibility
           showPinned
         />
@@ -107,7 +108,7 @@ const MemoDetail = () => {
                   <span className="text-gray-400 text-sm ml-0.5">({comments.length})</span>
                 </div>
                 {comments.map((comment) => (
-                  <MemoView key={`${memo.name}-${memo.displayTime}`} memo={comment} />
+                  <MemoView key={`${memo.name}-${memo.displayTime}`} memo={comment} showCreator />
                 ))}
               </>
             )}

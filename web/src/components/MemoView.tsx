@@ -24,6 +24,7 @@ import VisibilityIcon from "./VisibilityIcon";
 interface Props {
   memo: Memo;
   compact?: boolean;
+  showCreator?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;
   className?: string;
@@ -85,7 +86,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     >
       <div className="w-full flex flex-row justify-between items-center gap-2">
         <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
-          {creator && (
+          {props.showCreator && creator ? (
             <div className="w-full flex flex-row justify-start items-center">
               <Link className="w-auto hover:opacity-80" to={`/u/${encodeURIComponent(creator.username)}`} unstable_viewTransition>
                 <UserAvatar className="mr-2 shrink-0" avatarUrl={creator.avatarUrl} />
@@ -105,6 +106,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
                   <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
                 </div>
               </div>
+            </div>
+          ) : (
+            <div className="w-full text-sm leading-tight text-gray-400 dark:text-gray-500 select-none" onClick={handleGotoMemoDetailPage}>
+              <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
             </div>
           )}
         </div>
