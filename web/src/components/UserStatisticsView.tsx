@@ -10,7 +10,7 @@ interface Props {
   user: User;
 }
 
-const PersonalStatistics = (props: Props) => {
+const UserStatisticsView = (props: Props) => {
   const { user } = props;
   const t = useTranslate();
   const tagStore = useTagStore();
@@ -39,7 +39,9 @@ const PersonalStatistics = (props: Props) => {
 
   return (
     <div className="w-full border mt-2 py-2 px-3 rounded-md space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
-      <p className="text-sm font-medium dark:text-gray-500">{t("common.statistics")}</p>
+      <div className="mb-1 w-full flex flex-row justify-between items-center">
+        <p className="text-sm font-medium leading-6 dark:text-gray-500">{t("common.statistics")}</p>
+      </div>
       <div className="w-full flex justify-between items-center">
         <div className="w-full flex justify-start items-center">
           <Icon.CalendarDays className="w-4 h-auto mr-1" />
@@ -65,4 +67,4 @@ const PersonalStatistics = (props: Props) => {
   );
 };
 
-export default PersonalStatistics;
+export default UserStatisticsView;

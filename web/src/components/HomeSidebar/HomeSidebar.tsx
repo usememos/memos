@@ -1,6 +1,6 @@
 import classNames from "classnames";
-import PersonalStatistics from "@/components/PersonalStatistics";
 import SearchBar from "@/components/SearchBar";
+import UserStatisticsView from "@/components/UserStatisticsView";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import TagsSection from "./TagsSection";
 
@@ -19,7 +19,7 @@ const HomeSidebar = (props: Props) => {
       )}
     >
       <SearchBar />
-      <PersonalStatistics user={currentUser} />
+      <UserStatisticsView user={currentUser} />
       <TagsSection />
     </aside>
   );

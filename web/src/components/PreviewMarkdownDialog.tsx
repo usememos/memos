@@ -34,7 +34,6 @@ export default function showPreviewMarkdownDialog(content: string): void {
     {
       className: "preview-markdown-dialog",
       dialogName: "preview-markdown-dialog",
-      containerClassName: "dark:!bg-zinc-800",
     },
     PreviewMarkdownDialog,
     {
