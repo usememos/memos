@@ -32,9 +32,10 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   }
 
   const { md } = useResponsiveWidth();
+  const t = useTranslate();
+
   const [wrap, setWrap] = useState(true);
   const handleWrapChange = useCallback(() => setWrap(!wrap), [setWrap, wrap]);
-  const t = useTranslate();
 
   const highlightedCode: string = useMemo(() => {
     try {

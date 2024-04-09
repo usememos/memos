@@ -234,7 +234,6 @@
     },
     "system-section": {
       "server-name": "Server Name",
-      "general": "General",
       "customize-server": {
         "title": "Customize Server",
         "icon-url": "Icon URL",
@@ -261,8 +260,7 @@
       "telegram-bot-token-description": "Telegram Bot Token or API Proxy like `http…/bot<token>`",
       "telegram-bot-token-placeholder": "Your Telegram Bot token",
       "display-with-updated-time": "Display with updated time",
-      "instance-url": "Instance URL",
-      "others": "Others"
+      "server-side-markdown": "Process markdown on the server"
     },
     "appearance-option": {
       "system": "Follow system",
