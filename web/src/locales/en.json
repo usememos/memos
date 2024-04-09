@@ -259,8 +259,7 @@
       "telegram-bot-token": "Telegram Bot Token",
       "telegram-bot-token-description": "Telegram Bot Token or API Proxy like `http…/bot<token>`",
       "telegram-bot-token-placeholder": "Your Telegram Bot token",
-      "display-with-updated-time": "Display with updated time",
-      "server-side-markdown": "Process markdown on the server"
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Follow system",
