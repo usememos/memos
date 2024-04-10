@@ -8,15 +8,21 @@ enum WorkspaceSettingKey {
   WORKSPACE_SETTING_KEY_UNSPECIFIED = 0;
   // WORKSPACE_SETTING_GENERAL is the key for general settings.
   WORKSPACE_SETTING_GENERAL = 1;
+  // WORKSPACE_SETTING_STORAGE is the key for storage settings.
+  WORKSPACE_SETTING_STORAGE = 2;
   // WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings.
-  WORKSPACE_SETTING_MEMO_RELATED = 2;
+  WORKSPACE_SETTING_MEMO_RELATED = 3;
+  // WORKSPACE_SETTING_TELEGRAM_INTEGRATION is the key for telegram integration settings.
+  WORKSPACE_SETTING_TELEGRAM_INTEGRATION = 4;
 }
 
 message WorkspaceSetting {
   WorkspaceSettingKey key = 1;
   oneof value {
     WorkspaceGeneralSetting general_setting = 2;
-    WorkspaceMemoRelatedSetting memo_related_setting = 3;
+    WorkspaceStorageSetting storage_setting = 3;
+    WorkspaceMemoRelatedSetting memo_related_setting = 4;
+    WorkspaceTelegramIntegrationSetting telegram_integration_setting = 5;
   }
 }
 
@@ -33,9 +39,34 @@ message WorkspaceGeneralSetting {
   string additional_style = 6;
 }
 
+message WorkspaceStorageSetting {
+  // storage_type is the storage type.
+  StorageType storage_type = 1;
+  // The local storage path for STORAGE_TYPE_LOCAL.
+  // e.g. assets/{timestamp}_{filename}
+  string local_storage_path = 2;
+  // The max upload size in megabytes.
+  int64 upload_size_limit_mb = 3;
+
+  enum StorageType {
+    STORAGE_TYPE_UNSPECIFIED = 0;
+    // STORAGE_TYPE_DATABASE is the database storage type.
+    STORAGE_TYPE_DATABASE = 1;
+    // STORAGE_TYPE_LOCAL is the local storage type.
+    STORAGE_TYPE_LOCAL = 2;
+    // STORAGE_TYPE_EXTERNAL is the external storage type.
+    STORAGE_TYPE_EXTERNAL = 3;
+  }
+}
+
 message WorkspaceMemoRelatedSetting {
   // disallow_public_share disallows set memo as public visible.
   bool disallow_public_visible = 1;
   // display_with_update_time orders and displays memo with update time.
   bool display_with_update_time = 2;
+}
+
+message WorkspaceTelegramIntegrationSetting {
+  // telegram_bot_token is the telegram bot token.
+  string telegram_bot_token = 1;
 }

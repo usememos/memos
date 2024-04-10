@@ -40,8 +40,11 @@
     - [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting)
     - [WorkspaceMemoRelatedSetting](#memos-store-WorkspaceMemoRelatedSetting)
     - [WorkspaceSetting](#memos-store-WorkspaceSetting)
+    - [WorkspaceStorageSetting](#memos-store-WorkspaceStorageSetting)
+    - [WorkspaceTelegramIntegrationSetting](#memos-store-WorkspaceTelegramIntegrationSetting)
   
     - [WorkspaceSettingKey](#memos-store-WorkspaceSettingKey)
+    - [WorkspaceStorageSetting.StorageType](#memos-store-WorkspaceStorageSetting-StorageType)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -484,7 +487,41 @@
 | ----- | ---- | ----- | ----------- |
 | key | [WorkspaceSettingKey](#memos-store-WorkspaceSettingKey) |  |  |
 | general_setting | [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting) |  |  |
+| storage_setting | [WorkspaceStorageSetting](#memos-store-WorkspaceStorageSetting) |  |  |
 | memo_related_setting | [WorkspaceMemoRelatedSetting](#memos-store-WorkspaceMemoRelatedSetting) |  |  |
+| telegram_integration_setting | [WorkspaceTelegramIntegrationSetting](#memos-store-WorkspaceTelegramIntegrationSetting) |  |  |
+
+
+
+
+
+
+<a name="memos-store-WorkspaceStorageSetting"></a>
+
+### WorkspaceStorageSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| storage_type | [WorkspaceStorageSetting.StorageType](#memos-store-WorkspaceStorageSetting-StorageType) |  | storage_type is the storage type. |
+| local_storage_path | [string](#string) |  | The local storage path for STORAGE_TYPE_LOCAL. e.g. assets/{timestamp}_{filename} |
+| upload_size_limit_mb | [int64](#int64) |  | The max upload size in megabytes. |
+
+
+
+
+
+
+<a name="memos-store-WorkspaceTelegramIntegrationSetting"></a>
+
+### WorkspaceTelegramIntegrationSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| telegram_bot_token | [string](#string) |  | telegram_bot_token is the telegram bot token. |
 
 
 
@@ -502,7 +539,23 @@
 | ---- | ------ | ----------- |
 | WORKSPACE_SETTING_KEY_UNSPECIFIED | 0 |  |
 | WORKSPACE_SETTING_GENERAL | 1 | WORKSPACE_SETTING_GENERAL is the key for general settings. |
-| WORKSPACE_SETTING_MEMO_RELATED | 2 | WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings. |
+| WORKSPACE_SETTING_STORAGE | 2 | WORKSPACE_SETTING_STORAGE is the key for storage settings. |
+| WORKSPACE_SETTING_MEMO_RELATED | 3 | WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings. |
+| WORKSPACE_SETTING_TELEGRAM_INTEGRATION | 4 | WORKSPACE_SETTING_TELEGRAM_INTEGRATION is the key for telegram integration settings. |
+
+
+
+<a name="memos-store-WorkspaceStorageSetting-StorageType"></a>
+
+### WorkspaceStorageSetting.StorageType
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| STORAGE_TYPE_UNSPECIFIED | 0 |  |
+| STORAGE_TYPE_DATABASE | 1 | STORAGE_TYPE_DATABASE is the database storage type. |
+| STORAGE_TYPE_LOCAL | 2 | STORAGE_TYPE_LOCAL is the local storage type. |
+| STORAGE_TYPE_EXTERNAL | 3 | STORAGE_TYPE_EXTERNAL is the external storage type. |
 
 
  
