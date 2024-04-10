@@ -18,8 +18,8 @@ func (s *APIV2Service) GetWorkspaceSetting(ctx context.Context, request *apiv2pb
 		return nil, status.Errorf(codes.InvalidArgument, "invalid workspace setting name: %v", err)
 	}
 	settingKey := storepb.WorkspaceSettingKey(storepb.WorkspaceSettingKey_value[settingKeyString])
-	workspaceSetting, err := s.Store.GetWorkspaceSettingV1(ctx, &store.FindWorkspaceSettingV1{
-		Key: settingKey,
+	workspaceSetting, err := s.Store.GetWorkspaceSettingV1(ctx, &store.FindWorkspaceSetting{
+		Name: settingKey.String(),
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get workspace setting: %v", err)

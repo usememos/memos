@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -68,36 +69,61 @@ func (s *Store) DeleteWorkspaceSetting(ctx context.Context, delete *DeleteWorksp
 	return nil
 }
 
-type FindWorkspaceSettingV1 struct {
-	Key storepb.WorkspaceSettingKey
-}
-
 func (s *Store) UpsertWorkspaceSettingV1(ctx context.Context, upsert *storepb.WorkspaceSetting) (*storepb.WorkspaceSetting, error) {
-	workspaceSetting, err := s.driver.UpsertWorkspaceSettingV1(ctx, upsert)
+	workspaceSettingRaw := &WorkspaceSetting{
+		Name: upsert.Key.String(),
+	}
+	var valueBytes []byte
+	var err error
+	if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL {
+		valueBytes, err = protojson.Marshal(upsert.GetGeneralSetting())
+	} else if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE {
+		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
+	} else if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED {
+		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
+	} else if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_TELEGRAM_INTEGRATION {
+		valueBytes, err = protojson.Marshal(upsert.GetTelegramIntegrationSetting())
+	} else {
+		return nil, errors.Errorf("unsupported workspace setting key: %v", upsert.Key)
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal workspace setting value")
+	}
+	valueString := string(valueBytes)
+	workspaceSettingRaw.Value = valueString
+	workspaceSettingRaw, err = s.driver.UpsertWorkspaceSetting(ctx, workspaceSettingRaw)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to upsert workspace setting")
+	}
+	workspaceSetting, err := convertWorkspaceSettingFromRaw(workspaceSettingRaw)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to convert workspace setting")
 	}
 	s.workspaceSettingV1Cache.Store(workspaceSetting.Key.String(), workspaceSetting)
 	return workspaceSetting, nil
 }
 
-func (s *Store) ListWorkspaceSettingsV1(ctx context.Context, find *FindWorkspaceSettingV1) ([]*storepb.WorkspaceSetting, error) {
-	list, err := s.driver.ListWorkspaceSettingsV1(ctx, find)
+func (s *Store) ListWorkspaceSettingsV1(ctx context.Context, find *FindWorkspaceSetting) ([]*storepb.WorkspaceSetting, error) {
+	list, err := s.driver.ListWorkspaceSettings(ctx, find)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, workspaceSetting := range list {
+	workspaceSettings := []*storepb.WorkspaceSetting{}
+	for _, workspaceSettingRaw := range list {
+		workspaceSetting, err := convertWorkspaceSettingFromRaw(workspaceSettingRaw)
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to convert workspace setting")
+		}
 		s.workspaceSettingV1Cache.Store(workspaceSetting.Key.String(), workspaceSetting)
+		workspaceSettings = append(workspaceSettings, workspaceSetting)
 	}
-	return list, nil
+	return workspaceSettings, nil
 }
 
-func (s *Store) GetWorkspaceSettingV1(ctx context.Context, find *FindWorkspaceSettingV1) (*storepb.WorkspaceSetting, error) {
-	if find.Key != storepb.WorkspaceSettingKey_WORKSPACE_SETTING_KEY_UNSPECIFIED {
-		if cache, ok := s.workspaceSettingV1Cache.Load(find.Key.String()); ok {
-			return cache.(*storepb.WorkspaceSetting), nil
-		}
+func (s *Store) GetWorkspaceSettingV1(ctx context.Context, find *FindWorkspaceSetting) (*storepb.WorkspaceSetting, error) {
+	if cache, ok := s.workspaceSettingV1Cache.Load(find.Name); ok {
+		return cache.(*storepb.WorkspaceSetting), nil
 	}
 
 	list, err := s.ListWorkspaceSettingsV1(ctx, find)
@@ -107,18 +133,18 @@ func (s *Store) GetWorkspaceSettingV1(ctx context.Context, find *FindWorkspaceSe
 	if len(list) == 0 {
 		return nil, nil
 	}
-
-	workspaceSetting := list[0]
-	s.workspaceSettingV1Cache.Store(workspaceSetting.Key.String(), workspaceSetting)
-	return workspaceSetting, nil
+	if len(list) > 1 {
+		return nil, errors.Errorf("Found multiple workspace settings with key %s", find.Name)
+	}
+	return list[0], nil
 }
 
 func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.WorkspaceGeneralSetting, error) {
-	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSettingV1{
-		Key: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL,
+	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
+		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String(),
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get workspace setting")
+		return nil, errors.Wrap(err, "failed to get workspace general setting")
 	}
 
 	workspaceGeneralSetting := &storepb.WorkspaceGeneralSetting{}
@@ -126,4 +152,37 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 		workspaceGeneralSetting = workspaceSetting.GetGeneralSetting()
 	}
 	return workspaceGeneralSetting, nil
+}
+
+func convertWorkspaceSettingFromRaw(workspaceSettingRaw *WorkspaceSetting) (*storepb.WorkspaceSetting, error) {
+	workspaceSetting := &storepb.WorkspaceSetting{
+		Key: storepb.WorkspaceSettingKey(storepb.WorkspaceSettingKey_value[workspaceSettingRaw.Name]),
+	}
+	switch workspaceSettingRaw.Name {
+	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String():
+		generalSetting := &storepb.WorkspaceGeneralSetting{}
+		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), generalSetting); err != nil {
+			return nil, err
+		}
+		workspaceSetting.Value = &storepb.WorkspaceSetting_GeneralSetting{GeneralSetting: generalSetting}
+	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE.String():
+		storageSetting := &storepb.WorkspaceStorageSetting{}
+		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), storageSetting); err != nil {
+			return nil, err
+		}
+		workspaceSetting.Value = &storepb.WorkspaceSetting_StorageSetting{StorageSetting: storageSetting}
+	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED.String():
+		memoRelatedSetting := &storepb.WorkspaceMemoRelatedSetting{}
+		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), memoRelatedSetting); err != nil {
+			return nil, err
+		}
+		workspaceSetting.Value = &storepb.WorkspaceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
+	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_TELEGRAM_INTEGRATION.String():
+		telegramIntegrationSetting := &storepb.WorkspaceTelegramIntegrationSetting{}
+		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), telegramIntegrationSetting); err != nil {
+			return nil, err
+		}
+		workspaceSetting.Value = &storepb.WorkspaceSetting_TelegramIntegrationSetting{TelegramIntegrationSetting: telegramIntegrationSetting}
+	}
+	return workspaceSetting, nil
 }
