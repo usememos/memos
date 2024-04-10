@@ -91,7 +91,7 @@ const MarkdownMenu = (props: Props) => {
           <span>Checkbox</span>
         </MenuItem>
         <MenuItem onClick={handlePreviewClick}>
-          <Icon.GanttSquare className="w-4 h-auto" />
+          <Icon.GanttChartSquare className="w-4 h-auto" />
           <span>Preview</span>
         </MenuItem>
         <div className="-mt-0.5 pl-2">
