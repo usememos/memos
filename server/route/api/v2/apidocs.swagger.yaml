@@ -876,7 +876,12 @@ paths:
             properties:
               generalSetting:
                 $ref: '#/definitions/apiv2WorkspaceGeneralSetting'
-                description: general_setting is the general setting of workspace.
+              storageSetting:
+                $ref: '#/definitions/apiv2WorkspaceStorageSetting'
+              memoRelatedSetting:
+                $ref: '#/definitions/apiv2WorkspaceMemoRelatedSetting'
+              telegramIntegrationSetting:
+                $ref: '#/definitions/apiv2WorkspaceTelegramIntegrationSetting'
             title: setting is the setting to update.
       tags:
         - WorkspaceSettingService
@@ -1954,6 +1959,15 @@ definitions:
       additionalStyle:
         type: string
         description: additional_style is the additional style.
+  apiv2WorkspaceMemoRelatedSetting:
+    type: object
+    properties:
+      disallowPublicVisible:
+        type: boolean
+        description: disallow_public_share disallows set memo as public visible.
+      displayWithUpdateTime:
+        type: boolean
+        description: display_with_update_time orders and displays memo with update time.
   apiv2WorkspaceSetting:
     type: object
     properties:
@@ -1964,7 +1978,45 @@ definitions:
           Format: settings/{setting}
       generalSetting:
         $ref: '#/definitions/apiv2WorkspaceGeneralSetting'
-        description: general_setting is the general setting of workspace.
+      storageSetting:
+        $ref: '#/definitions/apiv2WorkspaceStorageSetting'
+      memoRelatedSetting:
+        $ref: '#/definitions/apiv2WorkspaceMemoRelatedSetting'
+      telegramIntegrationSetting:
+        $ref: '#/definitions/apiv2WorkspaceTelegramIntegrationSetting'
+  apiv2WorkspaceStorageSetting:
+    type: object
+    properties:
+      storageType:
+        $ref: '#/definitions/apiv2WorkspaceStorageSettingStorageType'
+        description: storage_type is the storage type.
+      localStoragePath:
+        type: string
+        title: |-
+          The local storage path for STORAGE_TYPE_LOCAL.
+          e.g. assets/{timestamp}_{filename}
+      uploadSizeLimitMb:
+        type: string
+        format: int64
+        description: The max upload size in megabytes.
+  apiv2WorkspaceStorageSettingStorageType:
+    type: string
+    enum:
+      - STORAGE_TYPE_UNSPECIFIED
+      - STORAGE_TYPE_DATABASE
+      - STORAGE_TYPE_LOCAL
+      - STORAGE_TYPE_EXTERNAL
+    default: STORAGE_TYPE_UNSPECIFIED
+    description: |2-
+       - STORAGE_TYPE_DATABASE: STORAGE_TYPE_DATABASE is the database storage type.
+       - STORAGE_TYPE_LOCAL: STORAGE_TYPE_LOCAL is the local storage type.
+       - STORAGE_TYPE_EXTERNAL: STORAGE_TYPE_EXTERNAL is the external storage type.
+  apiv2WorkspaceTelegramIntegrationSetting:
+    type: object
+    properties:
+      botToken:
+        type: string
+        description: bot_token is the telegram bot token.
   googlerpcStatus:
     type: object
     properties:

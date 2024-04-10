@@ -521,7 +521,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| telegram_bot_token | [string](#string) |  | telegram_bot_token is the telegram bot token. |
+| bot_token | [string](#string) |  | bot_token is the telegram bot token. |
 
 
 

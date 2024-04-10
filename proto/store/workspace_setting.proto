@@ -67,6 +67,6 @@ message WorkspaceMemoRelatedSetting {
 }
 
 message WorkspaceTelegramIntegrationSetting {
-  // telegram_bot_token is the telegram bot token.
-  string telegram_bot_token = 1;
+  // bot_token is the telegram bot token.
+  string bot_token = 1;
 }

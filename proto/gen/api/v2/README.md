@@ -218,7 +218,12 @@
     - [SetWorkspaceSettingRequest](#memos-api-v2-SetWorkspaceSettingRequest)
     - [SetWorkspaceSettingResponse](#memos-api-v2-SetWorkspaceSettingResponse)
     - [WorkspaceGeneralSetting](#memos-api-v2-WorkspaceGeneralSetting)
+    - [WorkspaceMemoRelatedSetting](#memos-api-v2-WorkspaceMemoRelatedSetting)
     - [WorkspaceSetting](#memos-api-v2-WorkspaceSetting)
+    - [WorkspaceStorageSetting](#memos-api-v2-WorkspaceStorageSetting)
+    - [WorkspaceTelegramIntegrationSetting](#memos-api-v2-WorkspaceTelegramIntegrationSetting)
+  
+    - [WorkspaceStorageSetting.StorageType](#memos-api-v2-WorkspaceStorageSetting-StorageType)
   
     - [WorkspaceSettingService](#memos-api-v2-WorkspaceSettingService)
   
@@ -2992,6 +2997,22 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-WorkspaceMemoRelatedSetting"></a>
+
+### WorkspaceMemoRelatedSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| disallow_public_visible | [bool](#bool) |  | disallow_public_share disallows set memo as public visible. |
+| display_with_update_time | [bool](#bool) |  | display_with_update_time orders and displays memo with update time. |
+
+
+
+
+
+
 <a name="memos-api-v2-WorkspaceSetting"></a>
 
 ### WorkspaceSetting
@@ -3001,13 +3022,62 @@ Used internally for obfuscating the page token.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | name is the name of the setting. Format: settings/{setting} |
-| general_setting | [WorkspaceGeneralSetting](#memos-api-v2-WorkspaceGeneralSetting) |  | general_setting is the general setting of workspace. |
+| general_setting | [WorkspaceGeneralSetting](#memos-api-v2-WorkspaceGeneralSetting) |  |  |
+| storage_setting | [WorkspaceStorageSetting](#memos-api-v2-WorkspaceStorageSetting) |  |  |
+| memo_related_setting | [WorkspaceMemoRelatedSetting](#memos-api-v2-WorkspaceMemoRelatedSetting) |  |  |
+| telegram_integration_setting | [WorkspaceTelegramIntegrationSetting](#memos-api-v2-WorkspaceTelegramIntegrationSetting) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-WorkspaceStorageSetting"></a>
+
+### WorkspaceStorageSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| storage_type | [WorkspaceStorageSetting.StorageType](#memos-api-v2-WorkspaceStorageSetting-StorageType) |  | storage_type is the storage type. |
+| local_storage_path | [string](#string) |  | The local storage path for STORAGE_TYPE_LOCAL. e.g. assets/{timestamp}_{filename} |
+| upload_size_limit_mb | [int64](#int64) |  | The max upload size in megabytes. |
+
+
+
+
+
+
+<a name="memos-api-v2-WorkspaceTelegramIntegrationSetting"></a>
+
+### WorkspaceTelegramIntegrationSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bot_token | [string](#string) |  | bot_token is the telegram bot token. |
 
 
 
 
 
  
+
+
+<a name="memos-api-v2-WorkspaceStorageSetting-StorageType"></a>
+
+### WorkspaceStorageSetting.StorageType
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| STORAGE_TYPE_UNSPECIFIED | 0 |  |
+| STORAGE_TYPE_DATABASE | 1 | STORAGE_TYPE_DATABASE is the database storage type. |
+| STORAGE_TYPE_LOCAL | 2 | STORAGE_TYPE_LOCAL is the local storage type. |
+| STORAGE_TYPE_EXTERNAL | 3 | STORAGE_TYPE_EXTERNAL is the external storage type. |
+
 
  
 
