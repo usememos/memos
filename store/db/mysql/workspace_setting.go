@@ -85,7 +85,7 @@ func (d *DB) UpsertWorkspaceSettingV1(ctx context.Context, upsert *storepb.Works
 	} else if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_TELEGRAM_INTEGRATION {
 		valueBytes, err = protojson.Marshal(upsert.GetTelegramIntegrationSetting())
 	} else {
-		return nil, errors.New(fmt.Sprintf("unsupported workspace setting key: %s", upsert.Key.String()))
+		return nil, fmt.Errorf("unsupported workspace setting key: %v", upsert.Key)
 	}
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal workspace setting value")
