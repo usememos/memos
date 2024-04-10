@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    commit-message:
+      prefix: "chore"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: npm
+    commit-message:
+      prefix: "chore"
+    directory: "/web"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    commit-message:
+      prefix: "chore"
+    directory: "/"
+    schedule:
+      interval: "weekly"
