@@ -38,6 +38,7 @@
   
 - [store/workspace_setting.proto](#store_workspace_setting-proto)
     - [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting)
+    - [WorkspaceMemoRelatedSetting](#memos-store-WorkspaceMemoRelatedSetting)
     - [WorkspaceSetting](#memos-store-WorkspaceSetting)
   
     - [WorkspaceSettingKey](#memos-store-WorkspaceSettingKey)
@@ -457,6 +458,22 @@
 
 
 
+<a name="memos-store-WorkspaceMemoRelatedSetting"></a>
+
+### WorkspaceMemoRelatedSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| disallow_public_visible | [bool](#bool) |  | disallow_public_share disallows set memo as public visible. |
+| display_with_update_time | [bool](#bool) |  | display_with_update_time orders and displays memo with update time. |
+
+
+
+
+
+
 <a name="memos-store-WorkspaceSetting"></a>
 
 ### WorkspaceSetting
@@ -466,7 +483,8 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | key | [WorkspaceSettingKey](#memos-store-WorkspaceSettingKey) |  |  |
-| general | [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting) |  |  |
+| general_setting | [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting) |  |  |
+| memo_related_setting | [WorkspaceMemoRelatedSetting](#memos-store-WorkspaceMemoRelatedSetting) |  |  |
 
 
 
@@ -484,6 +502,7 @@
 | ---- | ------ | ----------- |
 | WORKSPACE_SETTING_KEY_UNSPECIFIED | 0 |  |
 | WORKSPACE_SETTING_GENERAL | 1 | WORKSPACE_SETTING_GENERAL is the key for general settings. |
+| WORKSPACE_SETTING_MEMO_RELATED | 2 | WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings. |
 
 
  

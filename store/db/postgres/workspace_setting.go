@@ -84,7 +84,7 @@ func (d *DB) UpsertWorkspaceSettingV1(ctx context.Context, upsert *storepb.Works
 		SET value = EXCLUDED.value`
 	var valueString string
 	if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL {
-		valueBytes, err := protojson.Marshal(upsert.GetGeneral())
+		valueBytes, err := protojson.Marshal(upsert.GetGeneralSetting())
 		if err != nil {
 			return nil, err
 		}
@@ -126,7 +126,7 @@ func (d *DB) ListWorkspaceSettingsV1(ctx context.Context, find *store.FindWorksp
 			if err := protojson.Unmarshal([]byte(valueString), generalSetting); err != nil {
 				return nil, err
 			}
-			workspaceSetting.Value = &storepb.WorkspaceSetting_General{General: generalSetting}
+			workspaceSetting.Value = &storepb.WorkspaceSetting_GeneralSetting{GeneralSetting: generalSetting}
 		} else {
 			// Skip unknown workspace setting key.
 			continue

@@ -8,12 +8,15 @@ enum WorkspaceSettingKey {
   WORKSPACE_SETTING_KEY_UNSPECIFIED = 0;
   // WORKSPACE_SETTING_GENERAL is the key for general settings.
   WORKSPACE_SETTING_GENERAL = 1;
+  // WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings.
+  WORKSPACE_SETTING_MEMO_RELATED = 2;
 }
 
 message WorkspaceSetting {
   WorkspaceSettingKey key = 1;
   oneof value {
-    WorkspaceGeneralSetting general = 2;
+    WorkspaceGeneralSetting general_setting = 2;
+    WorkspaceMemoRelatedSetting memo_related_setting = 3;
   }
 }
 
@@ -28,4 +31,11 @@ message WorkspaceGeneralSetting {
   string additional_script = 5;
   // additional_style is the additional style.
   string additional_style = 6;
+}
+
+message WorkspaceMemoRelatedSetting {
+  // disallow_public_share disallows set memo as public visible.
+  bool disallow_public_visible = 1;
+  // display_with_update_time orders and displays memo with update time.
+  bool display_with_update_time = 2;
 }

@@ -57,7 +57,7 @@ func convertWorkspaceSettingFromStore(setting *storepb.WorkspaceSetting) *apiv2p
 	return &apiv2pb.WorkspaceSetting{
 		Name: fmt.Sprintf("%s%s", WorkspaceSettingNamePrefix, setting.Key.String()),
 		Value: &apiv2pb.WorkspaceSetting_GeneralSetting{
-			GeneralSetting: convertWorkspaceGeneralSettingFromStore(setting.GetGeneral()),
+			GeneralSetting: convertWorkspaceGeneralSettingFromStore(setting.GetGeneralSetting()),
 		},
 	}
 }
@@ -66,8 +66,8 @@ func convertWorkspaceSettingToStore(setting *apiv2pb.WorkspaceSetting) *storepb.
 	settingKeyString, _ := ExtractWorkspaceSettingKeyFromName(setting.Name)
 	return &storepb.WorkspaceSetting{
 		Key: storepb.WorkspaceSettingKey(storepb.WorkspaceSettingKey_value[settingKeyString]),
-		Value: &storepb.WorkspaceSetting_General{
-			General: convertWorkspaceGeneralSettingToStore(setting.GetGeneralSetting()),
+		Value: &storepb.WorkspaceSetting_GeneralSetting{
+			GeneralSetting: convertWorkspaceGeneralSettingToStore(setting.GetGeneralSetting()),
 		},
 	}
 }

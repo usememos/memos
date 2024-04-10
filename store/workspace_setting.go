@@ -123,7 +123,7 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 
 	workspaceGeneralSetting := &storepb.WorkspaceGeneralSetting{}
 	if workspaceSetting != nil {
-		workspaceGeneralSetting = workspaceSetting.GetGeneral()
+		workspaceGeneralSetting = workspaceSetting.GetGeneralSetting()
 	}
 	return workspaceGeneralSetting, nil
 }

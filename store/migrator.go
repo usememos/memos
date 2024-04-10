@@ -52,7 +52,7 @@ func (s *Store) MigrateWorkspaceSetting(ctx context.Context) error {
 
 	if _, err := s.UpsertWorkspaceSettingV1(ctx, &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL,
-		Value: &storepb.WorkspaceSetting_General{General: workspaceGeneralSetting},
+		Value: &storepb.WorkspaceSetting_GeneralSetting{GeneralSetting: workspaceGeneralSetting},
 	}); err != nil {
 		return errors.Wrap(err, "failed to upsert workspace general setting")
 	}
