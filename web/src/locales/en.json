@@ -105,7 +105,8 @@
       "self": "Comments",
       "no-comment": "No comment"
     },
-    "show-more": "Show more"
+    "show-more": "Show more",
+    "wrapping": "Wrapping"
   },
   "reference": {
     "add-references": "Add references",
