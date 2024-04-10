@@ -33,6 +33,7 @@
     "confirm": "Confirmar",
     "create": "Criar",
     "database": "Banco de dados",
+    "days": "Dias",
     "delete": "Deletar",
     "description": "Descrição",
     "edit": "Editar",
@@ -47,6 +48,7 @@
     "learn-more": "Saiba mais",
     "link": "Link",
     "mark": "Vincular",
+    "memos": "Memos",
     "name": "Nome",
     "new": "Novo",
     "nickname": "Apelido",
@@ -93,6 +95,7 @@
     "wed": "Qua"
   },
   "editor": {
+    "add-your-comment-here": "Adicione seu comentário aqui…",
     "any-thoughts": "Alguma ideia…",
     "save": "Salvar"
   },
@@ -169,6 +172,12 @@
     "succeed-vacuum-database": "Banco de dados compactado com êxito.",
     "update-succeed": "Atualizado com êxito",
     "user-not-found": "Usuário não encontrado"
+  },
+  "reference": {
+    "add-references": "Adicionar referências",
+    "embedded-usage": "Usar como Conteúdo Incorporado",
+    "no-memos-found": "Nenhum memo encontrado",
+    "search-bar-placeholder": "Pesquisar conteúdo"
   },
   "resource": {
     "clear": "Limpar",
