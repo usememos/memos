@@ -108,7 +108,7 @@
     },
     "show-more": "Show more",
     "wrapping": "Wrapping",
-    "count-memos-in-date": "{{count}} memos ina {{date}}"
+    "count-memos-in-date": "{{count}} memos in {{date}}"
   },
   "reference": {
     "add-references": "Add references",
