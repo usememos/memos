@@ -63,8 +63,7 @@ func (s *Store) CreateStorageV1(ctx context.Context, create *storepb.Storage) (*
 		Type: create.Type.String(),
 	}
 
-	switch create.Type {
-	case storepb.Storage_S3:
+	if create.Type == storepb.Storage_S3 {
 		configBytes, err := proto.Marshal(create.Config.GetS3Config())
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to marshal s3 config")
@@ -160,8 +159,7 @@ func convertStorageFromRaw(storageRaw *Storage) (*storepb.Storage, error) {
 
 func convertStorageConfigFromRaw(storageType storepb.Storage_Type, configRaw string) (*storepb.StorageConfig, error) {
 	storageConfig := &storepb.StorageConfig{}
-	switch storageType {
-	case storepb.Storage_S3:
+	if storageType == storepb.Storage_S3 {
 		s3Config := &storepb.S3Config{}
 		err := proto.Unmarshal([]byte(configRaw), s3Config)
 		if err != nil {
@@ -174,8 +172,7 @@ func convertStorageConfigFromRaw(storageType storepb.Storage_Type, configRaw str
 
 func convertStorageConfigToRaw(storageType storepb.Storage_Type, config *storepb.StorageConfig) (string, error) {
 	raw := ""
-	switch storageType {
-	case storepb.Storage_S3:
+	if storageType == storepb.Storage_S3 {
 		bytes, err := proto.Marshal(config.GetS3Config())
 		if err != nil {
 			return "", err
