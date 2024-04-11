@@ -21,6 +21,7 @@
     "language": "Language",
     "version": "Version",
     "pin": "Pin",
+    "pinned": "Pinned",
     "unpin": "Unpin",
     "edit": "Edit",
     "restore": "Restore",
@@ -106,7 +107,8 @@
       "no-comment": "No comment"
     },
     "show-more": "Show more",
-    "wrapping": "Wrapping"
+    "wrapping": "Wrapping",
+    "count-memos-in-date": "{{count}} memos ina {{date}}"
   },
   "reference": {
     "add-references": "Add references",
@@ -153,13 +155,17 @@
   "tag": {
     "tip-text": "Input `#tag` to create",
     "create-tag": "Create Tag",
+    "delete-tag": "Delete Tag",
+    "delete-confirm": "Are you sure to delete this tag?",
     "all-tags": "All Tags",
     "tag-name": "TAG_NAME",
     "invalid-tag-name": "Invalid tag name",
     "tag-suggestions": "Tag suggestions",
+    "no-tag-found": "No tag found",
     "show": "Show",
     "hide": "Hide",
-    "save-all": "Save all"
+    "save-all": "Save all",
+    "create-tags-guide": "You can create tags by inputting `#tag`."
   },
   "timeline": {
     "title": "Timeline"
@@ -318,11 +324,13 @@
     "memos-ready": "all memos are ready",
     "resource-ready": "all resource are ready",
     "archived-successfully": "Archived successfully",
+    "deleted-successfully": "Deleted successfully",
     "restored-successfully": "Restored successfully",
     "memo-updated-datetime": "Memo created datetime changed.",
     "invalid-created-datetime": "Invalid created datetime.",
     "change-memo-created-time": "Change memo created time",
     "memo-not-found": "Memo not found.",
+    "failed-to-embed-memo": "Failed to embed memo",
     "fill-all": "Please fill in all fields.",
     "password-not-match": "Passwords do not match.",
     "new-password-not-match": "New passwords do not match.",

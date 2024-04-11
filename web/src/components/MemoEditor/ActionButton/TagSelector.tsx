@@ -4,6 +4,7 @@ import useClickAway from "react-use/lib/useClickAway";
 import Icon from "@/components/Icon";
 import OverflowTip from "@/components/kit/OverflowTip";
 import { useTagStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const TagSelector = (props: Props) => {
+  const t = useTranslate();
   const { editorRef } = props;
   const tagStore = useTagStore();
   const [open, setOpen] = useState(false);
@@ -74,7 +76,7 @@ const TagSelector = (props: Props) => {
             </div>
           ) : (
             <p className="italic mx-2" onClick={(e) => e.stopPropagation()}>
-              No tag found
+              {t("tag.no-tag-found")}
             </p>
           )}
         </div>

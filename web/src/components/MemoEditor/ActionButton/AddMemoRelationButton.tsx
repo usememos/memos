@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import showCreateMemoRelationDialog from "@/components/CreateMemoRelationDialog";
 import Icon from "@/components/Icon";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
+import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 import { MemoEditorContext } from "../types";
 
@@ -15,6 +16,7 @@ interface Props {
 const AddMemoRelationButton = (props: Props) => {
   const { editorRef } = props;
   const context = useContext(MemoEditorContext);
+  const t = useTranslate();
 
   const handleAddMemoRelationBtnClick = () => {
     showCreateMemoRelationDialog({
@@ -22,7 +24,7 @@ const AddMemoRelationButton = (props: Props) => {
         // If embedded mode is enabled, embed the memo instead of creating a relation.
         if (embedded) {
           if (!editorRef.current) {
-            toast.error("Failed to embed memo");
+            toast.error(t("message.failed-to-embed-memo"));
             return;
           }
 
