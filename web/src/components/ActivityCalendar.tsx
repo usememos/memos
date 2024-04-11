@@ -54,7 +54,7 @@ const ActivityCalendar = (props: Props) => {
         );
         const count = data[date] || 0;
         const isToday = new Date().toDateString() === new Date(date).toDateString();
-        const tooltipText = count ? t("memo.count-memos-in-date", {count: count, date: date}) : date;
+        const tooltipText = count ? t("memo.count-memos-in-date", { count: count, date: date }) : date;
         return day ? (
           <Tooltip className="shrink-0" key={`${date}-${index}`} title={tooltipText} placement="top" arrow>
             <div
