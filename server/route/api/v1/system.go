@@ -98,10 +98,6 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
 	}
 	for _, systemSetting := range systemSettingList {
-		if systemSetting.Name == SystemSettingServerIDName.String() || systemSetting.Name == SystemSettingSecretSessionName.String() || systemSetting.Name == SystemSettingTelegramBotTokenName.String() {
-			continue
-		}
-
 		var baseValue any
 		err := json.Unmarshal([]byte(systemSetting.Value), &baseValue)
 		if err != nil {
@@ -110,8 +106,6 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		}
 
 		switch systemSetting.Name {
-		case SystemSettingDisablePublicMemosName.String():
-			systemStatus.DisablePublicMemos = baseValue.(bool)
 		case SystemSettingMaxUploadSizeMiBName.String():
 			systemStatus.MaxUploadSizeMiB = int(baseValue.(float64))
 		case SystemSettingCustomizedProfileName.String():
@@ -122,10 +116,6 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 			systemStatus.CustomizedProfile = customizedProfile
 		case SystemSettingStorageServiceIDName.String():
 			systemStatus.StorageServiceID = int32(baseValue.(float64))
-		case SystemSettingLocalStoragePathName.String():
-			systemStatus.LocalStoragePath = baseValue.(string)
-		case SystemSettingMemoDisplayWithUpdatedTsName.String():
-			systemStatus.MemoDisplayWithUpdatedTs = baseValue.(bool)
 		default:
 			// Skip unknown system setting.
 		}

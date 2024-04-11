@@ -12,6 +12,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/plugin/telegram"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
 	apiv1 "github.com/usememos/memos/server/route/api/v1"
@@ -51,19 +52,16 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	// Register CORS middleware.
 	e.Use(CORSMiddleware(s.Profile.Origins))
 
-	serverID, err := s.getSystemServerID(ctx)
+	workspaceBasicSetting, err := s.getOrUpsertWorkspaceBasicSetting(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to retrieve system server ID")
+		return nil, errors.Wrap(err, "failed to get workspace basic setting")
 	}
-	s.ID = serverID
 
 	secret := "usememos"
 	if profile.Mode == "prod" {
-		secret, err = s.getSystemSecretSessionName(ctx)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to retrieve system secret session name")
-		}
+		secret = workspaceBasicSetting.SecretKey
 	}
+	s.ID = workspaceBasicSetting.ServerId
 	s.Secret = secret
 
 	// Register healthz endpoint.
@@ -118,42 +116,31 @@ func (s *Server) GetEcho() *echo.Echo {
 	return s.e
 }
 
-func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
-	serverIDSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: apiv1.SystemSettingServerIDName.String(),
-	})
+func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb.WorkspaceBasicSetting, error) {
+	workspaceBasicSetting, err := s.Store.GetWorkspaceBasicSetting(ctx)
 	if err != nil {
-		return "", err
+		return nil, errors.Wrap(err, "failed to get workspace basic setting")
 	}
-	if serverIDSetting == nil || serverIDSetting.Value == "" {
-		serverIDSetting, err = s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
-			Name:  apiv1.SystemSettingServerIDName.String(),
-			Value: uuid.NewString(),
+	modified := false
+	if workspaceBasicSetting.ServerId == "" {
+		workspaceBasicSetting.ServerId = uuid.NewString()
+		modified = true
+	}
+	if workspaceBasicSetting.SecretKey == "" {
+		workspaceBasicSetting.SecretKey = uuid.NewString()
+		modified = true
+	}
+	if modified {
+		workspaceSetting, err := s.Store.UpsertWorkspaceSettingV1(ctx, &storepb.WorkspaceSetting{
+			Key:   storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC,
+			Value: &storepb.WorkspaceSetting_BasicSetting{BasicSetting: workspaceBasicSetting},
 		})
 		if err != nil {
-			return "", err
+			return nil, errors.Wrap(err, "failed to upsert workspace setting")
 		}
+		workspaceBasicSetting = workspaceSetting.GetBasicSetting()
 	}
-	return serverIDSetting.Value, nil
-}
-
-func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error) {
-	secretSessionNameValue, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: apiv1.SystemSettingSecretSessionName.String(),
-	})
-	if err != nil {
-		return "", err
-	}
-	if secretSessionNameValue == nil || secretSessionNameValue.Value == "" {
-		secretSessionNameValue, err = s.Store.UpsertWorkspaceSetting(ctx, &store.WorkspaceSetting{
-			Name:  apiv1.SystemSettingSecretSessionName.String(),
-			Value: uuid.NewString(),
-		})
-		if err != nil {
-			return "", err
-		}
-	}
-	return secretSessionNameValue.Value, nil
+	return workspaceBasicSetting, nil
 }
 
 func grpcRequestSkipper(c echo.Context) bool {

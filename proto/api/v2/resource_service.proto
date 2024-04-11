@@ -4,6 +4,7 @@ package memos.api.v2;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -51,29 +52,25 @@ message Resource {
   // The user defined id of the resource.
   string uid = 2;
 
-  google.protobuf.Timestamp create_time = 3;
+  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   string filename = 4;
 
-  string external_link = 5;
+  bytes content = 5 [(google.api.field_behavior) = INPUT_ONLY];
 
-  string type = 6;
+  string external_link = 6;
 
-  int64 size = 7;
+  string type = 7;
 
+  int64 size = 8;
+
+  // The related memo.
   // Format: memos/{id}
-  optional string memo = 8;
+  optional string memo = 9;
 }
 
 message CreateResourceRequest {
-  string filename = 1;
-
-  string external_link = 2;
-
-  string type = 3;
-
-  // Format: memos/{id}
-  optional string memo = 4;
+  Resource resource = 1;
 }
 
 message CreateResourceResponse {
@@ -95,6 +92,9 @@ message SearchResourcesResponse {
 }
 
 message GetResourceRequest {
+  // The name of the resource.
+  // Format: resources/{id}
+  // id is the system generated unique identifier.
   string name = 1;
 }
 
@@ -113,6 +113,9 @@ message UpdateResourceResponse {
 }
 
 message DeleteResourceRequest {
+  // The name of the resource.
+  // Format: resources/{id}
+  // id is the system generated unique identifier.
   string name = 1;
 }
 

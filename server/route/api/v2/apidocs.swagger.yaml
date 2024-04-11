@@ -446,20 +446,50 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: filename
+        - name: resource.name
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
           in: query
           required: false
           type: string
-        - name: externalLink
+        - name: resource.uid
+          description: The user defined id of the resource.
           in: query
           required: false
           type: string
-        - name: type
+        - name: resource.createTime
           in: query
           required: false
           type: string
-        - name: memo
-          description: 'Format: memos/{id}'
+          format: date-time
+        - name: resource.filename
+          in: query
+          required: false
+          type: string
+        - name: resource.content
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: resource.externalLink
+          in: query
+          required: false
+          type: string
+        - name: resource.type
+          in: query
+          required: false
+          type: string
+        - name: resource.size
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: resource.memo
+          description: |-
+            The related memo.
+            Format: memos/{id}
           in: query
           required: false
           type: string
@@ -1110,6 +1140,10 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
           in: path
           required: true
           type: string
@@ -1177,6 +1211,10 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_3
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
           in: path
           required: true
           type: string
@@ -1641,8 +1679,12 @@ paths:
               createTime:
                 type: string
                 format: date-time
+                readOnly: true
               filename:
                 type: string
+              content:
+                type: string
+                format: byte
               externalLink:
                 type: string
               type:
@@ -1652,7 +1694,9 @@ paths:
                 format: int64
               memo:
                 type: string
-                title: 'Format: memos/{id}'
+                title: |-
+                  The related memo.
+                  Format: memos/{id}
       tags:
         - ResourceService
   /api/v2/{setting.name}:
@@ -2472,8 +2516,12 @@ definitions:
       createTime:
         type: string
         format: date-time
+        readOnly: true
       filename:
         type: string
+      content:
+        type: string
+        format: byte
       externalLink:
         type: string
       type:
@@ -2483,7 +2531,9 @@ definitions:
         format: int64
       memo:
         type: string
-        title: 'Format: memos/{id}'
+        title: |-
+          The related memo.
+          Format: memos/{id}
   v2SearchMemosResponse:
     type: object
     properties:

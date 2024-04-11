@@ -6,24 +6,32 @@ option go_package = "gen/store";
 
 enum WorkspaceSettingKey {
   WORKSPACE_SETTING_KEY_UNSPECIFIED = 0;
+  // WORKSPACE_SETTING_BASIC is the key for basic settings.
+  WORKSPACE_SETTING_BASIC = 1;
   // WORKSPACE_SETTING_GENERAL is the key for general settings.
-  WORKSPACE_SETTING_GENERAL = 1;
+  WORKSPACE_SETTING_GENERAL = 2;
   // WORKSPACE_SETTING_STORAGE is the key for storage settings.
-  WORKSPACE_SETTING_STORAGE = 2;
+  WORKSPACE_SETTING_STORAGE = 3;
   // WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings.
-  WORKSPACE_SETTING_MEMO_RELATED = 3;
+  WORKSPACE_SETTING_MEMO_RELATED = 4;
   // WORKSPACE_SETTING_TELEGRAM_INTEGRATION is the key for telegram integration settings.
-  WORKSPACE_SETTING_TELEGRAM_INTEGRATION = 4;
+  WORKSPACE_SETTING_TELEGRAM_INTEGRATION = 5;
 }
 
 message WorkspaceSetting {
   WorkspaceSettingKey key = 1;
   oneof value {
-    WorkspaceGeneralSetting general_setting = 2;
-    WorkspaceStorageSetting storage_setting = 3;
-    WorkspaceMemoRelatedSetting memo_related_setting = 4;
-    WorkspaceTelegramIntegrationSetting telegram_integration_setting = 5;
+    WorkspaceBasicSetting basic_setting = 2;
+    WorkspaceGeneralSetting general_setting = 3;
+    WorkspaceStorageSetting storage_setting = 4;
+    WorkspaceMemoRelatedSetting memo_related_setting = 5;
+    WorkspaceTelegramIntegrationSetting telegram_integration_setting = 6;
   }
+}
+
+message WorkspaceBasicSetting {
+  string server_id = 1;
+  string secret_key = 2;
 }
 
 message WorkspaceGeneralSetting {
@@ -37,16 +45,28 @@ message WorkspaceGeneralSetting {
   string additional_script = 5;
   // additional_style is the additional style.
   string additional_style = 6;
+  // custom_profile is the custom profile.
+  WorkspaceCustomProfile custom_profile = 4;
+}
+
+message WorkspaceCustomProfile {
+  string title = 1;
+  string description = 2;
+  string logo_url = 3;
+  string locale = 4;
+  string appearance = 5;
 }
 
 message WorkspaceStorageSetting {
   // storage_type is the storage type.
   StorageType storage_type = 1;
+  // The id of actived external storage.
+  optional int32 actived_external_storage_id = 2;
   // The local storage path for STORAGE_TYPE_LOCAL.
   // e.g. assets/{timestamp}_{filename}
-  string local_storage_path = 2;
+  string local_storage_path = 3;
   // The max upload size in megabytes.
-  int64 upload_size_limit_mb = 3;
+  int64 upload_size_limit_mb = 4;
 
   enum StorageType {
     STORAGE_TYPE_UNSPECIFIED = 0;

@@ -75,7 +75,9 @@ func (s *Store) UpsertWorkspaceSettingV1(ctx context.Context, upsert *storepb.Wo
 	}
 	var valueBytes []byte
 	var err error
-	if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL {
+	if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC {
+		valueBytes, err = protojson.Marshal(upsert.GetBasicSetting())
+	} else if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL {
 		valueBytes, err = protojson.Marshal(upsert.GetGeneralSetting())
 	} else if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE {
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
@@ -139,6 +141,21 @@ func (s *Store) GetWorkspaceSettingV1(ctx context.Context, find *FindWorkspaceSe
 	return list[0], nil
 }
 
+func (s *Store) GetWorkspaceBasicSetting(ctx context.Context) (*storepb.WorkspaceBasicSetting, error) {
+	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
+		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace basic setting")
+	}
+
+	workspaceBasicSetting := &storepb.WorkspaceBasicSetting{}
+	if workspaceSetting != nil {
+		workspaceBasicSetting = workspaceSetting.GetBasicSetting()
+	}
+	return workspaceBasicSetting, nil
+}
+
 func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.WorkspaceGeneralSetting, error) {
 	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
 		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String(),
@@ -154,11 +171,47 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 	return workspaceGeneralSetting, nil
 }
 
+func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.WorkspaceMemoRelatedSetting, error) {
+	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
+		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace general setting")
+	}
+
+	workspaceMemoRelatedSetting := &storepb.WorkspaceMemoRelatedSetting{}
+	if workspaceSetting != nil {
+		workspaceMemoRelatedSetting = workspaceSetting.GetMemoRelatedSetting()
+	}
+	return workspaceMemoRelatedSetting, nil
+}
+
+func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.WorkspaceStorageSetting, error) {
+	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
+		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace storage setting")
+	}
+
+	workspaceStorageSetting := &storepb.WorkspaceStorageSetting{}
+	if workspaceSetting != nil {
+		workspaceStorageSetting = workspaceSetting.GetStorageSetting()
+	}
+	return workspaceStorageSetting, nil
+}
+
 func convertWorkspaceSettingFromRaw(workspaceSettingRaw *WorkspaceSetting) (*storepb.WorkspaceSetting, error) {
 	workspaceSetting := &storepb.WorkspaceSetting{
 		Key: storepb.WorkspaceSettingKey(storepb.WorkspaceSettingKey_value[workspaceSettingRaw.Name]),
 	}
 	switch workspaceSettingRaw.Name {
+	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC.String():
+		basicSetting := &storepb.WorkspaceBasicSetting{}
+		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), basicSetting); err != nil {
+			return nil, err
+		}
+		workspaceSetting.Value = &storepb.WorkspaceSetting_BasicSetting{BasicSetting: basicSetting}
 	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String():
 		generalSetting := &storepb.WorkspaceGeneralSetting{}
 		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), generalSetting); err != nil {
@@ -183,6 +236,8 @@ func convertWorkspaceSettingFromRaw(workspaceSettingRaw *WorkspaceSetting) (*sto
 			return nil, err
 		}
 		workspaceSetting.Value = &storepb.WorkspaceSetting_TelegramIntegrationSetting{TelegramIntegrationSetting: telegramIntegrationSetting}
+	default:
+		return nil, errors.Errorf("unsupported workspace setting key: %v", workspaceSettingRaw.Name)
 	}
 	return workspaceSetting, nil
 }

@@ -15,24 +15,23 @@ import { Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 
 function groupResourcesByDate(resources: Resource[]) {
-  const tmp_resources: Resource[] = resources.slice();
-  tmp_resources.sort((a: Resource, b: Resource) => {
-    const a_date = new Date(a.createTime as any);
-    const b_date = new Date(b.createTime as any);
-    return b_date.getTime() - a_date.getTime();
-  });
-
   const grouped = new Map<number, Resource[]>();
-  tmp_resources.forEach((item) => {
-    const date = new Date(item.createTime as any);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const timestamp = Date.UTC(year, month - 1, 1);
-    if (!grouped.has(timestamp)) {
-      grouped.set(timestamp, []);
-    }
-    grouped.get(timestamp)?.push(item);
-  });
+  resources
+    .sort((a: Resource, b: Resource) => {
+      const a_date = new Date(a.createTime as any);
+      const b_date = new Date(b.createTime as any);
+      return b_date.getTime() - a_date.getTime();
+    })
+    .forEach((item) => {
+      const date = new Date(item.createTime as any);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const timestamp = Date.UTC(year, month - 1, 1);
+      if (!grouped.has(timestamp)) {
+        grouped.set(timestamp, []);
+      }
+      grouped.get(timestamp)?.push(item);
+    });
   return grouped;
 }
 

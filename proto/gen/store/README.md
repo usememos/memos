@@ -26,6 +26,13 @@
   
     - [Reaction.Type](#memos-store-Reaction-Type)
   
+- [store/storage.proto](#store_storage-proto)
+    - [S3Config](#memos-store-S3Config)
+    - [Storage](#memos-store-Storage)
+    - [StorageConfig](#memos-store-StorageConfig)
+  
+    - [Storage.Type](#memos-store-Storage-Type)
+  
 - [store/user_setting.proto](#store_user_setting-proto)
     - [AccessTokensUserSetting](#memos-store-AccessTokensUserSetting)
     - [AccessTokensUserSetting.AccessToken](#memos-store-AccessTokensUserSetting-AccessToken)
@@ -37,6 +44,8 @@
     - [Webhook](#memos-store-Webhook)
   
 - [store/workspace_setting.proto](#store_workspace_setting-proto)
+    - [WorkspaceBasicSetting](#memos-store-WorkspaceBasicSetting)
+    - [WorkspaceCustomProfile](#memos-store-WorkspaceCustomProfile)
     - [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting)
     - [WorkspaceMemoRelatedSetting](#memos-store-WorkspaceMemoRelatedSetting)
     - [WorkspaceSetting](#memos-store-WorkspaceSetting)
@@ -314,6 +323,90 @@
 
 
 
+<a name="store_storage-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## store/storage.proto
+
+
+
+<a name="memos-store-S3Config"></a>
+
+### S3Config
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| end_point | [string](#string) |  |  |
+| path | [string](#string) |  |  |
+| region | [string](#string) |  |  |
+| access_key | [string](#string) |  |  |
+| secret_key | [string](#string) |  |  |
+| bucket | [string](#string) |  |  |
+| url_prefix | [string](#string) |  |  |
+| url_suffix | [string](#string) |  |  |
+| pre_sign | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="memos-store-Storage"></a>
+
+### Storage
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| name | [string](#string) |  |  |
+| type | [Storage.Type](#memos-store-Storage-Type) |  |  |
+| config | [StorageConfig](#memos-store-StorageConfig) |  |  |
+
+
+
+
+
+
+<a name="memos-store-StorageConfig"></a>
+
+### StorageConfig
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| s3_config | [S3Config](#memos-store-S3Config) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-store-Storage-Type"></a>
+
+### Storage.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| S3 | 1 |  |
+
+
+ 
+
+ 
+
+ 
+
+
+
 <a name="store_user_setting-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -442,6 +535,41 @@
 
 
 
+<a name="memos-store-WorkspaceBasicSetting"></a>
+
+### WorkspaceBasicSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| server_id | [string](#string) |  |  |
+| secret_key | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-store-WorkspaceCustomProfile"></a>
+
+### WorkspaceCustomProfile
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| title | [string](#string) |  |  |
+| description | [string](#string) |  |  |
+| logo_url | [string](#string) |  |  |
+| locale | [string](#string) |  |  |
+| appearance | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="memos-store-WorkspaceGeneralSetting"></a>
 
 ### WorkspaceGeneralSetting
@@ -455,6 +583,7 @@
 | disallow_password_login | [bool](#bool) |  | disallow_password_login is the flag to disallow password login. |
 | additional_script | [string](#string) |  | additional_script is the additional script. |
 | additional_style | [string](#string) |  | additional_style is the additional style. |
+| custom_profile | [WorkspaceCustomProfile](#memos-store-WorkspaceCustomProfile) |  | custom_profile is the custom profile. |
 
 
 
@@ -486,6 +615,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | key | [WorkspaceSettingKey](#memos-store-WorkspaceSettingKey) |  |  |
+| basic_setting | [WorkspaceBasicSetting](#memos-store-WorkspaceBasicSetting) |  |  |
 | general_setting | [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting) |  |  |
 | storage_setting | [WorkspaceStorageSetting](#memos-store-WorkspaceStorageSetting) |  |  |
 | memo_related_setting | [WorkspaceMemoRelatedSetting](#memos-store-WorkspaceMemoRelatedSetting) |  |  |
@@ -505,6 +635,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | storage_type | [WorkspaceStorageSetting.StorageType](#memos-store-WorkspaceStorageSetting-StorageType) |  | storage_type is the storage type. |
+| actived_external_storage_id | [int32](#int32) | optional | The id of actived external storage. |
 | local_storage_path | [string](#string) |  | The local storage path for STORAGE_TYPE_LOCAL. e.g. assets/{timestamp}_{filename} |
 | upload_size_limit_mb | [int64](#int64) |  | The max upload size in megabytes. |
 
@@ -538,10 +669,11 @@
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | WORKSPACE_SETTING_KEY_UNSPECIFIED | 0 |  |
-| WORKSPACE_SETTING_GENERAL | 1 | WORKSPACE_SETTING_GENERAL is the key for general settings. |
-| WORKSPACE_SETTING_STORAGE | 2 | WORKSPACE_SETTING_STORAGE is the key for storage settings. |
-| WORKSPACE_SETTING_MEMO_RELATED | 3 | WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings. |
-| WORKSPACE_SETTING_TELEGRAM_INTEGRATION | 4 | WORKSPACE_SETTING_TELEGRAM_INTEGRATION is the key for telegram integration settings. |
+| WORKSPACE_SETTING_BASIC | 1 | WORKSPACE_SETTING_BASIC is the key for basic settings. |
+| WORKSPACE_SETTING_GENERAL | 2 | WORKSPACE_SETTING_GENERAL is the key for general settings. |
+| WORKSPACE_SETTING_STORAGE | 3 | WORKSPACE_SETTING_STORAGE is the key for storage settings. |
+| WORKSPACE_SETTING_MEMO_RELATED | 4 | WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings. |
+| WORKSPACE_SETTING_TELEGRAM_INTEGRATION | 5 | WORKSPACE_SETTING_TELEGRAM_INTEGRATION is the key for telegram integration settings. |
 
 
 

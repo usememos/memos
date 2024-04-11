@@ -15,12 +15,6 @@ import (
 type SystemSettingName string
 
 const (
-	// SystemSettingServerIDName is the name of server id.
-	SystemSettingServerIDName SystemSettingName = "server-id"
-	// SystemSettingSecretSessionName is the name of secret session.
-	SystemSettingSecretSessionName SystemSettingName = "secret-session"
-	// SystemSettingDisablePublicMemosName is the name of disable public memos setting.
-	SystemSettingDisablePublicMemosName SystemSettingName = "disable-public-memos"
 	// SystemSettingMaxUploadSizeMiBName is the name of max upload size setting.
 	SystemSettingMaxUploadSizeMiBName SystemSettingName = "max-upload-size-mib"
 	// SystemSettingCustomizedProfileName is the name of customized server profile.
@@ -29,10 +23,6 @@ const (
 	SystemSettingStorageServiceIDName SystemSettingName = "storage-service-id"
 	// SystemSettingLocalStoragePathName is the name of local storage path.
 	SystemSettingLocalStoragePathName SystemSettingName = "local-storage-path"
-	// SystemSettingTelegramBotTokenName is the name of Telegram Bot Token.
-	SystemSettingTelegramBotTokenName SystemSettingName = "telegram-bot-token"
-	// SystemSettingMemoDisplayWithUpdatedTsName is the name of memo display with updated ts.
-	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
 )
 const systemSettingUnmarshalError = `failed to unmarshal value from system setting "%v"`
 
@@ -160,13 +150,6 @@ func (s *APIV1Service) CreateSystemSetting(c echo.Context) error {
 
 func (upsert UpsertSystemSettingRequest) Validate() error {
 	switch settingName := upsert.Name; settingName {
-	case SystemSettingServerIDName:
-		return errors.Errorf("updating %v is not allowed", settingName)
-	case SystemSettingDisablePublicMemosName:
-		var value bool
-		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
-			return errors.Errorf(systemSettingUnmarshalError, settingName)
-		}
 	case SystemSettingMaxUploadSizeMiBName:
 		var value int
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
@@ -212,27 +195,6 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 			return errors.New("local storage path must be a relative path")
 		case !strings.Contains(trimmedValue, "{filename}"):
 			return errors.New("local storage path must contain `{filename}`")
-		}
-	case SystemSettingTelegramBotTokenName:
-		if upsert.Value == "" {
-			return nil
-		}
-		// Bot Token with Reverse Proxy shoule like `http.../bot<token>`
-		if strings.HasPrefix(upsert.Value, "http") {
-			slashIndex := strings.LastIndexAny(upsert.Value, "/")
-			if strings.HasPrefix(upsert.Value[slashIndex:], "/bot") {
-				return nil
-			}
-			return errors.New("token start with `http` must end with `/bot<token>`")
-		}
-		fragments := strings.Split(upsert.Value, ":")
-		if len(fragments) != 2 {
-			return errors.Errorf(systemSettingUnmarshalError, settingName)
-		}
-	case SystemSettingMemoDisplayWithUpdatedTsName:
-		var value bool
-		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
-			return errors.Errorf(systemSettingUnmarshalError, settingName)
 		}
 	default:
 		return errors.New("invalid system setting name")

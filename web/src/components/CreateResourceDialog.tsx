@@ -1,9 +1,9 @@
 import { Autocomplete, Button, IconButton, Input, List, ListItem, Option, Select, Typography } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { CreateResourceRequest, Resource } from "@/types/proto/api/v2/resource_service";
+import { useResourceStore } from "@/store/v1";
+import { Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
-import { useResourceStore } from "../store/module";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 
@@ -29,8 +29,8 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
     selectedMode: "local-file",
     uploadingFlag: false,
   });
-  const [resourceCreate, setResourceCreate] = useState<CreateResourceRequest>(
-    CreateResourceRequest.fromPartial({
+  const [resourceCreate, setResourceCreate] = useState<Resource>(
+    Resource.fromPartial({
       filename: "",
       externalLink: "",
       type: "",
@@ -160,16 +160,25 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
           if (!fileOnInput) {
             continue;
           }
-          const resource = await resourceStore.createResourceWithBlob(file);
+          const { name: filename, size, type } = file;
+          const buffer = new Uint8Array(await file.arrayBuffer());
+          const resource = await resourceStore.createResource({
+            resource: Resource.fromPartial({
+              filename,
+              size,
+              type,
+              content: buffer,
+            }),
+          });
           createdResourceList.push(resource);
         }
       } else {
-        const resource = await resourceStore.createResource(resourceCreate);
+        const resource = await resourceStore.createResource({ resource: resourceCreate });
         createdResourceList.push(resource);
       }
     } catch (error: any) {
       console.error(error);
-      toast.error(typeof error === "string" ? error : error.response.data.message);
+      toast.error(error.details);
     }
 
     if (onConfirm) {

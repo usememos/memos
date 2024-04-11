@@ -3,7 +3,6 @@ package integration
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"slices"
@@ -34,10 +33,10 @@ func NewTelegramHandler(store *store.Store) *TelegramHandler {
 }
 
 func (t *TelegramHandler) BotToken(ctx context.Context) string {
-	if setting, err := t.store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: apiv1.SystemSettingTelegramBotTokenName.String(),
-	}); err == nil && setting != nil {
-		return setting.Value
+	if workspaceSetting, err := t.store.GetWorkspaceSettingV1(ctx, &store.FindWorkspaceSetting{
+		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_TELEGRAM_INTEGRATION.String(),
+	}); err == nil && workspaceSetting != nil {
+		return workspaceSetting.GetTelegramIntegrationSetting().BotToken
 	}
 	return ""
 }
@@ -170,21 +169,12 @@ func (t *TelegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Memo %d not found, possibly deleted elsewhere", memoID))
 	}
 
-	setting, err := t.store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: apiv1.SystemSettingDisablePublicMemosName.String(),
-	})
+	workspaceMemoRelatedSetting, err := t.store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
 		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to get workspace setting %s", err))
 	}
-	if setting != nil && setting.Value != "" {
-		disablePublicMemo := false
-		err = json.Unmarshal([]byte(setting.Value), &disablePublicMemo)
-		if err != nil {
-			return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to get workspace setting %s", err))
-		}
-		if disablePublicMemo && visibility == store.Public {
-			return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to changing Memo %d to %s\n(workspace disallowed public memo)", memoID, visibility))
-		}
+	if workspaceMemoRelatedSetting.DisallowPublicVisible && visibility == store.Public {
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to changing Memo %d to %s\n(workspace disallowed public memo)", memoID, visibility))
 	}
 
 	update := store.UpdateMemo{

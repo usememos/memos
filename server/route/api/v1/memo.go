@@ -202,14 +202,6 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 		find.Offset = &offset
 	}
 
-	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
-	}
-	if memoDisplayWithUpdatedTs {
-		find.OrderByUpdatedTs = true
-	}
-
 	list, err := s.Store.ListMemos(ctx, find)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
@@ -271,36 +263,6 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 		} else {
 			// Private is the default memo visibility.
 			createMemoRequest.Visibility = Private
-		}
-	}
-
-	// Find disable public memos system setting.
-	disablePublicMemosSystemSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: SystemSettingDisablePublicMemosName.String(),
-	})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
-	}
-	if disablePublicMemosSystemSetting != nil {
-		disablePublicMemos := false
-		err = json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
-		}
-		if disablePublicMemos {
-			user, err := s.Store.GetUser(ctx, &store.FindUser{
-				ID: &userID,
-			})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-			}
-			if user == nil {
-				return echo.NewHTTPError(http.StatusNotFound, "User not found")
-			}
-			// Enforce normal user to create private memo if public memos are disabled.
-			if user.Role == store.RoleUser {
-				createMemoRequest.Visibility = Private
-			}
 		}
 	}
 
@@ -444,14 +406,6 @@ func (s *APIV1Service) GetAllMemos(c echo.Context) error {
 	normalStatus := store.Normal
 	memoFind.RowStatus = &normalStatus
 
-	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
-	}
-	if memoDisplayWithUpdatedTs {
-		memoFind.OrderByUpdatedTs = true
-	}
-
 	list, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch all memo list").SetInternal(err)
@@ -512,28 +466,14 @@ func (s *APIV1Service) GetMemoStats(c echo.Context) error {
 		}
 	}
 
-	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
-	}
-	if memoDisplayWithUpdatedTs {
-		findMemoMessage.OrderByUpdatedTs = true
-	}
-
 	list, err := s.Store.ListMemos(ctx, findMemoMessage)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 	}
 
 	displayTsList := []int64{}
-	if memoDisplayWithUpdatedTs {
-		for _, memo := range list {
-			displayTsList = append(displayTsList, memo.UpdatedTs)
-		}
-	} else {
-		for _, memo := range list {
-			displayTsList = append(displayTsList, memo.CreatedTs)
-		}
+	for _, memo := range list {
+		displayTsList = append(displayTsList, memo.CreatedTs)
 	}
 	return c.JSON(http.StatusOK, displayTsList)
 }
@@ -704,40 +644,6 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 		rowStatus := store.RowStatus(patchMemoRequest.RowStatus.String())
 		updateMemoMessage.RowStatus = &rowStatus
 	}
-	if patchMemoRequest.Visibility != nil {
-		visibility := store.Visibility(patchMemoRequest.Visibility.String())
-		updateMemoMessage.Visibility = &visibility
-		// Find disable public memos system setting.
-		disablePublicMemosSystemSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-			Name: SystemSettingDisablePublicMemosName.String(),
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
-		}
-		if disablePublicMemosSystemSetting != nil {
-			disablePublicMemos := false
-			err = json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
-			}
-			if disablePublicMemos {
-				user, err := s.Store.GetUser(ctx, &store.FindUser{
-					ID: &userID,
-				})
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-				}
-				if user == nil {
-					return echo.NewHTTPError(http.StatusNotFound, "User not found")
-				}
-				// Enforce normal user to save as private memo if public memos are disabled.
-				if user.Role == store.RoleUser {
-					visibility = store.Visibility("PRIVATE")
-					updateMemoMessage.Visibility = &visibility
-				}
-			}
-		}
-	}
 
 	err = s.Store.UpdateMemo(ctx, updateMemoMessage)
 	if err != nil {
@@ -853,14 +759,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 
 	// Compose display ts.
 	memoMessage.DisplayTs = memoMessage.CreatedTs
-	// Find memo display with updated ts setting.
-	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if memoDisplayWithUpdatedTs {
-		memoMessage.DisplayTs = memoMessage.UpdatedTs
-	}
 
 	// Compose related resources.
 	resourceList, err := s.Store.ListResources(ctx, &store.FindResource{
@@ -896,23 +794,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 	memoMessage.RelationList = relationList
 	return memoMessage, nil
-}
-
-func (s *APIV1Service) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (bool, error) {
-	memoDisplayWithUpdatedTsSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: SystemSettingMemoDisplayWithUpdatedTsName.String(),
-	})
-	if err != nil {
-		return false, errors.Wrap(err, "failed to find system setting")
-	}
-	memoDisplayWithUpdatedTs := false
-	if memoDisplayWithUpdatedTsSetting != nil {
-		err = json.Unmarshal([]byte(memoDisplayWithUpdatedTsSetting.Value), &memoDisplayWithUpdatedTs)
-		if err != nil {
-			return false, errors.Wrap(err, "failed to unmarshal system setting value")
-		}
-	}
-	return memoDisplayWithUpdatedTs, nil
 }
 
 func convertCreateMemoRequestToMemoMessage(memoCreate *CreateMemoRequest) *store.Memo {

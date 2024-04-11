@@ -17,6 +17,11 @@ func (s *Store) MigrateWorkspaceSetting(ctx context.Context) error {
 		return errors.Wrap(err, "failed to list workspace settings")
 	}
 
+	workspaceBasicSetting, err := s.GetWorkspaceBasicSetting(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to get workspace basic setting")
+	}
+
 	workspaceGeneralSetting, err := s.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
 		return errors.Wrap(err, "failed to get workspace general setting")
@@ -27,7 +32,11 @@ func (s *Store) MigrateWorkspaceSetting(ctx context.Context) error {
 		var baseValue any
 		// nolint
 		json.Unmarshal([]byte(workspaceSetting.Value), &baseValue)
-		if workspaceSetting.Name == "allow-signup" {
+		if workspaceSetting.Name == "server-id" {
+			workspaceBasicSetting.ServerId = workspaceSetting.Value
+		} else if workspaceSetting.Name == "secret-session" {
+			workspaceBasicSetting.SecretKey = workspaceSetting.Value
+		} else if workspaceSetting.Name == "allow-signup" {
 			workspaceGeneralSetting.DisallowSignup = !baseValue.(bool)
 		} else if workspaceSetting.Name == "disable-password-login" {
 			workspaceGeneralSetting.DisallowPasswordLogin = baseValue.(bool)
@@ -48,6 +57,13 @@ func (s *Store) MigrateWorkspaceSetting(ctx context.Context) error {
 				return errors.Wrap(err, fmt.Sprintf("failed to delete workspace setting: %s", workspaceSetting.Name))
 			}
 		}
+	}
+
+	if _, err := s.UpsertWorkspaceSettingV1(ctx, &storepb.WorkspaceSetting{
+		Key:   storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC,
+		Value: &storepb.WorkspaceSetting_BasicSetting{BasicSetting: workspaceBasicSetting},
+	}); err != nil {
+		return errors.Wrap(err, "failed to upsert workspace basic setting")
 	}
 
 	if _, err := s.UpsertWorkspaceSettingV1(ctx, &storepb.WorkspaceSetting{

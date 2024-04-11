@@ -60,7 +60,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
       handleCloseBtnClick();
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message);
+      toast.error(error.details);
     }
   };
 

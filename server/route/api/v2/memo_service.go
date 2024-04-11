@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
@@ -21,7 +20,6 @@ import (
 	"github.com/usememos/memos/plugin/webhook"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	apiv1 "github.com/usememos/memos/server/route/api/v1"
 	"github.com/usememos/memos/store"
 )
 
@@ -49,12 +47,11 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		Content:    request.Content,
 		Visibility: convertVisibilityToStore(request.Visibility),
 	}
-	// Find disable public memos system setting.
-	disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get system setting")
+		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 	}
-	if disablePublicMemosSystem && create.Visibility == store.Public {
+	if workspaceMemoRelatedSetting.DisallowPublicVisible && create.Visibility == store.Public {
 		return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
 	}
 
@@ -238,13 +235,12 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name")
 			}
 		} else if path == "visibility" {
-			visibility := convertVisibilityToStore(request.Memo.Visibility)
-			// Find disable public memos system setting.
-			disablePublicMemosSystem, err := s.getDisablePublicMemosSystemSettingValue(ctx)
+			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get system setting")
+				return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 			}
-			if disablePublicMemosSystem && visibility == store.Public {
+			visibility := convertVisibilityToStore(request.Memo.Visibility)
+			if workspaceMemoRelatedSetting.DisallowPublicVisible && visibility == store.Public {
 				return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
 			}
 			update.Visibility = &visibility
@@ -467,14 +463,14 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 		return nil, status.Errorf(codes.Internal, "invalid timezone location")
 	}
 
-	displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 	}
 	stats := make(map[string]int32)
 	for _, memo := range memos {
 		displayTs := memo.CreatedTs
-		if displayWithUpdatedTs {
+		if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
 			displayTs = memo.UpdatedTs
 		}
 		stats[time.Unix(displayTs, 0).In(location).Format("2006-01-02")]++
@@ -529,7 +525,11 @@ func (s *APIV2Service) ExportMemos(ctx context.Context, request *apiv2pb.ExportM
 
 func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*apiv2pb.Memo, error) {
 	displayTs := memo.CreatedTs
-	if displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx); err == nil && displayWithUpdatedTs {
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+	}
+	if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
 		displayTs = memo.UpdatedTs
 	}
 
@@ -570,42 +570,6 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Resources:   listMemoResourcesResponse.Resources,
 		Reactions:   listMemoReactionsResponse.Reactions,
 	}, nil
-}
-
-func (s *APIV2Service) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (bool, error) {
-	memoDisplayWithUpdatedTsSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: apiv1.SystemSettingMemoDisplayWithUpdatedTsName.String(),
-	})
-	if err != nil {
-		return false, errors.Wrap(err, "failed to find system setting")
-	}
-	if memoDisplayWithUpdatedTsSetting == nil {
-		return false, nil
-	}
-
-	memoDisplayWithUpdatedTs := false
-	if err := json.Unmarshal([]byte(memoDisplayWithUpdatedTsSetting.Value), &memoDisplayWithUpdatedTs); err != nil {
-		return false, errors.Wrap(err, "failed to unmarshal system setting value")
-	}
-	return memoDisplayWithUpdatedTs, nil
-}
-
-func (s *APIV2Service) getDisablePublicMemosSystemSettingValue(ctx context.Context) (bool, error) {
-	disablePublicMemosSystemSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: apiv1.SystemSettingDisablePublicMemosName.String(),
-	})
-	if err != nil {
-		return false, errors.Wrap(err, "failed to find system setting")
-	}
-	if disablePublicMemosSystemSetting == nil {
-		return false, nil
-	}
-
-	disablePublicMemos := false
-	if err := json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos); err != nil {
-		return false, errors.Wrap(err, "failed to unmarshal system setting value")
-	}
-	return disablePublicMemos, nil
 }
 
 func convertVisibilityFromStore(visibility store.Visibility) apiv2pb.Visibility {
@@ -654,22 +618,22 @@ func (s *APIV2Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 			find.OrderByPinned = filter.OrderByPinned
 		}
 		if filter.DisplayTimeAfter != nil {
-			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
-				return status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+				return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 			}
-			if displayWithUpdatedTs {
+			if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
 				find.UpdatedTsAfter = filter.DisplayTimeAfter
 			} else {
 				find.CreatedTsAfter = filter.DisplayTimeAfter
 			}
 		}
 		if filter.DisplayTimeBefore != nil {
-			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
-				return status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+				return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 			}
-			if displayWithUpdatedTs {
+			if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
 				find.UpdatedTsBefore = filter.DisplayTimeBefore
 			} else {
 				find.CreatedTsBefore = filter.DisplayTimeBefore
@@ -717,11 +681,11 @@ func (s *APIV2Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		find.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
-	displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+		return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 	}
-	if displayWithUpdatedTs {
+	if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
 		find.OrderByUpdatedTs = true
 	}
 	return nil

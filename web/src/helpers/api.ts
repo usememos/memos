@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Resource } from "@/types/proto/api/v2/resource_service";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || "";
 axios.defaults.withCredentials = true;
@@ -14,10 +13,6 @@ export function getSystemSetting() {
 
 export function upsertSystemSetting(systemSetting: SystemSetting) {
   return axios.post<SystemSetting>("/api/v1/system/setting", systemSetting);
-}
-
-export function createResourceWithBlob(formData: FormData) {
-  return axios.post<Resource>("/api/v1/resource/blob", formData);
 }
 
 export function getStorageList() {

@@ -7,8 +7,8 @@ import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useGlobalStore, useResourceStore, useTagStore } from "@/store/module";
-import { useMemoStore, useUserStore } from "@/store/v1";
+import { useGlobalStore, useTagStore } from "@/store/module";
+import { useMemoStore, useResourceStore, useUserStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { Resource } from "@/types/proto/api/v2/resource_service";
@@ -207,21 +207,29 @@ const MemoEditor = (props: Props) => {
       };
     });
 
-    let resource = undefined;
+    const { name: filename, size, type } = file;
+    const buffer = new Uint8Array(await file.arrayBuffer());
+
     try {
-      resource = await resourceStore.createResourceWithBlob(file);
+      const resource = await resourceStore.createResource({
+        resource: Resource.fromPartial({
+          filename,
+          size,
+          type,
+          content: buffer,
+        }),
+      });
+      setState((state) => {
+        return {
+          ...state,
+          isUploadingResource: false,
+        };
+      });
+      return resource;
     } catch (error: any) {
       console.error(error);
-      toast.error(typeof error === "string" ? error : error.response.data.message);
+      toast.error(error.details);
     }
-
-    setState((state) => {
-      return {
-        ...state,
-        isUploadingResource: false,
-      };
-    });
-    return resource;
   };
 
   const uploadMultiFiles = async (files: FileList) => {

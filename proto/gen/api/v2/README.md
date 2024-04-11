@@ -1609,10 +1609,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| filename | [string](#string) |  |  |
-| external_link | [string](#string) |  |  |
-| type | [string](#string) |  |  |
-| memo | [string](#string) | optional | Format: memos/{id} |
+| resource | [Resource](#memos-api-v2-Resource) |  |  |
 
 
 
@@ -1642,7 +1639,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
+| name | [string](#string) |  | The name of the resource. Format: resources/{id} id is the system generated unique identifier. |
 
 
 
@@ -1667,7 +1664,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
+| name | [string](#string) |  | The name of the resource. Format: resources/{id} id is the system generated unique identifier. |
 
 
 
@@ -1726,10 +1723,11 @@ Used internally for obfuscating the page token.
 | uid | [string](#string) |  | The user defined id of the resource. |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | filename | [string](#string) |  |  |
+| content | [bytes](#bytes) |  |  |
 | external_link | [string](#string) |  |  |
 | type | [string](#string) |  |  |
 | size | [int64](#int64) |  |  |
-| memo | [string](#string) | optional | Format: memos/{id} |
+| memo | [string](#string) | optional | The related memo. Format: memos/{id} |
 
 
 

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package memos.store;
+
+option go_package = "gen/store";
+
+message Storage {
+  int32 id = 1;
+  string name = 2;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    S3 = 1;
+  }
+  Type type = 3;
+  StorageConfig config = 4;
+}
+
+message StorageConfig {
+  oneof storage_config {
+    S3Config s3_config = 1;
+  }
+}
+
+message S3Config {
+  string end_point = 1;
+  string path = 2;
+  string region = 3;
+  string access_key = 4;
+  string secret_key = 5;
+  string bucket = 6;
+  string url_prefix = 7;
+  string url_suffix = 8;
+  bool pre_sign = 9;
+}
