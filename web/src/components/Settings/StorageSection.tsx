@@ -2,7 +2,6 @@ import {
   Button,
   Divider,
   Dropdown,
-  IconButton,
   Input,
   List,
   ListItem,
@@ -11,9 +10,12 @@ import {
   MenuItem,
   Radio,
   RadioGroup,
+  Select,
   Tooltip,
+  Option,
 } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { isEqual } from "lodash-es";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import * as api from "@/helpers/api";
@@ -25,7 +27,6 @@ import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import LearnMore from "../LearnMore";
-import showUpdateLocalStorageDialog from "../UpdateLocalStorageDialog";
 
 const StorageSection = () => {
   const t = useTranslate();
@@ -36,6 +37,26 @@ const StorageSection = () => {
       workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE)?.storageSetting || {},
     ),
   );
+
+  const allowSaveStorageSetting = useMemo(() => {
+    if (workspaceStorageSetting.uploadSizeLimitMb <= 0) {
+      return false;
+    }
+
+    const origin = WorkspaceStorageSetting.fromPartial(
+      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE)?.storageSetting || {},
+    );
+    if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.STORAGE_TYPE_LOCAL) {
+      if (workspaceStorageSetting.localStoragePathTemplate.length === 0) {
+        return false;
+      }
+    } else if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.STORAGE_TYPE_EXTERNAL) {
+      if (!workspaceStorageSetting.activedExternalStorageId || workspaceStorageSetting.activedExternalStorageId === 0) {
+        return false;
+      }
+    }
+    return !isEqual(origin, workspaceStorageSetting);
+  }, [workspaceStorageSetting, workspaceSettingStore.getState()]);
 
   useEffect(() => {
     fetchStorageList();
@@ -56,10 +77,14 @@ const StorageSection = () => {
       uploadSizeLimitMb: num,
     };
     setWorkspaceStorageSetting(update);
-    workspaceSettingStore.setWorkspaceSetting({
-      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE}`,
-      storageSetting: update,
-    });
+  };
+
+  const handleLocalStoragePathTemplateChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
+    const update: WorkspaceStorageSetting = {
+      ...workspaceStorageSetting,
+      localStoragePathTemplate: event.target.value,
+    };
+    setWorkspaceStorageSetting(update);
   };
 
   const handleStorageTypeChanged = async (storageType: WorkspaceStorageSetting_StorageType) => {
@@ -68,10 +93,6 @@ const StorageSection = () => {
       storageType: storageType,
     };
     setWorkspaceStorageSetting(update);
-    await workspaceSettingStore.setWorkspaceSetting({
-      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE}`,
-      storageSetting: update,
-    });
   };
 
   const handleActivedExternalStorageIdChanged = async (activedExternalStorageId: number) => {
@@ -80,10 +101,14 @@ const StorageSection = () => {
       activedExternalStorageId: activedExternalStorageId,
     };
     setWorkspaceStorageSetting(update);
+  };
+
+  const saveWorkspaceStorageSetting = async () => {
     await workspaceSettingStore.setWorkspaceSetting({
       name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE}`,
-      storageSetting: update,
+      storageSetting: workspaceStorageSetting,
     });
+    toast.success("Updated");
   };
 
   const handleDeleteStorage = (storage: ObjectStorage) => {
@@ -106,10 +131,9 @@ const StorageSection = () => {
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <div className="w-full flex flex-row justify-start items-center">
-        <span className="font-mono text-sm text-gray-400 mr-2 dark:text-gray-500">{t("setting.storage-section.current-storage")}</span>
-      </div>
+      <div className="font-medium text-gray-700 dark:text-gray-500">{t("setting.storage-section.current-storage")}</div>
       <RadioGroup
+        orientation="horizontal"
         className="w-full"
         value={workspaceStorageSetting.storageType}
         onChange={(event) => {
@@ -117,28 +141,12 @@ const StorageSection = () => {
         }}
       >
         <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_DATABASE} label={t("setting.storage-section.type-database")} />
-        <div>
-          <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_LOCAL} label={t("setting.storage-section.type-local")} />
-          <IconButton size="sm" onClick={() => showUpdateLocalStorageDialog()}>
-            <Icon.PenBox className="w-4 h-auto" />
-          </IconButton>
-        </div>
-        <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_EXTERNAL} label={"S3"} />
-      </RadioGroup>
-      <RadioGroup
-        className="w-full"
-        value={workspaceStorageSetting.activedExternalStorageId}
-        onChange={(event) => {
-          handleActivedExternalStorageIdChanged(Number(event.target.value));
-        }}
-      >
-        {storageList.map((storage) => (
-          <Radio key={storage.id} value={storage.id} label={storage.name} />
-        ))}
+        <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_LOCAL} label={t("setting.storage-section.type-local")} />
+        <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_EXTERNAL} disabled={storageList.length === 0} label={"S3"} />
       </RadioGroup>
       <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">
-          <span className="mr-1">{t("setting.system-section.max-upload-size")}</span>
+          <span className="text-gray-700 dark:text-gray-500 mr-1">{t("setting.system-section.max-upload-size")}</span>
           <Tooltip title={t("setting.system-section.max-upload-size-hint")} placement="top">
             <Icon.HelpCircle className="w-4 h-auto" />
           </Tooltip>
@@ -151,6 +159,36 @@ const StorageSection = () => {
           defaultValue={workspaceStorageSetting.uploadSizeLimitMb}
           onChange={handleMaxUploadSizeChanged}
         />
+      </div>
+      {workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.STORAGE_TYPE_LOCAL && (
+        <div className="w-full flex flex-row justify-between items-center">
+          <span className="text-gray-700 dark:text-gray-500 mr-1">Local file path template</span>
+          <Input
+            defaultValue={workspaceStorageSetting.localStoragePathTemplate}
+            placeholder="assets/{timestamp}_{filename}"
+            onChange={handleLocalStoragePathTemplateChanged}
+          />
+        </div>
+      )}
+      {workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.STORAGE_TYPE_EXTERNAL && (
+        <div className="w-full flex flex-row justify-between items-center">
+          <span className="text-gray-700 dark:text-gray-500 mr-1">Actived storage</span>
+          <Select
+            onChange={(_, value) => handleActivedExternalStorageIdChanged(value as number)}
+            defaultValue={workspaceStorageSetting.activedExternalStorageId}
+          >
+            {storageList.map((storage) => (
+              <Option key={storage.id} value={storage.id}>
+                {storage.name}
+              </Option>
+            ))}
+          </Select>
+        </div>
+      )}
+      <div>
+        <Button disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>
+          {t("common.save")}
+        </Button>
       </div>
       <Divider className="!my-2" />
       <div className="mb-2 w-full flex flex-row justify-between items-center gap-1">

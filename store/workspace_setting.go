@@ -186,6 +186,12 @@ func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.Wo
 	return workspaceMemoRelatedSetting, nil
 }
 
+const (
+	defaultWorkspaceStorageType              = storepb.WorkspaceStorageSetting_STORAGE_TYPE_DATABASE
+	defaultWorkspaceUploadSizeLimitMb        = 30
+	defaultWorkspaceLocalStoragePathTemplate = "assets/{timestamp}_{filename}"
+)
+
 func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.WorkspaceStorageSetting, error) {
 	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
 		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE.String(),
@@ -198,6 +204,15 @@ func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.Worksp
 	if workspaceSetting != nil {
 		workspaceStorageSetting = workspaceSetting.GetStorageSetting()
 	}
+	if workspaceStorageSetting.StorageType == storepb.WorkspaceStorageSetting_STORAGE_TYPE_UNSPECIFIED {
+		workspaceStorageSetting.StorageType = defaultWorkspaceStorageType
+	}
+	if workspaceStorageSetting.UploadSizeLimitMb == 0 {
+		workspaceStorageSetting.UploadSizeLimitMb = defaultWorkspaceUploadSizeLimitMb
+	}
+	if workspaceStorageSetting.LocalStoragePathTemplate == "" {
+		workspaceStorageSetting.LocalStoragePathTemplate = defaultWorkspaceLocalStoragePathTemplate
+	}
 	return workspaceStorageSetting, nil
 }
 
@@ -208,31 +223,31 @@ func convertWorkspaceSettingFromRaw(workspaceSettingRaw *WorkspaceSetting) (*sto
 	switch workspaceSettingRaw.Name {
 	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC.String():
 		basicSetting := &storepb.WorkspaceBasicSetting{}
-		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), basicSetting); err != nil {
+		if err := protojsonUnmarshaler.Unmarshal([]byte(workspaceSettingRaw.Value), basicSetting); err != nil {
 			return nil, err
 		}
 		workspaceSetting.Value = &storepb.WorkspaceSetting_BasicSetting{BasicSetting: basicSetting}
 	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String():
 		generalSetting := &storepb.WorkspaceGeneralSetting{}
-		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), generalSetting); err != nil {
+		if err := protojsonUnmarshaler.Unmarshal([]byte(workspaceSettingRaw.Value), generalSetting); err != nil {
 			return nil, err
 		}
 		workspaceSetting.Value = &storepb.WorkspaceSetting_GeneralSetting{GeneralSetting: generalSetting}
 	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE.String():
 		storageSetting := &storepb.WorkspaceStorageSetting{}
-		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), storageSetting); err != nil {
+		if err := protojsonUnmarshaler.Unmarshal([]byte(workspaceSettingRaw.Value), storageSetting); err != nil {
 			return nil, err
 		}
 		workspaceSetting.Value = &storepb.WorkspaceSetting_StorageSetting{StorageSetting: storageSetting}
 	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED.String():
 		memoRelatedSetting := &storepb.WorkspaceMemoRelatedSetting{}
-		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), memoRelatedSetting); err != nil {
+		if err := protojsonUnmarshaler.Unmarshal([]byte(workspaceSettingRaw.Value), memoRelatedSetting); err != nil {
 			return nil, err
 		}
 		workspaceSetting.Value = &storepb.WorkspaceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
 	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_TELEGRAM_INTEGRATION.String():
 		telegramIntegrationSetting := &storepb.WorkspaceTelegramIntegrationSetting{}
-		if err := protojson.Unmarshal([]byte(workspaceSettingRaw.Value), telegramIntegrationSetting); err != nil {
+		if err := protojsonUnmarshaler.Unmarshal([]byte(workspaceSettingRaw.Value), telegramIntegrationSetting); err != nil {
 			return nil, err
 		}
 		workspaceSetting.Value = &storepb.WorkspaceSetting_TelegramIntegrationSetting{TelegramIntegrationSetting: telegramIntegrationSetting}

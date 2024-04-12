@@ -3084,7 +3084,7 @@ Used internally for obfuscating the page token.
 | ----- | ---- | ----- | ----------- |
 | storage_type | [WorkspaceStorageSetting.StorageType](#memos-api-v2-WorkspaceStorageSetting-StorageType) |  | storage_type is the storage type. |
 | actived_external_storage_id | [int32](#int32) | optional | The id of actived external storage. |
-| local_storage_path | [string](#string) |  | The local storage path for STORAGE_TYPE_LOCAL. e.g. assets/{timestamp}_{filename} |
+| local_storage_path_template | [string](#string) |  | The template of local storage path. e.g. assets/{timestamp}_{filename} |
 | upload_size_limit_mb | [int64](#int64) |  | The max upload size in megabytes. |
 
 

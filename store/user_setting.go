@@ -3,8 +3,16 @@ package store
 import (
 	"context"
 
+	"github.com/pkg/errors"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"google.golang.org/protobuf/encoding/protojson"
 )
+
+type UserSetting struct {
+	UserID int32
+	Key    storepb.UserSettingKey
+	Value  string
+}
 
 type FindUserSetting struct {
 	UserID *int32
@@ -12,25 +20,39 @@ type FindUserSetting struct {
 }
 
 func (s *Store) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
-	userSettingMessage, err := s.driver.UpsertUserSetting(ctx, upsert)
+	userSettingRaw, err := convertUserSettingToRaw(upsert)
+	if err != nil {
+		return nil, err
+	}
+	userSettingRaw, err = s.driver.UpsertUserSetting(ctx, userSettingRaw)
 	if err != nil {
 		return nil, err
 	}
 
-	s.userSettingCache.Store(getUserSettingV1CacheKey(userSettingMessage.UserId, userSettingMessage.Key.String()), userSettingMessage)
-	return userSettingMessage, nil
+	userSetting, err := convertUserSettingFromRaw(userSettingRaw)
+	if err != nil {
+		return nil, err
+	}
+	s.userSettingCache.Store(getUserSettingV1CacheKey(userSetting.UserId, userSetting.Key.String()), userSetting)
+	return userSetting, nil
 }
 
 func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*storepb.UserSetting, error) {
-	userSettingList, err := s.driver.ListUserSettings(ctx, find)
+	userSettingRawList, err := s.driver.ListUserSettings(ctx, find)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, userSetting := range userSettingList {
+	userSettings := []*storepb.UserSetting{}
+	for _, userSettingRaw := range userSettingRawList {
+		userSetting, err := convertUserSettingFromRaw(userSettingRaw)
+		if err != nil {
+			return nil, err
+		}
 		s.userSettingCache.Store(getUserSettingV1CacheKey(userSetting.UserId, userSetting.Key.String()), userSetting)
+		userSettings = append(userSettings, userSetting)
 	}
-	return userSettingList, nil
+	return userSettings, nil
 }
 
 func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*storepb.UserSetting, error) {
@@ -44,9 +66,11 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*sto
 	if err != nil {
 		return nil, err
 	}
-
 	if len(list) == 0 {
 		return nil, nil
+	}
+	if len(list) > 1 {
+		return nil, errors.Errorf("expected 1 user setting, but got %d", len(list))
 	}
 
 	userSetting := list[0]
@@ -96,4 +120,59 @@ func (s *Store) RemoveUserAccessToken(ctx context.Context, userID int32, token s
 	})
 
 	return err
+}
+
+func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
+	userSetting := &storepb.UserSetting{
+		UserId: raw.UserID,
+		Key:    raw.Key,
+	}
+
+	switch raw.Key {
+	case storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS:
+		accessTokensUserSetting := &storepb.AccessTokensUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), accessTokensUserSetting); err != nil {
+			return nil, err
+		}
+		userSetting.Value = &storepb.UserSetting_AccessTokens{AccessTokens: accessTokensUserSetting}
+	case storepb.UserSettingKey_USER_SETTING_LOCALE:
+		userSetting.Value = &storepb.UserSetting_Locale{Locale: raw.Value}
+	case storepb.UserSettingKey_USER_SETTING_APPEARANCE:
+		userSetting.Value = &storepb.UserSetting_Appearance{Appearance: raw.Value}
+	case storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY:
+		userSetting.Value = &storepb.UserSetting_MemoVisibility{MemoVisibility: raw.Value}
+	case storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID:
+		userSetting.Value = &storepb.UserSetting_TelegramUserId{TelegramUserId: raw.Value}
+	default:
+		return nil, errors.Errorf("unsupported user setting key: %v", raw.Key)
+	}
+	return userSetting, nil
+}
+
+func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, error) {
+	raw := &UserSetting{
+		UserID: userSetting.UserId,
+		Key:    userSetting.Key,
+	}
+
+	switch userSetting.Key {
+	case storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS:
+		accessTokensUserSetting := userSetting.GetAccessTokens()
+		value, err := protojson.Marshal(accessTokensUserSetting)
+		if err != nil {
+			return nil, err
+		}
+		raw.Value = string(value)
+	case storepb.UserSettingKey_USER_SETTING_LOCALE:
+		raw.Value = userSetting.GetLocale()
+	case storepb.UserSettingKey_USER_SETTING_APPEARANCE:
+		raw.Value = userSetting.GetAppearance()
+	case storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY:
+		raw.Value = userSetting.GetMemoVisibility()
+	case storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID:
+		raw.Value = userSetting.GetTelegramUserId()
+	default:
+		return nil, errors.Errorf("unsupported user setting key: %v", userSetting.Key)
+	}
+	return raw, nil
 }

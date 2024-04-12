@@ -61,8 +61,8 @@ type Driver interface {
 	DeleteUser(ctx context.Context, delete *DeleteUser) error
 
 	// UserSetting model related methods.
-	UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error)
-	ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*storepb.UserSetting, error)
+	UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*UserSetting, error)
+	ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*UserSetting, error)
 
 	// IdentityProvider model related methods.
 	CreateIdentityProvider(ctx context.Context, create *IdentityProvider) (*IdentityProvider, error)

@@ -1,5 +1,14 @@
 package store
 
+import "google.golang.org/protobuf/encoding/protojson"
+
+var (
+	protojsonUnmarshaler = protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: true,
+	}
+)
+
 // RowStatus is the status for a row.
 type RowStatus string
 

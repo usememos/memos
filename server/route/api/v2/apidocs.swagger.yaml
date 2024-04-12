@@ -2069,10 +2069,10 @@ definitions:
         type: integer
         format: int32
         description: The id of actived external storage.
-      localStoragePath:
+      localStoragePathTemplate:
         type: string
         title: |-
-          The local storage path for STORAGE_TYPE_LOCAL.
+          The template of local storage path.
           e.g. assets/{timestamp}_{filename}
       uploadSizeLimitMb:
         type: string

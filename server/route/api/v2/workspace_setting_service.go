@@ -176,9 +176,10 @@ func convertWorkspaceStorageSettingFromStore(setting *storepb.WorkspaceStorageSe
 		return nil
 	}
 	return &apiv2pb.WorkspaceStorageSetting{
-		StorageType:       apiv2pb.WorkspaceStorageSetting_StorageType(setting.StorageType),
-		LocalStoragePath:  setting.LocalStoragePath,
-		UploadSizeLimitMb: setting.UploadSizeLimitMb,
+		StorageType:              apiv2pb.WorkspaceStorageSetting_StorageType(setting.StorageType),
+		LocalStoragePathTemplate: setting.LocalStoragePathTemplate,
+		UploadSizeLimitMb:        setting.UploadSizeLimitMb,
+		ActivedExternalStorageId: setting.ActivedExternalStorageId,
 	}
 }
 
@@ -187,9 +188,10 @@ func convertWorkspaceStorageSettingToStore(setting *apiv2pb.WorkspaceStorageSett
 		return nil
 	}
 	return &storepb.WorkspaceStorageSetting{
-		StorageType:       storepb.WorkspaceStorageSetting_StorageType(setting.StorageType),
-		LocalStoragePath:  setting.LocalStoragePath,
-		UploadSizeLimitMb: setting.UploadSizeLimitMb,
+		StorageType:              storepb.WorkspaceStorageSetting_StorageType(setting.StorageType),
+		LocalStoragePathTemplate: setting.LocalStoragePathTemplate,
+		UploadSizeLimitMb:        setting.UploadSizeLimitMb,
+		ActivedExternalStorageId: setting.ActivedExternalStorageId,
 	}
 }
 

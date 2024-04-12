@@ -260,8 +260,8 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 
 	if workspaceStorageSetting.StorageType == storepb.WorkspaceStorageSetting_STORAGE_TYPE_LOCAL {
 		localStoragePath := "assets/{timestamp}_{filename}"
-		if workspaceStorageSetting.LocalStoragePath != "" {
-			localStoragePath = workspaceStorageSetting.LocalStoragePath
+		if workspaceStorageSetting.LocalStoragePathTemplate != "" {
+			localStoragePath = workspaceStorageSetting.LocalStoragePathTemplate
 		}
 
 		internalPath := localStoragePath
