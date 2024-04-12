@@ -271,6 +271,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		internalPath = replacePathTemplate(internalPath, create.Filename)
 		internalPath = filepath.ToSlash(internalPath)
 
+		// Ensure the directory exists.
 		osPath := filepath.FromSlash(internalPath)
 		if !filepath.IsAbs(osPath) {
 			osPath = filepath.Join(s.Profile.Data, osPath)
@@ -285,7 +286,8 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		}
 		defer dst.Close()
 
-		if err := os.WriteFile(dir, create.Blob, 0644); err != nil {
+		// Write the blob to the file.
+		if err := os.WriteFile(osPath, create.Blob, 0644); err != nil {
 			return errors.Wrap(err, "Failed to write file")
 		}
 		create.InternalPath = internalPath
