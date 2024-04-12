@@ -69,7 +69,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
       ["status"],
     );
     if (!silence) {
-      toast.success("Archived");
+      toast.success(t("message.archived-successfully"));
     }
   };
 

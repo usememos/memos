@@ -97,7 +97,7 @@ const MemoActionMenu = (props: Props) => {
       dialogName: "delete-memo-dialog",
       onConfirm: async () => {
         await memoStore.deleteMemo(memo.name);
-        toast.success("Deleted successfully");
+        toast.success(t("message.deleted-successfully"));
         if (isInMemoDetailPage) {
           navigateTo("/");
         }

@@ -1,6 +1,7 @@
 import { Tooltip } from "@mui/joy";
 import classNames from "classnames";
 import { getNormalizedDateString, getDateWithOffset } from "@/helpers/datetime";
+import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   // Format: 2021-1
@@ -25,6 +26,7 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
 };
 
 const ActivityCalendar = (props: Props) => {
+  const t = useTranslate();
   const { month: monthStr, data, onClick } = props;
   const year = new Date(monthStr).getUTCFullYear();
   const month = new Date(monthStr).getUTCMonth() + 1;
@@ -52,7 +54,7 @@ const ActivityCalendar = (props: Props) => {
         );
         const count = data[date] || 0;
         const isToday = new Date().toDateString() === new Date(date).toDateString();
-        const tooltipText = count ? `${count} memos in ${date}` : date;
+        const tooltipText = count ? t("memo.count-memos-in-date", { count: count, date: date }) : date;
         return day ? (
           <Tooltip className="shrink-0" key={`${date}-${index}`} title={tooltipText} placement="top" arrow>
             <div

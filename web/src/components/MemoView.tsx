@@ -138,7 +138,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             </Link>
           )}
           {props.showPinned && memo.pinned && (
-            <Tooltip title={"Pinned"} placement="top">
+            <Tooltip title={t("common.pinned")} placement="top">
               <Icon.Bookmark className="w-4 h-auto text-amber-500" />
             </Tooltip>
           )}
