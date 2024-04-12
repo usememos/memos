@@ -31,6 +31,7 @@ type APIV2Service struct {
 	apiv2pb.UnimplementedActivityServiceServer
 	apiv2pb.UnimplementedWebhookServiceServer
 	apiv2pb.UnimplementedLinkServiceServer
+	apiv2pb.UnimplementedStorageServiceServer
 
 	Secret  string
 	Profile *profile.Profile
@@ -68,6 +69,7 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 	apiv2pb.RegisterActivityServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterWebhookServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterLinkServiceServer(grpcServer, apiv2Service)
+	apiv2pb.RegisterStorageServiceServer(grpcServer, apiv2Service)
 	reflection.Register(grpcServer)
 
 	return apiv2Service
@@ -122,6 +124,9 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 		return err
 	}
 	if err := apiv2pb.RegisterLinkServiceHandler(context.Background(), gwMux, conn); err != nil {
+		return err
+	}
+	if err := apiv2pb.RegisterStorageServiceHandler(context.Background(), gwMux, conn); err != nil {
 		return err
 	}
 	e.Any("/api/v2/*", echo.WrapHandler(gwMux))

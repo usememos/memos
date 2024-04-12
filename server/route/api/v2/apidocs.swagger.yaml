@@ -11,6 +11,7 @@ tags:
   - name: LinkService
   - name: ResourceService
   - name: MemoService
+  - name: StorageService
   - name: TagService
   - name: WebhookService
   - name: WorkspaceService
@@ -515,6 +516,115 @@ paths:
           type: string
       tags:
         - ResourceService
+  /api/v2/storages:
+    get:
+      summary: ListStorages returns a list of storages.
+      operationId: StorageService_ListStorages
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListStoragesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - StorageService
+    post:
+      summary: CreateStorage creates a new storage.
+      operationId: StorageService_CreateStorage
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2CreateStorageResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2CreateStorageRequest'
+      tags:
+        - StorageService
+  /api/v2/storages/{id}:
+    get:
+      summary: GetStorage returns a storage by id.
+      operationId: StorageService_GetStorage
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2GetStorageResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - StorageService
+    delete:
+      summary: DeleteStorage deletes a storage by id.
+      operationId: StorageService_DeleteStorage
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2DeleteStorageResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - StorageService
+  /api/v2/storages/{storage.id}:
+    patch:
+      summary: UpdateStorage updates a storage.
+      operationId: StorageService_UpdateStorage
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2UpdateStorageResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: storage.id
+          in: path
+          required: true
+          type: integer
+          format: int32
+        - name: storage
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              type:
+                $ref: '#/definitions/apiv2StorageType'
+              config:
+                $ref: '#/definitions/apiv2StorageConfig'
+      tags:
+        - StorageService
   /api/v2/tags:
     get:
       summary: ListTags lists tags.
@@ -966,7 +1076,7 @@ paths:
               identifierFilter:
                 type: string
               config:
-                $ref: '#/definitions/IdentityProviderConfig'
+                $ref: '#/definitions/apiv2IdentityProviderConfig'
             title: The identityProvider to update.
       tags:
         - IdentityProviderService
@@ -1834,39 +1944,6 @@ paths:
       tags:
         - ActivityService
 definitions:
-  IdentityProviderConfig:
-    type: object
-    properties:
-      oauth2:
-        $ref: '#/definitions/IdentityProviderConfigOAuth2'
-  IdentityProviderConfigFieldMapping:
-    type: object
-    properties:
-      identifier:
-        type: string
-      displayName:
-        type: string
-      email:
-        type: string
-  IdentityProviderConfigOAuth2:
-    type: object
-    properties:
-      clientId:
-        type: string
-      clientSecret:
-        type: string
-      authUrl:
-        type: string
-      tokenUrl:
-        type: string
-      userInfoUrl:
-        type: string
-      scopes:
-        type: array
-        items:
-          type: string
-      fieldMapping:
-        $ref: '#/definitions/IdentityProviderConfigFieldMapping'
   MemoServiceSetMemoRelationsBody:
     type: object
     properties:
@@ -1920,6 +1997,39 @@ definitions:
     properties:
       version:
         type: string
+  apiv2FieldMapping:
+    type: object
+    properties:
+      identifier:
+        type: string
+      displayName:
+        type: string
+      email:
+        type: string
+  apiv2IdentityProviderConfig:
+    type: object
+    properties:
+      oauth2:
+        $ref: '#/definitions/apiv2OAuth2Config'
+  apiv2OAuth2Config:
+    type: object
+    properties:
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+      authUrl:
+        type: string
+      tokenUrl:
+        type: string
+      userInfoUrl:
+        type: string
+      scopes:
+        type: array
+        items:
+          type: string
+      fieldMapping:
+        $ref: '#/definitions/apiv2FieldMapping'
   apiv2Reaction:
     type: object
     properties:
@@ -1959,6 +2069,50 @@ definitions:
       - ACTIVE
       - ARCHIVED
     default: ROW_STATUS_UNSPECIFIED
+  apiv2S3Config:
+    type: object
+    properties:
+      endPoint:
+        type: string
+      path:
+        type: string
+      region:
+        type: string
+      accessKey:
+        type: string
+      secretKey:
+        type: string
+      bucket:
+        type: string
+      urlPrefix:
+        type: string
+      urlSuffix:
+        type: string
+      preSign:
+        type: boolean
+  apiv2Storage:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/apiv2StorageType'
+      config:
+        $ref: '#/definitions/apiv2StorageConfig'
+  apiv2StorageConfig:
+    type: object
+    properties:
+      s3Config:
+        $ref: '#/definitions/apiv2S3Config'
+  apiv2StorageType:
+    type: string
+    enum:
+      - TYPE_UNSPECIFIED
+      - S3
+    default: TYPE_UNSPECIFIED
   apiv2UserSetting:
     type: object
     properties:
@@ -2163,6 +2317,16 @@ definitions:
     properties:
       resource:
         $ref: '#/definitions/v2Resource'
+  v2CreateStorageRequest:
+    type: object
+    properties:
+      storage:
+        $ref: '#/definitions/apiv2Storage'
+  v2CreateStorageResponse:
+    type: object
+    properties:
+      storage:
+        $ref: '#/definitions/apiv2Storage'
   v2CreateUserAccessTokenResponse:
     type: object
     properties:
@@ -2194,6 +2358,8 @@ definitions:
   v2DeleteMemoResponse:
     type: object
   v2DeleteResourceResponse:
+    type: object
+  v2DeleteStorageResponse:
     type: object
   v2DeleteTagResponse:
     type: object
@@ -2240,6 +2406,11 @@ definitions:
     properties:
       resource:
         $ref: '#/definitions/v2Resource'
+  v2GetStorageResponse:
+    type: object
+    properties:
+      storage:
+        $ref: '#/definitions/apiv2Storage'
   v2GetTagSuggestionsResponse:
     type: object
     properties:
@@ -2298,7 +2469,7 @@ definitions:
       identifierFilter:
         type: string
       config:
-        $ref: '#/definitions/IdentityProviderConfig'
+        $ref: '#/definitions/apiv2IdentityProviderConfig'
   v2IdentityProviderType:
     type: string
     enum:
@@ -2421,6 +2592,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v2Resource'
+  v2ListStoragesResponse:
+    type: object
+    properties:
+      storages:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/apiv2Storage'
   v2ListTagsResponse:
     type: object
     properties:
@@ -2658,6 +2837,11 @@ definitions:
     properties:
       resource:
         $ref: '#/definitions/v2Resource'
+  v2UpdateStorageResponse:
+    type: object
+    properties:
+      storage:
+        $ref: '#/definitions/apiv2Storage'
   v2UpdateUserResponse:
     type: object
     properties:

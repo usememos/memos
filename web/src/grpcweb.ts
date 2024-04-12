@@ -5,6 +5,7 @@ import { InboxServiceDefinition } from "./types/proto/api/v2/inbox_service";
 import { LinkServiceDefinition } from "./types/proto/api/v2/link_service";
 import { MemoServiceDefinition } from "./types/proto/api/v2/memo_service";
 import { ResourceServiceDefinition } from "./types/proto/api/v2/resource_service";
+import { StorageServiceDefinition } from "./types/proto/api/v2/storage_service";
 import { TagServiceDefinition } from "./types/proto/api/v2/tag_service";
 import { UserServiceDefinition } from "./types/proto/api/v2/user_service";
 import { WebhookServiceDefinition } from "./types/proto/api/v2/webhook_service";
@@ -41,3 +42,5 @@ export const activityServiceClient = clientFactory.create(ActivityServiceDefinit
 export const webhookServiceClient = clientFactory.create(WebhookServiceDefinition, channel);
 
 export const linkServiceClient = clientFactory.create(LinkServiceDefinition, channel);
+
+export const storageServiceClient = clientFactory.create(StorageServiceDefinition, channel);

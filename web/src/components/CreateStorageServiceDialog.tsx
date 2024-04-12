@@ -1,7 +1,8 @@
 import { Button, IconButton, Input, Checkbox, Typography } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import * as api from "@/helpers/api";
+import { storageServiceClient } from "@/grpcweb";
+import { S3Config, Storage, Storage_Type } from "@/types/proto/api/v2/storage_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -9,7 +10,7 @@ import LearnMore from "./LearnMore";
 import RequiredBadge from "./RequiredBadge";
 
 interface Props extends DialogProps {
-  storage?: ObjectStorage;
+  storage?: Storage;
   confirmCallback?: () => void;
 }
 
@@ -17,10 +18,10 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
   const { destroy, storage, confirmCallback } = props;
   const [basicInfo, setBasicInfo] = useState({
-    name: "",
+    title: "",
   });
-  const [type, setType] = useState<StorageType>("S3");
-  const [s3Config, setS3Config] = useState<StorageS3Config>({
+  const [type] = useState<Storage_Type>(Storage_Type.S3);
+  const [s3Config, setS3Config] = useState<S3Config>({
     endPoint: "",
     region: "",
     accessKey: "",
@@ -29,18 +30,17 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     bucket: "",
     urlPrefix: "",
     urlSuffix: "",
-    presign: false,
+    preSign: false,
   });
   const isCreating = storage === undefined;
 
   useEffect(() => {
     if (storage) {
       setBasicInfo({
-        name: storage.name,
+        title: storage.title,
       });
-      setType(storage.type);
       if (storage.type === "S3") {
-        setS3Config(storage.config.s3Config);
+        setS3Config(S3Config.fromPartial(storage.config?.s3Config || {}));
       }
     }
   }, []);
@@ -50,7 +50,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   };
 
   const allowConfirmAction = () => {
-    if (basicInfo.name === "") {
+    if (basicInfo.title === "") {
       return false;
     }
     if (type === "S3") {
@@ -70,21 +70,25 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   const handleConfirmBtnClick = async () => {
     try {
       if (isCreating) {
-        await api.createStorage({
-          ...basicInfo,
-          type: type,
-          config: {
-            s3Config: s3Config,
-          },
+        await storageServiceClient.createStorage({
+          storage: Storage.fromPartial({
+            title: basicInfo.title,
+            type: type,
+            config: {
+              s3Config: s3Config,
+            },
+          }),
         });
       } else {
-        await api.patchStorage({
-          id: storage.id,
-          type: type,
-          ...basicInfo,
-          config: {
-            s3Config: s3Config,
-          },
+        await storageServiceClient.updateStorage({
+          storage: Storage.fromPartial({
+            title: basicInfo.title,
+            type: type,
+            config: {
+              s3Config: s3Config,
+            },
+          }),
+          updateMask: ["title", "config"],
         });
       }
     } catch (error: any) {
@@ -97,7 +101,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     destroy();
   };
 
-  const setPartialS3Config = (state: Partial<StorageS3Config>) => {
+  const setPartialS3Config = (state: Partial<S3Config>) => {
     setS3Config({
       ...s3Config,
       ...state,
@@ -120,11 +124,11 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         <Input
           className="mb-2"
           placeholder={t("common.name")}
-          value={basicInfo.name}
+          value={basicInfo.title}
           onChange={(e) =>
             setBasicInfo({
               ...basicInfo,
-              name: e.target.value,
+              title: e.target.value,
             })
           }
           fullWidth
@@ -222,8 +226,8 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         <Checkbox
           className="mb-2"
           label={t("setting.storage-section.presign-placeholder")}
-          checked={s3Config.presign}
-          onChange={(e) => setPartialS3Config({ presign: e.target.checked })}
+          checked={s3Config.preSign}
+          onChange={(e) => setPartialS3Config({ preSign: e.target.checked })}
         />
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
@@ -238,7 +242,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-function showCreateStorageServiceDialog(storage?: ObjectStorage, confirmCallback?: () => void) {
+function showCreateStorageServiceDialog(storage?: Storage, confirmCallback?: () => void) {
   generateDialog(
     {
       className: "create-storage-service-dialog",

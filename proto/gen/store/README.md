@@ -12,9 +12,9 @@
     - [RowStatus](#memos-store-RowStatus)
   
 - [store/idp.proto](#store_idp-proto)
+    - [FieldMapping](#memos-store-FieldMapping)
     - [IdentityProviderConfig](#memos-store-IdentityProviderConfig)
-    - [IdentityProviderConfig.FieldMapping](#memos-store-IdentityProviderConfig-FieldMapping)
-    - [IdentityProviderConfig.OAuth2](#memos-store-IdentityProviderConfig-OAuth2)
+    - [OAuth2Config](#memos-store-OAuth2Config)
   
 - [store/inbox.proto](#store_inbox-proto)
     - [InboxMessage](#memos-store-InboxMessage)
@@ -158,24 +158,9 @@
 
 
 
-<a name="memos-store-IdentityProviderConfig"></a>
+<a name="memos-store-FieldMapping"></a>
 
-### IdentityProviderConfig
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| oauth2 | [IdentityProviderConfig.OAuth2](#memos-store-IdentityProviderConfig-OAuth2) |  |  |
-
-
-
-
-
-
-<a name="memos-store-IdentityProviderConfig-FieldMapping"></a>
-
-### IdentityProviderConfig.FieldMapping
+### FieldMapping
 
 
 
@@ -190,9 +175,24 @@
 
 
 
-<a name="memos-store-IdentityProviderConfig-OAuth2"></a>
+<a name="memos-store-IdentityProviderConfig"></a>
 
-### IdentityProviderConfig.OAuth2
+### IdentityProviderConfig
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| oauth2 | [OAuth2Config](#memos-store-OAuth2Config) |  |  |
+
+
+
+
+
+
+<a name="memos-store-OAuth2Config"></a>
+
+### OAuth2Config
 
 
 
@@ -204,7 +204,7 @@
 | token_url | [string](#string) |  |  |
 | user_info_url | [string](#string) |  |  |
 | scopes | [string](#string) | repeated |  |
-| field_mapping | [IdentityProviderConfig.FieldMapping](#memos-store-IdentityProviderConfig-FieldMapping) |  |  |
+| field_mapping | [FieldMapping](#memos-store-FieldMapping) |  |  |
 
 
 

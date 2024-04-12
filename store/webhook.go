@@ -30,7 +30,7 @@ func (s *Store) ListWebhooks(ctx context.Context, find *FindWebhook) ([]*storepb
 	return s.driver.ListWebhooks(ctx, find)
 }
 
-func (s *Store) GetWebhooks(ctx context.Context, find *FindWebhook) (*storepb.Webhook, error) {
+func (s *Store) GetWebhook(ctx context.Context, find *FindWebhook) (*storepb.Webhook, error) {
 	list, err := s.ListWebhooks(ctx, find)
 	if err != nil {
 		return nil, err

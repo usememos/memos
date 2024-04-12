@@ -55,7 +55,7 @@ func (s *APIV2Service) GetWebhook(ctx context.Context, request *apiv2pb.GetWebho
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
 
-	webhook, err := s.Store.GetWebhooks(ctx, &store.FindWebhook{
+	webhook, err := s.Store.GetWebhook(ctx, &store.FindWebhook{
 		ID:        &request.Id,
 		CreatorID: &currentUser.ID,
 	})

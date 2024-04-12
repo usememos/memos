@@ -18,8 +18,9 @@ import { isEqual } from "lodash-es";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import * as api from "@/helpers/api";
+import { storageServiceClient } from "@/grpcweb";
 import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { Storage } from "@/types/proto/api/v2/storage_service";
 import { WorkspaceStorageSetting, WorkspaceStorageSetting_StorageType } from "@/types/proto/api/v2/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
@@ -31,7 +32,7 @@ import LearnMore from "../LearnMore";
 const StorageSection = () => {
   const t = useTranslate();
   const workspaceSettingStore = useWorkspaceSettingStore();
-  const [storageList, setStorageList] = useState<ObjectStorage[]>([]);
+  const [storageList, setStorageList] = useState<Storage[]>([]);
   const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceStorageSetting>(
     WorkspaceStorageSetting.fromPartial(
       workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE)?.storageSetting || {},
@@ -63,8 +64,8 @@ const StorageSection = () => {
   }, []);
 
   const fetchStorageList = async () => {
-    const { data: storageList } = await api.getStorageList();
-    setStorageList(storageList);
+    const { storages } = await storageServiceClient.listStorages({});
+    setStorageList(storages);
   };
 
   const handleMaxUploadSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
@@ -111,15 +112,15 @@ const StorageSection = () => {
     toast.success("Updated");
   };
 
-  const handleDeleteStorage = (storage: ObjectStorage) => {
+  const handleDeleteStorage = (storage: Storage) => {
     showCommonDialog({
       title: t("setting.storage-section.delete-storage"),
-      content: t("setting.storage-section.warning-text", { name: storage.name }),
+      content: t("setting.storage-section.warning-text", { name: storage.title }),
       style: "danger",
       dialogName: "delete-storage-dialog",
       onConfirm: async () => {
         try {
-          await api.deleteStorage(storage.id);
+          await storageServiceClient.deleteStorage({ id: storage.id });
         } catch (error: any) {
           console.error(error);
           toast.error(error.response.data.message);
@@ -179,7 +180,7 @@ const StorageSection = () => {
           >
             {storageList.map((storage) => (
               <Option key={storage.id} value={storage.id}>
-                {storage.name}
+                {storage.title}
               </Option>
             ))}
           </Select>
@@ -205,7 +206,7 @@ const StorageSection = () => {
             className="py-2 w-full border-t last:border-b dark:border-zinc-700 flex flex-row items-center justify-between"
           >
             <div className="flex flex-row items-center">
-              <p className="ml-2">{storage.name}</p>
+              <p className="ml-2">{storage.title}</p>
             </div>
             <div className="flex flex-row items-center">
               <Dropdown>

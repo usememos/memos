@@ -162,7 +162,7 @@ func convertStorageConfigFromRaw(storageType storepb.Storage_Type, configRaw str
 	storageConfig := &storepb.StorageConfig{}
 	if storageType == storepb.Storage_S3 {
 		s3Config := &storepb.S3Config{}
-		err := proto.Unmarshal([]byte(configRaw), s3Config)
+		err := protojsonUnmarshaler.Unmarshal([]byte(configRaw), s3Config)
 		if err != nil {
 			return nil, err
 		}

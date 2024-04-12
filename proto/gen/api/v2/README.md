@@ -68,14 +68,14 @@
     - [CreateIdentityProviderResponse](#memos-api-v2-CreateIdentityProviderResponse)
     - [DeleteIdentityProviderRequest](#memos-api-v2-DeleteIdentityProviderRequest)
     - [DeleteIdentityProviderResponse](#memos-api-v2-DeleteIdentityProviderResponse)
+    - [FieldMapping](#memos-api-v2-FieldMapping)
     - [GetIdentityProviderRequest](#memos-api-v2-GetIdentityProviderRequest)
     - [GetIdentityProviderResponse](#memos-api-v2-GetIdentityProviderResponse)
     - [IdentityProvider](#memos-api-v2-IdentityProvider)
-    - [IdentityProvider.Config](#memos-api-v2-IdentityProvider-Config)
-    - [IdentityProvider.Config.FieldMapping](#memos-api-v2-IdentityProvider-Config-FieldMapping)
-    - [IdentityProvider.Config.OAuth2](#memos-api-v2-IdentityProvider-Config-OAuth2)
+    - [IdentityProviderConfig](#memos-api-v2-IdentityProviderConfig)
     - [ListIdentityProvidersRequest](#memos-api-v2-ListIdentityProvidersRequest)
     - [ListIdentityProvidersResponse](#memos-api-v2-ListIdentityProvidersResponse)
+    - [OAuth2Config](#memos-api-v2-OAuth2Config)
     - [UpdateIdentityProviderRequest](#memos-api-v2-UpdateIdentityProviderRequest)
     - [UpdateIdentityProviderResponse](#memos-api-v2-UpdateIdentityProviderResponse)
   
@@ -172,6 +172,25 @@
     - [Visibility](#memos-api-v2-Visibility)
   
     - [MemoService](#memos-api-v2-MemoService)
+  
+- [api/v2/storage_service.proto](#api_v2_storage_service-proto)
+    - [CreateStorageRequest](#memos-api-v2-CreateStorageRequest)
+    - [CreateStorageResponse](#memos-api-v2-CreateStorageResponse)
+    - [DeleteStorageRequest](#memos-api-v2-DeleteStorageRequest)
+    - [DeleteStorageResponse](#memos-api-v2-DeleteStorageResponse)
+    - [GetStorageRequest](#memos-api-v2-GetStorageRequest)
+    - [GetStorageResponse](#memos-api-v2-GetStorageResponse)
+    - [ListStoragesRequest](#memos-api-v2-ListStoragesRequest)
+    - [ListStoragesResponse](#memos-api-v2-ListStoragesResponse)
+    - [S3Config](#memos-api-v2-S3Config)
+    - [Storage](#memos-api-v2-Storage)
+    - [StorageConfig](#memos-api-v2-StorageConfig)
+    - [UpdateStorageRequest](#memos-api-v2-UpdateStorageRequest)
+    - [UpdateStorageResponse](#memos-api-v2-UpdateStorageResponse)
+  
+    - [Storage.Type](#memos-api-v2-Storage-Type)
+  
+    - [StorageService](#memos-api-v2-StorageService)
   
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
     - [BatchUpsertTagRequest](#memos-api-v2-BatchUpsertTagRequest)
@@ -1067,6 +1086,23 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-FieldMapping"></a>
+
+### FieldMapping
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| identifier | [string](#string) |  |  |
+| display_name | [string](#string) |  |  |
+| email | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-GetIdentityProviderRequest"></a>
 
 ### GetIdentityProviderRequest
@@ -1109,60 +1145,22 @@ Used internally for obfuscating the page token.
 | type | [IdentityProvider.Type](#memos-api-v2-IdentityProvider-Type) |  |  |
 | title | [string](#string) |  |  |
 | identifier_filter | [string](#string) |  |  |
-| config | [IdentityProvider.Config](#memos-api-v2-IdentityProvider-Config) |  |  |
+| config | [IdentityProviderConfig](#memos-api-v2-IdentityProviderConfig) |  |  |
 
 
 
 
 
 
-<a name="memos-api-v2-IdentityProvider-Config"></a>
+<a name="memos-api-v2-IdentityProviderConfig"></a>
 
-### IdentityProvider.Config
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| oauth2 | [IdentityProvider.Config.OAuth2](#memos-api-v2-IdentityProvider-Config-OAuth2) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-IdentityProvider-Config-FieldMapping"></a>
-
-### IdentityProvider.Config.FieldMapping
+### IdentityProviderConfig
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| identifier | [string](#string) |  |  |
-| display_name | [string](#string) |  |  |
-| email | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="memos-api-v2-IdentityProvider-Config-OAuth2"></a>
-
-### IdentityProvider.Config.OAuth2
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| client_id | [string](#string) |  |  |
-| client_secret | [string](#string) |  |  |
-| auth_url | [string](#string) |  |  |
-| token_url | [string](#string) |  |  |
-| user_info_url | [string](#string) |  |  |
-| scopes | [string](#string) | repeated |  |
-| field_mapping | [IdentityProvider.Config.FieldMapping](#memos-api-v2-IdentityProvider-Config-FieldMapping) |  |  |
+| oauth2 | [OAuth2Config](#memos-api-v2-OAuth2Config) |  |  |
 
 
 
@@ -1188,6 +1186,27 @@ Used internally for obfuscating the page token.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | identity_providers | [IdentityProvider](#memos-api-v2-IdentityProvider) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-OAuth2Config"></a>
+
+### OAuth2Config
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| client_id | [string](#string) |  |  |
+| client_secret | [string](#string) |  |  |
+| auth_url | [string](#string) |  |  |
+| token_url | [string](#string) |  |  |
+| user_info_url | [string](#string) |  |  |
+| scopes | [string](#string) | repeated |  |
+| field_mapping | [FieldMapping](#memos-api-v2-FieldMapping) |  |  |
 
 
 
@@ -2418,6 +2437,245 @@ Used internally for obfuscating the page token.
 | ListMemoReactions | [ListMemoReactionsRequest](#memos-api-v2-ListMemoReactionsRequest) | [ListMemoReactionsResponse](#memos-api-v2-ListMemoReactionsResponse) | ListMemoReactions lists reactions for a memo. |
 | UpsertMemoReaction | [UpsertMemoReactionRequest](#memos-api-v2-UpsertMemoReactionRequest) | [UpsertMemoReactionResponse](#memos-api-v2-UpsertMemoReactionResponse) | UpsertMemoReaction upserts a reaction for a memo. |
 | DeleteMemoReaction | [DeleteMemoReactionRequest](#memos-api-v2-DeleteMemoReactionRequest) | [DeleteMemoReactionResponse](#memos-api-v2-DeleteMemoReactionResponse) | DeleteMemoReaction deletes a reaction for a memo. |
+
+ 
+
+
+
+<a name="api_v2_storage_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/storage_service.proto
+
+
+
+<a name="memos-api-v2-CreateStorageRequest"></a>
+
+### CreateStorageRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| storage | [Storage](#memos-api-v2-Storage) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CreateStorageResponse"></a>
+
+### CreateStorageResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| storage | [Storage](#memos-api-v2-Storage) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteStorageRequest"></a>
+
+### DeleteStorageRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteStorageResponse"></a>
+
+### DeleteStorageResponse
+
+
+
+
+
+
+
+<a name="memos-api-v2-GetStorageRequest"></a>
+
+### GetStorageRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetStorageResponse"></a>
+
+### GetStorageResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| storage | [Storage](#memos-api-v2-Storage) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListStoragesRequest"></a>
+
+### ListStoragesRequest
+
+
+
+
+
+
+
+<a name="memos-api-v2-ListStoragesResponse"></a>
+
+### ListStoragesResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| storages | [Storage](#memos-api-v2-Storage) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-S3Config"></a>
+
+### S3Config
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| end_point | [string](#string) |  |  |
+| path | [string](#string) |  |  |
+| region | [string](#string) |  |  |
+| access_key | [string](#string) |  |  |
+| secret_key | [string](#string) |  |  |
+| bucket | [string](#string) |  |  |
+| url_prefix | [string](#string) |  |  |
+| url_suffix | [string](#string) |  |  |
+| pre_sign | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-Storage"></a>
+
+### Storage
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| title | [string](#string) |  |  |
+| type | [Storage.Type](#memos-api-v2-Storage-Type) |  |  |
+| config | [StorageConfig](#memos-api-v2-StorageConfig) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-StorageConfig"></a>
+
+### StorageConfig
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| s3_config | [S3Config](#memos-api-v2-S3Config) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateStorageRequest"></a>
+
+### UpdateStorageRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| storage | [Storage](#memos-api-v2-Storage) |  |  |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateStorageResponse"></a>
+
+### UpdateStorageResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| storage | [Storage](#memos-api-v2-Storage) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-api-v2-Storage-Type"></a>
+
+### Storage.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| S3 | 1 |  |
+
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-StorageService"></a>
+
+### StorageService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| CreateStorage | [CreateStorageRequest](#memos-api-v2-CreateStorageRequest) | [CreateStorageResponse](#memos-api-v2-CreateStorageResponse) | CreateStorage creates a new storage. |
+| GetStorage | [GetStorageRequest](#memos-api-v2-GetStorageRequest) | [GetStorageResponse](#memos-api-v2-GetStorageResponse) | GetStorage returns a storage by id. |
+| ListStorages | [ListStoragesRequest](#memos-api-v2-ListStoragesRequest) | [ListStoragesResponse](#memos-api-v2-ListStoragesResponse) | ListStorages returns a list of storages. |
+| UpdateStorage | [UpdateStorageRequest](#memos-api-v2-UpdateStorageRequest) | [UpdateStorageResponse](#memos-api-v2-UpdateStorageResponse) | UpdateStorage updates a storage. |
+| DeleteStorage | [DeleteStorageRequest](#memos-api-v2-DeleteStorageRequest) | [DeleteStorageResponse](#memos-api-v2-DeleteStorageResponse) | DeleteStorage deletes a storage by id. |
 
  
 
