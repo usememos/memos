@@ -92,9 +92,7 @@ const TagsSection = () => {
       ) : (
         <div className="p-2 border rounded-md flex flex-row justify-start items-start gap-1 text-gray-400 dark:text-gray-500">
           <Icon.ThumbsUp />
-          <p className="mt-0.5 text-sm leading-snug italic">
-          {t("tag.create-tags-guide")}
-          </p>
+          <p className="mt-0.5 text-sm leading-snug italic">{t("tag.create-tags-guide")}</p>
         </div>
       )}
     </div>

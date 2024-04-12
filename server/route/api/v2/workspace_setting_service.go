@@ -12,7 +12,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV2Service) ListWorkspaceSettings(ctx context.Context, request *apiv2pb.ListWorkspaceSettingsRequest) (*apiv2pb.ListWorkspaceSettingsResponse, error) {
+func (s *APIV2Service) ListWorkspaceSettings(ctx context.Context, _ *apiv2pb.ListWorkspaceSettingsRequest) (*apiv2pb.ListWorkspaceSettingsResponse, error) {
 	workspaceSettings, err := s.Store.ListWorkspaceSettingsV1(ctx, &store.FindWorkspaceSetting{})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get workspace setting: %v", err)
