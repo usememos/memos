@@ -346,7 +346,7 @@
   "tag": {
     "all-tags": "全部标签",
     "create-tag": "创建标签",
-    "delete-confirm": "您确定要删除此标签吗?（此操作不可逆）",
+    "delete-confirm": "Are you sure to delete this tag?",
     "delete-tag": "删除标签",
     "hide": "收起",
     "invalid-tag-name": "无效的标签名称",
