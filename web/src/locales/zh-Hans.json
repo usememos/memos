@@ -115,6 +115,7 @@
       "self": "评论"
     },
     "copy-link": "复制链接",
+    "count-memos-in-date": "{{count}} 备忘录 {{date}}",
     "delete-confirm": "您确定要删除此 Memo 吗？此操作不可逆",
     "delete-memo": "删除 Memo",
     "embed": "嵌入",
@@ -345,6 +346,8 @@
   "tag": {
     "all-tags": "全部标签",
     "create-tag": "创建标签",
+    "delete-confirm": "Are you sure to delete this tag?",
+    "delete-tag": "删除标签",
     "hide": "收起",
     "invalid-tag-name": "无效的标签名称",
     "save-all": "全部保存",
