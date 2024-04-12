@@ -87,7 +87,7 @@
   "days": {
     "fri": "Cum",
     "mon": "Paz",
-    "sat": "Cum",
+    "sat": "Cmt",
     "sun": "Paz",
     "thu": "Per",
     "tue": "Sal",
@@ -130,7 +130,8 @@
       "private": "Sadece sizin için görünür",
       "protected": "Çalışma Alanı",
       "public": "Herkese açık"
-    }
+    },
+    "wrapping": "Paketleme"
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",
