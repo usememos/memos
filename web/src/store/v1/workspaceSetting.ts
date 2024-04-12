@@ -15,6 +15,13 @@ const getDefaultState = (): State => ({
 
 export const useWorkspaceSettingStore = create(
   combine(getDefaultState(), (set, get) => ({
+    getState: () => {
+      return get();
+    },
+    listWorkspaceSettings: async () => {
+      const { settings } = await workspaceSettingServiceClient.listWorkspaceSettings({});
+      set({ workspaceSettingByName: settings.reduce((acc, setting) => ({ ...acc, [setting.name]: setting }), {}) });
+    },
     fetchWorkspaceSetting: async (key: WorkspaceSettingKey) => {
       const { setting } = await workspaceSettingServiceClient.getWorkspaceSetting({ name: `${WorkspaceSettingPrefix}${key}` });
       if (!setting) {
@@ -24,6 +31,10 @@ export const useWorkspaceSettingStore = create(
     },
     getWorkspaceSettingByKey: (key: WorkspaceSettingKey): WorkspaceSetting => {
       return get().workspaceSettingByName[`${WorkspaceSettingPrefix}${key}`] || WorkspaceSetting.fromPartial({});
+    },
+    setWorkspaceSetting: async (setting: WorkspaceSetting) => {
+      await workspaceSettingServiceClient.setWorkspaceSetting({ setting });
+      set({ workspaceSettingByName: { ...get().workspaceSettingByName, [setting.name]: setting } });
     },
   })),
 );

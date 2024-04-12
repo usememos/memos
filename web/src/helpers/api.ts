@@ -3,18 +3,6 @@ import axios from "axios";
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || "";
 axios.defaults.withCredentials = true;
 
-export function getSystemStatus() {
-  return axios.get<SystemStatus>("/api/v1/status");
-}
-
-export function getSystemSetting() {
-  return axios.get<SystemSetting[]>("/api/v1/system/setting");
-}
-
-export function upsertSystemSetting(systemSetting: SystemSetting) {
-  return axios.post<SystemSetting>("/api/v1/system/setting", systemSetting);
-}
-
 export function getStorageList() {
   return axios.get<ObjectStorage[]>(`/api/v1/storage`);
 }

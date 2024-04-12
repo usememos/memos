@@ -1,65 +1,39 @@
-import { Button, Divider, Input, Switch, Textarea, Tooltip } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { Button, Divider, Input, Switch, Textarea } from "@mui/joy";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { workspaceSettingServiceClient } from "@/grpcweb";
-import * as api from "@/helpers/api";
-import { useGlobalStore } from "@/store/module";
-import { WorkspaceSettingPrefix } from "@/store/v1";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v2/workspace_setting_service";
+import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
+import {
+  WorkspaceGeneralSetting,
+  WorkspaceMemoRelatedSetting,
+  WorkspaceTelegramIntegrationSetting,
+} from "@/types/proto/api/v2/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 
-interface State {
-  disablePublicMemos: boolean;
-  maxUploadSizeMiB: number;
-  memoDisplayWithUpdatedTs: boolean;
-}
-
-const SystemSection = () => {
+const WorkspaceSection = () => {
   const t = useTranslate();
-  const globalStore = useGlobalStore();
-  const systemStatus = globalStore.state.systemStatus;
-  const [state, setState] = useState<State>({
-    disablePublicMemos: systemStatus.disablePublicMemos,
-    maxUploadSizeMiB: systemStatus.maxUploadSizeMiB,
-    memoDisplayWithUpdatedTs: systemStatus.memoDisplayWithUpdatedTs,
-  });
-  const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(WorkspaceGeneralSetting.fromPartial({}));
-  const [telegramBotToken, setTelegramBotToken] = useState<string>("");
-
-  useEffect(() => {
-    (async () => {
-      await globalStore.fetchSystemStatus();
-      const { setting } = await workspaceSettingServiceClient.getWorkspaceSetting({
-        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
-      });
-      if (setting && setting.generalSetting) {
-        setWorkspaceGeneralSetting(WorkspaceGeneralSetting.fromPartial(setting.generalSetting));
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    api.getSystemSetting().then(({ data: systemSettings }) => {
-      const telegramBotSetting = systemSettings.find((setting) => setting.name === "telegram-bot-token");
-      if (telegramBotSetting) {
-        setTelegramBotToken(telegramBotSetting.value);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    setState({
-      ...state,
-      disablePublicMemos: systemStatus.disablePublicMemos,
-      maxUploadSizeMiB: systemStatus.maxUploadSizeMiB,
-      memoDisplayWithUpdatedTs: systemStatus.memoDisplayWithUpdatedTs,
-    });
-  }, [systemStatus]);
+  const workspaceSettingStore = useWorkspaceSettingStore();
+  const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(
+    WorkspaceGeneralSetting.fromPartial(
+      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL)?.generalSetting || {},
+    ),
+  );
+  const [workspaceMemoRelatedSetting, setWorkspaceMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(
+    WorkspaceMemoRelatedSetting.fromPartial(
+      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED)?.memoRelatedSetting || {},
+    ),
+  );
+  const [workspaceTelegramIntegrationSetting, setWorkspaceTelegramIntegrationSetting] = useState<WorkspaceTelegramIntegrationSetting>(
+    WorkspaceTelegramIntegrationSetting.fromPartial(
+      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_TELEGRAM_INTEGRATION)
+        ?.telegramIntegrationSetting || {},
+    ),
+  );
 
   const handleAllowSignUpChanged = async (value: boolean) => {
     const setting = { ...workspaceGeneralSetting, disallowSignup: !value };
@@ -123,21 +97,20 @@ const SystemSection = () => {
   };
 
   const handleTelegramBotTokenChanged = (value: string) => {
-    setTelegramBotToken(value);
+    setWorkspaceTelegramIntegrationSetting({ ...workspaceTelegramIntegrationSetting, botToken: value });
   };
 
   const handleSaveTelegramBotToken = async () => {
     try {
-      await api.upsertSystemSetting({
-        name: "telegram-bot-token",
-        value: telegramBotToken,
+      await workspaceSettingStore.setWorkspaceSetting({
+        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_TELEGRAM_INTEGRATION}`,
+        telegramIntegrationSetting: workspaceTelegramIntegrationSetting,
       });
+      toast.success("Telegram Bot Token updated");
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message);
-      return;
+      toast.error(error.details);
     }
-    toast.success("Telegram Bot Token updated");
   };
 
   const handleAdditionalStyleChanged = (value: string) => {
@@ -181,51 +154,21 @@ const SystemSection = () => {
   };
 
   const handleDisablePublicMemosChanged = async (value: boolean) => {
-    setState({
-      ...state,
-      disablePublicMemos: value,
-    });
-    globalStore.setSystemStatus({ disablePublicMemos: value });
-    await api.upsertSystemSetting({
-      name: "disable-public-memos",
-      value: JSON.stringify(value),
+    const update: WorkspaceMemoRelatedSetting = { ...workspaceMemoRelatedSetting, disallowPublicVisible: value };
+    setWorkspaceMemoRelatedSetting(update);
+    await workspaceSettingStore.setWorkspaceSetting({
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED}`,
+      memoRelatedSetting: update,
     });
   };
 
   const handleMemoDisplayWithUpdatedTs = async (value: boolean) => {
-    setState({
-      ...state,
-      memoDisplayWithUpdatedTs: value,
+    const update: WorkspaceMemoRelatedSetting = { ...workspaceMemoRelatedSetting, displayWithUpdateTime: value };
+    setWorkspaceMemoRelatedSetting(update);
+    await workspaceSettingStore.setWorkspaceSetting({
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED}`,
+      memoRelatedSetting: update,
     });
-    globalStore.setSystemStatus({ memoDisplayWithUpdatedTs: value });
-    await api.upsertSystemSetting({
-      name: "memo-display-with-updated-ts",
-      value: JSON.stringify(value),
-    });
-  };
-
-  const handleMaxUploadSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
-    // fixes cursor skipping position on mobile
-    event.target.selectionEnd = event.target.value.length;
-
-    let num = parseInt(event.target.value);
-    if (Number.isNaN(num)) {
-      num = 0;
-    }
-    setState({
-      ...state,
-      maxUploadSizeMiB: num,
-    });
-    event.target.value = num.toString();
-    globalStore.setSystemStatus({ maxUploadSizeMiB: num });
-    await api.upsertSystemSetting({
-      name: "max-upload-size-mib",
-      value: JSON.stringify(num),
-    });
-  };
-
-  const handleMaxUploadSizeFocus = (event: React.FocusEvent<HTMLInputElement>) => {
-    event.target.select();
   };
 
   return (
@@ -233,7 +176,8 @@ const SystemSection = () => {
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <div>
-          {t("setting.system-section.server-name")}: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
+          {t("setting.system-section.server-name")}:{" "}
+          <span className="font-mono font-bold">{workspaceGeneralSetting.customProfile?.title || "Memos"}</span>
         </div>
         <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
       </div>
@@ -331,32 +275,23 @@ const SystemSection = () => {
         </div>
       </div>
       <Divider className="!my-3" />
-      <p className="font-medium text-gray-700 dark:text-gray-500">Others</p>
+      <p className="font-medium text-gray-700 dark:text-gray-500">Memo related settings</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.disable-public-memos")}</span>
-        <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
+        <Switch
+          checked={workspaceMemoRelatedSetting.disallowPublicVisible}
+          onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)}
+        />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.display-with-updated-time")}</span>
-        <Switch checked={state.memoDisplayWithUpdatedTs} onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)} />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <div className="flex flex-row items-center">
-          <span className="mr-1">{t("setting.system-section.max-upload-size")}</span>
-          <Tooltip title={t("setting.system-section.max-upload-size-hint")} placement="top">
-            <Icon.HelpCircle className="w-4 h-auto" />
-          </Tooltip>
-        </div>
-        <Input
-          className="w-16"
-          sx={{
-            fontFamily: "monospace",
-          }}
-          defaultValue={state.maxUploadSizeMiB}
-          onFocus={handleMaxUploadSizeFocus}
-          onChange={handleMaxUploadSizeChanged}
+        <Switch
+          checked={workspaceMemoRelatedSetting.displayWithUpdateTime}
+          onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)}
         />
       </div>
+      <Divider className="!my-3" />
+      <p className="font-medium text-gray-700 dark:text-gray-500">Integrations</p>
       <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
         <div className="w-full flex flex-row justify-between items-center">
           <div className="flex flex-row items-center">
@@ -375,7 +310,7 @@ const SystemSection = () => {
             fontSize: "14px",
           }}
           placeholder={t("setting.system-section.telegram-bot-token-placeholder")}
-          value={telegramBotToken}
+          value={workspaceTelegramIntegrationSetting.botToken}
           onChange={(event) => handleTelegramBotTokenChanged(event.target.value)}
         />
         <div className="w-full">
@@ -393,4 +328,4 @@ const SystemSection = () => {
   );
 };
 
-export default SystemSection;
+export default WorkspaceSection;

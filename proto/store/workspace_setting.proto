@@ -42,11 +42,11 @@ message WorkspaceGeneralSetting {
   // disallow_password_login is the flag to disallow password login.
   bool disallow_password_login = 3;
   // additional_script is the additional script.
-  string additional_script = 5;
+  string additional_script = 4;
   // additional_style is the additional style.
-  string additional_style = 6;
+  string additional_style = 5;
   // custom_profile is the custom profile.
-  WorkspaceCustomProfile custom_profile = 4;
+  WorkspaceCustomProfile custom_profile = 6;
 }
 
 message WorkspaceCustomProfile {

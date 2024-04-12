@@ -21,14 +21,6 @@ message WorkspaceProfile {
   string version = 2;
   // mode is the instance mode (e.g. "prod", "dev" or "demo").
   string mode = 3;
-  // disallow_signup is whether the signup is disallowed.
-  bool disallow_signup = 4;
-  // disable_password_login is whether the password login is disabled.
-  bool disable_password_login = 5;
-  // additional_script is the additional script.
-  string additional_script = 6;
-  // additional_style is the additional style.
-  string additional_style = 7;
 }
 
 message GetWorkspaceProfileRequest {}

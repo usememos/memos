@@ -4,7 +4,6 @@ import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { Routes } from "@/router";
-import { useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
 import UserAvatar from "./UserAvatar";
@@ -17,10 +16,8 @@ const UserBanner = (props: Props) => {
   const { collapsed } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const globalStore = useGlobalStore();
-  const { systemStatus } = globalStore.state;
   const user = useCurrentUser();
-  const title = user ? user.nickname || user.username : systemStatus.customizedProfile.name || "memos";
+  const title = user ? user.nickname || user.username : "memos";
   const avatarUrl = user ? user.avatarUrl : "/full-logo.webp";
 
   const handleSignOut = async () => {

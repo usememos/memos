@@ -25,14 +25,6 @@ func (s *APIV2Service) GetWorkspaceProfile(ctx context.Context, _ *apiv2pb.GetWo
 	if owner != nil {
 		workspaceProfile.Owner = owner.Name
 	}
-	generalSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
-	}
-	workspaceProfile.DisallowSignup = generalSetting.DisallowSignup
-	workspaceProfile.DisablePasswordLogin = generalSetting.DisallowPasswordLogin
-	workspaceProfile.AdditionalStyle = generalSetting.AdditionalStyle
-	workspaceProfile.AdditionalScript = generalSetting.AdditionalScript
 	return &apiv2pb.GetWorkspaceProfileResponse{
 		WorkspaceProfile: workspaceProfile,
 	}, nil

@@ -12,6 +12,24 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+func (s *APIV2Service) ListWorkspaceSettings(ctx context.Context, request *apiv2pb.ListWorkspaceSettingsRequest) (*apiv2pb.ListWorkspaceSettingsResponse, error) {
+	workspaceSettings, err := s.Store.ListWorkspaceSettingsV1(ctx, &store.FindWorkspaceSetting{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace setting: %v", err)
+	}
+
+	response := &apiv2pb.ListWorkspaceSettingsResponse{
+		Settings: []*apiv2pb.WorkspaceSetting{},
+	}
+	for _, workspaceSetting := range workspaceSettings {
+		if workspaceSetting.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC {
+			continue
+		}
+		response.Settings = append(response.Settings, convertWorkspaceSettingFromStore(workspaceSetting))
+	}
+	return response, nil
+}
+
 func (s *APIV2Service) GetWorkspaceSetting(ctx context.Context, request *apiv2pb.GetWorkspaceSettingRequest) (*apiv2pb.GetWorkspaceSettingResponse, error) {
 	settingKeyString, err := ExtractWorkspaceSettingKeyFromName(request.Name)
 	if err != nil {
@@ -111,26 +129,46 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 	if setting == nil {
 		return nil
 	}
-	return &apiv2pb.WorkspaceGeneralSetting{
+	generalSetting := &apiv2pb.WorkspaceGeneralSetting{
 		InstanceUrl:           setting.InstanceUrl,
 		DisallowSignup:        setting.DisallowSignup,
 		DisallowPasswordLogin: setting.DisallowPasswordLogin,
 		AdditionalScript:      setting.AdditionalScript,
 		AdditionalStyle:       setting.AdditionalStyle,
 	}
+	if setting.CustomProfile != nil {
+		generalSetting.CustomProfile = &apiv2pb.WorkspaceCustomProfile{
+			Title:       setting.CustomProfile.Title,
+			Description: setting.CustomProfile.Description,
+			LogoUrl:     setting.CustomProfile.LogoUrl,
+			Locale:      setting.CustomProfile.Locale,
+			Appearance:  setting.CustomProfile.Appearance,
+		}
+	}
+	return generalSetting
 }
 
 func convertWorkspaceGeneralSettingToStore(setting *apiv2pb.WorkspaceGeneralSetting) *storepb.WorkspaceGeneralSetting {
 	if setting == nil {
 		return nil
 	}
-	return &storepb.WorkspaceGeneralSetting{
+	generalSetting := &storepb.WorkspaceGeneralSetting{
 		InstanceUrl:           setting.InstanceUrl,
 		DisallowSignup:        setting.DisallowSignup,
 		DisallowPasswordLogin: setting.DisallowPasswordLogin,
 		AdditionalScript:      setting.AdditionalScript,
 		AdditionalStyle:       setting.AdditionalStyle,
 	}
+	if setting.CustomProfile != nil {
+		generalSetting.CustomProfile = &storepb.WorkspaceCustomProfile{
+			Title:       setting.CustomProfile.Title,
+			Description: setting.CustomProfile.Description,
+			LogoUrl:     setting.CustomProfile.LogoUrl,
+			Locale:      setting.CustomProfile.Locale,
+			Appearance:  setting.CustomProfile.Appearance,
+		}
+	}
+	return generalSetting
 }
 
 func convertWorkspaceStorageSettingFromStore(setting *storepb.WorkspaceStorageSetting) *apiv2pb.WorkspaceStorageSetting {

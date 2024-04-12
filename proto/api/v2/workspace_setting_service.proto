@@ -9,6 +9,10 @@ import "google/api/field_behavior.proto";
 option go_package = "gen/api/v2";
 
 service WorkspaceSettingService {
+  // ListWorkspaceSetting returns the list of settings.
+  rpc ListWorkspaceSettings(ListWorkspaceSettingsRequest) returns (ListWorkspaceSettingsResponse) {
+    option (google.api.http) = {get: "/api/v2/workspace/settings"};
+  }
   // GetWorkspaceSetting returns the setting by name.
   rpc GetWorkspaceSetting(GetWorkspaceSettingRequest) returns (GetWorkspaceSettingResponse) {
     option (google.api.http) = {get: "/api/v2/workspace/{name=settings/*}"};
@@ -22,6 +26,12 @@ service WorkspaceSettingService {
     };
     option (google.api.method_signature) = "setting";
   }
+}
+
+message ListWorkspaceSettingsRequest {}
+
+message ListWorkspaceSettingsResponse {
+  repeated WorkspaceSetting settings = 1;
 }
 
 message GetWorkspaceSettingRequest {
@@ -63,19 +73,31 @@ message WorkspaceGeneralSetting {
   // disallow_password_login is the flag to disallow password login.
   bool disallow_password_login = 3;
   // additional_script is the additional script.
-  string additional_script = 5;
+  string additional_script = 4;
   // additional_style is the additional style.
-  string additional_style = 6;
+  string additional_style = 5;
+  // custom_profile is the custom profile.
+  WorkspaceCustomProfile custom_profile = 6;
+}
+
+message WorkspaceCustomProfile {
+  string title = 1;
+  string description = 2;
+  string logo_url = 3;
+  string locale = 4;
+  string appearance = 5;
 }
 
 message WorkspaceStorageSetting {
   // storage_type is the storage type.
   StorageType storage_type = 1;
+  // The id of actived external storage.
+  optional int32 actived_external_storage_id = 2;
   // The local storage path for STORAGE_TYPE_LOCAL.
   // e.g. assets/{timestamp}_{filename}
-  string local_storage_path = 2;
+  string local_storage_path = 3;
   // The max upload size in megabytes.
-  int64 upload_size_limit_mb = 3;
+  int64 upload_size_limit_mb = 4;
 
   enum StorageType {
     STORAGE_TYPE_UNSPECIFIED = 0;

@@ -2,7 +2,7 @@ import { Button, Divider, Input, Option, Select } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { useGlobalStore } from "@/store/module";
+import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useUserStore } from "@/store/v1";
 import { Visibility } from "@/types/proto/api/v2/memo_service";
 import { UserSetting } from "@/types/proto/api/v2/user_service";
@@ -16,29 +16,29 @@ import WebhookSection from "./WebhookSection";
 
 const PreferencesSection = () => {
   const t = useTranslate();
-  const globalStore = useGlobalStore();
+  const commonContext = useCommonContext();
   const userStore = useUserStore();
   const setting = userStore.userSetting as UserSetting;
   const [telegramUserId, setTelegramUserId] = useState<string>(setting.telegramUserId);
 
   const handleLocaleSelectChange = async (locale: Locale) => {
+    commonContext.setLocale(locale);
     await userStore.updateUserSetting(
       {
         locale,
       },
       ["locale"],
     );
-    globalStore.setLocale(locale);
   };
 
   const handleAppearanceSelectChange = async (appearance: Appearance) => {
+    commonContext.setAppearance(appearance);
     await userStore.updateUserSetting(
       {
         appearance,
       },
       ["appearance"],
     );
-    globalStore.setAppearance(appearance);
   };
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {

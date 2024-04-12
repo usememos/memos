@@ -10,7 +10,7 @@ import * as api from "@/helpers/api";
 import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useGlobalStore } from "@/store/module";
+import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v2/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
@@ -19,11 +19,10 @@ import { useTranslate } from "@/utils/i18n";
 const SignIn = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const globalStore = useGlobalStore();
+  const commonContext = useCommonContext();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
-  const { appearance, locale, systemStatus, workspaceProfile } = globalStore.state;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -41,11 +40,11 @@ const SignIn = () => {
   }, []);
 
   useEffect(() => {
-    if (workspaceProfile.mode === "demo") {
+    if (commonContext.profile.mode === "demo") {
       setUsername("memos-demo");
       setPassword("secret");
     }
-  }, [workspaceProfile.mode]);
+  }, [commonContext.profile.mode]);
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -58,11 +57,11 @@ const SignIn = () => {
   };
 
   const handleLocaleSelectChange = (locale: Locale) => {
-    globalStore.setLocale(locale);
+    commonContext.setLocale(locale);
   };
 
   const handleAppearanceSelectChange = (appearance: Appearance) => {
-    globalStore.setAppearance(appearance);
+    commonContext.setAppearance(appearance);
   };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -113,8 +112,10 @@ const SignIn = () => {
     <div className="py-4 sm:py-8 w-80 max-w-full min-h-[100svh] mx-auto flex flex-col justify-start items-center">
       <div className="w-full py-4 grow flex flex-col justify-center items-center">
         <div className="w-full flex flex-row justify-center items-center mb-6">
-          <img className="h-14 w-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
-          <p className="ml-2 text-5xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
+          <img className="h-14 w-auto rounded-full shadow" src={workspaceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
+          <p className="ml-2 text-5xl text-black opacity-80 dark:text-gray-200">
+            {workspaceGeneralSetting.customProfile?.title || "Memos"}
+          </p>
         </div>
         {!workspaceGeneralSetting.disallowPasswordLogin && (
           <>
@@ -199,8 +200,8 @@ const SignIn = () => {
         )}
       </div>
       <div className="mt-4 flex flex-row items-center justify-center w-full gap-2">
-        <LocaleSelect value={locale} onChange={handleLocaleSelectChange} />
-        <AppearanceSelect value={appearance} onChange={handleAppearanceSelectChange} />
+        <LocaleSelect value={commonContext.locale} onChange={handleLocaleSelectChange} />
+        <AppearanceSelect value={commonContext.appearance as Appearance} onChange={handleAppearanceSelectChange} />
       </div>
     </div>
   );

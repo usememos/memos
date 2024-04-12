@@ -31,6 +31,24 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
+func request_WorkspaceSettingService_ListWorkspaceSettings_0(ctx context.Context, marshaler runtime.Marshaler, client WorkspaceSettingServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ListWorkspaceSettingsRequest
+	var metadata runtime.ServerMetadata
+
+	msg, err := client.ListWorkspaceSettings(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_WorkspaceSettingService_ListWorkspaceSettings_0(ctx context.Context, marshaler runtime.Marshaler, server WorkspaceSettingServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ListWorkspaceSettingsRequest
+	var metadata runtime.ServerMetadata
+
+	msg, err := server.ListWorkspaceSettings(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
 func request_WorkspaceSettingService_GetWorkspaceSetting_0(ctx context.Context, marshaler runtime.Marshaler, client WorkspaceSettingServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetWorkspaceSettingRequest
 	var metadata runtime.ServerMetadata
@@ -157,6 +175,31 @@ func local_request_WorkspaceSettingService_SetWorkspaceSetting_0(ctx context.Con
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterWorkspaceSettingServiceHandlerFromEndpoint instead.
 func RegisterWorkspaceSettingServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server WorkspaceSettingServiceServer) error {
 
+	mux.Handle("GET", pattern_WorkspaceSettingService_ListWorkspaceSettings_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v2.WorkspaceSettingService/ListWorkspaceSettings", runtime.WithHTTPPathPattern("/api/v2/workspace/settings"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_WorkspaceSettingService_ListWorkspaceSettings_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_WorkspaceSettingService_ListWorkspaceSettings_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	mux.Handle("GET", pattern_WorkspaceSettingService_GetWorkspaceSetting_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -248,6 +291,28 @@ func RegisterWorkspaceSettingServiceHandler(ctx context.Context, mux *runtime.Se
 // "WorkspaceSettingServiceClient" to call the correct interceptors.
 func RegisterWorkspaceSettingServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client WorkspaceSettingServiceClient) error {
 
+	mux.Handle("GET", pattern_WorkspaceSettingService_ListWorkspaceSettings_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v2.WorkspaceSettingService/ListWorkspaceSettings", runtime.WithHTTPPathPattern("/api/v2/workspace/settings"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_WorkspaceSettingService_ListWorkspaceSettings_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_WorkspaceSettingService_ListWorkspaceSettings_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	mux.Handle("GET", pattern_WorkspaceSettingService_GetWorkspaceSetting_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -296,12 +361,16 @@ func RegisterWorkspaceSettingServiceHandlerClient(ctx context.Context, mux *runt
 }
 
 var (
+	pattern_WorkspaceSettingService_ListWorkspaceSettings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v2", "workspace", "settings"}, ""))
+
 	pattern_WorkspaceSettingService_GetWorkspaceSetting_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 2, 5, 4}, []string{"api", "v2", "workspace", "settings", "name"}, ""))
 
 	pattern_WorkspaceSettingService_SetWorkspaceSetting_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 2, 5, 4}, []string{"api", "v2", "workspace", "settings", "setting.name"}, ""))
 )
 
 var (
+	forward_WorkspaceSettingService_ListWorkspaceSettings_0 = runtime.ForwardResponseMessage
+
 	forward_WorkspaceSettingService_GetWorkspaceSetting_0 = runtime.ForwardResponseMessage
 
 	forward_WorkspaceSettingService_SetWorkspaceSetting_0 = runtime.ForwardResponseMessage

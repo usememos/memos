@@ -1,8 +1,9 @@
 import { Button, IconButton, Input } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import * as api from "@/helpers/api";
-import { useGlobalStore } from "@/store/module";
+import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { WorkspaceGeneralSetting } from "@/types/proto/api/v2/workspace_setting_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -15,10 +16,12 @@ interface State {
 
 const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
   const t = useTranslate();
-  const globalStore = useGlobalStore();
-  const systemStatus = globalStore.state.systemStatus;
+  const workspaceSettingStore = useWorkspaceSettingStore();
+  const workspaceGeneralSetting =
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
+    WorkspaceGeneralSetting.fromPartial({});
   const [state, setState] = useState<State>({
-    disablePasswordLogin: systemStatus.disablePasswordLogin,
+    disablePasswordLogin: workspaceGeneralSetting.disallowPasswordLogin,
   });
   const [confirmedOnce, setConfirmedOnce] = useState(false);
   const [typingConfirmation, setTypingConfirmation] = useState("");
@@ -36,11 +39,13 @@ const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
       setConfirmedOnce(true);
     } else {
       setState({ ...state, disablePasswordLogin: true });
-      globalStore.setSystemStatus({ disablePasswordLogin: true });
       try {
-        await api.upsertSystemSetting({
-          name: "disable-password-login",
-          value: JSON.stringify(true),
+        await workspaceSettingStore.setWorkspaceSetting({
+          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+          generalSetting: {
+            ...workspaceGeneralSetting,
+            disallowPasswordLogin: true,
+          },
         });
         handleCloseBtnClick();
       } catch (error: any) {

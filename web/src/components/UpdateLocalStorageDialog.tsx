@@ -1,23 +1,26 @@
 import { Button, IconButton, Input } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import * as api from "@/helpers/api";
-import { useGlobalStore } from "@/store/module";
+import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { WorkspaceSettingKey, WorkspaceStorageSetting } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import LearnMore from "./LearnMore";
 
 interface Props extends DialogProps {
-  localStoragePath?: string;
   confirmCallback?: () => void;
 }
 
 const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
-  const { destroy, localStoragePath, confirmCallback } = props;
-  const globalStore = useGlobalStore();
-  const [path, setPath] = useState(localStoragePath || "");
+  const { destroy, confirmCallback } = props;
+  const workspaceSettingStore = useWorkspaceSettingStore();
+  const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceStorageSetting>(
+    WorkspaceStorageSetting.fromPartial(
+      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE)?.storageSetting || {},
+    ),
+  );
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -25,23 +28,13 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
 
   const handleConfirmBtnClick = async () => {
     try {
-      await api.upsertSystemSetting({
-        name: "local-storage-path",
-        value: JSON.stringify(path.trim()),
+      await workspaceSettingStore.setWorkspaceSetting({
+        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE}`,
+        storageSetting: workspaceStorageSetting,
       });
-      await globalStore.fetchSystemStatus();
     } catch (error: any) {
       console.error(error);
-      if (error.response.data.error) {
-        const errorText = error.response.data.error as string;
-        const internalIndex = errorText.indexOf("internal=");
-        if (internalIndex !== -1) {
-          const internalError = errorText.substring(internalIndex + 9);
-          toast.error(internalError);
-        }
-      } else {
-        toast.error(error.response.data.message);
-      }
+      toast.error(error.details);
     }
     if (confirmCallback) {
       confirmCallback();
@@ -67,8 +60,8 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
           className="mb-2"
           placeholder={t("setting.storage-section.local-storage-path")}
           fullWidth
-          value={path}
-          onChange={(e) => setPath(e.target.value)}
+          value={workspaceStorageSetting.localStoragePath}
+          onChange={(e) => setWorkspaceStorageSetting({ ...workspaceStorageSetting, localStoragePath: e.target.value })}
         />
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
@@ -81,14 +74,14 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-function showUpdateLocalStorageDialog(localStoragePath?: string, confirmCallback?: () => void) {
+function showUpdateLocalStorageDialog(confirmCallback?: () => void) {
   generateDialog(
     {
       className: "update-local-storage-dialog",
       dialogName: "update-local-storage-dialog",
     },
     UpdateLocalStorageDialog,
-    { localStoragePath, confirmCallback },
+    { confirmCallback },
   );
 }
 

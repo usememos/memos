@@ -215,8 +215,11 @@
 - [api/v2/workspace_setting_service.proto](#api_v2_workspace_setting_service-proto)
     - [GetWorkspaceSettingRequest](#memos-api-v2-GetWorkspaceSettingRequest)
     - [GetWorkspaceSettingResponse](#memos-api-v2-GetWorkspaceSettingResponse)
+    - [ListWorkspaceSettingsRequest](#memos-api-v2-ListWorkspaceSettingsRequest)
+    - [ListWorkspaceSettingsResponse](#memos-api-v2-ListWorkspaceSettingsResponse)
     - [SetWorkspaceSettingRequest](#memos-api-v2-SetWorkspaceSettingRequest)
     - [SetWorkspaceSettingResponse](#memos-api-v2-SetWorkspaceSettingResponse)
+    - [WorkspaceCustomProfile](#memos-api-v2-WorkspaceCustomProfile)
     - [WorkspaceGeneralSetting](#memos-api-v2-WorkspaceGeneralSetting)
     - [WorkspaceMemoRelatedSetting](#memos-api-v2-WorkspaceMemoRelatedSetting)
     - [WorkspaceSetting](#memos-api-v2-WorkspaceSetting)
@@ -2880,10 +2883,6 @@ Used internally for obfuscating the page token.
 | owner | [string](#string) |  | The name of intance owner. Format: &#34;users/{id}&#34; |
 | version | [string](#string) |  | version is the current version of instance |
 | mode | [string](#string) |  | mode is the instance mode (e.g. &#34;prod&#34;, &#34;dev&#34; or &#34;demo&#34;). |
-| disallow_signup | [bool](#bool) |  | disallow_signup is whether the signup is disallowed. |
-| disable_password_login | [bool](#bool) |  | disable_password_login is whether the password login is disabled. |
-| additional_script | [string](#string) |  | additional_script is the additional script. |
-| additional_style | [string](#string) |  | additional_style is the additional style. |
 
 
 
@@ -2946,6 +2945,31 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-ListWorkspaceSettingsRequest"></a>
+
+### ListWorkspaceSettingsRequest
+
+
+
+
+
+
+
+<a name="memos-api-v2-ListWorkspaceSettingsResponse"></a>
+
+### ListWorkspaceSettingsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| settings | [WorkspaceSetting](#memos-api-v2-WorkspaceSetting) | repeated |  |
+
+
+
+
+
+
 <a name="memos-api-v2-SetWorkspaceSettingRequest"></a>
 
 ### SetWorkspaceSettingRequest
@@ -2976,6 +3000,25 @@ Used internally for obfuscating the page token.
 
 
 
+<a name="memos-api-v2-WorkspaceCustomProfile"></a>
+
+### WorkspaceCustomProfile
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| title | [string](#string) |  |  |
+| description | [string](#string) |  |  |
+| logo_url | [string](#string) |  |  |
+| locale | [string](#string) |  |  |
+| appearance | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-WorkspaceGeneralSetting"></a>
 
 ### WorkspaceGeneralSetting
@@ -2989,6 +3032,7 @@ Used internally for obfuscating the page token.
 | disallow_password_login | [bool](#bool) |  | disallow_password_login is the flag to disallow password login. |
 | additional_script | [string](#string) |  | additional_script is the additional script. |
 | additional_style | [string](#string) |  | additional_style is the additional style. |
+| custom_profile | [WorkspaceCustomProfile](#memos-api-v2-WorkspaceCustomProfile) |  | custom_profile is the custom profile. |
 
 
 
@@ -3039,6 +3083,7 @@ Used internally for obfuscating the page token.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | storage_type | [WorkspaceStorageSetting.StorageType](#memos-api-v2-WorkspaceStorageSetting-StorageType) |  | storage_type is the storage type. |
+| actived_external_storage_id | [int32](#int32) | optional | The id of actived external storage. |
 | local_storage_path | [string](#string) |  | The local storage path for STORAGE_TYPE_LOCAL. e.g. assets/{timestamp}_{filename} |
 | upload_size_limit_mb | [int64](#int64) |  | The max upload size in megabytes. |
 
@@ -3089,6 +3134,7 @@ Used internally for obfuscating the page token.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
+| ListWorkspaceSettings | [ListWorkspaceSettingsRequest](#memos-api-v2-ListWorkspaceSettingsRequest) | [ListWorkspaceSettingsResponse](#memos-api-v2-ListWorkspaceSettingsResponse) | ListWorkspaceSetting returns the list of settings. |
 | GetWorkspaceSetting | [GetWorkspaceSettingRequest](#memos-api-v2-GetWorkspaceSettingRequest) | [GetWorkspaceSettingResponse](#memos-api-v2-GetWorkspaceSettingResponse) | GetWorkspaceSetting returns the setting by name. |
 | SetWorkspaceSetting | [SetWorkspaceSettingRequest](#memos-api-v2-SetWorkspaceSettingRequest) | [SetWorkspaceSettingResponse](#memos-api-v2-SetWorkspaceSettingResponse) | SetWorkspaceSetting updates the setting. |
 

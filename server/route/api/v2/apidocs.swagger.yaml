@@ -851,6 +851,21 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - WorkspaceService
+  /api/v2/workspace/settings:
+    get:
+      summary: ListWorkspaceSetting returns the list of settings.
+      operationId: WorkspaceSettingService_ListWorkspaceSettings
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v2ListWorkspaceSettingsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - WorkspaceSettingService
   /api/v2/workspace/{name}:
     get:
       summary: GetWorkspaceSetting returns the setting by name.
@@ -1985,6 +2000,19 @@ definitions:
         type: string
       url:
         type: string
+  apiv2WorkspaceCustomProfile:
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      logoUrl:
+        type: string
+      locale:
+        type: string
+      appearance:
+        type: string
   apiv2WorkspaceGeneralSetting:
     type: object
     properties:
@@ -2003,6 +2031,9 @@ definitions:
       additionalStyle:
         type: string
         description: additional_style is the additional style.
+      customProfile:
+        $ref: '#/definitions/apiv2WorkspaceCustomProfile'
+        description: custom_profile is the custom profile.
   apiv2WorkspaceMemoRelatedSetting:
     type: object
     properties:
@@ -2034,6 +2065,10 @@ definitions:
       storageType:
         $ref: '#/definitions/apiv2WorkspaceStorageSettingStorageType'
         description: storage_type is the storage type.
+      activedExternalStorageId:
+        type: integer
+        format: int32
+        description: The id of actived external storage.
       localStoragePath:
         type: string
         title: |-
@@ -2418,6 +2453,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/apiv2Webhook'
+  v2ListWorkspaceSettingsResponse:
+    type: object
+    properties:
+      settings:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/apiv2WorkspaceSetting'
   v2Memo:
     type: object
     properties:
@@ -2714,15 +2757,3 @@ definitions:
       mode:
         type: string
         description: mode is the instance mode (e.g. "prod", "dev" or "demo").
-      disallowSignup:
-        type: boolean
-        description: disallow_signup is whether the signup is disallowed.
-      disablePasswordLogin:
-        type: boolean
-        description: disable_password_login is whether the password login is disabled.
-      additionalScript:
-        type: string
-        description: additional_script is the additional script.
-      additionalStyle:
-        type: string
-        description: additional_style is the additional style.

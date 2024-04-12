@@ -8,19 +8,24 @@ import LocaleSelect from "@/components/LocaleSelect";
 import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useGlobalStore } from "@/store/module";
-import { useUserStore } from "@/store/v1";
+import { useCommonContext } from "@/layouts/CommonContextProvider";
+import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
+import { WorkspaceGeneralSetting } from "@/types/proto/api/v2/workspace_setting_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const globalStore = useGlobalStore();
+  const commonContext = useCommonContext();
+  const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
-  const { appearance, locale, systemStatus, workspaceProfile } = globalStore.state;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const workspaceGeneralSetting =
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
+    WorkspaceGeneralSetting.fromPartial({});
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -33,11 +38,11 @@ const SignUp = () => {
   };
 
   const handleLocaleSelectChange = (locale: Locale) => {
-    globalStore.setLocale(locale);
+    commonContext.setLocale(locale);
   };
 
   const handleAppearanceSelectChange = (appearance: Appearance) => {
-    globalStore.setAppearance(appearance);
+    commonContext.setAppearance(appearance);
   };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -74,8 +79,10 @@ const SignUp = () => {
     <div className="py-4 sm:py-8 w-80 max-w-full min-h-[100svh] mx-auto flex flex-col justify-start items-center">
       <div className="w-full py-4 grow flex flex-col justify-center items-center">
         <div className="w-full flex flex-row justify-center items-center mb-6">
-          <img className="h-14 w-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
-          <p className="ml-2 text-5xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
+          <img className="h-14 w-auto rounded-full shadow" src={workspaceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
+          <p className="ml-2 text-5xl text-black opacity-80 dark:text-gray-200">
+            {workspaceGeneralSetting.customProfile?.title || "Memos"}
+          </p>
         </div>
         <p className="w-full text-2xl mt-2 dark:text-gray-500">{t("auth.create-your-account")}</p>
         <form className="w-full mt-2" onSubmit={handleFormSubmit}>
@@ -120,7 +127,7 @@ const SignUp = () => {
             </Button>
           </div>
         </form>
-        {!workspaceProfile.owner && <p className="w-full mt-4 text-sm font-medium dark:text-gray-500">{t("auth.host-tip")}</p>}
+        {!commonContext.profile.owner && <p className="w-full mt-4 text-sm font-medium dark:text-gray-500">{t("auth.host-tip")}</p>}
         <p className="w-full mt-4 text-sm">
           <span className="dark:text-gray-500">{t("auth.sign-in-tip")}</span>
           <Link to="/auth" className="cursor-pointer ml-2 text-blue-600 hover:underline" unstable_viewTransition>
@@ -129,8 +136,8 @@ const SignUp = () => {
         </p>
       </div>
       <div className="mt-4 flex flex-row items-center justify-center w-full gap-2">
-        <LocaleSelect value={locale} onChange={handleLocaleSelectChange} />
-        <AppearanceSelect value={appearance} onChange={handleAppearanceSelectChange} />
+        <LocaleSelect value={commonContext.locale} onChange={handleLocaleSelectChange} />
+        <AppearanceSelect value={commonContext.appearance as Appearance} onChange={handleAppearanceSelectChange} />
       </div>
     </div>
   );

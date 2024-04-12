@@ -9,9 +9,9 @@ import PreferencesSection from "@/components/Settings/PreferencesSection";
 import SSOSection from "@/components/Settings/SSOSection";
 import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import StorageSection from "@/components/Settings/StorageSection";
-import SystemSection from "@/components/Settings/SystemSection";
+import WorkspaceSection from "@/components/Settings/WorkspaceSection";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useGlobalStore } from "@/store/module";
+import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 
@@ -35,8 +35,8 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
 
 const Setting = () => {
   const t = useTranslate();
+  const commonContext = useCommonContext();
   const user = useCurrentUser();
-  const globalStore = useGlobalStore();
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });
@@ -88,7 +88,7 @@ const Setting = () => {
                       onClick={() => handleSectionSelectorItemClick(item)}
                     />
                   ))}
-                  <span className="px-3 mt-2 opacity-70 text-sm">Version: v{globalStore.state.workspaceProfile.version}</span>
+                  <span className="px-3 mt-2 opacity-70 text-sm">Version: v{commonContext.profile.version}</span>
                 </div>
               </>
             ) : null}
@@ -110,7 +110,7 @@ const Setting = () => {
             ) : state.selectedSection === "member" ? (
               <MemberSection />
             ) : state.selectedSection === "system" ? (
-              <SystemSection />
+              <WorkspaceSection />
             ) : state.selectedSection === "storage" ? (
               <StorageSection />
             ) : state.selectedSection === "sso" ? (

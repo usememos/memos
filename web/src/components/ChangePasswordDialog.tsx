@@ -2,7 +2,7 @@ import { Button, IconButton, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useGlobalStore } from "@/store/module";
+import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useUserStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
@@ -12,15 +12,14 @@ type Props = DialogProps;
 
 const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   const t = useTranslate();
+  const commonContext = useCommonContext();
   const currentUser = useCurrentUser();
   const userStore = useUserStore();
-  const globalStore = useGlobalStore();
-  const profile = globalStore.state.workspaceProfile;
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 
   useEffect(() => {
-    if (profile.mode === "demo") {
+    if (commonContext.profile.mode === "demo") {
       toast.error("Demo mode does not support this operation.");
       destroy();
     }

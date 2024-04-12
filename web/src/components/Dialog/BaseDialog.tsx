@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { ANIMATION_DURATION } from "@/helpers/consts";
+import CommonContextProvider from "@/layouts/CommonContextProvider";
 import store from "@/store";
 import { useDialogStore } from "@/store/module";
 import theme from "@/theme";
@@ -103,9 +104,11 @@ export function generateDialog<T extends DialogProps>(
   const Fragment = (
     <Provider store={store}>
       <CssVarsProvider theme={theme}>
-        <BaseDialog destroy={cbs.destroy} hide={cbs.hide} clickSpaceDestroy={true} {...config}>
-          <DialogComponent {...dialogProps} />
-        </BaseDialog>
+        <CommonContextProvider>
+          <BaseDialog destroy={cbs.destroy} hide={cbs.hide} clickSpaceDestroy={true} {...config}>
+            <DialogComponent {...dialogProps} />
+          </BaseDialog>
+        </CommonContextProvider>
       </CssVarsProvider>
     </Provider>
   );

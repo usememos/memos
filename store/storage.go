@@ -4,8 +4,9 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"google.golang.org/protobuf/proto"
+
+	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 type Storage struct {

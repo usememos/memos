@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 import storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import useNavigateTo from "./hooks/useNavigateTo";
-import { useGlobalStore } from "./store/module";
+import { useCommonContext } from "./layouts/CommonContextProvider";
 import { useUserStore, useWorkspaceSettingStore } from "./store/v1";
 import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "./types/proto/store/workspace_setting";
 
@@ -13,16 +13,16 @@ const App = () => {
   const { i18n } = useTranslation();
   const navigateTo = useNavigateTo();
   const { mode, setMode } = useColorScheme();
-  const globalStore = useGlobalStore();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
-  const { appearance, locale, systemStatus, workspaceProfile } = globalStore.state;
+  const commonContext = useCommonContext();
+  const workspaceProfile = commonContext.profile;
   const userSetting = userStore.userSetting;
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
     WorkspaceGeneralSetting.fromPartial({});
 
-  // Redirect to sign up page if no host.
+  // Redirect to sign up page if no instance owner.
   useEffect(() => {
     if (!workspaceProfile.owner) {
       navigateTo("/auth/signup");
@@ -32,7 +32,7 @@ const App = () => {
   useEffect(() => {
     const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleColorSchemeChange = (e: MediaQueryListEvent) => {
-      if (globalStore.getState().appearance === "system") {
+      if (commonContext.appearance === "system") {
         const mode = e.matches ? "dark" : "light";
         setMode(mode);
       }
@@ -68,23 +68,17 @@ const App = () => {
 
   // Dynamic update metadata with customized profile.
   useEffect(() => {
-    document.title = systemStatus.customizedProfile.name;
-    const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-    link.href = systemStatus.customizedProfile.logoUrl || "/logo.webp";
-  }, [systemStatus.customizedProfile]);
-
-  useEffect(() => {
-    if (!userSetting) {
+    if (!workspaceGeneralSetting.customProfile) {
       return;
     }
 
-    globalStore.setLocale(userSetting.locale);
-    globalStore.setAppearance(userSetting.appearance as Appearance);
-  }, [userSetting?.locale, userSetting?.appearance]);
+    document.title = workspaceGeneralSetting.customProfile.title;
+    const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+    link.href = workspaceGeneralSetting.customProfile.logoUrl || "/logo.webp";
+  }, [workspaceGeneralSetting.customProfile]);
 
   useEffect(() => {
-    const { locale: storageLocale } = storage.get(["locale"]);
-    const currentLocale = storageLocale || locale;
+    const currentLocale = commonContext.locale;
     i18n.changeLanguage(currentLocale);
     document.documentElement.setAttribute("lang", currentLocale);
     if (currentLocale === "ar") {
@@ -95,11 +89,10 @@ const App = () => {
     storage.set({
       locale: currentLocale,
     });
-  }, [locale]);
+  }, [commonContext.locale]);
 
   useEffect(() => {
-    const { appearance: storageAppearance } = storage.get(["appearance"]);
-    let currentAppearance = (storageAppearance || appearance) as Appearance;
+    let currentAppearance = commonContext.appearance as Appearance;
     if (currentAppearance === "system") {
       currentAppearance = getSystemColorScheme();
     }
@@ -107,7 +100,7 @@ const App = () => {
     storage.set({
       appearance: currentAppearance,
     });
-  }, [appearance]);
+  }, [commonContext.appearance]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -117,6 +110,15 @@ const App = () => {
       root.classList.add("dark");
     }
   }, [mode]);
+
+  useEffect(() => {
+    if (!userSetting) {
+      return;
+    }
+
+    commonContext.setLocale(userSetting.locale);
+    commonContext.setAppearance(userSetting.appearance);
+  }, [userSetting?.locale, userSetting?.appearance]);
 
   return <Outlet />;
 };

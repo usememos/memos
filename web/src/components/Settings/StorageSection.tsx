@@ -1,9 +1,25 @@
-import { Button, Divider, Dropdown, IconButton, List, ListItem, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/joy";
+import {
+  Button,
+  Divider,
+  Dropdown,
+  IconButton,
+  Input,
+  List,
+  ListItem,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Tooltip,
+} from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import * as api from "@/helpers/api";
-import { useGlobalStore } from "@/store/module";
+import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { WorkspaceStorageSetting, WorkspaceStorageSetting_StorageType } from "@/types/proto/api/v2/workspace_setting_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
@@ -13,10 +29,13 @@ import showUpdateLocalStorageDialog from "../UpdateLocalStorageDialog";
 
 const StorageSection = () => {
   const t = useTranslate();
-  const globalStore = useGlobalStore();
-  const systemStatus = globalStore.state.systemStatus;
-  const [storageServiceId, setStorageServiceId] = useState(systemStatus.storageServiceId);
+  const workspaceSettingStore = useWorkspaceSettingStore();
   const [storageList, setStorageList] = useState<ObjectStorage[]>([]);
+  const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceStorageSetting>(
+    WorkspaceStorageSetting.fromPartial(
+      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE)?.storageSetting || {},
+    ),
+  );
 
   useEffect(() => {
     fetchStorageList();
@@ -27,17 +46,44 @@ const StorageSection = () => {
     setStorageList(storageList);
   };
 
-  const handleActiveStorageServiceChanged = async (storageId: StorageId) => {
-    await api.upsertSystemSetting({
-      name: "storage-service-id",
-      value: JSON.stringify(storageId),
-    });
-    try {
-      await globalStore.fetchSystemStatus();
-    } catch (error: any) {
-      console.error(error);
+  const handleMaxUploadSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
+    let num = parseInt(event.target.value);
+    if (Number.isNaN(num)) {
+      num = 0;
     }
-    setStorageServiceId(storageId);
+    const update: WorkspaceStorageSetting = {
+      ...workspaceStorageSetting,
+      uploadSizeLimitMb: num,
+    };
+    setWorkspaceStorageSetting(update);
+    workspaceSettingStore.setWorkspaceSetting({
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE}`,
+      storageSetting: update,
+    });
+  };
+
+  const handleStorageTypeChanged = async (storageType: WorkspaceStorageSetting_StorageType) => {
+    const update: WorkspaceStorageSetting = {
+      ...workspaceStorageSetting,
+      storageType: storageType,
+    };
+    setWorkspaceStorageSetting(update);
+    await workspaceSettingStore.setWorkspaceSetting({
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE}`,
+      storageSetting: update,
+    });
+  };
+
+  const handleActivedExternalStorageIdChanged = async (activedExternalStorageId: number) => {
+    const update: WorkspaceStorageSetting = {
+      ...workspaceStorageSetting,
+      activedExternalStorageId: activedExternalStorageId,
+    };
+    setWorkspaceStorageSetting(update);
+    await workspaceSettingStore.setWorkspaceSetting({
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE}`,
+      storageSetting: update,
+    });
   };
 
   const handleDeleteStorage = (storage: ObjectStorage) => {
@@ -65,22 +111,47 @@ const StorageSection = () => {
       </div>
       <RadioGroup
         className="w-full"
-        value={storageServiceId}
+        value={workspaceStorageSetting.storageType}
         onChange={(event) => {
-          handleActiveStorageServiceChanged(Number(event.target.value));
+          handleStorageTypeChanged(event.target.value as WorkspaceStorageSetting_StorageType);
         }}
       >
-        <Radio value={"0"} label={t("setting.storage-section.type-database")} />
-        <div className="w-full mt-2 flex flex-row justify-start items-center gap-x-2">
-          <Radio value={"-1"} label={t("setting.storage-section.type-local")} />
-          <IconButton size="sm" onClick={() => showUpdateLocalStorageDialog(systemStatus.localStoragePath)}>
+        <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_DATABASE} label={t("setting.storage-section.type-database")} />
+        <div>
+          <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_LOCAL} label={t("setting.storage-section.type-local")} />
+          <IconButton size="sm" onClick={() => showUpdateLocalStorageDialog()}>
             <Icon.PenBox className="w-4 h-auto" />
           </IconButton>
         </div>
+        <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_EXTERNAL} label={"S3"} />
+      </RadioGroup>
+      <RadioGroup
+        className="w-full"
+        value={workspaceStorageSetting.activedExternalStorageId}
+        onChange={(event) => {
+          handleActivedExternalStorageIdChanged(Number(event.target.value));
+        }}
+      >
         {storageList.map((storage) => (
           <Radio key={storage.id} value={storage.id} label={storage.name} />
         ))}
       </RadioGroup>
+      <div className="w-full flex flex-row justify-between items-center">
+        <div className="flex flex-row items-center">
+          <span className="mr-1">{t("setting.system-section.max-upload-size")}</span>
+          <Tooltip title={t("setting.system-section.max-upload-size-hint")} placement="top">
+            <Icon.HelpCircle className="w-4 h-auto" />
+          </Tooltip>
+        </div>
+        <Input
+          className="w-16"
+          sx={{
+            fontFamily: "monospace",
+          }}
+          defaultValue={workspaceStorageSetting.uploadSizeLimitMb}
+          onChange={handleMaxUploadSizeChanged}
+        />
+      </div>
       <Divider className="!my-2" />
       <div className="mb-2 w-full flex flex-row justify-between items-center gap-1">
         <div className="flex items-center gap-1">
