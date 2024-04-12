@@ -3,7 +3,6 @@ import classNames from "classnames";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { ANIMATION_DURATION } from "@/helpers/consts";
 import CommonContextProvider from "@/layouts/CommonContextProvider";
 import store from "@/store";
 import { useDialogStore } from "@/store/module";
@@ -75,24 +74,15 @@ export function generateDialog<T extends DialogProps>(
   document.body.append(tempDiv);
   document.body.style.overflow = "hidden";
 
-  setTimeout(() => {
-    tempDiv.firstElementChild?.classList.add("showup");
-  }, 0);
-
   const cbs: DialogCallback = {
     destroy: () => {
-      tempDiv.firstElementChild?.classList.remove("showup");
-      tempDiv.firstElementChild?.classList.add("showoff");
       document.body.style.removeProperty("overflow");
       setTimeout(() => {
         dialog.unmount();
         tempDiv.remove();
-      }, ANIMATION_DURATION);
+      });
     },
-    hide: () => {
-      tempDiv.firstElementChild?.classList.remove("showup");
-      tempDiv.firstElementChild?.classList.add("showoff");
-    },
+    hide: () => {},
   };
 
   const dialogProps = {
