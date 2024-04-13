@@ -10,10 +10,10 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (d *DB) UpsertReaction(ctx context.Context, upsert *storepb.Reaction) (*storepb.Reaction, error) {
+func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store.Reaction, error) {
 	fields := []string{"`creator_id`", "`content_id`", "`reaction_type`"}
 	placeholder := []string{"?", "?", "?"}
-	args := []interface{}{upsert.CreatorId, upsert.ContentId, upsert.ReactionType.String()}
+	args := []interface{}{upsert.CreatorID, upsert.ContentID, upsert.ReactionType.String()}
 	stmt := "INSERT INTO `reaction` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
@@ -35,7 +35,7 @@ func (d *DB) UpsertReaction(ctx context.Context, upsert *storepb.Reaction) (*sto
 	return reaction, nil
 }
 
-func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*storepb.Reaction, error) {
+func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*store.Reaction, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if find.ID != nil {
 		where, args = append(where, "`id` = ?"), append(args, *find.ID)
@@ -64,20 +64,20 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	}
 	defer rows.Close()
 
-	list := []*storepb.Reaction{}
+	list := []*store.Reaction{}
 	for rows.Next() {
-		reaction := &storepb.Reaction{}
+		reaction := &store.Reaction{}
 		var reactionType string
 		if err := rows.Scan(
-			&reaction.Id,
+			&reaction.ID,
 			&reaction.CreatedTs,
-			&reaction.CreatorId,
-			&reaction.ContentId,
+			&reaction.CreatorID,
+			&reaction.ContentID,
 			&reactionType,
 		); err != nil {
 			return nil, err
 		}
-		reaction.ReactionType = storepb.Reaction_Type(storepb.Reaction_Type_value[reactionType])
+		reaction.ReactionType = storepb.ReactionType(storepb.ReactionType_value[reactionType])
 		list = append(list, reaction)
 	}
 
@@ -88,7 +88,7 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	return list, nil
 }
 
-func (d *DB) GetReaction(ctx context.Context, find *store.FindReaction) (*storepb.Reaction, error) {
+func (d *DB) GetReaction(ctx context.Context, find *store.FindReaction) (*store.Reaction, error) {
 	list, err := d.ListReactions(ctx, find)
 	if err != nil {
 		return nil, err

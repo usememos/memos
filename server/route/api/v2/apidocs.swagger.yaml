@@ -939,7 +939,7 @@ paths:
                 type: string
                 format: date-time
               rowStatus:
-                $ref: '#/definitions/apiv2RowStatus'
+                $ref: '#/definitions/v2RowStatus'
               name:
                 type: string
               url:
@@ -1159,7 +1159,7 @@ paths:
                 type: string
                 description: The user defined id of the memo.
               rowStatus:
-                $ref: '#/definitions/apiv2RowStatus'
+                $ref: '#/definitions/v2RowStatus'
               creator:
                 type: string
                 title: |-
@@ -1200,7 +1200,7 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/apiv2Reaction'
+                  $ref: '#/definitions/v2Reaction'
                 readOnly: true
       tags:
         - MemoService
@@ -1913,7 +1913,7 @@ paths:
               password:
                 type: string
               rowStatus:
-                $ref: '#/definitions/apiv2RowStatus'
+                $ref: '#/definitions/v2RowStatus'
               createTime:
                 type: string
                 format: date-time
@@ -2052,45 +2052,6 @@ definitions:
           type: string
       fieldMapping:
         $ref: '#/definitions/apiv2FieldMapping'
-  apiv2Reaction:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int32
-      creator:
-        type: string
-        title: |-
-          The name of the creator.
-          Format: users/{id}
-      contentId:
-        type: string
-      reactionType:
-        $ref: '#/definitions/apiv2ReactionType'
-  apiv2ReactionType:
-    type: string
-    enum:
-      - TYPE_UNSPECIFIED
-      - THUMBS_UP
-      - THUMBS_DOWN
-      - HEART
-      - FIRE
-      - CLAPPING_HANDS
-      - LAUGH
-      - OK_HAND
-      - ROCKET
-      - EYES
-      - THINKING_FACE
-      - CLOWN_FACE
-      - QUESTION_MARK
-    default: TYPE_UNSPECIFIED
-  apiv2RowStatus:
-    type: string
-    enum:
-      - ROW_STATUS_UNSPECIFIED
-      - ACTIVE
-      - ARCHIVED
-    default: ROW_STATUS_UNSPECIFIED
   apiv2S3Config:
     type: object
     properties:
@@ -2155,27 +2116,6 @@ definitions:
       telegramUserId:
         type: string
         description: The telegram user id of the user.
-  apiv2Webhook:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int32
-      creatorId:
-        type: integer
-        format: int32
-      createdTime:
-        type: string
-        format: date-time
-      updatedTime:
-        type: string
-        format: date-time
-      rowStatus:
-        $ref: '#/definitions/apiv2RowStatus'
-      name:
-        type: string
-      url:
-        type: string
   apiv2WorkspaceCustomProfile:
     type: object
     properties:
@@ -2370,7 +2310,7 @@ definitions:
     type: object
     properties:
       webhook:
-        $ref: '#/definitions/apiv2Webhook'
+        $ref: '#/definitions/v2Webhook'
   v2DeleteIdentityProviderResponse:
     type: object
   v2DeleteInboxResponse:
@@ -2465,7 +2405,7 @@ definitions:
     type: object
     properties:
       webhook:
-        $ref: '#/definitions/apiv2Webhook'
+        $ref: '#/definitions/v2Webhook'
   v2GetWorkspaceProfileResponse:
     type: object
     properties:
@@ -2554,7 +2494,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/apiv2Reaction'
+          $ref: '#/definitions/v2Reaction'
   v2ListMemoRelationsResponse:
     type: object
     properties:
@@ -2631,7 +2571,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/apiv2Webhook'
+          $ref: '#/definitions/v2Webhook'
   v2ListWorkspaceSettingsResponse:
     type: object
     properties:
@@ -2653,7 +2593,7 @@ definitions:
         type: string
         description: The user defined id of the memo.
       rowStatus:
-        $ref: '#/definitions/apiv2RowStatus'
+        $ref: '#/definitions/v2RowStatus'
       creator:
         type: string
         title: |-
@@ -2694,7 +2634,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/apiv2Reaction'
+          $ref: '#/definitions/v2Reaction'
         readOnly: true
   v2MemoRelation:
     type: object
@@ -2717,6 +2657,38 @@ definitions:
       - TYPE_UNSPECIFIED
       - REFERENCE
       - COMMENT
+    default: TYPE_UNSPECIFIED
+  v2Reaction:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      creator:
+        type: string
+        title: |-
+          The name of the creator.
+          Format: users/{id}
+      contentId:
+        type: string
+      reactionType:
+        $ref: '#/definitions/v2ReactionType'
+  v2ReactionType:
+    type: string
+    enum:
+      - TYPE_UNSPECIFIED
+      - THUMBS_UP
+      - THUMBS_DOWN
+      - HEART
+      - FIRE
+      - CLAPPING_HANDS
+      - LAUGH
+      - OK_HAND
+      - ROCKET
+      - EYES
+      - THINKING_FACE
+      - CLOWN_FACE
+      - QUESTION_MARK
     default: TYPE_UNSPECIFIED
   v2RenameTagResponse:
     type: object
@@ -2756,6 +2728,13 @@ definitions:
         title: |-
           The related memo.
           Format: memos/{id}
+  v2RowStatus:
+    type: string
+    enum:
+      - ROW_STATUS_UNSPECIFIED
+      - ACTIVE
+      - ARCHIVED
+    default: ROW_STATUS_UNSPECIFIED
   v2SearchMemosResponse:
     type: object
     properties:
@@ -2856,12 +2835,12 @@ definitions:
     type: object
     properties:
       webhook:
-        $ref: '#/definitions/apiv2Webhook'
+        $ref: '#/definitions/v2Webhook'
   v2UpsertMemoReactionResponse:
     type: object
     properties:
       reaction:
-        $ref: '#/definitions/apiv2Reaction'
+        $ref: '#/definitions/v2Reaction'
   v2UpsertTagRequest:
     type: object
     properties:
@@ -2899,7 +2878,7 @@ definitions:
       password:
         type: string
       rowStatus:
-        $ref: '#/definitions/apiv2RowStatus'
+        $ref: '#/definitions/v2RowStatus'
       createTime:
         type: string
         format: date-time
@@ -2927,6 +2906,27 @@ definitions:
       - PROTECTED
       - PUBLIC
     default: VISIBILITY_UNSPECIFIED
+  v2Webhook:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      creatorId:
+        type: integer
+        format: int32
+      createdTime:
+        type: string
+        format: date-time
+      updatedTime:
+        type: string
+        format: date-time
+      rowStatus:
+        $ref: '#/definitions/v2RowStatus'
+      name:
+        type: string
+      url:
+        type: string
   v2WorkspaceProfile:
     type: object
     properties:

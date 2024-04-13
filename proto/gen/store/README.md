@@ -8,9 +8,6 @@
     - [ActivityPayload](#memos-store-ActivityPayload)
     - [ActivityVersionUpdatePayload](#memos-store-ActivityVersionUpdatePayload)
   
-- [store/common.proto](#store_common-proto)
-    - [RowStatus](#memos-store-RowStatus)
-  
 - [store/idp.proto](#store_idp-proto)
     - [FieldMapping](#memos-store-FieldMapping)
     - [IdentityProvider](#memos-store-IdentityProvider)
@@ -25,9 +22,7 @@
     - [InboxMessage.Type](#memos-store-InboxMessage-Type)
   
 - [store/reaction.proto](#store_reaction-proto)
-    - [Reaction](#memos-store-Reaction)
-  
-    - [Reaction.Type](#memos-store-Reaction-Type)
+    - [ReactionType](#memos-store-ReactionType)
   
 - [store/storage.proto](#store_storage-proto)
     - [S3Config](#memos-store-S3Config)
@@ -42,9 +37,6 @@
     - [UserSetting](#memos-store-UserSetting)
   
     - [UserSettingKey](#memos-store-UserSettingKey)
-  
-- [store/webhook.proto](#store_webhook-proto)
-    - [Webhook](#memos-store-Webhook)
   
 - [store/workspace_setting.proto](#store_workspace_setting-proto)
     - [WorkspaceBasicSetting](#memos-store-WorkspaceBasicSetting)
@@ -116,35 +108,6 @@
 
 
  
-
- 
-
- 
-
- 
-
-
-
-<a name="store_common-proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## store/common.proto
-
-
- 
-
-
-<a name="memos-store-RowStatus"></a>
-
-### RowStatus
-
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| ROW_STATUS_UNSPECIFIED | 0 |  |
-| NORMAL | 1 |  |
-| ARCHIVED | 2 |  |
-
 
  
 
@@ -305,36 +268,17 @@
 ## store/reaction.proto
 
 
-
-<a name="memos-store-Reaction"></a>
-
-### Reaction
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
-| created_ts | [int64](#int64) |  |  |
-| creator_id | [int32](#int32) |  |  |
-| content_id | [string](#string) |  | content_id is the id of the content that the reaction is for. This can be a memo. e.g. memos/101 |
-| reaction_type | [Reaction.Type](#memos-store-Reaction-Type) |  |  |
-
-
-
-
-
  
 
 
-<a name="memos-store-Reaction-Type"></a>
+<a name="memos-store-ReactionType"></a>
 
-### Reaction.Type
+### ReactionType
 
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| TYPE_UNSPECIFIED | 0 |  |
+| REACTION_TYPE_UNSPECIFIED | 0 |  |
 | THUMBS_UP | 1 |  |
 | THUMBS_DOWN | 2 |  |
 | HEART | 3 |  |
@@ -516,43 +460,6 @@
 | USER_SETTING_MEMO_VISIBILITY | 4 | The visibility of the memo. |
 | USER_SETTING_TELEGRAM_USER_ID | 5 | The telegram user id of the user. |
 
-
- 
-
- 
-
- 
-
-
-
-<a name="store_webhook-proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## store/webhook.proto
-
-
-
-<a name="memos-store-Webhook"></a>
-
-### Webhook
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
-| created_ts | [int64](#int64) |  |  |
-| updated_ts | [int64](#int64) |  |  |
-| creator_id | [int32](#int32) |  |  |
-| row_status | [RowStatus](#memos-store-RowStatus) |  |  |
-| name | [string](#string) |  |  |
-| url | [string](#string) |  |  |
-
-
-
-
-
- 
 
  
 

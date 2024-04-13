@@ -9,7 +9,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -19,8 +18,8 @@ func (s *APIV2Service) CreateWebhook(ctx context.Context, request *apiv2pb.Creat
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
 
-	webhook, err := s.Store.CreateWebhook(ctx, &storepb.Webhook{
-		CreatorId: currentUser.ID,
+	webhook, err := s.Store.CreateWebhook(ctx, &store.Webhook{
+		CreatorID: currentUser.ID,
 		Name:      request.Name,
 		Url:       request.Url,
 	})
@@ -79,7 +78,7 @@ func (s *APIV2Service) UpdateWebhook(ctx context.Context, request *apiv2pb.Updat
 	for _, field := range request.UpdateMask.Paths {
 		switch field {
 		case "row_status":
-			rowStatus := storepb.RowStatus(storepb.RowStatus_value[request.Webhook.RowStatus.String()])
+			rowStatus := store.RowStatus(request.Webhook.RowStatus.String())
 			update.RowStatus = &rowStatus
 		case "name":
 			update.Name = &request.Webhook.Name
@@ -107,13 +106,13 @@ func (s *APIV2Service) DeleteWebhook(ctx context.Context, request *apiv2pb.Delet
 	return &apiv2pb.DeleteWebhookResponse{}, nil
 }
 
-func convertWebhookFromStore(webhook *storepb.Webhook) *apiv2pb.Webhook {
+func convertWebhookFromStore(webhook *store.Webhook) *apiv2pb.Webhook {
 	return &apiv2pb.Webhook{
-		Id:          webhook.Id,
+		Id:          webhook.ID,
 		CreatedTime: timestamppb.New(time.Unix(webhook.CreatedTs, 0)),
 		UpdatedTime: timestamppb.New(time.Unix(webhook.UpdatedTs, 0)),
-		RowStatus:   apiv2pb.RowStatus(webhook.RowStatus),
-		CreatorId:   webhook.CreatorId,
+		RowStatus:   convertRowStatusFromStore(webhook.RowStatus),
+		CreatorId:   webhook.CreatorID,
 		Name:        webhook.Name,
 		Url:         webhook.Url,
 	}

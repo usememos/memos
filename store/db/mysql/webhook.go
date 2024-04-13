@@ -4,14 +4,13 @@ import (
 	"context"
 	"strings"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
-func (d *DB) CreateWebhook(ctx context.Context, create *storepb.Webhook) (*storepb.Webhook, error) {
+func (d *DB) CreateWebhook(ctx context.Context, create *store.Webhook) (*store.Webhook, error) {
 	fields := []string{"`name`", "`url`", "`creator_id`"}
 	placeholder := []string{"?", "?", "?"}
-	args := []any{create.Name, create.Url, create.CreatorId}
+	args := []any{create.Name, create.Url, create.CreatorID}
 
 	stmt := "INSERT INTO `webhook` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
@@ -24,11 +23,11 @@ func (d *DB) CreateWebhook(ctx context.Context, create *storepb.Webhook) (*store
 		return nil, err
 	}
 
-	create.Id = int32(id)
-	return d.GetWebhook(ctx, &store.FindWebhook{ID: &create.Id})
+	create.ID = int32(id)
+	return d.GetWebhook(ctx, &store.FindWebhook{ID: &create.ID})
 }
 
-func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*storepb.Webhook, error) {
+func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*store.Webhook, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.ID != nil {
 		where, args = append(where, "`id` = ?"), append(args, *find.ID)
@@ -45,22 +44,22 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 	}
 	defer rows.Close()
 
-	list := []*storepb.Webhook{}
+	list := []*store.Webhook{}
 	for rows.Next() {
-		webhook := &storepb.Webhook{}
+		webhook := &store.Webhook{}
 		var rowStatus string
 		if err := rows.Scan(
-			&webhook.Id,
+			&webhook.ID,
 			&webhook.CreatedTs,
 			&webhook.UpdatedTs,
 			&rowStatus,
-			&webhook.CreatorId,
+			&webhook.CreatorID,
 			&webhook.Name,
 			&webhook.Url,
 		); err != nil {
 			return nil, err
 		}
-		webhook.RowStatus = storepb.RowStatus(storepb.RowStatus_value[rowStatus])
+		webhook.RowStatus = store.RowStatus(rowStatus)
 		list = append(list, webhook)
 	}
 
@@ -71,7 +70,7 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 	return list, nil
 }
 
-func (d *DB) GetWebhook(ctx context.Context, find *store.FindWebhook) (*storepb.Webhook, error) {
+func (d *DB) GetWebhook(ctx context.Context, find *store.FindWebhook) (*store.Webhook, error) {
 	list, err := d.ListWebhooks(ctx, find)
 	if err != nil {
 		return nil, err
@@ -82,7 +81,7 @@ func (d *DB) GetWebhook(ctx context.Context, find *store.FindWebhook) (*storepb.
 	return list[0], nil
 }
 
-func (d *DB) UpdateWebhook(ctx context.Context, update *store.UpdateWebhook) (*storepb.Webhook, error) {
+func (d *DB) UpdateWebhook(ctx context.Context, update *store.UpdateWebhook) (*store.Webhook, error) {
 	set, args := []string{}, []any{}
 	if update.RowStatus != nil {
 		set, args = append(set, "`row_status` = ?"), append(args, update.RowStatus.String())

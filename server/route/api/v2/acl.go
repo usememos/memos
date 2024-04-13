@@ -14,7 +14,6 @@ import (
 
 	"github.com/usememos/memos/internal/util"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/route/api/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -84,7 +83,7 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessToken str
 	if accessToken == "" {
 		return "", status.Errorf(codes.Unauthenticated, "access token not found")
 	}
-	claims := &auth.ClaimsMessage{}
+	claims := &ClaimsMessage{}
 	_, err := jwt.ParseWithClaims(accessToken, claims, func(t *jwt.Token) (any, error) {
 		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 			return nil, status.Errorf(codes.Unauthenticated, "unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
@@ -145,7 +144,7 @@ func getTokenFromMetadata(md metadata.MD) (string, error) {
 		header := http.Header{}
 		header.Add("Cookie", t)
 		request := http.Request{Header: header}
-		if v, _ := request.Cookie(auth.AccessTokenCookieName); v != nil {
+		if v, _ := request.Cookie(AccessTokenCookieName); v != nil {
 			accessToken = v.Value
 		}
 	}

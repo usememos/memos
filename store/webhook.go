@@ -2,9 +2,17 @@ package store
 
 import (
 	"context"
-
-	storepb "github.com/usememos/memos/proto/gen/store"
 )
+
+type Webhook struct {
+	ID        int32
+	CreatedTs int64
+	UpdatedTs int64
+	CreatorID int32
+	RowStatus RowStatus
+	Name      string
+	Url       string
+}
 
 type FindWebhook struct {
 	ID        *int32
@@ -13,7 +21,7 @@ type FindWebhook struct {
 
 type UpdateWebhook struct {
 	ID        int32
-	RowStatus *storepb.RowStatus
+	RowStatus *RowStatus
 	Name      *string
 	URL       *string
 }
@@ -22,15 +30,15 @@ type DeleteWebhook struct {
 	ID int32
 }
 
-func (s *Store) CreateWebhook(ctx context.Context, create *storepb.Webhook) (*storepb.Webhook, error) {
+func (s *Store) CreateWebhook(ctx context.Context, create *Webhook) (*Webhook, error) {
 	return s.driver.CreateWebhook(ctx, create)
 }
 
-func (s *Store) ListWebhooks(ctx context.Context, find *FindWebhook) ([]*storepb.Webhook, error) {
+func (s *Store) ListWebhooks(ctx context.Context, find *FindWebhook) ([]*Webhook, error) {
 	return s.driver.ListWebhooks(ctx, find)
 }
 
-func (s *Store) GetWebhook(ctx context.Context, find *FindWebhook) (*storepb.Webhook, error) {
+func (s *Store) GetWebhook(ctx context.Context, find *FindWebhook) (*Webhook, error) {
 	list, err := s.ListWebhooks(ctx, find)
 	if err != nil {
 		return nil, err
@@ -41,7 +49,7 @@ func (s *Store) GetWebhook(ctx context.Context, find *FindWebhook) (*storepb.Web
 	return list[0], nil
 }
 
-func (s *Store) UpdateWebhook(ctx context.Context, update *UpdateWebhook) (*storepb.Webhook, error) {
+func (s *Store) UpdateWebhook(ctx context.Context, update *UpdateWebhook) (*Webhook, error) {
 	return s.driver.UpdateWebhook(ctx, update)
 }
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -15,15 +14,15 @@ func TestWebhookStore(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	webhook, err := ts.CreateWebhook(ctx, &storepb.Webhook{
-		CreatorId: user.ID,
+	webhook, err := ts.CreateWebhook(ctx, &store.Webhook{
+		CreatorID: user.ID,
 		Name:      "test_webhook",
 		Url:       "https://example.com",
-		RowStatus: storepb.RowStatus_NORMAL,
+		RowStatus: store.Normal,
 	})
 	require.NoError(t, err)
 	require.Equal(t, "test_webhook", webhook.Name)
-	require.Equal(t, user.ID, webhook.CreatorId)
+	require.Equal(t, user.ID, webhook.CreatorID)
 	webhooks, err := ts.ListWebhooks(ctx, &store.FindWebhook{
 		CreatorID: &user.ID,
 	})
@@ -32,14 +31,14 @@ func TestWebhookStore(t *testing.T) {
 	require.Equal(t, webhook, webhooks[0])
 	newName := "test_webhook_new"
 	updatedWebhook, err := ts.UpdateWebhook(ctx, &store.UpdateWebhook{
-		ID:   webhook.Id,
+		ID:   webhook.ID,
 		Name: &newName,
 	})
 	require.NoError(t, err)
 	require.Equal(t, newName, updatedWebhook.Name)
-	require.Equal(t, webhook.CreatorId, updatedWebhook.CreatorId)
+	require.Equal(t, webhook.CreatorID, updatedWebhook.CreatorID)
 	err = ts.DeleteWebhook(ctx, &store.DeleteWebhook{
-		ID: webhook.Id,
+		ID: webhook.ID,
 	})
 	require.NoError(t, err)
 	webhooks, err = ts.ListWebhooks(ctx, &store.FindWebhook{

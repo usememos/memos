@@ -18,14 +18,14 @@ func TestReactionStore(t *testing.T) {
 	require.NoError(t, err)
 
 	contentID := "test_content_id"
-	reaction, err := ts.UpsertReaction(ctx, &storepb.Reaction{
-		CreatorId:    user.ID,
-		ContentId:    contentID,
-		ReactionType: storepb.Reaction_HEART,
+	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{
+		CreatorID:    user.ID,
+		ContentID:    contentID,
+		ReactionType: storepb.ReactionType_HEART,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, reaction)
-	require.NotEmpty(t, reaction.Id)
+	require.NotEmpty(t, reaction.ID)
 
 	reactions, err := ts.ListReactions(ctx, &store.FindReaction{
 		ContentID: &contentID,
@@ -35,7 +35,7 @@ func TestReactionStore(t *testing.T) {
 	require.Equal(t, reaction, reactions[0])
 
 	err = ts.DeleteReaction(ctx, &store.DeleteReaction{
-		ID: reaction.Id,
+		ID: reaction.ID,
 	})
 	require.NoError(t, err)
 
