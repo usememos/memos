@@ -98,6 +98,100 @@ GetAuthStatus returns the current auth status of the user.
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
+## IdentityProviderService
+
+### /api/v2/identityProviders
+
+#### GET
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2ListIdentityProvidersResponse](#v2listidentityprovidersresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### POST
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| identityProvider.name | query | The name of the identityProvider. Format: identityProviders/{id} | No | string |
+| identityProvider.type | query |  | No | string |
+| identityProvider.title | query |  | No | string |
+| identityProvider.identifierFilter | query |  | No | string |
+| identityProvider.config.oauth2Config.clientId | query |  | No | string |
+| identityProvider.config.oauth2Config.clientSecret | query |  | No | string |
+| identityProvider.config.oauth2Config.authUrl | query |  | No | string |
+| identityProvider.config.oauth2Config.tokenUrl | query |  | No | string |
+| identityProvider.config.oauth2Config.userInfoUrl | query |  | No | string |
+| identityProvider.config.oauth2Config.scopes | query |  | No | [ string ] |
+| identityProvider.config.oauth2Config.fieldMapping.identifier | query |  | No | string |
+| identityProvider.config.oauth2Config.fieldMapping.displayName | query |  | No | string |
+| identityProvider.config.oauth2Config.fieldMapping.email | query |  | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2CreateIdentityProviderResponse](#v2createidentityproviderresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{identityProvider.name}
+
+#### PATCH
+##### Summary
+
+UpdateIdentityProvider updates an identity provider.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| identityProvider.name | path | The name of the identityProvider. Format: identityProviders/{id} | Yes | string |
+| identityProvider | body | The identityProvider to update. | Yes | { **"type"**: [apiv2IdentityProviderType](#apiv2identityprovidertype), **"title"**: string, **"identifierFilter"**: string, **"config"**: [apiv2IdentityProviderConfig](#apiv2identityproviderconfig) } |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2UpdateIdentityProviderResponse](#v2updateidentityproviderresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/{name_1}
+
+#### GET
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_1 | path | The name of the identityProvider to get. Format: identityProviders/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2GetIdentityProviderResponse](#v2getidentityproviderresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### DELETE
+##### Summary
+
+DeleteIdentityProvider deletes an identity provider.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| name_1 | path | The name of the identityProvider to delete. Format: identityProviders/{id} | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteIdentityProviderResponse](#v2deleteidentityproviderresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+---
 ## InboxService
 
 ### /api/v2/inboxes
@@ -111,7 +205,7 @@ ListInboxes lists inboxes for a user.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| user | query | Format: users/{username} | No | string |
+| user | query | Format: users/{id} | No | string |
 
 ##### Responses
 
@@ -131,7 +225,7 @@ UpdateInbox updates an inbox.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| inbox.name | path | The name of the inbox. Format: inboxes/{uid} | Yes | string |
+| inbox.name | path | The name of the inbox. Format: inboxes/{id} | Yes | string |
 | inbox | body |  | Yes | { **"sender"**: string, **"receiver"**: string, **"status"**: [v2InboxStatus](#v2inboxstatus), **"createTime"**: dateTime, **"type"**: [v2InboxType](#v2inboxtype), **"activityId"**: integer } |
 
 ##### Responses
@@ -141,7 +235,7 @@ UpdateInbox updates an inbox.
 | 200 | A successful response. | [v2UpdateInboxResponse](#v2updateinboxresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/{name_1}
+### /api/v2/{name_2}
 
 #### GET
 ##### Summary
@@ -152,7 +246,7 @@ GetResource returns a resource by name.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_1 | path |  | Yes | string |
+| name_2 | path | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | Yes | string |
 
 ##### Responses
 
@@ -170,7 +264,7 @@ DeleteInbox deletes an inbox.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_1 | path | The name of the inbox to delete. Format: inboxes/{uid} | Yes | string |
+| name_2 | path | The name of the inbox to delete. Format: inboxes/{id} | Yes | string |
 
 ##### Responses
 
@@ -303,6 +397,26 @@ SearchMemos searches memos.
 | 200 | A successful response. | [v2SearchMemosResponse](#v2searchmemosresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
+### /api/v2/reactions/{reactionId}
+
+#### DELETE
+##### Summary
+
+DeleteMemoReaction deletes a reaction for a memo.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| reactionId | path |  | Yes | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteMemoReactionResponse](#v2deletememoreactionresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
 ### /api/v2/{memo.name}
 
 #### PATCH
@@ -315,7 +429,7 @@ UpdateMemo updates a memo.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | memo.name | path | The name of the memo. Format: memos/{id} id is the system generated id. | Yes | string |
-| memo | body |  | Yes | { **"uid"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"creator"**: string, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ], **"reactions"**: [ [apiv2Reaction](#apiv2reaction) ] } |
+| memo | body |  | Yes | { **"uid"**: string, **"rowStatus"**: [v2RowStatus](#v2rowstatus), **"creator"**: string, **"createTime"**: dateTime, **"updateTime"**: dateTime, **"displayTime"**: dateTime, **"content"**: string, **"visibility"**: [v2Visibility](#v2visibility), **"pinned"**: boolean, **"parentId"**: integer, **"resources"**: [ [v2Resource](#v2resource) ], **"relations"**: [ [v2MemoRelation](#v2memorelation) ], **"reactions"**: [ [v2Reaction](#v2reaction) ] } |
 
 ##### Responses
 
@@ -324,7 +438,7 @@ UpdateMemo updates a memo.
 | 200 | A successful response. | [v2UpdateMemoResponse](#v2updatememoresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/{name_2}
+### /api/v2/{name_3}
 
 #### GET
 ##### Summary
@@ -335,7 +449,7 @@ GetMemo gets a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_2 | path | The name of the memo. Format: memos/{id} | Yes | string |
+| name_3 | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -353,7 +467,7 @@ DeleteResource deletes a resource by name.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_2 | path |  | Yes | string |
+| name_3 | path | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | Yes | string |
 
 ##### Responses
 
@@ -362,7 +476,7 @@ DeleteResource deletes a resource by name.
 | 200 | A successful response. | [v2DeleteResourceResponse](#v2deleteresourceresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/{name_3}
+### /api/v2/{name_4}
 
 #### DELETE
 ##### Summary
@@ -373,7 +487,7 @@ DeleteMemo deletes a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_3 | path | The name of the memo. Format: memos/{id} | Yes | string |
+| name_4 | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -462,27 +576,6 @@ UpsertMemoReaction upserts a reaction for a memo.
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | A successful response. | [v2UpsertMemoReactionResponse](#v2upsertmemoreactionresponse) |
-| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
-
-### /api/v2/{name}/reactions/{reactionId}
-
-#### DELETE
-##### Summary
-
-DeleteMemoReaction deletes a reaction for a memo.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| name | path | The name of the memo. Format: memos/{id} | Yes | string |
-| reactionId | path |  | Yes | integer |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | A successful response. | [v2DeleteMemoReactionResponse](#v2deletememoreactionresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ### /api/v2/{name}/relations
@@ -589,10 +682,15 @@ CreateResource creates a new resource.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| filename | query |  | No | string |
-| externalLink | query |  | No | string |
-| type | query |  | No | string |
-| memoId | query |  | No | integer |
+| resource.name | query | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | No | string |
+| resource.uid | query | The user defined id of the resource. | No | string |
+| resource.createTime | query |  | No | dateTime |
+| resource.filename | query |  | No | string |
+| resource.content | query |  | No | byte |
+| resource.externalLink | query |  | No | string |
+| resource.type | query |  | No | string |
+| resource.size | query |  | No | string (int64) |
+| resource.memo | query | The related memo. Format: memos/{id} | No | string |
 
 ##### Responses
 
@@ -621,7 +719,7 @@ SearchResources searches memos.
 | 200 | A successful response. | [v2SearchResourcesResponse](#v2searchresourcesresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/{name_1}
+### /api/v2/{name_2}
 
 #### GET
 ##### Summary
@@ -632,7 +730,7 @@ GetResource returns a resource by name.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_1 | path |  | Yes | string |
+| name_2 | path | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | Yes | string |
 
 ##### Responses
 
@@ -650,7 +748,7 @@ DeleteInbox deletes an inbox.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_1 | path | The name of the inbox to delete. Format: inboxes/{uid} | Yes | string |
+| name_2 | path | The name of the inbox to delete. Format: inboxes/{id} | Yes | string |
 
 ##### Responses
 
@@ -659,7 +757,7 @@ DeleteInbox deletes an inbox.
 | 200 | A successful response. | [v2DeleteInboxResponse](#v2deleteinboxresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
-### /api/v2/{name_2}
+### /api/v2/{name_3}
 
 #### GET
 ##### Summary
@@ -670,7 +768,7 @@ GetMemo gets a memo.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_2 | path | The name of the memo. Format: memos/{id} | Yes | string |
+| name_3 | path | The name of the memo. Format: memos/{id} | Yes | string |
 
 ##### Responses
 
@@ -688,7 +786,7 @@ DeleteResource deletes a resource by name.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| name_2 | path |  | Yes | string |
+| name_3 | path | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | Yes | string |
 
 ##### Responses
 
@@ -709,13 +807,107 @@ UpdateResource updates a resource.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | resource.name | path | The name of the resource. Format: resources/{id} id is the system generated unique identifier. | Yes | string |
-| resource | body |  | Yes | { **"uid"**: string, **"createTime"**: dateTime, **"filename"**: string, **"externalLink"**: string, **"type"**: string, **"size"**: string (int64), **"memoId"**: integer } |
+| resource | body |  | Yes | { **"uid"**: string, **"createTime"**: dateTime, **"filename"**: string, **"content"**: byte, **"externalLink"**: string, **"type"**: string, **"size"**: string (int64), **"memo"**: string } |
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | A successful response. | [v2UpdateResourceResponse](#v2updateresourceresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+---
+## StorageService
+
+### /api/v2/storages
+
+#### GET
+##### Summary
+
+ListStorages returns a list of storages.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2ListStoragesResponse](#v2liststoragesresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### POST
+##### Summary
+
+CreateStorage creates a new storage.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| body | body |  | Yes | [v2CreateStorageRequest](#v2createstoragerequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2CreateStorageResponse](#v2createstorageresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/storages/{id}
+
+#### GET
+##### Summary
+
+GetStorage returns a storage by id.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path |  | Yes | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2GetStorageResponse](#v2getstorageresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+#### DELETE
+##### Summary
+
+DeleteStorage deletes a storage by id.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | path |  | Yes | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2DeleteStorageResponse](#v2deletestorageresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
+
+### /api/v2/storages/{storage.id}
+
+#### PATCH
+##### Summary
+
+UpdateStorage updates a storage.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| storage.id | path |  | Yes | integer |
+| storage | body |  | Yes | { **"title"**: string, **"type"**: [apiv2StorageType](#apiv2storagetype), **"config"**: [apiv2StorageConfig](#apiv2storageconfig) } |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2UpdateStorageResponse](#v2updatestorageresponse) |
 | default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ---
@@ -881,7 +1073,7 @@ SearchUsers searches users by filter.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| filter | query |  | No | string |
+| filter | query | Filter is used to filter users returned in the list. Format: "username == frank" | No | string |
 
 ##### Responses
 
@@ -1020,7 +1212,7 @@ UpdateUserSetting updates the setting of a user.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | setting.name | path | The name of the user. Format: users/{id} | Yes | string |
-| setting | body |  | Yes | { **"locale"**: string, **"appearance"**: string, **"memoVisibility"**: string, **"telegramUserId"**: string } |
+| setting | body |  | Yes | { **"locale"**: string, **"appearance"**: string, **"memoVisibility"**: string } |
 
 ##### Responses
 
@@ -1041,7 +1233,7 @@ UpdateUser updates a user.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | user.name | path | The name of the user. Format: users/{id} | Yes | string |
-| user | body |  | Yes | { **"id"**: integer, **"role"**: [UserRole](#userrole), **"username"**: string, **"email"**: string, **"nickname"**: string, **"avatarUrl"**: string, **"description"**: string, **"password"**: string, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"createTime"**: dateTime, **"updateTime"**: dateTime } |
+| user | body |  | Yes | { **"id"**: integer, **"role"**: [UserRole](#userrole), **"username"**: string, **"email"**: string, **"nickname"**: string, **"avatarUrl"**: string, **"description"**: string, **"password"**: string, **"rowStatus"**: [v2RowStatus](#v2rowstatus), **"createTime"**: dateTime, **"updateTime"**: dateTime } |
 
 ##### Responses
 
@@ -1141,7 +1333,7 @@ UpdateWebhook updates a webhook.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | webhook.id | path |  | Yes | integer |
-| webhook | body |  | Yes | { **"creatorId"**: integer, **"createdTime"**: dateTime, **"updatedTime"**: dateTime, **"rowStatus"**: [apiv2RowStatus](#apiv2rowstatus), **"name"**: string, **"url"**: string } |
+| webhook | body |  | Yes | { **"creatorId"**: integer, **"createdTime"**: dateTime, **"updatedTime"**: dateTime, **"rowStatus"**: [v2RowStatus](#v2rowstatus), **"name"**: string, **"url"**: string } |
 
 ##### Responses
 
@@ -1169,6 +1361,20 @@ GetWorkspaceProfile returns the workspace profile.
 
 ---
 ## WorkspaceSettingService
+
+### /api/v2/workspace/settings
+
+#### GET
+##### Summary
+
+ListWorkspaceSetting returns the list of settings.
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | A successful response. | [v2ListWorkspaceSettingsResponse](#v2listworkspacesettingsresponse) |
+| default | An unexpected error response. | [googlerpcStatus](#googlerpcstatus) |
 
 ### /api/v2/workspace/{name}
 
@@ -1202,7 +1408,7 @@ SetWorkspaceSetting updates the setting.
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | setting.name | path | name is the name of the setting. Format: settings/{setting} | Yes | string |
-| setting | body | setting is the setting to update. | Yes | { **"generalSetting"**: [apiv2WorkspaceGeneralSetting](#apiv2workspacegeneralsetting) } |
+| setting | body | setting is the setting to update. | Yes | { **"generalSetting"**: [apiv2WorkspaceGeneralSetting](#apiv2workspacegeneralsetting), **"storageSetting"**: [apiv2WorkspaceStorageSetting](#apiv2workspacestoragesetting), **"memoRelatedSetting"**: [apiv2WorkspaceMemoRelatedSetting](#apiv2workspacememorelatedsetting) } |
 
 ##### Responses
 
@@ -1282,26 +1488,82 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | version | string |  | No |
 
-#### apiv2Reaction
+#### apiv2FieldMapping
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| identifier | string |  | No |
+| displayName | string |  | No |
+| email | string |  | No |
+
+#### apiv2IdentityProvider
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| name | string |  | No |
+| type | [apiv2IdentityProviderType](#apiv2identityprovidertype) |  | No |
+| title | string |  | No |
+| identifierFilter | string |  | No |
+| config | [apiv2IdentityProviderConfig](#apiv2identityproviderconfig) |  | No |
+
+#### apiv2IdentityProviderConfig
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| oauth2Config | [apiv2OAuth2Config](#apiv2oauth2config) |  | No |
+
+#### apiv2IdentityProviderType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| apiv2IdentityProviderType | string |  |  |
+
+#### apiv2OAuth2Config
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| clientId | string |  | No |
+| clientSecret | string |  | No |
+| authUrl | string |  | No |
+| tokenUrl | string |  | No |
+| userInfoUrl | string |  | No |
+| scopes | [ string ] |  | No |
+| fieldMapping | [apiv2FieldMapping](#apiv2fieldmapping) |  | No |
+
+#### apiv2S3Config
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| endPoint | string |  | No |
+| path | string |  | No |
+| region | string |  | No |
+| accessKey | string |  | No |
+| secretKey | string |  | No |
+| bucket | string |  | No |
+| urlPrefix | string |  | No |
+| urlSuffix | string |  | No |
+| preSign | boolean |  | No |
+
+#### apiv2Storage
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | id | integer |  | No |
-| creator | string |  | No |
-| contentId | string |  | No |
-| reactionType | [apiv2ReactionType](#apiv2reactiontype) |  | No |
+| title | string |  | No |
+| type | [apiv2StorageType](#apiv2storagetype) |  | No |
+| config | [apiv2StorageConfig](#apiv2storageconfig) |  | No |
 
-#### apiv2ReactionType
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| apiv2ReactionType | string |  |  |
-
-#### apiv2RowStatus
+#### apiv2StorageConfig
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| apiv2RowStatus | string |  |  |
+| s3Config | [apiv2S3Config](#apiv2s3config) |  | No |
+
+#### apiv2StorageType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| apiv2StorageType | string |  |  |
 
 #### apiv2UserSetting
 
@@ -1311,19 +1573,16 @@ GetActivity returns the activity with the given id.
 | locale | string | The preferred locale of the user. | No |
 | appearance | string | The preferred appearance of the user. | No |
 | memoVisibility | string | The default visibility of the memo. | No |
-| telegramUserId | string | The telegram user id of the user. | No |
 
-#### apiv2Webhook
+#### apiv2WorkspaceCustomProfile
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| id | integer |  | No |
-| creatorId | integer |  | No |
-| createdTime | dateTime |  | No |
-| updatedTime | dateTime |  | No |
-| rowStatus | [apiv2RowStatus](#apiv2rowstatus) |  | No |
-| name | string |  | No |
-| url | string |  | No |
+| title | string |  | No |
+| description | string |  | No |
+| logoUrl | string |  | No |
+| locale | string |  | No |
+| appearance | string |  | No |
 
 #### apiv2WorkspaceGeneralSetting
 
@@ -1334,13 +1593,42 @@ GetActivity returns the activity with the given id.
 | disallowPasswordLogin | boolean | disallow_password_login is the flag to disallow password login. | No |
 | additionalScript | string | additional_script is the additional script. | No |
 | additionalStyle | string | additional_style is the additional style. | No |
+| customProfile | [apiv2WorkspaceCustomProfile](#apiv2workspacecustomprofile) | custom_profile is the custom profile. | No |
+
+#### apiv2WorkspaceMemoRelatedSetting
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| disallowPublicVisible | boolean | disallow_public_share disallows set memo as public visible. | No |
+| displayWithUpdateTime | boolean | display_with_update_time orders and displays memo with update time. | No |
 
 #### apiv2WorkspaceSetting
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | name | string |  | No |
-| generalSetting | [apiv2WorkspaceGeneralSetting](#apiv2workspacegeneralsetting) | general_setting is the general setting of workspace. | No |
+| generalSetting | [apiv2WorkspaceGeneralSetting](#apiv2workspacegeneralsetting) |  | No |
+| storageSetting | [apiv2WorkspaceStorageSetting](#apiv2workspacestoragesetting) |  | No |
+| memoRelatedSetting | [apiv2WorkspaceMemoRelatedSetting](#apiv2workspacememorelatedsetting) |  | No |
+
+#### apiv2WorkspaceStorageSetting
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| storageType | [apiv2WorkspaceStorageSettingStorageType](#apiv2workspacestoragesettingstoragetype) | storage_type is the storage type. | No |
+| activedExternalStorageId | integer | The id of actived external storage. | No |
+| localStoragePathTemplate | string |  | No |
+| uploadSizeLimitMb | string (int64) | The max upload size in megabytes. | No |
+
+#### apiv2WorkspaceStorageSettingStorageType
+
+- STORAGE_TYPE_DATABASE: STORAGE_TYPE_DATABASE is the database storage type.
+- STORAGE_TYPE_LOCAL: STORAGE_TYPE_LOCAL is the local storage type.
+- STORAGE_TYPE_EXTERNAL: STORAGE_TYPE_EXTERNAL is the external storage type.
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| apiv2WorkspaceStorageSettingStorageType | string |  - STORAGE_TYPE_DATABASE: STORAGE_TYPE_DATABASE is the database storage type.  - STORAGE_TYPE_LOCAL: STORAGE_TYPE_LOCAL is the local storage type.  - STORAGE_TYPE_EXTERNAL: STORAGE_TYPE_EXTERNAL is the external storage type. |  |
 
 #### googlerpcStatus
 
@@ -1373,6 +1661,12 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | v2BatchUpsertTagResponse | object |  |  |
 
+#### v2CreateIdentityProviderResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| identityProvider | [apiv2IdentityProvider](#apiv2identityprovider) | The created identityProvider. | No |
+
 #### v2CreateMemoCommentResponse
 
 | Name | Type | Description | Required |
@@ -1398,6 +1692,18 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | resource | [v2Resource](#v2resource) |  | No |
 
+#### v2CreateStorageRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| storage | [apiv2Storage](#apiv2storage) |  | No |
+
+#### v2CreateStorageResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| storage | [apiv2Storage](#apiv2storage) |  | No |
+
 #### v2CreateUserAccessTokenResponse
 
 | Name | Type | Description | Required |
@@ -1421,7 +1727,13 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| webhook | [apiv2Webhook](#apiv2webhook) |  | No |
+| webhook | [v2Webhook](#v2webhook) |  | No |
+
+#### v2DeleteIdentityProviderResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| v2DeleteIdentityProviderResponse | object |  |  |
 
 #### v2DeleteInboxResponse
 
@@ -1446,6 +1758,12 @@ GetActivity returns the activity with the given id.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | v2DeleteResourceResponse | object |  |  |
+
+#### v2DeleteStorageResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| v2DeleteStorageResponse | object |  |  |
 
 #### v2DeleteTagResponse
 
@@ -1489,6 +1807,12 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | user | [v2User](#v2user) |  | No |
 
+#### v2GetIdentityProviderResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| identityProvider | [apiv2IdentityProvider](#apiv2identityprovider) | The identityProvider. | No |
+
 #### v2GetLinkMetadataResponse
 
 | Name | Type | Description | Required |
@@ -1506,6 +1830,12 @@ GetActivity returns the activity with the given id.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | resource | [v2Resource](#v2resource) |  | No |
+
+#### v2GetStorageResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| storage | [apiv2Storage](#apiv2storage) |  | No |
 
 #### v2GetTagSuggestionsResponse
 
@@ -1535,7 +1865,7 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| webhook | [apiv2Webhook](#apiv2webhook) |  | No |
+| webhook | [v2Webhook](#v2webhook) |  | No |
 
 #### v2GetWorkspaceProfileResponse
 
@@ -1581,6 +1911,12 @@ GetActivity returns the activity with the given id.
 | description | string |  | No |
 | image | string |  | No |
 
+#### v2ListIdentityProvidersResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| identityProviders | [ [apiv2IdentityProvider](#apiv2identityprovider) ] |  | No |
+
 #### v2ListInboxesResponse
 
 | Name | Type | Description | Required |
@@ -1597,7 +1933,7 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| reactions | [ [apiv2Reaction](#apiv2reaction) ] |  | No |
+| reactions | [ [v2Reaction](#v2reaction) ] |  | No |
 
 #### v2ListMemoRelationsResponse
 
@@ -1624,6 +1960,12 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | resources | [ [v2Resource](#v2resource) ] |  | No |
 
+#### v2ListStoragesResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| storages | [ [apiv2Storage](#apiv2storage) ] |  | No |
+
 #### v2ListTagsResponse
 
 | Name | Type | Description | Required |
@@ -1646,7 +1988,13 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| webhooks | [ [apiv2Webhook](#apiv2webhook) ] |  | No |
+| webhooks | [ [v2Webhook](#v2webhook) ] |  | No |
+
+#### v2ListWorkspaceSettingsResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| settings | [ [apiv2WorkspaceSetting](#apiv2workspacesetting) ] |  | No |
 
 #### v2Memo
 
@@ -1654,7 +2002,7 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | name | string | The name of the memo. Format: memos/{id} id is the system generated id. | No |
 | uid | string | The user defined id of the memo. | No |
-| rowStatus | [apiv2RowStatus](#apiv2rowstatus) |  | No |
+| rowStatus | [v2RowStatus](#v2rowstatus) |  | No |
 | creator | string |  | No |
 | createTime | dateTime |  | No |
 | updateTime | dateTime |  | No |
@@ -1665,7 +2013,7 @@ GetActivity returns the activity with the given id.
 | parentId | integer |  | No |
 | resources | [ [v2Resource](#v2resource) ] |  | No |
 | relations | [ [v2MemoRelation](#v2memorelation) ] |  | No |
-| reactions | [ [apiv2Reaction](#apiv2reaction) ] |  | No |
+| reactions | [ [v2Reaction](#v2reaction) ] |  | No |
 
 #### v2MemoRelation
 
@@ -1681,6 +2029,21 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | v2MemoRelationType | string |  |  |
 
+#### v2Reaction
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| creator | string |  | No |
+| contentId | string |  | No |
+| reactionType | [v2ReactionType](#v2reactiontype) |  | No |
+
+#### v2ReactionType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| v2ReactionType | string |  |  |
+
 #### v2RenameTagResponse
 
 | Name | Type | Description | Required |
@@ -1695,10 +2058,17 @@ GetActivity returns the activity with the given id.
 | uid | string | The user defined id of the resource. | No |
 | createTime | dateTime |  | No |
 | filename | string |  | No |
+| content | byte |  | No |
 | externalLink | string |  | No |
 | type | string |  | No |
 | size | string (int64) |  | No |
-| memoId | integer |  | No |
+| memo | string |  | No |
+
+#### v2RowStatus
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| v2RowStatus | string |  |  |
 
 #### v2SearchMemosResponse
 
@@ -1767,6 +2137,12 @@ GetActivity returns the activity with the given id.
 | name | string |  | No |
 | creator | string |  | No |
 
+#### v2UpdateIdentityProviderResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| identityProvider | [apiv2IdentityProvider](#apiv2identityprovider) | The updated identityProvider. | No |
+
 #### v2UpdateInboxResponse
 
 | Name | Type | Description | Required |
@@ -1785,6 +2161,12 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | resource | [v2Resource](#v2resource) |  | No |
 
+#### v2UpdateStorageResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| storage | [apiv2Storage](#apiv2storage) |  | No |
+
 #### v2UpdateUserResponse
 
 | Name | Type | Description | Required |
@@ -1801,13 +2183,13 @@ GetActivity returns the activity with the given id.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| webhook | [apiv2Webhook](#apiv2webhook) |  | No |
+| webhook | [v2Webhook](#v2webhook) |  | No |
 
 #### v2UpsertMemoReactionResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| reaction | [apiv2Reaction](#apiv2reaction) |  | No |
+| reaction | [v2Reaction](#v2reaction) |  | No |
 
 #### v2UpsertTagRequest
 
@@ -1834,7 +2216,7 @@ GetActivity returns the activity with the given id.
 | avatarUrl | string |  | No |
 | description | string |  | No |
 | password | string |  | No |
-| rowStatus | [apiv2RowStatus](#apiv2rowstatus) |  | No |
+| rowStatus | [v2RowStatus](#v2rowstatus) |  | No |
 | createTime | dateTime |  | No |
 | updateTime | dateTime |  | No |
 
@@ -1853,6 +2235,18 @@ GetActivity returns the activity with the given id.
 | ---- | ---- | ----------- | -------- |
 | v2Visibility | string |  |  |
 
+#### v2Webhook
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| creatorId | integer |  | No |
+| createdTime | dateTime |  | No |
+| updatedTime | dateTime |  | No |
+| rowStatus | [v2RowStatus](#v2rowstatus) |  | No |
+| name | string |  | No |
+| url | string |  | No |
+
 #### v2WorkspaceProfile
 
 | Name | Type | Description | Required |
@@ -1860,7 +2254,3 @@ GetActivity returns the activity with the given id.
 | owner | string |  | No |
 | version | string |  | No |
 | mode | string | mode is the instance mode (e.g. "prod", "dev" or "demo"). | No |
-| disallowSignup | boolean | disallow_signup is whether the signup is disallowed. | No |
-| disablePasswordLogin | boolean | disable_password_login is whether the password login is disabled. | No |
-| additionalScript | string | additional_script is the additional script. | No |
-| additionalStyle | string | additional_style is the additional style. | No |

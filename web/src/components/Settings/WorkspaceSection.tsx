@@ -4,11 +4,7 @@ import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { workspaceSettingServiceClient } from "@/grpcweb";
 import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
-import {
-  WorkspaceGeneralSetting,
-  WorkspaceMemoRelatedSetting,
-  WorkspaceTelegramIntegrationSetting,
-} from "@/types/proto/api/v2/workspace_setting_service";
+import { WorkspaceGeneralSetting, WorkspaceMemoRelatedSetting } from "@/types/proto/api/v2/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { showCommonDialog } from "../Dialog/CommonDialog";
@@ -26,12 +22,6 @@ const WorkspaceSection = () => {
   const [workspaceMemoRelatedSetting, setWorkspaceMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(
     WorkspaceMemoRelatedSetting.fromPartial(
       workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED)?.memoRelatedSetting || {},
-    ),
-  );
-  const [workspaceTelegramIntegrationSetting, setWorkspaceTelegramIntegrationSetting] = useState<WorkspaceTelegramIntegrationSetting>(
-    WorkspaceTelegramIntegrationSetting.fromPartial(
-      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_TELEGRAM_INTEGRATION)
-        ?.telegramIntegrationSetting || {},
     ),
   );
 
@@ -94,23 +84,6 @@ const WorkspaceSection = () => {
       return;
     }
     toast.success("Instance URL updated");
-  };
-
-  const handleTelegramBotTokenChanged = (value: string) => {
-    setWorkspaceTelegramIntegrationSetting({ ...workspaceTelegramIntegrationSetting, botToken: value });
-  };
-
-  const handleSaveTelegramBotToken = async () => {
-    try {
-      await workspaceSettingStore.setWorkspaceSetting({
-        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_TELEGRAM_INTEGRATION}`,
-        telegramIntegrationSetting: workspaceTelegramIntegrationSetting,
-      });
-      toast.success("Telegram Bot Token updated");
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.details);
-    }
   };
 
   const handleAdditionalStyleChanged = (value: string) => {
@@ -289,40 +262,6 @@ const WorkspaceSection = () => {
           checked={workspaceMemoRelatedSetting.displayWithUpdateTime}
           onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)}
         />
-      </div>
-      <Divider className="!my-3" />
-      <p className="font-medium text-gray-700 dark:text-gray-500">Integrations</p>
-      <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
-        <div className="w-full flex flex-row justify-between items-center">
-          <div className="flex flex-row items-center">
-            <div className="w-auto flex items-center">
-              <span className="mr-1">{t("setting.system-section.telegram-bot-token")}</span>
-            </div>
-          </div>
-          <Button variant="outlined" color="neutral" onClick={handleSaveTelegramBotToken}>
-            {t("common.save")}
-          </Button>
-        </div>
-        <Input
-          className="w-full"
-          sx={{
-            fontFamily: "monospace",
-            fontSize: "14px",
-          }}
-          placeholder={t("setting.system-section.telegram-bot-token-placeholder")}
-          value={workspaceTelegramIntegrationSetting.botToken}
-          onChange={(event) => handleTelegramBotTokenChanged(event.target.value)}
-        />
-        <div className="w-full">
-          <Link
-            className="text-gray-500 text-sm inline-flex flex-row justify-start items-center hover:underline hover:text-blue-600"
-            to="https://usememos.com/docs/integration/telegram-bot"
-            target="_blank"
-          >
-            {t("common.learn-more")}
-            <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
-          </Link>
-        </div>
       </div>
     </div>
   );

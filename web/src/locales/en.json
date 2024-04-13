@@ -194,9 +194,7 @@
     "preference-section": {
       "theme": "Theme",
       "default-memo-visibility": "Default memo visibility",
-      "default-memo-sort-option": "Memo display time",
-      "telegram-user-id": "Telegram UserID",
-      "telegram-user-id-placeholder": "Send any words to your Telegram Bot as a memo"
+      "default-memo-sort-option": "Memo display time"
     },
     "storage-section": {
       "current-storage": "Current object storage",
@@ -262,9 +260,6 @@
       "additional-script": "Additional script",
       "additional-style-placeholder": "Additional CSS code",
       "additional-script-placeholder": "Additional JavaScript code",
-      "telegram-bot-token": "Telegram Bot Token",
-      "telegram-bot-token-description": "Telegram Bot Token or API Proxy like `http…/bot<token>`",
-      "telegram-bot-token-placeholder": "Your Telegram Bot token",
       "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
