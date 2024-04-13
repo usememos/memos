@@ -10,7 +10,7 @@ import (
 func (d *DB) CreateWebhook(ctx context.Context, create *store.Webhook) (*store.Webhook, error) {
 	fields := []string{"`name`", "`url`", "`creator_id`"}
 	placeholder := []string{"?", "?", "?"}
-	args := []any{create.Name, create.Url, create.CreatorID}
+	args := []any{create.Name, create.URL, create.CreatorID}
 
 	stmt := "INSERT INTO `webhook` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
@@ -55,7 +55,7 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 			&rowStatus,
 			&webhook.CreatorID,
 			&webhook.Name,
-			&webhook.Url,
+			&webhook.URL,
 		); err != nil {
 			return nil, err
 		}

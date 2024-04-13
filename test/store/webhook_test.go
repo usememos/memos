@@ -17,7 +17,7 @@ func TestWebhookStore(t *testing.T) {
 	webhook, err := ts.CreateWebhook(ctx, &store.Webhook{
 		CreatorID: user.ID,
 		Name:      "test_webhook",
-		Url:       "https://example.com",
+		URL:       "https://example.com",
 		RowStatus: store.Normal,
 	})
 	require.NoError(t, err)

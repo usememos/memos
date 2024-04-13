@@ -823,7 +823,7 @@ func (s *APIV2Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *api
 			return errors.Wrap(err, "failed to convert memo to webhook payload")
 		}
 		payload.ActivityType = activityType
-		payload.URL = hook.Url
+		payload.URL = hook.URL
 		if err := webhook.Post(*payload); err != nil {
 			return errors.Wrap(err, "failed to post webhook")
 		}

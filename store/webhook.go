@@ -11,7 +11,7 @@ type Webhook struct {
 	CreatorID int32
 	RowStatus RowStatus
 	Name      string
-	Url       string
+	URL       string
 }
 
 type FindWebhook struct {

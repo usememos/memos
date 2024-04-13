@@ -282,7 +282,7 @@ func (t *TelegramHandler) dispatchMemoRelatedWebhook(ctx context.Context, memo s
 	for _, hook := range webhooks {
 		payload := t.convertMemoToWebhookPayload(ctx, memo)
 		payload.ActivityType = activityType
-		payload.URL = hook.Url
+		payload.URL = hook.URL
 		err := webhook.Post(*payload)
 		if err != nil {
 			return errors.Wrap(err, "failed to post webhook")

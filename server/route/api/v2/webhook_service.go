@@ -21,7 +21,7 @@ func (s *APIV2Service) CreateWebhook(ctx context.Context, request *apiv2pb.Creat
 	webhook, err := s.Store.CreateWebhook(ctx, &store.Webhook{
 		CreatorID: currentUser.ID,
 		Name:      request.Name,
-		Url:       request.Url,
+		URL:       request.Url,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create webhook, error: %+v", err)
@@ -114,6 +114,6 @@ func convertWebhookFromStore(webhook *store.Webhook) *apiv2pb.Webhook {
 		RowStatus:   convertRowStatusFromStore(webhook.RowStatus),
 		CreatorId:   webhook.CreatorID,
 		Name:        webhook.Name,
-		Url:         webhook.Url,
+		Url:         webhook.URL,
 	}
 }
