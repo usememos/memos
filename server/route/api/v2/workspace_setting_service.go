@@ -88,10 +88,6 @@ func convertWorkspaceSettingFromStore(setting *storepb.WorkspaceSetting) *apiv2p
 		workspaceSetting.Value = &apiv2pb.WorkspaceSetting_MemoRelatedSetting{
 			MemoRelatedSetting: convertWorkspaceMemoRelatedSettingFromStore(setting.GetMemoRelatedSetting()),
 		}
-	case *storepb.WorkspaceSetting_TelegramIntegrationSetting:
-		workspaceSetting.Value = &apiv2pb.WorkspaceSetting_TelegramIntegrationSetting{
-			TelegramIntegrationSetting: convertWorkspaceTelegramIntegrationSettingFromStore(setting.GetTelegramIntegrationSetting()),
-		}
 	}
 	return workspaceSetting
 }
@@ -116,10 +112,6 @@ func convertWorkspaceSettingToStore(setting *apiv2pb.WorkspaceSetting) *storepb.
 	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED:
 		workspaceSetting.Value = &storepb.WorkspaceSetting_MemoRelatedSetting{
 			MemoRelatedSetting: convertWorkspaceMemoRelatedSettingToStore(setting.GetMemoRelatedSetting()),
-		}
-	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_TELEGRAM_INTEGRATION:
-		workspaceSetting.Value = &storepb.WorkspaceSetting_TelegramIntegrationSetting{
-			TelegramIntegrationSetting: convertWorkspaceTelegramIntegrationSettingToStore(setting.GetTelegramIntegrationSetting()),
 		}
 	}
 	return workspaceSetting
@@ -212,23 +204,5 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *apiv2pb.WorkspaceMemoRel
 	return &storepb.WorkspaceMemoRelatedSetting{
 		DisallowPublicVisible: setting.DisallowPublicVisible,
 		DisplayWithUpdateTime: setting.DisplayWithUpdateTime,
-	}
-}
-
-func convertWorkspaceTelegramIntegrationSettingFromStore(setting *storepb.WorkspaceTelegramIntegrationSetting) *apiv2pb.WorkspaceTelegramIntegrationSetting {
-	if setting == nil {
-		return nil
-	}
-	return &apiv2pb.WorkspaceTelegramIntegrationSetting{
-		BotToken: setting.BotToken,
-	}
-}
-
-func convertWorkspaceTelegramIntegrationSettingToStore(setting *apiv2pb.WorkspaceTelegramIntegrationSetting) *storepb.WorkspaceTelegramIntegrationSetting {
-	if setting == nil {
-		return nil
-	}
-	return &storepb.WorkspaceTelegramIntegrationSetting{
-		BotToken: setting.BotToken,
 	}
 }

@@ -61,7 +61,6 @@ message WorkspaceSetting {
     WorkspaceGeneralSetting general_setting = 2;
     WorkspaceStorageSetting storage_setting = 3;
     WorkspaceMemoRelatedSetting memo_related_setting = 4;
-    WorkspaceTelegramIntegrationSetting telegram_integration_setting = 5;
   }
 }
 
@@ -115,9 +114,4 @@ message WorkspaceMemoRelatedSetting {
   bool disallow_public_visible = 1;
   // display_with_update_time orders and displays memo with update time.
   bool display_with_update_time = 2;
-}
-
-message WorkspaceTelegramIntegrationSetting {
-  // bot_token is the telegram bot token.
-  string bot_token = 1;
 }

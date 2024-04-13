@@ -142,8 +142,6 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 		userSetting.Value = &storepb.UserSetting_Appearance{Appearance: raw.Value}
 	case storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY:
 		userSetting.Value = &storepb.UserSetting_MemoVisibility{MemoVisibility: raw.Value}
-	case storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID:
-		userSetting.Value = &storepb.UserSetting_TelegramUserId{TelegramUserId: raw.Value}
 	default:
 		return nil, errors.Errorf("unsupported user setting key: %v", raw.Key)
 	}
@@ -170,8 +168,6 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 		raw.Value = userSetting.GetAppearance()
 	case storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY:
 		raw.Value = userSetting.GetMemoVisibility()
-	case storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID:
-		raw.Value = userSetting.GetTelegramUserId()
 	default:
 		return nil, errors.Errorf("unsupported user setting key: %v", userSetting.Key)
 	}

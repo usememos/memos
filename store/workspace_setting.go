@@ -71,8 +71,6 @@ func (s *Store) UpsertWorkspaceSettingV1(ctx context.Context, upsert *storepb.Wo
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
 	} else if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED {
 		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
-	} else if upsert.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_TELEGRAM_INTEGRATION {
-		valueBytes, err = protojson.Marshal(upsert.GetTelegramIntegrationSetting())
 	} else {
 		return nil, errors.Errorf("unsupported workspace setting key: %v", upsert.Key)
 	}
@@ -233,12 +231,6 @@ func convertWorkspaceSettingFromRaw(workspaceSettingRaw *WorkspaceSetting) (*sto
 			return nil, err
 		}
 		workspaceSetting.Value = &storepb.WorkspaceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
-	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_TELEGRAM_INTEGRATION.String():
-		telegramIntegrationSetting := &storepb.WorkspaceTelegramIntegrationSetting{}
-		if err := protojsonUnmarshaler.Unmarshal([]byte(workspaceSettingRaw.Value), telegramIntegrationSetting); err != nil {
-			return nil, err
-		}
-		workspaceSetting.Value = &storepb.WorkspaceSetting_TelegramIntegrationSetting{TelegramIntegrationSetting: telegramIntegrationSetting}
 	default:
 		return nil, errors.Errorf("unsupported workspace setting key: %v", workspaceSettingRaw.Name)
 	}

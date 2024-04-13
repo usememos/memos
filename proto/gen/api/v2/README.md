@@ -243,7 +243,6 @@
     - [WorkspaceMemoRelatedSetting](#memos-api-v2-WorkspaceMemoRelatedSetting)
     - [WorkspaceSetting](#memos-api-v2-WorkspaceSetting)
     - [WorkspaceStorageSetting](#memos-api-v2-WorkspaceStorageSetting)
-    - [WorkspaceTelegramIntegrationSetting](#memos-api-v2-WorkspaceTelegramIntegrationSetting)
   
     - [WorkspaceStorageSetting.StorageType](#memos-api-v2-WorkspaceStorageSetting-StorageType)
   
@@ -804,7 +803,6 @@ Used internally for obfuscating the page token.
 | locale | [string](#string) |  | The preferred locale of the user. |
 | appearance | [string](#string) |  | The preferred appearance of the user. |
 | memo_visibility | [string](#string) |  | The default visibility of the memo. |
-| telegram_user_id | [string](#string) |  | The telegram user id of the user. |
 
 
 
@@ -3325,7 +3323,6 @@ Used internally for obfuscating the page token.
 | general_setting | [WorkspaceGeneralSetting](#memos-api-v2-WorkspaceGeneralSetting) |  |  |
 | storage_setting | [WorkspaceStorageSetting](#memos-api-v2-WorkspaceStorageSetting) |  |  |
 | memo_related_setting | [WorkspaceMemoRelatedSetting](#memos-api-v2-WorkspaceMemoRelatedSetting) |  |  |
-| telegram_integration_setting | [WorkspaceTelegramIntegrationSetting](#memos-api-v2-WorkspaceTelegramIntegrationSetting) |  |  |
 
 
 
@@ -3344,21 +3341,6 @@ Used internally for obfuscating the page token.
 | actived_external_storage_id | [int32](#int32) | optional | The id of actived external storage. |
 | local_storage_path_template | [string](#string) |  | The template of local storage path. e.g. assets/{timestamp}_{filename} |
 | upload_size_limit_mb | [int64](#int64) |  | The max upload size in megabytes. |
-
-
-
-
-
-
-<a name="memos-api-v2-WorkspaceTelegramIntegrationSetting"></a>
-
-### WorkspaceTelegramIntegrationSetting
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| bot_token | [string](#string) |  | bot_token is the telegram bot token. |
 
 
 

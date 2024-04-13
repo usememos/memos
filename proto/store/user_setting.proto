@@ -14,8 +14,6 @@ enum UserSettingKey {
   USER_SETTING_APPEARANCE = 3;
   // The visibility of the memo.
   USER_SETTING_MEMO_VISIBILITY = 4;
-  // The telegram user id of the user.
-  USER_SETTING_TELEGRAM_USER_ID = 5;
 }
 
 message UserSetting {
@@ -26,7 +24,6 @@ message UserSetting {
     string locale = 4;
     string appearance = 5;
     string memo_visibility = 6;
-    string telegram_user_id = 7;
   }
 }
 

@@ -14,8 +14,6 @@ enum WorkspaceSettingKey {
   WORKSPACE_SETTING_STORAGE = 3;
   // WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings.
   WORKSPACE_SETTING_MEMO_RELATED = 4;
-  // WORKSPACE_SETTING_TELEGRAM_INTEGRATION is the key for telegram integration settings.
-  WORKSPACE_SETTING_TELEGRAM_INTEGRATION = 5;
 }
 
 message WorkspaceSetting {
@@ -25,7 +23,6 @@ message WorkspaceSetting {
     WorkspaceGeneralSetting general_setting = 3;
     WorkspaceStorageSetting storage_setting = 4;
     WorkspaceMemoRelatedSetting memo_related_setting = 5;
-    WorkspaceTelegramIntegrationSetting telegram_integration_setting = 6;
   }
 }
 
@@ -84,9 +81,4 @@ message WorkspaceMemoRelatedSetting {
   bool disallow_public_visible = 1;
   // display_with_update_time orders and displays memo with update time.
   bool display_with_update_time = 2;
-}
-
-message WorkspaceTelegramIntegrationSetting {
-  // bot_token is the telegram bot token.
-  string bot_token = 1;
 }

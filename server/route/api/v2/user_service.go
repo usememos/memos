@@ -266,8 +266,6 @@ func (s *APIV2Service) GetUserSetting(ctx context.Context, _ *apiv2pb.GetUserSet
 			userSettingMessage.Appearance = setting.GetAppearance()
 		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY {
 			userSettingMessage.MemoVisibility = setting.GetMemoVisibility()
-		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID {
-			userSettingMessage.TelegramUserId = setting.GetTelegramUserId()
 		}
 	}
 	return &apiv2pb.GetUserSettingResponse{
@@ -312,16 +310,6 @@ func (s *APIV2Service) UpdateUserSetting(ctx context.Context, request *apiv2pb.U
 				Key:    storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY,
 				Value: &storepb.UserSetting_MemoVisibility{
 					MemoVisibility: request.Setting.MemoVisibility,
-				},
-			}); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
-			}
-		} else if field == "telegram_user_id" {
-			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
-				UserId: user.ID,
-				Key:    storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID,
-				Value: &storepb.UserSetting_TelegramUserId{
-					TelegramUserId: request.Setting.TelegramUserId,
 				},
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)

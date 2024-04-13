@@ -1035,8 +1035,6 @@ paths:
                 $ref: '#/definitions/apiv2WorkspaceStorageSetting'
               memoRelatedSetting:
                 $ref: '#/definitions/apiv2WorkspaceMemoRelatedSetting'
-              telegramIntegrationSetting:
-                $ref: '#/definitions/apiv2WorkspaceTelegramIntegrationSetting'
             title: setting is the setting to update.
       tags:
         - WorkspaceSettingService
@@ -1861,9 +1859,6 @@ paths:
               memoVisibility:
                 type: string
                 description: The default visibility of the memo.
-              telegramUserId:
-                type: string
-                description: The telegram user id of the user.
       tags:
         - UserService
   /api/v2/{user.name}:
@@ -2113,9 +2108,6 @@ definitions:
       memoVisibility:
         type: string
         description: The default visibility of the memo.
-      telegramUserId:
-        type: string
-        description: The telegram user id of the user.
   apiv2WorkspaceCustomProfile:
     type: object
     properties:
@@ -2173,8 +2165,6 @@ definitions:
         $ref: '#/definitions/apiv2WorkspaceStorageSetting'
       memoRelatedSetting:
         $ref: '#/definitions/apiv2WorkspaceMemoRelatedSetting'
-      telegramIntegrationSetting:
-        $ref: '#/definitions/apiv2WorkspaceTelegramIntegrationSetting'
   apiv2WorkspaceStorageSetting:
     type: object
     properties:
@@ -2206,12 +2196,6 @@ definitions:
        - STORAGE_TYPE_DATABASE: STORAGE_TYPE_DATABASE is the database storage type.
        - STORAGE_TYPE_LOCAL: STORAGE_TYPE_LOCAL is the local storage type.
        - STORAGE_TYPE_EXTERNAL: STORAGE_TYPE_EXTERNAL is the external storage type.
-  apiv2WorkspaceTelegramIntegrationSetting:
-    type: object
-    properties:
-      botToken:
-        type: string
-        description: bot_token is the telegram bot token.
   googlerpcStatus:
     type: object
     properties:

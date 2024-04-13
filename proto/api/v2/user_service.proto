@@ -186,8 +186,6 @@ message UserSetting {
   string appearance = 3;
   // The default visibility of the memo.
   string memo_visibility = 4;
-  // The telegram user id of the user.
-  string telegram_user_id = 5;
 }
 
 message GetUserSettingRequest {

@@ -11,9 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/plugin/telegram"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/route/api/auth"
 	apiv2 "github.com/usememos/memos/server/route/api/v2"
@@ -31,9 +29,6 @@ type Server struct {
 	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
-
-	// Asynchronous runners.
-	telegramBot *telegram.Bot
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -46,9 +41,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		e:       e,
 		Store:   store,
 		Profile: profile,
-
-		// Asynchronous runners.
-		telegramBot: telegram.NewBotWithHandler(integration.NewTelegramHandler(store)),
 	}
 
 	// Register CORS middleware.
@@ -102,7 +94,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 func (s *Server) Start(ctx context.Context) error {
 	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
-	go s.telegramBot.Start(ctx)
 	return s.e.Start(fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port))
 }
 

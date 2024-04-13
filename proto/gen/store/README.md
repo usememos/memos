@@ -45,7 +45,6 @@
     - [WorkspaceMemoRelatedSetting](#memos-store-WorkspaceMemoRelatedSetting)
     - [WorkspaceSetting](#memos-store-WorkspaceSetting)
     - [WorkspaceStorageSetting](#memos-store-WorkspaceStorageSetting)
-    - [WorkspaceTelegramIntegrationSetting](#memos-store-WorkspaceTelegramIntegrationSetting)
   
     - [WorkspaceSettingKey](#memos-store-WorkspaceSettingKey)
     - [WorkspaceStorageSetting.StorageType](#memos-store-WorkspaceStorageSetting-StorageType)
@@ -437,7 +436,6 @@
 | locale | [string](#string) |  |  |
 | appearance | [string](#string) |  |  |
 | memo_visibility | [string](#string) |  |  |
-| telegram_user_id | [string](#string) |  |  |
 
 
 
@@ -458,7 +456,6 @@
 | USER_SETTING_LOCALE | 2 | The locale of the user. |
 | USER_SETTING_APPEARANCE | 3 | The appearance of the user. |
 | USER_SETTING_MEMO_VISIBILITY | 4 | The visibility of the memo. |
-| USER_SETTING_TELEGRAM_USER_ID | 5 | The telegram user id of the user. |
 
 
  
@@ -560,7 +557,6 @@
 | general_setting | [WorkspaceGeneralSetting](#memos-store-WorkspaceGeneralSetting) |  |  |
 | storage_setting | [WorkspaceStorageSetting](#memos-store-WorkspaceStorageSetting) |  |  |
 | memo_related_setting | [WorkspaceMemoRelatedSetting](#memos-store-WorkspaceMemoRelatedSetting) |  |  |
-| telegram_integration_setting | [WorkspaceTelegramIntegrationSetting](#memos-store-WorkspaceTelegramIntegrationSetting) |  |  |
 
 
 
@@ -584,21 +580,6 @@
 
 
 
-
-<a name="memos-store-WorkspaceTelegramIntegrationSetting"></a>
-
-### WorkspaceTelegramIntegrationSetting
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| bot_token | [string](#string) |  | bot_token is the telegram bot token. |
-
-
-
-
-
  
 
 
@@ -614,7 +595,6 @@
 | WORKSPACE_SETTING_GENERAL | 2 | WORKSPACE_SETTING_GENERAL is the key for general settings. |
 | WORKSPACE_SETTING_STORAGE | 3 | WORKSPACE_SETTING_STORAGE is the key for storage settings. |
 | WORKSPACE_SETTING_MEMO_RELATED | 4 | WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings. |
-| WORKSPACE_SETTING_TELEGRAM_INTEGRATION | 5 | WORKSPACE_SETTING_TELEGRAM_INTEGRATION is the key for telegram integration settings. |
 
 
 
