@@ -13,7 +13,6 @@ import (
 	"github.com/yourselfhosted/gomark/ast"
 	"github.com/yourselfhosted/gomark/renderer"
 
-	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -102,7 +101,7 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 		Created:     time.Now(),
 	}
 
-	var itemCountLimit = util.Min(len(memoList), maxRSSItemCount)
+	var itemCountLimit = min(len(memoList), maxRSSItemCount)
 	feed.Items = make([]*feeds.Item, itemCountLimit)
 	for i := 0; i < itemCountLimit; i++ {
 		memo := memoList[i]
@@ -152,7 +151,7 @@ func getRSSItemTitle(content string) string {
 	}
 
 	title := strings.Split(content, "\n")[0]
-	var titleLengthLimit = util.Min(len(title), maxRSSItemTitleLength)
+	var titleLengthLimit = min(len(title), maxRSSItemTitleLength)
 	if titleLengthLimit < len(title) {
 		title = title[:titleLengthLimit] + "..."
 	}
