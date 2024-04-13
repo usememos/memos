@@ -113,7 +113,7 @@ func TestIdentityProvider(t *testing.T) {
 	ctx := context.Background()
 
 	const (
-		testClientId    = "test-client-id"
+		testClientID    = "test-client-id"
 		testCode        = "test-code"
 		testAccessToken = "test-access-token"
 		testSubject     = "123456789"
@@ -133,7 +133,7 @@ func TestIdentityProvider(t *testing.T) {
 
 	oauth2, err := NewIdentityProvider(
 		&storepb.OAuth2Config{
-			ClientId:     testClientId,
+			ClientId:     testClientID,
 			ClientSecret: "test-client-secret",
 			TokenUrl:     fmt.Sprintf("%s/oauth2/token", s.URL),
 			UserInfoUrl:  fmt.Sprintf("%s/oauth2/userinfo", s.URL),
