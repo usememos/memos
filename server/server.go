@@ -15,8 +15,11 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/server/route/api/auth"
 	apiv2 "github.com/usememos/memos/server/route/api/v2"
 	"github.com/usememos/memos/server/route/frontend"
+	"github.com/usememos/memos/server/route/resource"
+	"github.com/usememos/memos/server/route/rss"
 	versionchecker "github.com/usememos/memos/server/service/version_checker"
 	"github.com/usememos/memos/store"
 )
@@ -73,6 +76,20 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		frontendService := frontend.NewFrontendService(profile, store)
 		frontendService.Serve(ctx, e)
 	}
+
+	rootGroup := e.Group("")
+
+	// Register public routes.
+	publicGroup := rootGroup.Group("/o")
+	publicGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return auth.JWTMiddleware(s.Store, next, s.Secret)
+	})
+
+	// Create and register resource public routes.
+	resource.NewResourceService(s.Profile, s.Store).RegisterRoutes(publicGroup)
+
+	// Create and register rss public routes.
+	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
 	apiV2Service := apiv2.NewAPIV2Service(s.Secret, profile, store, s.Profile.Port+1)
 	// Register gRPC gateway as api v2.

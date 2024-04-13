@@ -18,13 +18,11 @@ import (
 
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/server/route/api/auth"
 	"github.com/usememos/memos/store"
 )
 
 const (
-	// The key name used to store user id in the context
-	// user id is extracted from the jwt token subject field.
-	userIDContextKey = "user-id"
 	// thumbnailImagePath is the directory to store image thumbnails.
 	thumbnailImagePath = ".thumbnail_cache"
 )
@@ -68,7 +66,7 @@ func (s *ResourceService) streamResource(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", resource.MemoID)).SetInternal(err)
 		}
 		if memo != nil && memo.Visibility != store.Public {
-			userID, ok := c.Get(userIDContextKey).(int32)
+			userID, ok := c.Get(auth.UserIDContextKey).(int32)
 			if !ok || (memo.Visibility == store.Private && userID != resource.CreatorID) {
 				return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match")
 			}

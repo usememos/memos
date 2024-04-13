@@ -38,10 +38,10 @@ func (s *APIV2Service) UpsertMemoReaction(ctx context.Context, request *apiv2pb.
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
-	reaction, err := s.Store.UpsertReaction(ctx, &storepb.Reaction{
-		CreatorId:    user.ID,
-		ContentId:    request.Reaction.ContentId,
-		ReactionType: storepb.Reaction_Type(request.Reaction.ReactionType),
+	reaction, err := s.Store.UpsertReaction(ctx, &store.Reaction{
+		CreatorID:    user.ID,
+		ContentID:    request.Reaction.ContentId,
+		ReactionType: storepb.ReactionType(request.Reaction.ReactionType),
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert reaction")
@@ -66,17 +66,17 @@ func (s *APIV2Service) DeleteMemoReaction(ctx context.Context, request *apiv2pb.
 	return &apiv2pb.DeleteMemoReactionResponse{}, nil
 }
 
-func (s *APIV2Service) convertReactionFromStore(ctx context.Context, reaction *storepb.Reaction) (*apiv2pb.Reaction, error) {
+func (s *APIV2Service) convertReactionFromStore(ctx context.Context, reaction *store.Reaction) (*apiv2pb.Reaction, error) {
 	creator, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &reaction.CreatorId,
+		ID: &reaction.CreatorID,
 	})
 	if err != nil {
 		return nil, err
 	}
 	return &apiv2pb.Reaction{
-		Id:           reaction.Id,
+		Id:           reaction.ID,
 		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
-		ContentId:    reaction.ContentId,
+		ContentId:    reaction.ContentID,
 		ReactionType: apiv2pb.Reaction_Type(reaction.ReactionType),
 	}, nil
 }
