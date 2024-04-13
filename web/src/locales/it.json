@@ -217,8 +217,6 @@
     "preference-section": {
       "default-memo-sort-option": "Ordinamento memo predefinito",
       "default-memo-visibility": "Visibilità memo predefinita",
-      "telegram-user-id": "UserID Telegram",
-      "telegram-user-id-placeholder": "Salva i messaggi al tuo bot telegram come memo",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -301,10 +299,7 @@
       "enable-password-login-warning": "Ciò consentirà l'accesso tramite password per tutti gli utenti. Continua solo se desideri che gli utenti possano accedere utilizzando sia SSO che password❗",
       "max-upload-size": "Dimensione massima caricamento (MiB)",
       "max-upload-size-hint": "Valore consigliato di 32 MiB.",
-      "server-name": "Nome server",
-      "telegram-bot-token": "Token Bot Telegram",
-      "telegram-bot-token-description": "Token bot Telegram o API Proxy come `http.../bot<token>`",
-      "telegram-bot-token-placeholder": "Il token del tuo bot Telegram"
+      "server-name": "Nome server"
     }
   },
   "tag": {

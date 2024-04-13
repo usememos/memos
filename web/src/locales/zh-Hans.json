@@ -254,8 +254,6 @@
     "preference-section": {
       "default-memo-sort-option": "Memo 显示时间",
       "default-memo-visibility": "默认 Memo 可见性",
-      "telegram-user-id": "Telegram UserID",
-      "telegram-user-id-placeholder": "向 Telegram 机器人发送任意消息以获取",
       "theme": "主题"
     },
     "sso": "单点登录",
@@ -340,9 +338,6 @@
       "max-upload-size": "最大上传大小 (MiB)",
       "max-upload-size-hint": "建议值为 32 MiB。",
       "server-name": "服务名称",
-      "telegram-bot-token": "Telegram 机器人 Token",
-      "telegram-bot-token-description": "Telegram 机器人 Token 或 `http…/bot<token>` 格式的代理地址",
-      "telegram-bot-token-placeholder": "您的 Telegram 机器人 Token",
       "vacuum-hint": "清理未使用的数据。"
     }
   },

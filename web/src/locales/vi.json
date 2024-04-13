@@ -211,8 +211,6 @@
     "preference-section": {
       "default-memo-sort-option": "Thời gian hiển thị ghi chú",
       "default-memo-visibility": "Hiển thị ghi chú mặc định",
-      "telegram-user-id": "Telegram UserID",
-      "telegram-user-id-placeholder": "Gửi bất kỳ từ nào đến Telegram Bot của bạn như một ghi chú",
       "theme": "Giao diện"
     },
     "sso": "SSO",
@@ -297,9 +295,6 @@
       "max-upload-size": "Kích thước tải lên tối đa (MiB)",
       "max-upload-size-hint": "Giá trị khuyến nghị là 32 MiB.",
       "server-name": "Tên máy chủ",
-      "telegram-bot-token": "Mã thông báo Telegram Bot",
-      "telegram-bot-token-description": "Mã thông báo Telegram Bot hoặc API Proxy như `http…/bot<token>`",
-      "telegram-bot-token-placeholder": "Mã thông báo Telegram Bot của bạn",
       "vacuum-hint": "Dọn dẹp dữ liệu không sử dụng."
     }
   },

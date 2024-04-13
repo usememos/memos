@@ -231,8 +231,6 @@
     "preference-section": {
       "default-memo-sort-option": "Memo display vrijeme",
       "default-memo-visibility": "Zadana vidljivost memoa",
-      "telegram-user-id": "Telegram UserID",
-      "telegram-user-id-placeholder": "Send any words to Your Telegram Bot to get",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -314,10 +312,7 @@
       "enable-password-login-warning": "Ovo će omogućiti prijavu lozinkom za sve korisnike.",
       "max-upload-size": "Maximalna veličina uploada (MiB)",
       "max-upload-size-hint": "Preporučena vrijednost je 32 MiB.",
-      "server-name": "Ime servera",
-      "telegram-bot-token": "Token Telegram Bota",
-      "telegram-bot-token-description": "Telegram Bot Token ili API Proxy kao `http.../bot<token>`",
-      "telegram-bot-token-placeholder": "Tvoj Telegram Bot token"
+      "server-name": "Ime servera"
     }
   },
   "tag": {

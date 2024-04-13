@@ -238,8 +238,6 @@
     "preference-section": {
       "default-memo-sort-option": "Hora de visualización del memo",
       "default-memo-visibility": "Visibilidad predeterminada de los memos",
-      "telegram-user-id": "ID de usuario de Telegram",
-      "telegram-user-id-placeholder": "Envía cualquier palabra a tu bot de Telegram como un memo",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -316,9 +314,6 @@
       "max-upload-size": "Tamaño máximo de subida (MiB)",
       "max-upload-size-hint": "El valor recomendado es de 32 MiB.",
       "server-name": "Nombre del servidor",
-      "telegram-bot-token": "Token del Bot de Telegram",
-      "telegram-bot-token-description": "Token del Bot de Telegram o API Proxy como `http…/bot<token>`",
-      "telegram-bot-token-placeholder": "Tu token del Bot de Telegram",
       "vacuum-hint": "Limpia los datos no utilizados."
     }
   },
