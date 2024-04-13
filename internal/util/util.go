@@ -41,13 +41,6 @@ func GenUUID() string {
 	return uuid.New().String()
 }
 
-func Min(x, y int) int {
-	if x < y {
-		return x
-	}
-	return y
-}
-
 var letters = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 // RandomString returns a random string with length n.
