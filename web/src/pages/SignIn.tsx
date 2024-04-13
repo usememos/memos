@@ -5,13 +5,13 @@ import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import AppearanceSelect from "@/components/AppearanceSelect";
 import LocaleSelect from "@/components/LocaleSelect";
-import { authServiceClient } from "@/grpcweb";
-import * as api from "@/helpers/api";
+import { authServiceClient, identityProviderServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
-import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
+import { extractIdentityProviderIdFromName, useUserStore, useWorkspaceSettingStore } from "@/store/v1";
+import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v2/idp_service";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v2/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
@@ -33,8 +33,8 @@ const SignIn = () => {
 
   useEffect(() => {
     const fetchIdentityProviderList = async () => {
-      const { data: identityProviderList } = await api.getIdentityProviderList();
-      setIdentityProviderList(identityProviderList);
+      const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
+      setIdentityProviderList(identityProviders);
     };
     fetchIdentityProviderList();
   }, []);
@@ -95,10 +95,14 @@ const SignIn = () => {
   };
 
   const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
-    const stateQueryParameter = `auth.signin.${identityProvider.name}-${identityProvider.id}`;
-    if (identityProvider.type === "OAUTH2") {
+    const stateQueryParameter = `auth.signin.${identityProvider.title}-${extractIdentityProviderIdFromName(identityProvider.name)}`;
+    if (identityProvider.type === IdentityProvider_Type.OAUTH2) {
       const redirectUri = absolutifyLink("/auth/callback");
-      const oauth2Config = identityProvider.config.oauth2Config;
+      const oauth2Config = identityProvider.config?.oauth2Config;
+      if (!oauth2Config) {
+        toast.error("Identity provider configuration is invalid.");
+        return;
+      }
       const authUrl = `${oauth2Config.authUrl}?client_id=${
         oauth2Config.clientId
       }&redirect_uri=${redirectUri}&state=${stateQueryParameter}&response_type=code&scope=${encodeURIComponent(
@@ -185,7 +189,7 @@ const SignIn = () => {
             <div className="w-full flex flex-col space-y-2">
               {identityProviderList.map((identityProvider) => (
                 <Button
-                  key={identityProvider.id}
+                  key={identityProvider.name}
                   variant="outlined"
                   color="neutral"
                   className="w-full"

@@ -181,42 +181,42 @@ paths:
           in: query
           required: false
           type: string
-        - name: identityProvider.config.oauth2.clientId
+        - name: identityProvider.config.oauth2Config.clientId
           in: query
           required: false
           type: string
-        - name: identityProvider.config.oauth2.clientSecret
+        - name: identityProvider.config.oauth2Config.clientSecret
           in: query
           required: false
           type: string
-        - name: identityProvider.config.oauth2.authUrl
+        - name: identityProvider.config.oauth2Config.authUrl
           in: query
           required: false
           type: string
-        - name: identityProvider.config.oauth2.tokenUrl
+        - name: identityProvider.config.oauth2Config.tokenUrl
           in: query
           required: false
           type: string
-        - name: identityProvider.config.oauth2.userInfoUrl
+        - name: identityProvider.config.oauth2Config.userInfoUrl
           in: query
           required: false
           type: string
-        - name: identityProvider.config.oauth2.scopes
+        - name: identityProvider.config.oauth2Config.scopes
           in: query
           required: false
           type: array
           items:
             type: string
           collectionFormat: multi
-        - name: identityProvider.config.oauth2.fieldMapping.identifier
+        - name: identityProvider.config.oauth2Config.fieldMapping.identifier
           in: query
           required: false
           type: string
-        - name: identityProvider.config.oauth2.fieldMapping.displayName
+        - name: identityProvider.config.oauth2Config.fieldMapping.displayName
           in: query
           required: false
           type: string
-        - name: identityProvider.config.oauth2.fieldMapping.email
+        - name: identityProvider.config.oauth2Config.fieldMapping.email
           in: query
           required: false
           type: string
@@ -1070,7 +1070,7 @@ paths:
             type: object
             properties:
               type:
-                $ref: '#/definitions/v2IdentityProviderType'
+                $ref: '#/definitions/apiv2IdentityProviderType'
               title:
                 type: string
               identifierFilter:
@@ -2006,11 +2006,33 @@ definitions:
         type: string
       email:
         type: string
+  apiv2IdentityProvider:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the identityProvider.
+          Format: identityProviders/{id}
+      type:
+        $ref: '#/definitions/apiv2IdentityProviderType'
+      title:
+        type: string
+      identifierFilter:
+        type: string
+      config:
+        $ref: '#/definitions/apiv2IdentityProviderConfig'
   apiv2IdentityProviderConfig:
     type: object
     properties:
-      oauth2:
+      oauth2Config:
         $ref: '#/definitions/apiv2OAuth2Config'
+  apiv2IdentityProviderType:
+    type: string
+    enum:
+      - TYPE_UNSPECIFIED
+      - OAUTH2
+    default: TYPE_UNSPECIFIED
   apiv2OAuth2Config:
     type: object
     properties:
@@ -2293,7 +2315,7 @@ definitions:
     type: object
     properties:
       identityProvider:
-        $ref: '#/definitions/v2IdentityProvider'
+        $ref: '#/definitions/apiv2IdentityProvider'
         description: The created identityProvider.
   v2CreateMemoCommentResponse:
     type: object
@@ -2389,7 +2411,7 @@ definitions:
     type: object
     properties:
       identityProvider:
-        $ref: '#/definitions/v2IdentityProvider'
+        $ref: '#/definitions/apiv2IdentityProvider'
         description: The identityProvider.
   v2GetLinkMetadataResponse:
     type: object
@@ -2454,28 +2476,6 @@ definitions:
     properties:
       setting:
         $ref: '#/definitions/apiv2WorkspaceSetting'
-  v2IdentityProvider:
-    type: object
-    properties:
-      name:
-        type: string
-        title: |-
-          The name of the identityProvider.
-          Format: identityProviders/{id}
-      type:
-        $ref: '#/definitions/v2IdentityProviderType'
-      title:
-        type: string
-      identifierFilter:
-        type: string
-      config:
-        $ref: '#/definitions/apiv2IdentityProviderConfig'
-  v2IdentityProviderType:
-    type: string
-    enum:
-      - TYPE_UNSPECIFIED
-      - OAUTH2
-    default: TYPE_UNSPECIFIED
   v2Inbox:
     type: object
     properties:
@@ -2530,7 +2530,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2IdentityProvider'
+          $ref: '#/definitions/apiv2IdentityProvider'
   v2ListInboxesResponse:
     type: object
     properties:
@@ -2820,7 +2820,7 @@ definitions:
     type: object
     properties:
       identityProvider:
-        $ref: '#/definitions/v2IdentityProvider'
+        $ref: '#/definitions/apiv2IdentityProvider'
         description: The updated identityProvider.
   v2UpdateInboxResponse:
     type: object

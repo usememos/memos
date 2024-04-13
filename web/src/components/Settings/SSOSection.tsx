@@ -2,7 +2,8 @@ import { Button, Divider, Dropdown, List, ListItem, Menu, MenuButton, MenuItem }
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import * as api from "@/helpers/api";
+import { identityProviderServiceClient } from "@/grpcweb";
+import { IdentityProvider } from "@/types/proto/api/v2/idp_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
@@ -18,8 +19,8 @@ const SSOSection = () => {
   }, []);
 
   const fetchIdentityProviderList = async () => {
-    const { data: identityProviderList } = await api.getIdentityProviderList();
-    setIdentityProviderList(identityProviderList);
+    const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
+    setIdentityProviderList(identityProviders);
   };
 
   const handleDeleteIdentityProvider = async (identityProvider: IdentityProvider) => {
@@ -32,10 +33,10 @@ const SSOSection = () => {
       dialogName: "delete-identity-provider-dialog",
       onConfirm: async () => {
         try {
-          await api.deleteIdentityProvider(identityProvider.id);
+          await identityProviderServiceClient.deleteIdentityProvider({ name: identityProvider.name });
         } catch (error: any) {
           console.error(error);
-          toast.error(error.response.data.message);
+          toast.error(error.details);
         }
         await fetchIdentityProviderList();
       },
@@ -54,12 +55,12 @@ const SSOSection = () => {
       <Divider />
       {identityProviderList.map((identityProvider) => (
         <div
-          key={identityProvider.id}
+          key={identityProvider.name}
           className="py-2 w-full border-b last:border-b dark:border-zinc-700 flex flex-row items-center justify-between"
         >
           <div className="flex flex-row items-center">
             <p className="ml-2">
-              {identityProvider.name}
+              {identityProvider.title}
               <span className="text-sm ml-1 opacity-40">({identityProvider.type})</span>
             </p>
           </div>

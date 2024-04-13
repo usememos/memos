@@ -18,6 +18,7 @@ import (
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/route/api/auth"
 	"github.com/usememos/memos/store"
 )
@@ -71,7 +72,7 @@ func (s *APIV2Service) SignIn(ctx context.Context, request *apiv2pb.SignInReques
 }
 
 func (s *APIV2Service) SignInWithSSO(ctx context.Context, request *apiv2pb.SignInWithSSORequest) (*apiv2pb.SignInWithSSOResponse, error) {
-	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
+	identityProvider, err := s.Store.GetIdentityProviderV1(ctx, &store.FindIdentityProvider{
 		ID: &request.IdpId,
 	})
 	if err != nil {
@@ -82,8 +83,8 @@ func (s *APIV2Service) SignInWithSSO(ctx context.Context, request *apiv2pb.SignI
 	}
 
 	var userInfo *idp.IdentityProviderUserInfo
-	if identityProvider.Type == store.IdentityProviderOAuth2Type {
-		oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.OAuth2Config)
+	if identityProvider.Type == storepb.IdentityProvider_OAUTH2 {
+		oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.GetOauth2Config())
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to create oauth2 identity provider, err: %s", err))
 		}

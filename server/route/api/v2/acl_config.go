@@ -4,6 +4,8 @@ var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v2.WorkspaceService/GetWorkspaceProfile":          true,
 	"/memos.api.v2.WorkspaceSettingService/GetWorkspaceSetting":   true,
 	"/memos.api.v2.WorkspaceSettingService/ListWorkspaceSettings": true,
+	"/memos.api.v2.IdentityProviderService/ListIdentityProviders": true,
+	"/memos.api.v2.IdentityProviderService/GetIdentityProvider":   true,
 	"/memos.api.v2.AuthService/GetAuthStatus":                     true,
 	"/memos.api.v2.AuthService/SignIn":                            true,
 	"/memos.api.v2.AuthService/SignInWithSSO":                     true,

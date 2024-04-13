@@ -2,29 +2,18 @@ package mysql
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/pkg/errors"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityProvider) (*store.IdentityProvider, error) {
-	var configBytes []byte
-	if create.Type == store.IdentityProviderOAuth2Type {
-		bytes, err := json.Marshal(create.Config.OAuth2Config)
-		if err != nil {
-			return nil, err
-		}
-		configBytes = bytes
-	} else {
-		return nil, errors.Errorf("unsupported idp type %s", string(create.Type))
-	}
-
 	placeholders := []string{"?", "?", "?", "?"}
 	fields := []string{"`name`", "`type`", "`identifier_filter`", "`config`"}
-	args := []any{create.Name, create.Type, create.IdentifierFilter, string(configBytes)}
+	args := []any{create.Name, create.Type.String(), create.IdentifierFilter, create.Config}
 
 	stmt := "INSERT INTO `idp` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholders, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
@@ -58,28 +47,17 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 	var identityProviders []*store.IdentityProvider
 	for rows.Next() {
 		var identityProvider store.IdentityProvider
-		var identityProviderConfig string
+		var typeString string
 		if err := rows.Scan(
 			&identityProvider.ID,
 			&identityProvider.Name,
-			&identityProvider.Type,
+			&typeString,
 			&identityProvider.IdentifierFilter,
-			&identityProviderConfig,
+			&identityProvider.Config,
 		); err != nil {
 			return nil, err
 		}
-
-		if identityProvider.Type == store.IdentityProviderOAuth2Type {
-			oauth2Config := &store.IdentityProviderOAuth2Config{}
-			if err := json.Unmarshal([]byte(identityProviderConfig), oauth2Config); err != nil {
-				return nil, err
-			}
-			identityProvider.Config = &store.IdentityProviderConfig{
-				OAuth2Config: oauth2Config,
-			}
-		} else {
-			return nil, errors.Errorf("unsupported idp type %s", string(identityProvider.Type))
-		}
+		identityProvider.Type = storepb.IdentityProvider_Type(storepb.IdentityProvider_Type_value[typeString])
 		identityProviders = append(identityProviders, &identityProvider)
 	}
 
@@ -112,17 +90,7 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 		set, args = append(set, "`identifier_filter` = ?"), append(args, *v)
 	}
 	if v := update.Config; v != nil {
-		var configBytes []byte
-		if update.Type == store.IdentityProviderOAuth2Type {
-			bytes, err := json.Marshal(update.Config.OAuth2Config)
-			if err != nil {
-				return nil, err
-			}
-			configBytes = bytes
-		} else {
-			return nil, errors.Errorf("unsupported idp type %s", string(update.Type))
-		}
-		set, args = append(set, "`config` = ?"), append(args, string(configBytes))
+		set, args = append(set, "`config` = ?"), append(args, *v)
 	}
 	args = append(args, update.ID)
 

@@ -14,24 +14,24 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/usememos/memos/plugin/idp"
-	"github.com/usememos/memos/store"
+	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 func TestNewIdentityProvider(t *testing.T) {
 	tests := []struct {
 		name        string
-		config      *store.IdentityProviderOAuth2Config
+		config      *storepb.OAuth2Config
 		containsErr string
 	}{
 		{
 			name: "no tokenUrl",
-			config: &store.IdentityProviderOAuth2Config{
-				ClientID:     "test-client-id",
+			config: &storepb.OAuth2Config{
+				ClientId:     "test-client-id",
 				ClientSecret: "test-client-secret",
-				AuthURL:      "",
-				TokenURL:     "",
-				UserInfoURL:  "https://example.com/api/user",
-				FieldMapping: &store.FieldMapping{
+				AuthUrl:      "",
+				TokenUrl:     "",
+				UserInfoUrl:  "https://example.com/api/user",
+				FieldMapping: &storepb.FieldMapping{
 					Identifier: "login",
 				},
 			},
@@ -39,13 +39,13 @@ func TestNewIdentityProvider(t *testing.T) {
 		},
 		{
 			name: "no userInfoUrl",
-			config: &store.IdentityProviderOAuth2Config{
-				ClientID:     "test-client-id",
+			config: &storepb.OAuth2Config{
+				ClientId:     "test-client-id",
 				ClientSecret: "test-client-secret",
-				AuthURL:      "",
-				TokenURL:     "https://example.com/token",
-				UserInfoURL:  "",
-				FieldMapping: &store.FieldMapping{
+				AuthUrl:      "",
+				TokenUrl:     "https://example.com/token",
+				UserInfoUrl:  "",
+				FieldMapping: &storepb.FieldMapping{
 					Identifier: "login",
 				},
 			},
@@ -53,13 +53,13 @@ func TestNewIdentityProvider(t *testing.T) {
 		},
 		{
 			name: "no field mapping identifier",
-			config: &store.IdentityProviderOAuth2Config{
-				ClientID:     "test-client-id",
+			config: &storepb.OAuth2Config{
+				ClientId:     "test-client-id",
 				ClientSecret: "test-client-secret",
-				AuthURL:      "",
-				TokenURL:     "https://example.com/token",
-				UserInfoURL:  "https://example.com/api/user",
-				FieldMapping: &store.FieldMapping{
+				AuthUrl:      "",
+				TokenUrl:     "https://example.com/token",
+				UserInfoUrl:  "https://example.com/api/user",
+				FieldMapping: &storepb.FieldMapping{
 					Identifier: "",
 				},
 			},
@@ -113,7 +113,7 @@ func TestIdentityProvider(t *testing.T) {
 	ctx := context.Background()
 
 	const (
-		testClientID    = "test-client-id"
+		testClientId    = "test-client-id"
 		testCode        = "test-code"
 		testAccessToken = "test-access-token"
 		testSubject     = "123456789"
@@ -132,12 +132,12 @@ func TestIdentityProvider(t *testing.T) {
 	s := newMockServer(t, testCode, testAccessToken, userInfo)
 
 	oauth2, err := NewIdentityProvider(
-		&store.IdentityProviderOAuth2Config{
-			ClientID:     testClientID,
+		&storepb.OAuth2Config{
+			ClientId:     testClientId,
 			ClientSecret: "test-client-secret",
-			TokenURL:     fmt.Sprintf("%s/oauth2/token", s.URL),
-			UserInfoURL:  fmt.Sprintf("%s/oauth2/userinfo", s.URL),
-			FieldMapping: &store.FieldMapping{
+			TokenUrl:     fmt.Sprintf("%s/oauth2/token", s.URL),
+			UserInfoUrl:  fmt.Sprintf("%s/oauth2/userinfo", s.URL),
+			FieldMapping: &storepb.FieldMapping{
 				Identifier:  "sub",
 				DisplayName: "name",
 				Email:       "email",

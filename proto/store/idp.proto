@@ -4,9 +4,22 @@ package memos.store;
 
 option go_package = "gen/store";
 
+message IdentityProvider {
+  int32 id = 1;
+  string name = 2;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    OAUTH2 = 1;
+  }
+  Type type = 3;
+  string identifier_filter = 4;
+  IdentityProviderConfig config = 5;
+}
+
 message IdentityProviderConfig {
   oneof config {
-    OAuth2Config oauth2 = 1;
+    OAuth2Config oauth2_config = 1;
   }
 }
 

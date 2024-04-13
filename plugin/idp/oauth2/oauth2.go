@@ -12,21 +12,21 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/usememos/memos/plugin/idp"
-	"github.com/usememos/memos/store"
+	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 // IdentityProvider represents an OAuth2 Identity Provider.
 type IdentityProvider struct {
-	config *store.IdentityProviderOAuth2Config
+	config *storepb.OAuth2Config
 }
 
 // NewIdentityProvider initializes a new OAuth2 Identity Provider with the given configuration.
-func NewIdentityProvider(config *store.IdentityProviderOAuth2Config) (*IdentityProvider, error) {
+func NewIdentityProvider(config *storepb.OAuth2Config) (*IdentityProvider, error) {
 	for v, field := range map[string]string{
-		config.ClientID:                "clientId",
+		config.ClientId:                "clientId",
 		config.ClientSecret:            "clientSecret",
-		config.TokenURL:                "tokenUrl",
-		config.UserInfoURL:             "userInfoUrl",
+		config.TokenUrl:                "tokenUrl",
+		config.UserInfoUrl:             "userInfoUrl",
 		config.FieldMapping.Identifier: "fieldMapping.identifier",
 	} {
 		if v == "" {
@@ -42,13 +42,13 @@ func NewIdentityProvider(config *store.IdentityProviderOAuth2Config) (*IdentityP
 // ExchangeToken returns the exchanged OAuth2 token using the given authorization code.
 func (p *IdentityProvider) ExchangeToken(ctx context.Context, redirectURL, code string) (string, error) {
 	conf := &oauth2.Config{
-		ClientID:     p.config.ClientID,
+		ClientID:     p.config.ClientId,
 		ClientSecret: p.config.ClientSecret,
 		RedirectURL:  redirectURL,
 		Scopes:       p.config.Scopes,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   p.config.AuthURL,
-			TokenURL:  p.config.TokenURL,
+			AuthURL:   p.config.AuthUrl,
+			TokenURL:  p.config.TokenUrl,
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 	}
@@ -69,7 +69,7 @@ func (p *IdentityProvider) ExchangeToken(ctx context.Context, redirectURL, code 
 // UserInfo returns the parsed user information using the given OAuth2 token.
 func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodGet, p.config.UserInfoURL, nil)
+	req, err := http.NewRequest(http.MethodGet, p.config.UserInfoUrl, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to new http request")
 	}

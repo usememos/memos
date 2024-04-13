@@ -13,8 +13,11 @@
   
 - [store/idp.proto](#store_idp-proto)
     - [FieldMapping](#memos-store-FieldMapping)
+    - [IdentityProvider](#memos-store-IdentityProvider)
     - [IdentityProviderConfig](#memos-store-IdentityProviderConfig)
     - [OAuth2Config](#memos-store-OAuth2Config)
+  
+    - [IdentityProvider.Type](#memos-store-IdentityProvider-Type)
   
 - [store/inbox.proto](#store_inbox-proto)
     - [InboxMessage](#memos-store-InboxMessage)
@@ -175,6 +178,25 @@
 
 
 
+<a name="memos-store-IdentityProvider"></a>
+
+### IdentityProvider
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| name | [string](#string) |  |  |
+| type | [IdentityProvider.Type](#memos-store-IdentityProvider-Type) |  |  |
+| identifier_filter | [string](#string) |  |  |
+| config | [IdentityProviderConfig](#memos-store-IdentityProviderConfig) |  |  |
+
+
+
+
+
+
 <a name="memos-store-IdentityProviderConfig"></a>
 
 ### IdentityProviderConfig
@@ -183,7 +205,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| oauth2 | [OAuth2Config](#memos-store-OAuth2Config) |  |  |
+| oauth2_config | [OAuth2Config](#memos-store-OAuth2Config) |  |  |
 
 
 
@@ -211,6 +233,18 @@
 
 
  
+
+
+<a name="memos-store-IdentityProvider-Type"></a>
+
+### IdentityProvider.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| OAUTH2 | 1 |  |
+
 
  
 

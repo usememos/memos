@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -65,7 +65,7 @@ func (s *Store) CreateStorageV1(ctx context.Context, create *storepb.Storage) (*
 	}
 
 	if create.Type == storepb.Storage_S3 {
-		configBytes, err := proto.Marshal(create.Config.GetS3Config())
+		configBytes, err := protojson.Marshal(create.Config.GetS3Config())
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to marshal s3 config")
 		}
@@ -174,7 +174,7 @@ func convertStorageConfigFromRaw(storageType storepb.Storage_Type, configRaw str
 func convertStorageConfigToRaw(storageType storepb.Storage_Type, config *storepb.StorageConfig) (string, error) {
 	raw := ""
 	if storageType == storepb.Storage_S3 {
-		bytes, err := proto.Marshal(config.GetS3Config())
+		bytes, err := protojson.Marshal(config.GetS3Config())
 		if err != nil {
 			return "", err
 		}

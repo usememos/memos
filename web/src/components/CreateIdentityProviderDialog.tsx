@@ -1,18 +1,18 @@
 import { Button, Divider, IconButton, Input, Option, Select, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import * as api from "@/helpers/api";
-import { UNKNOWN_ID } from "@/helpers/consts";
+import { identityProviderServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
+import { FieldMapping, IdentityProvider, IdentityProvider_Type, OAuth2Config } from "@/types/proto/api/v2/idp_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 
 const templateList: IdentityProvider[] = [
   {
-    id: UNKNOWN_ID,
-    name: "GitHub",
-    type: "OAUTH2",
+    name: "",
+    title: "GitHub",
+    type: IdentityProvider_Type.OAUTH2,
     identifierFilter: "",
     config: {
       oauth2Config: {
@@ -31,9 +31,9 @@ const templateList: IdentityProvider[] = [
     },
   },
   {
-    id: UNKNOWN_ID,
-    name: "GitLab",
-    type: "OAUTH2",
+    name: "",
+    title: "GitLab",
+    type: IdentityProvider_Type.OAUTH2,
     identifierFilter: "",
     config: {
       oauth2Config: {
@@ -52,9 +52,9 @@ const templateList: IdentityProvider[] = [
     },
   },
   {
-    id: UNKNOWN_ID,
-    name: "Google",
-    type: "OAUTH2",
+    name: "",
+    title: "Google",
+    type: IdentityProvider_Type.OAUTH2,
     identifierFilter: "",
     config: {
       oauth2Config: {
@@ -73,9 +73,9 @@ const templateList: IdentityProvider[] = [
     },
   },
   {
-    id: UNKNOWN_ID,
-    name: "Custom",
-    type: "OAUTH2",
+    name: "",
+    title: "Custom",
+    type: IdentityProvider_Type.OAUTH2,
     identifierFilter: "",
     config: {
       oauth2Config: {
@@ -108,8 +108,8 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     name: "",
     identifierFilter: "",
   });
-  const [type, setType] = useState<IdentityProviderType>("OAUTH2");
-  const [oauth2Config, setOAuth2Config] = useState<IdentityProviderOAuth2Config>({
+  const [type, setType] = useState<IdentityProvider_Type>(IdentityProvider_Type.OAUTH2);
+  const [oauth2Config, setOAuth2Config] = useState<OAuth2Config>({
     clientId: "",
     clientSecret: "",
     authUrl: "",
@@ -133,9 +133,10 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         identifierFilter: identityProvider.identifierFilter,
       });
       setType(identityProvider.type);
-      if (identityProvider.type === "OAUTH2") {
-        setOAuth2Config(identityProvider.config.oauth2Config);
-        setOAuth2Scopes(identityProvider.config.oauth2Config.scopes.join(" "));
+      if (identityProvider.type === IdentityProvider_Type.OAUTH2) {
+        const oauth2Config = OAuth2Config.fromPartial(identityProvider.config?.oauth2Config || {});
+        setOAuth2Config(oauth2Config);
+        setOAuth2Scopes(oauth2Config.scopes.join(" "));
       }
     }
   }, []);
@@ -145,16 +146,17 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    const template = templateList.find((t) => t.name === selectedTemplate);
+    const template = templateList.find((t) => t.title === selectedTemplate);
     if (template) {
       setBasicInfo({
         name: template.name,
         identifierFilter: template.identifierFilter,
       });
       setType(template.type);
-      if (template.type === "OAUTH2") {
-        setOAuth2Config(template.config.oauth2Config);
-        setOAuth2Scopes(template.config.oauth2Config.scopes.join(" "));
+      if (template.type === IdentityProvider_Type.OAUTH2) {
+        const oauth2Config = OAuth2Config.fromPartial(template.config?.oauth2Config || {});
+        setOAuth2Config(oauth2Config);
+        setOAuth2Scopes(oauth2Config.scopes.join(" "));
       }
     }
   }, [selectedTemplate]);
@@ -174,7 +176,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         oauth2Config.tokenUrl === "" ||
         oauth2Config.userInfoUrl === "" ||
         oauth2Scopes === "" ||
-        oauth2Config.fieldMapping.identifier === ""
+        oauth2Config.fieldMapping?.identifier === ""
       ) {
         return false;
       }
@@ -191,28 +193,32 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   const handleConfirmBtnClick = async () => {
     try {
       if (isCreating) {
-        await api.createIdentityProvider({
-          ...basicInfo,
-          type: type,
-          config: {
-            oauth2Config: {
-              ...oauth2Config,
-              scopes: oauth2Scopes.split(" "),
+        await identityProviderServiceClient.createIdentityProvider({
+          identityProvider: {
+            ...basicInfo,
+            type: type,
+            config: {
+              oauth2Config: {
+                ...oauth2Config,
+                scopes: oauth2Scopes.split(" "),
+              },
             },
           },
         });
         toast.success(t("setting.sso-section.sso-created", { name: basicInfo.name }));
       } else {
-        await api.patchIdentityProvider({
-          id: identityProvider.id,
-          type: type,
-          ...basicInfo,
-          config: {
-            oauth2Config: {
-              ...oauth2Config,
-              scopes: oauth2Scopes.split(" "),
+        await identityProviderServiceClient.updateIdentityProvider({
+          identityProvider: {
+            ...basicInfo,
+            type: type,
+            config: {
+              oauth2Config: {
+                ...oauth2Config,
+                scopes: oauth2Scopes.split(" "),
+              },
             },
           },
+          updateMask: ["title", "identifierFilter", "config"],
         });
         toast.success(t("setting.sso-section.sso-updated", { name: basicInfo.name }));
       }
@@ -226,7 +232,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     destroy();
   };
 
-  const setPartialOAuth2Config = (state: Partial<IdentityProviderOAuth2Config>) => {
+  const setPartialOAuth2Config = (state: Partial<OAuth2Config>) => {
     setOAuth2Config({
       ...oauth2Config,
       ...state,
@@ -259,8 +265,8 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             </Typography>
             <Select className="mb-1 h-auto w-full" value={selectedTemplate} onChange={(_, e) => setSelectedTemplate(e ?? selectedTemplate)}>
               {templateList.map((template) => (
-                <Option key={template.name} value={template.name}>
-                  {template.name}
+                <Option key={template.title} value={template.title}>
+                  {template.title}
                 </Option>
               ))}
             </Select>
@@ -380,8 +386,10 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             <Input
               className="mb-2"
               placeholder={t("setting.sso-section.identifier")}
-              value={oauth2Config.fieldMapping.identifier}
-              onChange={(e) => setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, identifier: e.target.value } })}
+              value={oauth2Config.fieldMapping!.identifier}
+              onChange={(e) =>
+                setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, identifier: e.target.value } as FieldMapping })
+              }
               fullWidth
             />
             <Typography className="!mb-1" level="body-md">
@@ -390,8 +398,10 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             <Input
               className="mb-2"
               placeholder={t("setting.sso-section.display-name")}
-              value={oauth2Config.fieldMapping.displayName}
-              onChange={(e) => setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, displayName: e.target.value } })}
+              value={oauth2Config.fieldMapping!.displayName}
+              onChange={(e) =>
+                setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, displayName: e.target.value } as FieldMapping })
+              }
               fullWidth
             />
             <Typography className="!mb-1" level="body-md">
@@ -400,8 +410,10 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             <Input
               className="mb-2"
               placeholder={t("common.email")}
-              value={oauth2Config.fieldMapping.email}
-              onChange={(e) => setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, email: e.target.value } })}
+              value={oauth2Config.fieldMapping!.email}
+              onChange={(e) =>
+                setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, email: e.target.value } as FieldMapping })
+              }
               fullWidth
             />
           </>

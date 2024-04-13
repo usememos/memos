@@ -1160,7 +1160,7 @@ Used internally for obfuscating the page token.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| oauth2 | [OAuth2Config](#memos-api-v2-OAuth2Config) |  |  |
+| oauth2_config | [OAuth2Config](#memos-api-v2-OAuth2Config) |  |  |
 
 
 

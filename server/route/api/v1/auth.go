@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
 
@@ -14,8 +13,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/usememos/memos/internal/util"
-	"github.com/usememos/memos/plugin/idp"
-	"github.com/usememos/memos/plugin/idp/oauth2"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/route/api/auth"
 	"github.com/usememos/memos/store"
@@ -40,7 +37,6 @@ type SignUp struct {
 
 func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 	g.POST("/auth/signin", s.SignIn)
-	g.POST("/auth/signin/sso", s.SignInSSO)
 	g.POST("/auth/signout", s.SignOut)
 	g.POST("/auth/signup", s.SignUp)
 }
@@ -106,117 +102,6 @@ func (s *APIV1Service) SignIn(c echo.Context) error {
 	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert access token, err: %s", err)).SetInternal(err)
 	}
-	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
-	userMessage := convertUserFromStore(user)
-	return c.JSON(http.StatusOK, userMessage)
-}
-
-// SignInSSO godoc
-//
-//	@Summary	Sign-in to memos using SSO.
-//	@Tags		auth
-//	@Accept		json
-//	@Produce	json
-//	@Param		body	body		SSOSignIn	true	"SSO sign-in object"
-//	@Success	200		{object}	store.User	"User information"
-//	@Failure	400		{object}	nil			"Malformatted signin request"
-//	@Failure	401		{object}	nil			"Access denied, identifier does not match the filter."
-//	@Failure	403		{object}	nil			"User has been archived with username {username}"
-//	@Failure	404		{object}	nil			"Identity provider not found"
-//	@Failure	500		{object}	nil			"Failed to find identity provider | Failed to create identity provider instance | Failed to exchange token | Failed to get user info | Failed to compile identifier filter | Incorrect login credentials, please try again | Failed to generate random password | Failed to generate password hash | Failed to create user | Failed to generate tokens | Failed to create activity"
-//	@Router		/api/v1/auth/signin/sso [POST]
-func (s *APIV1Service) SignInSSO(c echo.Context) error {
-	ctx := c.Request().Context()
-	signin := &SSOSignIn{}
-	if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
-	}
-
-	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
-		ID: &signin.IdentityProviderID,
-	})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider").SetInternal(err)
-	}
-	if identityProvider == nil {
-		return echo.NewHTTPError(http.StatusNotFound, "Identity provider not found")
-	}
-
-	var userInfo *idp.IdentityProviderUserInfo
-	if identityProvider.Type == store.IdentityProviderOAuth2Type {
-		oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.OAuth2Config)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider instance").SetInternal(err)
-		}
-		token, err := oauth2IdentityProvider.ExchangeToken(ctx, signin.RedirectURI, signin.Code)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to exchange token").SetInternal(err)
-		}
-		userInfo, err = oauth2IdentityProvider.UserInfo(token)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get user info").SetInternal(err)
-		}
-	}
-
-	identifierFilter := identityProvider.IdentifierFilter
-	if identifierFilter != "" {
-		identifierFilterRegex, err := regexp.Compile(identifierFilter)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compile identifier filter").SetInternal(err)
-		}
-		if !identifierFilterRegex.MatchString(userInfo.Identifier) {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Access denied, identifier does not match the filter.").SetInternal(err)
-		}
-	}
-
-	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Username: &userInfo.Identifier,
-	})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
-	}
-	if user == nil {
-		workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
-		}
-		if workspaceGeneralSetting.DisallowSignup {
-			return echo.NewHTTPError(http.StatusUnauthorized, "signup is disabled").SetInternal(err)
-		}
-
-		userCreate := &store.User{
-			Username: userInfo.Identifier,
-			// The new signup user should be normal user by default.
-			Role:     store.RoleUser,
-			Nickname: userInfo.DisplayName,
-			Email:    userInfo.Email,
-		}
-		password, err := util.RandomString(20)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate random password").SetInternal(err)
-		}
-		passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
-		}
-		userCreate.PasswordHash = string(passwordHash)
-		user, err = s.Store.CreateUser(ctx, userCreate)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
-		}
-	}
-	if user.RowStatus == store.Archived {
-		return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
-	}
-
-	accessToken, err := auth.GenerateAccessToken(user.Username, user.ID, time.Now().Add(auth.AccessTokenDuration), []byte(s.Secret))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to generate tokens, err: %s", err)).SetInternal(err)
-	}
-	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert access token, err: %s", err)).SetInternal(err)
-	}
-	cookieExp := time.Now().Add(auth.CookieExpDuration)
 	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
 	userMessage := convertUserFromStore(user)
 	return c.JSON(http.StatusOK, userMessage)

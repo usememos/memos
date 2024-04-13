@@ -32,20 +32,10 @@ func (s *Store) ListWorkspaceSettings(ctx context.Context, find *FindWorkspaceSe
 	if err != nil {
 		return nil, err
 	}
-
-	for _, systemSettingMessage := range list {
-		s.workspaceSettingCache.Store(systemSettingMessage.Name, systemSettingMessage)
-	}
 	return list, nil
 }
 
 func (s *Store) GetWorkspaceSetting(ctx context.Context, find *FindWorkspaceSetting) (*WorkspaceSetting, error) {
-	if find.Name != "" {
-		if cache, ok := s.workspaceSettingCache.Load(find.Name); ok {
-			return cache.(*WorkspaceSetting), nil
-		}
-	}
-
 	list, err := s.ListWorkspaceSettings(ctx, find)
 	if err != nil {
 		return nil, err
@@ -56,7 +46,6 @@ func (s *Store) GetWorkspaceSetting(ctx context.Context, find *FindWorkspaceSett
 	}
 
 	systemSettingMessage := list[0]
-	s.workspaceSettingCache.Store(systemSettingMessage.Name, systemSettingMessage)
 	return systemSettingMessage, nil
 }
 
@@ -65,7 +54,6 @@ func (s *Store) DeleteWorkspaceSetting(ctx context.Context, delete *DeleteWorksp
 	if err != nil {
 		return errors.Wrap(err, "Failed to delete workspace setting")
 	}
-	s.workspaceSettingCache.Delete(delete.Name)
 	return nil
 }
 
@@ -101,7 +89,7 @@ func (s *Store) UpsertWorkspaceSettingV1(ctx context.Context, upsert *storepb.Wo
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to convert workspace setting")
 	}
-	s.workspaceSettingV1Cache.Store(workspaceSetting.Key.String(), workspaceSetting)
+	s.workspaceSettingCache.Store(workspaceSetting.Key.String(), workspaceSetting)
 	return workspaceSetting, nil
 }
 
@@ -117,14 +105,14 @@ func (s *Store) ListWorkspaceSettingsV1(ctx context.Context, find *FindWorkspace
 		if err != nil {
 			return nil, errors.Wrap(err, "Failed to convert workspace setting")
 		}
-		s.workspaceSettingV1Cache.Store(workspaceSetting.Key.String(), workspaceSetting)
+		s.workspaceSettingCache.Store(workspaceSetting.Key.String(), workspaceSetting)
 		workspaceSettings = append(workspaceSettings, workspaceSetting)
 	}
 	return workspaceSettings, nil
 }
 
 func (s *Store) GetWorkspaceSettingV1(ctx context.Context, find *FindWorkspaceSetting) (*storepb.WorkspaceSetting, error) {
-	if cache, ok := s.workspaceSettingV1Cache.Load(find.Name); ok {
+	if cache, ok := s.workspaceSettingCache.Load(find.Name); ok {
 		return cache.(*storepb.WorkspaceSetting), nil
 	}
 

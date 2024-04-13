@@ -105,7 +105,7 @@ func convertStorageFromStore(storage *storepb.Storage) *apiv2pb.Storage {
 	if storage.Type == storepb.Storage_S3 {
 		s3Config := storage.Config.GetS3Config()
 		temp.Config = &apiv2pb.StorageConfig{
-			StorageConfig: &apiv2pb.StorageConfig_S3Config{
+			Config: &apiv2pb.StorageConfig_S3Config{
 				S3Config: &apiv2pb.S3Config{
 					EndPoint:  s3Config.EndPoint,
 					Path:      s3Config.Path,

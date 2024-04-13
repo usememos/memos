@@ -53,7 +53,7 @@ message Storage {
 }
 
 message StorageConfig {
-  oneof storage_config {
+  oneof config {
     S3Config s3_config = 1;
   }
 }

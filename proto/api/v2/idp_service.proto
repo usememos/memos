@@ -54,7 +54,7 @@ message IdentityProvider {
 
 message IdentityProviderConfig {
   oneof config {
-    OAuth2Config oauth2 = 1;
+    OAuth2Config oauth2_config = 1;
   }
 }
 
