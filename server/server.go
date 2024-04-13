@@ -88,7 +88,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	// Create and register resource public routes.
 	resource.NewResourceService(s.Profile, s.Store).RegisterRoutes(publicGroup)
 
-	// Create and register rss public routes.
+	// Create and register RSS routes.
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
 	apiV2Service := apiv2.NewAPIV2Service(s.Secret, profile, store, s.Profile.Port+1)

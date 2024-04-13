@@ -53,21 +53,11 @@ func JWTMiddleware(storeInstance *store.Store, next echo.HandlerFunc, secret str
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		path := c.Request().URL.Path
-		method := c.Request().Method
-
-		// Skip validation for server status endpoints.
-		if util.HasPrefixes(path, "/api/v1/ping", "/api/v1/status") && method == http.MethodGet {
-			return next(c)
-		}
 
 		accessToken := findAccessToken(c)
 		if accessToken == "" {
 			// Allow the user to access the public endpoints.
 			if util.HasPrefixes(path, "/o") {
-				return next(c)
-			}
-			// When the request is not authenticated, we allow the user to access the memo endpoints for those public memos.
-			if util.HasPrefixes(path, "/api/v1/idp", "/api/v1/memo", "/api/v1/user") && path != "/api/v1/user" && method == http.MethodGet {
 				return next(c)
 			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing access token")
