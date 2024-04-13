@@ -15,7 +15,6 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
-	apiv1 "github.com/usememos/memos/server/route/api/v1"
 	apiv2 "github.com/usememos/memos/server/route/api/v2"
 	"github.com/usememos/memos/server/route/frontend"
 	versionchecker "github.com/usememos/memos/server/service/version_checker"
@@ -74,11 +73,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		frontendService := frontend.NewFrontendService(profile, store)
 		frontendService.Serve(ctx, e)
 	}
-
-	// Register API v1 endpoints.
-	rootGroup := e.Group("")
-	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, s.telegramBot)
-	apiV1Service.Register(rootGroup)
 
 	apiV2Service := apiv2.NewAPIV2Service(s.Secret, profile, store, s.Profile.Port+1)
 	// Register gRPC gateway as api v2.

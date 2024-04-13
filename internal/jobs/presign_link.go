@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"strings"
 	"time"
@@ -10,7 +9,9 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/plugin/storage/s3"
-	apiv1 "github.com/usememos/memos/server/route/api/v1"
+	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	storepb "github.com/usememos/memos/proto/gen/store"
+	apiv2 "github.com/usememos/memos/server/route/api/v2"
 	"github.com/usememos/memos/store"
 )
 
@@ -95,44 +96,35 @@ func signExternalLinks(ctx context.Context, dataStore *store.Store) error {
 // Returns error only in case of internal problems (ie: database or configuration issues).
 // May return nil client and nil error.
 func findObjectStorage(ctx context.Context, dataStore *store.Store) (*s3.Client, error) {
-	systemSettingStorageServiceID, err := dataStore.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{Name: apiv1.SystemSettingStorageServiceIDName.String()})
+	workspaceStorageSetting, err := dataStore.GetWorkspaceStorageSetting(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to find SystemSettingStorageServiceIDName")
+		return nil, errors.Wrap(err, "Failed to find workspaceStorageSetting")
 	}
-
-	storageServiceID := apiv1.DefaultStorage
-	if systemSettingStorageServiceID != nil {
-		err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
-		if err != nil {
-			return nil, errors.Wrap(err, "Failed to unmarshal storage service id")
-		}
+	if workspaceStorageSetting.StorageType != storepb.WorkspaceStorageSetting_STORAGE_TYPE_EXTERNAL || workspaceStorageSetting.ActivedExternalStorageId == nil {
+		return nil, nil
 	}
-	storage, err := dataStore.GetStorage(ctx, &store.FindStorage{ID: &storageServiceID})
+	storage, err := dataStore.GetStorageV1(ctx, &store.FindStorage{ID: workspaceStorageSetting.ActivedExternalStorageId})
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to find StorageServiceID")
+		return nil, errors.Wrap(err, "Failed to find storage")
 	}
-
 	if storage == nil {
-		return nil, nil // storage not configured - not an error, just return empty ref
-	}
-	storageMessage, err := apiv1.ConvertStorageFromStore(storage)
-
-	if err != nil {
-		return nil, errors.Wrap(err, "Failed to ConvertStorageFromStore")
-	}
-	if storageMessage.Type != apiv1.StorageS3 {
 		return nil, nil
 	}
 
-	s3Config := storageMessage.Config.S3Config
+	storageMessage := apiv2.ConvertStorageFromStore(storage)
+	if storageMessage.Type != apiv2pb.Storage_S3 {
+		return nil, nil
+	}
+
+	s3Config := storageMessage.Config.GetS3Config()
 	return s3.NewClient(ctx, &s3.Config{
 		AccessKey: s3Config.AccessKey,
 		SecretKey: s3Config.SecretKey,
 		EndPoint:  s3Config.EndPoint,
 		Region:    s3Config.Region,
 		Bucket:    s3Config.Bucket,
-		URLPrefix: s3Config.URLPrefix,
-		URLSuffix: s3Config.URLSuffix,
+		URLPrefix: s3Config.UrlPrefix,
+		URLSuffix: s3Config.UrlSuffix,
 		PreSign:   s3Config.PreSign,
 	})
 }

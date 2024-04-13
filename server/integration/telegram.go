@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"path/filepath"
@@ -19,7 +18,6 @@ import (
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/plugin/webhook"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	apiv1 "github.com/usememos/memos/server/route/api/v1"
 	apiv2 "github.com/usememos/memos/server/route/api/v2"
 	"github.com/usememos/memos/store"
 )
@@ -126,9 +124,10 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 			Type:      attachment.GetMimeType(),
 			Size:      attachment.FileSize,
 			MemoID:    &memoMessage.ID,
+			Blob:      attachment.Data,
 		}
 
-		err := apiv1.SaveResourceBlob(ctx, t.store, &create, bytes.NewReader(attachment.Data))
+		err := apiv2.SaveResourceBlob(ctx, t.store, &create)
 		if err != nil {
 			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Failed to SaveResourceBlob: %s", err), nil)
 			return err

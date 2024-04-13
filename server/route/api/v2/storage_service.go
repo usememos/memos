@@ -25,7 +25,7 @@ func (s *APIV2Service) CreateStorage(ctx context.Context, request *apiv2pb.Creat
 		return nil, status.Errorf(codes.Internal, "failed to create storage, error: %+v", err)
 	}
 	return &apiv2pb.CreateStorageResponse{
-		Storage: convertStorageFromStore(storage),
+		Storage: ConvertStorageFromStore(storage),
 	}, nil
 }
 
@@ -39,7 +39,7 @@ func (s *APIV2Service) ListStorages(ctx context.Context, _ *apiv2pb.ListStorages
 		Storages: []*apiv2pb.Storage{},
 	}
 	for _, storage := range storages {
-		response.Storages = append(response.Storages, convertStorageFromStore(storage))
+		response.Storages = append(response.Storages, ConvertStorageFromStore(storage))
 	}
 	return response, nil
 }
@@ -55,7 +55,7 @@ func (s *APIV2Service) GetStorage(ctx context.Context, request *apiv2pb.GetStora
 		return nil, status.Errorf(codes.NotFound, "storage not found")
 	}
 	return &apiv2pb.GetStorageResponse{
-		Storage: convertStorageFromStore(storage),
+		Storage: ConvertStorageFromStore(storage),
 	}, nil
 }
 
@@ -82,7 +82,7 @@ func (s *APIV2Service) UpdateStorage(ctx context.Context, request *apiv2pb.Updat
 		return nil, status.Errorf(codes.Internal, "failed to update storage, error: %+v", err)
 	}
 	return &apiv2pb.UpdateStorageResponse{
-		Storage: convertStorageFromStore(storage),
+		Storage: ConvertStorageFromStore(storage),
 	}, nil
 }
 
@@ -96,7 +96,7 @@ func (s *APIV2Service) DeleteStorage(ctx context.Context, request *apiv2pb.Delet
 	return &apiv2pb.DeleteStorageResponse{}, nil
 }
 
-func convertStorageFromStore(storage *storepb.Storage) *apiv2pb.Storage {
+func ConvertStorageFromStore(storage *storepb.Storage) *apiv2pb.Storage {
 	temp := &apiv2pb.Storage{
 		Id:    storage.Id,
 		Title: storage.Name,
