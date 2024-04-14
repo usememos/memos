@@ -16,7 +16,7 @@ const MemoEditorDialog: React.FC<Props> = ({ memoName: memo, cacheKey, relationL
   const tagStore = useTagStore();
 
   useEffect(() => {
-    tagStore.fetchTags();
+    tagStore.fetchTags({ skipCache: false });
   }, []);
 
   const handleCloseBtnClick = () => {

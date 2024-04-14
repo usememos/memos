@@ -26,10 +26,10 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
   const currentUser = useCurrentUser();
   const tagStore = useTagStore();
   const [tagName, setTagName] = useState<string>("");
-  const [suggestTagNameList, setSuggestTagNameList] = useState<string[]>([]);
+  const [suggestTags, setSuggestTags] = useState<string[]>([]);
   const [showTagSuggestions, setShowTagSuggestions] = useState<boolean>(false);
-  const tagNameList = tagStore.getState().tags;
-  const shownSuggestTagNameList = suggestTagNameList.filter((tag) => !tagNameList.has(tag));
+  const tags = Array.from(tagStore.getState().tags);
+  const shownSuggestTags = suggestTags.filter((tag) => !tags.includes(tag));
 
   useEffect(() => {
     tagServiceClient
@@ -37,9 +37,9 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
         user: currentUser.name,
       })
       .then(({ tags }) => {
-        setSuggestTagNameList(tags.filter((tag) => validateTagName(tag)));
+        setSuggestTags(tags.filter((tag) => validateTagName(tag)));
       });
-  }, [tagNameList]);
+  }, [tags]);
 
   const handleTagNameInputKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
@@ -48,12 +48,12 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleTagNameChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const tagName = event.target.value;
-    setTagName(tagName.trim());
+    const tag = event.target.value;
+    setTagName(tag.trim());
   };
 
-  const handleUpsertTag = async (tagName: string) => {
-    await tagStore.upsertTag(tagName);
+  const handleUpsertTag = async (tag: string) => {
+    await tagStore.upsertTag(tag);
   };
 
   const handleToggleShowSuggestionTags = () => {
@@ -80,7 +80,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleSaveSuggestTagList = async () => {
-    for (const tagName of suggestTagNameList) {
+    for (const tagName of suggestTags) {
       if (validateTagName(tagName)) {
         await tagStore.upsertTag(tagName);
       }
@@ -107,27 +107,25 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
           startDecorator={<Icon.Hash className="w-4 h-auto" />}
           endDecorator={<Icon.Check onClick={handleSaveBtnClick} className="w-4 h-auto cursor-pointer hover:opacity-80" />}
         />
-        {tagNameList.size > 0 && (
+        {tags.length > 0 && (
           <>
             <p className="w-full mt-2 mb-1 text-sm text-gray-400">{t("tag.all-tags")}</p>
             <div className="w-full flex flex-row justify-start items-start flex-wrap">
-              {Array.from(tagNameList)
-                .sort()
-                .map((tag) => (
-                  <OverflowTip
-                    key={tag}
-                    className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer dark:text-gray-300 hover:opacity-60 hover:line-through"
-                  >
-                    <span className="w-full" onClick={() => handleDeleteTag(tag)}>
-                      #{tag}
-                    </span>
-                  </OverflowTip>
-                ))}
+              {tags.sort().map((tag) => (
+                <OverflowTip
+                  key={tag}
+                  className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer dark:text-gray-300 hover:opacity-60 hover:line-through"
+                >
+                  <span className="w-full" onClick={() => handleDeleteTag(tag)}>
+                    #{tag}
+                  </span>
+                </OverflowTip>
+              ))}
             </div>
           </>
         )}
 
-        {shownSuggestTagNameList.length > 0 && (
+        {shownSuggestTags.length > 0 && (
           <>
             <div className="mt-4 mb-1 text-sm w-full flex flex-row justify-start items-center">
               <span className="text-gray-400 mr-2">{t("tag.tag-suggestions")}</span>
@@ -141,7 +139,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
             {showTagSuggestions && (
               <>
                 <div className="w-full flex flex-row justify-start items-start flex-wrap mb-2">
-                  {shownSuggestTagNameList.map((tag) => (
+                  {shownSuggestTags.map((tag) => (
                     <OverflowTip
                       key={tag}
                       className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer dark:text-gray-300 hover:opacity-60"

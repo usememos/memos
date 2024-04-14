@@ -17,7 +17,7 @@ const TagSelector = (props: Props) => {
   const tagStore = useTagStore();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const tags = tagStore.getState().tags;
+  const tags = Array.from(tagStore.getState().tags);
 
   useEffect(() => {
     (async () => {
@@ -60,9 +60,9 @@ const TagSelector = (props: Props) => {
       </MenuButton>
       <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">
         <div ref={containerRef}>
-          {tags.size > 0 ? (
+          {tags.length > 0 ? (
             <div className="flex-row justify-start items-start flex-wrap px-1 max-w-[12rem] h-auto max-h-48 overflow-y-auto font-mono">
-              {Array.from(tags).map((tag) => {
+              {tags.map((tag) => {
                 return (
                   <div
                     key={tag}

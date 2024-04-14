@@ -25,7 +25,7 @@ const TagsSection = () => {
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
   const memoList = useMemoList();
-  const tagsText = tagStore.getState().tags;
+  const tagsText = Array.from(tagStore.getState().tags);
   const filter = filterStore.state;
   const [tags, setTags] = useState<Tag[]>([]);
 
@@ -38,7 +38,7 @@ const TagsSection = () => {
   );
 
   useEffect(() => {
-    const sortedTags = Array.from(tagsText).sort();
+    const sortedTags = tagsText.sort();
     const root: KVObject<any> = {
       subTags: [],
     };

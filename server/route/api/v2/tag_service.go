@@ -50,7 +50,7 @@ func (s *APIV2Service) BatchUpsertTag(ctx context.Context, request *apiv2pb.Batc
 	return &apiv2pb.BatchUpsertTagResponse{}, nil
 }
 
-func (s *APIV2Service) ListTags(ctx context.Context, request *apiv2pb.ListTagsRequest) (*apiv2pb.ListTagsResponse, error) {
+func (s *APIV2Service) ListTags(ctx context.Context, _ *apiv2pb.ListTagsRequest) (*apiv2pb.ListTagsResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
