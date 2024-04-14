@@ -1,8 +1,9 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { useEffect, useState } from "react";
+import useDebounce from "react-use/lib/useDebounce";
 import useToggle from "react-use/lib/useToggle";
-import { useFilterStore, useTagStore } from "@/store/module";
-import { useMemoList } from "@/store/v1";
+import { useFilterStore } from "@/store/module";
+import { useMemoList, useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showCreateTagDialog from "../CreateTagDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
@@ -24,13 +25,17 @@ const TagsSection = () => {
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
   const memoList = useMemoList();
-  const tagsText = tagStore.state.tags;
+  const tagsText = tagStore.getState().tags;
   const filter = filterStore.state;
   const [tags, setTags] = useState<Tag[]>([]);
 
-  useEffect(() => {
-    tagStore.fetchTags();
-  }, [memoList.size()]);
+  useDebounce(
+    () => {
+      tagStore.fetchTags();
+    },
+    300,
+    [memoList.size()],
+  );
 
   useEffect(() => {
     const sortedTags = Array.from(tagsText).sort();

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { memoServiceClient } from "@/grpcweb";
-import { useTagStore } from "@/store/module";
-import { useMemoStore } from "@/store/v1";
+import { useMemoStore, useTagStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
@@ -19,7 +18,7 @@ const UserStatisticsView = (props: Props) => {
   const [isRequesting, setIsRequesting] = useState(false);
   const days = Math.ceil((Date.now() - user.createTime!.getTime()) / 86400000);
   const memos = Object.values(memoStore.getState().memoMapByName);
-  const tags = tagStore.state.tags.length;
+  const tags = tagStore.getState().tags.size;
 
   useEffect(() => {
     if (memos.length === 0) {

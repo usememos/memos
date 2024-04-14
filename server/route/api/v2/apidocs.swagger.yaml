@@ -638,14 +638,6 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user
-          description: |-
-            The creator of tags.
-            Format: users/{id}
-          in: query
-          required: false
-          type: string
       tags:
         - TagService
     delete:

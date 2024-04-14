@@ -51,12 +51,16 @@ func (s *APIV2Service) BatchUpsertTag(ctx context.Context, request *apiv2pb.Batc
 }
 
 func (s *APIV2Service) ListTags(ctx context.Context, request *apiv2pb.ListTagsRequest) (*apiv2pb.ListTagsResponse, error) {
-	tagFind := &store.FindTag{}
-	userID, err := ExtractUserIDFromName(request.User)
+	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get user")
 	}
-	tagFind.CreatorID = userID
+	if user == nil {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+	tagFind := &store.FindTag{
+		CreatorID: user.ID,
+	}
 	tags, err := s.Store.ListTags(ctx, tagFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list tags: %v", err)

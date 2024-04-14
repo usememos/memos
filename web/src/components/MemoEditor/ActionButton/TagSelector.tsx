@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import Icon from "@/components/Icon";
 import OverflowTip from "@/components/kit/OverflowTip";
-import { useTagStore } from "@/store/module";
+import { useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 
@@ -17,7 +17,7 @@ const TagSelector = (props: Props) => {
   const tagStore = useTagStore();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const tags = tagStore.state.tags;
+  const tags = tagStore.getState().tags;
 
   useEffect(() => {
     (async () => {
@@ -60,9 +60,9 @@ const TagSelector = (props: Props) => {
       </MenuButton>
       <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">
         <div ref={containerRef}>
-          {tags.length > 0 ? (
+          {tags.size > 0 ? (
             <div className="flex-row justify-start items-start flex-wrap px-1 max-w-[12rem] h-auto max-h-48 overflow-y-auto font-mono">
-              {tags.map((tag) => {
+              {Array.from(tags).map((tag) => {
                 return (
                   <div
                     key={tag}

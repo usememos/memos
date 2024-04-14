@@ -55,11 +55,7 @@ message BatchUpsertTagRequest {
 
 message BatchUpsertTagResponse {}
 
-message ListTagsRequest {
-  // The creator of tags.
-  // Format: users/{id}
-  string user = 1;
-}
+message ListTagsRequest {}
 
 message ListTagsResponse {
   repeated Tag tags = 1;

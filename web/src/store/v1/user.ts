@@ -29,6 +29,7 @@ const requestCache = new Map<string, Promise<any>>();
 
 export const useUserStore = create(
   combine(getDefaultState(), (set, get) => ({
+    getState: () => get(),
     fetchUsers: async () => {
       const { users } = await userServiceClient.listUsers({});
       const userMap = get().userMapByName;

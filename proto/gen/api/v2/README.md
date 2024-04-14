@@ -2772,11 +2772,6 @@ Used internally for obfuscating the page token.
 
 
 
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| user | [string](#string) |  | The creator of tags. Format: users/{id} |
-
-
 
 
 

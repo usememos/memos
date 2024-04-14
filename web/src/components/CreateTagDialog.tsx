@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { tagServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useTagStore } from "@/store/module";
+import { useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { TAG_REG } from "@/utils/tag";
 import { generateDialog } from "./Dialog";
@@ -28,8 +28,8 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
   const [tagName, setTagName] = useState<string>("");
   const [suggestTagNameList, setSuggestTagNameList] = useState<string[]>([]);
   const [showTagSuggestions, setShowTagSuggestions] = useState<boolean>(false);
-  const tagNameList = tagStore.state.tags;
-  const shownSuggestTagNameList = suggestTagNameList.filter((tag) => !tagNameList.includes(tag));
+  const tagNameList = tagStore.getState().tags;
+  const shownSuggestTagNameList = suggestTagNameList.filter((tag) => !tagNameList.has(tag));
 
   useEffect(() => {
     tagServiceClient
@@ -107,7 +107,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
           startDecorator={<Icon.Hash className="w-4 h-auto" />}
           endDecorator={<Icon.Check onClick={handleSaveBtnClick} className="w-4 h-auto cursor-pointer hover:opacity-80" />}
         />
-        {tagNameList.length > 0 && (
+        {tagNameList.size > 0 && (
           <>
             <p className="w-full mt-2 mb-1 text-sm text-gray-400">{t("tag.all-tags")}</p>
             <div className="w-full flex flex-row justify-start items-start flex-wrap">

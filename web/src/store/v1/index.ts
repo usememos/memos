@@ -4,3 +4,4 @@ export * from "./inbox";
 export * from "./resourceName";
 export * from "./resource";
 export * from "./workspaceSetting";
+export * from "./tag";
