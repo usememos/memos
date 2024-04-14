@@ -231,8 +231,6 @@
     "preference-section": {
       "default-memo-sort-option": "메모에 표시할 시각",
       "default-memo-visibility": "메모 공개 범위 기본값",
-      "telegram-user-id": "텔레그램 유저 ID",
-      "telegram-user-id-placeholder": "서버의 텔레그램 봇에 아무 메세지나 보내서 받을 수 있습니다",
       "theme": "테마"
     },
     "sso": "SSO",
@@ -315,10 +313,7 @@
       "enable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인할 수 있게 합니다. 사용자들이 SSO와 비밀번호 둘 다 사용할 수 있게 하고 싶은 경우에만 켜 주세요",
       "max-upload-size": "최대 업로드 크기 (MiB)",
       "max-upload-size-hint": "권장값은 32 MiB입니다.",
-      "server-name": "서버 이름",
-      "telegram-bot-token": "텔레그램 봇 연동",
-      "telegram-bot-token-description": "`http…/bot<token>` 형태의 API 프록시 또는 텔레그램 봇 토큰",
-      "telegram-bot-token-placeholder": "서버의 텔레그램 봇 토큰"
+      "server-name": "서버 이름"
     }
   },
   "tag": {

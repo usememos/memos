@@ -206,8 +206,6 @@
     "preference-section": {
       "default-memo-sort-option": "मेमो प्रदर्शन समय",
       "default-memo-visibility": "डिफ़ॉल्ट मेमो दृश्यता",
-      "telegram-user-id": "टेलीग्राम उपयोगकर्ता आईडी",
-      "telegram-user-id-placeholder": "अपने टेलीग्राम बॉट को कोई शब्द भेजें और प्राप्त करें",
       "theme": "थीम"
     },
     "sso": "एसएसओ",

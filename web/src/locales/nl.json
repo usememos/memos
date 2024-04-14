@@ -195,8 +195,6 @@
     "preference-section": {
       "default-memo-sort-option": "Sorteer op tijd van aanmaken/wijziging",
       "default-memo-visibility": "Standaard memo zichtbaarheid",
-      "telegram-user-id": "Telegram User ID",
-      "telegram-user-id-placeholder": "Stuur je memos naar je Telegram bot",
       "theme": "Thema"
     },
     "sso": "SSO",
@@ -279,10 +277,7 @@
       "enable-password-login-warning": "Als je dit aanzet kan er met zowel SSO als een wachtwoord ingelogd worden",
       "max-upload-size": "Maximum uploadgrootte (MiB)",
       "max-upload-size-hint": "32 MiB wordt aangeraden.",
-      "server-name": "Servernaam",
-      "telegram-bot-token": "Telegram bot token",
-      "telegram-bot-token-description": "Telegram bot token of API proxy zoals `http://.../bot<token>`",
-      "telegram-bot-token-placeholder": "Je Telegram bot token"
+      "server-name": "Servernaam"
     }
   },
   "tag": {

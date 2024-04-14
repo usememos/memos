@@ -239,8 +239,6 @@
     "preference-section": {
       "default-memo-sort-option": "メモの表示時間",
       "default-memo-visibility": "公開範囲の初期設定",
-      "telegram-user-id": "TelegramのUserid",
-      "telegram-user-id-placeholder": "文章をTelegram Botに送信して取得します。",
       "theme": "テーマ"
     },
     "sso": "SSO",
@@ -325,9 +323,6 @@
       "max-upload-size": "最大ファイルサイズ(MiB)",
       "max-upload-size-hint": "推奨サイズは32 MiBです。",
       "server-name": "サーバーの名前",
-      "telegram-bot-token": "Telegram Bot Token",
-      "telegram-bot-token-description": "Telegram Bot Token もしくは API Proxyを`http.../bot<token>`のように入力してください。",
-      "telegram-bot-token-placeholder": "あなたのTelegram Bot token",
       "vacuum-hint": "未使用のデータを削除する"
     }
   },

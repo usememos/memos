@@ -241,8 +241,6 @@
     "preference-section": {
       "default-memo-sort-option": "Memo 顯示時間",
       "default-memo-visibility": "Memo 預設之能見度",
-      "telegram-user-id": "Telegram UserID",
-      "telegram-user-id-placeholder": "向 Telegram 機器人傳送任意訊息以取得",
       "theme": "主題"
     },
     "sso": "SSO",
@@ -327,9 +325,6 @@
       "max-upload-size": "最大上傳檔案大小 (MiB)",
       "max-upload-size-hint": "建議值為 32 MiB。",
       "server-name": "伺服器名稱",
-      "telegram-bot-token": "Telegram 機器人權杖",
-      "telegram-bot-token-description": "Telegram 機器人權杖或 API Proxy，如 `http.../bot<token>`",
-      "telegram-bot-token-placeholder": "您的 Telegram 機器人權杖",
       "vacuum-hint": "清理未使用的資料"
     }
   },

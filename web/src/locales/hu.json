@@ -160,8 +160,6 @@
     "preference-section": {
       "default-memo-sort-option": "Memó létrehozási ideje",
       "default-memo-visibility": "Memók alapértelmezett láthatósága",
-      "telegram-user-id": "Telegram fiók neve",
-      "telegram-user-id-placeholder": "Küldj bármit a Telegram Bot-nak mint memó",
       "theme": "Téma"
     },
     "sso": "SSO",
@@ -221,10 +219,7 @@
       "enable-password-login-warning": "Ez engedélyezi a jelszavas bejelentkezést minden felhasználó számára. Csak akkor folytasd, ha szeretnéd, ha a felhasználók SSO és jelszó használatával is be tudjanak jelentkezni",
       "max-upload-size": "Maximális feltöltési méret (MiB)",
       "max-upload-size-hint": "Az ajánlott érték 32 MiB.",
-      "server-name": "Szerver neve",
-      "telegram-bot-token": "Telegram bot token",
-      "telegram-bot-token-description": "Telegram bot token vagy API proxy, mint `http.../bot<token>`",
-      "telegram-bot-token-placeholder": "Telegram bot tokened"
+      "server-name": "Szerver neve"
     }
   },
   "tag": {

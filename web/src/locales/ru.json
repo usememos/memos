@@ -235,8 +235,6 @@
     "preference-section": {
       "default-memo-sort-option": "Отображаемое время записи",
       "default-memo-visibility": "Видимость записей по умолчанию",
-      "telegram-user-id": "ID пользователя Telegram",
-      "telegram-user-id-placeholder": "Отправьте любое сообщение своему Telegram-боту, чтобы узнать ID",
       "theme": "Тема"
     },
     "sso": "SSO",
@@ -314,10 +312,7 @@
       "display-with-updated-time": "Отображать время обновления записи",
       "max-upload-size": "Максимальный размер загрузки (МБ)",
       "max-upload-size-hint": "Рекомендуемое значение 32 MБ.",
-      "server-name": "Имя сервера",
-      "telegram-bot-token": "Токен Telegram бота",
-      "telegram-bot-token-description": "Токен Telegram бота или прокси API вида `http.../bot<token>`",
-      "telegram-bot-token-placeholder": "Ваш токен Telegram бота"
+      "server-name": "Имя сервера"
     }
   },
   "tag": {

@@ -54,6 +54,7 @@
     "or": "或者",
     "password": "密码",
     "pin": "置顶",
+    "pinned": "置顶",
     "preview": "预览",
     "profile": "个人资料",
     "remember-me": "保持登录",
@@ -139,6 +140,8 @@
     "click-to-save-the-image": "点击保存图片",
     "copied": "已复制",
     "count-selected-resources": "所选资源总数",
+    "deleted-successfully": "成功删除！",
+    "failed-to-embed-memo": "嵌入备忘录失败",
     "fill-all": "请填写所有栏目。",
     "fill-form": "请填写此表单",
     "fill-server-name": "请填写服务器名称",
@@ -251,8 +254,6 @@
     "preference-section": {
       "default-memo-sort-option": "Memo 显示时间",
       "default-memo-visibility": "默认 Memo 可见性",
-      "telegram-user-id": "Telegram UserID",
-      "telegram-user-id-placeholder": "向 Telegram 机器人发送任意消息以获取",
       "theme": "主题"
     },
     "sso": "单点登录",
@@ -337,19 +338,18 @@
       "max-upload-size": "最大上传大小 (MiB)",
       "max-upload-size-hint": "建议值为 32 MiB。",
       "server-name": "服务名称",
-      "telegram-bot-token": "Telegram 机器人 Token",
-      "telegram-bot-token-description": "Telegram 机器人 Token 或 `http…/bot<token>` 格式的代理地址",
-      "telegram-bot-token-placeholder": "您的 Telegram 机器人 Token",
       "vacuum-hint": "清理未使用的数据。"
     }
   },
   "tag": {
     "all-tags": "全部标签",
     "create-tag": "创建标签",
-    "delete-confirm": "Are you sure to delete this tag?",
+    "create-tags-guide": "您可以通过输入 “#tag” 创建标签。",
+    "delete-confirm": "您确定要删除此标签吗?（此操作不可逆）",
     "delete-tag": "删除标签",
     "hide": "收起",
     "invalid-tag-name": "无效的标签名称",
+    "no-tag-found": "没找到此标签",
     "save-all": "全部保存",
     "show": "展开",
     "tag-name": "标签名称",

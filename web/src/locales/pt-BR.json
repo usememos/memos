@@ -56,6 +56,7 @@
     "or": "ou",
     "password": "Senha",
     "pin": "Fixar",
+    "pinned": "Fixado",
     "preview": "Pré-visualizar",
     "profile": "Perfil",
     "remember-me": "Lembre de mim",
@@ -101,9 +102,9 @@
   },
   "embed-memo": {
     "copy": "Copiar",
-    "only-public-supported": "* Somente memos públicos podem ser incorporados.",
+    "only-public-supported": "* Somente memos públicos podem ser embutidos.",
     "text": "Copie o código abaixo para incorporar este memo em seu site.",
-    "title": "Incorporar memo"
+    "title": "Embutir memo"
   },
   "inbox": {
     "memo-comment": "{{user}} tem um comentário sobre o seu {{memo}}.",
@@ -117,9 +118,10 @@
       "self": "Comentários"
     },
     "copy-link": "Copiar link",
+    "count-memos-in-date": "{{count}} memos em {{date}}",
     "delete-confirm": "Tem certeza de que deseja deletar este memo?\n\nESTA AÇÃO É IRREVERSÍVEL",
     "delete-memo": "Deletar memo",
-    "embed": "Incorporar",
+    "embed": "Embutir",
     "fetch-more": "Clique para carregar mais",
     "fetching-data": "Obtendo dados…",
     "no-archived-memos": "Nenhum memo arquivado.",
@@ -131,7 +133,8 @@
       "private": "Privado (eu)",
       "protected": "Protegido (membros)",
       "public": "Público (todos)"
-    }
+    },
+    "wrapping": "Quebra"
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",
@@ -140,6 +143,8 @@
     "click-to-save-the-image": "Clique para salvar a imagem",
     "copied": "Copiado",
     "count-selected-resources": "Total selecionado",
+    "deleted-successfully": "Êxito na exclusão",
+    "failed-to-embed-memo": "Falha ao embutir o memo",
     "fill-all": "Por favor, preencha todos os campos.",
     "fill-form": "Por favor, preencha o formulário",
     "fill-server-name": "Por favor, preencha o nome do servidor",
@@ -175,7 +180,7 @@
   },
   "reference": {
     "add-references": "Adicionar referências",
-    "embedded-usage": "Usar como Conteúdo Incorporado",
+    "embedded-usage": "Usar como Conteúdo Embutido",
     "no-memos-found": "Nenhum memo encontrado",
     "search-bar-placeholder": "Pesquisar conteúdo"
   },
@@ -252,8 +257,6 @@
     "preference-section": {
       "default-memo-sort-option": "Exibição de tempo do memo",
       "default-memo-visibility": "Visibilidade padrão do memo",
-      "telegram-user-id": "ID de usuário do Telegram",
-      "telegram-user-id-placeholder": "Envie quaisquer palavras para seu Bot do Telegram como um memo",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -338,17 +341,18 @@
       "max-upload-size": "Tamanho máximo de upload (MiB)",
       "max-upload-size-hint": "O valor recomendado é 32 MiB.",
       "server-name": "Nome do servidor",
-      "telegram-bot-token": "Token de Bot do Telegram",
-      "telegram-bot-token-description": "Token de Bot do Telegram ou Proxy de API, tipo `http…/bot<token>`",
-      "telegram-bot-token-placeholder": "Seu token de Bot do Telegram",
       "vacuum-hint": "Limpa dados não utilizados."
     }
   },
   "tag": {
     "all-tags": "Todas as Tags",
     "create-tag": "Criar Tag",
+    "create-tags-guide": "Você pode criar tags inserindo `#tag`.",
+    "delete-confirm": "Tem certeza de que deseja excluir esta tag?",
+    "delete-tag": "Excluir Tag",
     "hide": "Ocultar",
     "invalid-tag-name": "Nome de tag inválido",
+    "no-tag-found": "Nenhuma tag encontrada",
     "save-all": "Salvar tudo",
     "show": "Mostrar",
     "tag-name": "NOME_DA_TAG",

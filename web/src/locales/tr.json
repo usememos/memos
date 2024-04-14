@@ -252,8 +252,6 @@
     "preference-section": {
       "default-memo-sort-option": "Yer İşareti Görüntüleme Zamanı",
       "default-memo-visibility": "Varsayılan not görünürlüğü",
-      "telegram-user-id": "Telegram Kullanıcı Kimliği",
-      "telegram-user-id-placeholder": "Telegram Botunuza herhangi bir kelimeyi not olarak gönderin",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -338,9 +336,6 @@
       "max-upload-size": "Maksimum yükleme boyutu (MiB)",
       "max-upload-size-hint": "Önerilen değer 32 MiB'dir.",
       "server-name": "Uygulama Adı",
-      "telegram-bot-token": "Telegram Bot Token",
-      "telegram-bot-token-description": "Telegram Bot Token or API Proxy like `http…/bot<token>`",
-      "telegram-bot-token-placeholder": "Telegram Bot tokeniniz",
       "vacuum-hint": "Kullanılmayan verileri temizler."
     }
   },
