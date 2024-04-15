@@ -45,7 +45,7 @@
     "@types/node": "^20.12.7",
     "@types/qs": "^6.9.14",
     "@types/react": "^18.2.75",
-    "@types/react-dom": "^18.2.24",
+    "@types/react-dom": "^18.2.25",
     "@types/textarea-caret": "^3.0.3",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
