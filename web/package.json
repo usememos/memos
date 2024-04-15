@@ -18,7 +18,7 @@
     "copy-to-clipboard": "^3.3.3",
     "fuse.js": "^7.0.0",
     "highlight.js": "^11.9.0",
-    "i18next": "^23.11.1",
+    "i18next": "^23.11.2",
     "katex": "^0.16.10",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.367.0",
