@@ -117,7 +117,7 @@
     },
     "copy-link": "复制链接",
     "count-memos-in-date": "{{count}} 备忘录 {{date}}",
-    "delete-confirm": "您确定要删除此 Memo 吗？此操作不可逆",
+    "delete-confirm": "您确定要删除此 Memo 吗？（此操作不可逆）",
     "delete-memo": "删除 Memo",
     "embed": "嵌入",
     "fetch-more": "点击获取更多",
