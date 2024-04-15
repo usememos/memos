@@ -27,7 +27,7 @@
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
     "react-i18next": "^14.1.0",
-    "react-redux": "^9.1.0",
+    "react-redux": "^9.1.1",
     "react-router-dom": "^6.22.3",
     "react-use": "^17.5.0",
     "tailwindcss": "^3.4.3",
