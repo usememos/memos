@@ -14,7 +14,7 @@ service WorkspaceService {
 }
 
 message WorkspaceProfile {
-  // The name of intance owner.
+  // The name of instance owner.
   // Format: "users/{id}"
   string owner = 1;
   // version is the current version of instance

@@ -26,7 +26,7 @@ type WorkspaceProfile struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The name of intance owner.
+	// The name of instance owner.
 	// Format: "users/{id}"
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// version is the current version of instance
