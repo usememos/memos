@@ -150,7 +150,7 @@ func parseCronSegment(segment string, min int, max int) (map[int]struct{}, error
 			switch len(rangeParts) {
 			case 1:
 				if step != 1 {
-					return nil, errors.New("invalid segement step - step > 1 could be used only with the wildcard or range format")
+					return nil, errors.New("invalid segment step - step > 1 could be used only with the wildcard or range format")
 				}
 				parsed, err := strconv.Atoi(rangeParts[0])
 				if err != nil {

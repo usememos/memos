@@ -2909,7 +2909,7 @@ definitions:
       owner:
         type: string
         title: |-
-          The name of intance owner.
+          The name of instance owner.
           Format: "users/{id}"
       version:
         type: string
