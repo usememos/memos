@@ -173,7 +173,8 @@
     "succeed-update-customized-profile": "更新自定义配置文件成功。",
     "succeed-vacuum-database": "清理数据库成功。",
     "update-succeed": "更新成功",
-    "user-not-found": "未找到该用户"
+    "user-not-found": "未找到该用户",
+    "no-more-memos": "没有更多Memos记录"
   },
   "reference": {
     "add-references": "添加引用",

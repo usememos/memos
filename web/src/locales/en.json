@@ -354,7 +354,8 @@
     "succeed-update-customized-profile": "Profile successfully customized.",
     "succeed-update-additional-script": "Additional script updated successfully.",
     "update-succeed": "Update succeeded",
-    "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB"
+    "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
+    "no-more-memos": "No more memmos"
   },
   "inbox": {
     "memo-comment": "{{user}} has a comment on your {{memo}}.",

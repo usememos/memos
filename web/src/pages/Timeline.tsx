@@ -19,6 +19,7 @@ import i18n from "@/i18n";
 import { useMemoList, useMemoStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
+import toast from "react-hot-toast";
 
 interface GroupedByMonthItem {
   // Format: 2021-1
@@ -58,6 +59,87 @@ const Timeline = () => {
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
   const groupedByMonth = groupByMonth(activityStats, sortedMemos);
 
+  const handleDateClick = (date: string) => {
+    if (date === selectedDay) {
+      setSelectedDay(undefined);
+    } else {
+      setSelectedDay(date);
+    }
+  };
+  const handlePrevDay = () => {
+    if (!selectedDay) return; 
+  
+    const currentDate = new Date(selectedDay);
+    currentDate.setUTCDate(currentDate.getUTCDate() - 1); 
+  
+    let found = false;
+    while (currentDate >= new Date(Object.keys(activityStats).sort()[0])) {
+      const checkDateStr = currentDate.toISOString().substring(0, 10); 
+      if (activityStats[checkDateStr] && activityStats[checkDateStr] > 0) {
+        setSelectedDay(checkDateStr); 
+        found = true;
+        break;
+      }
+      currentDate.setUTCDate(currentDate.getUTCDate() - 1);
+    }
+  
+    if (!found) {
+      toast.error(t("message.no-more-memos"));
+    }
+  };
+  const handleNextDay = () => {
+    if (!selectedDay) return; 
+  
+    const currentDate = new Date(selectedDay);
+    currentDate.setUTCDate(currentDate.getUTCDate() + 1); 
+  
+    let found = false;
+    while (currentDate <= new Date(Object.keys(activityStats).sort().reverse()[0])) {
+      const checkDateStr = currentDate.toISOString().substring(0, 10); 
+      if (activityStats[checkDateStr] && activityStats[checkDateStr] > 0) {
+        setSelectedDay(checkDateStr); 
+        found = true;
+        break;
+      }
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+    }   
+    if (!found) {
+      toast.error(t("message.no-more-memos")); 
+    }
+  };
+
+    const handlePrevMonth = () => {
+      if (!selectedDay) return;
+      const currentMonth = new Date(selectedDay);
+      currentMonth.setUTCMonth(currentMonth.getUTCMonth() - 1);
+
+      const prevMonthStr = currentMonth.toISOString().substring(0, 7); 
+      const datesWithData = Object.keys(activityStats).filter(date => date.startsWith(prevMonthStr)).sort();
+      if (datesWithData.length > 0) {
+        setSelectedDay(datesWithData[0]);
+      } else {
+        handlePrevDay()
+      }
+    };
+    const handleNextMonth = () => {
+      if (!selectedDay) return;
+      const currentMonth = new Date(selectedDay);
+      currentMonth.setUTCMonth(currentMonth.getUTCMonth() + 1);
+      const nextMonthStr = currentMonth.toISOString().substring(0, 7); 
+      const datesWithData = Object.keys(activityStats).filter(date => date.startsWith(nextMonthStr)).sort();
+      if (datesWithData.length > 0) {
+        setSelectedDay(datesWithData[0]);
+      } else {
+        const currentMonthStr = selectedDay.substring(0, 7); 
+        const datesInCurrentMonth = Object.keys(activityStats).filter(date => date.startsWith(currentMonthStr)).sort();
+        if (datesInCurrentMonth.length > 0 && selectedDay !== datesInCurrentMonth[datesInCurrentMonth.length - 1]) {
+          setSelectedDay(datesInCurrentMonth[datesInCurrentMonth.length - 1]);
+        } else {
+          toast.error(t("message.no-more-memos"));
+        }
+      }
+    };
+  
   useEffect(() => {
     nextPageTokenRef.current = undefined;
     memoList.reset();
@@ -139,6 +221,23 @@ const Timeline = () => {
                 </div>
               </div>
               <div className="flex justify-end items-center gap-2">
+              { selectedDay && (
+              <div>
+                <IconButton variant="outlined" size="sm" onClick={()=>handlePrevMonth()}>
+                 <Icon.ChevronsLeft   className="w-5 h-auto" />
+                </IconButton>
+                <IconButton variant="outlined" size="sm" onClick={()=>handlePrevDay()}>
+                  <Icon.ChevronLeft   className="w-5 h-auto" />
+                </IconButton>
+                <IconButton variant="outlined" size="sm" onClick={()=>handleNextDay()}>
+                  <Icon.ChevronRight   className="w-5 h-auto" />
+                </IconButton>
+                <IconButton variant="outlined" size="sm" onClick={()=>handleNextMonth()}>
+                  <Icon.ChevronsRight  className="w-5 h-auto" />
+                </IconButton>
+              </div>
+              )}
+
                 <IconButton variant="outlined" size="sm" onClick={() => handleNewMemo()}>
                   <Icon.Plus className="w-5 h-auto" />
                 </IconButton>
@@ -147,17 +246,33 @@ const Timeline = () => {
             <div className="w-full h-auto flex flex-col justify-start items-start">
               <MemoFilter className="px-2 my-4" />
 
-              {groupedByMonth.map((group, index) => (
+              {activityStats && Object.keys(activityStats).length > 0 && groupedByMonth.map((group, index) => (
                 <Fragment key={group.month}>
                   <div className={classNames("flex flex-col justify-start items-start w-full mt-2 last:mb-4")}>
-                    <div className={classNames("flex shrink-0 flex-row w-full pl-1 mt-2 mb-2")}>
+                    <div className={classNames("flex shrink-0 flex-row w-full pl-1 mt-2 mb-2", "sticky")}>
                       <div className={classNames("w-full flex flex-col")}>
                         <span className="font-medium text-3xl leading-tight mb-1">
                           {new Date(group.month).toLocaleString(i18n.language, { month: "short", timeZone: "UTC" })}
                         </span>
+                      {selectedDay ? (
+                          <span className="font-medium text-3xl leading-none mb-1">
+                            {new Date(selectedDay).toLocaleDateString(i18n.language, {
+                              month: 'long',
+                              day: 'numeric',
+                              timeZone: "UTC"
+                            })}
+                          </span>
+                        ) : (
+                          <span className="font-medium text-3xl leading-none mb-1">
+                            {new Date().toLocaleDateString(i18n.language, {
+                              month: 'long',
+                              timeZone: "UTC"
+                            })}
+                          </span>
+                        )}
                         <span className="opacity-60">{new Date(group.month).getUTCFullYear()}</span>
                       </div>
-                      <ActivityCalendar month={group.month} data={group.data} onClick={(date) => setSelectedDay(date)} />
+                      <ActivityCalendar month={group.month} data={group.data} onClick={(date) => handleDateClick(date)} selectedDate={selectedDay} />
                     </div>
 
                     <div className={classNames("w-full flex flex-col justify-start items-start")}>
