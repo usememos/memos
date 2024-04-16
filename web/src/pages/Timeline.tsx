@@ -94,7 +94,7 @@ const Timeline = () => {
     currentDate.setUTCDate(currentDate.getUTCDate() + 1);
 
     let found = false;
-    while (currentDate <= new Date(Object.keys(activityStats).sort().reverse()[0])) {
+    while (currentDate < new Date(Object.keys(activityStats).sort().reverse()[0])) {
       const checkDateStr = currentDate.toISOString().substring(0, 10);
       if (activityStats[checkDateStr] && activityStats[checkDateStr] > 0) {
         setSelectedDay(checkDateStr);
@@ -110,39 +110,60 @@ const Timeline = () => {
 
   const handlePrevMonth = () => {
     if (!selectedDay) return;
-    const currentMonth = new Date(selectedDay);
-    currentMonth.setUTCMonth(currentMonth.getUTCMonth() - 1);
 
-    const prevMonthStr = currentMonth.toISOString().substring(0, 7);
-    const datesWithData = Object.keys(activityStats)
-      .filter((date) => date.startsWith(prevMonthStr))
+    const currentDate = new Date(selectedDay);
+    while (currentDate >= new Date(Object.keys(activityStats).sort()[0])) {
+      currentDate.setDate(0);
+      const monthKey = currentDate.toISOString().substring(0, 7);
+      const datesInMonth = Object.keys(activityStats)
+        .filter((date) => date.startsWith(monthKey))
+        .sort();
+      if (datesInMonth.length > 0) {
+        setSelectedDay(datesInMonth[datesInMonth.length - 1]);
+        return;
+      }
+    }
+    const selectDate = new Date(selectedDay);
+    const monthKey = selectDate.toISOString().substring(0, 7);
+    const datesInMonth = Object.keys(activityStats)
+      .filter((date) => date.startsWith(monthKey))
       .sort();
-    if (datesWithData.length > 0) {
-      setSelectedDay(datesWithData[0]);
+    if (selectDate > new Date(datesInMonth[0])) {
+      setSelectedDay(datesInMonth[0]);
     } else {
-      handlePrevDay();
+      toast.error(t("message.no-more-memos"));
     }
   };
+
   const handleNextMonth = () => {
     if (!selectedDay) return;
-    const currentMonth = new Date(selectedDay);
-    currentMonth.setUTCMonth(currentMonth.getUTCMonth() + 1);
-    const nextMonthStr = currentMonth.toISOString().substring(0, 7);
-    const datesWithData = Object.keys(activityStats)
-      .filter((date) => date.startsWith(nextMonthStr))
-      .sort();
-    if (datesWithData.length > 0) {
-      setSelectedDay(datesWithData[0]);
-    } else {
-      const currentMonthStr = selectedDay.substring(0, 7);
-      const datesInCurrentMonth = Object.keys(activityStats)
-        .filter((date) => date.startsWith(currentMonthStr))
+
+    const currentDate = new Date(selectedDay);
+    const sortedDates = Object.keys(activityStats).sort();
+    const lastDate = sortedDates[sortedDates.length - 1];
+    const lastDateObject = new Date(lastDate);
+
+    while (currentDate < lastDateObject) {
+      currentDate.setDate(1);
+      currentDate.setUTCMonth(currentDate.getUTCMonth() + 1);
+      const monthKey = currentDate.toISOString().substring(0, 7);
+      const datesInMonth = Object.keys(activityStats)
+        .filter((date) => date.startsWith(monthKey))
         .sort();
-      if (datesInCurrentMonth.length > 0 && selectedDay !== datesInCurrentMonth[datesInCurrentMonth.length - 1]) {
-        setSelectedDay(datesInCurrentMonth[datesInCurrentMonth.length - 1]);
-      } else {
-        toast.error(t("message.no-more-memos"));
+      if (datesInMonth.length > 0) {
+        setSelectedDay(datesInMonth[0]);
+        return;
       }
+    }
+    const selectDate = new Date(selectedDay);
+    const monthKey = selectDate.toISOString().substring(0, 7);
+    const datesInMonth = Object.keys(activityStats)
+      .filter((date) => date.startsWith(monthKey))
+      .sort();
+    if (selectDate < new Date(datesInMonth[datesInMonth.length - 1])) {
+      setSelectedDay(datesInMonth[datesInMonth.length - 1]);
+    } else {
+      toast.error(t("message.no-more-memos"));
     }
   };
 
