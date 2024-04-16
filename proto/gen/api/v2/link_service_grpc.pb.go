@@ -26,6 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LinkServiceClient interface {
+	// GetLinkMetadata returns metadata for a given link.
 	GetLinkMetadata(ctx context.Context, in *GetLinkMetadataRequest, opts ...grpc.CallOption) (*GetLinkMetadataResponse, error)
 }
 
@@ -50,6 +51,7 @@ func (c *linkServiceClient) GetLinkMetadata(ctx context.Context, in *GetLinkMeta
 // All implementations must embed UnimplementedLinkServiceServer
 // for forward compatibility
 type LinkServiceServer interface {
+	// GetLinkMetadata returns metadata for a given link.
 	GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*GetLinkMetadataResponse, error)
 	mustEmbedUnimplementedLinkServiceServer()
 }

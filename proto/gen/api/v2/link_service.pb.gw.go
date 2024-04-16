@@ -81,7 +81,7 @@ func RegisterLinkServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v2.LinkService/GetLinkMetadata", runtime.WithHTTPPathPattern("/api/v2/link_metadata"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v2.LinkService/GetLinkMetadata", runtime.WithHTTPPathPattern("/api/v2/linkMetadata"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -145,7 +145,7 @@ func RegisterLinkServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v2.LinkService/GetLinkMetadata", runtime.WithHTTPPathPattern("/api/v2/link_metadata"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v2.LinkService/GetLinkMetadata", runtime.WithHTTPPathPattern("/api/v2/linkMetadata"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -165,7 +165,7 @@ func RegisterLinkServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_LinkService_GetLinkMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v2", "link_metadata"}, ""))
+	pattern_LinkService_GetLinkMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v2", "linkMetadata"}, ""))
 )
 
 var (

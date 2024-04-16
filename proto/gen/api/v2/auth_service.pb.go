@@ -111,9 +111,12 @@ type SignInRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Username    string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password    string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	NeverExpire bool   `protobuf:"varint,3,opt,name=never_expire,json=neverExpire,proto3" json:"never_expire,omitempty"`
+	// The username to sign in with.
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	// The password to sign in with.
+	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	// Whether the session should never expire.
+	NeverExpire bool `protobuf:"varint,3,opt,name=never_expire,json=neverExpire,proto3" json:"never_expire,omitempty"`
 }
 
 func (x *SignInRequest) Reset() {
@@ -221,8 +224,11 @@ type SignInWithSSORequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	IdpId       int32  `protobuf:"varint,1,opt,name=idp_id,json=idpId,proto3" json:"idp_id,omitempty"`
-	Code        string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	// The ID of the SSO provider.
+	IdpId int32 `protobuf:"varint,1,opt,name=idp_id,json=idpId,proto3" json:"idp_id,omitempty"`
+	// The code to sign in with.
+	Code string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	// The redirect URI.
 	RedirectUri string `protobuf:"bytes,3,opt,name=redirect_uri,json=redirectUri,proto3" json:"redirect_uri,omitempty"`
 }
 
@@ -331,7 +337,9 @@ type SignUpRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The username to sign up with.
 	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	// The password to sign up with.
 	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 }
 

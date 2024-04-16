@@ -19,7 +19,7 @@ plugins:
     opt:
       - paths=source_relative
   - plugin: buf.build/grpc-ecosystem/openapiv2:v2.19.0
-    out: ../server/route/api/v2/
+    out: ../docs
     opt: output_format=yaml,allow_merge=true
   # Build the TypeScript definitions for the web.
   - plugin: buf.build/community/stephenh-ts-proto:v1.152.1
@@ -33,7 +33,3 @@ plugins:
       - useExactTypes=false
       - esModuleInterop=true
       - stringEnums=true
-  - plugin: buf.build/community/pseudomuto-doc:v1.5.1
-    out: gen
-    opt:
-      - markdown,README.md,source_relative

@@ -50,12 +50,15 @@ service MemoService {
   }
   // ExportMemos exports memos.
   rpc ExportMemos(ExportMemosRequest) returns (ExportMemosResponse) {
-    option (google.api.http) = {post: "/api/v2/memos:export"};
+    option (google.api.http) = {
+      post: "/api/v2/memos:export",
+      body: "*"
+    };
   }
   // SetMemoResources sets resources for a memo.
   rpc SetMemoResources(SetMemoResourcesRequest) returns (SetMemoResourcesResponse) {
     option (google.api.http) = {
-      post: "/api/v2/{name=memos/*}/resources"
+      patch: "/api/v2/{name=memos/*}/resources"
       body: "*"
     };
     option (google.api.method_signature) = "name";
@@ -68,7 +71,7 @@ service MemoService {
   // SetMemoRelations sets relations for a memo.
   rpc SetMemoRelations(SetMemoRelationsRequest) returns (SetMemoRelationsResponse) {
     option (google.api.http) = {
-      post: "/api/v2/{name=memos/*}/relations"
+      patch: "/api/v2/{name=memos/*}/relations"
       body: "*"
     };
     option (google.api.method_signature) = "name";
@@ -80,7 +83,10 @@ service MemoService {
   }
   // CreateMemoComment creates a comment for a memo.
   rpc CreateMemoComment(CreateMemoCommentRequest) returns (CreateMemoCommentResponse) {
-    option (google.api.http) = {post: "/api/v2/{name=memos/*}/comments"};
+    option (google.api.http) = {
+      post: "/api/v2/{name=memos/*}/comments",
+      body: "*"
+    };
     option (google.api.method_signature) = "name";
   }
   // ListMemoComments lists comments for a memo.
@@ -100,7 +106,10 @@ service MemoService {
   }
   // UpsertMemoReaction upserts a reaction for a memo.
   rpc UpsertMemoReaction(UpsertMemoReactionRequest) returns (UpsertMemoReactionResponse) {
-    option (google.api.http) = {post: "/api/v2/{name=memos/*}/reactions"};
+    option (google.api.http) = {
+      post: "/api/v2/{name=memos/*}/reactions",
+      body: "*"
+    };
     option (google.api.method_signature) = "name";
   }
   // DeleteMemoReaction deletes a reaction for a memo.
@@ -112,11 +121,8 @@ service MemoService {
 
 enum Visibility {
   VISIBILITY_UNSPECIFIED = 0;
-
   PRIVATE = 1;
-
   PROTECTED = 2;
-
   PUBLIC = 3;
 }
 

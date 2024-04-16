@@ -37,8 +37,11 @@ message GetAuthStatusResponse {
 }
 
 message SignInRequest {
+  // The username to sign in with.
   string username = 1;
+  // The password to sign in with.
   string password = 2;
+  // Whether the session should never expire.
   bool never_expire = 3;
 }
 
@@ -47,8 +50,11 @@ message SignInResponse {
 }
 
 message SignInWithSSORequest {
+  // The ID of the SSO provider.
   int32 idp_id = 1;
+  // The code to sign in with.
   string code = 2;
+  // The redirect URI.
   string redirect_uri = 3;
 }
 
@@ -57,7 +63,9 @@ message SignInWithSSOResponse {
 }
 
 message SignUpRequest {
+  // The username to sign up with.
   string username = 1;
+  // The password to sign up with.
   string password = 2;
 }
 

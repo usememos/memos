@@ -30,8 +30,11 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type IdentityProviderServiceClient interface {
+	// ListIdentityProviders lists identity providers.
 	ListIdentityProviders(ctx context.Context, in *ListIdentityProvidersRequest, opts ...grpc.CallOption) (*ListIdentityProvidersResponse, error)
+	// GetIdentityProvider gets an identity provider.
 	GetIdentityProvider(ctx context.Context, in *GetIdentityProviderRequest, opts ...grpc.CallOption) (*GetIdentityProviderResponse, error)
+	// CreateIdentityProvider creates an identity provider.
 	CreateIdentityProvider(ctx context.Context, in *CreateIdentityProviderRequest, opts ...grpc.CallOption) (*CreateIdentityProviderResponse, error)
 	// UpdateIdentityProvider updates an identity provider.
 	UpdateIdentityProvider(ctx context.Context, in *UpdateIdentityProviderRequest, opts ...grpc.CallOption) (*UpdateIdentityProviderResponse, error)
@@ -96,8 +99,11 @@ func (c *identityProviderServiceClient) DeleteIdentityProvider(ctx context.Conte
 // All implementations must embed UnimplementedIdentityProviderServiceServer
 // for forward compatibility
 type IdentityProviderServiceServer interface {
+	// ListIdentityProviders lists identity providers.
 	ListIdentityProviders(context.Context, *ListIdentityProvidersRequest) (*ListIdentityProvidersResponse, error)
+	// GetIdentityProvider gets an identity provider.
 	GetIdentityProvider(context.Context, *GetIdentityProviderRequest) (*GetIdentityProviderResponse, error)
+	// CreateIdentityProvider creates an identity provider.
 	CreateIdentityProvider(context.Context, *CreateIdentityProviderRequest) (*CreateIdentityProviderResponse, error)
 	// UpdateIdentityProvider updates an identity provider.
 	UpdateIdentityProvider(context.Context, *UpdateIdentityProviderRequest) (*UpdateIdentityProviderResponse, error)

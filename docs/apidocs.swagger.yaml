@@ -36,14 +36,17 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: username
+          description: The username to sign in with.
           in: query
           required: false
           type: string
         - name: password
+          description: The password to sign in with.
           in: query
           required: false
           type: string
         - name: neverExpire
+          description: Whether the session should never expire.
           in: query
           required: false
           type: boolean
@@ -64,15 +67,18 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: idpId
+          description: The ID of the SSO provider.
           in: query
           required: false
           type: integer
           format: int32
         - name: code
+          description: The code to sign in with.
           in: query
           required: false
           type: string
         - name: redirectUri
+          description: The redirect URI.
           in: query
           required: false
           type: string
@@ -108,10 +114,12 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: username
+          description: The username to sign up with.
           in: query
           required: false
           type: string
         - name: password
+          description: The password to sign up with.
           in: query
           required: false
           type: string
@@ -134,6 +142,7 @@ paths:
         - AuthService
   /api/v2/identityProviders:
     get:
+      summary: ListIdentityProviders lists identity providers.
       operationId: IdentityProviderService_ListIdentityProviders
       responses:
         "200":
@@ -147,6 +156,7 @@ paths:
       tags:
         - IdentityProviderService
     post:
+      summary: CreateIdentityProvider creates an identity provider.
       operationId: IdentityProviderService_CreateIdentityProvider
       responses:
         "200":
@@ -158,68 +168,12 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: identityProvider.name
-          description: |-
-            The name of the identityProvider.
-            Format: identityProviders/{id}
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.type
-          in: query
-          required: false
-          type: string
-          enum:
-            - TYPE_UNSPECIFIED
-            - OAUTH2
-          default: TYPE_UNSPECIFIED
-        - name: identityProvider.title
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.identifierFilter
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.config.oauth2Config.clientId
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.config.oauth2Config.clientSecret
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.config.oauth2Config.authUrl
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.config.oauth2Config.tokenUrl
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.config.oauth2Config.userInfoUrl
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.config.oauth2Config.scopes
-          in: query
-          required: false
-          type: array
-          items:
-            type: string
-          collectionFormat: multi
-        - name: identityProvider.config.oauth2Config.fieldMapping.identifier
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.config.oauth2Config.fieldMapping.displayName
-          in: query
-          required: false
-          type: string
-        - name: identityProvider.config.oauth2Config.fieldMapping.email
-          in: query
-          required: false
-          type: string
+        - name: identityProvider
+          description: The identityProvider to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiv2IdentityProvider'
       tags:
         - IdentityProviderService
   /api/v2/inboxes:
@@ -243,8 +197,9 @@ paths:
           type: string
       tags:
         - InboxService
-  /api/v2/link_metadata:
+  /api/v2/linkMetadata:
     get:
+      summary: GetLinkMetadata returns metadata for a given link.
       operationId: LinkService_GetLinkMetadata
       responses:
         "200":
@@ -368,11 +323,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: filter
-          description: Same as ListMemosRequest.filter
-          in: query
-          required: false
-          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2ExportMemosRequest'
       tags:
         - MemoService
   /api/v2/memos:search:
@@ -447,53 +402,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: resource.name
-          description: |-
-            The name of the resource.
-            Format: resources/{id}
-            id is the system generated unique identifier.
-          in: query
-          required: false
-          type: string
-        - name: resource.uid
-          description: The user defined id of the resource.
-          in: query
-          required: false
-          type: string
-        - name: resource.createTime
-          in: query
-          required: false
-          type: string
-          format: date-time
-        - name: resource.filename
-          in: query
-          required: false
-          type: string
-        - name: resource.content
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: resource.externalLink
-          in: query
-          required: false
-          type: string
-        - name: resource.type
-          in: query
-          required: false
-          type: string
-        - name: resource.size
-          in: query
-          required: false
-          type: string
-          format: int64
-        - name: resource.memo
-          description: |-
-            The related memo.
-            Format: memos/{id}
-          in: query
-          required: false
-          type: string
+        - name: resource
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2Resource'
       tags:
         - ResourceService
   /api/v2/resources:search:
@@ -679,10 +592,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name
-          in: query
-          required: false
-          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2UpsertTagRequest'
       tags:
         - TagService
   /api/v2/tags/suggestion:
@@ -721,6 +635,12 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2BatchUpsertTagRequest'
       tags:
         - TagService
   /api/v2/tags:rename:
@@ -739,21 +659,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user
-          description: |-
-            The creator of tags.
-            Format: users/{id}
-          in: query
-          required: false
-          type: string
-        - name: oldName
-          in: query
-          required: false
-          type: string
-        - name: newName
-          in: query
-          required: false
-          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v2RenameTagRequest'
       tags:
         - TagService
   /api/v2/users:
@@ -1196,6 +1106,7 @@ paths:
         - MemoService
   /api/v2/{name_1}:
     get:
+      summary: GetIdentityProvider gets an identity provider.
       operationId: IdentityProviderService_GetIdentityProvider
       responses:
         "200":
@@ -1533,20 +1444,11 @@ paths:
           required: true
           type: string
           pattern: memos/[^/]+
-        - name: comment.content
-          in: query
-          required: false
-          type: string
-        - name: comment.visibility
-          in: query
-          required: false
-          type: string
-          enum:
-            - VISIBILITY_UNSPECIFIED
-            - PRIVATE
-            - PROTECTED
-            - PUBLIC
-          default: VISIBILITY_UNSPECIFIED
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceCreateMemoCommentBody'
       tags:
         - MemoService
   /api/v2/{name}/reactions:
@@ -1594,41 +1496,11 @@ paths:
           required: true
           type: string
           pattern: memos/[^/]+
-        - name: reaction.id
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: reaction.creator
-          description: |-
-            The name of the creator.
-            Format: users/{id}
-          in: query
-          required: false
-          type: string
-        - name: reaction.contentId
-          in: query
-          required: false
-          type: string
-        - name: reaction.reactionType
-          in: query
-          required: false
-          type: string
-          enum:
-            - TYPE_UNSPECIFIED
-            - THUMBS_UP
-            - THUMBS_DOWN
-            - HEART
-            - FIRE
-            - CLAPPING_HANDS
-            - LAUGH
-            - OK_HAND
-            - ROCKET
-            - EYES
-            - THINKING_FACE
-            - CLOWN_FACE
-            - QUESTION_MARK
-          default: TYPE_UNSPECIFIED
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceUpsertMemoReactionBody'
       tags:
         - MemoService
   /api/v2/{name}/relations:
@@ -1655,7 +1527,7 @@ paths:
           pattern: memos/[^/]+
       tags:
         - MemoService
-    post:
+    patch:
       summary: SetMemoRelations sets relations for a memo.
       operationId: MemoService_SetMemoRelations
       responses:
@@ -1707,7 +1579,7 @@ paths:
           pattern: memos/[^/]+
       tags:
         - MemoService
-    post:
+    patch:
       summary: SetMemoResources sets resources for a memo.
       operationId: MemoService_SetMemoResources
       responses:
@@ -1924,6 +1796,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: id
+          description: The system-generated unique identifier for the activity.
           in: path
           required: true
           type: integer
@@ -1931,6 +1804,11 @@ paths:
       tags:
         - ActivityService
 definitions:
+  MemoServiceCreateMemoCommentBody:
+    type: object
+    properties:
+      comment:
+        $ref: '#/definitions/v2CreateMemoRequest'
   MemoServiceSetMemoRelationsBody:
     type: object
     properties:
@@ -1947,6 +1825,11 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v2Resource'
+  MemoServiceUpsertMemoReactionBody:
+    type: object
+    properties:
+      reaction:
+        $ref: '#/definitions/v2Reaction'
   UserRole:
     type: string
     enum:
@@ -1969,9 +1852,12 @@ definitions:
       memoId:
         type: integer
         format: int32
+        description: The memo id of comment.
       relatedMemoId:
         type: integer
         format: int32
+        description: The memo id of related memo.
+    description: ActivityMemoCommentPayload represents the payload of a memo comment activity.
   apiv2ActivityPayload:
     type: object
     properties:
@@ -1984,6 +1870,7 @@ definitions:
     properties:
       version:
         type: string
+        description: The updated version of memos.
   apiv2FieldMapping:
     type: object
     properties:
@@ -2213,18 +2100,33 @@ definitions:
       id:
         type: integer
         format: int32
+        description: The system-generated unique identifier for the activity.
       creatorId:
         type: integer
         format: int32
+        description: The system-generated unique identifier for the user who created the activity.
       type:
         type: string
+        description: The type of the activity.
       level:
         type: string
+        description: The level of the activity.
       createTime:
         type: string
         format: date-time
+        description: The create time of the activity.
+        readOnly: true
       payload:
         $ref: '#/definitions/apiv2ActivityPayload'
+        description: The payload of the activity.
+  v2BatchUpsertTagRequest:
+    type: object
+    properties:
+      requests:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v2UpsertTagRequest'
   v2BatchUpsertTagResponse:
     type: object
   v2CreateIdentityProviderResponse:
@@ -2307,6 +2209,12 @@ definitions:
     type: object
   v2DeleteWebhookResponse:
     type: object
+  v2ExportMemosRequest:
+    type: object
+    properties:
+      filter:
+        type: string
+        title: Same as ListMemosRequest.filter
   v2ExportMemosResponse:
     type: object
     properties:
@@ -2666,6 +2574,18 @@ definitions:
       - CLOWN_FACE
       - QUESTION_MARK
     default: TYPE_UNSPECIFIED
+  v2RenameTagRequest:
+    type: object
+    properties:
+      user:
+        type: string
+        title: |-
+          The creator of tags.
+          Format: users/{id}
+      oldName:
+        type: string
+      newName:
+        type: string
   v2RenameTagResponse:
     type: object
     properties:

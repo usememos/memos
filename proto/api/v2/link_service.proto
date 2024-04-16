@@ -7,8 +7,9 @@ import "google/api/annotations.proto";
 option go_package = "gen/api/v2";
 
 service LinkService {
+  // GetLinkMetadata returns metadata for a given link.
   rpc GetLinkMetadata(GetLinkMetadataRequest) returns (GetLinkMetadataResponse) {
-    option (google.api.http) = {get: "/api/v2/link_metadata"};
+    option (google.api.http) = {get: "/api/v2/linkMetadata"};
   }
 }
 

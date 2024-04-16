@@ -16,18 +16,15 @@ service UserService {
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
     option (google.api.http) = {get: "/api/v2/users"};
   }
-
   // SearchUsers searches users by filter.
   rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {
     option (google.api.http) = {get: "/api/v2/users:search"};
   }
-
   // GetUser gets a user by name.
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {get: "/api/v2/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
-
   // CreateUser creates a new user.
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
@@ -36,7 +33,6 @@ service UserService {
     };
     option (google.api.method_signature) = "user";
   }
-
   // UpdateUser updates a user.
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
@@ -45,19 +41,16 @@ service UserService {
     };
     option (google.api.method_signature) = "user,update_mask";
   }
-
   // DeleteUser deletes a user.
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
     option (google.api.http) = {delete: "/api/v2/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
-
   // GetUserSetting gets the setting of a user.
   rpc GetUserSetting(GetUserSettingRequest) returns (GetUserSettingResponse) {
     option (google.api.http) = {get: "/api/v2/{name=users/*}/setting"};
     option (google.api.method_signature) = "name";
   }
-
   // UpdateUserSetting updates the setting of a user.
   rpc UpdateUserSetting(UpdateUserSettingRequest) returns (UpdateUserSettingResponse) {
     option (google.api.http) = {
@@ -66,13 +59,11 @@ service UserService {
     };
     option (google.api.method_signature) = "setting,update_mask";
   }
-
   // ListUserAccessTokens returns a list of access tokens for a user.
   rpc ListUserAccessTokens(ListUserAccessTokensRequest) returns (ListUserAccessTokensResponse) {
     option (google.api.http) = {get: "/api/v2/{name=users/*}/access_tokens"};
     option (google.api.method_signature) = "name";
   }
-
   // CreateUserAccessToken creates a new access token for a user.
   rpc CreateUserAccessToken(CreateUserAccessTokenRequest) returns (CreateUserAccessTokenResponse) {
     option (google.api.http) = {
@@ -81,7 +72,6 @@ service UserService {
     };
     option (google.api.method_signature) = "name";
   }
-
   // DeleteUserAccessToken deletes an access token for a user.
   rpc DeleteUserAccessToken(DeleteUserAccessTokenRequest) returns (DeleteUserAccessTokenResponse) {
     option (google.api.http) = {delete: "/api/v2/{name=users/*}/access_tokens/{access_token}"};
