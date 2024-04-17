@@ -25,7 +25,7 @@ func New(driver Driver, profile *profile.Profile) *Store {
 	}
 }
 
-func (s *Store) MigrateManually(ctx context.Context) error {
+func (*Store) MigrateManually(context.Context) error {
 	return nil
 }
 
