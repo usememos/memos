@@ -72,7 +72,7 @@ func (s *APIV2Service) SignIn(ctx context.Context, request *apiv2pb.SignInReques
 }
 
 func (s *APIV2Service) SignInWithSSO(ctx context.Context, request *apiv2pb.SignInWithSSORequest) (*apiv2pb.SignInWithSSOResponse, error) {
-	identityProvider, err := s.Store.GetIdentityProviderV1(ctx, &store.FindIdentityProvider{
+	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
 		ID: &request.IdpId,
 	})
 	if err != nil {

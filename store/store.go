@@ -14,8 +14,7 @@ type Store struct {
 	workspaceSettingCache sync.Map // map[string]*storepb.WorkspaceSetting
 	userCache             sync.Map // map[int]*User
 	userSettingCache      sync.Map // map[string]*UserSetting
-	idpCache              sync.Map // map[int]*IdentityProvider
-	idpV1Cache            sync.Map // map[int]*storepb.IdentityProvider
+	idpCache              sync.Map // map[int]*storepb.IdentityProvider
 }
 
 // New creates a new instance of Store.
@@ -27,9 +26,6 @@ func New(driver Driver, profile *profile.Profile) *Store {
 }
 
 func (s *Store) MigrateManually(ctx context.Context) error {
-	if err := s.MigrateWorkspaceSetting(ctx); err != nil {
-		return err
-	}
 	return nil
 }
 

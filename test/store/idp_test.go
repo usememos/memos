@@ -13,7 +13,7 @@ import (
 func TestIdentityProviderStore(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
-	createdIDP, err := ts.CreateIdentityProviderV1(ctx, &storepb.IdentityProvider{
+	createdIDP, err := ts.CreateIdentityProvider(ctx, &storepb.IdentityProvider{
 		Name:             "GitHub OAuth",
 		Type:             storepb.IdentityProvider_OAUTH2,
 		IdentifierFilter: "",
@@ -36,14 +36,14 @@ func TestIdentityProviderStore(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	idp, err := ts.GetIdentityProviderV1(ctx, &store.FindIdentityProvider{
+	idp, err := ts.GetIdentityProvider(ctx, &store.FindIdentityProvider{
 		ID: &createdIDP.Id,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, idp)
 	require.Equal(t, createdIDP, idp)
 	newName := "My GitHub OAuth"
-	updatedIdp, err := ts.UpdateIdentityProviderV1(ctx, &store.UpdateIdentityProviderV1{
+	updatedIdp, err := ts.UpdateIdentityProvider(ctx, &store.UpdateIdentityProviderV1{
 		ID:   idp.Id,
 		Name: &newName,
 	})
@@ -53,7 +53,7 @@ func TestIdentityProviderStore(t *testing.T) {
 		ID: idp.Id,
 	})
 	require.NoError(t, err)
-	idpList, err := ts.ListIdentityProvidersV1(ctx, &store.FindIdentityProvider{})
+	idpList, err := ts.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(idpList))
 	ts.Close()

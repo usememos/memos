@@ -21,7 +21,7 @@ func (s *APIV2Service) CreateIdentityProvider(ctx context.Context, request *apiv
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	identityProvider, err := s.Store.CreateIdentityProviderV1(ctx, convertIdentityProviderToStore(request.IdentityProvider))
+	identityProvider, err := s.Store.CreateIdentityProvider(ctx, convertIdentityProviderToStore(request.IdentityProvider))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create identity provider, error: %+v", err)
 	}
@@ -31,7 +31,7 @@ func (s *APIV2Service) CreateIdentityProvider(ctx context.Context, request *apiv
 }
 
 func (s *APIV2Service) ListIdentityProviders(ctx context.Context, _ *apiv2pb.ListIdentityProvidersRequest) (*apiv2pb.ListIdentityProvidersResponse, error) {
-	identityProviders, err := s.Store.ListIdentityProvidersV1(ctx, &store.FindIdentityProvider{})
+	identityProviders, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list identity providers, error: %+v", err)
 	}
@@ -50,7 +50,7 @@ func (s *APIV2Service) GetIdentityProvider(ctx context.Context, request *apiv2pb
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
 	}
-	identityProvider, err := s.Store.GetIdentityProviderV1(ctx, &store.FindIdentityProvider{
+	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
 		ID: &id,
 	})
 	if err != nil {
@@ -86,7 +86,7 @@ func (s *APIV2Service) UpdateIdentityProvider(ctx context.Context, request *apiv
 		}
 	}
 
-	identityProvider, err := s.Store.UpdateIdentityProviderV1(ctx, update)
+	identityProvider, err := s.Store.UpdateIdentityProvider(ctx, update)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update identity provider, error: %+v", err)
 	}

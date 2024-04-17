@@ -13,7 +13,7 @@ import (
 )
 
 func (s *APIV2Service) ListWorkspaceSettings(ctx context.Context, _ *apiv2pb.ListWorkspaceSettingsRequest) (*apiv2pb.ListWorkspaceSettingsResponse, error) {
-	workspaceSettings, err := s.Store.ListWorkspaceSettingsV1(ctx, &store.FindWorkspaceSetting{})
+	workspaceSettings, err := s.Store.ListWorkspaceSettings(ctx, &store.FindWorkspaceSetting{})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get workspace setting: %v", err)
 	}
@@ -36,7 +36,7 @@ func (s *APIV2Service) GetWorkspaceSetting(ctx context.Context, request *apiv2pb
 		return nil, status.Errorf(codes.InvalidArgument, "invalid workspace setting name: %v", err)
 	}
 	settingKey := storepb.WorkspaceSettingKey(storepb.WorkspaceSettingKey_value[settingKeyString])
-	workspaceSetting, err := s.Store.GetWorkspaceSettingV1(ctx, &store.FindWorkspaceSetting{
+	workspaceSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
 		Name: settingKey.String(),
 	})
 	if err != nil {
@@ -64,7 +64,7 @@ func (s *APIV2Service) SetWorkspaceSetting(ctx context.Context, request *apiv2pb
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	if _, err := s.Store.UpsertWorkspaceSettingV1(ctx, convertWorkspaceSettingToStore(request.Setting)); err != nil {
+	if _, err := s.Store.UpsertWorkspaceSetting(ctx, convertWorkspaceSettingToStore(request.Setting)); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert workspace setting: %v", err)
 	}
 

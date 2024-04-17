@@ -30,35 +30,7 @@ type DeleteStorage struct {
 	ID int32
 }
 
-func (s *Store) CreateStorage(ctx context.Context, create *Storage) (*Storage, error) {
-	return s.driver.CreateStorage(ctx, create)
-}
-
-func (s *Store) ListStorages(ctx context.Context, find *FindStorage) ([]*Storage, error) {
-	return s.driver.ListStorages(ctx, find)
-}
-
-func (s *Store) GetStorage(ctx context.Context, find *FindStorage) (*Storage, error) {
-	list, err := s.ListStorages(ctx, find)
-	if err != nil {
-		return nil, err
-	}
-	if len(list) == 0 {
-		return nil, nil
-	}
-
-	return list[0], nil
-}
-
-func (s *Store) UpdateStorage(ctx context.Context, update *UpdateStorage) (*Storage, error) {
-	return s.driver.UpdateStorage(ctx, update)
-}
-
-func (s *Store) DeleteStorage(ctx context.Context, delete *DeleteStorage) error {
-	return s.driver.DeleteStorage(ctx, delete)
-}
-
-func (s *Store) CreateStorageV1(ctx context.Context, create *storepb.Storage) (*storepb.Storage, error) {
+func (s *Store) CreateStorage(ctx context.Context, create *storepb.Storage) (*storepb.Storage, error) {
 	storageRaw := &Storage{
 		Name: create.Name,
 		Type: create.Type.String(),
@@ -83,7 +55,7 @@ func (s *Store) CreateStorageV1(ctx context.Context, create *storepb.Storage) (*
 	return storage, nil
 }
 
-func (s *Store) ListStoragesV1(ctx context.Context, find *FindStorage) ([]*storepb.Storage, error) {
+func (s *Store) ListStorages(ctx context.Context, find *FindStorage) ([]*storepb.Storage, error) {
 	list, err := s.driver.ListStorages(ctx, find)
 	if err != nil {
 		return nil, err
@@ -100,8 +72,8 @@ func (s *Store) ListStoragesV1(ctx context.Context, find *FindStorage) ([]*store
 	return storages, nil
 }
 
-func (s *Store) GetStorageV1(ctx context.Context, find *FindStorage) (*storepb.Storage, error) {
-	list, err := s.ListStoragesV1(ctx, find)
+func (s *Store) GetStorage(ctx context.Context, find *FindStorage) (*storepb.Storage, error) {
+	list, err := s.ListStorages(ctx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +91,7 @@ type UpdateStorageV1 struct {
 	Config *storepb.StorageConfig
 }
 
-func (s *Store) UpdateStorageV1(ctx context.Context, update *UpdateStorageV1) (*storepb.Storage, error) {
+func (s *Store) UpdateStorage(ctx context.Context, update *UpdateStorageV1) (*storepb.Storage, error) {
 	updateRaw := &UpdateStorage{
 		ID: update.ID,
 	}
@@ -142,6 +114,10 @@ func (s *Store) UpdateStorageV1(ctx context.Context, update *UpdateStorageV1) (*
 		return nil, err
 	}
 	return storage, nil
+}
+
+func (s *Store) DeleteStorage(ctx context.Context, delete *DeleteStorage) error {
+	return s.driver.DeleteStorage(ctx, delete)
 }
 
 func convertStorageFromRaw(storageRaw *Storage) (*storepb.Storage, error) {

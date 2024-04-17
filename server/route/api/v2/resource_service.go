@@ -296,7 +296,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		if workspaceStorageSetting.ActivedExternalStorageId == nil {
 			return errors.Errorf("No actived external storage found")
 		}
-		storage, err := s.GetStorageV1(ctx, &store.FindStorage{ID: workspaceStorageSetting.ActivedExternalStorageId})
+		storage, err := s.GetStorage(ctx, &store.FindStorage{ID: workspaceStorageSetting.ActivedExternalStorageId})
 		if err != nil {
 			return errors.Wrap(err, "Failed to find actived external storage")
 		}

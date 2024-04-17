@@ -23,41 +23,7 @@ type DeleteWorkspaceSetting struct {
 	Name string
 }
 
-func (s *Store) UpsertWorkspaceSetting(ctx context.Context, upsert *WorkspaceSetting) (*WorkspaceSetting, error) {
-	return s.driver.UpsertWorkspaceSetting(ctx, upsert)
-}
-
-func (s *Store) ListWorkspaceSettings(ctx context.Context, find *FindWorkspaceSetting) ([]*WorkspaceSetting, error) {
-	list, err := s.driver.ListWorkspaceSettings(ctx, find)
-	if err != nil {
-		return nil, err
-	}
-	return list, nil
-}
-
-func (s *Store) GetWorkspaceSetting(ctx context.Context, find *FindWorkspaceSetting) (*WorkspaceSetting, error) {
-	list, err := s.ListWorkspaceSettings(ctx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(list) == 0 {
-		return nil, nil
-	}
-
-	systemSettingMessage := list[0]
-	return systemSettingMessage, nil
-}
-
-func (s *Store) DeleteWorkspaceSetting(ctx context.Context, delete *DeleteWorkspaceSetting) error {
-	err := s.driver.DeleteWorkspaceSetting(ctx, delete)
-	if err != nil {
-		return errors.Wrap(err, "Failed to delete workspace setting")
-	}
-	return nil
-}
-
-func (s *Store) UpsertWorkspaceSettingV1(ctx context.Context, upsert *storepb.WorkspaceSetting) (*storepb.WorkspaceSetting, error) {
+func (s *Store) UpsertWorkspaceSetting(ctx context.Context, upsert *storepb.WorkspaceSetting) (*storepb.WorkspaceSetting, error) {
 	workspaceSettingRaw := &WorkspaceSetting{
 		Name: upsert.Key.String(),
 	}
@@ -91,7 +57,7 @@ func (s *Store) UpsertWorkspaceSettingV1(ctx context.Context, upsert *storepb.Wo
 	return workspaceSetting, nil
 }
 
-func (s *Store) ListWorkspaceSettingsV1(ctx context.Context, find *FindWorkspaceSetting) ([]*storepb.WorkspaceSetting, error) {
+func (s *Store) ListWorkspaceSettings(ctx context.Context, find *FindWorkspaceSetting) ([]*storepb.WorkspaceSetting, error) {
 	list, err := s.driver.ListWorkspaceSettings(ctx, find)
 	if err != nil {
 		return nil, err
@@ -109,12 +75,12 @@ func (s *Store) ListWorkspaceSettingsV1(ctx context.Context, find *FindWorkspace
 	return workspaceSettings, nil
 }
 
-func (s *Store) GetWorkspaceSettingV1(ctx context.Context, find *FindWorkspaceSetting) (*storepb.WorkspaceSetting, error) {
+func (s *Store) GetWorkspaceSetting(ctx context.Context, find *FindWorkspaceSetting) (*storepb.WorkspaceSetting, error) {
 	if cache, ok := s.workspaceSettingCache.Load(find.Name); ok {
 		return cache.(*storepb.WorkspaceSetting), nil
 	}
 
-	list, err := s.ListWorkspaceSettingsV1(ctx, find)
+	list, err := s.ListWorkspaceSettings(ctx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +94,7 @@ func (s *Store) GetWorkspaceSettingV1(ctx context.Context, find *FindWorkspaceSe
 }
 
 func (s *Store) GetWorkspaceBasicSetting(ctx context.Context) (*storepb.WorkspaceBasicSetting, error) {
-	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
+	workspaceSetting, err := s.GetWorkspaceSetting(ctx, &FindWorkspaceSetting{
 		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC.String(),
 	})
 	if err != nil {
@@ -143,7 +109,7 @@ func (s *Store) GetWorkspaceBasicSetting(ctx context.Context) (*storepb.Workspac
 }
 
 func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.WorkspaceGeneralSetting, error) {
-	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
+	workspaceSetting, err := s.GetWorkspaceSetting(ctx, &FindWorkspaceSetting{
 		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String(),
 	})
 	if err != nil {
@@ -158,7 +124,7 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 }
 
 func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.WorkspaceMemoRelatedSetting, error) {
-	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
+	workspaceSetting, err := s.GetWorkspaceSetting(ctx, &FindWorkspaceSetting{
 		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED.String(),
 	})
 	if err != nil {
@@ -179,7 +145,7 @@ const (
 )
 
 func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.WorkspaceStorageSetting, error) {
-	workspaceSetting, err := s.GetWorkspaceSettingV1(ctx, &FindWorkspaceSetting{
+	workspaceSetting, err := s.GetWorkspaceSetting(ctx, &FindWorkspaceSetting{
 		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE.String(),
 	})
 	if err != nil {

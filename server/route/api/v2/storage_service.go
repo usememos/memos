@@ -20,7 +20,7 @@ func (s *APIV2Service) CreateStorage(ctx context.Context, request *apiv2pb.Creat
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	storage, err := s.Store.CreateStorageV1(ctx, convertStorageToStore(request.Storage))
+	storage, err := s.Store.CreateStorage(ctx, convertStorageToStore(request.Storage))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create storage, error: %+v", err)
 	}
@@ -30,7 +30,7 @@ func (s *APIV2Service) CreateStorage(ctx context.Context, request *apiv2pb.Creat
 }
 
 func (s *APIV2Service) ListStorages(ctx context.Context, _ *apiv2pb.ListStoragesRequest) (*apiv2pb.ListStoragesResponse, error) {
-	storages, err := s.Store.ListStoragesV1(ctx, &store.FindStorage{})
+	storages, err := s.Store.ListStorages(ctx, &store.FindStorage{})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list storages, error: %+v", err)
 	}
@@ -45,7 +45,7 @@ func (s *APIV2Service) ListStorages(ctx context.Context, _ *apiv2pb.ListStorages
 }
 
 func (s *APIV2Service) GetStorage(ctx context.Context, request *apiv2pb.GetStorageRequest) (*apiv2pb.GetStorageResponse, error) {
-	storage, err := s.Store.GetStorageV1(ctx, &store.FindStorage{
+	storage, err := s.Store.GetStorage(ctx, &store.FindStorage{
 		ID: &request.Id,
 	})
 	if err != nil {
@@ -77,7 +77,7 @@ func (s *APIV2Service) UpdateStorage(ctx context.Context, request *apiv2pb.Updat
 		}
 	}
 
-	storage, err := s.Store.UpdateStorageV1(ctx, update)
+	storage, err := s.Store.UpdateStorage(ctx, update)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update storage, error: %+v", err)
 	}

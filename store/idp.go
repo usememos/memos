@@ -32,7 +32,7 @@ type DeleteIdentityProvider struct {
 	ID int32
 }
 
-func (s *Store) CreateIdentityProviderV1(ctx context.Context, create *storepb.IdentityProvider) (*storepb.IdentityProvider, error) {
+func (s *Store) CreateIdentityProvider(ctx context.Context, create *storepb.IdentityProvider) (*storepb.IdentityProvider, error) {
 	raw, err := convertIdentityProviderToRaw(create)
 	if err != nil {
 		return nil, err
@@ -46,11 +46,11 @@ func (s *Store) CreateIdentityProviderV1(ctx context.Context, create *storepb.Id
 	if err != nil {
 		return nil, err
 	}
-	s.idpV1Cache.Store(identityProvider.Id, identityProvider)
+	s.idpCache.Store(identityProvider.Id, identityProvider)
 	return identityProvider, nil
 }
 
-func (s *Store) ListIdentityProvidersV1(ctx context.Context, find *FindIdentityProvider) ([]*storepb.IdentityProvider, error) {
+func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityProvider) ([]*storepb.IdentityProvider, error) {
 	list, err := s.driver.ListIdentityProviders(ctx, find)
 	if err != nil {
 		return nil, err
@@ -62,19 +62,19 @@ func (s *Store) ListIdentityProvidersV1(ctx context.Context, find *FindIdentityP
 		if err != nil {
 			return nil, err
 		}
-		s.idpV1Cache.Store(identityProvider.Id, identityProvider)
+		s.idpCache.Store(identityProvider.Id, identityProvider)
 	}
 	return identityProviders, nil
 }
 
-func (s *Store) GetIdentityProviderV1(ctx context.Context, find *FindIdentityProvider) (*storepb.IdentityProvider, error) {
+func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProvider) (*storepb.IdentityProvider, error) {
 	if find.ID != nil {
-		if cache, ok := s.idpV1Cache.Load(*find.ID); ok {
+		if cache, ok := s.idpCache.Load(*find.ID); ok {
 			return cache.(*storepb.IdentityProvider), nil
 		}
 	}
 
-	list, err := s.ListIdentityProvidersV1(ctx, find)
+	list, err := s.ListIdentityProviders(ctx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ type UpdateIdentityProviderV1 struct {
 	Config           *storepb.IdentityProviderConfig
 }
 
-func (s *Store) UpdateIdentityProviderV1(ctx context.Context, update *UpdateIdentityProviderV1) (*storepb.IdentityProvider, error) {
+func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProviderV1) (*storepb.IdentityProvider, error) {
 	updateRaw := &UpdateIdentityProvider{
 		ID: update.ID,
 	}
@@ -123,7 +123,7 @@ func (s *Store) UpdateIdentityProviderV1(ctx context.Context, update *UpdateIden
 	if err != nil {
 		return nil, err
 	}
-	s.idpV1Cache.Store(identityProvider.Id, identityProvider)
+	s.idpCache.Store(identityProvider.Id, identityProvider)
 	return identityProvider, nil
 }
 

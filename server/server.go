@@ -133,7 +133,7 @@ func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb
 		modified = true
 	}
 	if modified {
-		workspaceSetting, err := s.Store.UpsertWorkspaceSettingV1(ctx, &storepb.WorkspaceSetting{
+		workspaceSetting, err := s.Store.UpsertWorkspaceSetting(ctx, &storepb.WorkspaceSetting{
 			Key:   storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC,
 			Value: &storepb.WorkspaceSetting_BasicSetting{BasicSetting: workspaceBasicSetting},
 		})

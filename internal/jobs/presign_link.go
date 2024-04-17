@@ -103,7 +103,7 @@ func findObjectStorage(ctx context.Context, dataStore *store.Store) (*s3.Client,
 	if workspaceStorageSetting.StorageType != storepb.WorkspaceStorageSetting_STORAGE_TYPE_EXTERNAL || workspaceStorageSetting.ActivedExternalStorageId == nil {
 		return nil, nil
 	}
-	storage, err := dataStore.GetStorageV1(ctx, &store.FindStorage{ID: workspaceStorageSetting.ActivedExternalStorageId})
+	storage, err := dataStore.GetStorage(ctx, &store.FindStorage{ID: workspaceStorageSetting.ActivedExternalStorageId})
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to find storage")
 	}
