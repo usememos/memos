@@ -3,13 +3,10 @@ package v2
 import (
 	"context"
 	"fmt"
-	"log/slog"
-	"net"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -38,27 +35,17 @@ type APIV2Service struct {
 	Profile *profile.Profile
 	Store   *store.Store
 
-	grpcServer     *grpc.Server
-	grpcServerPort int
+	grpcServer *grpc.Server
 }
 
-func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store, grpcServerPort int) *APIV2Service {
+func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store, grpcServer *grpc.Server) *APIV2Service {
 	grpc.EnableTracing = true
-	authProvider := NewGRPCAuthInterceptor(store, secret)
-	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(
-			NewLoggerInterceptor().LoggerInterceptor,
-			authProvider.AuthenticationInterceptor,
-		),
-	)
 	apiv2Service := &APIV2Service{
-		Secret:         secret,
-		Profile:        profile,
-		Store:          store,
-		grpcServer:     grpcServer,
-		grpcServerPort: grpcServerPort,
+		Secret:     secret,
+		Profile:    profile,
+		Store:      store,
+		grpcServer: grpcServer,
 	}
-
 	apiv2pb.RegisterWorkspaceServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterWorkspaceSettingServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterAuthServiceServer(grpcServer, apiv2Service)
@@ -73,21 +60,16 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 	apiv2pb.RegisterStorageServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterIdentityProviderServiceServer(grpcServer, apiv2Service)
 	reflection.Register(grpcServer)
-
 	return apiv2Service
 }
 
-func (s *APIV2Service) GetGRPCServer() *grpc.Server {
-	return s.grpcServer
-}
-
 // RegisterGateway registers the gRPC-Gateway with the given Echo instance.
-func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error {
+func (s *APIV2Service) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
 	// Create a client connection to the gRPC Server we just started.
 	// This is where the gRPC-Gateway proxies the requests.
 	conn, err := grpc.DialContext(
 		ctx,
-		fmt.Sprintf(":%d", s.grpcServerPort),
+		fmt.Sprintf(":%d", s.Profile.Port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -134,7 +116,7 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 	if err := apiv2pb.RegisterIdentityProviderServiceHandler(context.Background(), gwMux, conn); err != nil {
 		return err
 	}
-	e.Any("/api/v2/*", echo.WrapHandler(gwMux))
+	echoServer.Any("/api/v2/*", echo.WrapHandler(gwMux))
 
 	// GRPC web proxy.
 	options := []grpcweb.Option{
@@ -144,18 +126,7 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 		}),
 	}
 	wrappedGrpc := grpcweb.WrapServer(s.grpcServer, options...)
-	e.Any("/memos.api.v2.*", echo.WrapHandler(wrappedGrpc))
-
-	// Start gRPC server.
-	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%d", s.Profile.Addr, s.grpcServerPort))
-	if err != nil {
-		return errors.Wrap(err, "failed to start gRPC server")
-	}
-	go func() {
-		if err := s.grpcServer.Serve(listen); err != nil {
-			slog.Error("failed to start gRPC server", err)
-		}
-	}()
+	echoServer.Any("/memos.api.v2.*", echo.WrapHandler(wrappedGrpc))
 
 	return nil
 }

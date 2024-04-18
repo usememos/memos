@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -10,6 +12,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"github.com/soheilhy/cmux"
+	"google.golang.org/grpc"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/profile"
@@ -23,28 +27,29 @@ import (
 )
 
 type Server struct {
-	e *echo.Echo
-
 	ID      string
 	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
+
+	echoServer *echo.Echo
+	grpcServer *grpc.Server
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
-	e := echo.New()
-	e.Debug = true
-	e.HideBanner = true
-	e.HidePort = true
-
 	s := &Server{
-		e:       e,
 		Store:   store,
 		Profile: profile,
 	}
 
+	echoServer := echo.New()
+	echoServer.Debug = true
+	echoServer.HideBanner = true
+	echoServer.HidePort = true
+	s.echoServer = echoServer
+
 	// Register CORS middleware.
-	e.Use(CORSMiddleware(s.Profile.Origins))
+	echoServer.Use(CORSMiddleware(s.Profile.Origins))
 
 	workspaceBasicSetting, err := s.getOrUpsertWorkspaceBasicSetting(ctx)
 	if err != nil {
@@ -59,17 +64,17 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.Secret = secret
 
 	// Register healthz endpoint.
-	e.GET("/healthz", func(c echo.Context) error {
+	echoServer.GET("/healthz", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Service ready.")
 	})
 
 	// Only serve frontend when it's enabled.
 	if profile.Frontend {
 		frontendService := frontend.NewFrontendService(profile, store)
-		frontendService.Serve(ctx, e)
+		frontendService.Serve(ctx, echoServer)
 	}
 
-	rootGroup := e.Group("")
+	rootGroup := echoServer.Group("")
 
 	// Register public routes.
 	publicGroup := rootGroup.Group("/o")
@@ -83,9 +88,15 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	// Create and register RSS routes.
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
-	apiV2Service := apiv2.NewAPIV2Service(s.Secret, profile, store, s.Profile.Port+1)
+	grpcServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
+		apiv2.NewLoggerInterceptor().LoggerInterceptor,
+		apiv2.NewGRPCAuthInterceptor(store, secret).AuthenticationInterceptor,
+	))
+	s.grpcServer = grpcServer
+
+	apiV2Service := apiv2.NewAPIV2Service(s.Secret, profile, store, grpcServer)
 	// Register gRPC gateway as api v2.
-	if err := apiV2Service.RegisterGateway(ctx, e); err != nil {
+	if err := apiV2Service.RegisterGateway(ctx, echoServer); err != nil {
 		return nil, errors.Wrap(err, "failed to register gRPC gateway")
 	}
 
@@ -93,8 +104,28 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 }
 
 func (s *Server) Start(ctx context.Context) error {
-	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
-	return s.e.Start(fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port))
+	address := fmt.Sprintf(":%d", s.Profile.Port)
+	listener, err := net.Listen("tcp", address)
+	if err != nil {
+		return errors.Wrap(err, "failed to listen")
+	}
+
+	muxServer := cmux.New(listener)
+	go func() {
+		grpcListener := muxServer.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+		if err := s.grpcServer.Serve(grpcListener); err != nil {
+			slog.Error("failed to serve gRPC", err)
+		}
+	}()
+	go func() {
+		httpListener := muxServer.Match(cmux.HTTP1Fast(), cmux.Any())
+		s.echoServer.Listener = httpListener
+		if err := s.echoServer.Start(address); err != nil {
+			slog.Error("failed to start echo server", err)
+		}
+	}()
+
+	return muxServer.Serve()
 }
 
 func (s *Server) Shutdown(ctx context.Context) {
@@ -102,7 +133,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 	defer cancel()
 
 	// Shutdown echo server
-	if err := s.e.Shutdown(ctx); err != nil {
+	if err := s.echoServer.Shutdown(ctx); err != nil {
 		fmt.Printf("failed to shutdown server, error: %v\n", err)
 	}
 
@@ -114,8 +145,8 @@ func (s *Server) Shutdown(ctx context.Context) {
 	fmt.Printf("memos stopped properly\n")
 }
 
-func (s *Server) GetEcho() *echo.Echo {
-	return s.e
+func (s *Server) StartRunners(ctx context.Context) {
+	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
 }
 
 func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb.WorkspaceBasicSetting, error) {
