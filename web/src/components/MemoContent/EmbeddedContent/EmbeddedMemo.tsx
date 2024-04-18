@@ -21,7 +21,7 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
   const resourceName = `memos/${resourceId}`;
 
   useEffect(() => {
-    memoStore.searchMemos(`uid == "${resourceId}"`).finally(() => loadingState.setFinish());
+    memoStore.searchMemos(`uid == "${resourceId}" && include_comments == true`).finally(() => loadingState.setFinish());
   }, [resourceId]);
 
   if (loadingState.isLoading) {

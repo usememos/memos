@@ -30,7 +30,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
     async () => {
       setIsFetching(true);
       try {
-        const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
+        const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `include_comments == true`];
         if (searchText) {
           filters.push(`content_search == [${JSON.stringify(searchText)}]`);
         }

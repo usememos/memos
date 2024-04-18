@@ -667,6 +667,9 @@ func (s *APIV2Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if filter.Limit != nil {
 			find.Limit = filter.Limit
 		}
+		if filter.IncludeComments {
+			find.ExcludeComments = false
+		}
 	}
 
 	// If the user is not authenticated, only public memos are visible.
@@ -703,6 +706,7 @@ var SearchMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("row_status", cel.StringType),
 	cel.Variable("random", cel.BoolType),
 	cel.Variable("limit", cel.IntType),
+	cel.Variable("include_comments", cel.BoolType),
 }
 
 type SearchMemosFilter struct {
@@ -716,6 +720,7 @@ type SearchMemosFilter struct {
 	RowStatus         *store.RowStatus
 	Random            bool
 	Limit             *int
+	IncludeComments   bool
 }
 
 func parseSearchMemosFilter(expression string) (*SearchMemosFilter, error) {
@@ -779,6 +784,9 @@ func findSearchMemosField(callExpr *expr.Expr_Call, filter *SearchMemosFilter) {
 			} else if idExpr.Name == "limit" {
 				limit := int(callExpr.Args[1].GetConstExpr().GetInt64Value())
 				filter.Limit = &limit
+			} else if idExpr.Name == "include_comments" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.IncludeComments = value
 			}
 			return
 		}
