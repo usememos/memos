@@ -15,7 +15,6 @@ import (
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
 
-	"github.com/usememos/memos/internal/jobs"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/route/api/auth"
@@ -23,6 +22,7 @@ import (
 	"github.com/usememos/memos/server/route/frontend"
 	"github.com/usememos/memos/server/route/resource"
 	"github.com/usememos/memos/server/route/rss"
+	resourcepresign "github.com/usememos/memos/server/service/resource_presign"
 	versionchecker "github.com/usememos/memos/server/service/version_checker"
 	"github.com/usememos/memos/store"
 )
@@ -104,7 +104,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	return s, nil
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start(ctx context.Context) error {
 	address := fmt.Sprintf(":%d", s.Profile.Port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
@@ -125,6 +125,7 @@ func (s *Server) Start() error {
 			slog.Error("failed to start echo server", err)
 		}
 	}()
+	s.StartBackgroundRunners(ctx)
 
 	return muxServer.Serve()
 }
@@ -146,8 +147,8 @@ func (s *Server) Shutdown(ctx context.Context) {
 	fmt.Printf("memos stopped properly\n")
 }
 
-func (s *Server) StartRunners(ctx context.Context) {
-	go jobs.RunPreSignLinks(ctx, s.Store)
+func (s *Server) StartBackgroundRunners(ctx context.Context) {
+	go resourcepresign.RunPreSignLinks(ctx, s.Store)
 	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
 }
 

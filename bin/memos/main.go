@@ -84,7 +84,7 @@ var (
 
 			printGreetings()
 
-			if err := s.Start(); err != nil {
+			if err := s.Start(ctx); err != nil {
 				if err != http.ErrServerClosed {
 					slog.Error("failed to start server", err)
 					cancel()
