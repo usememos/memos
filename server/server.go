@@ -15,6 +15,7 @@ import (
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
 
+	"github.com/usememos/memos/internal/jobs"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/route/api/auth"
@@ -103,7 +104,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	return s, nil
 }
 
-func (s *Server) Start(ctx context.Context) error {
+func (s *Server) Start() error {
 	address := fmt.Sprintf(":%d", s.Profile.Port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
@@ -146,6 +147,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 }
 
 func (s *Server) StartRunners(ctx context.Context) {
+	go jobs.RunPreSignLinks(ctx, s.Store)
 	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
 }
 

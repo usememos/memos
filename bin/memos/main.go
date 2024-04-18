@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/usememos/memos/internal/jobs"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -85,10 +84,7 @@ var (
 
 			printGreetings()
 
-			// update (pre-sign) object storage links if applicable
-			go jobs.RunPreSignLinks(ctx, storeInstance)
-
-			if err := s.Start(ctx); err != nil {
+			if err := s.Start(); err != nil {
 				if err != http.ErrServerClosed {
 					slog.Error("failed to start server", err)
 					cancel()
