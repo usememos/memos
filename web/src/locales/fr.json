@@ -33,6 +33,7 @@
     "confirm": "Confirmer",
     "create": "Créer",
     "database": "Base de données",
+    "days": "Jours",
     "delete": "Supprimer",
     "description": "Description",
     "edit": "Modifier",
@@ -47,6 +48,7 @@
     "learn-more": "En savoir plus",
     "link": "Lien",
     "mark": "Lier",
+    "memos": "Mémos",
     "name": "Nom",
     "new": "Nouveau",
     "nickname": "Surnom",
@@ -54,6 +56,7 @@
     "or": "ou",
     "password": "Mot de passe",
     "pin": "Épingler",
+    "pinned": "Épinglé",
     "preview": "Aperçu",
     "profile": "Profil",
     "remember-me": "Se souvenir de moi",
@@ -93,6 +96,7 @@
     "wed": "Me"
   },
   "editor": {
+    "add-your-comment-here": "Ajoutez votre commentaire ici...",
     "any-thoughts": "Une idée...",
     "save": "Enregistrer"
   },
@@ -114,6 +118,7 @@
       "self": "Commentaires"
     },
     "copy-link": "Copier le lien",
+    "count-memos-in-date": "{{count}} mémos le {{date}}",
     "delete-confirm": "Êtes-vous sûr de vouloir supprimer ce memos ? CETTE ACTION EST IRRÉVERSIBLE",
     "delete-memo": "Supprimer Memo",
     "embed": "Intégrer",
@@ -137,6 +142,8 @@
     "click-to-save-the-image": "Cliquez pour enregistrer l'image",
     "copied": "Copié",
     "count-selected-resources": "Total de la sélection",
+    "deleted-successfully": "Supprimé avec succès",
+    "failed-to-embed-memo": "Échec de l'intégration du mémo",
     "fill-all": "Veuillez remplir tous les champs.",
     "fill-form": "Veuillez remplir ce formulaire",
     "fill-server-name": "Veuillez indiquer le nom du serveur",
@@ -169,6 +176,12 @@
     "succeed-vacuum-database": "La base de données a été vidée avec succès.",
     "update-succeed": "Mise à jour effectuée",
     "user-not-found": "Utilisateur introuvable"
+  },
+  "reference": {
+    "add-references": "Ajouter des références",
+    "embedded-usage": "Utiliser comme contenu intégré",
+    "no-memos-found": "Aucun mémo trouvé",
+    "search-bar-placeholder": "Rechercher du contenu"
   },
   "resource": {
     "clear": "Nettoyer",
@@ -333,8 +346,12 @@
   "tag": {
     "all-tags": "Toutes les Étiquettes",
     "create-tag": "Créer une Étiquette",
+    "create-tags-guide": "Vous pouvez ajouter des tags en écrivant `#tag`.",
+    "delete-confirm": "Voulez-vous vraiment supprimer ce tag ?",
+    "delete-tag": "Supprimer le tag",
     "hide": "Cacher",
     "invalid-tag-name": "Nom d'étiquette invalide",
+    "no-tag-found": "Aucun tag trouvé",
     "save-all": "Tout enregistrer",
     "show": "Afficher",
     "tag-name": "NOM_ÉTIQUETTE",
