@@ -5,6 +5,7 @@ import { tagServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useFilterStore } from "@/store/module";
+import { useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -16,6 +17,7 @@ interface Props extends DialogProps {
 const RenameTagDialog: React.FC<Props> = (props: Props) => {
   const { tag, destroy } = props;
   const t = useTranslate();
+  const tagStore = useTagStore();
   const filterStore = useFilterStore();
   const currentUser = useCurrentUser();
   const [newName, setNewName] = useState(tag);
@@ -43,6 +45,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
       });
       toast.success("Rename tag successfully");
       filterStore.setTagFilter(newName);
+      tagStore.fetchTags({ skipCache: true });
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
