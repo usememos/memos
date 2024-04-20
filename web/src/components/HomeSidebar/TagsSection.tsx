@@ -56,14 +56,7 @@ const TagsSection = () => {
           tagText += "/" + key;
         }
 
-        let obj = null;
-
-        for (const t of tempObj.subTags) {
-          if (t.text === tagText) {
-            obj = t;
-            break;
-          }
-        }
+        let obj = tempObj.subTags.find((t: Tag) => t.text === tagText);
 
         if (!obj) {
           obj = {
@@ -79,7 +72,7 @@ const TagsSection = () => {
     }
 
     setTags(root.subTags as Tag[]);
-  }, [tagsText]);
+  }, [tagsText.join(",")]);
 
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
