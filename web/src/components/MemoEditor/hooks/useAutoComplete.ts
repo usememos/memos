@@ -10,6 +10,10 @@ const useAutoComplete = (actions: EditorRefActions) => {
 
     editor.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
+        if (event.nativeEvent.isComposing) {
+          return;
+        }
+
         const cursorPosition = actions.getCursorPosition();
         const prevContent = actions.getContent().substring(0, cursorPosition);
         const lastNode = last(window.parse(prevContent));
