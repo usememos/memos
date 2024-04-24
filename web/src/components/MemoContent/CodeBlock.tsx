@@ -58,7 +58,12 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   }, [content]);
 
   return (
-    <div className="w-full my-1 bg-amber-100 border-l-4 border-amber-400 rounded hover:shadow dark:bg-zinc-600 dark:border-zinc-400 relative">
+    <div
+      className={classNames(
+        "my-1 bg-amber-100 border-l-4 border-amber-400 rounded hover:shadow dark:bg-zinc-600 dark:border-zinc-400 relative",
+        !md && "w-[calc(100%+2rem)] -ml-4",
+      )}
+    >
       <div className="w-full px-2 py-1 flex flex-row justify-between items-center text-amber-500 dark:text-zinc-400">
         <span className="text-sm font-mono">{formatedLanguage}</span>
         {md && <Icon.Copy className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={handleCopyButtonClick} />}
