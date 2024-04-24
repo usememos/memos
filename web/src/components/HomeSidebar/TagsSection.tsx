@@ -25,7 +25,6 @@ const TagsSection = () => {
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
   const memoList = useMemoList();
-  const tagsText = Array.from(tagStore.getState().tags);
   const filter = filterStore.state;
   const [tags, setTags] = useState<Tag[]>([]);
 
@@ -38,7 +37,7 @@ const TagsSection = () => {
   );
 
   useEffect(() => {
-    const sortedTags = tagsText.sort();
+    const sortedTags = Array.from(tagStore.getState().tags).sort();
     const root: KVObject<any> = {
       subTags: [],
     };
@@ -57,7 +56,6 @@ const TagsSection = () => {
         }
 
         let obj = tempObj.subTags.find((t: Tag) => t.text === tagText);
-
         if (!obj) {
           obj = {
             key,
@@ -72,7 +70,7 @@ const TagsSection = () => {
     }
 
     setTags(root.subTags as Tag[]);
-  }, [tagsText.join(",")]);
+  }, [tagStore.getState().tags]);
 
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">

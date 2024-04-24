@@ -82,6 +82,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       } else {
         await storageServiceClient.updateStorage({
           storage: Storage.fromPartial({
+            id: storage?.id,
             title: basicInfo.title,
             type: type,
             config: {
