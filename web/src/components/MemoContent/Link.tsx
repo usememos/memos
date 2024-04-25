@@ -1,5 +1,5 @@
 import { Link as MLink, Tooltip } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { linkServiceClient } from "@/grpcweb";
 import { LinkMetadata } from "@/types/proto/api/v2/link_service";
 
@@ -18,43 +18,48 @@ const getFaviconWithGoogleS2 = (url: string) => {
 };
 
 const Link: React.FC<Props> = ({ text, url }: Props) => {
+  const [initialized, setInitialized] = useState<boolean>(false);
+  const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [linkMetadata, setLinkMetadata] = useState<LinkMetadata | undefined>();
 
-  useEffect(() => {
-    (async () => {
+  const handleMouseEnter = async () => {
+    if (!initialized) {
       try {
         const { linkMetadata } = await linkServiceClient.getLinkMetadata({ link: url }, {});
         setLinkMetadata(linkMetadata);
       } catch (error) {
         console.error("Error fetching URL metadata:", error);
       }
-    })();
-  }, [url]);
+      setInitialized(true);
+    }
+    setTimeout(() => setShowTooltip(true), 0);
+  };
 
-  return linkMetadata ? (
+  return (
     <Tooltip
       variant="outlined"
       title={
-        <div className="w-full max-w-64 sm:max-w-96 p-1 flex flex-col">
-          <a href={url} target="_blank" rel="noopener noreferrer" className="group w-full flex flex-row justify-start items-center gap-1">
-            <img className="w-5 h-5 pointer-events-none" src={getFaviconWithGoogleS2(url)} alt={linkMetadata?.title} />
-            <h3 className="text-base truncate dark:opacity-90 group-hover:opacity-80 group-hover:underline">{linkMetadata?.title}</h3>
-          </a>
-          {linkMetadata.description && (
-            <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>
-          )}
-        </div>
+        linkMetadata && (
+          <div className="w-full max-w-64 sm:max-w-96 p-1 flex flex-col">
+            <div className="w-full flex flex-row justify-start items-center gap-1">
+              <img className="w-5 h-5 rounded" src={getFaviconWithGoogleS2(url)} alt={linkMetadata?.title} />
+              <h3 className="text-base truncate dark:opacity-90">{linkMetadata?.title}</h3>
+            </div>
+            {linkMetadata.description && (
+              <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>
+            )}
+          </div>
+        )
       }
+      open={showTooltip}
       arrow
     >
       <MLink underline="always" target="_blank" href={url}>
-        {text || url}
+        <span onMouseEnter={handleMouseEnter} onMouseLeave={() => setShowTooltip(false)}>
+          {text || url}
+        </span>
       </MLink>
     </Tooltip>
-  ) : (
-    <MLink underline="always" target="_blank" href={url}>
-      {text || url}
-    </MLink>
   );
 };
 
