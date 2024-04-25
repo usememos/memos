@@ -92,7 +92,7 @@ const MemoDetail = () => {
         />
         <div className="pt-8 pb-16 w-full">
           <h2 id="comments" className="sr-only">
-            Comments
+            {t("memo.comment.self")}
           </h2>
           <div className="relative mx-auto flex-grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
             {comments.length === 0 ? (
@@ -108,7 +108,7 @@ const MemoDetail = () => {
                   <span className="text-gray-400 text-sm ml-0.5">({comments.length})</span>
                 </div>
                 {comments.map((comment) => (
-                  <MemoView key={`${memo.name}-${memo.displayTime}`} memo={comment} showCreator />
+                  <MemoView key={`${comment.name}-${comment.displayTime}`} memo={comment} showCreator />
                 ))}
               </>
             )}
