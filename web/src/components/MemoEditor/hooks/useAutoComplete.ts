@@ -10,7 +10,7 @@ const useAutoComplete = (actions: EditorRefActions) => {
 
     editor.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
-        if (event.isComposing || event.keyCode === 229) {
+        if (event.isComposing) {
           return;
         }
         const cursorPosition = actions.getCursorPosition();
