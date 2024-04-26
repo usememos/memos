@@ -68,7 +68,7 @@ func local_request_InboxService_ListInboxes_0(ctx context.Context, marshaler run
 }
 
 var (
-	filter_InboxService_UpdateInbox_0 = &utilities.DoubleArray{Encoding: map[string]int{"inbox": 0, "name": 1}, Base: []int{1, 4, 5, 2, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 4, 2, 2, 3}}
+	filter_InboxService_UpdateInbox_0 = &utilities.DoubleArray{Encoding: map[string]int{"inbox": 0, "name": 1}, Base: []int{1, 2, 1, 0, 0}, Check: []int{0, 1, 2, 3, 2}}
 )
 
 func request_InboxService_UpdateInbox_0(ctx context.Context, marshaler runtime.Marshaler, client InboxServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
