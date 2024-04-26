@@ -31,6 +31,7 @@
     "confirm": "確認する",
     "create": "作成する",
     "database": "データベース",
+    "days": "日",
     "delete": "削除する",
     "description": "説明",
     "edit": "編集する",
@@ -45,6 +46,7 @@
     "learn-more": "さらに詳しく",
     "link": "リンク",
     "mark": "マーク",
+    "memos": "Memos",
     "name": "名前",
     "new": "新しく追加",
     "nickname": "ニックネーム",
@@ -52,6 +54,7 @@
     "or": "もしくは",
     "password": "パスワード",
     "pin": "ピン",
+    "pinned": "ピン留め",
     "preview": "プレビュー",
     "profile": "プロファイル",
     "remember-me": "パスワードを保存する",
@@ -69,6 +72,7 @@
     "sign-in-with": "{{provider}}でサインイン",
     "sign-out": "ログアウト",
     "sign-up": "登録",
+    "statistics": "統計",
     "tags": "タグ",
     "title": "タイトル",
     "type": "タイプ",
@@ -90,6 +94,7 @@
     "wed": "水"
   },
   "editor": {
+    "add-your-comment-here": "ここにコメントを追加...",
     "any-thoughts": "今思ったことは...",
     "save": "保存"
   },
@@ -165,6 +170,9 @@
     "succeed-vacuum-database": "データベースの初期化に成功しました",
     "update-succeed": "変更は保存されました。",
     "user-not-found": "ユーザーが見つかりませんでした"
+  },
+  "reference": {
+    "no-memos-found": "メモが見つかりません"
   },
   "resource": {
     "clear": "クリア",
