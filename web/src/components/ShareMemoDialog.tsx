@@ -8,7 +8,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
 import { useUserStore, useMemoStore, MemoNamePrefix } from "@/store/v1";
-import { Visibility } from "@/types/proto/api/v2/memo_service";
+import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import { generateDialog } from "./Dialog";

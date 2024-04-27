@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { workspaceSettingServiceClient } from "@/grpcweb";
-import { WorkspaceSetting } from "@/types/proto/api/v2/workspace_setting_service";
+import { WorkspaceSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { WorkspaceSettingPrefix } from "./resourceName";
 

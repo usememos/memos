@@ -1,0 +1,213 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "api/v1/common.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service UserService {
+  // ListUsers returns a list of users.
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
+    option (google.api.http) = {get: "/api/v1/users"};
+  }
+  // SearchUsers searches users by filter.
+  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {
+    option (google.api.http) = {get: "/api/v1/users:search"};
+  }
+  // GetUser gets a user by name.
+  rpc GetUser(GetUserRequest) returns (User) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*}"};
+    option (google.api.method_signature) = "name";
+  }
+  // CreateUser creates a new user.
+  rpc CreateUser(CreateUserRequest) returns (User) {
+    option (google.api.http) = {
+      post: "/api/v1/users"
+      body: "user"
+    };
+    option (google.api.method_signature) = "user";
+  }
+  // UpdateUser updates a user.
+  rpc UpdateUser(UpdateUserRequest) returns (User) {
+    option (google.api.http) = {
+      patch: "/api/v1/{user.name=users/*}"
+      body: "user"
+    };
+    option (google.api.method_signature) = "user,update_mask";
+  }
+  // DeleteUser deletes a user.
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*}"};
+    option (google.api.method_signature) = "name";
+  }
+  // GetUserSetting gets the setting of a user.
+  rpc GetUserSetting(GetUserSettingRequest) returns (UserSetting) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*}/setting"};
+    option (google.api.method_signature) = "name";
+  }
+  // UpdateUserSetting updates the setting of a user.
+  rpc UpdateUserSetting(UpdateUserSettingRequest) returns (UserSetting) {
+    option (google.api.http) = {
+      patch: "/api/v1/{setting.name=users/*/setting}"
+      body: "setting"
+    };
+    option (google.api.method_signature) = "setting,update_mask";
+  }
+  // ListUserAccessTokens returns a list of access tokens for a user.
+  rpc ListUserAccessTokens(ListUserAccessTokensRequest) returns (ListUserAccessTokensResponse) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*}/access_tokens"};
+    option (google.api.method_signature) = "name";
+  }
+  // CreateUserAccessToken creates a new access token for a user.
+  rpc CreateUserAccessToken(CreateUserAccessTokenRequest) returns (UserAccessToken) {
+    option (google.api.http) = {
+      post: "/api/v1/{name=users/*}/access_tokens"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+  // DeleteUserAccessToken deletes an access token for a user.
+  rpc DeleteUserAccessToken(DeleteUserAccessTokenRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*}/access_tokens/{access_token}"};
+    option (google.api.method_signature) = "name,access_token";
+  }
+}
+
+message User {
+  // The name of the user.
+  // Format: users/{id}
+  string name = 1;
+
+  // The system generated uid of the user.
+  int32 id = 2;
+
+  enum Role {
+    ROLE_UNSPECIFIED = 0;
+    HOST = 1;
+    ADMIN = 2;
+    USER = 3;
+  }
+  Role role = 3;
+
+  string username = 4;
+
+  string email = 5;
+
+  string nickname = 6;
+
+  string avatar_url = 7;
+
+  string description = 8;
+
+  string password = 9 [(google.api.field_behavior) = INPUT_ONLY];
+
+  RowStatus row_status = 10;
+
+  google.protobuf.Timestamp create_time = 11;
+
+  google.protobuf.Timestamp update_time = 12;
+}
+
+message ListUsersRequest {}
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
+message SearchUsersRequest {
+  // Filter is used to filter users returned in the list.
+  // Format: "username == frank"
+  string filter = 1;
+}
+
+message SearchUsersResponse {
+  repeated User users = 1;
+}
+
+message GetUserRequest {
+  // The name of the user.
+  // Format: users/{id}
+  string name = 1;
+}
+
+message CreateUserRequest {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  User user = 1 [(google.api.field_behavior) = REQUIRED];
+
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message DeleteUserRequest {
+  // The name of the user.
+  // Format: users/{id}
+  string name = 1;
+}
+
+message UserSetting {
+  // The name of the user.
+  // Format: users/{id}
+  string name = 1;
+  // The preferred locale of the user.
+  string locale = 2;
+  // The preferred appearance of the user.
+  string appearance = 3;
+  // The default visibility of the memo.
+  string memo_visibility = 4;
+}
+
+message GetUserSettingRequest {
+  // The name of the user.
+  // Format: users/{id}
+  string name = 1;
+}
+
+message UpdateUserSettingRequest {
+  UserSetting setting = 1 [(google.api.field_behavior) = REQUIRED];
+
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UserAccessToken {
+  string access_token = 1;
+  string description = 2;
+  google.protobuf.Timestamp issued_at = 3;
+  google.protobuf.Timestamp expires_at = 4;
+}
+
+message ListUserAccessTokensRequest {
+  // The name of the user.
+  // Format: users/{id}
+  string name = 1;
+}
+
+message ListUserAccessTokensResponse {
+  repeated UserAccessToken access_tokens = 1;
+}
+
+message CreateUserAccessTokenRequest {
+  // The name of the user.
+  // Format: users/{id}
+  string name = 1;
+
+  string description = 2;
+
+  optional google.protobuf.Timestamp expires_at = 3;
+}
+
+message DeleteUserAccessTokenRequest {
+  // The name of the user.
+  // Format: users/{id}
+  string name = 1;
+  // access_token is the access token to delete.
+  string access_token = 2;
+}

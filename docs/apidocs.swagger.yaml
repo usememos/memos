@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  title: api/v2/activity_service.proto
+  title: api/v1/activity_service.proto
   version: version not set
 tags:
   - name: ActivityService
@@ -21,7 +21,29 @@ consumes:
 produces:
   - application/json
 paths:
-  /api/v2/auth/signin:
+  /api/v1/activities/{id}:
+    get:
+      summary: GetActivity returns the activity with the given id.
+      operationId: ActivityService_GetActivity
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Activity'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          description: The system-generated unique identifier for the activity.
+          in: path
+          required: true
+          type: integer
+          format: int32
+      tags:
+        - ActivityService
+  /api/v1/auth/signin:
     post:
       summary: SignIn signs in the user with the given username and password.
       operationId: AuthService_SignIn
@@ -29,7 +51,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2User'
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
@@ -52,7 +74,7 @@ paths:
           type: boolean
       tags:
         - AuthService
-  /api/v2/auth/signin/sso:
+  /api/v1/auth/signin/sso:
     post:
       summary: SignInWithSSO signs in the user with the given SSO code.
       operationId: AuthService_SignInWithSSO
@@ -60,7 +82,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2User'
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
@@ -84,7 +106,7 @@ paths:
           type: string
       tags:
         - AuthService
-  /api/v2/auth/signout:
+  /api/v1/auth/signout:
     post:
       summary: SignOut signs out the user.
       operationId: AuthService_SignOut
@@ -100,7 +122,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - AuthService
-  /api/v2/auth/signup:
+  /api/v1/auth/signup:
     post:
       summary: SignUp signs up the user with the given username and password.
       operationId: AuthService_SignUp
@@ -108,7 +130,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2User'
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
@@ -126,7 +148,7 @@ paths:
           type: string
       tags:
         - AuthService
-  /api/v2/auth/status:
+  /api/v1/auth/status:
     post:
       summary: GetAuthStatus returns the current auth status of the user.
       operationId: AuthService_GetAuthStatus
@@ -134,14 +156,14 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2User'
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - AuthService
-  /api/v2/identityProviders:
+  /api/v1/identityProviders:
     get:
       summary: ListIdentityProviders lists identity providers.
       operationId: IdentityProviderService_ListIdentityProviders
@@ -149,7 +171,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListIdentityProvidersResponse'
+            $ref: '#/definitions/v1ListIdentityProvidersResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -163,7 +185,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/apiv2IdentityProvider'
+            $ref: '#/definitions/apiv1IdentityProvider'
         default:
           description: An unexpected error response.
           schema:
@@ -174,10 +196,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/apiv2IdentityProvider'
+            $ref: '#/definitions/apiv1IdentityProvider'
       tags:
         - IdentityProviderService
-  /api/v2/inboxes:
+  /api/v1/inboxes:
     get:
       summary: ListInboxes lists inboxes for a user.
       operationId: InboxService_ListInboxes
@@ -185,7 +207,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListInboxesResponse'
+            $ref: '#/definitions/v1ListInboxesResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -198,7 +220,7 @@ paths:
           type: string
       tags:
         - InboxService
-  /api/v2/linkMetadata:
+  /api/v1/linkMetadata:
     get:
       summary: GetLinkMetadata returns metadata for a given link.
       operationId: LinkService_GetLinkMetadata
@@ -206,7 +228,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetLinkMetadataResponse'
+            $ref: '#/definitions/v1GetLinkMetadataResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -218,7 +240,7 @@ paths:
           type: string
       tags:
         - LinkService
-  /api/v2/memos:
+  /api/v1/memos:
     get:
       summary: ListMemos lists memos with pagination and filter.
       operationId: MemoService_ListMemos
@@ -226,7 +248,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListMemosResponse'
+            $ref: '#/definitions/v1ListMemosResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -261,7 +283,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Memo'
+            $ref: '#/definitions/v1Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -271,10 +293,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2CreateMemoRequest'
+            $ref: '#/definitions/v1CreateMemoRequest'
       tags:
         - MemoService
-  /api/v2/memos/stats:
+  /api/v1/memos/stats:
     get:
       summary: GetUserMemosStats gets stats of memos for a user.
       operationId: MemoService_GetUserMemosStats
@@ -282,7 +304,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetUserMemosStatsResponse'
+            $ref: '#/definitions/v1GetUserMemosStatsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -310,7 +332,7 @@ paths:
           type: string
       tags:
         - MemoService
-  /api/v2/memos:export:
+  /api/v1/memos:export:
     post:
       summary: ExportMemos exports memos.
       operationId: MemoService_ExportMemos
@@ -318,7 +340,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ExportMemosResponse'
+            $ref: '#/definitions/v1ExportMemosResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -328,10 +350,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2ExportMemosRequest'
+            $ref: '#/definitions/v1ExportMemosRequest'
       tags:
         - MemoService
-  /api/v2/memos:search:
+  /api/v1/memos:search:
     get:
       summary: SearchMemos searches memos.
       operationId: MemoService_SearchMemos
@@ -339,7 +361,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2SearchMemosResponse'
+            $ref: '#/definitions/v1SearchMemosResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -354,7 +376,7 @@ paths:
           type: string
       tags:
         - MemoService
-  /api/v2/reactions/{reactionId}:
+  /api/v1/reactions/{reactionId}:
     delete:
       summary: DeleteMemoReaction deletes a reaction for a memo.
       operationId: MemoService_DeleteMemoReaction
@@ -376,7 +398,7 @@ paths:
           format: int32
       tags:
         - MemoService
-  /api/v2/resources:
+  /api/v1/resources:
     get:
       summary: ListResources lists all resources.
       operationId: ResourceService_ListResources
@@ -384,7 +406,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListResourcesResponse'
+            $ref: '#/definitions/v1ListResourcesResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -398,7 +420,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Resource'
+            $ref: '#/definitions/v1Resource'
         default:
           description: An unexpected error response.
           schema:
@@ -408,10 +430,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2Resource'
+            $ref: '#/definitions/v1Resource'
       tags:
         - ResourceService
-  /api/v2/resources:search:
+  /api/v1/resources:search:
     get:
       summary: SearchResources searches memos.
       operationId: ResourceService_SearchResources
@@ -419,7 +441,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2SearchResourcesResponse'
+            $ref: '#/definitions/v1SearchResourcesResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -431,7 +453,7 @@ paths:
           type: string
       tags:
         - ResourceService
-  /api/v2/storages:
+  /api/v1/storages:
     get:
       summary: ListStorages returns a list of storages.
       operationId: StorageService_ListStorages
@@ -439,7 +461,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListStoragesResponse'
+            $ref: '#/definitions/v1ListStoragesResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -453,7 +475,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2CreateStorageResponse'
+            $ref: '#/definitions/v1CreateStorageResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -463,10 +485,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2CreateStorageRequest'
+            $ref: '#/definitions/v1CreateStorageRequest'
       tags:
         - StorageService
-  /api/v2/storages/{id}:
+  /api/v1/storages/{id}:
     get:
       summary: GetStorage returns a storage by id.
       operationId: StorageService_GetStorage
@@ -474,7 +496,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetStorageResponse'
+            $ref: '#/definitions/v1GetStorageResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -494,7 +516,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2DeleteStorageResponse'
+            $ref: '#/definitions/v1DeleteStorageResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -507,7 +529,7 @@ paths:
           format: int32
       tags:
         - StorageService
-  /api/v2/storages/{storage.id}:
+  /api/v1/storages/{storage.id}:
     patch:
       summary: UpdateStorage updates a storage.
       operationId: StorageService_UpdateStorage
@@ -515,7 +537,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2UpdateStorageResponse'
+            $ref: '#/definitions/v1UpdateStorageResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -535,12 +557,12 @@ paths:
               title:
                 type: string
               type:
-                $ref: '#/definitions/apiv2StorageType'
+                $ref: '#/definitions/apiv1StorageType'
               config:
-                $ref: '#/definitions/apiv2StorageConfig'
+                $ref: '#/definitions/apiv1StorageConfig'
       tags:
         - StorageService
-  /api/v2/tags:
+  /api/v1/tags:
     get:
       summary: ListTags lists tags.
       operationId: TagService_ListTags
@@ -548,7 +570,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListTagsResponse'
+            $ref: '#/definitions/v1ListTagsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -589,7 +611,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Tag'
+            $ref: '#/definitions/v1Tag'
         default:
           description: An unexpected error response.
           schema:
@@ -599,10 +621,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2UpsertTagRequest'
+            $ref: '#/definitions/v1UpsertTagRequest'
       tags:
         - TagService
-  /api/v2/tags/suggestion:
+  /api/v1/tags/suggestion:
     get:
       summary: GetTagSuggestions gets tag suggestions from the user's memos.
       operationId: TagService_GetTagSuggestions
@@ -610,7 +632,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetTagSuggestionsResponse'
+            $ref: '#/definitions/v1GetTagSuggestionsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -625,7 +647,7 @@ paths:
           type: string
       tags:
         - TagService
-  /api/v2/tags:batchUpsert:
+  /api/v1/tags:batchUpsert:
     post:
       summary: BatchUpsertTag upserts multiple tags.
       operationId: TagService_BatchUpsertTag
@@ -644,10 +666,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2BatchUpsertTagRequest'
+            $ref: '#/definitions/v1BatchUpsertTagRequest'
       tags:
         - TagService
-  /api/v2/tags:rename:
+  /api/v1/tags:rename:
     patch:
       summary: |-
         RenameTag renames a tag.
@@ -668,10 +690,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2RenameTagRequest'
+            $ref: '#/definitions/v1RenameTagRequest'
       tags:
         - TagService
-  /api/v2/users:
+  /api/v1/users:
     get:
       summary: ListUsers returns a list of users.
       operationId: UserService_ListUsers
@@ -679,7 +701,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListUsersResponse'
+            $ref: '#/definitions/v1ListUsersResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -693,7 +715,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2User'
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
@@ -703,10 +725,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2User'
+            $ref: '#/definitions/v1User'
       tags:
         - UserService
-  /api/v2/users:search:
+  /api/v1/users:search:
     get:
       summary: SearchUsers searches users by filter.
       operationId: UserService_SearchUsers
@@ -714,7 +736,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2SearchUsersResponse'
+            $ref: '#/definitions/v1SearchUsersResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -729,7 +751,7 @@ paths:
           type: string
       tags:
         - UserService
-  /api/v2/webhooks:
+  /api/v1/webhooks:
     get:
       summary: ListWebhooks returns a list of webhooks.
       operationId: WebhookService_ListWebhooks
@@ -737,7 +759,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListWebhooksResponse'
+            $ref: '#/definitions/v1ListWebhooksResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -757,7 +779,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Webhook'
+            $ref: '#/definitions/v1Webhook'
         default:
           description: An unexpected error response.
           schema:
@@ -767,10 +789,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2CreateWebhookRequest'
+            $ref: '#/definitions/v1CreateWebhookRequest'
       tags:
         - WebhookService
-  /api/v2/webhooks/{id}:
+  /api/v1/webhooks/{id}:
     get:
       summary: GetWebhook returns a webhook by id.
       operationId: WebhookService_GetWebhook
@@ -778,7 +800,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Webhook'
+            $ref: '#/definitions/v1Webhook'
         default:
           description: An unexpected error response.
           schema:
@@ -812,7 +834,7 @@ paths:
           format: int32
       tags:
         - WebhookService
-  /api/v2/webhooks/{webhook.id}:
+  /api/v1/webhooks/{webhook.id}:
     patch:
       summary: UpdateWebhook updates a webhook.
       operationId: WebhookService_UpdateWebhook
@@ -820,7 +842,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Webhook'
+            $ref: '#/definitions/v1Webhook'
         default:
           description: An unexpected error response.
           schema:
@@ -847,14 +869,14 @@ paths:
                 type: string
                 format: date-time
               rowStatus:
-                $ref: '#/definitions/v2RowStatus'
+                $ref: '#/definitions/v1RowStatus'
               name:
                 type: string
               url:
                 type: string
       tags:
         - WebhookService
-  /api/v2/workspace/profile:
+  /api/v1/workspace/profile:
     get:
       summary: GetWorkspaceProfile returns the workspace profile.
       operationId: WorkspaceService_GetWorkspaceProfile
@@ -862,14 +884,14 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2WorkspaceProfile'
+            $ref: '#/definitions/v1WorkspaceProfile'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - WorkspaceService
-  /api/v2/workspace/settings:
+  /api/v1/workspace/settings:
     get:
       summary: ListWorkspaceSetting returns the list of settings.
       operationId: WorkspaceSettingService_ListWorkspaceSettings
@@ -877,14 +899,14 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListWorkspaceSettingsResponse'
+            $ref: '#/definitions/v1ListWorkspaceSettingsResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - WorkspaceSettingService
-  /api/v2/workspace/{name}:
+  /api/v1/workspace/{name}:
     get:
       summary: GetWorkspaceSetting returns the setting by name.
       operationId: WorkspaceSettingService_GetWorkspaceSetting
@@ -892,7 +914,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/apiv2WorkspaceSetting'
+            $ref: '#/definitions/apiv1WorkspaceSetting'
         default:
           description: An unexpected error response.
           schema:
@@ -908,7 +930,7 @@ paths:
           pattern: settings/[^/]+
       tags:
         - WorkspaceSettingService
-  /api/v2/workspace/{setting.name}:
+  /api/v1/workspace/{setting.name}:
     patch:
       summary: SetWorkspaceSetting updates the setting.
       operationId: WorkspaceSettingService_SetWorkspaceSetting
@@ -916,7 +938,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/apiv2WorkspaceSetting'
+            $ref: '#/definitions/apiv1WorkspaceSetting'
         default:
           description: An unexpected error response.
           schema:
@@ -938,15 +960,15 @@ paths:
             type: object
             properties:
               generalSetting:
-                $ref: '#/definitions/apiv2WorkspaceGeneralSetting'
+                $ref: '#/definitions/apiv1WorkspaceGeneralSetting'
               storageSetting:
-                $ref: '#/definitions/apiv2WorkspaceStorageSetting'
+                $ref: '#/definitions/apiv1WorkspaceStorageSetting'
               memoRelatedSetting:
-                $ref: '#/definitions/apiv2WorkspaceMemoRelatedSetting'
+                $ref: '#/definitions/apiv1WorkspaceMemoRelatedSetting'
             title: setting is the setting to update.
       tags:
         - WorkspaceSettingService
-  /api/v2/{identityProvider.name}:
+  /api/v1/{identityProvider.name}:
     patch:
       summary: UpdateIdentityProvider updates an identity provider.
       operationId: IdentityProviderService_UpdateIdentityProvider
@@ -954,7 +976,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/apiv2IdentityProvider'
+            $ref: '#/definitions/apiv1IdentityProvider'
         default:
           description: An unexpected error response.
           schema:
@@ -976,17 +998,17 @@ paths:
             type: object
             properties:
               type:
-                $ref: '#/definitions/apiv2IdentityProviderType'
+                $ref: '#/definitions/apiv1IdentityProviderType'
               title:
                 type: string
               identifierFilter:
                 type: string
               config:
-                $ref: '#/definitions/apiv2IdentityProviderConfig'
+                $ref: '#/definitions/apiv1IdentityProviderConfig'
             title: The identityProvider to update.
       tags:
         - IdentityProviderService
-  /api/v2/{inbox.name}:
+  /api/v1/{inbox.name}:
     patch:
       summary: UpdateInbox updates an inbox.
       operationId: InboxService_UpdateInbox
@@ -994,7 +1016,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Inbox'
+            $ref: '#/definitions/v1Inbox'
         default:
           description: An unexpected error response.
           schema:
@@ -1021,18 +1043,18 @@ paths:
                 type: string
                 title: 'Format: users/{id}'
               status:
-                $ref: '#/definitions/v2InboxStatus'
+                $ref: '#/definitions/v1InboxStatus'
               createTime:
                 type: string
                 format: date-time
               type:
-                $ref: '#/definitions/v2InboxType'
+                $ref: '#/definitions/v1InboxType'
               activityId:
                 type: integer
                 format: int32
       tags:
         - InboxService
-  /api/v2/{memo.name}:
+  /api/v1/{memo.name}:
     patch:
       summary: UpdateMemo updates a memo.
       operationId: MemoService_UpdateMemo
@@ -1040,7 +1062,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Memo'
+            $ref: '#/definitions/v1Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -1065,7 +1087,7 @@ paths:
                 type: string
                 description: The user defined id of the memo.
               rowStatus:
-                $ref: '#/definitions/v2RowStatus'
+                $ref: '#/definitions/v1RowStatus'
               creator:
                 type: string
                 title: |-
@@ -1083,7 +1105,7 @@ paths:
               content:
                 type: string
               visibility:
-                $ref: '#/definitions/v2Visibility'
+                $ref: '#/definitions/v1Visibility'
               pinned:
                 type: boolean
               parentId:
@@ -1094,23 +1116,23 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/v2Resource'
+                  $ref: '#/definitions/v1Resource'
                 readOnly: true
               relations:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/v2MemoRelation'
+                  $ref: '#/definitions/v1MemoRelation'
                 readOnly: true
               reactions:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/v2Reaction'
+                  $ref: '#/definitions/v1Reaction'
                 readOnly: true
       tags:
         - MemoService
-  /api/v2/{name_1}:
+  /api/v1/{name_1}:
     get:
       summary: GetIdentityProvider gets an identity provider.
       operationId: IdentityProviderService_GetIdentityProvider
@@ -1118,7 +1140,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/apiv2IdentityProvider'
+            $ref: '#/definitions/apiv1IdentityProvider'
         default:
           description: An unexpected error response.
           schema:
@@ -1158,7 +1180,7 @@ paths:
           pattern: identityProviders/[^/]+
       tags:
         - IdentityProviderService
-  /api/v2/{name_2}:
+  /api/v1/{name_2}:
     get:
       summary: GetResource returns a resource by name.
       operationId: ResourceService_GetResource
@@ -1166,7 +1188,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Resource'
+            $ref: '#/definitions/v1Resource'
         default:
           description: An unexpected error response.
           schema:
@@ -1207,7 +1229,7 @@ paths:
           pattern: inboxes/[^/]+
       tags:
         - InboxService
-  /api/v2/{name_3}:
+  /api/v1/{name_3}:
     get:
       summary: GetMemo gets a memo.
       operationId: MemoService_GetMemo
@@ -1215,7 +1237,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Memo'
+            $ref: '#/definitions/v1Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -1256,7 +1278,7 @@ paths:
           pattern: resources/[^/]+
       tags:
         - ResourceService
-  /api/v2/{name_4}:
+  /api/v1/{name_4}:
     delete:
       summary: DeleteMemo deletes a memo.
       operationId: MemoService_DeleteMemo
@@ -1281,7 +1303,7 @@ paths:
           pattern: memos/[^/]+
       tags:
         - MemoService
-  /api/v2/{name}:
+  /api/v1/{name}:
     get:
       summary: GetUser gets a user by name.
       operationId: UserService_GetUser
@@ -1289,7 +1311,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2User'
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
@@ -1329,7 +1351,7 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
-  /api/v2/{name}/access_tokens:
+  /api/v1/{name}/access_tokens:
     get:
       summary: ListUserAccessTokens returns a list of access tokens for a user.
       operationId: UserService_ListUserAccessTokens
@@ -1337,7 +1359,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListUserAccessTokensResponse'
+            $ref: '#/definitions/v1ListUserAccessTokensResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1360,7 +1382,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2UserAccessToken'
+            $ref: '#/definitions/v1UserAccessToken'
         default:
           description: An unexpected error response.
           schema:
@@ -1381,7 +1403,7 @@ paths:
             $ref: '#/definitions/UserServiceCreateUserAccessTokenBody'
       tags:
         - UserService
-  /api/v2/{name}/access_tokens/{accessToken}:
+  /api/v1/{name}/access_tokens/{accessToken}:
     delete:
       summary: DeleteUserAccessToken deletes an access token for a user.
       operationId: UserService_DeleteUserAccessToken
@@ -1411,7 +1433,7 @@ paths:
           type: string
       tags:
         - UserService
-  /api/v2/{name}/comments:
+  /api/v1/{name}/comments:
     get:
       summary: ListMemoComments lists comments for a memo.
       operationId: MemoService_ListMemoComments
@@ -1419,7 +1441,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListMemoCommentsResponse'
+            $ref: '#/definitions/v1ListMemoCommentsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1442,7 +1464,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Memo'
+            $ref: '#/definitions/v1Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -1460,10 +1482,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v2CreateMemoRequest'
+            $ref: '#/definitions/v1CreateMemoRequest'
       tags:
         - MemoService
-  /api/v2/{name}/reactions:
+  /api/v1/{name}/reactions:
     get:
       summary: ListMemoReactions lists reactions for a memo.
       operationId: MemoService_ListMemoReactions
@@ -1471,7 +1493,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListMemoReactionsResponse'
+            $ref: '#/definitions/v1ListMemoReactionsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1494,7 +1516,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Reaction'
+            $ref: '#/definitions/v1Reaction'
         default:
           description: An unexpected error response.
           schema:
@@ -1515,7 +1537,7 @@ paths:
             $ref: '#/definitions/MemoServiceUpsertMemoReactionBody'
       tags:
         - MemoService
-  /api/v2/{name}/relations:
+  /api/v1/{name}/relations:
     get:
       summary: ListMemoRelations lists relations for a memo.
       operationId: MemoService_ListMemoRelations
@@ -1523,7 +1545,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListMemoRelationsResponse'
+            $ref: '#/definitions/v1ListMemoRelationsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1568,7 +1590,7 @@ paths:
             $ref: '#/definitions/MemoServiceSetMemoRelationsBody'
       tags:
         - MemoService
-  /api/v2/{name}/resources:
+  /api/v1/{name}/resources:
     get:
       summary: ListMemoResources lists resources for a memo.
       operationId: MemoService_ListMemoResources
@@ -1576,7 +1598,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2ListMemoResourcesResponse'
+            $ref: '#/definitions/v1ListMemoResourcesResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1621,7 +1643,7 @@ paths:
             $ref: '#/definitions/MemoServiceSetMemoResourcesBody'
       tags:
         - MemoService
-  /api/v2/{name}/setting:
+  /api/v1/{name}/setting:
     get:
       summary: GetUserSetting gets the setting of a user.
       operationId: UserService_GetUserSetting
@@ -1629,7 +1651,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/apiv2UserSetting'
+            $ref: '#/definitions/apiv1UserSetting'
         default:
           description: An unexpected error response.
           schema:
@@ -1645,7 +1667,7 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
-  /api/v2/{resource.name}:
+  /api/v1/{resource.name}:
     patch:
       summary: UpdateResource updates a resource.
       operationId: ResourceService_UpdateResource
@@ -1653,7 +1675,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2Resource'
+            $ref: '#/definitions/v1Resource'
         default:
           description: An unexpected error response.
           schema:
@@ -1700,7 +1722,7 @@ paths:
                   Format: memos/{id}
       tags:
         - ResourceService
-  /api/v2/{setting.name}:
+  /api/v1/{setting.name}:
     patch:
       summary: UpdateUserSetting updates the setting of a user.
       operationId: UserService_UpdateUserSetting
@@ -1708,7 +1730,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/apiv2UserSetting'
+            $ref: '#/definitions/apiv1UserSetting'
         default:
           description: An unexpected error response.
           schema:
@@ -1739,7 +1761,7 @@ paths:
                 description: The default visibility of the memo.
       tags:
         - UserService
-  /api/v2/{user.name}:
+  /api/v1/{user.name}:
     patch:
       summary: UpdateUser updates a user.
       operationId: UserService_UpdateUser
@@ -1747,7 +1769,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2User'
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
@@ -1786,7 +1808,7 @@ paths:
               password:
                 type: string
               rowStatus:
-                $ref: '#/definitions/v2RowStatus'
+                $ref: '#/definitions/v1RowStatus'
               createTime:
                 type: string
                 format: date-time
@@ -1795,28 +1817,6 @@ paths:
                 format: date-time
       tags:
         - UserService
-  /v2/activities/{id}:
-    get:
-      summary: GetActivity returns the activity with the given id.
-      operationId: ActivityService_GetActivity
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v2Activity'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          description: The system-generated unique identifier for the activity.
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - ActivityService
 definitions:
   MemoServiceSetMemoRelationsBody:
     type: object
@@ -1825,7 +1825,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2MemoRelation'
+          $ref: '#/definitions/v1MemoRelation'
   MemoServiceSetMemoResourcesBody:
     type: object
     properties:
@@ -1833,12 +1833,12 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Resource'
+          $ref: '#/definitions/v1Resource'
   MemoServiceUpsertMemoReactionBody:
     type: object
     properties:
       reaction:
-        $ref: '#/definitions/v2Reaction'
+        $ref: '#/definitions/v1Reaction'
   UserRole:
     type: string
     enum:
@@ -1855,7 +1855,7 @@ definitions:
       expiresAt:
         type: string
         format: date-time
-  apiv2ActivityMemoCommentPayload:
+  apiv1ActivityMemoCommentPayload:
     type: object
     properties:
       memoId:
@@ -1867,20 +1867,20 @@ definitions:
         format: int32
         description: The memo id of related memo.
     description: ActivityMemoCommentPayload represents the payload of a memo comment activity.
-  apiv2ActivityPayload:
+  apiv1ActivityPayload:
     type: object
     properties:
       memoComment:
-        $ref: '#/definitions/apiv2ActivityMemoCommentPayload'
+        $ref: '#/definitions/apiv1ActivityMemoCommentPayload'
       versionUpdate:
-        $ref: '#/definitions/apiv2ActivityVersionUpdatePayload'
-  apiv2ActivityVersionUpdatePayload:
+        $ref: '#/definitions/apiv1ActivityVersionUpdatePayload'
+  apiv1ActivityVersionUpdatePayload:
     type: object
     properties:
       version:
         type: string
         description: The updated version of memos.
-  apiv2FieldMapping:
+  apiv1FieldMapping:
     type: object
     properties:
       identifier:
@@ -1889,7 +1889,7 @@ definitions:
         type: string
       email:
         type: string
-  apiv2IdentityProvider:
+  apiv1IdentityProvider:
     type: object
     properties:
       name:
@@ -1898,25 +1898,25 @@ definitions:
           The name of the identityProvider.
           Format: identityProviders/{id}
       type:
-        $ref: '#/definitions/apiv2IdentityProviderType'
+        $ref: '#/definitions/apiv1IdentityProviderType'
       title:
         type: string
       identifierFilter:
         type: string
       config:
-        $ref: '#/definitions/apiv2IdentityProviderConfig'
-  apiv2IdentityProviderConfig:
+        $ref: '#/definitions/apiv1IdentityProviderConfig'
+  apiv1IdentityProviderConfig:
     type: object
     properties:
       oauth2Config:
-        $ref: '#/definitions/apiv2OAuth2Config'
-  apiv2IdentityProviderType:
+        $ref: '#/definitions/apiv1OAuth2Config'
+  apiv1IdentityProviderType:
     type: string
     enum:
       - TYPE_UNSPECIFIED
       - OAUTH2
     default: TYPE_UNSPECIFIED
-  apiv2OAuth2Config:
+  apiv1OAuth2Config:
     type: object
     properties:
       clientId:
@@ -1934,8 +1934,8 @@ definitions:
         items:
           type: string
       fieldMapping:
-        $ref: '#/definitions/apiv2FieldMapping'
-  apiv2S3Config:
+        $ref: '#/definitions/apiv1FieldMapping'
+  apiv1S3Config:
     type: object
     properties:
       endPoint:
@@ -1956,7 +1956,7 @@ definitions:
         type: string
       preSign:
         type: boolean
-  apiv2Storage:
+  apiv1Storage:
     type: object
     properties:
       id:
@@ -1965,21 +1965,21 @@ definitions:
       title:
         type: string
       type:
-        $ref: '#/definitions/apiv2StorageType'
+        $ref: '#/definitions/apiv1StorageType'
       config:
-        $ref: '#/definitions/apiv2StorageConfig'
-  apiv2StorageConfig:
+        $ref: '#/definitions/apiv1StorageConfig'
+  apiv1StorageConfig:
     type: object
     properties:
       s3Config:
-        $ref: '#/definitions/apiv2S3Config'
-  apiv2StorageType:
+        $ref: '#/definitions/apiv1S3Config'
+  apiv1StorageType:
     type: string
     enum:
       - TYPE_UNSPECIFIED
       - S3
     default: TYPE_UNSPECIFIED
-  apiv2UserSetting:
+  apiv1UserSetting:
     type: object
     properties:
       name:
@@ -1996,7 +1996,7 @@ definitions:
       memoVisibility:
         type: string
         description: The default visibility of the memo.
-  apiv2WorkspaceCustomProfile:
+  apiv1WorkspaceCustomProfile:
     type: object
     properties:
       title:
@@ -2009,7 +2009,7 @@ definitions:
         type: string
       appearance:
         type: string
-  apiv2WorkspaceGeneralSetting:
+  apiv1WorkspaceGeneralSetting:
     type: object
     properties:
       instanceUrl:
@@ -2028,9 +2028,9 @@ definitions:
         type: string
         description: additional_style is the additional style.
       customProfile:
-        $ref: '#/definitions/apiv2WorkspaceCustomProfile'
+        $ref: '#/definitions/apiv1WorkspaceCustomProfile'
         description: custom_profile is the custom profile.
-  apiv2WorkspaceMemoRelatedSetting:
+  apiv1WorkspaceMemoRelatedSetting:
     type: object
     properties:
       disallowPublicVisible:
@@ -2039,7 +2039,7 @@ definitions:
       displayWithUpdateTime:
         type: boolean
         description: display_with_update_time orders and displays memo with update time.
-  apiv2WorkspaceSetting:
+  apiv1WorkspaceSetting:
     type: object
     properties:
       name:
@@ -2048,16 +2048,16 @@ definitions:
           name is the name of the setting.
           Format: settings/{setting}
       generalSetting:
-        $ref: '#/definitions/apiv2WorkspaceGeneralSetting'
+        $ref: '#/definitions/apiv1WorkspaceGeneralSetting'
       storageSetting:
-        $ref: '#/definitions/apiv2WorkspaceStorageSetting'
+        $ref: '#/definitions/apiv1WorkspaceStorageSetting'
       memoRelatedSetting:
-        $ref: '#/definitions/apiv2WorkspaceMemoRelatedSetting'
-  apiv2WorkspaceStorageSetting:
+        $ref: '#/definitions/apiv1WorkspaceMemoRelatedSetting'
+  apiv1WorkspaceStorageSetting:
     type: object
     properties:
       storageType:
-        $ref: '#/definitions/apiv2WorkspaceStorageSettingStorageType'
+        $ref: '#/definitions/apiv1WorkspaceStorageSettingStorageType'
         description: storage_type is the storage type.
       activedExternalStorageId:
         type: integer
@@ -2072,7 +2072,7 @@ definitions:
         type: string
         format: int64
         description: The max upload size in megabytes.
-  apiv2WorkspaceStorageSettingStorageType:
+  apiv1WorkspaceStorageSettingStorageType:
     type: string
     enum:
       - STORAGE_TYPE_UNSPECIFIED
@@ -2103,7 +2103,7 @@ definitions:
       '@type':
         type: string
     additionalProperties: {}
-  v2Activity:
+  v1Activity:
     type: object
     properties:
       id:
@@ -2126,72 +2126,72 @@ definitions:
         description: The create time of the activity.
         readOnly: true
       payload:
-        $ref: '#/definitions/apiv2ActivityPayload'
+        $ref: '#/definitions/apiv1ActivityPayload'
         description: The payload of the activity.
-  v2BatchUpsertTagRequest:
+  v1BatchUpsertTagRequest:
     type: object
     properties:
       requests:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2UpsertTagRequest'
-  v2CreateMemoRequest:
+          $ref: '#/definitions/v1UpsertTagRequest'
+  v1CreateMemoRequest:
     type: object
     properties:
       content:
         type: string
       visibility:
-        $ref: '#/definitions/v2Visibility'
-  v2CreateStorageRequest:
+        $ref: '#/definitions/v1Visibility'
+  v1CreateStorageRequest:
     type: object
     properties:
       storage:
-        $ref: '#/definitions/apiv2Storage'
-  v2CreateStorageResponse:
+        $ref: '#/definitions/apiv1Storage'
+  v1CreateStorageResponse:
     type: object
     properties:
       storage:
-        $ref: '#/definitions/apiv2Storage'
-  v2CreateWebhookRequest:
+        $ref: '#/definitions/apiv1Storage'
+  v1CreateWebhookRequest:
     type: object
     properties:
       name:
         type: string
       url:
         type: string
-  v2DeleteStorageResponse:
+  v1DeleteStorageResponse:
     type: object
-  v2ExportMemosRequest:
+  v1ExportMemosRequest:
     type: object
     properties:
       filter:
         type: string
         title: Same as ListMemosRequest.filter
-  v2ExportMemosResponse:
+  v1ExportMemosResponse:
     type: object
     properties:
       content:
         type: string
         format: byte
-  v2GetLinkMetadataResponse:
+  v1GetLinkMetadataResponse:
     type: object
     properties:
       linkMetadata:
-        $ref: '#/definitions/v2LinkMetadata'
-  v2GetStorageResponse:
+        $ref: '#/definitions/v1LinkMetadata'
+  v1GetStorageResponse:
     type: object
     properties:
       storage:
-        $ref: '#/definitions/apiv2Storage'
-  v2GetTagSuggestionsResponse:
+        $ref: '#/definitions/apiv1Storage'
+  v1GetTagSuggestionsResponse:
     type: object
     properties:
       tags:
         type: array
         items:
           type: string
-  v2GetUserMemosStatsResponse:
+  v1GetUserMemosStatsResponse:
     type: object
     properties:
       stats:
@@ -2202,7 +2202,7 @@ definitions:
         description: |-
           stats is the stats of memo creating/updating activities.
           key is the year-month-day string. e.g. "2020-01-01".
-  v2Inbox:
+  v1Inbox:
     type: object
     properties:
       name:
@@ -2217,30 +2217,30 @@ definitions:
         type: string
         title: 'Format: users/{id}'
       status:
-        $ref: '#/definitions/v2InboxStatus'
+        $ref: '#/definitions/v1InboxStatus'
       createTime:
         type: string
         format: date-time
       type:
-        $ref: '#/definitions/v2InboxType'
+        $ref: '#/definitions/v1InboxType'
       activityId:
         type: integer
         format: int32
-  v2InboxStatus:
+  v1InboxStatus:
     type: string
     enum:
       - STATUS_UNSPECIFIED
       - UNREAD
       - ARCHIVED
     default: STATUS_UNSPECIFIED
-  v2InboxType:
+  v1InboxType:
     type: string
     enum:
       - TYPE_UNSPECIFIED
       - TYPE_MEMO_COMMENT
       - TYPE_VERSION_UPDATE
     default: TYPE_UNSPECIFIED
-  v2LinkMetadata:
+  v1LinkMetadata:
     type: object
     properties:
       title:
@@ -2249,124 +2249,124 @@ definitions:
         type: string
       image:
         type: string
-  v2ListIdentityProvidersResponse:
+  v1ListIdentityProvidersResponse:
     type: object
     properties:
       identityProviders:
         type: array
         items:
           type: object
-          $ref: '#/definitions/apiv2IdentityProvider'
-  v2ListInboxesResponse:
+          $ref: '#/definitions/apiv1IdentityProvider'
+  v1ListInboxesResponse:
     type: object
     properties:
       inboxes:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Inbox'
-  v2ListMemoCommentsResponse:
+          $ref: '#/definitions/v1Inbox'
+  v1ListMemoCommentsResponse:
     type: object
     properties:
       memos:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Memo'
-  v2ListMemoReactionsResponse:
+          $ref: '#/definitions/v1Memo'
+  v1ListMemoReactionsResponse:
     type: object
     properties:
       reactions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Reaction'
-  v2ListMemoRelationsResponse:
+          $ref: '#/definitions/v1Reaction'
+  v1ListMemoRelationsResponse:
     type: object
     properties:
       relations:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2MemoRelation'
-  v2ListMemoResourcesResponse:
+          $ref: '#/definitions/v1MemoRelation'
+  v1ListMemoResourcesResponse:
     type: object
     properties:
       resources:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Resource'
-  v2ListMemosResponse:
+          $ref: '#/definitions/v1Resource'
+  v1ListMemosResponse:
     type: object
     properties:
       memos:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Memo'
+          $ref: '#/definitions/v1Memo'
       nextPageToken:
         type: string
         description: |-
           A token, which can be sent as `page_token` to retrieve the next page.
           If this field is omitted, there are no subsequent pages.
-  v2ListResourcesResponse:
+  v1ListResourcesResponse:
     type: object
     properties:
       resources:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Resource'
-  v2ListStoragesResponse:
+          $ref: '#/definitions/v1Resource'
+  v1ListStoragesResponse:
     type: object
     properties:
       storages:
         type: array
         items:
           type: object
-          $ref: '#/definitions/apiv2Storage'
-  v2ListTagsResponse:
+          $ref: '#/definitions/apiv1Storage'
+  v1ListTagsResponse:
     type: object
     properties:
       tags:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Tag'
-  v2ListUserAccessTokensResponse:
+          $ref: '#/definitions/v1Tag'
+  v1ListUserAccessTokensResponse:
     type: object
     properties:
       accessTokens:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2UserAccessToken'
-  v2ListUsersResponse:
+          $ref: '#/definitions/v1UserAccessToken'
+  v1ListUsersResponse:
     type: object
     properties:
       users:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2User'
-  v2ListWebhooksResponse:
+          $ref: '#/definitions/v1User'
+  v1ListWebhooksResponse:
     type: object
     properties:
       webhooks:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Webhook'
-  v2ListWorkspaceSettingsResponse:
+          $ref: '#/definitions/v1Webhook'
+  v1ListWorkspaceSettingsResponse:
     type: object
     properties:
       settings:
         type: array
         items:
           type: object
-          $ref: '#/definitions/apiv2WorkspaceSetting'
-  v2Memo:
+          $ref: '#/definitions/apiv1WorkspaceSetting'
+  v1Memo:
     type: object
     properties:
       name:
@@ -2379,7 +2379,7 @@ definitions:
         type: string
         description: The user defined id of the memo.
       rowStatus:
-        $ref: '#/definitions/v2RowStatus'
+        $ref: '#/definitions/v1RowStatus'
       creator:
         type: string
         title: |-
@@ -2397,7 +2397,7 @@ definitions:
       content:
         type: string
       visibility:
-        $ref: '#/definitions/v2Visibility'
+        $ref: '#/definitions/v1Visibility'
       pinned:
         type: boolean
       parentId:
@@ -2408,21 +2408,21 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Resource'
+          $ref: '#/definitions/v1Resource'
         readOnly: true
       relations:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2MemoRelation'
+          $ref: '#/definitions/v1MemoRelation'
         readOnly: true
       reactions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Reaction'
+          $ref: '#/definitions/v1Reaction'
         readOnly: true
-  v2MemoRelation:
+  v1MemoRelation:
     type: object
     properties:
       memo:
@@ -2436,15 +2436,15 @@ definitions:
           The name of related memo.
           Format: "memos/{uid}"
       type:
-        $ref: '#/definitions/v2MemoRelationType'
-  v2MemoRelationType:
+        $ref: '#/definitions/v1MemoRelationType'
+  v1MemoRelationType:
     type: string
     enum:
       - TYPE_UNSPECIFIED
       - REFERENCE
       - COMMENT
     default: TYPE_UNSPECIFIED
-  v2Reaction:
+  v1Reaction:
     type: object
     properties:
       id:
@@ -2458,8 +2458,8 @@ definitions:
       contentId:
         type: string
       reactionType:
-        $ref: '#/definitions/v2ReactionType'
-  v2ReactionType:
+        $ref: '#/definitions/v1ReactionType'
+  v1ReactionType:
     type: string
     enum:
       - TYPE_UNSPECIFIED
@@ -2476,7 +2476,7 @@ definitions:
       - CLOWN_FACE
       - QUESTION_MARK
     default: TYPE_UNSPECIFIED
-  v2RenameTagRequest:
+  v1RenameTagRequest:
     type: object
     properties:
       user:
@@ -2488,7 +2488,7 @@ definitions:
         type: string
       newName:
         type: string
-  v2Resource:
+  v1Resource:
     type: object
     properties:
       name:
@@ -2521,38 +2521,38 @@ definitions:
         title: |-
           The related memo.
           Format: memos/{id}
-  v2RowStatus:
+  v1RowStatus:
     type: string
     enum:
       - ROW_STATUS_UNSPECIFIED
       - ACTIVE
       - ARCHIVED
     default: ROW_STATUS_UNSPECIFIED
-  v2SearchMemosResponse:
+  v1SearchMemosResponse:
     type: object
     properties:
       memos:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Memo'
-  v2SearchResourcesResponse:
+          $ref: '#/definitions/v1Memo'
+  v1SearchResourcesResponse:
     type: object
     properties:
       resources:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2Resource'
-  v2SearchUsersResponse:
+          $ref: '#/definitions/v1Resource'
+  v1SearchUsersResponse:
     type: object
     properties:
       users:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v2User'
-  v2Tag:
+          $ref: '#/definitions/v1User'
+  v1Tag:
     type: object
     properties:
       name:
@@ -2562,17 +2562,17 @@ definitions:
         title: |-
           The creator of tags.
           Format: users/{id}
-  v2UpdateStorageResponse:
+  v1UpdateStorageResponse:
     type: object
     properties:
       storage:
-        $ref: '#/definitions/apiv2Storage'
-  v2UpsertTagRequest:
+        $ref: '#/definitions/apiv1Storage'
+  v1UpsertTagRequest:
     type: object
     properties:
       name:
         type: string
-  v2User:
+  v1User:
     type: object
     properties:
       name:
@@ -2599,14 +2599,14 @@ definitions:
       password:
         type: string
       rowStatus:
-        $ref: '#/definitions/v2RowStatus'
+        $ref: '#/definitions/v1RowStatus'
       createTime:
         type: string
         format: date-time
       updateTime:
         type: string
         format: date-time
-  v2UserAccessToken:
+  v1UserAccessToken:
     type: object
     properties:
       accessToken:
@@ -2619,7 +2619,7 @@ definitions:
       expiresAt:
         type: string
         format: date-time
-  v2Visibility:
+  v1Visibility:
     type: string
     enum:
       - VISIBILITY_UNSPECIFIED
@@ -2627,7 +2627,7 @@ definitions:
       - PROTECTED
       - PUBLIC
     default: VISIBILITY_UNSPECIFIED
-  v2Webhook:
+  v1Webhook:
     type: object
     properties:
       id:
@@ -2643,12 +2643,12 @@ definitions:
         type: string
         format: date-time
       rowStatus:
-        $ref: '#/definitions/v2RowStatus'
+        $ref: '#/definitions/v1RowStatus'
       name:
         type: string
       url:
         type: string
-  v2WorkspaceProfile:
+  v1WorkspaceProfile:
     type: object
     properties:
       owner:

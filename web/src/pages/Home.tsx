@@ -15,7 +15,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoList, useMemoStore } from "@/store/v1";
-import { RowStatus } from "@/types/proto/api/v2/common";
+import { RowStatus } from "@/types/proto/api/v1/common";
 import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {

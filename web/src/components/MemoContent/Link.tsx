@@ -1,7 +1,7 @@
 import { Link as MLink, Tooltip } from "@mui/joy";
 import { useState } from "react";
 import { linkServiceClient } from "@/grpcweb";
-import { LinkMetadata } from "@/types/proto/api/v2/link_service";
+import { LinkMetadata } from "@/types/proto/api/v1/link_service";
 
 interface Props {
   url: string;

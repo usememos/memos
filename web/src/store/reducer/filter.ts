@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Visibility } from "@/types/proto/api/v2/memo_service";
+import { Visibility } from "@/types/proto/api/v1/memo_service";
 
 interface State {
   tag?: string;

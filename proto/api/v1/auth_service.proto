@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "api/v1/user_service.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "gen/api/v1";
+
+service AuthService {
+  // GetAuthStatus returns the current auth status of the user.
+  rpc GetAuthStatus(GetAuthStatusRequest) returns (User) {
+    option (google.api.http) = {post: "/api/v1/auth/status"};
+  }
+  // SignIn signs in the user with the given username and password.
+  rpc SignIn(SignInRequest) returns (User) {
+    option (google.api.http) = {post: "/api/v1/auth/signin"};
+  }
+  // SignInWithSSO signs in the user with the given SSO code.
+  rpc SignInWithSSO(SignInWithSSORequest) returns (User) {
+    option (google.api.http) = {post: "/api/v1/auth/signin/sso"};
+  }
+  // SignUp signs up the user with the given username and password.
+  rpc SignUp(SignUpRequest) returns (User) {
+    option (google.api.http) = {post: "/api/v1/auth/signup"};
+  }
+  // SignOut signs out the user.
+  rpc SignOut(SignOutRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {post: "/api/v1/auth/signout"};
+  }
+}
+
+message GetAuthStatusRequest {}
+
+message GetAuthStatusResponse {
+  User user = 1;
+}
+
+message SignInRequest {
+  // The username to sign in with.
+  string username = 1;
+  // The password to sign in with.
+  string password = 2;
+  // Whether the session should never expire.
+  bool never_expire = 3;
+}
+
+message SignInWithSSORequest {
+  // The ID of the SSO provider.
+  int32 idp_id = 1;
+  // The code to sign in with.
+  string code = 2;
+  // The redirect URI.
+  string redirect_uri = 3;
+}
+
+message SignUpRequest {
+  // The username to sign up with.
+  string username = 1;
+  // The password to sign up with.
+  string password = 2;
+}
+
+message SignOutRequest {}

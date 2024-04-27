@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { inboxServiceClient } from "@/grpcweb";
-import { Inbox } from "@/types/proto/api/v2/inbox_service";
+import { Inbox } from "@/types/proto/api/v1/inbox_service";
 
 interface State {
   inboxes: Inbox[];

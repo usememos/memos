@@ -3,9 +3,9 @@ import classNames from "classnames";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
-import { Memo } from "@/types/proto/api/v2/memo_service";
-import { Reaction_Type } from "@/types/proto/api/v2/reaction_service";
-import { User } from "@/types/proto/api/v2/user_service";
+import { Memo } from "@/types/proto/api/v1/memo_service";
+import { Reaction_Type } from "@/types/proto/api/v1/reaction_service";
+import { User } from "@/types/proto/api/v1/user_service";
 
 interface Props {
   memo: Memo;

@@ -14,7 +14,7 @@ import { getTimeStampByDate } from "@/helpers/datetime";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useLoading from "@/hooks/useLoading";
 import { useMemoList, useMemoStore, useUserStore } from "@/store/v1";
-import { User } from "@/types/proto/api/v2/user_service";
+import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = () => {

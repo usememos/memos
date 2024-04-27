@@ -18,7 +18,7 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/route/api/auth"
-	apiv2 "github.com/usememos/memos/server/route/api/v2"
+	apiv1 "github.com/usememos/memos/server/route/api/v1"
 	"github.com/usememos/memos/server/route/frontend"
 	"github.com/usememos/memos/server/route/resource"
 	"github.com/usememos/memos/server/route/rss"
@@ -90,14 +90,14 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
 	grpcServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
-		apiv2.NewLoggerInterceptor().LoggerInterceptor,
-		apiv2.NewGRPCAuthInterceptor(store, secret).AuthenticationInterceptor,
+		apiv1.NewLoggerInterceptor().LoggerInterceptor,
+		apiv1.NewGRPCAuthInterceptor(store, secret).AuthenticationInterceptor,
 	))
 	s.grpcServer = grpcServer
 
-	apiV2Service := apiv2.NewAPIV2Service(s.Secret, profile, store, grpcServer)
-	// Register gRPC gateway as api v2.
-	if err := apiV2Service.RegisterGateway(ctx, echoServer); err != nil {
+	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, grpcServer)
+	// Register gRPC gateway as api v1.
+	if err := apiV1Service.RegisterGateway(ctx, echoServer); err != nil {
 		return nil, errors.Wrap(err, "failed to register gRPC gateway")
 	}
 
@@ -180,7 +180,7 @@ func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb
 }
 
 func grpcRequestSkipper(c echo.Context) bool {
-	return strings.HasPrefix(c.Request().URL.Path, "/memos.api.v2.")
+	return strings.HasPrefix(c.Request().URL.Path, "/memos.api.v1.")
 }
 
 func CORSMiddleware(origins []string) echo.MiddlewareFunc {

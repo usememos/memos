@@ -46,7 +46,7 @@ func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 		HTML5:      true,
 		Filesystem: getFileSystem("dist"),
 		Skipper: func(c echo.Context) bool {
-			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v2", "/robots.txt", "/sitemap.xml", "/m/:name")
+			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
 		},
 	}))
 

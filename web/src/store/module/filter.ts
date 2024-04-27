@@ -1,4 +1,4 @@
-import { Visibility } from "@/types/proto/api/v2/memo_service";
+import { Visibility } from "@/types/proto/api/v1/memo_service";
 import store, { useAppSelector } from "..";
 import { setFilter } from "../reducer/filter";
 

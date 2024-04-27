@@ -1,7 +1,7 @@
 import { IconButton } from "@mui/joy";
 import { useEffect } from "react";
 import { useTagStore } from "@/store/v1";
-import { MemoRelation } from "@/types/proto/api/v2/memo_relation_service";
+import { MemoRelation } from "@/types/proto/api/v1/memo_relation_service";
 import MemoEditor from ".";
 import { generateDialog } from "../Dialog";
 import Icon from "../Icon";

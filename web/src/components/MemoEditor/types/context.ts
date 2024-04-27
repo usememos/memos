@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { MemoRelation } from "@/types/proto/api/v2/memo_relation_service";
+import { MemoRelation } from "@/types/proto/api/v1/memo_relation_service";
 
 interface Context {
   relationList: MemoRelation[];

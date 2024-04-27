@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { absolutifyLink } from "@/helpers/utils";
-import { Resource } from "@/types/proto/api/v2/resource_service";
+import { Resource } from "@/types/proto/api/v1/resource_service";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
 import MemoResource from "./MemoResource";
 import showPreviewImageDialog from "./PreviewImageDialog";

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { authServiceClient, userServiceClient } from "@/grpcweb";
-import { User, UserSetting, User_Role } from "@/types/proto/api/v2/user_service";
+import { User, UserSetting, User_Role } from "@/types/proto/api/v1/user_service";
 
 interface State {
   userMapByName: Record<string, User>;

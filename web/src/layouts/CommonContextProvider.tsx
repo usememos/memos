@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { workspaceServiceClient } from "@/grpcweb";
 import storage from "@/helpers/storage";
 import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
-import { WorkspaceProfile } from "@/types/proto/api/v2/workspace_service";
+import { WorkspaceProfile } from "@/types/proto/api/v1/workspace_service";
 import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 
 interface Context {

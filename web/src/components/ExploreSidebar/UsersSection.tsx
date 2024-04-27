@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "@/store/v1";
-import { User } from "@/types/proto/api/v2/user_service";
+import { User } from "@/types/proto/api/v1/user_service";
 import Icon from "../Icon";
 import UserAvatar from "../UserAvatar";
 

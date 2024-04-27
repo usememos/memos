@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { resourceServiceClient } from "@/grpcweb";
-import { CreateResourceRequest, Resource, UpdateResourceRequest } from "@/types/proto/api/v2/resource_service";
+import { CreateResourceRequest, Resource, UpdateResourceRequest } from "@/types/proto/api/v1/resource_service";
 
 interface State {
   resourceMapByName: Record<string, Resource>;

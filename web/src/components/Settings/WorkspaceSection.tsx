@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { workspaceSettingServiceClient } from "@/grpcweb";
 import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
-import { WorkspaceGeneralSetting, WorkspaceMemoRelatedSetting } from "@/types/proto/api/v2/workspace_setting_service";
+import { WorkspaceGeneralSetting, WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { showCommonDialog } from "../Dialog/CommonDialog";

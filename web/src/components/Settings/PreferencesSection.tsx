@@ -1,8 +1,8 @@
 import { Divider, Option, Select } from "@mui/joy";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useUserStore } from "@/store/v1";
-import { Visibility } from "@/types/proto/api/v2/memo_service";
-import { UserSetting } from "@/types/proto/api/v2/user_service";
+import { Visibility } from "@/types/proto/api/v1/memo_service";
+import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import AppearanceSelect from "../AppearanceSelect";

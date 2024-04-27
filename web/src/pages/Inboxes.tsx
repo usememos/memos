@@ -5,7 +5,7 @@ import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import VersionUpdateMessage from "@/components/Inbox/VersionUpdateMessage";
 import MobileHeader from "@/components/MobileHeader";
 import { useInboxStore } from "@/store/v1";
-import { Inbox_Status, Inbox_Type } from "@/types/proto/api/v2/inbox_service";
+import { Inbox_Status, Inbox_Type } from "@/types/proto/api/v1/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 
 const Inboxes = () => {

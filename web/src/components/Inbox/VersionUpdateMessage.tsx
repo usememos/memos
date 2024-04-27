@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
 import { useInboxStore } from "@/store/v1";
-import { Activity } from "@/types/proto/api/v2/activity_service";
-import { Inbox, Inbox_Status } from "@/types/proto/api/v2/inbox_service";
+import { Activity } from "@/types/proto/api/v1/activity_service";
+import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 

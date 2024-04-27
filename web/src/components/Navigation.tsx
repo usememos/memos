@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Routes } from "@/router";
 import { useInboxStore } from "@/store/v1";
-import { Inbox_Status } from "@/types/proto/api/v2/inbox_service";
+import { Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
 import UserBanner from "./UserBanner";

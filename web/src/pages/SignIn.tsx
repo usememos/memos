@@ -11,8 +11,8 @@ import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { extractIdentityProviderIdFromName, useUserStore, useWorkspaceSettingStore } from "@/store/v1";
-import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v2/idp_service";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v2/workspace_setting_service";
+import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service";
+import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 

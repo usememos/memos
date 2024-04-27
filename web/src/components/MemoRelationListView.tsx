@@ -2,8 +2,8 @@ import { Tooltip } from "@mui/joy";
 import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMemoStore } from "@/store/v1";
-import { MemoRelation } from "@/types/proto/api/v2/memo_relation_service";
-import { Memo } from "@/types/proto/api/v2/memo_service";
+import { MemoRelation } from "@/types/proto/api/v1/memo_relation_service";
+import { Memo } from "@/types/proto/api/v1/memo_service";
 import Icon from "./Icon";
 
 interface Props {

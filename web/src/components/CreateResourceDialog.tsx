@@ -2,7 +2,7 @@ import { Autocomplete, Button, IconButton, Input, List, ListItem, Option, Select
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useResourceStore } from "@/store/v1";
-import { Resource } from "@/types/proto/api/v2/resource_service";
+import { Resource } from "@/types/proto/api/v1/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";

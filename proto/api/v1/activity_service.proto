@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service ActivityService {
+  // GetActivity returns the activity with the given id.
+  rpc GetActivity(GetActivityRequest) returns (Activity) {
+    option (google.api.http) = {get: "/api/v1/activities/{id}"};
+    option (google.api.method_signature) = "id";
+  }
+}
+
+message Activity {
+  // The system-generated unique identifier for the activity.
+  int32 id = 1;
+  // The system-generated unique identifier for the user who created the activity.
+  int32 creator_id = 2;
+  // The type of the activity.
+  string type = 3;
+  // The level of the activity.
+  string level = 4;
+  // The create time of the activity.
+  google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The payload of the activity.
+  ActivityPayload payload = 6;
+}
+
+// ActivityMemoCommentPayload represents the payload of a memo comment activity.
+message ActivityMemoCommentPayload {
+  // The memo id of comment.
+  int32 memo_id = 1;
+  // The memo id of related memo.
+  int32 related_memo_id = 2;
+}
+
+message ActivityVersionUpdatePayload {
+  // The updated version of memos.
+  string version = 1;
+}
+
+message ActivityPayload {
+  ActivityMemoCommentPayload memo_comment = 1;
+  ActivityVersionUpdatePayload version_update = 2;
+}
+
+message GetActivityRequest {
+  // The system-generated unique identifier for the activity.
+  int32 id = 1;
+}

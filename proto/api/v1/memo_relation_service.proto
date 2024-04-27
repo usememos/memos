@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+option go_package = "gen/api/v1";
+
+message MemoRelation {
+  // The name of memo.
+  // Format: "memos/{uid}"
+  string memo = 1;
+
+  // The name of related memo.
+  // Format: "memos/{uid}"
+  string related_memo = 2;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    REFERENCE = 1;
+    COMMENT = 2;
+  }
+  Type type = 3;
+}

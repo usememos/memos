@@ -2,7 +2,7 @@ import { Button, IconButton, Input, Checkbox, Typography } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { storageServiceClient } from "@/grpcweb";
-import { S3Config, Storage, Storage_Type } from "@/types/proto/api/v2/storage_service";
+import { S3Config, Storage, Storage_Type } from "@/types/proto/api/v1/storage_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";

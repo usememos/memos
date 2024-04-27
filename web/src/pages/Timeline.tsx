@@ -17,7 +17,7 @@ import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
 import { useMemoList, useMemoStore } from "@/store/v1";
-import { Memo } from "@/types/proto/api/v2/memo_service";
+import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 
 interface GroupedByMonthItem {

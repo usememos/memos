@@ -2,7 +2,7 @@ import { Button, IconButton, Input } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v2/workspace_setting_service";
+import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";

@@ -11,7 +11,7 @@ import { resourceServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import i18n from "@/i18n";
 import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
-import { Resource } from "@/types/proto/api/v2/resource_service";
+import { Resource } from "@/types/proto/api/v1/resource_service";
 import { useTranslate } from "@/utils/i18n";
 
 function groupResourcesByDate(resources: Resource[]) {

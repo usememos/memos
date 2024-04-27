@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { memoServiceClient } from "@/grpcweb";
 import { useMemoStore, useTagStore } from "@/store/v1";
-import { User } from "@/types/proto/api/v2/user_service";
+import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
 

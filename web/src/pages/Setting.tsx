@@ -12,7 +12,7 @@ import StorageSection from "@/components/Settings/StorageSection";
 import WorkspaceSection from "@/components/Settings/WorkspaceSection";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
-import { User_Role } from "@/types/proto/api/v2/user_service";
+import { User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 type SettingSection = "my-account" | "preference" | "member" | "system" | "storage" | "sso";

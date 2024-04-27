@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { identityProviderServiceClient } from "@/grpcweb";
-import { IdentityProvider } from "@/types/proto/api/v2/idp_service";
+import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
