@@ -1,6 +1,7 @@
 import classNames from "classnames";
-import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
-import { useAutoComplete } from "../hooks";
+import { last } from "lodash-es";
+import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { NodeType, OrderedListNode, TaskListNode, UnorderedListNode } from "@/types/node";
 import TagSuggestions from "./TagSuggestions";
 
 export interface EditorRefActions {
@@ -30,6 +31,7 @@ interface Props {
 
 const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<EditorRefActions>) {
   const { className, initialContent, placeholder, onPaste, onContentChange: handleContentChangeCallback } = props;
+  const [isInIME, setIsInIME] = useState(false);
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -133,8 +135,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     },
   };
 
-  useAutoComplete(editorActions);
-
   useImperativeHandle(ref, () => editorActions, []);
 
   const updateEditorHeight = () => {
@@ -148,6 +148,33 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     handleContentChangeCallback(editorRef.current?.value ?? "");
     updateEditorHeight();
   }, []);
+
+  const handleEditorKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !isInIME) {
+      const cursorPosition = editorActions.getCursorPosition();
+      const prevContent = editorActions.getContent().substring(0, cursorPosition);
+      const lastNode = last(window.parse(prevContent));
+      if (!lastNode) {
+        return;
+      }
+
+      let insertText = "";
+      if (lastNode.type === NodeType.TASK_LIST) {
+        const { complete } = lastNode.value as TaskListNode;
+        insertText = complete ? "- [x] " : "- [ ] ";
+      } else if (lastNode.type === NodeType.UNORDERED_LIST) {
+        const { symbol } = lastNode.value as UnorderedListNode;
+        insertText = `${symbol} `;
+      } else if (lastNode.type === NodeType.ORDERED_LIST) {
+        const { number } = lastNode.value as OrderedListNode;
+        insertText = `${Number(number) + 1}. `;
+      }
+      if (insertText) {
+        editorActions.insertText(`\n${insertText}`);
+        event.preventDefault();
+      }
+    }
+  };
 
   return (
     <div
@@ -163,6 +190,9 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         ref={editorRef}
         onPaste={onPaste}
         onInput={handleEditorInput}
+        onKeyDown={handleEditorKeyDown}
+        onCompositionStart={() => setIsInIME(true)}
+        onCompositionEnd={() => setTimeout(() => setIsInIME(false))}
       ></textarea>
       <TagSuggestions editorRef={editorRef} editorActions={ref} />
     </div>
