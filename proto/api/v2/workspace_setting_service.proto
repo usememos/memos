@@ -14,43 +14,18 @@ service WorkspaceSettingService {
     option (google.api.http) = {get: "/api/v2/workspace/settings"};
   }
   // GetWorkspaceSetting returns the setting by name.
-  rpc GetWorkspaceSetting(GetWorkspaceSettingRequest) returns (GetWorkspaceSettingResponse) {
+  rpc GetWorkspaceSetting(GetWorkspaceSettingRequest) returns (WorkspaceSetting) {
     option (google.api.http) = {get: "/api/v2/workspace/{name=settings/*}"};
     option (google.api.method_signature) = "name";
   }
   // SetWorkspaceSetting updates the setting.
-  rpc SetWorkspaceSetting(SetWorkspaceSettingRequest) returns (SetWorkspaceSettingResponse) {
+  rpc SetWorkspaceSetting(SetWorkspaceSettingRequest) returns (WorkspaceSetting) {
     option (google.api.http) = {
       patch: "/api/v2/workspace/{setting.name=settings/*}",
       body: "setting"
     };
     option (google.api.method_signature) = "setting";
   }
-}
-
-message ListWorkspaceSettingsRequest {}
-
-message ListWorkspaceSettingsResponse {
-  repeated WorkspaceSetting settings = 1;
-}
-
-message GetWorkspaceSettingRequest {
-  // The resource name of the workspace setting.
-  // Format: settings/{setting}
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
-}
-
-message GetWorkspaceSettingResponse {
-  WorkspaceSetting setting = 1;
-}
-
-message SetWorkspaceSettingRequest {
-  // setting is the setting to update.
-  WorkspaceSetting setting = 1;
-}
-
-message SetWorkspaceSettingResponse {
-  WorkspaceSetting setting = 1;
 }
 
 message WorkspaceSetting {
@@ -114,4 +89,21 @@ message WorkspaceMemoRelatedSetting {
   bool disallow_public_visible = 1;
   // display_with_update_time orders and displays memo with update time.
   bool display_with_update_time = 2;
+}
+
+message ListWorkspaceSettingsRequest {}
+
+message ListWorkspaceSettingsResponse {
+  repeated WorkspaceSetting settings = 1;
+}
+
+message GetWorkspaceSettingRequest {
+  // The resource name of the workspace setting.
+  // Format: settings/{setting}
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message SetWorkspaceSettingRequest {
+  // setting is the setting to update.
+  WorkspaceSetting setting = 1;
 }

@@ -3,19 +3,20 @@ syntax = "proto3";
 package memos.api.v2;
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "gen/api/v2";
 
 service TagService {
   // UpsertTag upserts a tag.
-  rpc UpsertTag(UpsertTagRequest) returns (UpsertTagResponse) {
+  rpc UpsertTag(UpsertTagRequest) returns (Tag) {
     option (google.api.http) = {
       post: "/api/v2/tags",
       body: "*"
     };
   }
   // BatchUpsertTag upserts multiple tags.
-  rpc BatchUpsertTag(BatchUpsertTagRequest) returns (BatchUpsertTagResponse) {
+  rpc BatchUpsertTag(BatchUpsertTagRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/api/v2/tags:batchUpsert",
       body: "*"
@@ -27,14 +28,14 @@ service TagService {
   }
   // RenameTag renames a tag.
   // All related memos will be updated.
-  rpc RenameTag(RenameTagRequest) returns (RenameTagResponse) {
+  rpc RenameTag(RenameTagRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       patch: "/api/v2/tags:rename",
       body: "*"
     };
   }
   // DeleteTag deletes a tag.
-  rpc DeleteTag(DeleteTagRequest) returns (DeleteTagResponse) {
+  rpc DeleteTag(DeleteTagRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v2/tags"};
   }
   // GetTagSuggestions gets tag suggestions from the user's memos.
@@ -54,15 +55,9 @@ message UpsertTagRequest {
   string name = 1;
 }
 
-message UpsertTagResponse {
-  Tag tag = 1;
-}
-
 message BatchUpsertTagRequest {
   repeated UpsertTagRequest requests = 1;
 }
-
-message BatchUpsertTagResponse {}
 
 message ListTagsRequest {}
 
@@ -78,15 +73,9 @@ message RenameTagRequest {
   string new_name = 3;
 }
 
-message RenameTagResponse {
-  Tag tag = 1;
-}
-
 message DeleteTagRequest {
   Tag tag = 1;
 }
-
-message DeleteTagResponse {}
 
 message GetTagSuggestionsRequest {
   // The creator of tags.

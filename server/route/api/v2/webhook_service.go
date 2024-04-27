@@ -6,13 +6,14 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV2Service) CreateWebhook(ctx context.Context, request *apiv2pb.CreateWebhookRequest) (*apiv2pb.CreateWebhookResponse, error) {
+func (s *APIV2Service) CreateWebhook(ctx context.Context, request *apiv2pb.CreateWebhookRequest) (*apiv2pb.Webhook, error) {
 	currentUser, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -26,9 +27,7 @@ func (s *APIV2Service) CreateWebhook(ctx context.Context, request *apiv2pb.Creat
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create webhook, error: %+v", err)
 	}
-	return &apiv2pb.CreateWebhookResponse{
-		Webhook: convertWebhookFromStore(webhook),
-	}, nil
+	return convertWebhookFromStore(webhook), nil
 }
 
 func (s *APIV2Service) ListWebhooks(ctx context.Context, request *apiv2pb.ListWebhooksRequest) (*apiv2pb.ListWebhooksResponse, error) {
@@ -48,7 +47,7 @@ func (s *APIV2Service) ListWebhooks(ctx context.Context, request *apiv2pb.ListWe
 	return response, nil
 }
 
-func (s *APIV2Service) GetWebhook(ctx context.Context, request *apiv2pb.GetWebhookRequest) (*apiv2pb.GetWebhookResponse, error) {
+func (s *APIV2Service) GetWebhook(ctx context.Context, request *apiv2pb.GetWebhookRequest) (*apiv2pb.Webhook, error) {
 	currentUser, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -64,12 +63,10 @@ func (s *APIV2Service) GetWebhook(ctx context.Context, request *apiv2pb.GetWebho
 	if webhook == nil {
 		return nil, status.Errorf(codes.NotFound, "webhook not found")
 	}
-	return &apiv2pb.GetWebhookResponse{
-		Webhook: convertWebhookFromStore(webhook),
-	}, nil
+	return convertWebhookFromStore(webhook), nil
 }
 
-func (s *APIV2Service) UpdateWebhook(ctx context.Context, request *apiv2pb.UpdateWebhookRequest) (*apiv2pb.UpdateWebhookResponse, error) {
+func (s *APIV2Service) UpdateWebhook(ctx context.Context, request *apiv2pb.UpdateWebhookRequest) (*apiv2pb.Webhook, error) {
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update_mask is required")
 	}
@@ -91,19 +88,17 @@ func (s *APIV2Service) UpdateWebhook(ctx context.Context, request *apiv2pb.Updat
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update webhook, error: %+v", err)
 	}
-	return &apiv2pb.UpdateWebhookResponse{
-		Webhook: convertWebhookFromStore(webhook),
-	}, nil
+	return convertWebhookFromStore(webhook), nil
 }
 
-func (s *APIV2Service) DeleteWebhook(ctx context.Context, request *apiv2pb.DeleteWebhookRequest) (*apiv2pb.DeleteWebhookResponse, error) {
+func (s *APIV2Service) DeleteWebhook(ctx context.Context, request *apiv2pb.DeleteWebhookRequest) (*emptypb.Empty, error) {
 	err := s.Store.DeleteWebhook(ctx, &store.DeleteWebhook{
 		ID: request.Id,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete webhook, error: %+v", err)
 	}
-	return &apiv2pb.DeleteWebhookResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func convertWebhookFromStore(webhook *store.Webhook) *apiv2pb.Webhook {

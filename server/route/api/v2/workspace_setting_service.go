@@ -30,7 +30,7 @@ func (s *APIV2Service) ListWorkspaceSettings(ctx context.Context, _ *apiv2pb.Lis
 	return response, nil
 }
 
-func (s *APIV2Service) GetWorkspaceSetting(ctx context.Context, request *apiv2pb.GetWorkspaceSettingRequest) (*apiv2pb.GetWorkspaceSettingResponse, error) {
+func (s *APIV2Service) GetWorkspaceSetting(ctx context.Context, request *apiv2pb.GetWorkspaceSettingRequest) (*apiv2pb.WorkspaceSetting, error) {
 	settingKeyString, err := ExtractWorkspaceSettingKeyFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid workspace setting name: %v", err)
@@ -46,12 +46,10 @@ func (s *APIV2Service) GetWorkspaceSetting(ctx context.Context, request *apiv2pb
 		return nil, status.Errorf(codes.NotFound, "workspace setting not found")
 	}
 
-	return &apiv2pb.GetWorkspaceSettingResponse{
-		Setting: convertWorkspaceSettingFromStore(workspaceSetting),
-	}, nil
+	return convertWorkspaceSettingFromStore(workspaceSetting), nil
 }
 
-func (s *APIV2Service) SetWorkspaceSetting(ctx context.Context, request *apiv2pb.SetWorkspaceSettingRequest) (*apiv2pb.SetWorkspaceSettingResponse, error) {
+func (s *APIV2Service) SetWorkspaceSetting(ctx context.Context, request *apiv2pb.SetWorkspaceSettingRequest) (*apiv2pb.WorkspaceSetting, error) {
 	if s.Profile.Mode == "demo" {
 		return nil, status.Errorf(codes.InvalidArgument, "setting workspace setting is not allowed in demo mode")
 	}
@@ -64,11 +62,12 @@ func (s *APIV2Service) SetWorkspaceSetting(ctx context.Context, request *apiv2pb
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	if _, err := s.Store.UpsertWorkspaceSetting(ctx, convertWorkspaceSettingToStore(request.Setting)); err != nil {
+	workspaceSetting, err := s.Store.UpsertWorkspaceSetting(ctx, convertWorkspaceSettingToStore(request.Setting))
+	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert workspace setting: %v", err)
 	}
 
-	return &apiv2pb.SetWorkspaceSettingResponse{}, nil
+	return convertWorkspaceSettingFromStore(workspaceSetting), nil
 }
 
 func convertWorkspaceSettingFromStore(setting *storepb.WorkspaceSetting) *apiv2pb.WorkspaceSetting {

@@ -23,10 +23,7 @@ export const useWorkspaceSettingStore = create(
       set({ workspaceSettingByName: settings.reduce((acc, setting) => ({ ...acc, [setting.name]: setting }), {}) });
     },
     fetchWorkspaceSetting: async (key: WorkspaceSettingKey) => {
-      const { setting } = await workspaceSettingServiceClient.getWorkspaceSetting({ name: `${WorkspaceSettingPrefix}${key}` });
-      if (!setting) {
-        throw new Error("Workspace setting not found");
-      }
+      const setting = await workspaceSettingServiceClient.getWorkspaceSetting({ name: `${WorkspaceSettingPrefix}${key}` });
       set({ workspaceSettingByName: { ...get().workspaceSettingByName, [setting.name]: setting } });
     },
     getWorkspaceSettingByKey: (key: WorkspaceSettingKey): WorkspaceSetting => {

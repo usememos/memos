@@ -31,9 +31,9 @@ type WorkspaceSettingServiceClient interface {
 	// ListWorkspaceSetting returns the list of settings.
 	ListWorkspaceSettings(ctx context.Context, in *ListWorkspaceSettingsRequest, opts ...grpc.CallOption) (*ListWorkspaceSettingsResponse, error)
 	// GetWorkspaceSetting returns the setting by name.
-	GetWorkspaceSetting(ctx context.Context, in *GetWorkspaceSettingRequest, opts ...grpc.CallOption) (*GetWorkspaceSettingResponse, error)
+	GetWorkspaceSetting(ctx context.Context, in *GetWorkspaceSettingRequest, opts ...grpc.CallOption) (*WorkspaceSetting, error)
 	// SetWorkspaceSetting updates the setting.
-	SetWorkspaceSetting(ctx context.Context, in *SetWorkspaceSettingRequest, opts ...grpc.CallOption) (*SetWorkspaceSettingResponse, error)
+	SetWorkspaceSetting(ctx context.Context, in *SetWorkspaceSettingRequest, opts ...grpc.CallOption) (*WorkspaceSetting, error)
 }
 
 type workspaceSettingServiceClient struct {
@@ -53,8 +53,8 @@ func (c *workspaceSettingServiceClient) ListWorkspaceSettings(ctx context.Contex
 	return out, nil
 }
 
-func (c *workspaceSettingServiceClient) GetWorkspaceSetting(ctx context.Context, in *GetWorkspaceSettingRequest, opts ...grpc.CallOption) (*GetWorkspaceSettingResponse, error) {
-	out := new(GetWorkspaceSettingResponse)
+func (c *workspaceSettingServiceClient) GetWorkspaceSetting(ctx context.Context, in *GetWorkspaceSettingRequest, opts ...grpc.CallOption) (*WorkspaceSetting, error) {
+	out := new(WorkspaceSetting)
 	err := c.cc.Invoke(ctx, WorkspaceSettingService_GetWorkspaceSetting_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -62,8 +62,8 @@ func (c *workspaceSettingServiceClient) GetWorkspaceSetting(ctx context.Context,
 	return out, nil
 }
 
-func (c *workspaceSettingServiceClient) SetWorkspaceSetting(ctx context.Context, in *SetWorkspaceSettingRequest, opts ...grpc.CallOption) (*SetWorkspaceSettingResponse, error) {
-	out := new(SetWorkspaceSettingResponse)
+func (c *workspaceSettingServiceClient) SetWorkspaceSetting(ctx context.Context, in *SetWorkspaceSettingRequest, opts ...grpc.CallOption) (*WorkspaceSetting, error) {
+	out := new(WorkspaceSetting)
 	err := c.cc.Invoke(ctx, WorkspaceSettingService_SetWorkspaceSetting_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -78,9 +78,9 @@ type WorkspaceSettingServiceServer interface {
 	// ListWorkspaceSetting returns the list of settings.
 	ListWorkspaceSettings(context.Context, *ListWorkspaceSettingsRequest) (*ListWorkspaceSettingsResponse, error)
 	// GetWorkspaceSetting returns the setting by name.
-	GetWorkspaceSetting(context.Context, *GetWorkspaceSettingRequest) (*GetWorkspaceSettingResponse, error)
+	GetWorkspaceSetting(context.Context, *GetWorkspaceSettingRequest) (*WorkspaceSetting, error)
 	// SetWorkspaceSetting updates the setting.
-	SetWorkspaceSetting(context.Context, *SetWorkspaceSettingRequest) (*SetWorkspaceSettingResponse, error)
+	SetWorkspaceSetting(context.Context, *SetWorkspaceSettingRequest) (*WorkspaceSetting, error)
 	mustEmbedUnimplementedWorkspaceSettingServiceServer()
 }
 
@@ -91,10 +91,10 @@ type UnimplementedWorkspaceSettingServiceServer struct {
 func (UnimplementedWorkspaceSettingServiceServer) ListWorkspaceSettings(context.Context, *ListWorkspaceSettingsRequest) (*ListWorkspaceSettingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListWorkspaceSettings not implemented")
 }
-func (UnimplementedWorkspaceSettingServiceServer) GetWorkspaceSetting(context.Context, *GetWorkspaceSettingRequest) (*GetWorkspaceSettingResponse, error) {
+func (UnimplementedWorkspaceSettingServiceServer) GetWorkspaceSetting(context.Context, *GetWorkspaceSettingRequest) (*WorkspaceSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorkspaceSetting not implemented")
 }
-func (UnimplementedWorkspaceSettingServiceServer) SetWorkspaceSetting(context.Context, *SetWorkspaceSettingRequest) (*SetWorkspaceSettingResponse, error) {
+func (UnimplementedWorkspaceSettingServiceServer) SetWorkspaceSetting(context.Context, *SetWorkspaceSettingRequest) (*WorkspaceSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetWorkspaceSetting not implemented")
 }
 func (UnimplementedWorkspaceSettingServiceServer) mustEmbedUnimplementedWorkspaceSettingServiceServer() {

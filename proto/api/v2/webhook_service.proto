@@ -5,6 +5,7 @@ package memos.api.v2;
 import "api/v2/common.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -12,14 +13,14 @@ option go_package = "gen/api/v2";
 
 service WebhookService {
   // CreateWebhook creates a new webhook.
-  rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse) {
+  rpc CreateWebhook(CreateWebhookRequest) returns (Webhook) {
     option (google.api.http) = {
       post: "/api/v2/webhooks"
       body: "*"
     };
   }
   // GetWebhook returns a webhook by id.
-  rpc GetWebhook(GetWebhookRequest) returns (GetWebhookResponse) {
+  rpc GetWebhook(GetWebhookRequest) returns (Webhook) {
     option (google.api.http) = {get: "/api/v2/webhooks/{id}"};
     option (google.api.method_signature) = "id";
   }
@@ -28,7 +29,7 @@ service WebhookService {
     option (google.api.http) = {get: "/api/v2/webhooks"};
   }
   // UpdateWebhook updates a webhook.
-  rpc UpdateWebhook(UpdateWebhookRequest) returns (UpdateWebhookResponse) {
+  rpc UpdateWebhook(UpdateWebhookRequest) returns (Webhook) {
     option (google.api.http) = {
       patch: "/api/v2/webhooks/{webhook.id}"
       body: "webhook"
@@ -36,7 +37,7 @@ service WebhookService {
     option (google.api.method_signature) = "webhook,update_mask";
   }
   // DeleteWebhook deletes a webhook by id.
-  rpc DeleteWebhook(DeleteWebhookRequest) returns (DeleteWebhookResponse) {
+  rpc DeleteWebhook(DeleteWebhookRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v2/webhooks/{id}"};
     option (google.api.method_signature) = "id";
   }
@@ -64,16 +65,8 @@ message CreateWebhookRequest {
   string url = 2;
 }
 
-message CreateWebhookResponse {
-  Webhook webhook = 1;
-}
-
 message GetWebhookRequest {
   int32 id = 1;
-}
-
-message GetWebhookResponse {
-  Webhook webhook = 1;
 }
 
 message ListWebhooksRequest {
@@ -90,12 +83,6 @@ message UpdateWebhookRequest {
   google.protobuf.FieldMask update_mask = 2;
 }
 
-message UpdateWebhookResponse {
-  Webhook webhook = 1;
-}
-
 message DeleteWebhookRequest {
   int32 id = 1;
 }
-
-message DeleteWebhookResponse {}

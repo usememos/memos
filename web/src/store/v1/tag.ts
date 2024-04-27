@@ -15,12 +15,12 @@ export const useTagStore = create(
     setState: (state: State) => set(state),
     getState: () => get(),
     fetchTags: async (options?: { skipCache: boolean }) => {
-      const { tags } = get();
-      if (tags.size && !options?.skipCache) {
-        return tags;
+      const { tags: tagsCache } = get();
+      if (tagsCache.size && !options?.skipCache) {
+        return tagsCache;
       }
-      const res = await tagServiceClient.listTags({});
-      set({ tags: new Set(res.tags.map((tag) => tag.name)) });
+      const { tags } = await tagServiceClient.listTags({});
+      set({ tags: new Set(tags.map((tag) => tag.name)) });
       return tags;
     },
     upsertTag: async (tagName: string) => {

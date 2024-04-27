@@ -52,7 +52,7 @@ export const useUserStore = create(
         .getUser({
           name: name,
         })
-        .then(({ user }) => user);
+        .then((user) => user);
       requestCache.set(name, promisedUser);
       const user = await promisedUser;
       if (!user) {
@@ -88,13 +88,10 @@ export const useUserStore = create(
       return userMap[name];
     },
     updateUser: async (user: Partial<User>, updateMask: string[]) => {
-      const { user: updatedUser } = await userServiceClient.updateUser({
+      const updatedUser = await userServiceClient.updateUser({
         user: user,
         updateMask: updateMask,
       });
-      if (!updatedUser) {
-        throw new Error("User not found");
-      }
       const userMap = get().userMapByName;
       if (user.name && user.name !== updatedUser.name) {
         delete userMap[user.name];
@@ -119,7 +116,7 @@ export const useUserStore = create(
       const userMap = get().userMapByName;
       userMap[user.name] = user;
       set({ currentUser: user.name, userMapByName: userMap });
-      const { setting } = await userServiceClient.getUserSetting({});
+      const setting = await userServiceClient.getUserSetting({});
       set({
         userSetting: UserSetting.fromPartial({
           ...getDefaultUserSetting(),
@@ -129,13 +126,10 @@ export const useUserStore = create(
       return user;
     },
     updateUserSetting: async (userSetting: Partial<UserSetting>, updateMask: string[]) => {
-      const { setting: updatedUserSetting } = await userServiceClient.updateUserSetting({
+      const updatedUserSetting = await userServiceClient.updateUserSetting({
         setting: userSetting,
         updateMask: updateMask,
       });
-      if (!updatedUserSetting) {
-        throw new Error("User setting not found");
-      }
       set({ userSetting: updatedUserSetting });
       return updatedUserSetting;
     },

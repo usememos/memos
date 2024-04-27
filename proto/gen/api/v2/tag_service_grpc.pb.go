@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -32,16 +33,16 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TagServiceClient interface {
 	// UpsertTag upserts a tag.
-	UpsertTag(ctx context.Context, in *UpsertTagRequest, opts ...grpc.CallOption) (*UpsertTagResponse, error)
+	UpsertTag(ctx context.Context, in *UpsertTagRequest, opts ...grpc.CallOption) (*Tag, error)
 	// BatchUpsertTag upserts multiple tags.
-	BatchUpsertTag(ctx context.Context, in *BatchUpsertTagRequest, opts ...grpc.CallOption) (*BatchUpsertTagResponse, error)
+	BatchUpsertTag(ctx context.Context, in *BatchUpsertTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListTags lists tags.
 	ListTags(ctx context.Context, in *ListTagsRequest, opts ...grpc.CallOption) (*ListTagsResponse, error)
 	// RenameTag renames a tag.
 	// All related memos will be updated.
-	RenameTag(ctx context.Context, in *RenameTagRequest, opts ...grpc.CallOption) (*RenameTagResponse, error)
+	RenameTag(ctx context.Context, in *RenameTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// DeleteTag deletes a tag.
-	DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*DeleteTagResponse, error)
+	DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetTagSuggestions gets tag suggestions from the user's memos.
 	GetTagSuggestions(ctx context.Context, in *GetTagSuggestionsRequest, opts ...grpc.CallOption) (*GetTagSuggestionsResponse, error)
 }
@@ -54,8 +55,8 @@ func NewTagServiceClient(cc grpc.ClientConnInterface) TagServiceClient {
 	return &tagServiceClient{cc}
 }
 
-func (c *tagServiceClient) UpsertTag(ctx context.Context, in *UpsertTagRequest, opts ...grpc.CallOption) (*UpsertTagResponse, error) {
-	out := new(UpsertTagResponse)
+func (c *tagServiceClient) UpsertTag(ctx context.Context, in *UpsertTagRequest, opts ...grpc.CallOption) (*Tag, error) {
+	out := new(Tag)
 	err := c.cc.Invoke(ctx, TagService_UpsertTag_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -63,8 +64,8 @@ func (c *tagServiceClient) UpsertTag(ctx context.Context, in *UpsertTagRequest, 
 	return out, nil
 }
 
-func (c *tagServiceClient) BatchUpsertTag(ctx context.Context, in *BatchUpsertTagRequest, opts ...grpc.CallOption) (*BatchUpsertTagResponse, error) {
-	out := new(BatchUpsertTagResponse)
+func (c *tagServiceClient) BatchUpsertTag(ctx context.Context, in *BatchUpsertTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, TagService_BatchUpsertTag_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -81,8 +82,8 @@ func (c *tagServiceClient) ListTags(ctx context.Context, in *ListTagsRequest, op
 	return out, nil
 }
 
-func (c *tagServiceClient) RenameTag(ctx context.Context, in *RenameTagRequest, opts ...grpc.CallOption) (*RenameTagResponse, error) {
-	out := new(RenameTagResponse)
+func (c *tagServiceClient) RenameTag(ctx context.Context, in *RenameTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, TagService_RenameTag_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -90,8 +91,8 @@ func (c *tagServiceClient) RenameTag(ctx context.Context, in *RenameTagRequest, 
 	return out, nil
 }
 
-func (c *tagServiceClient) DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*DeleteTagResponse, error) {
-	out := new(DeleteTagResponse)
+func (c *tagServiceClient) DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, TagService_DeleteTag_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -113,16 +114,16 @@ func (c *tagServiceClient) GetTagSuggestions(ctx context.Context, in *GetTagSugg
 // for forward compatibility
 type TagServiceServer interface {
 	// UpsertTag upserts a tag.
-	UpsertTag(context.Context, *UpsertTagRequest) (*UpsertTagResponse, error)
+	UpsertTag(context.Context, *UpsertTagRequest) (*Tag, error)
 	// BatchUpsertTag upserts multiple tags.
-	BatchUpsertTag(context.Context, *BatchUpsertTagRequest) (*BatchUpsertTagResponse, error)
+	BatchUpsertTag(context.Context, *BatchUpsertTagRequest) (*emptypb.Empty, error)
 	// ListTags lists tags.
 	ListTags(context.Context, *ListTagsRequest) (*ListTagsResponse, error)
 	// RenameTag renames a tag.
 	// All related memos will be updated.
-	RenameTag(context.Context, *RenameTagRequest) (*RenameTagResponse, error)
+	RenameTag(context.Context, *RenameTagRequest) (*emptypb.Empty, error)
 	// DeleteTag deletes a tag.
-	DeleteTag(context.Context, *DeleteTagRequest) (*DeleteTagResponse, error)
+	DeleteTag(context.Context, *DeleteTagRequest) (*emptypb.Empty, error)
 	// GetTagSuggestions gets tag suggestions from the user's memos.
 	GetTagSuggestions(context.Context, *GetTagSuggestionsRequest) (*GetTagSuggestionsResponse, error)
 	mustEmbedUnimplementedTagServiceServer()
@@ -132,19 +133,19 @@ type TagServiceServer interface {
 type UnimplementedTagServiceServer struct {
 }
 
-func (UnimplementedTagServiceServer) UpsertTag(context.Context, *UpsertTagRequest) (*UpsertTagResponse, error) {
+func (UnimplementedTagServiceServer) UpsertTag(context.Context, *UpsertTagRequest) (*Tag, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpsertTag not implemented")
 }
-func (UnimplementedTagServiceServer) BatchUpsertTag(context.Context, *BatchUpsertTagRequest) (*BatchUpsertTagResponse, error) {
+func (UnimplementedTagServiceServer) BatchUpsertTag(context.Context, *BatchUpsertTagRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchUpsertTag not implemented")
 }
 func (UnimplementedTagServiceServer) ListTags(context.Context, *ListTagsRequest) (*ListTagsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTags not implemented")
 }
-func (UnimplementedTagServiceServer) RenameTag(context.Context, *RenameTagRequest) (*RenameTagResponse, error) {
+func (UnimplementedTagServiceServer) RenameTag(context.Context, *RenameTagRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RenameTag not implemented")
 }
-func (UnimplementedTagServiceServer) DeleteTag(context.Context, *DeleteTagRequest) (*DeleteTagResponse, error) {
+func (UnimplementedTagServiceServer) DeleteTag(context.Context, *DeleteTagRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTag not implemented")
 }
 func (UnimplementedTagServiceServer) GetTagSuggestions(context.Context, *GetTagSuggestionsRequest) (*GetTagSuggestionsResponse, error) {

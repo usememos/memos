@@ -13,12 +13,13 @@ import (
 	"github.com/yourselfhosted/gomark/restore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV2Service) UpsertTag(ctx context.Context, request *apiv2pb.UpsertTagRequest) (*apiv2pb.UpsertTagResponse, error) {
+func (s *APIV2Service) UpsertTag(ctx context.Context, request *apiv2pb.UpsertTagRequest) (*apiv2pb.Tag, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
@@ -32,22 +33,20 @@ func (s *APIV2Service) UpsertTag(ctx context.Context, request *apiv2pb.UpsertTag
 		return nil, status.Errorf(codes.Internal, "failed to upsert tag: %v", err)
 	}
 
-	t, err := s.convertTagFromStore(ctx, tag)
+	tagMessage, err := s.convertTagFromStore(ctx, tag)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to convert tag: %v", err)
 	}
-	return &apiv2pb.UpsertTagResponse{
-		Tag: t,
-	}, nil
+	return tagMessage, nil
 }
 
-func (s *APIV2Service) BatchUpsertTag(ctx context.Context, request *apiv2pb.BatchUpsertTagRequest) (*apiv2pb.BatchUpsertTagResponse, error) {
+func (s *APIV2Service) BatchUpsertTag(ctx context.Context, request *apiv2pb.BatchUpsertTagRequest) (*emptypb.Empty, error) {
 	for _, r := range request.Requests {
 		if _, err := s.UpsertTag(ctx, r); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to batch upsert tags: %v", err)
 		}
 	}
-	return &apiv2pb.BatchUpsertTagResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *APIV2Service) ListTags(ctx context.Context, _ *apiv2pb.ListTagsRequest) (*apiv2pb.ListTagsResponse, error) {
@@ -77,7 +76,7 @@ func (s *APIV2Service) ListTags(ctx context.Context, _ *apiv2pb.ListTagsRequest)
 	return response, nil
 }
 
-func (s *APIV2Service) RenameTag(ctx context.Context, request *apiv2pb.RenameTagRequest) (*apiv2pb.RenameTagResponse, error) {
+func (s *APIV2Service) RenameTag(ctx context.Context, request *apiv2pb.RenameTagRequest) (*emptypb.Empty, error) {
 	userID, err := ExtractUserIDFromName(request.User)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -127,22 +126,17 @@ func (s *APIV2Service) RenameTag(ctx context.Context, request *apiv2pb.RenameTag
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete tag: %v", err)
 	}
-	tag, err := s.Store.UpsertTag(ctx, &store.Tag{
+	if _, err := s.Store.UpsertTag(ctx, &store.Tag{
 		CreatorID: user.ID,
 		Name:      request.NewName,
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert tag: %v", err)
 	}
 
-	tagMessage, err := s.convertTagFromStore(ctx, tag)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to convert tag: %v", err)
-	}
-	return &apiv2pb.RenameTagResponse{Tag: tagMessage}, nil
+	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV2Service) DeleteTag(ctx context.Context, request *apiv2pb.DeleteTagRequest) (*apiv2pb.DeleteTagResponse, error) {
+func (s *APIV2Service) DeleteTag(ctx context.Context, request *apiv2pb.DeleteTagRequest) (*emptypb.Empty, error) {
 	userID, err := ExtractUserIDFromName(request.Tag.Creator)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -163,7 +157,7 @@ func (s *APIV2Service) DeleteTag(ctx context.Context, request *apiv2pb.DeleteTag
 		return nil, status.Errorf(codes.Internal, "failed to delete tag: %v", err)
 	}
 
-	return &apiv2pb.DeleteTagResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *APIV2Service) GetTagSuggestions(ctx context.Context, request *apiv2pb.GetTagSuggestionsRequest) (*apiv2pb.GetTagSuggestionsResponse, error) {

@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -41,23 +42,23 @@ type UserServiceClient interface {
 	// SearchUsers searches users by filter.
 	SearchUsers(ctx context.Context, in *SearchUsersRequest, opts ...grpc.CallOption) (*SearchUsersResponse, error)
 	// GetUser gets a user by name.
-	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)
 	// CreateUser creates a new user.
-	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
 	// UpdateUser updates a user.
-	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error)
 	// DeleteUser deletes a user.
-	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
+	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetUserSetting gets the setting of a user.
-	GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*GetUserSettingResponse, error)
+	GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
 	// UpdateUserSetting updates the setting of a user.
-	UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UpdateUserSettingResponse, error)
+	UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(ctx context.Context, in *ListUserAccessTokensRequest, opts ...grpc.CallOption) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
-	CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*CreateUserAccessTokenResponse, error)
+	CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*UserAccessToken, error)
 	// DeleteUserAccessToken deletes an access token for a user.
-	DeleteUserAccessToken(ctx context.Context, in *DeleteUserAccessTokenRequest, opts ...grpc.CallOption) (*DeleteUserAccessTokenResponse, error)
+	DeleteUserAccessToken(ctx context.Context, in *DeleteUserAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type userServiceClient struct {
@@ -86,8 +87,8 @@ func (c *userServiceClient) SearchUsers(ctx context.Context, in *SearchUsersRequ
 	return out, nil
 }
 
-func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
-	out := new(GetUserResponse)
+func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, UserService_GetUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -95,8 +96,8 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opt
 	return out, nil
 }
 
-func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
-	out := new(CreateUserResponse)
+func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, UserService_CreateUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -104,8 +105,8 @@ func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserReques
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
-	out := new(UpdateUserResponse)
+func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, UserService_UpdateUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -113,8 +114,8 @@ func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateUserReques
 	return out, nil
 }
 
-func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error) {
-	out := new(DeleteUserResponse)
+func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, UserService_DeleteUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -122,8 +123,8 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 	return out, nil
 }
 
-func (c *userServiceClient) GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*GetUserSettingResponse, error) {
-	out := new(GetUserSettingResponse)
+func (c *userServiceClient) GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error) {
+	out := new(UserSetting)
 	err := c.cc.Invoke(ctx, UserService_GetUserSetting_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -131,8 +132,8 @@ func (c *userServiceClient) GetUserSetting(ctx context.Context, in *GetUserSetti
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UpdateUserSettingResponse, error) {
-	out := new(UpdateUserSettingResponse)
+func (c *userServiceClient) UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error) {
+	out := new(UserSetting)
 	err := c.cc.Invoke(ctx, UserService_UpdateUserSetting_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -149,8 +150,8 @@ func (c *userServiceClient) ListUserAccessTokens(ctx context.Context, in *ListUs
 	return out, nil
 }
 
-func (c *userServiceClient) CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*CreateUserAccessTokenResponse, error) {
-	out := new(CreateUserAccessTokenResponse)
+func (c *userServiceClient) CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*UserAccessToken, error) {
+	out := new(UserAccessToken)
 	err := c.cc.Invoke(ctx, UserService_CreateUserAccessToken_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -158,8 +159,8 @@ func (c *userServiceClient) CreateUserAccessToken(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *userServiceClient) DeleteUserAccessToken(ctx context.Context, in *DeleteUserAccessTokenRequest, opts ...grpc.CallOption) (*DeleteUserAccessTokenResponse, error) {
-	out := new(DeleteUserAccessTokenResponse)
+func (c *userServiceClient) DeleteUserAccessToken(ctx context.Context, in *DeleteUserAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, UserService_DeleteUserAccessToken_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -176,23 +177,23 @@ type UserServiceServer interface {
 	// SearchUsers searches users by filter.
 	SearchUsers(context.Context, *SearchUsersRequest) (*SearchUsersResponse, error)
 	// GetUser gets a user by name.
-	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	GetUser(context.Context, *GetUserRequest) (*User, error)
 	// CreateUser creates a new user.
-	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	CreateUser(context.Context, *CreateUserRequest) (*User, error)
 	// UpdateUser updates a user.
-	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
 	// DeleteUser deletes a user.
-	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
+	DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
 	// GetUserSetting gets the setting of a user.
-	GetUserSetting(context.Context, *GetUserSettingRequest) (*GetUserSettingResponse, error)
+	GetUserSetting(context.Context, *GetUserSettingRequest) (*UserSetting, error)
 	// UpdateUserSetting updates the setting of a user.
-	UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UpdateUserSettingResponse, error)
+	UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UserSetting, error)
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(context.Context, *ListUserAccessTokensRequest) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
-	CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*CreateUserAccessTokenResponse, error)
+	CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*UserAccessToken, error)
 	// DeleteUserAccessToken deletes an access token for a user.
-	DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*DeleteUserAccessTokenResponse, error)
+	DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -206,31 +207,31 @@ func (UnimplementedUserServiceServer) ListUsers(context.Context, *ListUsersReque
 func (UnimplementedUserServiceServer) SearchUsers(context.Context, *SearchUsersRequest) (*SearchUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchUsers not implemented")
 }
-func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
+func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
+func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
-func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
+func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
-func (UnimplementedUserServiceServer) GetUserSetting(context.Context, *GetUserSettingRequest) (*GetUserSettingResponse, error) {
+func (UnimplementedUserServiceServer) GetUserSetting(context.Context, *GetUserSettingRequest) (*UserSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserSetting not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UpdateUserSettingResponse, error) {
+func (UnimplementedUserServiceServer) UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UserSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserSetting not implemented")
 }
 func (UnimplementedUserServiceServer) ListUserAccessTokens(context.Context, *ListUserAccessTokensRequest) (*ListUserAccessTokensResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserAccessTokens not implemented")
 }
-func (UnimplementedUserServiceServer) CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*CreateUserAccessTokenResponse, error) {
+func (UnimplementedUserServiceServer) CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*UserAccessToken, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUserAccessToken not implemented")
 }
-func (UnimplementedUserServiceServer) DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*DeleteUserAccessTokenResponse, error) {
+func (UnimplementedUserServiceServer) DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserAccessToken not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
