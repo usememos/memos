@@ -4,6 +4,7 @@ package memos.api.v2;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -15,7 +16,7 @@ service InboxService {
     option (google.api.http) = {get: "/api/v2/inboxes"};
   }
   // UpdateInbox updates an inbox.
-  rpc UpdateInbox(UpdateInboxRequest) returns (UpdateInboxResponse) {
+  rpc UpdateInbox(UpdateInboxRequest) returns (Inbox) {
     option (google.api.http) = {
       patch: "/api/v2/{inbox.name=inboxes/*}"
       body: "inbox"
@@ -23,7 +24,7 @@ service InboxService {
     option (google.api.method_signature) = "inbox,update_mask";
   }
   // DeleteInbox deletes an inbox.
-  rpc DeleteInbox(DeleteInboxRequest) returns (DeleteInboxResponse) {
+  rpc DeleteInbox(DeleteInboxRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v2/{name=inboxes/*}"};
     option (google.api.method_signature) = "name";
   }
@@ -72,14 +73,8 @@ message UpdateInboxRequest {
   google.protobuf.FieldMask update_mask = 2;
 }
 
-message UpdateInboxResponse {
-  Inbox inbox = 1;
-}
-
 message DeleteInboxRequest {
   // The name of the inbox to delete.
   // Format: inboxes/{id}
   string name = 1;
 }
-
-message DeleteInboxResponse {}

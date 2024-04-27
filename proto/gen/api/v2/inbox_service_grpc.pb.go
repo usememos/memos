@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -31,9 +32,9 @@ type InboxServiceClient interface {
 	// ListInboxes lists inboxes for a user.
 	ListInboxes(ctx context.Context, in *ListInboxesRequest, opts ...grpc.CallOption) (*ListInboxesResponse, error)
 	// UpdateInbox updates an inbox.
-	UpdateInbox(ctx context.Context, in *UpdateInboxRequest, opts ...grpc.CallOption) (*UpdateInboxResponse, error)
+	UpdateInbox(ctx context.Context, in *UpdateInboxRequest, opts ...grpc.CallOption) (*Inbox, error)
 	// DeleteInbox deletes an inbox.
-	DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*DeleteInboxResponse, error)
+	DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type inboxServiceClient struct {
@@ -53,8 +54,8 @@ func (c *inboxServiceClient) ListInboxes(ctx context.Context, in *ListInboxesReq
 	return out, nil
 }
 
-func (c *inboxServiceClient) UpdateInbox(ctx context.Context, in *UpdateInboxRequest, opts ...grpc.CallOption) (*UpdateInboxResponse, error) {
-	out := new(UpdateInboxResponse)
+func (c *inboxServiceClient) UpdateInbox(ctx context.Context, in *UpdateInboxRequest, opts ...grpc.CallOption) (*Inbox, error) {
+	out := new(Inbox)
 	err := c.cc.Invoke(ctx, InboxService_UpdateInbox_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -62,8 +63,8 @@ func (c *inboxServiceClient) UpdateInbox(ctx context.Context, in *UpdateInboxReq
 	return out, nil
 }
 
-func (c *inboxServiceClient) DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*DeleteInboxResponse, error) {
-	out := new(DeleteInboxResponse)
+func (c *inboxServiceClient) DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, InboxService_DeleteInbox_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -78,9 +79,9 @@ type InboxServiceServer interface {
 	// ListInboxes lists inboxes for a user.
 	ListInboxes(context.Context, *ListInboxesRequest) (*ListInboxesResponse, error)
 	// UpdateInbox updates an inbox.
-	UpdateInbox(context.Context, *UpdateInboxRequest) (*UpdateInboxResponse, error)
+	UpdateInbox(context.Context, *UpdateInboxRequest) (*Inbox, error)
 	// DeleteInbox deletes an inbox.
-	DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error)
+	DeleteInbox(context.Context, *DeleteInboxRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedInboxServiceServer()
 }
 
@@ -91,10 +92,10 @@ type UnimplementedInboxServiceServer struct {
 func (UnimplementedInboxServiceServer) ListInboxes(context.Context, *ListInboxesRequest) (*ListInboxesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListInboxes not implemented")
 }
-func (UnimplementedInboxServiceServer) UpdateInbox(context.Context, *UpdateInboxRequest) (*UpdateInboxResponse, error) {
+func (UnimplementedInboxServiceServer) UpdateInbox(context.Context, *UpdateInboxRequest) (*Inbox, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateInbox not implemented")
 }
-func (UnimplementedInboxServiceServer) DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error) {
+func (UnimplementedInboxServiceServer) DeleteInbox(context.Context, *DeleteInboxRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInbox not implemented")
 }
 func (UnimplementedInboxServiceServer) mustEmbedUnimplementedInboxServiceServer() {}

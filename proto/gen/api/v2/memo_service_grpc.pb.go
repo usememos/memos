@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -43,29 +44,29 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MemoServiceClient interface {
 	// CreateMemo creates a memo.
-	CreateMemo(ctx context.Context, in *CreateMemoRequest, opts ...grpc.CallOption) (*CreateMemoResponse, error)
+	CreateMemo(ctx context.Context, in *CreateMemoRequest, opts ...grpc.CallOption) (*Memo, error)
 	// ListMemos lists memos with pagination and filter.
 	ListMemos(ctx context.Context, in *ListMemosRequest, opts ...grpc.CallOption) (*ListMemosResponse, error)
 	// SearchMemos searches memos.
 	SearchMemos(ctx context.Context, in *SearchMemosRequest, opts ...grpc.CallOption) (*SearchMemosResponse, error)
 	// GetMemo gets a memo.
-	GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*GetMemoResponse, error)
+	GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*Memo, error)
 	// UpdateMemo updates a memo.
-	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*UpdateMemoResponse, error)
+	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*Memo, error)
 	// DeleteMemo deletes a memo.
-	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*DeleteMemoResponse, error)
+	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ExportMemos exports memos.
 	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error)
 	// SetMemoResources sets resources for a memo.
-	SetMemoResources(ctx context.Context, in *SetMemoResourcesRequest, opts ...grpc.CallOption) (*SetMemoResourcesResponse, error)
+	SetMemoResources(ctx context.Context, in *SetMemoResourcesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListMemoResources lists resources for a memo.
 	ListMemoResources(ctx context.Context, in *ListMemoResourcesRequest, opts ...grpc.CallOption) (*ListMemoResourcesResponse, error)
 	// SetMemoRelations sets relations for a memo.
-	SetMemoRelations(ctx context.Context, in *SetMemoRelationsRequest, opts ...grpc.CallOption) (*SetMemoRelationsResponse, error)
+	SetMemoRelations(ctx context.Context, in *SetMemoRelationsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListMemoRelations lists relations for a memo.
 	ListMemoRelations(ctx context.Context, in *ListMemoRelationsRequest, opts ...grpc.CallOption) (*ListMemoRelationsResponse, error)
 	// CreateMemoComment creates a comment for a memo.
-	CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*CreateMemoCommentResponse, error)
+	CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*Memo, error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error)
 	// GetUserMemosStats gets stats of memos for a user.
@@ -73,9 +74,9 @@ type MemoServiceClient interface {
 	// ListMemoReactions lists reactions for a memo.
 	ListMemoReactions(ctx context.Context, in *ListMemoReactionsRequest, opts ...grpc.CallOption) (*ListMemoReactionsResponse, error)
 	// UpsertMemoReaction upserts a reaction for a memo.
-	UpsertMemoReaction(ctx context.Context, in *UpsertMemoReactionRequest, opts ...grpc.CallOption) (*UpsertMemoReactionResponse, error)
+	UpsertMemoReaction(ctx context.Context, in *UpsertMemoReactionRequest, opts ...grpc.CallOption) (*Reaction, error)
 	// DeleteMemoReaction deletes a reaction for a memo.
-	DeleteMemoReaction(ctx context.Context, in *DeleteMemoReactionRequest, opts ...grpc.CallOption) (*DeleteMemoReactionResponse, error)
+	DeleteMemoReaction(ctx context.Context, in *DeleteMemoReactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type memoServiceClient struct {
@@ -86,8 +87,8 @@ func NewMemoServiceClient(cc grpc.ClientConnInterface) MemoServiceClient {
 	return &memoServiceClient{cc}
 }
 
-func (c *memoServiceClient) CreateMemo(ctx context.Context, in *CreateMemoRequest, opts ...grpc.CallOption) (*CreateMemoResponse, error) {
-	out := new(CreateMemoResponse)
+func (c *memoServiceClient) CreateMemo(ctx context.Context, in *CreateMemoRequest, opts ...grpc.CallOption) (*Memo, error) {
+	out := new(Memo)
 	err := c.cc.Invoke(ctx, MemoService_CreateMemo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -113,8 +114,8 @@ func (c *memoServiceClient) SearchMemos(ctx context.Context, in *SearchMemosRequ
 	return out, nil
 }
 
-func (c *memoServiceClient) GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*GetMemoResponse, error) {
-	out := new(GetMemoResponse)
+func (c *memoServiceClient) GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*Memo, error) {
+	out := new(Memo)
 	err := c.cc.Invoke(ctx, MemoService_GetMemo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -122,8 +123,8 @@ func (c *memoServiceClient) GetMemo(ctx context.Context, in *GetMemoRequest, opt
 	return out, nil
 }
 
-func (c *memoServiceClient) UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*UpdateMemoResponse, error) {
-	out := new(UpdateMemoResponse)
+func (c *memoServiceClient) UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*Memo, error) {
+	out := new(Memo)
 	err := c.cc.Invoke(ctx, MemoService_UpdateMemo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -131,8 +132,8 @@ func (c *memoServiceClient) UpdateMemo(ctx context.Context, in *UpdateMemoReques
 	return out, nil
 }
 
-func (c *memoServiceClient) DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*DeleteMemoResponse, error) {
-	out := new(DeleteMemoResponse)
+func (c *memoServiceClient) DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MemoService_DeleteMemo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -149,8 +150,8 @@ func (c *memoServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequ
 	return out, nil
 }
 
-func (c *memoServiceClient) SetMemoResources(ctx context.Context, in *SetMemoResourcesRequest, opts ...grpc.CallOption) (*SetMemoResourcesResponse, error) {
-	out := new(SetMemoResourcesResponse)
+func (c *memoServiceClient) SetMemoResources(ctx context.Context, in *SetMemoResourcesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MemoService_SetMemoResources_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -167,8 +168,8 @@ func (c *memoServiceClient) ListMemoResources(ctx context.Context, in *ListMemoR
 	return out, nil
 }
 
-func (c *memoServiceClient) SetMemoRelations(ctx context.Context, in *SetMemoRelationsRequest, opts ...grpc.CallOption) (*SetMemoRelationsResponse, error) {
-	out := new(SetMemoRelationsResponse)
+func (c *memoServiceClient) SetMemoRelations(ctx context.Context, in *SetMemoRelationsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MemoService_SetMemoRelations_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -185,8 +186,8 @@ func (c *memoServiceClient) ListMemoRelations(ctx context.Context, in *ListMemoR
 	return out, nil
 }
 
-func (c *memoServiceClient) CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*CreateMemoCommentResponse, error) {
-	out := new(CreateMemoCommentResponse)
+func (c *memoServiceClient) CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*Memo, error) {
+	out := new(Memo)
 	err := c.cc.Invoke(ctx, MemoService_CreateMemoComment_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -221,8 +222,8 @@ func (c *memoServiceClient) ListMemoReactions(ctx context.Context, in *ListMemoR
 	return out, nil
 }
 
-func (c *memoServiceClient) UpsertMemoReaction(ctx context.Context, in *UpsertMemoReactionRequest, opts ...grpc.CallOption) (*UpsertMemoReactionResponse, error) {
-	out := new(UpsertMemoReactionResponse)
+func (c *memoServiceClient) UpsertMemoReaction(ctx context.Context, in *UpsertMemoReactionRequest, opts ...grpc.CallOption) (*Reaction, error) {
+	out := new(Reaction)
 	err := c.cc.Invoke(ctx, MemoService_UpsertMemoReaction_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -230,8 +231,8 @@ func (c *memoServiceClient) UpsertMemoReaction(ctx context.Context, in *UpsertMe
 	return out, nil
 }
 
-func (c *memoServiceClient) DeleteMemoReaction(ctx context.Context, in *DeleteMemoReactionRequest, opts ...grpc.CallOption) (*DeleteMemoReactionResponse, error) {
-	out := new(DeleteMemoReactionResponse)
+func (c *memoServiceClient) DeleteMemoReaction(ctx context.Context, in *DeleteMemoReactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MemoService_DeleteMemoReaction_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -244,29 +245,29 @@ func (c *memoServiceClient) DeleteMemoReaction(ctx context.Context, in *DeleteMe
 // for forward compatibility
 type MemoServiceServer interface {
 	// CreateMemo creates a memo.
-	CreateMemo(context.Context, *CreateMemoRequest) (*CreateMemoResponse, error)
+	CreateMemo(context.Context, *CreateMemoRequest) (*Memo, error)
 	// ListMemos lists memos with pagination and filter.
 	ListMemos(context.Context, *ListMemosRequest) (*ListMemosResponse, error)
 	// SearchMemos searches memos.
 	SearchMemos(context.Context, *SearchMemosRequest) (*SearchMemosResponse, error)
 	// GetMemo gets a memo.
-	GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error)
+	GetMemo(context.Context, *GetMemoRequest) (*Memo, error)
 	// UpdateMemo updates a memo.
-	UpdateMemo(context.Context, *UpdateMemoRequest) (*UpdateMemoResponse, error)
+	UpdateMemo(context.Context, *UpdateMemoRequest) (*Memo, error)
 	// DeleteMemo deletes a memo.
-	DeleteMemo(context.Context, *DeleteMemoRequest) (*DeleteMemoResponse, error)
+	DeleteMemo(context.Context, *DeleteMemoRequest) (*emptypb.Empty, error)
 	// ExportMemos exports memos.
 	ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error)
 	// SetMemoResources sets resources for a memo.
-	SetMemoResources(context.Context, *SetMemoResourcesRequest) (*SetMemoResourcesResponse, error)
+	SetMemoResources(context.Context, *SetMemoResourcesRequest) (*emptypb.Empty, error)
 	// ListMemoResources lists resources for a memo.
 	ListMemoResources(context.Context, *ListMemoResourcesRequest) (*ListMemoResourcesResponse, error)
 	// SetMemoRelations sets relations for a memo.
-	SetMemoRelations(context.Context, *SetMemoRelationsRequest) (*SetMemoRelationsResponse, error)
+	SetMemoRelations(context.Context, *SetMemoRelationsRequest) (*emptypb.Empty, error)
 	// ListMemoRelations lists relations for a memo.
 	ListMemoRelations(context.Context, *ListMemoRelationsRequest) (*ListMemoRelationsResponse, error)
 	// CreateMemoComment creates a comment for a memo.
-	CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*CreateMemoCommentResponse, error)
+	CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*Memo, error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error)
 	// GetUserMemosStats gets stats of memos for a user.
@@ -274,9 +275,9 @@ type MemoServiceServer interface {
 	// ListMemoReactions lists reactions for a memo.
 	ListMemoReactions(context.Context, *ListMemoReactionsRequest) (*ListMemoReactionsResponse, error)
 	// UpsertMemoReaction upserts a reaction for a memo.
-	UpsertMemoReaction(context.Context, *UpsertMemoReactionRequest) (*UpsertMemoReactionResponse, error)
+	UpsertMemoReaction(context.Context, *UpsertMemoReactionRequest) (*Reaction, error)
 	// DeleteMemoReaction deletes a reaction for a memo.
-	DeleteMemoReaction(context.Context, *DeleteMemoReactionRequest) (*DeleteMemoReactionResponse, error)
+	DeleteMemoReaction(context.Context, *DeleteMemoReactionRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedMemoServiceServer()
 }
 
@@ -284,7 +285,7 @@ type MemoServiceServer interface {
 type UnimplementedMemoServiceServer struct {
 }
 
-func (UnimplementedMemoServiceServer) CreateMemo(context.Context, *CreateMemoRequest) (*CreateMemoResponse, error) {
+func (UnimplementedMemoServiceServer) CreateMemo(context.Context, *CreateMemoRequest) (*Memo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMemo not implemented")
 }
 func (UnimplementedMemoServiceServer) ListMemos(context.Context, *ListMemosRequest) (*ListMemosResponse, error) {
@@ -293,31 +294,31 @@ func (UnimplementedMemoServiceServer) ListMemos(context.Context, *ListMemosReque
 func (UnimplementedMemoServiceServer) SearchMemos(context.Context, *SearchMemosRequest) (*SearchMemosResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchMemos not implemented")
 }
-func (UnimplementedMemoServiceServer) GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error) {
+func (UnimplementedMemoServiceServer) GetMemo(context.Context, *GetMemoRequest) (*Memo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemo not implemented")
 }
-func (UnimplementedMemoServiceServer) UpdateMemo(context.Context, *UpdateMemoRequest) (*UpdateMemoResponse, error) {
+func (UnimplementedMemoServiceServer) UpdateMemo(context.Context, *UpdateMemoRequest) (*Memo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemo not implemented")
 }
-func (UnimplementedMemoServiceServer) DeleteMemo(context.Context, *DeleteMemoRequest) (*DeleteMemoResponse, error) {
+func (UnimplementedMemoServiceServer) DeleteMemo(context.Context, *DeleteMemoRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMemo not implemented")
 }
 func (UnimplementedMemoServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportMemos not implemented")
 }
-func (UnimplementedMemoServiceServer) SetMemoResources(context.Context, *SetMemoResourcesRequest) (*SetMemoResourcesResponse, error) {
+func (UnimplementedMemoServiceServer) SetMemoResources(context.Context, *SetMemoResourcesRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetMemoResources not implemented")
 }
 func (UnimplementedMemoServiceServer) ListMemoResources(context.Context, *ListMemoResourcesRequest) (*ListMemoResourcesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMemoResources not implemented")
 }
-func (UnimplementedMemoServiceServer) SetMemoRelations(context.Context, *SetMemoRelationsRequest) (*SetMemoRelationsResponse, error) {
+func (UnimplementedMemoServiceServer) SetMemoRelations(context.Context, *SetMemoRelationsRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetMemoRelations not implemented")
 }
 func (UnimplementedMemoServiceServer) ListMemoRelations(context.Context, *ListMemoRelationsRequest) (*ListMemoRelationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMemoRelations not implemented")
 }
-func (UnimplementedMemoServiceServer) CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*CreateMemoCommentResponse, error) {
+func (UnimplementedMemoServiceServer) CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*Memo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMemoComment not implemented")
 }
 func (UnimplementedMemoServiceServer) ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error) {
@@ -329,10 +330,10 @@ func (UnimplementedMemoServiceServer) GetUserMemosStats(context.Context, *GetUse
 func (UnimplementedMemoServiceServer) ListMemoReactions(context.Context, *ListMemoReactionsRequest) (*ListMemoReactionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMemoReactions not implemented")
 }
-func (UnimplementedMemoServiceServer) UpsertMemoReaction(context.Context, *UpsertMemoReactionRequest) (*UpsertMemoReactionResponse, error) {
+func (UnimplementedMemoServiceServer) UpsertMemoReaction(context.Context, *UpsertMemoReactionRequest) (*Reaction, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpsertMemoReaction not implemented")
 }
-func (UnimplementedMemoServiceServer) DeleteMemoReaction(context.Context, *DeleteMemoReactionRequest) (*DeleteMemoReactionResponse, error) {
+func (UnimplementedMemoServiceServer) DeleteMemoReaction(context.Context, *DeleteMemoReactionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMemoReaction not implemented")
 }
 func (UnimplementedMemoServiceServer) mustEmbedUnimplementedMemoServiceServer() {}

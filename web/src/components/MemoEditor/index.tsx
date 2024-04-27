@@ -9,7 +9,7 @@ import { isValidUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore, useResourceStore, useUserStore, useWorkspaceSettingStore, useTagStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
-import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
+import { Visibility } from "@/types/proto/api/v2/memo_service";
 import { Resource } from "@/types/proto/api/v2/resource_service";
 import { UserSetting } from "@/types/proto/api/v2/user_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v2/workspace_setting_service";
@@ -342,7 +342,7 @@ const MemoEditor = (props: Props) => {
                   visibility: state.memoVisibility,
                 },
               })
-              .then(({ memo }) => memo as Memo);
+              .then((memo) => memo);
         const memo = await request;
         await memoServiceClient.setMemoResources({
           name: memo.name,

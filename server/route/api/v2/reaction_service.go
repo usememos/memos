@@ -6,6 +6,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -33,7 +34,7 @@ func (s *APIV2Service) ListMemoReactions(ctx context.Context, request *apiv2pb.L
 	return response, nil
 }
 
-func (s *APIV2Service) UpsertMemoReaction(ctx context.Context, request *apiv2pb.UpsertMemoReactionRequest) (*apiv2pb.UpsertMemoReactionResponse, error) {
+func (s *APIV2Service) UpsertMemoReaction(ctx context.Context, request *apiv2pb.UpsertMemoReactionRequest) (*apiv2pb.Reaction, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
@@ -51,19 +52,17 @@ func (s *APIV2Service) UpsertMemoReaction(ctx context.Context, request *apiv2pb.
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to convert reaction")
 	}
-	return &apiv2pb.UpsertMemoReactionResponse{
-		Reaction: reactionMessage,
-	}, nil
+	return reactionMessage, nil
 }
 
-func (s *APIV2Service) DeleteMemoReaction(ctx context.Context, request *apiv2pb.DeleteMemoReactionRequest) (*apiv2pb.DeleteMemoReactionResponse, error) {
+func (s *APIV2Service) DeleteMemoReaction(ctx context.Context, request *apiv2pb.DeleteMemoReactionRequest) (*emptypb.Empty, error) {
 	if err := s.Store.DeleteReaction(ctx, &store.DeleteReaction{
 		ID: request.ReactionId,
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete reaction")
 	}
 
-	return &apiv2pb.DeleteMemoReactionResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *APIV2Service) convertReactionFromStore(ctx context.Context, reaction *store.Reaction) (*apiv2pb.Reaction, error) {

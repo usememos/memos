@@ -14,6 +14,7 @@ import (
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/internal/util"
@@ -29,7 +30,7 @@ const (
 	ChunkSize        = 64 * 1024 // 64 KiB
 )
 
-func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMemoRequest) (*apiv2pb.CreateMemoResponse, error) {
+func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMemoRequest) (*apiv2pb.Memo, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
@@ -69,10 +70,7 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		slog.Warn("Failed to dispatch memo created webhook", err)
 	}
 
-	response := &apiv2pb.CreateMemoResponse{
-		Memo: memoMessage,
-	}
-	return response, nil
+	return memoMessage, nil
 }
 
 func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemosRequest) (*apiv2pb.ListMemosResponse, error) {
@@ -162,7 +160,7 @@ func (s *APIV2Service) SearchMemos(ctx context.Context, request *apiv2pb.SearchM
 	return response, nil
 }
 
-func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequest) (*apiv2pb.GetMemoResponse, error) {
+func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequest) (*apiv2pb.Memo, error) {
 	id, err := ExtractMemoIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
@@ -193,13 +191,10 @@ func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequ
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
-	response := &apiv2pb.GetMemoResponse{
-		Memo: memoMessage,
-	}
-	return response, nil
+	return memoMessage, nil
 }
 
-func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMemoRequest) (*apiv2pb.UpdateMemoResponse, error) {
+func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMemoRequest) (*apiv2pb.Memo, error) {
 	id, err := ExtractMemoIDFromName(request.Memo.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
@@ -283,12 +278,10 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 		slog.Warn("Failed to dispatch memo updated webhook", err)
 	}
 
-	return &apiv2pb.UpdateMemoResponse{
-		Memo: memoMessage,
-	}, nil
+	return memoMessage, nil
 }
 
-func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMemoRequest) (*apiv2pb.DeleteMemoResponse, error) {
+func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMemoRequest) (*emptypb.Empty, error) {
 	id, err := ExtractMemoIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
@@ -319,10 +312,10 @@ func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMe
 		return nil, status.Errorf(codes.Internal, "failed to delete memo")
 	}
 
-	return &apiv2pb.DeleteMemoResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.CreateMemoCommentRequest) (*apiv2pb.CreateMemoCommentResponse, error) {
+func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.CreateMemoCommentRequest) (*apiv2pb.Memo, error) {
 	id, err := ExtractMemoIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
@@ -333,13 +326,12 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 	}
 
 	// Create the comment memo first.
-	createMemoResponse, err := s.CreateMemo(ctx, request.Comment)
+	memo, err := s.CreateMemo(ctx, request.Comment)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo")
 	}
 
 	// Build the relation between the comment memo and the original memo.
-	memo := createMemoResponse.Memo
 	memoID, err := ExtractMemoIDFromName(memo.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
@@ -384,10 +376,7 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 		}
 	}
 
-	response := &apiv2pb.CreateMemoCommentResponse{
-		Memo: memo,
-	}
-	return response, nil
+	return memo, nil
 }
 
 func (s *APIV2Service) ListMemoComments(ctx context.Context, request *apiv2pb.ListMemoCommentsRequest) (*apiv2pb.ListMemoCommentsResponse, error) {

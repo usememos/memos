@@ -4,28 +4,29 @@ package memos.api.v2;
 
 import "api/v2/user_service.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "gen/api/v2";
 
 service AuthService {
   // GetAuthStatus returns the current auth status of the user.
-  rpc GetAuthStatus(GetAuthStatusRequest) returns (GetAuthStatusResponse) {
+  rpc GetAuthStatus(GetAuthStatusRequest) returns (User) {
     option (google.api.http) = {post: "/api/v2/auth/status"};
   }
   // SignIn signs in the user with the given username and password.
-  rpc SignIn(SignInRequest) returns (SignInResponse) {
+  rpc SignIn(SignInRequest) returns (User) {
     option (google.api.http) = {post: "/api/v2/auth/signin"};
   }
   // SignInWithSSO signs in the user with the given SSO code.
-  rpc SignInWithSSO(SignInWithSSORequest) returns (SignInWithSSOResponse) {
+  rpc SignInWithSSO(SignInWithSSORequest) returns (User) {
     option (google.api.http) = {post: "/api/v2/auth/signin/sso"};
   }
   // SignUp signs up the user with the given username and password.
-  rpc SignUp(SignUpRequest) returns (SignUpResponse) {
+  rpc SignUp(SignUpRequest) returns (User) {
     option (google.api.http) = {post: "/api/v2/auth/signup"};
   }
   // SignOut signs out the user.
-  rpc SignOut(SignOutRequest) returns (SignOutResponse) {
+  rpc SignOut(SignOutRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {post: "/api/v2/auth/signout"};
   }
 }
@@ -45,10 +46,6 @@ message SignInRequest {
   bool never_expire = 3;
 }
 
-message SignInResponse {
-  User user = 1;
-}
-
 message SignInWithSSORequest {
   // The ID of the SSO provider.
   int32 idp_id = 1;
@@ -58,10 +55,6 @@ message SignInWithSSORequest {
   string redirect_uri = 3;
 }
 
-message SignInWithSSOResponse {
-  User user = 1;
-}
-
 message SignUpRequest {
   // The username to sign up with.
   string username = 1;
@@ -69,10 +62,4 @@ message SignUpRequest {
   string password = 2;
 }
 
-message SignUpResponse {
-  User user = 1;
-}
-
 message SignOutRequest {}
-
-message SignOutResponse {}

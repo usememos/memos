@@ -115,10 +115,7 @@ export const useUserStore = create(
       set({ userMapByName: userMap });
     },
     fetchCurrentUser: async () => {
-      const { user } = await authServiceClient.getAuthStatus({});
-      if (!user) {
-        throw new Error("User not found");
-      }
+      const user = await authServiceClient.getAuthStatus({});
       const userMap = get().userMapByName;
       userMap[user.name] = user;
       set({ currentUser: user.name, userMapByName: userMap });

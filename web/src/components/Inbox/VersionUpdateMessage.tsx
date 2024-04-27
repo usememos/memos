@@ -24,13 +24,9 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
     }
 
     (async () => {
-      const { activity } = await activityServiceClient.getActivity({
+      const activity = await activityServiceClient.getActivity({
         id: inbox.activityId,
       });
-      if (!activity) {
-        return;
-      }
-
       setActivity(activity);
     })();
   }, [inbox.activityId]);

@@ -80,13 +80,9 @@ const SignIn = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      const { user } = await authServiceClient.signIn({ username, password, neverExpire: remember });
-      if (user) {
-        await userStore.fetchCurrentUser();
-        navigateTo("/");
-      } else {
-        toast.error(t("message.login-failed"));
-      }
+      await authServiceClient.signIn({ username, password, neverExpire: remember });
+      await userStore.fetchCurrentUser();
+      navigateTo("/");
     } catch (error: any) {
       console.error(error);
       toast.error((error as ClientError).details || t("message.login-failed"));

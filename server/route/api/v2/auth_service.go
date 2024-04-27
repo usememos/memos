@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/idp"
@@ -23,7 +24,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV2Service) GetAuthStatus(ctx context.Context, _ *apiv2pb.GetAuthStatusRequest) (*apiv2pb.GetAuthStatusResponse, error) {
+func (s *APIV2Service) GetAuthStatus(ctx context.Context, _ *apiv2pb.GetAuthStatusRequest) (*apiv2pb.User, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
@@ -35,12 +36,10 @@ func (s *APIV2Service) GetAuthStatus(ctx context.Context, _ *apiv2pb.GetAuthStat
 		}
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
 	}
-	return &apiv2pb.GetAuthStatusResponse{
-		User: convertUserFromStore(user),
-	}, nil
+	return convertUserFromStore(user), nil
 }
 
-func (s *APIV2Service) SignIn(ctx context.Context, request *apiv2pb.SignInRequest) (*apiv2pb.SignInResponse, error) {
+func (s *APIV2Service) SignIn(ctx context.Context, request *apiv2pb.SignInRequest) (*apiv2pb.User, error) {
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
 		Username: &request.Username,
 	})
@@ -66,12 +65,10 @@ func (s *APIV2Service) SignIn(ctx context.Context, request *apiv2pb.SignInReques
 	if err := s.doSignIn(ctx, user, expireTime); err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to sign in, err: %s", err))
 	}
-	return &apiv2pb.SignInResponse{
-		User: convertUserFromStore(user),
-	}, nil
+	return convertUserFromStore(user), nil
 }
 
-func (s *APIV2Service) SignInWithSSO(ctx context.Context, request *apiv2pb.SignInWithSSORequest) (*apiv2pb.SignInWithSSOResponse, error) {
+func (s *APIV2Service) SignInWithSSO(ctx context.Context, request *apiv2pb.SignInWithSSORequest) (*apiv2pb.User, error) {
 	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
 		ID: &request.IdpId,
 	})
@@ -144,9 +141,7 @@ func (s *APIV2Service) SignInWithSSO(ctx context.Context, request *apiv2pb.SignI
 	if err := s.doSignIn(ctx, user, time.Now().Add(auth.AccessTokenDuration)); err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to sign in, err: %s", err))
 	}
-	return &apiv2pb.SignInWithSSOResponse{
-		User: convertUserFromStore(user),
-	}, nil
+	return convertUserFromStore(user), nil
 }
 
 func (s *APIV2Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) error {
@@ -171,7 +166,7 @@ func (s *APIV2Service) doSignIn(ctx context.Context, user *store.User, expireTim
 	return nil
 }
 
-func (s *APIV2Service) SignUp(ctx context.Context, request *apiv2pb.SignUpRequest) (*apiv2pb.SignUpResponse, error) {
+func (s *APIV2Service) SignUp(ctx context.Context, request *apiv2pb.SignUpRequest) (*apiv2pb.User, error) {
 	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace setting, err: %s", err))
@@ -216,16 +211,14 @@ func (s *APIV2Service) SignUp(ctx context.Context, request *apiv2pb.SignUpReques
 	if err := s.doSignIn(ctx, user, time.Now().Add(auth.AccessTokenDuration)); err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to sign in, err: %s", err))
 	}
-	return &apiv2pb.SignUpResponse{
-		User: convertUserFromStore(user),
-	}, nil
+	return convertUserFromStore(user), nil
 }
 
-func (s *APIV2Service) SignOut(ctx context.Context, _ *apiv2pb.SignOutRequest) (*apiv2pb.SignOutResponse, error) {
+func (s *APIV2Service) SignOut(ctx context.Context, _ *apiv2pb.SignOutRequest) (*emptypb.Empty, error) {
 	if err := s.clearAccessTokenCookie(ctx); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to set grpc header, error: %v", err)
 	}
-	return &apiv2pb.SignOutResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *APIV2Service) clearAccessTokenCookie(ctx context.Context) error {

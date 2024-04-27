@@ -13,7 +13,7 @@ import (
 
 var ownerCache *apiv2pb.User
 
-func (s *APIV2Service) GetWorkspaceProfile(ctx context.Context, _ *apiv2pb.GetWorkspaceProfileRequest) (*apiv2pb.GetWorkspaceProfileResponse, error) {
+func (s *APIV2Service) GetWorkspaceProfile(ctx context.Context, _ *apiv2pb.GetWorkspaceProfileRequest) (*apiv2pb.WorkspaceProfile, error) {
 	workspaceProfile := &apiv2pb.WorkspaceProfile{
 		Version: s.Profile.Version,
 		Mode:    s.Profile.Mode,
@@ -25,9 +25,7 @@ func (s *APIV2Service) GetWorkspaceProfile(ctx context.Context, _ *apiv2pb.GetWo
 	if owner != nil {
 		workspaceProfile.Owner = owner.Name
 	}
-	return &apiv2pb.GetWorkspaceProfileResponse{
-		WorkspaceProfile: workspaceProfile,
-	}, nil
+	return workspaceProfile, nil
 }
 
 func (s *APIV2Service) GetInstanceOwner(ctx context.Context) (*apiv2pb.User, error) {

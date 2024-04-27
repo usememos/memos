@@ -18,6 +18,7 @@ import (
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/internal/util"
@@ -35,7 +36,7 @@ const (
 	MebiByte                 = 1024 * 1024
 )
 
-func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.CreateResourceRequest) (*apiv2pb.CreateResourceResponse, error) {
+func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.CreateResourceRequest) (*apiv2pb.Resource, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -89,9 +90,7 @@ func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.Crea
 		return nil, status.Errorf(codes.Internal, "failed to create resource: %v", err)
 	}
 
-	return &apiv2pb.CreateResourceResponse{
-		Resource: s.convertResourceFromStore(ctx, resource),
-	}, nil
+	return s.convertResourceFromStore(ctx, resource), nil
 }
 
 func (s *APIV2Service) ListResources(ctx context.Context, _ *apiv2pb.ListResourcesRequest) (*apiv2pb.ListResourcesResponse, error) {
@@ -142,7 +141,7 @@ func (s *APIV2Service) SearchResources(ctx context.Context, request *apiv2pb.Sea
 	return response, nil
 }
 
-func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetResourceRequest) (*apiv2pb.GetResourceResponse, error) {
+func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetResourceRequest) (*apiv2pb.Resource, error) {
 	id, err := ExtractResourceIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
@@ -157,12 +156,10 @@ func (s *APIV2Service) GetResource(ctx context.Context, request *apiv2pb.GetReso
 		return nil, status.Errorf(codes.NotFound, "resource not found")
 	}
 
-	return &apiv2pb.GetResourceResponse{
-		Resource: s.convertResourceFromStore(ctx, resource),
-	}, nil
+	return s.convertResourceFromStore(ctx, resource), nil
 }
 
-func (s *APIV2Service) UpdateResource(ctx context.Context, request *apiv2pb.UpdateResourceRequest) (*apiv2pb.UpdateResourceResponse, error) {
+func (s *APIV2Service) UpdateResource(ctx context.Context, request *apiv2pb.UpdateResourceRequest) (*apiv2pb.Resource, error) {
 	id, err := ExtractResourceIDFromName(request.Resource.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
@@ -195,12 +192,10 @@ func (s *APIV2Service) UpdateResource(ctx context.Context, request *apiv2pb.Upda
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update resource: %v", err)
 	}
-	return &apiv2pb.UpdateResourceResponse{
-		Resource: s.convertResourceFromStore(ctx, resource),
-	}, nil
+	return s.convertResourceFromStore(ctx, resource), nil
 }
 
-func (s *APIV2Service) DeleteResource(ctx context.Context, request *apiv2pb.DeleteResourceRequest) (*apiv2pb.DeleteResourceResponse, error) {
+func (s *APIV2Service) DeleteResource(ctx context.Context, request *apiv2pb.DeleteResourceRequest) (*emptypb.Empty, error) {
 	id, err := ExtractResourceIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
@@ -225,7 +220,7 @@ func (s *APIV2Service) DeleteResource(ctx context.Context, request *apiv2pb.Dele
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete resource: %v", err)
 	}
-	return &apiv2pb.DeleteResourceResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *APIV2Service) convertResourceFromStore(ctx context.Context, resource *store.Resource) *apiv2pb.Resource {

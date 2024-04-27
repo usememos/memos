@@ -1,14 +1,12 @@
 import { last } from "lodash-es";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import Icon from "@/components/Icon";
 import { authServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore } from "@/store/v1";
-import { useTranslate } from "@/utils/i18n";
 
 interface State {
   loading: boolean;
@@ -16,7 +14,6 @@ interface State {
 }
 
 const AuthCallback = () => {
-  const t = useTranslate();
   const navigateTo = useNavigateTo();
   const [searchParams] = useSearchParams();
   const userStore = useUserStore();
@@ -49,21 +46,15 @@ const AuthCallback = () => {
     const redirectUri = absolutifyLink("/auth/callback");
     (async () => {
       try {
-        const { user } = await authServiceClient.signInWithSSO({
+        await authServiceClient.signInWithSSO({
           idpId: identityProviderId,
           code,
           redirectUri,
         });
-
         setState({
           loading: false,
           errorMessage: "",
         });
-        if (!user) {
-          toast.error(t("message.login-failed"));
-          return;
-        }
-
         await userStore.fetchCurrentUser();
         navigateTo("/");
       } catch (error: any) {

@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -33,13 +34,13 @@ type IdentityProviderServiceClient interface {
 	// ListIdentityProviders lists identity providers.
 	ListIdentityProviders(ctx context.Context, in *ListIdentityProvidersRequest, opts ...grpc.CallOption) (*ListIdentityProvidersResponse, error)
 	// GetIdentityProvider gets an identity provider.
-	GetIdentityProvider(ctx context.Context, in *GetIdentityProviderRequest, opts ...grpc.CallOption) (*GetIdentityProviderResponse, error)
+	GetIdentityProvider(ctx context.Context, in *GetIdentityProviderRequest, opts ...grpc.CallOption) (*IdentityProvider, error)
 	// CreateIdentityProvider creates an identity provider.
-	CreateIdentityProvider(ctx context.Context, in *CreateIdentityProviderRequest, opts ...grpc.CallOption) (*CreateIdentityProviderResponse, error)
+	CreateIdentityProvider(ctx context.Context, in *CreateIdentityProviderRequest, opts ...grpc.CallOption) (*IdentityProvider, error)
 	// UpdateIdentityProvider updates an identity provider.
-	UpdateIdentityProvider(ctx context.Context, in *UpdateIdentityProviderRequest, opts ...grpc.CallOption) (*UpdateIdentityProviderResponse, error)
+	UpdateIdentityProvider(ctx context.Context, in *UpdateIdentityProviderRequest, opts ...grpc.CallOption) (*IdentityProvider, error)
 	// DeleteIdentityProvider deletes an identity provider.
-	DeleteIdentityProvider(ctx context.Context, in *DeleteIdentityProviderRequest, opts ...grpc.CallOption) (*DeleteIdentityProviderResponse, error)
+	DeleteIdentityProvider(ctx context.Context, in *DeleteIdentityProviderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type identityProviderServiceClient struct {
@@ -59,8 +60,8 @@ func (c *identityProviderServiceClient) ListIdentityProviders(ctx context.Contex
 	return out, nil
 }
 
-func (c *identityProviderServiceClient) GetIdentityProvider(ctx context.Context, in *GetIdentityProviderRequest, opts ...grpc.CallOption) (*GetIdentityProviderResponse, error) {
-	out := new(GetIdentityProviderResponse)
+func (c *identityProviderServiceClient) GetIdentityProvider(ctx context.Context, in *GetIdentityProviderRequest, opts ...grpc.CallOption) (*IdentityProvider, error) {
+	out := new(IdentityProvider)
 	err := c.cc.Invoke(ctx, IdentityProviderService_GetIdentityProvider_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -68,8 +69,8 @@ func (c *identityProviderServiceClient) GetIdentityProvider(ctx context.Context,
 	return out, nil
 }
 
-func (c *identityProviderServiceClient) CreateIdentityProvider(ctx context.Context, in *CreateIdentityProviderRequest, opts ...grpc.CallOption) (*CreateIdentityProviderResponse, error) {
-	out := new(CreateIdentityProviderResponse)
+func (c *identityProviderServiceClient) CreateIdentityProvider(ctx context.Context, in *CreateIdentityProviderRequest, opts ...grpc.CallOption) (*IdentityProvider, error) {
+	out := new(IdentityProvider)
 	err := c.cc.Invoke(ctx, IdentityProviderService_CreateIdentityProvider_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -77,8 +78,8 @@ func (c *identityProviderServiceClient) CreateIdentityProvider(ctx context.Conte
 	return out, nil
 }
 
-func (c *identityProviderServiceClient) UpdateIdentityProvider(ctx context.Context, in *UpdateIdentityProviderRequest, opts ...grpc.CallOption) (*UpdateIdentityProviderResponse, error) {
-	out := new(UpdateIdentityProviderResponse)
+func (c *identityProviderServiceClient) UpdateIdentityProvider(ctx context.Context, in *UpdateIdentityProviderRequest, opts ...grpc.CallOption) (*IdentityProvider, error) {
+	out := new(IdentityProvider)
 	err := c.cc.Invoke(ctx, IdentityProviderService_UpdateIdentityProvider_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -86,8 +87,8 @@ func (c *identityProviderServiceClient) UpdateIdentityProvider(ctx context.Conte
 	return out, nil
 }
 
-func (c *identityProviderServiceClient) DeleteIdentityProvider(ctx context.Context, in *DeleteIdentityProviderRequest, opts ...grpc.CallOption) (*DeleteIdentityProviderResponse, error) {
-	out := new(DeleteIdentityProviderResponse)
+func (c *identityProviderServiceClient) DeleteIdentityProvider(ctx context.Context, in *DeleteIdentityProviderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, IdentityProviderService_DeleteIdentityProvider_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -102,13 +103,13 @@ type IdentityProviderServiceServer interface {
 	// ListIdentityProviders lists identity providers.
 	ListIdentityProviders(context.Context, *ListIdentityProvidersRequest) (*ListIdentityProvidersResponse, error)
 	// GetIdentityProvider gets an identity provider.
-	GetIdentityProvider(context.Context, *GetIdentityProviderRequest) (*GetIdentityProviderResponse, error)
+	GetIdentityProvider(context.Context, *GetIdentityProviderRequest) (*IdentityProvider, error)
 	// CreateIdentityProvider creates an identity provider.
-	CreateIdentityProvider(context.Context, *CreateIdentityProviderRequest) (*CreateIdentityProviderResponse, error)
+	CreateIdentityProvider(context.Context, *CreateIdentityProviderRequest) (*IdentityProvider, error)
 	// UpdateIdentityProvider updates an identity provider.
-	UpdateIdentityProvider(context.Context, *UpdateIdentityProviderRequest) (*UpdateIdentityProviderResponse, error)
+	UpdateIdentityProvider(context.Context, *UpdateIdentityProviderRequest) (*IdentityProvider, error)
 	// DeleteIdentityProvider deletes an identity provider.
-	DeleteIdentityProvider(context.Context, *DeleteIdentityProviderRequest) (*DeleteIdentityProviderResponse, error)
+	DeleteIdentityProvider(context.Context, *DeleteIdentityProviderRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedIdentityProviderServiceServer()
 }
 
@@ -119,16 +120,16 @@ type UnimplementedIdentityProviderServiceServer struct {
 func (UnimplementedIdentityProviderServiceServer) ListIdentityProviders(context.Context, *ListIdentityProvidersRequest) (*ListIdentityProvidersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListIdentityProviders not implemented")
 }
-func (UnimplementedIdentityProviderServiceServer) GetIdentityProvider(context.Context, *GetIdentityProviderRequest) (*GetIdentityProviderResponse, error) {
+func (UnimplementedIdentityProviderServiceServer) GetIdentityProvider(context.Context, *GetIdentityProviderRequest) (*IdentityProvider, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIdentityProvider not implemented")
 }
-func (UnimplementedIdentityProviderServiceServer) CreateIdentityProvider(context.Context, *CreateIdentityProviderRequest) (*CreateIdentityProviderResponse, error) {
+func (UnimplementedIdentityProviderServiceServer) CreateIdentityProvider(context.Context, *CreateIdentityProviderRequest) (*IdentityProvider, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateIdentityProvider not implemented")
 }
-func (UnimplementedIdentityProviderServiceServer) UpdateIdentityProvider(context.Context, *UpdateIdentityProviderRequest) (*UpdateIdentityProviderResponse, error) {
+func (UnimplementedIdentityProviderServiceServer) UpdateIdentityProvider(context.Context, *UpdateIdentityProviderRequest) (*IdentityProvider, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateIdentityProvider not implemented")
 }
-func (UnimplementedIdentityProviderServiceServer) DeleteIdentityProvider(context.Context, *DeleteIdentityProviderRequest) (*DeleteIdentityProviderResponse, error) {
+func (UnimplementedIdentityProviderServiceServer) DeleteIdentityProvider(context.Context, *DeleteIdentityProviderRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIdentityProvider not implemented")
 }
 func (UnimplementedIdentityProviderServiceServer) mustEmbedUnimplementedIdentityProviderServiceServer() {

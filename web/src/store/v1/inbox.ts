@@ -19,13 +19,10 @@ export const useInboxStore = create(
       return inboxes;
     },
     updateInbox: async (inbox: Partial<Inbox>, updateMask: string[]) => {
-      const { inbox: updatedInbox } = await inboxServiceClient.updateInbox({
+      const updatedInbox = await inboxServiceClient.updateInbox({
         inbox,
         updateMask,
       });
-      if (!updatedInbox) {
-        throw new Error("Inbox not found");
-      }
       const inboxes = get().inboxes;
       set({ inboxes: inboxes.map((i) => (i.name === updatedInbox.name ? updatedInbox : i)) });
       return updatedInbox;

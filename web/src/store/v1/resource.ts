@@ -31,19 +31,13 @@ export const useResourceStore = create(
       return Object.values(resourceMap).find((r) => r.name === name);
     },
     async createResource(create: CreateResourceRequest): Promise<Resource> {
-      const { resource } = await resourceServiceClient.createResource(create);
-      if (!resource) {
-        throw new Error("resource is null");
-      }
+      const resource = await resourceServiceClient.createResource(create);
       const resourceMap = get().resourceMapByName;
       resourceMap[resource.name] = resource;
       return resource;
     },
     async updateResource(update: UpdateResourceRequest): Promise<Resource> {
-      const { resource } = await resourceServiceClient.updateResource(update);
-      if (!resource) {
-        throw new Error("resource is null");
-      }
+      const resource = await resourceServiceClient.updateResource(update);
       const resourceMap = get().resourceMapByName;
       resourceMap[resource.name] = resource;
       return resource;

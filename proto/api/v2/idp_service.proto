@@ -4,6 +4,7 @@ package memos.api.v2;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 
 option go_package = "gen/api/v2";
@@ -14,19 +15,19 @@ service IdentityProviderService {
     option (google.api.http) = {get: "/api/v2/identityProviders"};
   }
   // GetIdentityProvider gets an identity provider.
-  rpc GetIdentityProvider(GetIdentityProviderRequest) returns (GetIdentityProviderResponse) {
+  rpc GetIdentityProvider(GetIdentityProviderRequest) returns (IdentityProvider) {
     option (google.api.http) = {get: "/api/v2/{name=identityProviders/*}"};
     option (google.api.method_signature) = "name";
   }
   // CreateIdentityProvider creates an identity provider.
-  rpc CreateIdentityProvider(CreateIdentityProviderRequest) returns (CreateIdentityProviderResponse) {
+  rpc CreateIdentityProvider(CreateIdentityProviderRequest) returns (IdentityProvider) {
     option (google.api.http) = {
       post: "/api/v2/identityProviders",
       body: "identity_provider"
     };
   }
   // UpdateIdentityProvider updates an identity provider.
-  rpc UpdateIdentityProvider(UpdateIdentityProviderRequest) returns (UpdateIdentityProviderResponse) {
+  rpc UpdateIdentityProvider(UpdateIdentityProviderRequest) returns (IdentityProvider) {
     option (google.api.http) = {
       patch: "/api/v2/{identity_provider.name=identityProviders/*}"
       body: "identity_provider"
@@ -34,7 +35,7 @@ service IdentityProviderService {
     option (google.api.method_signature) = "identity_provider,update_mask";
   }
   // DeleteIdentityProvider deletes an identity provider.
-  rpc DeleteIdentityProvider(DeleteIdentityProviderRequest) returns (DeleteIdentityProviderResponse) {
+  rpc DeleteIdentityProvider(DeleteIdentityProviderRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v2/{name=identityProviders/*}"};
     option (google.api.method_signature) = "name";
   }
@@ -92,18 +93,8 @@ message GetIdentityProviderRequest {
   string name = 1;
 }
 
-message GetIdentityProviderResponse {
-  // The identityProvider.
-  IdentityProvider identity_provider = 1;
-}
-
 message CreateIdentityProviderRequest {
   // The identityProvider to create.
-  IdentityProvider identity_provider = 1;
-}
-
-message CreateIdentityProviderResponse {
-  // The created identityProvider.
   IdentityProvider identity_provider = 1;
 }
 
@@ -116,15 +107,8 @@ message UpdateIdentityProviderRequest {
   google.protobuf.FieldMask update_mask = 2;
 }
 
-message UpdateIdentityProviderResponse {
-  // The updated identityProvider.
-  IdentityProvider identity_provider = 1;
-}
-
 message DeleteIdentityProviderRequest {
   // The name of the identityProvider to delete.
   // Format: identityProviders/{id}
   string name = 1;
 }
-
-message DeleteIdentityProviderResponse {}

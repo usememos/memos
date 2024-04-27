@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -32,17 +33,17 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ResourceServiceClient interface {
 	// CreateResource creates a new resource.
-	CreateResource(ctx context.Context, in *CreateResourceRequest, opts ...grpc.CallOption) (*CreateResourceResponse, error)
+	CreateResource(ctx context.Context, in *CreateResourceRequest, opts ...grpc.CallOption) (*Resource, error)
 	// ListResources lists all resources.
 	ListResources(ctx context.Context, in *ListResourcesRequest, opts ...grpc.CallOption) (*ListResourcesResponse, error)
 	// SearchResources searches memos.
 	SearchResources(ctx context.Context, in *SearchResourcesRequest, opts ...grpc.CallOption) (*SearchResourcesResponse, error)
 	// GetResource returns a resource by name.
-	GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error)
+	GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*Resource, error)
 	// UpdateResource updates a resource.
-	UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error)
+	UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*Resource, error)
 	// DeleteResource deletes a resource by name.
-	DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*DeleteResourceResponse, error)
+	DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type resourceServiceClient struct {
@@ -53,8 +54,8 @@ func NewResourceServiceClient(cc grpc.ClientConnInterface) ResourceServiceClient
 	return &resourceServiceClient{cc}
 }
 
-func (c *resourceServiceClient) CreateResource(ctx context.Context, in *CreateResourceRequest, opts ...grpc.CallOption) (*CreateResourceResponse, error) {
-	out := new(CreateResourceResponse)
+func (c *resourceServiceClient) CreateResource(ctx context.Context, in *CreateResourceRequest, opts ...grpc.CallOption) (*Resource, error) {
+	out := new(Resource)
 	err := c.cc.Invoke(ctx, ResourceService_CreateResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -80,8 +81,8 @@ func (c *resourceServiceClient) SearchResources(ctx context.Context, in *SearchR
 	return out, nil
 }
 
-func (c *resourceServiceClient) GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error) {
-	out := new(GetResourceResponse)
+func (c *resourceServiceClient) GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*Resource, error) {
+	out := new(Resource)
 	err := c.cc.Invoke(ctx, ResourceService_GetResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -89,8 +90,8 @@ func (c *resourceServiceClient) GetResource(ctx context.Context, in *GetResource
 	return out, nil
 }
 
-func (c *resourceServiceClient) UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error) {
-	out := new(UpdateResourceResponse)
+func (c *resourceServiceClient) UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*Resource, error) {
+	out := new(Resource)
 	err := c.cc.Invoke(ctx, ResourceService_UpdateResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -98,8 +99,8 @@ func (c *resourceServiceClient) UpdateResource(ctx context.Context, in *UpdateRe
 	return out, nil
 }
 
-func (c *resourceServiceClient) DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*DeleteResourceResponse, error) {
-	out := new(DeleteResourceResponse)
+func (c *resourceServiceClient) DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, ResourceService_DeleteResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -112,17 +113,17 @@ func (c *resourceServiceClient) DeleteResource(ctx context.Context, in *DeleteRe
 // for forward compatibility
 type ResourceServiceServer interface {
 	// CreateResource creates a new resource.
-	CreateResource(context.Context, *CreateResourceRequest) (*CreateResourceResponse, error)
+	CreateResource(context.Context, *CreateResourceRequest) (*Resource, error)
 	// ListResources lists all resources.
 	ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error)
 	// SearchResources searches memos.
 	SearchResources(context.Context, *SearchResourcesRequest) (*SearchResourcesResponse, error)
 	// GetResource returns a resource by name.
-	GetResource(context.Context, *GetResourceRequest) (*GetResourceResponse, error)
+	GetResource(context.Context, *GetResourceRequest) (*Resource, error)
 	// UpdateResource updates a resource.
-	UpdateResource(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error)
+	UpdateResource(context.Context, *UpdateResourceRequest) (*Resource, error)
 	// DeleteResource deletes a resource by name.
-	DeleteResource(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error)
+	DeleteResource(context.Context, *DeleteResourceRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedResourceServiceServer()
 }
 
@@ -130,7 +131,7 @@ type ResourceServiceServer interface {
 type UnimplementedResourceServiceServer struct {
 }
 
-func (UnimplementedResourceServiceServer) CreateResource(context.Context, *CreateResourceRequest) (*CreateResourceResponse, error) {
+func (UnimplementedResourceServiceServer) CreateResource(context.Context, *CreateResourceRequest) (*Resource, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateResource not implemented")
 }
 func (UnimplementedResourceServiceServer) ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error) {
@@ -139,13 +140,13 @@ func (UnimplementedResourceServiceServer) ListResources(context.Context, *ListRe
 func (UnimplementedResourceServiceServer) SearchResources(context.Context, *SearchResourcesRequest) (*SearchResourcesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchResources not implemented")
 }
-func (UnimplementedResourceServiceServer) GetResource(context.Context, *GetResourceRequest) (*GetResourceResponse, error) {
+func (UnimplementedResourceServiceServer) GetResource(context.Context, *GetResourceRequest) (*Resource, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetResource not implemented")
 }
-func (UnimplementedResourceServiceServer) UpdateResource(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error) {
+func (UnimplementedResourceServiceServer) UpdateResource(context.Context, *UpdateResourceRequest) (*Resource, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateResource not implemented")
 }
-func (UnimplementedResourceServiceServer) DeleteResource(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error) {
+func (UnimplementedResourceServiceServer) DeleteResource(context.Context, *DeleteResourceRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteResource not implemented")
 }
 func (UnimplementedResourceServiceServer) mustEmbedUnimplementedResourceServiceServer() {}

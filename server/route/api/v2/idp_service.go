@@ -6,13 +6,14 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV2Service) CreateIdentityProvider(ctx context.Context, request *apiv2pb.CreateIdentityProviderRequest) (*apiv2pb.CreateIdentityProviderResponse, error) {
+func (s *APIV2Service) CreateIdentityProvider(ctx context.Context, request *apiv2pb.CreateIdentityProviderRequest) (*apiv2pb.IdentityProvider, error) {
 	currentUser, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -25,9 +26,7 @@ func (s *APIV2Service) CreateIdentityProvider(ctx context.Context, request *apiv
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create identity provider, error: %+v", err)
 	}
-	return &apiv2pb.CreateIdentityProviderResponse{
-		IdentityProvider: convertIdentityProviderFromStore(identityProvider),
-	}, nil
+	return convertIdentityProviderFromStore(identityProvider), nil
 }
 
 func (s *APIV2Service) ListIdentityProviders(ctx context.Context, _ *apiv2pb.ListIdentityProvidersRequest) (*apiv2pb.ListIdentityProvidersResponse, error) {
@@ -45,7 +44,7 @@ func (s *APIV2Service) ListIdentityProviders(ctx context.Context, _ *apiv2pb.Lis
 	return response, nil
 }
 
-func (s *APIV2Service) GetIdentityProvider(ctx context.Context, request *apiv2pb.GetIdentityProviderRequest) (*apiv2pb.GetIdentityProviderResponse, error) {
+func (s *APIV2Service) GetIdentityProvider(ctx context.Context, request *apiv2pb.GetIdentityProviderRequest) (*apiv2pb.IdentityProvider, error) {
 	id, err := ExtractIdentityProviderIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
@@ -59,12 +58,10 @@ func (s *APIV2Service) GetIdentityProvider(ctx context.Context, request *apiv2pb
 	if identityProvider == nil {
 		return nil, status.Errorf(codes.NotFound, "identity provider not found")
 	}
-	return &apiv2pb.GetIdentityProviderResponse{
-		IdentityProvider: convertIdentityProviderFromStore(identityProvider),
-	}, nil
+	return convertIdentityProviderFromStore(identityProvider), nil
 }
 
-func (s *APIV2Service) UpdateIdentityProvider(ctx context.Context, request *apiv2pb.UpdateIdentityProviderRequest) (*apiv2pb.UpdateIdentityProviderResponse, error) {
+func (s *APIV2Service) UpdateIdentityProvider(ctx context.Context, request *apiv2pb.UpdateIdentityProviderRequest) (*apiv2pb.IdentityProvider, error) {
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update_mask is required")
 	}
@@ -90,12 +87,10 @@ func (s *APIV2Service) UpdateIdentityProvider(ctx context.Context, request *apiv
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update identity provider, error: %+v", err)
 	}
-	return &apiv2pb.UpdateIdentityProviderResponse{
-		IdentityProvider: convertIdentityProviderFromStore(identityProvider),
-	}, nil
+	return convertIdentityProviderFromStore(identityProvider), nil
 }
 
-func (s *APIV2Service) DeleteIdentityProvider(ctx context.Context, request *apiv2pb.DeleteIdentityProviderRequest) (*apiv2pb.DeleteIdentityProviderResponse, error) {
+func (s *APIV2Service) DeleteIdentityProvider(ctx context.Context, request *apiv2pb.DeleteIdentityProviderRequest) (*emptypb.Empty, error) {
 	id, err := ExtractIdentityProviderIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
@@ -103,7 +98,7 @@ func (s *APIV2Service) DeleteIdentityProvider(ctx context.Context, request *apiv
 	if err := s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProvider{ID: id}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete identity provider, error: %+v", err)
 	}
-	return &apiv2pb.DeleteIdentityProviderResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider) *apiv2pb.IdentityProvider {

@@ -27,7 +27,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActivityServiceClient interface {
 	// GetActivity returns the activity with the given id.
-	GetActivity(ctx context.Context, in *GetActivityRequest, opts ...grpc.CallOption) (*GetActivityResponse, error)
+	GetActivity(ctx context.Context, in *GetActivityRequest, opts ...grpc.CallOption) (*Activity, error)
 }
 
 type activityServiceClient struct {
@@ -38,8 +38,8 @@ func NewActivityServiceClient(cc grpc.ClientConnInterface) ActivityServiceClient
 	return &activityServiceClient{cc}
 }
 
-func (c *activityServiceClient) GetActivity(ctx context.Context, in *GetActivityRequest, opts ...grpc.CallOption) (*GetActivityResponse, error) {
-	out := new(GetActivityResponse)
+func (c *activityServiceClient) GetActivity(ctx context.Context, in *GetActivityRequest, opts ...grpc.CallOption) (*Activity, error) {
+	out := new(Activity)
 	err := c.cc.Invoke(ctx, ActivityService_GetActivity_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (c *activityServiceClient) GetActivity(ctx context.Context, in *GetActivity
 // for forward compatibility
 type ActivityServiceServer interface {
 	// GetActivity returns the activity with the given id.
-	GetActivity(context.Context, *GetActivityRequest) (*GetActivityResponse, error)
+	GetActivity(context.Context, *GetActivityRequest) (*Activity, error)
 	mustEmbedUnimplementedActivityServiceServer()
 }
 
@@ -60,7 +60,7 @@ type ActivityServiceServer interface {
 type UnimplementedActivityServiceServer struct {
 }
 
-func (UnimplementedActivityServiceServer) GetActivity(context.Context, *GetActivityRequest) (*GetActivityResponse, error) {
+func (UnimplementedActivityServiceServer) GetActivity(context.Context, *GetActivityRequest) (*Activity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActivity not implemented")
 }
 func (UnimplementedActivityServiceServer) mustEmbedUnimplementedActivityServiceServer() {}

@@ -7,6 +7,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
@@ -36,7 +37,7 @@ func (s *APIV2Service) ListInboxes(ctx context.Context, _ *apiv2pb.ListInboxesRe
 	return response, nil
 }
 
-func (s *APIV2Service) UpdateInbox(ctx context.Context, request *apiv2pb.UpdateInboxRequest) (*apiv2pb.UpdateInboxResponse, error) {
+func (s *APIV2Service) UpdateInbox(ctx context.Context, request *apiv2pb.UpdateInboxRequest) (*apiv2pb.Inbox, error) {
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
@@ -62,12 +63,10 @@ func (s *APIV2Service) UpdateInbox(ctx context.Context, request *apiv2pb.UpdateI
 		return nil, status.Errorf(codes.Internal, "failed to update inbox: %v", err)
 	}
 
-	return &apiv2pb.UpdateInboxResponse{
-		Inbox: convertInboxFromStore(inbox),
-	}, nil
+	return convertInboxFromStore(inbox), nil
 }
 
-func (s *APIV2Service) DeleteInbox(ctx context.Context, request *apiv2pb.DeleteInboxRequest) (*apiv2pb.DeleteInboxResponse, error) {
+func (s *APIV2Service) DeleteInbox(ctx context.Context, request *apiv2pb.DeleteInboxRequest) (*emptypb.Empty, error) {
 	inboxID, err := ExtractInboxIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid inbox name: %v", err)
@@ -78,7 +77,7 @@ func (s *APIV2Service) DeleteInbox(ctx context.Context, request *apiv2pb.DeleteI
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update inbox: %v", err)
 	}
-	return &apiv2pb.DeleteInboxResponse{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func convertInboxFromStore(inbox *store.Inbox) *apiv2pb.Inbox {

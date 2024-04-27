@@ -8,7 +8,7 @@ option go_package = "gen/api/v2";
 
 service WorkspaceService {
   // GetWorkspaceProfile returns the workspace profile.
-  rpc GetWorkspaceProfile(GetWorkspaceProfileRequest) returns (GetWorkspaceProfileResponse) {
+  rpc GetWorkspaceProfile(GetWorkspaceProfileRequest) returns (WorkspaceProfile) {
     option (google.api.http) = {get: "/api/v2/workspace/profile"};
   }
 }
@@ -24,7 +24,3 @@ message WorkspaceProfile {
 }
 
 message GetWorkspaceProfileRequest {}
-
-message GetWorkspaceProfileResponse {
-  WorkspaceProfile workspace_profile = 1;
-}

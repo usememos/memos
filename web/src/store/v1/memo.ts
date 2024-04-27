@@ -26,23 +26,19 @@ export const useMemoStore = create(
     },
     getOrFetchMemoByName: async (name: string, options?: { skipCache?: boolean; skipStore?: boolean }) => {
       const memoMap = get().memoMapByName;
-      const memo = memoMap[name];
-      if (memo && !options?.skipCache) {
-        return memo;
+      const memoCache = memoMap[name];
+      if (memoCache && !options?.skipCache) {
+        return memoCache;
       }
 
-      const res = await memoServiceClient.getMemo({
+      const memo = await memoServiceClient.getMemo({
         name,
       });
-      if (!res.memo) {
-        throw new Error("Memo not found");
-      }
-
       if (!options?.skipStore) {
-        memoMap[name] = res.memo;
+        memoMap[name] = memo;
         set({ memoMapByName: memoMap });
       }
-      return res.memo;
+      return memo;
     },
     getMemoByName: (name: string) => {
       return get().memoMapByName[name];
@@ -63,24 +59,17 @@ export const useMemoStore = create(
       return Object.values(memoMap).find((memo) => memo.uid === uid);
     },
     createMemo: async (request: CreateMemoRequest) => {
-      const { memo } = await memoServiceClient.createMemo(request);
-      if (!memo) {
-        throw new Error("Memo not found");
-      }
-
+      const memo = await memoServiceClient.createMemo(request);
       const memoMap = get().memoMapByName;
       memoMap[memo.name] = memo;
       set({ memoMapByName: memoMap });
       return memo;
     },
     updateMemo: async (update: Partial<Memo>, updateMask: string[]) => {
-      const { memo } = await memoServiceClient.updateMemo({
+      const memo = await memoServiceClient.updateMemo({
         memo: update,
         updateMask,
       });
-      if (!memo) {
-        throw new Error("Memo not found");
-      }
 
       const memoMap = get().memoMapByName;
       memoMap[memo.name] = memo;

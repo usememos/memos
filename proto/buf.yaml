@@ -5,7 +5,7 @@ breaking:
     - FILE
 lint:
   use:
-    - DEFAULT
+    - BASIC
   except:
     - ENUM_VALUE_PREFIX
     - PACKAGE_DIRECTORY_MATCH

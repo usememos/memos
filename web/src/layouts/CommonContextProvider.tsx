@@ -33,7 +33,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const initialWorkspace = async () => {
-      const { workspaceProfile } = await workspaceServiceClient.getWorkspaceProfile({});
+      const workspaceProfile = await workspaceServiceClient.getWorkspaceProfile({});
       await workspaceSettingStore.listWorkspaceSettings();
 
       const workspaceGeneralSetting =
@@ -44,7 +44,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
       setCommonContext({
         locale: locale || workspaceGeneralSetting.customProfile?.locale || "en",
         appearance: appearance || workspaceGeneralSetting.customProfile?.appearance || "system",
-        profile: WorkspaceProfile.fromPartial(workspaceProfile || {}),
+        profile: workspaceProfile,
       });
     };
 

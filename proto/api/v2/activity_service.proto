@@ -11,7 +11,7 @@ option go_package = "gen/api/v2";
 
 service ActivityService {
   // GetActivity returns the activity with the given id.
-  rpc GetActivity(GetActivityRequest) returns (GetActivityResponse) {
+  rpc GetActivity(GetActivityRequest) returns (Activity) {
     option (google.api.http) = {get: "/v2/activities/{id}"};
     option (google.api.method_signature) = "id";
   }
@@ -53,8 +53,4 @@ message ActivityPayload {
 message GetActivityRequest {
   // The system-generated unique identifier for the activity.
   int32 id = 1;
-}
-
-message GetActivityResponse {
-  Activity activity = 1;
 }

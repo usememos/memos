@@ -13,7 +13,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV2Service) GetActivity(ctx context.Context, request *apiv2pb.GetActivityRequest) (*apiv2pb.GetActivityResponse, error) {
+func (s *APIV2Service) GetActivity(ctx context.Context, request *apiv2pb.GetActivityRequest) (*apiv2pb.Activity, error) {
 	activity, err := s.Store.GetActivity(ctx, &store.FindActivity{
 		ID: &request.Id,
 	})
@@ -25,9 +25,7 @@ func (s *APIV2Service) GetActivity(ctx context.Context, request *apiv2pb.GetActi
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to convert activity from store: %v", err)
 	}
-	return &apiv2pb.GetActivityResponse{
-		Activity: activityMessage,
-	}, nil
+	return activityMessage, nil
 }
 
 func (*APIV2Service) convertActivityFromStore(_ context.Context, activity *store.Activity) (*apiv2pb.Activity, error) {

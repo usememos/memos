@@ -61,13 +61,9 @@ const SignUp = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      const { user } = await authServiceClient.signUp({ username, password });
-      if (user) {
-        await userStore.fetchCurrentUser();
-        navigateTo("/");
-      } else {
-        toast.error(t("message.signup-failed"));
-      }
+      await authServiceClient.signUp({ username, password });
+      await userStore.fetchCurrentUser();
+      navigateTo("/");
     } catch (error: any) {
       console.error(error);
       toast.error((error as ClientError).details || t("message.signup-failed"));

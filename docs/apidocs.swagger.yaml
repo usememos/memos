@@ -29,7 +29,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2SignInResponse'
+            $ref: '#/definitions/v2User'
         default:
           description: An unexpected error response.
           schema:
@@ -60,7 +60,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2SignInWithSSOResponse'
+            $ref: '#/definitions/v2User'
         default:
           description: An unexpected error response.
           schema:
@@ -92,7 +92,8 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2SignOutResponse'
+            type: object
+            properties: {}
         default:
           description: An unexpected error response.
           schema:
@@ -107,7 +108,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2SignUpResponse'
+            $ref: '#/definitions/v2User'
         default:
           description: An unexpected error response.
           schema:
@@ -133,7 +134,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetAuthStatusResponse'
+            $ref: '#/definitions/v2User'
         default:
           description: An unexpected error response.
           schema:
@@ -162,7 +163,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2CreateIdentityProviderResponse'
+            $ref: '#/definitions/apiv2IdentityProvider'
         default:
           description: An unexpected error response.
           schema:
@@ -260,7 +261,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2CreateMemoResponse'
+            $ref: '#/definitions/v2Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -361,7 +362,8 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2DeleteMemoReactionResponse'
+            type: object
+            properties: {}
         default:
           description: An unexpected error response.
           schema:
@@ -396,7 +398,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2CreateResourceResponse'
+            $ref: '#/definitions/v2Resource'
         default:
           description: An unexpected error response.
           schema:
@@ -856,7 +858,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetWorkspaceProfileResponse'
+            $ref: '#/definitions/v2WorkspaceProfile'
         default:
           description: An unexpected error response.
           schema:
@@ -948,7 +950,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2UpdateIdentityProviderResponse'
+            $ref: '#/definitions/apiv2IdentityProvider'
         default:
           description: An unexpected error response.
           schema:
@@ -988,7 +990,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2UpdateInboxResponse'
+            $ref: '#/definitions/v2Inbox'
         default:
           description: An unexpected error response.
           schema:
@@ -1034,7 +1036,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2UpdateMemoResponse'
+            $ref: '#/definitions/v2Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -1112,7 +1114,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetIdentityProviderResponse'
+            $ref: '#/definitions/apiv2IdentityProvider'
         default:
           description: An unexpected error response.
           schema:
@@ -1135,7 +1137,8 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2DeleteIdentityProviderResponse'
+            type: object
+            properties: {}
         default:
           description: An unexpected error response.
           schema:
@@ -1159,7 +1162,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetResourceResponse'
+            $ref: '#/definitions/v2Resource'
         default:
           description: An unexpected error response.
           schema:
@@ -1183,7 +1186,8 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2DeleteInboxResponse'
+            type: object
+            properties: {}
         default:
           description: An unexpected error response.
           schema:
@@ -1207,7 +1211,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetMemoResponse'
+            $ref: '#/definitions/v2Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -1230,7 +1234,8 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2DeleteResourceResponse'
+            type: object
+            properties: {}
         default:
           description: An unexpected error response.
           schema:
@@ -1255,7 +1260,8 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2DeleteMemoResponse'
+            type: object
+            properties: {}
         default:
           description: An unexpected error response.
           schema:
@@ -1430,7 +1436,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2CreateMemoCommentResponse'
+            $ref: '#/definitions/v2Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -1444,11 +1450,11 @@ paths:
           required: true
           type: string
           pattern: memos/[^/]+
-        - name: body
+        - name: comment
           in: body
           required: true
           schema:
-            $ref: '#/definitions/MemoServiceCreateMemoCommentBody'
+            $ref: '#/definitions/v2CreateMemoRequest'
       tags:
         - MemoService
   /api/v2/{name}/reactions:
@@ -1482,7 +1488,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2UpsertMemoReactionResponse'
+            $ref: '#/definitions/v2Reaction'
         default:
           description: An unexpected error response.
           schema:
@@ -1534,7 +1540,8 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2SetMemoRelationsResponse'
+            type: object
+            properties: {}
         default:
           description: An unexpected error response.
           schema:
@@ -1586,7 +1593,8 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2SetMemoResourcesResponse'
+            type: object
+            properties: {}
         default:
           description: An unexpected error response.
           schema:
@@ -1639,7 +1647,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2UpdateResourceResponse'
+            $ref: '#/definitions/v2Resource'
         default:
           description: An unexpected error response.
           schema:
@@ -1789,7 +1797,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v2GetActivityResponse'
+            $ref: '#/definitions/v2Activity'
         default:
           description: An unexpected error response.
           schema:
@@ -1804,11 +1812,6 @@ paths:
       tags:
         - ActivityService
 definitions:
-  MemoServiceCreateMemoCommentBody:
-    type: object
-    properties:
-      comment:
-        $ref: '#/definitions/v2CreateMemoRequest'
   MemoServiceSetMemoRelationsBody:
     type: object
     properties:
@@ -2129,17 +2132,6 @@ definitions:
           $ref: '#/definitions/v2UpsertTagRequest'
   v2BatchUpsertTagResponse:
     type: object
-  v2CreateIdentityProviderResponse:
-    type: object
-    properties:
-      identityProvider:
-        $ref: '#/definitions/apiv2IdentityProvider'
-        description: The created identityProvider.
-  v2CreateMemoCommentResponse:
-    type: object
-    properties:
-      memo:
-        $ref: '#/definitions/v2Memo'
   v2CreateMemoRequest:
     type: object
     properties:
@@ -2147,16 +2139,6 @@ definitions:
         type: string
       visibility:
         $ref: '#/definitions/v2Visibility'
-  v2CreateMemoResponse:
-    type: object
-    properties:
-      memo:
-        $ref: '#/definitions/v2Memo'
-  v2CreateResourceResponse:
-    type: object
-    properties:
-      resource:
-        $ref: '#/definitions/v2Resource'
   v2CreateStorageRequest:
     type: object
     properties:
@@ -2189,16 +2171,6 @@ definitions:
     properties:
       webhook:
         $ref: '#/definitions/v2Webhook'
-  v2DeleteIdentityProviderResponse:
-    type: object
-  v2DeleteInboxResponse:
-    type: object
-  v2DeleteMemoReactionResponse:
-    type: object
-  v2DeleteMemoResponse:
-    type: object
-  v2DeleteResourceResponse:
-    type: object
   v2DeleteStorageResponse:
     type: object
   v2DeleteTagResponse:
@@ -2221,37 +2193,11 @@ definitions:
       content:
         type: string
         format: byte
-  v2GetActivityResponse:
-    type: object
-    properties:
-      activity:
-        $ref: '#/definitions/v2Activity'
-  v2GetAuthStatusResponse:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v2User'
-  v2GetIdentityProviderResponse:
-    type: object
-    properties:
-      identityProvider:
-        $ref: '#/definitions/apiv2IdentityProvider'
-        description: The identityProvider.
   v2GetLinkMetadataResponse:
     type: object
     properties:
       linkMetadata:
         $ref: '#/definitions/v2LinkMetadata'
-  v2GetMemoResponse:
-    type: object
-    properties:
-      memo:
-        $ref: '#/definitions/v2Memo'
-  v2GetResourceResponse:
-    type: object
-    properties:
-      resource:
-        $ref: '#/definitions/v2Resource'
   v2GetStorageResponse:
     type: object
     properties:
@@ -2290,11 +2236,6 @@ definitions:
     properties:
       webhook:
         $ref: '#/definitions/v2Webhook'
-  v2GetWorkspaceProfileResponse:
-    type: object
-    properties:
-      workspaceProfile:
-        $ref: '#/definitions/v2WorkspaceProfile'
   v2GetWorkspaceSettingResponse:
     type: object
     properties:
@@ -2655,32 +2596,11 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v2User'
-  v2SetMemoRelationsResponse:
-    type: object
-  v2SetMemoResourcesResponse:
-    type: object
   v2SetWorkspaceSettingResponse:
     type: object
     properties:
       setting:
         $ref: '#/definitions/apiv2WorkspaceSetting'
-  v2SignInResponse:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v2User'
-  v2SignInWithSSOResponse:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v2User'
-  v2SignOutResponse:
-    type: object
-  v2SignUpResponse:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v2User'
   v2Tag:
     type: object
     properties:
@@ -2691,27 +2611,6 @@ definitions:
         title: |-
           The creator of tags.
           Format: users/{id}
-  v2UpdateIdentityProviderResponse:
-    type: object
-    properties:
-      identityProvider:
-        $ref: '#/definitions/apiv2IdentityProvider'
-        description: The updated identityProvider.
-  v2UpdateInboxResponse:
-    type: object
-    properties:
-      inbox:
-        $ref: '#/definitions/v2Inbox'
-  v2UpdateMemoResponse:
-    type: object
-    properties:
-      memo:
-        $ref: '#/definitions/v2Memo'
-  v2UpdateResourceResponse:
-    type: object
-    properties:
-      resource:
-        $ref: '#/definitions/v2Resource'
   v2UpdateStorageResponse:
     type: object
     properties:
@@ -2732,11 +2631,6 @@ definitions:
     properties:
       webhook:
         $ref: '#/definitions/v2Webhook'
-  v2UpsertMemoReactionResponse:
-    type: object
-    properties:
-      reaction:
-        $ref: '#/definitions/v2Reaction'
   v2UpsertTagRequest:
     type: object
     properties:
