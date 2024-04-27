@@ -1,5 +1,5 @@
 import { CssVarsProvider } from "@mui/joy";
-import classNames from "classnames";
+import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
@@ -56,8 +56,8 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={classNames("dialog-wrapper", className)} onMouseDown={handleSpaceClicked}>
-      <div ref={dialogContainerRef} className={classNames("dialog-container")} onMouseDown={(e) => e.stopPropagation()}>
+    <div className={clsx("dialog-wrapper", className)} onMouseDown={handleSpaceClicked}>
+      <div ref={dialogContainerRef} className={clsx("dialog-container")} onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>

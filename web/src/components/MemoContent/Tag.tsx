@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import clsx from "clsx";
 import { useContext } from "react";
 import { useFilterStore } from "@/store/module";
 import { RendererContext } from "./types";
@@ -26,7 +26,7 @@ const Tag: React.FC<Props> = ({ content }: Props) => {
 
   return (
     <span
-      className={classNames(
+      className={clsx(
         "inline-block w-auto text-blue-600 dark:text-blue-400",
         context.disableFilter ? "" : "cursor-pointer hover:opacity-80",
       )}

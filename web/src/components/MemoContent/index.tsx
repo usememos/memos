@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import clsx from "clsx";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
@@ -71,7 +71,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-400 ${className || ""}`}>
           <div
             ref={memoContentContainerRef}
-            className={classNames(
+            className={clsx(
               "w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
               showCompactMode && "line-clamp-6",
             )}

@@ -1,5 +1,5 @@
 import { Dropdown, Menu, MenuButton } from "@mui/joy";
-import classNames from "classnames";
+import clsx from "clsx";
 import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import Icon from "@/components/Icon";
@@ -74,10 +74,7 @@ const ReactionSelector = (props: Props) => {
     <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
       <MenuButton slots={{ root: "div" }}>
         <span
-          className={classNames(
-            "h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70",
-            className,
-          )}
+          className={clsx("h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70", className)}
         >
           <Icon.SmilePlus className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
@@ -89,7 +86,7 @@ const ReactionSelector = (props: Props) => {
               return (
                 <span
                   key={reactionType}
-                  className={classNames(
+                  className={clsx(
                     "inline-flex w-auto cursor-pointer rounded text-lg px-1 text-gray-500 dark:text-gray-400 hover:opacity-80",
                     hasReacted(reactionType) && "bg-blue-100 dark:bg-zinc-800",
                   )}

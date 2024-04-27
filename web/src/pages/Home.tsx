@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import classNames from "classnames";
+import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Empty from "@/components/Empty";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
@@ -75,8 +75,8 @@ const Home = () => {
           <HomeSidebarDrawer />
         </MobileHeader>
       )}
-      <div className={classNames("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
-        <div className={classNames(md ? "w-[calc(100%-15rem)]" : "w-full")}>
+      <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
+        <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" onEditPrevious={handleEditPrevious} />
           <div className="flex flex-col justify-start items-start w-full max-w-full">
             <MemoFilter className="px-2 pb-2" />

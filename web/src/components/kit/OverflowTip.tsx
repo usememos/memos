@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/joy";
-import classNames from "classnames";
+import clsx from "clsx";
 import { useRef, useState, useEffect } from "react";
 
 interface Props {
@@ -21,7 +21,7 @@ const OverflowTip = ({ children, className }: Props) => {
 
   return (
     <Tooltip title={children} placement="top" arrow disableHoverListener={!isOverflowed}>
-      <div ref={textElementRef} className={classNames("truncate", className)}>
+      <div ref={textElementRef} className={clsx("truncate", className)}>
         {children}
       </div>
     </Tooltip>

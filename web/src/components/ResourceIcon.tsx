@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import clsx from "clsx";
 import React from "react";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
@@ -16,7 +16,7 @@ const ResourceIcon = (props: Props) => {
   const { resource } = props;
   const resourceType = getResourceType(resource);
   const resourceUrl = getResourceUrl(resource);
-  const className = classNames("w-full h-auto", props.className);
+  const className = clsx("w-full h-auto", props.className);
   const strokeWidth = props.strokeWidth;
 
   const previewResource = () => {
@@ -25,7 +25,7 @@ const ResourceIcon = (props: Props) => {
 
   if (resourceType === "image/*") {
     return (
-      <SquareDiv className={classNames(className, "flex items-center justify-center overflow-clip")}>
+      <SquareDiv className={clsx(className, "flex items-center justify-center overflow-clip")}>
         <img
           className="min-w-full min-h-full object-cover border rounded dark:border-none"
           src={resource.externalLink ? resourceUrl : resourceUrl + "?thumbnail=1"}
@@ -63,7 +63,7 @@ const ResourceIcon = (props: Props) => {
   };
 
   return (
-    <div onClick={previewResource} className={classNames(className, "max-w-[4rem] opacity-50")}>
+    <div onClick={previewResource} className={clsx(className, "max-w-[4rem] opacity-50")}>
       {getResourceIcon()}
     </div>
   );

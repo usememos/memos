@@ -1,5 +1,5 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
-import classNames from "classnames";
+import clsx from "clsx";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import Icon from "@/components/Icon";
@@ -108,7 +108,7 @@ const MemoActionMenu = (props: Props) => {
   return (
     <Dropdown>
       <MenuButton slots={{ root: "div" }}>
-        <span className={classNames("flex justify-center items-center rounded-full hover:opacity-70", props.className)}>
+        <span className={clsx("flex justify-center items-center rounded-full hover:opacity-70", props.className)}>
           <Icon.MoreVertical className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
       </MenuButton>

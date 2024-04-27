@@ -1,5 +1,5 @@
 import { Checkbox } from "@mui/joy";
-import classNames from "classnames";
+import clsx from "clsx";
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import { useCallback, useMemo, useState } from "react";
@@ -65,11 +65,9 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
       </div>
 
       <div className="overflow-auto">
-        <pre
-          className={classNames(wrap ? "whitespace-pre-wrap" : "no-wrap overflow-auto", "w-full p-2 bg-amber-50 dark:bg-zinc-700 relative")}
-        >
+        <pre className={clsx(wrap ? "whitespace-pre-wrap" : "no-wrap overflow-auto", "w-full p-2 bg-amber-50 dark:bg-zinc-700 relative")}>
           <code
-            className={classNames(`language-${formatedLanguage}`, "block text-sm leading-5")}
+            className={clsx(`language-${formatedLanguage}`, "block text-sm leading-5")}
             dangerouslySetInnerHTML={{ __html: highlightedCode }}
           ></code>
         </pre>

@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/joy";
-import classNames from "classnames";
+import clsx from "clsx";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -77,7 +77,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
 
   return (
     <div
-      className={classNames(
+      className={clsx(
         "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
         props.showPinned && memo.pinned && "border-gray-200 border dark:border-zinc-700",
         className,
@@ -126,7 +126,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           </div>
           {!isInMemoDetailPage && (
             <Link
-              className={classNames(
+              className={clsx(
                 "flex flex-row justify-start items-center hover:opacity-70",
                 commentAmount === 0 && "invisible group-hover:visible",
               )}

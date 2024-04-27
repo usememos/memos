@@ -1,5 +1,5 @@
 import { Button, Divider, IconButton } from "@mui/joy";
-import classNames from "classnames";
+import clsx from "clsx";
 import { Fragment, useEffect, useRef, useState } from "react";
 import ActivityCalendar from "@/components/ActivityCalendar";
 import Empty from "@/components/Empty";
@@ -125,8 +125,8 @@ const Timeline = () => {
           <TimelineSidebarDrawer />
         </MobileHeader>
       )}
-      <div className={classNames("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
-        <div className={classNames(md ? "w-[calc(100%-15rem)]" : "w-full")}>
+      <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
+        <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
           <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-black dark:text-gray-300">
             <div className="relative w-full flex flex-row justify-between items-center">
               <div>
@@ -149,9 +149,9 @@ const Timeline = () => {
 
               {groupedByMonth.map((group, index) => (
                 <Fragment key={group.month}>
-                  <div className={classNames("flex flex-col justify-start items-start w-full mt-2 last:mb-4")}>
-                    <div className={classNames("flex shrink-0 flex-row w-full pl-1 mt-2 mb-2")}>
-                      <div className={classNames("w-full flex flex-col")}>
+                  <div className={clsx("flex flex-col justify-start items-start w-full mt-2 last:mb-4")}>
+                    <div className={clsx("flex shrink-0 flex-row w-full pl-1 mt-2 mb-2")}>
+                      <div className={clsx("w-full flex flex-col")}>
                         <span className="font-medium text-3xl leading-tight mb-1">
                           {new Date(group.month).toLocaleString(i18n.language, { month: "short", timeZone: "UTC" })}
                         </span>
@@ -160,11 +160,11 @@ const Timeline = () => {
                       <ActivityCalendar month={group.month} data={group.data} onClick={(date) => setSelectedDay(date)} />
                     </div>
 
-                    <div className={classNames("w-full flex flex-col justify-start items-start")}>
+                    <div className={clsx("w-full flex flex-col justify-start items-start")}>
                       {group.memos.map((memo, index) => (
                         <div
                           key={`${memo.name}-${memo.displayTime}`}
-                          className={classNames("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
+                          className={clsx("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
                         >
                           <MemoView className="!border max-w-full !border-gray-100 dark:!border-zinc-700" memo={memo} />
                           <div className="absolute -left-2 sm:left-2 top-4 h-full">

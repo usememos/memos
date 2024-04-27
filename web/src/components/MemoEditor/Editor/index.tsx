@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import clsx from "clsx";
 import { last } from "lodash-es";
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { NodeType, OrderedListNode, TaskListNode, UnorderedListNode } from "@/types/node";
@@ -178,7 +178,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
 
   return (
     <div
-      className={classNames(
+      className={clsx(
         "flex flex-col justify-start items-start relative w-full h-auto max-h-[256px] bg-inherit dark:text-gray-300",
         className,
       )}
