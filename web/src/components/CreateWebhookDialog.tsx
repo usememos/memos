@@ -33,11 +33,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
         .getWebhook({
           id: webhookId,
         })
-        .then(({ webhook }) => {
-          if (!webhook) {
-            return;
-          }
-
+        .then((webhook) => {
           setState({
             name: webhook.name,
             url: webhook.url,
