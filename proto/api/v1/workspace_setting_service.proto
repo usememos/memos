@@ -63,25 +63,32 @@ message WorkspaceCustomProfile {
 }
 
 message WorkspaceStorageSetting {
-  // storage_type is the storage type.
-  StorageType storage_type = 1;
-  // The id of actived external storage.
-  optional int32 actived_external_storage_id = 2;
-  // The template of local storage path.
-  // e.g. assets/{timestamp}_{filename}
-  string local_storage_path_template = 3;
-  // The max upload size in megabytes.
-  int64 upload_size_limit_mb = 4;
-
   enum StorageType {
     STORAGE_TYPE_UNSPECIFIED = 0;
     // STORAGE_TYPE_DATABASE is the database storage type.
     STORAGE_TYPE_DATABASE = 1;
     // STORAGE_TYPE_LOCAL is the local storage type.
     STORAGE_TYPE_LOCAL = 2;
-    // STORAGE_TYPE_EXTERNAL is the external storage type.
-    STORAGE_TYPE_EXTERNAL = 3;
+    // STORAGE_TYPE_S3 is the S3 storage type.
+    STORAGE_TYPE_S3 = 3;
   }
+  // storage_type is the storage type.
+  StorageType storage_type = 1;
+  // The template of file path.
+  // e.g. assets/{timestamp}_{filename}
+  string filepath_template = 2;
+  // The max upload size in megabytes.
+  int64 upload_size_limit_mb = 3;
+  // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+  message S3Config {
+    string access_key_id = 1;
+    string access_key_secret = 2;
+    string endpoint = 3;
+    string region = 4;
+    string bucket = 5;
+  }
+  // The S3 config.
+  S3Config s3_config = 4;
 }
 
 message WorkspaceMemoRelatedSetting {

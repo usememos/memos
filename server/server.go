@@ -22,7 +22,6 @@ import (
 	"github.com/usememos/memos/server/route/frontend"
 	"github.com/usememos/memos/server/route/resource"
 	"github.com/usememos/memos/server/route/rss"
-	resourcepresign "github.com/usememos/memos/server/service/resource_presign"
 	versionchecker "github.com/usememos/memos/server/service/version_checker"
 	"github.com/usememos/memos/store"
 )
@@ -148,7 +147,6 @@ func (s *Server) Shutdown(ctx context.Context) {
 }
 
 func (s *Server) StartBackgroundRunners(ctx context.Context) {
-	go resourcepresign.RunPreSignLinks(ctx, s.Store)
 	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
 }
 

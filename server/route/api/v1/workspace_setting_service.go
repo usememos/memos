@@ -162,28 +162,46 @@ func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting
 	return generalSetting
 }
 
-func convertWorkspaceStorageSettingFromStore(setting *storepb.WorkspaceStorageSetting) *v1pb.WorkspaceStorageSetting {
-	if setting == nil {
+func convertWorkspaceStorageSettingFromStore(settingpb *storepb.WorkspaceStorageSetting) *v1pb.WorkspaceStorageSetting {
+	if settingpb == nil {
 		return nil
 	}
-	return &v1pb.WorkspaceStorageSetting{
-		StorageType:              v1pb.WorkspaceStorageSetting_StorageType(setting.StorageType),
-		LocalStoragePathTemplate: setting.LocalStoragePathTemplate,
-		UploadSizeLimitMb:        setting.UploadSizeLimitMb,
-		ActivedExternalStorageId: setting.ActivedExternalStorageId,
+	setting := &v1pb.WorkspaceStorageSetting{
+		StorageType:       v1pb.WorkspaceStorageSetting_StorageType(settingpb.StorageType),
+		FilepathTemplate:  settingpb.FilepathTemplate,
+		UploadSizeLimitMb: settingpb.UploadSizeLimitMb,
 	}
+	if settingpb.S3Config != nil {
+		setting.S3Config = &v1pb.WorkspaceStorageSetting_S3Config{
+			AccessKeyId:     settingpb.S3Config.AccessKeyId,
+			AccessKeySecret: settingpb.S3Config.AccessKeySecret,
+			Endpoint:        settingpb.S3Config.Endpoint,
+			Region:          settingpb.S3Config.Region,
+			Bucket:          settingpb.S3Config.Bucket,
+		}
+	}
+	return setting
 }
 
 func convertWorkspaceStorageSettingToStore(setting *v1pb.WorkspaceStorageSetting) *storepb.WorkspaceStorageSetting {
 	if setting == nil {
 		return nil
 	}
-	return &storepb.WorkspaceStorageSetting{
-		StorageType:              storepb.WorkspaceStorageSetting_StorageType(setting.StorageType),
-		LocalStoragePathTemplate: setting.LocalStoragePathTemplate,
-		UploadSizeLimitMb:        setting.UploadSizeLimitMb,
-		ActivedExternalStorageId: setting.ActivedExternalStorageId,
+	settingpb := &storepb.WorkspaceStorageSetting{
+		StorageType:       storepb.WorkspaceStorageSetting_StorageType(setting.StorageType),
+		FilepathTemplate:  setting.FilepathTemplate,
+		UploadSizeLimitMb: setting.UploadSizeLimitMb,
 	}
+	if setting.S3Config != nil {
+		settingpb.S3Config = &storepb.WorkspaceStorageSetting_S3Config{
+			AccessKeyId:     setting.S3Config.AccessKeyId,
+			AccessKeySecret: setting.S3Config.AccessKeySecret,
+			Endpoint:        setting.S3Config.Endpoint,
+			Region:          setting.S3Config.Region,
+			Bucket:          setting.S3Config.Bucket,
+		}
+	}
+	return settingpb
 }
 
 func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoRelatedSetting) *v1pb.WorkspaceMemoRelatedSetting {

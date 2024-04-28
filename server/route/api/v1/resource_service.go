@@ -254,12 +254,12 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 	}
 
 	if workspaceStorageSetting.StorageType == storepb.WorkspaceStorageSetting_STORAGE_TYPE_LOCAL {
-		localStoragePath := "assets/{timestamp}_{filename}"
-		if workspaceStorageSetting.LocalStoragePathTemplate != "" {
-			localStoragePath = workspaceStorageSetting.LocalStoragePathTemplate
+		filepathTemplate := "assets/{timestamp}_{filename}"
+		if workspaceStorageSetting.FilepathTemplate != "" {
+			filepathTemplate = workspaceStorageSetting.FilepathTemplate
 		}
 
-		internalPath := localStoragePath
+		internalPath := filepathTemplate
 		if !strings.Contains(internalPath, "{filename}") {
 			internalPath = filepath.Join(internalPath, "{filename}")
 		}
@@ -287,46 +287,29 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		}
 		create.InternalPath = internalPath
 		create.Blob = nil
-	} else if workspaceStorageSetting.StorageType == storepb.WorkspaceStorageSetting_STORAGE_TYPE_EXTERNAL {
-		if workspaceStorageSetting.ActivedExternalStorageId == nil {
+	} else if workspaceStorageSetting.StorageType == storepb.WorkspaceStorageSetting_STORAGE_TYPE_S3 {
+		s3Config := workspaceStorageSetting.S3Config
+		if s3Config == nil {
 			return errors.Errorf("No actived external storage found")
 		}
-		storage, err := s.GetStorage(ctx, &store.FindStorage{ID: workspaceStorageSetting.ActivedExternalStorageId})
-		if err != nil {
-			return errors.Wrap(err, "Failed to find actived external storage")
-		}
-		if storage == nil {
-			return errors.Errorf("Storage %d not found", *workspaceStorageSetting.ActivedExternalStorageId)
-		}
-		if storage.Type != storepb.Storage_S3 {
-			return errors.Errorf("Unsupported storage type: %s", storage.Type.String())
-		}
-
-		s3Config := storage.Config.GetS3Config()
-		if s3Config == nil {
-			return errors.Errorf("S3 config not found")
-		}
 		s3Client, err := s3.NewClient(ctx, &s3.Config{
-			AccessKey: s3Config.AccessKey,
-			SecretKey: s3Config.SecretKey,
-			EndPoint:  s3Config.EndPoint,
-			Region:    s3Config.Region,
-			Bucket:    s3Config.Bucket,
-			URLPrefix: s3Config.UrlPrefix,
-			URLSuffix: s3Config.UrlSuffix,
-			PreSign:   s3Config.PreSign,
+			AccessKeyID:     s3Config.AccessKeyId,
+			AcesssKeySecret: s3Config.AccessKeySecret,
+			Endpoint:        s3Config.Endpoint,
+			Region:          s3Config.Region,
+			Bucket:          s3Config.Bucket,
 		})
 		if err != nil {
 			return errors.Wrap(err, "Failed to create s3 client")
 		}
 
-		filePath := s3Config.Path
-		if !strings.Contains(filePath, "{filename}") {
-			filePath = filepath.Join(filePath, "{filename}")
+		filepathTemplate := workspaceStorageSetting.FilepathTemplate
+		if !strings.Contains(filepathTemplate, "{filename}") {
+			filepathTemplate = filepath.Join(filepathTemplate, "{filename}")
 		}
-		filePath = replacePathTemplate(filePath, create.Filename)
+		filepathTemplate = replacePathTemplate(filepathTemplate, create.Filename)
 		r := bytes.NewReader(create.Blob)
-		link, err := s3Client.UploadFile(ctx, filePath, create.Type, r)
+		link, err := s3Client.UploadFile(ctx, filepathTemplate, create.Type, r)
 		if err != nil {
 			return errors.Wrap(err, "Failed to upload via s3 client")
 		}

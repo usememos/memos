@@ -2059,31 +2059,44 @@ definitions:
       storageType:
         $ref: '#/definitions/apiv1WorkspaceStorageSettingStorageType'
         description: storage_type is the storage type.
-      activedExternalStorageId:
-        type: integer
-        format: int32
-        description: The id of actived external storage.
-      localStoragePathTemplate:
+      filepathTemplate:
         type: string
         title: |-
-          The template of local storage path.
+          The template of file path.
           e.g. assets/{timestamp}_{filename}
       uploadSizeLimitMb:
         type: string
         format: int64
         description: The max upload size in megabytes.
+      s3Config:
+        $ref: '#/definitions/apiv1WorkspaceStorageSettingS3Config'
+        description: The S3 config.
+  apiv1WorkspaceStorageSettingS3Config:
+    type: object
+    properties:
+      accessKeyId:
+        type: string
+      accessKeySecret:
+        type: string
+      endpoint:
+        type: string
+      region:
+        type: string
+      bucket:
+        type: string
+    title: 'Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/'
   apiv1WorkspaceStorageSettingStorageType:
     type: string
     enum:
       - STORAGE_TYPE_UNSPECIFIED
       - STORAGE_TYPE_DATABASE
       - STORAGE_TYPE_LOCAL
-      - STORAGE_TYPE_EXTERNAL
+      - STORAGE_TYPE_S3
     default: STORAGE_TYPE_UNSPECIFIED
     description: |2-
        - STORAGE_TYPE_DATABASE: STORAGE_TYPE_DATABASE is the database storage type.
        - STORAGE_TYPE_LOCAL: STORAGE_TYPE_LOCAL is the local storage type.
-       - STORAGE_TYPE_EXTERNAL: STORAGE_TYPE_EXTERNAL is the external storage type.
+       - STORAGE_TYPE_S3: STORAGE_TYPE_S3 is the S3 storage type.
   googlerpcStatus:
     type: object
     properties:

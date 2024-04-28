@@ -139,9 +139,9 @@ func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.Wo
 }
 
 const (
-	defaultWorkspaceStorageType              = storepb.WorkspaceStorageSetting_STORAGE_TYPE_DATABASE
-	defaultWorkspaceUploadSizeLimitMb        = 30
-	defaultWorkspaceLocalStoragePathTemplate = "assets/{timestamp}_{filename}"
+	defaultWorkspaceStorageType       = storepb.WorkspaceStorageSetting_STORAGE_TYPE_DATABASE
+	defaultWorkspaceUploadSizeLimitMb = 30
+	defaultWorkspaceFilepathTemplate  = "assets/{timestamp}_{filename}"
 )
 
 func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.WorkspaceStorageSetting, error) {
@@ -162,8 +162,8 @@ func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.Worksp
 	if workspaceStorageSetting.UploadSizeLimitMb == 0 {
 		workspaceStorageSetting.UploadSizeLimitMb = defaultWorkspaceUploadSizeLimitMb
 	}
-	if workspaceStorageSetting.LocalStoragePathTemplate == "" {
-		workspaceStorageSetting.LocalStoragePathTemplate = defaultWorkspaceLocalStoragePathTemplate
+	if workspaceStorageSetting.FilepathTemplate == "" {
+		workspaceStorageSetting.FilepathTemplate = defaultWorkspaceFilepathTemplate
 	}
 	return workspaceStorageSetting, nil
 }
