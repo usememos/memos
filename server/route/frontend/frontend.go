@@ -41,10 +41,33 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 
 func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 	// Use echo static middleware to serve the built dist folder.
-	// refer: https://github.com/labstack/echo/blob/master/middleware/static.go
+	// Reference: https://github.com/labstack/echo/blob/master/middleware/static.go
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		HTML5:      true,
 		Filesystem: getFileSystem("dist"),
+		Skipper: func(c echo.Context) bool {
+			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
+		},
+	}))
+
+	g := e.Group("assets")
+	// Use echo gzip middleware to compress the response.
+	// Reference: https://echo.labstack.com/docs/middleware/gzip
+	g.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Skipper: func(c echo.Context) bool {
+			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
+		},
+		Level: 5,
+	}))
+	g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Response().Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
+			return next(c)
+		}
+	})
+	g.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		HTML5:      true,
+		Filesystem: getFileSystem("dist/assets"),
 		Skipper: func(c echo.Context) bool {
 			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
 		},
