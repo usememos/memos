@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import useLocalStorage from "react-use/lib/useLocalStorage";
 import { workspaceServiceClient } from "@/grpcweb";
-import storage from "@/helpers/storage";
 import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceProfile } from "@/types/proto/api/v1/workspace_service";
 import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
@@ -30,6 +30,8 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
     appearance: "system",
     profile: WorkspaceProfile.fromPartial({}),
   });
+  const [locale] = useLocalStorage("locale", "en");
+  const [appearance] = useLocalStorage("appearance", "system");
 
   useEffect(() => {
     const initialWorkspace = async () => {
@@ -39,8 +41,6 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
       const workspaceGeneralSetting =
         workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
         WorkspaceGeneralSetting.fromPartial({});
-      const { locale } = storage.get(["locale"]);
-      const { appearance } = storage.get(["appearance"]);
       setCommonContext({
         locale: locale || workspaceGeneralSetting.customProfile?.locale || "en",
         appearance: appearance || workspaceGeneralSetting.customProfile?.appearance || "system",

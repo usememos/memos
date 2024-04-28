@@ -11,7 +11,6 @@ tags:
   - name: LinkService
   - name: ResourceService
   - name: MemoService
-  - name: StorageService
   - name: TagService
   - name: WebhookService
   - name: WorkspaceService
@@ -453,115 +452,6 @@ paths:
           type: string
       tags:
         - ResourceService
-  /api/v1/storages:
-    get:
-      summary: ListStorages returns a list of storages.
-      operationId: StorageService_ListStorages
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1ListStoragesResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      tags:
-        - StorageService
-    post:
-      summary: CreateStorage creates a new storage.
-      operationId: StorageService_CreateStorage
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1CreateStorageResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1CreateStorageRequest'
-      tags:
-        - StorageService
-  /api/v1/storages/{id}:
-    get:
-      summary: GetStorage returns a storage by id.
-      operationId: StorageService_GetStorage
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1GetStorageResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - StorageService
-    delete:
-      summary: DeleteStorage deletes a storage by id.
-      operationId: StorageService_DeleteStorage
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1DeleteStorageResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - StorageService
-  /api/v1/storages/{storage.id}:
-    patch:
-      summary: UpdateStorage updates a storage.
-      operationId: StorageService_UpdateStorage
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1UpdateStorageResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: storage.id
-          in: path
-          required: true
-          type: integer
-          format: int32
-        - name: storage
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              title:
-                type: string
-              type:
-                $ref: '#/definitions/apiv1StorageType'
-              config:
-                $ref: '#/definitions/apiv1StorageConfig'
-      tags:
-        - StorageService
   /api/v1/tags:
     get:
       summary: ListTags lists tags.
@@ -1935,50 +1825,6 @@ definitions:
           type: string
       fieldMapping:
         $ref: '#/definitions/apiv1FieldMapping'
-  apiv1S3Config:
-    type: object
-    properties:
-      endPoint:
-        type: string
-      path:
-        type: string
-      region:
-        type: string
-      accessKey:
-        type: string
-      secretKey:
-        type: string
-      bucket:
-        type: string
-      urlPrefix:
-        type: string
-      urlSuffix:
-        type: string
-      preSign:
-        type: boolean
-  apiv1Storage:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int32
-      title:
-        type: string
-      type:
-        $ref: '#/definitions/apiv1StorageType'
-      config:
-        $ref: '#/definitions/apiv1StorageConfig'
-  apiv1StorageConfig:
-    type: object
-    properties:
-      s3Config:
-        $ref: '#/definitions/apiv1S3Config'
-  apiv1StorageType:
-    type: string
-    enum:
-      - TYPE_UNSPECIFIED
-      - S3
-    default: TYPE_UNSPECIFIED
   apiv1UserSetting:
     type: object
     properties:
@@ -2156,16 +2002,6 @@ definitions:
         type: string
       visibility:
         $ref: '#/definitions/v1Visibility'
-  v1CreateStorageRequest:
-    type: object
-    properties:
-      storage:
-        $ref: '#/definitions/apiv1Storage'
-  v1CreateStorageResponse:
-    type: object
-    properties:
-      storage:
-        $ref: '#/definitions/apiv1Storage'
   v1CreateWebhookRequest:
     type: object
     properties:
@@ -2173,8 +2009,6 @@ definitions:
         type: string
       url:
         type: string
-  v1DeleteStorageResponse:
-    type: object
   v1ExportMemosRequest:
     type: object
     properties:
@@ -2192,11 +2026,6 @@ definitions:
     properties:
       linkMetadata:
         $ref: '#/definitions/v1LinkMetadata'
-  v1GetStorageResponse:
-    type: object
-    properties:
-      storage:
-        $ref: '#/definitions/apiv1Storage'
   v1GetTagSuggestionsResponse:
     type: object
     properties:
@@ -2331,14 +2160,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Resource'
-  v1ListStoragesResponse:
-    type: object
-    properties:
-      storages:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/apiv1Storage'
   v1ListTagsResponse:
     type: object
     properties:
@@ -2575,11 +2396,6 @@ definitions:
         title: |-
           The creator of tags.
           Format: users/{id}
-  v1UpdateStorageResponse:
-    type: object
-    properties:
-      storage:
-        $ref: '#/definitions/apiv1Storage'
   v1UpsertTagRequest:
     type: object
     properties:

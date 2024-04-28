@@ -73,12 +73,6 @@ type Driver interface {
 	ListTags(ctx context.Context, find *FindTag) ([]*Tag, error)
 	DeleteTag(ctx context.Context, delete *DeleteTag) error
 
-	// Storage model related methods.
-	CreateStorage(ctx context.Context, create *Storage) (*Storage, error)
-	ListStorages(ctx context.Context, find *FindStorage) ([]*Storage, error)
-	UpdateStorage(ctx context.Context, update *UpdateStorage) (*Storage, error)
-	DeleteStorage(ctx context.Context, delete *DeleteStorage) error
-
 	// Inbox model related methods.
 	CreateInbox(ctx context.Context, create *Inbox) (*Inbox, error)
 	ListInboxes(ctx context.Context, find *FindInbox) ([]*Inbox, error)

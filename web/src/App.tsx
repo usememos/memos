@@ -2,7 +2,7 @@ import { useColorScheme } from "@mui/joy";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
-import storage from "./helpers/storage";
+import useLocalStorage from "react-use/lib/useLocalStorage";
 import { getSystemColorScheme } from "./helpers/utils";
 import useNavigateTo from "./hooks/useNavigateTo";
 import { useCommonContext } from "./layouts/CommonContextProvider";
@@ -16,8 +16,11 @@ const App = () => {
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
   const commonContext = useCommonContext();
+  const [, setLocale] = useLocalStorage("locale", "en");
+  const [, setAppearance] = useLocalStorage("appearance", "system");
   const workspaceProfile = commonContext.profile;
   const userSetting = userStore.userSetting;
+
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
     WorkspaceGeneralSetting.fromPartial({});
@@ -86,9 +89,7 @@ const App = () => {
     } else {
       document.documentElement.setAttribute("dir", "ltr");
     }
-    storage.set({
-      locale: currentLocale,
-    });
+    setLocale(currentLocale);
   }, [commonContext.locale]);
 
   useEffect(() => {
@@ -97,9 +98,7 @@ const App = () => {
       currentAppearance = getSystemColorScheme();
     }
     setMode(currentAppearance);
-    storage.set({
-      appearance: currentAppearance,
-    });
+    setAppearance(currentAppearance);
   }, [commonContext.appearance]);
 
   useEffect(() => {
