@@ -1,4 +1,4 @@
-import { Autocomplete, Button, IconButton, Input, List, ListItem, Option, Select, Typography } from "@mui/joy";
+import { Button, IconButton, List, ListItem, Typography } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useResourceStore } from "@/store/v1";
@@ -7,17 +7,12 @@ import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 
-const fileTypeAutocompleteOptions = ["image/*", "text/*", "audio/*", "video/*", "application/*"];
-
 interface Props extends DialogProps {
   onCancel?: () => void;
   onConfirm?: (resourceList: Resource[]) => void;
 }
 
-type SelectedMode = "local-file" | "external-link";
-
 interface State {
-  selectedMode: SelectedMode;
   uploadingFlag: boolean;
 }
 
@@ -26,16 +21,8 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
   const { destroy, onCancel, onConfirm } = props;
   const resourceStore = useResourceStore();
   const [state, setState] = useState<State>({
-    selectedMode: "local-file",
     uploadingFlag: false,
   });
-  const [resourceCreate, setResourceCreate] = useState<Resource>(
-    Resource.fromPartial({
-      filename: "",
-      externalLink: "",
-      type: "",
-    }),
-  );
   const [fileList, setFileList] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -73,44 +60,6 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
     destroy();
   };
 
-  const handleSelectedModeChanged = (mode: "local-file" | "external-link") => {
-    setState((state) => {
-      return {
-        ...state,
-        selectedMode: mode,
-      };
-    });
-  };
-
-  const handleExternalLinkChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const externalLink = event.target.value;
-    setResourceCreate((state) => {
-      return {
-        ...state,
-        externalLink,
-      };
-    });
-  };
-
-  const handleFileNameChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const filename = event.target.value;
-    setResourceCreate((state) => {
-      return {
-        ...state,
-        filename,
-      };
-    });
-  };
-
-  const handleFileTypeChanged = (fileType: string) => {
-    setResourceCreate((state) => {
-      return {
-        ...state,
-        type: fileType,
-      };
-    });
-  };
-
   const handleFileInputChange = async () => {
     if (!fileInputRef.current || !fileInputRef.current.files) {
       return;
@@ -124,14 +73,8 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
   };
 
   const allowConfirmAction = () => {
-    if (state.selectedMode === "local-file") {
-      if (!fileInputRef.current || !fileInputRef.current.files || fileInputRef.current.files.length === 0) {
-        return false;
-      }
-    } else if (state.selectedMode === "external-link") {
-      if (resourceCreate.filename === "" || resourceCreate.externalLink === "" || resourceCreate.type === "") {
-        return false;
-      }
+    if (!fileInputRef.current || !fileInputRef.current.files || fileInputRef.current.files.length === 0) {
+      return false;
     }
     return true;
   };
@@ -150,30 +93,25 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
 
     const createdResourceList: Resource[] = [];
     try {
-      if (state.selectedMode === "local-file") {
-        if (!fileInputRef.current || !fileInputRef.current.files) {
-          return;
+      if (!fileInputRef.current || !fileInputRef.current.files) {
+        return;
+      }
+      const filesOnInput = Array.from(fileInputRef.current.files);
+      for (const file of fileList) {
+        const fileOnInput = filesOnInput.find((fileOnInput) => fileOnInput.name === file.name);
+        if (!fileOnInput) {
+          continue;
         }
-        const filesOnInput = Array.from(fileInputRef.current.files);
-        for (const file of fileList) {
-          const fileOnInput = filesOnInput.find((fileOnInput) => fileOnInput.name === file.name);
-          if (!fileOnInput) {
-            continue;
-          }
-          const { name: filename, size, type } = file;
-          const buffer = new Uint8Array(await file.arrayBuffer());
-          const resource = await resourceStore.createResource({
-            resource: Resource.fromPartial({
-              filename,
-              size,
-              type,
-              content: buffer,
-            }),
-          });
-          createdResourceList.push(resource);
-        }
-      } else {
-        const resource = await resourceStore.createResource({ resource: resourceCreate });
+        const { name: filename, size, type } = file;
+        const buffer = new Uint8Array(await file.arrayBuffer());
+        const resource = await resourceStore.createResource({
+          resource: Resource.fromPartial({
+            filename,
+            size,
+            type,
+            content: buffer,
+          }),
+        });
         createdResourceList.push(resource);
       }
     } catch (error: any) {
@@ -196,100 +134,47 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
         </IconButton>
       </div>
       <div className="dialog-content-container !w-80">
-        <Typography className="!mb-1" level="body-md">
-          {t("resource.create-dialog.upload-method")}
-        </Typography>
-        <Select
-          className="w-full mb-2"
-          onChange={(_, value) => handleSelectedModeChanged(value as SelectedMode)}
-          value={state.selectedMode}
-          startDecorator={<Icon.File className="w-4 h-auto" />}
-        >
-          <Option value="local-file">{t("resource.create-dialog.local-file.option")}</Option>
-          <Option value="external-link">{t("resource.create-dialog.external-link.option")}</Option>
-        </Select>
-
-        {state.selectedMode === "local-file" && (
-          <>
-            <div className="w-full relative bg-blue-50 dark:bg-zinc-900 rounded-md flex flex-row justify-center items-center py-8">
-              <label htmlFor="files" className="p-2 px-4 text-sm text-white cursor-pointer bg-blue-500 block rounded hover:opacity-80">
-                {t("resource.create-dialog.local-file.choose")}
-              </label>
-              <input
-                className="absolute inset-0 w-full h-full opacity-0"
-                ref={fileInputRef}
-                onChange={handleFileInputChange}
-                type="file"
-                id="files"
-                multiple={true}
-                accept="*"
-              />
-            </div>
-            <List size="sm" sx={{ width: "100%" }}>
-              {fileList.map((file, index) => (
-                <ListItem key={file.name} className="flex justify-between">
-                  <Typography noWrap>{file.name}</Typography>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => {
-                        handleReorderFileList(file.name, "up");
-                      }}
-                      disabled={index === 0}
-                      className="disabled:opacity-50"
-                    >
-                      <Icon.ArrowUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleReorderFileList(file.name, "down");
-                      }}
-                      disabled={index === fileList.length - 1}
-                      className="disabled:opacity-50"
-                    >
-                      <Icon.ArrowDown className="w-4 h-4" />
-                    </button>
-                  </div>
-                </ListItem>
-              ))}
-            </List>
-          </>
-        )}
-
-        {state.selectedMode === "external-link" && (
-          <>
-            <Typography className="!mb-1" level="body-md">
-              {t("resource.create-dialog.external-link.link")}
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("resource.create-dialog.external-link.link-placeholder")}
-              value={resourceCreate.externalLink}
-              onChange={handleExternalLinkChanged}
-              fullWidth
-            />
-            <Typography className="!mb-1" level="body-md">
-              {t("resource.create-dialog.external-link.file-name")}
-            </Typography>
-            <Input
-              className="mb-2"
-              placeholder={t("resource.create-dialog.external-link.file-name-placeholder")}
-              value={resourceCreate.filename}
-              onChange={handleFileNameChanged}
-              fullWidth
-            />
-            <Typography className="!mb-1" level="body-md">
-              {t("resource.create-dialog.external-link.type")}
-            </Typography>
-            <Autocomplete
-              className="w-full"
-              size="sm"
-              placeholder={t("resource.create-dialog.external-link.type-placeholder")}
-              freeSolo={true}
-              options={fileTypeAutocompleteOptions}
-              onChange={(_, value) => handleFileTypeChanged(value || "")}
-            />
-          </>
-        )}
+        <div className="w-full relative bg-blue-50 dark:bg-zinc-900 rounded-md border-dashed border-2 dark:border-zinc-700 flex flex-row justify-center items-center py-8 hover:opacity-90">
+          <label htmlFor="files" className="p-2 px-4 text-sm text-white cursor-pointer bg-blue-500 block rounded hover:opacity-80">
+            {t("resource.create-dialog.local-file.choose")}
+          </label>
+          <input
+            className="absolute inset-0 w-full h-full opacity-0"
+            ref={fileInputRef}
+            onChange={handleFileInputChange}
+            type="file"
+            id="files"
+            multiple={true}
+            accept="*"
+          />
+        </div>
+        <List size="sm" sx={{ width: "100%" }}>
+          {fileList.map((file, index) => (
+            <ListItem key={file.name} className="flex justify-between">
+              <Typography noWrap>{file.name}</Typography>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => {
+                    handleReorderFileList(file.name, "up");
+                  }}
+                  disabled={index === 0}
+                  className="disabled:opacity-50"
+                >
+                  <Icon.ArrowUp className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    handleReorderFileList(file.name, "down");
+                  }}
+                  disabled={index === fileList.length - 1}
+                  className="disabled:opacity-50"
+                >
+                  <Icon.ArrowDown className="w-4 h-4" />
+                </button>
+              </div>
+            </ListItem>
+          ))}
+        </List>
 
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseDialog}>
@@ -304,7 +189,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-function showCreateResourceDialog(props: Omit<Props, "destroy" | "hide">) {
+function showCreateResourceDialog(props: Omit<Props, "destroy">) {
   generateDialog<Props>(
     {
       dialogName: "create-resource-dialog",

@@ -145,7 +145,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-function showCreateMemoRelationDialog(props: Omit<Props, "destroy" | "hide">) {
+function showCreateMemoRelationDialog(props: Omit<Props, "destroy">) {
   generateDialog(
     {
       className: "create-memo-relation-dialog",
