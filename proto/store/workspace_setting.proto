@@ -27,8 +27,7 @@ message WorkspaceSetting {
 }
 
 message WorkspaceBasicSetting {
-  string server_id = 1;
-  string secret_key = 2;
+  string secret_key = 1;
 }
 
 message WorkspaceGeneralSetting {

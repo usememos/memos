@@ -13,6 +13,7 @@ import {
   ImageNode,
   ItalicNode,
   LinkNode,
+  MathBlockNode,
   MathNode,
   Node,
   NodeType,
@@ -28,7 +29,7 @@ import {
   TaskListNode,
   TextNode,
   UnorderedListNode,
-} from "@/types/node";
+} from "@/types/proto/api/v1/markdown_service";
 import Blockquote from "./Blockquote";
 import Bold from "./Bold";
 import BoldItalic from "./BoldItalic";
@@ -67,61 +68,61 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
     case NodeType.LINE_BREAK:
       return <LineBreak index={index} />;
     case NodeType.PARAGRAPH:
-      return <Paragraph index={index} {...(node.value as ParagraphNode)} />;
+      return <Paragraph index={index} {...(node.paragraphNode as ParagraphNode)} />;
     case NodeType.CODE_BLOCK:
-      return <CodeBlock index={index} {...(node.value as CodeBlockNode)} />;
+      return <CodeBlock index={index} {...(node.codeBlockNode as CodeBlockNode)} />;
     case NodeType.HEADING:
-      return <Heading index={index} {...(node.value as HeadingNode)} />;
+      return <Heading index={index} {...(node.headingNode as HeadingNode)} />;
     case NodeType.HORIZONTAL_RULE:
-      return <HorizontalRule index={index} {...(node.value as HorizontalRuleNode)} />;
+      return <HorizontalRule index={index} {...(node.horizontalRuleNode as HorizontalRuleNode)} />;
     case NodeType.BLOCKQUOTE:
-      return <Blockquote index={index} {...(node.value as BlockquoteNode)} />;
+      return <Blockquote index={index} {...(node.blockquoteNode as BlockquoteNode)} />;
     case NodeType.ORDERED_LIST:
-      return <OrderedList index={index} {...(node.value as OrderedListNode)} />;
+      return <OrderedList index={index} {...(node.orderedListNode as OrderedListNode)} />;
     case NodeType.UNORDERED_LIST:
-      return <UnorderedList {...(node.value as UnorderedListNode)} />;
+      return <UnorderedList {...(node.unorderedListNode as UnorderedListNode)} />;
     case NodeType.TASK_LIST:
-      return <TaskList index={index} {...(node.value as TaskListNode)} />;
+      return <TaskList index={index} {...(node.taskListNode as TaskListNode)} />;
     case NodeType.MATH_BLOCK:
-      return <Math {...(node.value as MathNode)} block={true} />;
+      return <Math {...(node.mathBlockNode as MathBlockNode)} block={true} />;
     case NodeType.TABLE:
-      return <Table {...(node.value as TableNode)} />;
+      return <Table {...(node.tableNode as TableNode)} />;
     case NodeType.EMBEDDED_CONTENT:
-      return <EmbeddedContent {...(node.value as EmbeddedContentNode)} />;
+      return <EmbeddedContent {...(node.embeddedContentNode as EmbeddedContentNode)} />;
     case NodeType.TEXT:
-      return <Text {...(node.value as TextNode)} />;
+      return <Text {...(node.textNode as TextNode)} />;
     case NodeType.BOLD:
-      return <Bold {...(node.value as BoldNode)} />;
+      return <Bold {...(node.boldNode as BoldNode)} />;
     case NodeType.ITALIC:
-      return <Italic {...(node.value as ItalicNode)} />;
+      return <Italic {...(node.italicNode as ItalicNode)} />;
     case NodeType.BOLD_ITALIC:
-      return <BoldItalic {...(node.value as BoldItalicNode)} />;
+      return <BoldItalic {...(node.boldItalicNode as BoldItalicNode)} />;
     case NodeType.CODE:
-      return <Code {...(node.value as CodeNode)} />;
+      return <Code {...(node.codeNode as CodeNode)} />;
     case NodeType.IMAGE:
-      return <Image {...(node.value as ImageNode)} />;
+      return <Image {...(node.imageNode as ImageNode)} />;
     case NodeType.LINK:
-      return <Link {...(node.value as LinkNode)} />;
+      return <Link {...(node.linkNode as LinkNode)} />;
     case NodeType.AUTO_LINK:
-      return <Link {...(node.value as AutoLinkNode)} />;
+      return <Link {...(node.autoLinkNode as AutoLinkNode)} />;
     case NodeType.TAG:
-      return <Tag {...(node.value as TagNode)} />;
+      return <Tag {...(node.tagNode as TagNode)} />;
     case NodeType.STRIKETHROUGH:
-      return <Strikethrough {...(node.value as StrikethroughNode)} />;
+      return <Strikethrough {...(node.strikethroughNode as StrikethroughNode)} />;
     case NodeType.MATH:
-      return <Math {...(node.value as MathNode)} />;
+      return <Math {...(node.mathNode as MathNode)} />;
     case NodeType.HIGHLIGHT:
-      return <Highlight {...(node.value as HighlightNode)} />;
+      return <Highlight {...(node.highlightNode as HighlightNode)} />;
     case NodeType.ESCAPING_CHARACTER:
-      return <EscapingCharacter {...(node.value as EscapingCharacterNode)} />;
+      return <EscapingCharacter {...(node.escapingCharacterNode as EscapingCharacterNode)} />;
     case NodeType.SUBSCRIPT:
-      return <Subscript {...(node.value as SubscriptNode)} />;
+      return <Subscript {...(node.subscriptNode as SubscriptNode)} />;
     case NodeType.SUPERSCRIPT:
-      return <Superscript {...(node.value as SuperscriptNode)} />;
+      return <Superscript {...(node.superscriptNode as SuperscriptNode)} />;
     case NodeType.REFERENCED_CONTENT:
-      return <ReferencedContent {...(node.value as ReferencedContentNode)} />;
+      return <ReferencedContent {...(node.referencedContentNode as ReferencedContentNode)} />;
     case NodeType.SPOILER:
-      return <Spoiler {...(node.value as SpoilerNode)} />;
+      return <Spoiler {...(node.spoilerNode as SpoilerNode)} />;
     default:
       return null;
   }

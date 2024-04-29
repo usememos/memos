@@ -32,7 +32,7 @@ func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
 		return nil, err
 	}
 	if mediatype != "text/html" {
-		return nil, errors.New("Wrong website mediatype")
+		return nil, errors.New("not a HTML page")
 	}
 
 	htmlMeta := extractHTMLMeta(response.Body)

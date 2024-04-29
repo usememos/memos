@@ -1,0 +1,259 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "gen/api/v1";
+
+service MarkdownService {
+  // Parses the given markdown content and returns a list of nodes.
+  rpc ParseMarkdown(ParseMarkdownRequest) returns (ParseMarkdownResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/markdown/parse"
+      body: "*"
+    };
+  }
+  // Restores the given nodes to markdown content.
+  rpc RestoreMarkdown(RestoreMarkdownRequest) returns (RestoreMarkdownResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/markdown:restore"
+      body: "*"
+    };
+  }
+  // GetLinkMetadata returns metadata for a given link.
+  rpc GetLinkMetadata(GetLinkMetadataRequest) returns (LinkMetadata) {
+    option (google.api.http) = {get: "/api/v1/markdown/link:metadata"};
+  }
+}
+
+message ParseMarkdownRequest {
+  string markdown = 1;
+}
+
+message ParseMarkdownResponse {
+  repeated Node nodes = 1;
+}
+
+message RestoreMarkdownRequest {
+  repeated Node nodes = 1;
+}
+
+message RestoreMarkdownResponse {
+  string markdown = 1;
+}
+
+message GetLinkMetadataRequest {
+  string link = 1;
+}
+
+message LinkMetadata {
+  string title = 1;
+  string description = 2;
+  string image = 3;
+}
+
+enum NodeType {
+  NODE_UNSPECIFIED = 0;
+  LINE_BREAK = 1;
+  PARAGRAPH = 2;
+  CODE_BLOCK = 3;
+  HEADING = 4;
+  HORIZONTAL_RULE = 5;
+  BLOCKQUOTE = 6;
+  ORDERED_LIST = 7;
+  UNORDERED_LIST = 8;
+  TASK_LIST = 9;
+  MATH_BLOCK = 10;
+  TABLE = 11;
+  EMBEDDED_CONTENT = 12;
+  TEXT = 13;
+  BOLD = 14;
+  ITALIC = 15;
+  BOLD_ITALIC = 16;
+  CODE = 17;
+  IMAGE = 18;
+  LINK = 19;
+  AUTO_LINK = 20;
+  TAG = 21;
+  STRIKETHROUGH = 22;
+  ESCAPING_CHARACTER = 23;
+  MATH = 24;
+  HIGHLIGHT = 25;
+  SUBSCRIPT = 26;
+  SUPERSCRIPT = 27;
+  REFERENCED_CONTENT = 28;
+  SPOILER = 29;
+}
+
+message Node {
+  NodeType type = 1;
+  oneof node {
+    LineBreakNode line_break_node = 2;
+    ParagraphNode paragraph_node = 3;
+    CodeBlockNode code_block_node = 4;
+    HeadingNode heading_node = 5;
+    HorizontalRuleNode horizontal_rule_node = 6;
+    BlockquoteNode blockquote_node = 7;
+    OrderedListNode ordered_list_node = 8;
+    UnorderedListNode unordered_list_node = 9;
+    TaskListNode task_list_node = 10;
+    MathBlockNode math_block_node = 11;
+    TableNode table_node = 12;
+    EmbeddedContentNode embedded_content_node = 13;
+    TextNode text_node = 14;
+    BoldNode bold_node = 15;
+    ItalicNode italic_node = 16;
+    BoldItalicNode bold_italic_node = 17;
+    CodeNode code_node = 18;
+    ImageNode image_node = 19;
+    LinkNode link_node = 20;
+    AutoLinkNode auto_link_node = 21;
+    TagNode tag_node = 22;
+    StrikethroughNode strikethrough_node = 23;
+    EscapingCharacterNode escaping_character_node = 24;
+    MathNode math_node = 25;
+    HighlightNode highlight_node = 26;
+    SubscriptNode subscript_node = 27;
+    SuperscriptNode superscript_node = 28;
+    ReferencedContentNode referenced_content_node = 29;
+    SpoilerNode spoiler_node = 30;
+  }
+}
+
+message LineBreakNode {}
+
+message ParagraphNode {
+  repeated Node children = 1;
+}
+
+message CodeBlockNode {
+  string language = 1;
+  string content = 2;
+}
+
+message HeadingNode {
+  int32 level = 1;
+  repeated Node children = 2;
+}
+
+message HorizontalRuleNode {
+  string symbol = 1;
+}
+
+message BlockquoteNode {
+  repeated Node children = 1;
+}
+
+message OrderedListNode {
+  string number = 1;
+  int32 indent = 2;
+  repeated Node children = 3;
+}
+
+message UnorderedListNode {
+  string symbol = 1;
+  int32 indent = 2;
+  repeated Node children = 3;
+}
+
+message TaskListNode {
+  string symbol = 1;
+  int32 indent = 2;
+  bool complete = 3;
+  repeated Node children = 4;
+}
+
+message MathBlockNode {
+  string content = 1;
+}
+
+message TableNode {
+  repeated string header = 1;
+  repeated string delimiter = 2;
+
+  message Row {
+    repeated string cells = 1;
+  }
+  repeated Row rows = 3;
+}
+
+message EmbeddedContentNode {
+  string resource_name = 1;
+  string params = 2;
+}
+
+message TextNode {
+  string content = 1;
+}
+
+message BoldNode {
+  string symbol = 1;
+  repeated Node children = 2;
+}
+
+message ItalicNode {
+  string symbol = 1;
+  string content = 2;
+}
+
+message BoldItalicNode {
+  string symbol = 1;
+  string content = 2;
+}
+
+message CodeNode {
+  string content = 1;
+}
+
+message ImageNode {
+  string alt_text = 1;
+  string url = 2;
+}
+
+message LinkNode {
+  string text = 1;
+  string url = 2;
+}
+
+message AutoLinkNode {
+  string url = 1;
+  bool is_raw_text = 2;
+}
+
+message TagNode {
+  string content = 1;
+}
+
+message StrikethroughNode {
+  string content = 1;
+}
+
+message EscapingCharacterNode {
+  string symbol = 1;
+}
+
+message MathNode {
+  string content = 1;
+}
+
+message HighlightNode {
+  string content = 1;
+}
+
+message SubscriptNode {
+  string content = 1;
+}
+
+message SuperscriptNode {
+  string content = 1;
+}
+
+message ReferencedContentNode {
+  string resource_name = 1;
+  string params = 2;
+}
+
+message SpoilerNode {
+  string content = 1;
+}

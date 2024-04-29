@@ -27,7 +27,6 @@ import (
 )
 
 type Server struct {
-	ID      string
 	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
@@ -60,7 +59,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	if profile.Mode == "prod" {
 		secret = workspaceBasicSetting.SecretKey
 	}
-	s.ID = workspaceBasicSetting.ServerId
 	s.Secret = secret
 
 	// Register healthz endpoint.
@@ -133,12 +131,12 @@ func (s *Server) Shutdown(ctx context.Context) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	// Shutdown echo server
+	// Shutdown echo server.
 	if err := s.echoServer.Shutdown(ctx); err != nil {
 		fmt.Printf("failed to shutdown server, error: %v\n", err)
 	}
 
-	// Close database connection
+	// Close database connection.
 	if err := s.Store.Close(); err != nil {
 		fmt.Printf("failed to close database, error: %v\n", err)
 	}
@@ -156,10 +154,6 @@ func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb
 		return nil, errors.Wrap(err, "failed to get workspace basic setting")
 	}
 	modified := false
-	if workspaceBasicSetting.ServerId == "" {
-		workspaceBasicSetting.ServerId = uuid.NewString()
-		modified = true
-	}
 	if workspaceBasicSetting.SecretKey == "" {
 		workspaceBasicSetting.SecretKey = uuid.NewString()
 		modified = true

@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import { last } from "lodash-es";
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { NodeType, OrderedListNode, TaskListNode, UnorderedListNode } from "@/types/node";
+import { markdownServiceClient } from "@/grpcweb";
+import { NodeType, OrderedListNode, TaskListNode, UnorderedListNode } from "@/types/proto/api/v1/markdown_service";
 import TagSuggestions from "./TagSuggestions";
 
 export interface EditorRefActions {
@@ -149,24 +150,29 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     updateEditorHeight();
   }, []);
 
-  const handleEditorKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleEditorKeyDown = async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !isInIME) {
+      if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
+        return;
+      }
+
       const cursorPosition = editorActions.getCursorPosition();
       const prevContent = editorActions.getContent().substring(0, cursorPosition);
-      const lastNode = last(window.parse(prevContent));
+      const { nodes } = await markdownServiceClient.parseMarkdown({ markdown: prevContent });
+      const lastNode = last(nodes);
       if (!lastNode) {
         return;
       }
 
       let insertText = "";
       if (lastNode.type === NodeType.TASK_LIST) {
-        const { complete } = lastNode.value as TaskListNode;
+        const { complete } = lastNode.taskListNode as TaskListNode;
         insertText = complete ? "- [x] " : "- [ ] ";
       } else if (lastNode.type === NodeType.UNORDERED_LIST) {
-        const { symbol } = lastNode.value as UnorderedListNode;
+        const { symbol } = lastNode.unorderedListNode as UnorderedListNode;
         insertText = `${symbol} `;
       } else if (lastNode.type === NodeType.ORDERED_LIST) {
-        const { number } = lastNode.value as OrderedListNode;
+        const { number } = lastNode.orderedListNode as OrderedListNode;
         insertText = `${Number(number) + 1}. `;
       }
       if (insertText) {

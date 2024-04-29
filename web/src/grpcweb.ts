@@ -3,7 +3,7 @@ import { ActivityServiceDefinition } from "./types/proto/api/v1/activity_service
 import { AuthServiceDefinition } from "./types/proto/api/v1/auth_service";
 import { IdentityProviderServiceDefinition } from "./types/proto/api/v1/idp_service";
 import { InboxServiceDefinition } from "./types/proto/api/v1/inbox_service";
-import { LinkServiceDefinition } from "./types/proto/api/v1/link_service";
+import { MarkdownServiceDefinition } from "./types/proto/api/v1/markdown_service";
 import { MemoServiceDefinition } from "./types/proto/api/v1/memo_service";
 import { ResourceServiceDefinition } from "./types/proto/api/v1/resource_service";
 import { TagServiceDefinition } from "./types/proto/api/v1/tag_service";
@@ -41,6 +41,6 @@ export const activityServiceClient = clientFactory.create(ActivityServiceDefinit
 
 export const webhookServiceClient = clientFactory.create(WebhookServiceDefinition, channel);
 
-export const linkServiceClient = clientFactory.create(LinkServiceDefinition, channel);
+export const markdownServiceClient = clientFactory.create(MarkdownServiceDefinition, channel);
 
 export const identityProviderServiceClient = clientFactory.create(IdentityProviderServiceDefinition, channel);

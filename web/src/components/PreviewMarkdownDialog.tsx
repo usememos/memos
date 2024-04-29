@@ -1,4 +1,7 @@
 import { IconButton } from "@mui/joy";
+import { useEffect, useState } from "react";
+import { markdownServiceClient } from "@/grpcweb";
+import { Node } from "@/types/proto/api/v1/markdown_service";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
@@ -8,6 +11,19 @@ interface Props extends DialogProps {
 }
 
 const PreviewMarkdownDialog: React.FC<Props> = ({ content, destroy }: Props) => {
+  const [nodes, setNodes] = useState<Node[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { nodes } = await markdownServiceClient.parseMarkdown({ markdown: content });
+        setNodes(nodes);
+      } catch (error) {
+        console.error("Error parsing markdown:", error);
+      }
+    })();
+  }, [content]);
+
   const handleCloseBtnClick = () => {
     destroy();
   };
@@ -23,7 +39,7 @@ const PreviewMarkdownDialog: React.FC<Props> = ({ content, destroy }: Props) => 
         </IconButton>
       </div>
       <div className="flex flex-col justify-start items-start max-w-full w-[32rem]">
-        {content !== "" ? <MemoContent content={content} /> : <p className="text-gray-400 dark:text-gray-600">Nothing to preview</p>}
+        {nodes.length > 0 ? <MemoContent nodes={nodes} /> : <p className="text-gray-400 dark:text-gray-600">Nothing to preview</p>}
       </div>
     </>
   );

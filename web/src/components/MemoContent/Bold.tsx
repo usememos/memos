@@ -1,4 +1,4 @@
-import { Node } from "@/types/node";
+import { Node } from "@/types/proto/api/v1/markdown_service";
 import Renderer from "./Renderer";
 
 interface Props {

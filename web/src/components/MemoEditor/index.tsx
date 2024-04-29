@@ -364,7 +364,7 @@ const MemoEditor = (props: Props) => {
     }
 
     // Batch upsert tags.
-    const tags = extractTagsFromContent(content);
+    const tags = await extractTagsFromContent(content);
     await tagStore.batchUpsertTag(tags);
 
     setState((state) => {

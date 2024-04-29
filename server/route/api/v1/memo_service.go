@@ -11,6 +11,8 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
+	"github.com/yourselfhosted/gomark/parser"
+	"github.com/yourselfhosted/gomark/parser/tokenizer"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -543,6 +545,11 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		return nil, errors.Wrap(err, "failed to list memo reactions")
 	}
 
+	nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse content")
+	}
+
 	return &v1pb.Memo{
 		Name:        name,
 		Uid:         memo.UID,
@@ -552,6 +559,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
 		Content:     memo.Content,
+		Nodes:       convertFromASTNodes(nodes),
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
 		ParentId:    memo.ParentID,

@@ -1,7 +1,7 @@
 import { Link as MLink, Tooltip } from "@mui/joy";
 import { useState } from "react";
-import { linkServiceClient } from "@/grpcweb";
-import { LinkMetadata } from "@/types/proto/api/v1/link_service";
+import { markdownServiceClient } from "@/grpcweb";
+import { LinkMetadata } from "@/types/proto/api/v1/markdown_service";
 
 interface Props {
   url: string;
@@ -25,7 +25,7 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
   const handleMouseEnter = async () => {
     if (!initialized) {
       try {
-        const { linkMetadata } = await linkServiceClient.getLinkMetadata({ link: url }, {});
+        const linkMetadata = await markdownServiceClient.getLinkMetadata({ link: url });
         setLinkMetadata(linkMetadata);
       } catch (error) {
         console.error("Error fetching URL metadata:", error);

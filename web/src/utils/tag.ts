@@ -1,10 +1,11 @@
-import { Node, TagNode } from "@/types/node";
+import { markdownServiceClient } from "@/grpcweb";
+import { Node, NodeType, TagNode } from "@/types/proto/api/v1/markdown_service";
 
 export const TAG_REG = /#([^\s#,]+)/;
 
 // extractTagsFromContent extracts tags from content.
-export const extractTagsFromContent = (content: string) => {
-  const nodes = window.parse(content);
+export const extractTagsFromContent = async (content: string) => {
+  const { nodes } = await markdownServiceClient.parseMarkdown({ markdown: content });
   const tags = new Set<string>();
 
   const traverse = (nodes: Node[], handle: (node: Node) => void) => {
@@ -15,7 +16,7 @@ export const extractTagsFromContent = (content: string) => {
 
       handle(node);
       if (node.type === "PARAGRAPH" || node.type === "ORDERED_LIST" || node.type === "UNORDERED_LIST") {
-        const children = (node.value as any).children;
+        const children = node.paragraphNode?.children || node.orderedListNode?.children || node.unorderedListNode?.children;
         if (Array.isArray(children)) {
           traverse(children, handle);
         }
@@ -24,8 +25,8 @@ export const extractTagsFromContent = (content: string) => {
   };
 
   traverse(nodes, (node) => {
-    if (node.type === "TAG" && node.value) {
-      tags.add((node.value as TagNode).content);
+    if (node.type === NodeType.TAG && node.tagNode) {
+      tags.add((node.tagNode as TagNode).content);
     }
   });
 

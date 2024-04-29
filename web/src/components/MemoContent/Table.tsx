@@ -1,4 +1,4 @@
-import { TableNode_Row } from "@/types/node";
+import { TableNode_Row } from "@/types/proto/api/v1/markdown_service";
 
 interface Props {
   header: string[];

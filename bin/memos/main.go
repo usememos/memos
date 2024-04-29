@@ -160,7 +160,7 @@ func initConfig() {
 	var err error
 	instanceProfile, err = profile.GetProfile()
 	if err != nil {
-		fmt.Printf("failed to get profile, error: %+v\n", err)
+		slog.Error("failed to get profile", err)
 		return
 	}
 

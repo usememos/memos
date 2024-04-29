@@ -1,5 +1,5 @@
 import { repeat } from "lodash-es";
-import { Node } from "@/types/node";
+import { Node } from "@/types/proto/api/v1/markdown_service";
 import Renderer from "./Renderer";
 import { BaseProps } from "./types";
 

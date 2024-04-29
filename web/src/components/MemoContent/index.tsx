@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
-import { Node, NodeType } from "@/types/node";
+import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
 import { useTranslate } from "@/utils/i18n";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
@@ -11,7 +11,7 @@ import { RendererContext } from "./types";
 const MAX_DISPLAY_HEIGHT = 256;
 
 interface Props {
-  content: string;
+  nodes: Node[];
   memoName?: string;
   compact?: boolean;
   readonly?: boolean;
@@ -24,14 +24,13 @@ interface Props {
 }
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, content, memoName, embeddedMemos, onClick } = props;
+  const { className, nodes, memoName, embeddedMemos, onClick } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<boolean>(false);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
-  const nodes = window.parse(content);
   const allowEdit = !props.readonly && memo && currentUser?.name === memo.creator;
 
   // Initial compact mode.

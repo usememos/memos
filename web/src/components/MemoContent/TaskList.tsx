@@ -2,8 +2,9 @@ import { Checkbox } from "@mui/joy";
 import clsx from "clsx";
 import { repeat } from "lodash-es";
 import { useContext, useState } from "react";
+import { markdownServiceClient } from "@/grpcweb";
 import { useMemoStore } from "@/store/v1";
-import { Node, NodeType, TaskListNode } from "@/types/node";
+import { Node, NodeType, TaskListNode } from "@/types/proto/api/v1/markdown_service";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
@@ -31,16 +32,16 @@ const TaskList: React.FC<Props> = ({ index, indent, complete, children }: Props)
     }
 
     const node = context.nodes[nodeIndex];
-    if (node.type !== NodeType.TASK_LIST || !node.value) {
+    if (node.type !== NodeType.TASK_LIST) {
       return;
     }
 
-    (node.value as TaskListNode)!.complete = on;
-    const content = window.restore(context.nodes);
+    (node.taskListNode as TaskListNode)!.complete = on;
+    const { markdown } = await markdownServiceClient.restoreMarkdown({ nodes: context.nodes });
     await memoStore.updateMemo(
       {
         name: context.memoName,
-        content,
+        content: markdown,
       },
       ["content"],
     );

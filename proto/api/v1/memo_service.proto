@@ -3,6 +3,7 @@ syntax = "proto3";
 package memos.api.v1;
 
 import "api/v1/common.proto";
+import "api/v1/markdown_service.proto";
 import "api/v1/memo_relation_service.proto";
 import "api/v1/reaction_service.proto";
 import "api/v1/resource_service.proto";
@@ -146,21 +147,23 @@ message Memo {
 
   google.protobuf.Timestamp update_time = 6;
 
-  google.protobuf.Timestamp display_time = 78;
+  google.protobuf.Timestamp display_time = 7;
 
   string content = 8;
 
-  Visibility visibility = 9;
+  repeated Node nodes = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  bool pinned = 10;
+  Visibility visibility = 10;
 
-  optional int32 parent_id = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  bool pinned = 11;
 
-  repeated Resource resources = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  optional int32 parent_id = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated MemoRelation relations = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated Resource resources = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated Reaction reactions = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  repeated Reaction reactions = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {
