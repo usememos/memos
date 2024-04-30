@@ -23,7 +23,6 @@ interface State {
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
 const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "storage", "sso"];
-
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": Icon.User,
   preference: Icon.Cog,

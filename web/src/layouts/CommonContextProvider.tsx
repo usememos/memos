@@ -24,7 +24,7 @@ const CommonContext = createContext<Context>({
 const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
-  const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
   const [commonContext, setCommonContext] = useState<Pick<Context, "locale" | "appearance" | "profile">>({
     locale: "en",
     appearance: "system",
@@ -56,7 +56,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    Promise.all([initialWorkspace(), initialUser()]).then(() => setLoading(false));
+    Promise.all([initialWorkspace(), initialUser()]).then(() => setInitialized(true));
   }, []);
 
   return (
@@ -67,7 +67,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
         setAppearance: (appearance: string) => setCommonContext({ ...commonContext, appearance }),
       }}
     >
-      {loading ? null : <>{children}</>}
+      {!initialized ? null : <>{children}</>}
     </CommonContext.Provider>
   );
 };

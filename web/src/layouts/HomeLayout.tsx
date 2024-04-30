@@ -1,6 +1,6 @@
 import { Button, IconButton, Tooltip } from "@mui/joy";
 import clsx from "clsx";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import Icon from "@/components/Icon";
@@ -17,6 +17,7 @@ const HomeLayout = () => {
   const { sm } = useResponsiveWidth();
   const currentUser = useCurrentUser();
   const [collapsed, setCollapsed] = useLocalStorage<boolean>("navigation-collapsed", false);
+  const [initialized, setInitialized] = useState(false);
 
   // Redirect to explore page if not logged in.
   useEffect(() => {
@@ -27,10 +28,14 @@ const HomeLayout = () => {
       )
     ) {
       navigateTo(Routes.EXPLORE);
+      return;
     }
+    setInitialized(true);
   }, []);
 
-  return (
+  return !initialized ? (
+    <Loading />
+  ) : (
     <div className="w-full min-h-full">
       <div className={clsx("w-full transition-all mx-auto flex flex-row justify-center items-start", collapsed ? "sm:pl-16" : "sm:pl-56")}>
         {sm && (
