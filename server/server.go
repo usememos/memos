@@ -110,7 +110,7 @@ func (s *Server) Start(ctx context.Context) error {
 
 	muxServer := cmux.New(listener)
 	go func() {
-		grpcListener := muxServer.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+		grpcListener := muxServer.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
 		if err := s.grpcServer.Serve(grpcListener); err != nil {
 			slog.Error("failed to serve gRPC", err)
 		}
