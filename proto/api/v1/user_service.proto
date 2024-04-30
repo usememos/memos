@@ -6,6 +6,7 @@ import "api/v1/common.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
+import "google/api/httpbody.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
@@ -24,6 +25,11 @@ service UserService {
   // GetUser gets a user by name.
   rpc GetUser(GetUserRequest) returns (User) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}"};
+    option (google.api.method_signature) = "name";
+  }
+  // GetUserAvatar gets the avatar of a user.
+  rpc GetUserAvatar(GetUserAvatarRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*}/avatar"};
     option (google.api.method_signature) = "name";
   }
   // CreateUser creates a new user.
@@ -135,6 +141,15 @@ message GetUserRequest {
   // The name of the user.
   // Format: users/{id}
   string name = 1;
+}
+
+message GetUserAvatarRequest {
+  // The name of the user.
+  // Format: users/{id}
+  string name = 1;
+
+  // The raw HTTP body is bound to this field.
+  google.api.HttpBody http_body = 2;
 }
 
 message CreateUserRequest {

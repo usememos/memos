@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -46,9 +45,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	echoServer.HideBanner = true
 	echoServer.HidePort = true
 	s.echoServer = echoServer
-
-	// Register CORS middleware.
-	echoServer.Use(CORSMiddleware(s.Profile.Origins))
 
 	workspaceBasicSetting, err := s.getOrUpsertWorkspaceBasicSetting(ctx)
 	if err != nil {
@@ -116,15 +112,20 @@ func (s *Server) Start(ctx context.Context) error {
 		}
 	}()
 	go func() {
-		httpListener := muxServer.Match(cmux.HTTP1Fast(), cmux.Any())
+		httpListener := muxServer.Match(cmux.HTTP1Fast())
 		s.echoServer.Listener = httpListener
 		if err := s.echoServer.Start(address); err != nil {
 			slog.Error("failed to start echo server", err)
 		}
 	}()
+	go func() {
+		if err := muxServer.Serve(); err != nil {
+			slog.Error("mux server listen error", err)
+		}
+	}()
 	s.StartBackgroundRunners(ctx)
 
-	return muxServer.Serve()
+	return nil
 }
 
 func (s *Server) Shutdown(ctx context.Context) {
@@ -169,44 +170,4 @@ func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb
 		workspaceBasicSetting = workspaceSetting.GetBasicSetting()
 	}
 	return workspaceBasicSetting, nil
-}
-
-func grpcRequestSkipper(c echo.Context) bool {
-	return strings.HasPrefix(c.Request().URL.Path, "/memos.api.v1.")
-}
-
-func CORSMiddleware(origins []string) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			if grpcRequestSkipper(c) {
-				return next(c)
-			}
-
-			r := c.Request()
-			w := c.Response().Writer
-
-			requestOrigin := r.Header.Get("Origin")
-			if len(origins) == 0 {
-				w.Header().Set("Access-Control-Allow-Origin", requestOrigin)
-			} else {
-				for _, origin := range origins {
-					if origin == requestOrigin {
-						w.Header().Set("Access-Control-Allow-Origin", origin)
-						break
-					}
-				}
-			}
-
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-
-			// If it's preflight request, return immediately.
-			if r.Method == "OPTIONS" {
-				w.WriteHeader(http.StatusOK)
-				return nil
-			}
-			return next(c)
-		}
-	}
 }

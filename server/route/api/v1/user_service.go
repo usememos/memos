@@ -2,8 +2,10 @@ package v1
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net/http"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -14,6 +16,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -98,6 +101,39 @@ func (s *APIV1Service) GetUser(ctx context.Context, request *v1pb.GetUserRequest
 	}
 
 	return convertUserFromStore(user), nil
+}
+
+func (s *APIV1Service) GetUserAvatar(ctx context.Context, request *v1pb.GetUserAvatarRequest) (*httpbody.HttpBody, error) {
+	userID, err := ExtractUserIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	}
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+	if user.AvatarURL == "" {
+		return nil, status.Errorf(codes.NotFound, "avatar not found")
+	}
+
+	imageType, base64Data, err := extractImageInfo(user.AvatarURL)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to extract image info: %v", err)
+	}
+	imageData, err := base64.StdEncoding.DecodeString(base64Data)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to decode string: %v", err)
+	}
+	httpBody := &httpbody.HttpBody{
+		ContentType: imageType,
+		Data:        imageData,
+	}
+	return httpBody, nil
 }
 
 func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserRequest) (*v1pb.User, error) {
@@ -566,4 +602,15 @@ func findSearchUsersField(callExpr *expr.Expr_Call, filter *SearchUsersFilter) {
 			findSearchUsersField(callExpr, filter)
 		}
 	}
+}
+
+func extractImageInfo(dataURI string) (string, string, error) {
+	dataURIRegex := regexp.MustCompile(`^data:(?P<type>.+);base64,(?P<base64>.+)`)
+	matches := dataURIRegex.FindStringSubmatch(dataURI)
+	if len(matches) != 3 {
+		return "", "", errors.New("Invalid data URI format")
+	}
+	imageType := matches[1]
+	base64Data := matches[2]
+	return imageType, base64Data, nil
 }

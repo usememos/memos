@@ -76,13 +76,6 @@ var (
 			// The default signal sent by the `kill` command is SIGTERM,
 			// which is taken as the graceful shutdown signal for many systems, eg., Kubernetes, Gunicorn.
 			signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-			go func() {
-				<-c
-				s.Shutdown(ctx)
-				cancel()
-			}()
-
-			printGreetings()
 
 			if err := s.Start(ctx); err != nil {
 				if err != http.ErrServerClosed {
@@ -90,6 +83,14 @@ var (
 					cancel()
 				}
 			}
+
+			printGreetings()
+
+			go func() {
+				<-c
+				s.Shutdown(ctx)
+				cancel()
+			}()
 
 			// Wait for CTRL-C.
 			<-ctx.Done()

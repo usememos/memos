@@ -40,16 +40,17 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 }
 
 func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
+	skipper := func(c echo.Context) bool {
+		return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
+	}
+
 	// Use echo static middleware to serve the built dist folder.
 	// Reference: https://github.com/labstack/echo/blob/master/middleware/static.go
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		HTML5:      true,
 		Filesystem: getFileSystem("dist"),
-		Skipper: func(c echo.Context) bool {
-			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
-		},
+		Skipper:    skipper,
 	}))
-
 	g := e.Group("assets")
 	// Use echo gzip middleware to compress the response.
 	// Reference: https://echo.labstack.com/docs/middleware/gzip
@@ -68,9 +69,6 @@ func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 	g.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		HTML5:      true,
 		Filesystem: getFileSystem("dist/assets"),
-		Skipper: func(c echo.Context) bool {
-			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
-		},
 	}))
 
 	s.registerRoutes(e)
