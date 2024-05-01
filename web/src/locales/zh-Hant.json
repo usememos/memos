@@ -13,7 +13,7 @@
     "host-tip": "您註冊為此站台之管理員。",
     "new-password": "新密碼",
     "repeat-new-password": "再次輸入新密碼",
-    "sign-in-tip": "已有帳戶？",
+    "sign-in-tip": "已經有帳戶了嗎？",
     "sign-up-tip": "還沒有帳戶？"
   },
   "common": {
@@ -31,6 +31,7 @@
     "confirm": "確認",
     "create": "建立",
     "database": "資料庫",
+    "days": "日子",
     "delete": "刪除",
     "description": "說明",
     "edit": "編輯",
@@ -45,6 +46,7 @@
     "learn-more": "了解",
     "link": "連結",
     "mark": "Mark",
+    "memos": "備忘錄",
     "name": "名稱",
     "new": "新增",
     "nickname": "暱稱",
@@ -52,6 +54,7 @@
     "or": "或",
     "password": "密碼",
     "pin": "釘選",
+    "pinned": "固定在最前面",
     "preview": "預覽",
     "profile": "個人專頁",
     "remember-me": "記住我",
@@ -91,6 +94,7 @@
     "wed": "三"
   },
   "editor": {
+    "add-your-comment-here": "在這裡添加您的評論...",
     "any-thoughts": "任何想法...",
     "save": "儲存"
   },
@@ -112,6 +116,7 @@
       "self": "評論"
     },
     "copy-link": "複製連結",
+    "count-memos-in-date": "{{date}}的{{count}}個備忘錄",
     "delete-confirm": "您確定要刪除此 Memo？\n\n此操作無法逆轉",
     "delete-memo": "刪除 Memo",
     "embed": "內嵌",
@@ -126,7 +131,8 @@
       "private": "私人",
       "protected": "成員可見",
       "public": "公開給所有人"
-    }
+    },
+    "wrapping": "包裝"
   },
   "message": {
     "archived-successfully": "封存成功",
@@ -135,6 +141,8 @@
     "click-to-save-the-image": "點選以儲存圖片",
     "copied": "已複製",
     "count-selected-resources": "全部選取",
+    "deleted-successfully": "已成功刪除",
+    "failed-to-embed-memo": "嵌入備忘錄失敗",
     "fill-all": "請填寫所有欄位。",
     "fill-form": "請填寫此表單",
     "fill-server-name": "請填寫伺服器名稱",
@@ -168,6 +176,12 @@
     "update-succeed": "更新成功",
     "user-not-found": "查無該使用者"
   },
+  "reference": {
+    "add-references": "添加參考資料",
+    "embedded-usage": "作為嵌入式內容使用",
+    "no-memos-found": "未找到任何備忘錄",
+    "search-bar-placeholder": "搜索內容"
+  },
   "resource": {
     "clear": "清除",
     "copy-link": "複製連結",
@@ -197,12 +211,12 @@
     "no-resources": "沒有資源。",
     "no-unused-resources": "無未使用的資源",
     "reset-link": "重設連結",
-    "reset-link-prompt": "您確定要重設連結？\n這將會破壞所有目前的使用中的連結。\n\n此操作無法逆轉",
+    "reset-link-prompt": "您確定要重設鏈接嗎？\n這將中斷所有當前的鏈接用法。\n\n此操作是不可逆的。",
     "reset-resource-link": "重設資源連結",
     "search-bar-placeholder": "搜尋資源",
     "upload-successfully": "上傳成功",
-    "warning-text": "您確定要刪除此資源？\n\n此操作無法逆轉",
-    "warning-text-unused": "您確定要刪除這些未使用的資源？\n\n此操作無法逆轉"
+    "warning-text": "您確定要刪除此資源嗎？此操作是不可逆的。",
+    "warning-text-unused": "您確定要刪除此資源嗎？\n\n此操作是不可逆的。"
   },
   "router": {
     "back-to-top": "回到頂部",
@@ -248,7 +262,7 @@
       "authorization-endpoint": "驗證端點（Authorization Endpoint）",
       "client-id": "客戶端 ID（Client ID）",
       "client-secret": "客戶端金鑰（Client Secret）",
-      "confirm-delete": "您確定要刪除 \"{{name}}\" SSO 設定？\n\n此操作無法逆轉",
+      "confirm-delete": "您確定要刪除 \"{{name}}\" 的單點登錄 (SSO) 配置嗎？\n\n此操作是不可逆的。",
       "create-sso": "新增 SSO",
       "custom": "自訂",
       "delete-sso": "確認刪除",
@@ -298,7 +312,7 @@
       "url-prefix-placeholder": "自訂網址前綴，選填",
       "url-suffix": "網址後綴",
       "url-suffix-placeholder": "自訂網址後綴，選填",
-      "warning-text": "您確定要刪除儲存服務「{{name}}」嗎?\n\n此操作無法逆轉"
+      "warning-text": "您確定要刪除存儲服務 \"{{name}}\" 嗎？\n\n此操作是不可逆的。"
     },
     "system": "系統",
     "system-section": {
@@ -331,8 +345,12 @@
   "tag": {
     "all-tags": "所有標籤",
     "create-tag": "建立標籤",
+    "create-tags-guide": "您可以通過輸入`#標籤`來創建標籤。",
+    "delete-confirm": "您確定要刪除此標籤嗎？",
+    "delete-tag": "刪除標籤",
     "hide": "隱藏",
     "invalid-tag-name": "無效的標籤名稱",
+    "no-tag-found": "找不到標籤",
     "save-all": "全部儲存",
     "show": "顯示",
     "tag-name": "標籤名稱",
