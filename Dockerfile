@@ -15,7 +15,7 @@ FROM golang:1.22-alpine AS backend
 WORKDIR /backend-build
 
 COPY . .
-COPY --from=frontend /frontend-build/web/dist /backend-build/server/route/frontend/dist
+COPY --from=frontend /frontend-build/web/dist /backend-build/server/router/frontend/dist
 
 RUN CGO_ENABLED=0 go build -o memos ./bin/memos/main.go
 

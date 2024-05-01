@@ -16,9 +16,9 @@ import (
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/profile"
-	apiv1 "github.com/usememos/memos/server/route/api/v1"
-	"github.com/usememos/memos/server/route/frontend"
-	"github.com/usememos/memos/server/route/rss"
+	apiv1 "github.com/usememos/memos/server/router/api/v1"
+	"github.com/usememos/memos/server/router/frontend"
+	"github.com/usememos/memos/server/router/rss"
 	versionchecker "github.com/usememos/memos/server/service/version_checker"
 	"github.com/usememos/memos/store"
 )
