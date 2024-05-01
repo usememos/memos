@@ -103,7 +103,7 @@ func (s *APIV1Service) GetUser(ctx context.Context, request *v1pb.GetUserRequest
 	return convertUserFromStore(user), nil
 }
 
-func (s *APIV1Service) GetUserAvatar(ctx context.Context, request *v1pb.GetUserAvatarRequest) (*httpbody.HttpBody, error) {
+func (s *APIV1Service) GetUserAvatarBinary(ctx context.Context, request *v1pb.GetUserAvatarBinaryRequest) (*httpbody.HttpBody, error) {
 	userID, err := ExtractUserIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -506,7 +506,7 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 }
 
 func convertUserFromStore(user *store.User) *v1pb.User {
-	return &v1pb.User{
+	userpb := &v1pb.User{
 		Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
 		Id:          user.ID,
 		RowStatus:   convertRowStatusFromStore(user.RowStatus),
@@ -519,6 +519,11 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 		AvatarUrl:   user.AvatarURL,
 		Description: user.Description,
 	}
+	// Use the avatar URL instead of raw base64 image data to reduce the response size.
+	if user.AvatarURL != "" {
+		userpb.AvatarUrl = fmt.Sprintf("/o/%s/avatar", userpb.Name)
+	}
+	return userpb
 }
 
 func convertUserRoleFromStore(role store.Role) v1pb.User_Role {

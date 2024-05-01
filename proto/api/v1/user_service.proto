@@ -27,9 +27,13 @@ service UserService {
     option (google.api.http) = {get: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
-  // GetUserAvatar gets the avatar of a user.
-  rpc GetUserAvatar(GetUserAvatarRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {get: "/api/v1/{name=users/*}/avatar"};
+  // GetUserAvatarBinary gets the avatar of a user.
+  rpc GetUserAvatarBinary(GetUserAvatarBinaryRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {
+      get: "/{name=users/*}/avatar"
+
+      additional_bindings: {get: "/o/{name=users/*}/avatar"}
+    };
     option (google.api.method_signature) = "name";
   }
   // CreateUser creates a new user.
@@ -143,7 +147,7 @@ message GetUserRequest {
   string name = 1;
 }
 
-message GetUserAvatarRequest {
+message GetUserAvatarBinaryRequest {
   // The name of the user.
   // Format: users/{id}
   string name = 1;

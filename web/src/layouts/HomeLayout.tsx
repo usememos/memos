@@ -6,13 +6,11 @@ import useLocalStorage from "react-use/lib/useLocalStorage";
 import Icon from "@/components/Icon";
 import Navigation from "@/components/Navigation";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
 
 const HomeLayout = () => {
-  const navigateTo = useNavigateTo();
   const location = useLocation();
   const { sm } = useResponsiveWidth();
   const currentUser = useCurrentUser();
@@ -27,9 +25,10 @@ const HomeLayout = () => {
         location.pathname,
       )
     ) {
-      navigateTo(Routes.EXPLORE);
+      window.location.href = Routes.EXPLORE;
       return;
     }
+
     setInitialized(true);
   }, []);
 

@@ -8,6 +8,7 @@ package apiv1
 
 import (
 	context "context"
+	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,12 +21,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ResourceService_CreateResource_FullMethodName  = "/memos.api.v1.ResourceService/CreateResource"
-	ResourceService_ListResources_FullMethodName   = "/memos.api.v1.ResourceService/ListResources"
-	ResourceService_SearchResources_FullMethodName = "/memos.api.v1.ResourceService/SearchResources"
-	ResourceService_GetResource_FullMethodName     = "/memos.api.v1.ResourceService/GetResource"
-	ResourceService_UpdateResource_FullMethodName  = "/memos.api.v1.ResourceService/UpdateResource"
-	ResourceService_DeleteResource_FullMethodName  = "/memos.api.v1.ResourceService/DeleteResource"
+	ResourceService_CreateResource_FullMethodName    = "/memos.api.v1.ResourceService/CreateResource"
+	ResourceService_ListResources_FullMethodName     = "/memos.api.v1.ResourceService/ListResources"
+	ResourceService_SearchResources_FullMethodName   = "/memos.api.v1.ResourceService/SearchResources"
+	ResourceService_GetResource_FullMethodName       = "/memos.api.v1.ResourceService/GetResource"
+	ResourceService_GetResourceBinary_FullMethodName = "/memos.api.v1.ResourceService/GetResourceBinary"
+	ResourceService_UpdateResource_FullMethodName    = "/memos.api.v1.ResourceService/UpdateResource"
+	ResourceService_DeleteResource_FullMethodName    = "/memos.api.v1.ResourceService/DeleteResource"
 )
 
 // ResourceServiceClient is the client API for ResourceService service.
@@ -40,6 +42,8 @@ type ResourceServiceClient interface {
 	SearchResources(ctx context.Context, in *SearchResourcesRequest, opts ...grpc.CallOption) (*SearchResourcesResponse, error)
 	// GetResource returns a resource by name.
 	GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*Resource, error)
+	// GetResourceBinary returns a resource binary by name.
+	GetResourceBinary(ctx context.Context, in *GetResourceBinaryRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	// UpdateResource updates a resource.
 	UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*Resource, error)
 	// DeleteResource deletes a resource by name.
@@ -90,6 +94,15 @@ func (c *resourceServiceClient) GetResource(ctx context.Context, in *GetResource
 	return out, nil
 }
 
+func (c *resourceServiceClient) GetResourceBinary(ctx context.Context, in *GetResourceBinaryRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, ResourceService_GetResourceBinary_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *resourceServiceClient) UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*Resource, error) {
 	out := new(Resource)
 	err := c.cc.Invoke(ctx, ResourceService_UpdateResource_FullMethodName, in, out, opts...)
@@ -120,6 +133,8 @@ type ResourceServiceServer interface {
 	SearchResources(context.Context, *SearchResourcesRequest) (*SearchResourcesResponse, error)
 	// GetResource returns a resource by name.
 	GetResource(context.Context, *GetResourceRequest) (*Resource, error)
+	// GetResourceBinary returns a resource binary by name.
+	GetResourceBinary(context.Context, *GetResourceBinaryRequest) (*httpbody.HttpBody, error)
 	// UpdateResource updates a resource.
 	UpdateResource(context.Context, *UpdateResourceRequest) (*Resource, error)
 	// DeleteResource deletes a resource by name.
@@ -142,6 +157,9 @@ func (UnimplementedResourceServiceServer) SearchResources(context.Context, *Sear
 }
 func (UnimplementedResourceServiceServer) GetResource(context.Context, *GetResourceRequest) (*Resource, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetResource not implemented")
+}
+func (UnimplementedResourceServiceServer) GetResourceBinary(context.Context, *GetResourceBinaryRequest) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetResourceBinary not implemented")
 }
 func (UnimplementedResourceServiceServer) UpdateResource(context.Context, *UpdateResourceRequest) (*Resource, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateResource not implemented")
@@ -234,6 +252,24 @@ func _ResourceService_GetResource_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ResourceService_GetResourceBinary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetResourceBinaryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResourceServiceServer).GetResourceBinary(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ResourceService_GetResourceBinary_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResourceServiceServer).GetResourceBinary(ctx, req.(*GetResourceBinaryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ResourceService_UpdateResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateResourceRequest)
 	if err := dec(in); err != nil {
@@ -292,6 +328,10 @@ var ResourceService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetResource",
 			Handler:    _ResourceService_GetResource_Handler,
+		},
+		{
+			MethodName: "GetResourceBinary",
+			Handler:    _ResourceService_GetResourceBinary_Handler,
 		},
 		{
 			MethodName: "UpdateResource",

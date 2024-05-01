@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -16,6 +17,7 @@ import (
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -157,6 +159,71 @@ func (s *APIV1Service) GetResource(ctx context.Context, request *v1pb.GetResourc
 	}
 
 	return s.convertResourceFromStore(ctx, resource), nil
+}
+
+func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetResourceBinaryRequest) (*httpbody.HttpBody, error) {
+	resourceFind := &store.FindResource{
+		GetBlob: true,
+	}
+	if request.Name != "" {
+		id, err := ExtractResourceIDFromName(request.Name)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
+		}
+		resourceFind.ID = &id
+	}
+	if request.Uid != "" {
+		resourceFind.UID = &request.Uid
+	}
+	resource, err := s.Store.GetResource(ctx, resourceFind)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+	}
+	if resource == nil {
+		return nil, status.Errorf(codes.NotFound, "resource not found")
+	}
+	// Check the related memo visibility.
+	if resource.MemoID != nil {
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+			ID: resource.MemoID,
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to find memo by ID: %v", resource.MemoID)
+		}
+		if memo != nil && memo.Visibility != store.Public {
+			user, err := getCurrentUser(ctx, s.Store)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+			}
+			if memo.Visibility == store.Private && user.ID != resource.CreatorID {
+				return nil, status.Errorf(codes.Unauthenticated, "unauthorized access")
+			}
+		}
+	}
+
+	blob := resource.Blob
+	if resource.InternalPath != "" {
+		resourcePath := filepath.FromSlash(resource.InternalPath)
+		if !filepath.IsAbs(resourcePath) {
+			resourcePath = filepath.Join(s.Profile.Data, resourcePath)
+		}
+
+		file, err := os.Open(resourcePath)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to open the file: %v", err)
+		}
+		defer file.Close()
+		blob, err = io.ReadAll(file)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to read the file: %v", err)
+		}
+	}
+
+	httpBody := &httpbody.HttpBody{
+		ContentType: resource.Type,
+		Data:        blob,
+	}
+	return httpBody, nil
 }
 
 func (s *APIV1Service) UpdateResource(ctx context.Context, request *v1pb.UpdateResourceRequest) (*v1pb.Resource, error) {

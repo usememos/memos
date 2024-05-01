@@ -41,7 +41,7 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 
 func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 	skipper := func(c echo.Context) bool {
-		return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
+		return util.HasPrefixes(c.Path(), "/o/", "/api/", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
 	}
 
 	// Use echo static middleware to serve the built dist folder.
@@ -55,9 +55,6 @@ func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 	// Use echo gzip middleware to compress the response.
 	// Reference: https://echo.labstack.com/docs/middleware/gzip
 	g.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-		Skipper: func(c echo.Context) bool {
-			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
-		},
 		Level: 5,
 	}))
 	g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {

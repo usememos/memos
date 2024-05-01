@@ -1371,41 +1371,6 @@ paths:
           type: string
       tags:
         - UserService
-  /api/v1/{name}/avatar:
-    get:
-      summary: GetUserAvatar gets the avatar of a user.
-      operationId: UserService_GetUserAvatar
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/apiHttpBody'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The name of the user.
-            Format: users/{id}
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-        - name: httpBody.contentType
-          description: The HTTP Content-Type header value specifying the content type of the body.
-          in: query
-          required: false
-          type: string
-        - name: httpBody.data
-          description: The HTTP request/response body as raw binary.
-          in: query
-          required: false
-          type: string
-          format: byte
-      tags:
-        - UserService
   /api/v1/{name}/comments:
     get:
       summary: ListMemoComments lists comments for a memo.
@@ -1790,6 +1755,105 @@ paths:
                 format: date-time
       tags:
         - UserService
+  /o/r/{uid}:
+    get:
+      summary: GetResourceBinary returns a resource binary by name.
+      operationId: ResourceService_GetResourceBinary
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiHttpBody'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: uid
+          description: The user defined id of the resource.
+          in: path
+          required: true
+          type: string
+        - name: name
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
+          in: query
+          required: false
+          type: string
+      tags:
+        - ResourceService
+  /o/{name}/avatar:
+    get:
+      summary: GetUserAvatarBinary gets the avatar of a user.
+      operationId: UserService_GetUserAvatarBinary2
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiHttpBody'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the user.
+            Format: users/{id}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: httpBody.contentType
+          description: The HTTP Content-Type header value specifying the content type of the body.
+          in: query
+          required: false
+          type: string
+        - name: httpBody.data
+          description: The HTTP request/response body as raw binary.
+          in: query
+          required: false
+          type: string
+          format: byte
+      tags:
+        - UserService
+  /{name}/avatar:
+    get:
+      summary: GetUserAvatarBinary gets the avatar of a user.
+      operationId: UserService_GetUserAvatarBinary
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiHttpBody'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the user.
+            Format: users/{id}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: httpBody.contentType
+          description: The HTTP Content-Type header value specifying the content type of the body.
+          in: query
+          required: false
+          type: string
+        - name: httpBody.data
+          description: The HTTP request/response body as raw binary.
+          in: query
+          required: false
+          type: string
+          format: byte
+      tags:
+        - UserService
 definitions:
   MemoServiceSetMemoRelationsBody:
     type: object
@@ -2137,8 +2201,7 @@ definitions:
 
           Note: this functionality is not currently available in the official
           protobuf release, and it is not used for type URLs beginning with
-          type.googleapis.com. As of May 2023, there are no widely used type server
-          implementations and no plans to implement one.
+          type.googleapis.com.
 
           Schemes other than `http`, `https` (or the empty scheme) might be
           used with implementation specific semantics.
@@ -2173,7 +2236,7 @@ definitions:
             foo = any.unpack(Foo.getDefaultInstance());
           }
 
-       Example 3: Pack and unpack a message in Python.
+      Example 3: Pack and unpack a message in Python.
 
           foo = Foo(...)
           any = Any()
@@ -2183,7 +2246,7 @@ definitions:
             any.Unpack(foo)
             ...
 
-       Example 4: Pack and unpack a message in Go
+      Example 4: Pack and unpack a message in Go
 
            foo := &pb.Foo{...}
            any, err := anypb.New(foo)
@@ -2203,7 +2266,7 @@ definitions:
       name "y.z".
 
       JSON
-      ====
+
       The JSON representation of an `Any` value uses the regular
       representation of the deserialized, embedded message, with an
       additional field `@type` which contains the type URL. Example:

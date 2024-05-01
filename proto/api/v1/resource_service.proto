@@ -5,6 +5,7 @@ package memos.api.v1;
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
+import "google/api/httpbody.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
@@ -31,6 +32,11 @@ service ResourceService {
   rpc GetResource(GetResourceRequest) returns (Resource) {
     option (google.api.http) = {get: "/api/v1/{name=resources/*}"};
     option (google.api.method_signature) = "name";
+  }
+  // GetResourceBinary returns a resource binary by name.
+  rpc GetResourceBinary(GetResourceBinaryRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {get: "/o/r/{uid}"};
+    option (google.api.method_signature) = "name,uid";
   }
   // UpdateResource updates a resource.
   rpc UpdateResource(UpdateResourceRequest) returns (Resource) {
@@ -96,6 +102,16 @@ message GetResourceRequest {
   // Format: resources/{id}
   // id is the system generated unique identifier.
   string name = 1;
+}
+
+message GetResourceBinaryRequest {
+  // The name of the resource.
+  // Format: resources/{id}
+  // id is the system generated unique identifier.
+  string name = 1;
+
+  // The user defined id of the resource.
+  string uid = 2;
 }
 
 message UpdateResourceRequest {

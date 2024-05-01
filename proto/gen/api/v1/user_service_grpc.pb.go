@@ -24,7 +24,7 @@ const (
 	UserService_ListUsers_FullMethodName             = "/memos.api.v1.UserService/ListUsers"
 	UserService_SearchUsers_FullMethodName           = "/memos.api.v1.UserService/SearchUsers"
 	UserService_GetUser_FullMethodName               = "/memos.api.v1.UserService/GetUser"
-	UserService_GetUserAvatar_FullMethodName         = "/memos.api.v1.UserService/GetUserAvatar"
+	UserService_GetUserAvatarBinary_FullMethodName   = "/memos.api.v1.UserService/GetUserAvatarBinary"
 	UserService_CreateUser_FullMethodName            = "/memos.api.v1.UserService/CreateUser"
 	UserService_UpdateUser_FullMethodName            = "/memos.api.v1.UserService/UpdateUser"
 	UserService_DeleteUser_FullMethodName            = "/memos.api.v1.UserService/DeleteUser"
@@ -45,8 +45,8 @@ type UserServiceClient interface {
 	SearchUsers(ctx context.Context, in *SearchUsersRequest, opts ...grpc.CallOption) (*SearchUsersResponse, error)
 	// GetUser gets a user by name.
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)
-	// GetUserAvatar gets the avatar of a user.
-	GetUserAvatar(ctx context.Context, in *GetUserAvatarRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
+	// GetUserAvatarBinary gets the avatar of a user.
+	GetUserAvatarBinary(ctx context.Context, in *GetUserAvatarBinaryRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	// CreateUser creates a new user.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
 	// UpdateUser updates a user.
@@ -100,9 +100,9 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opt
 	return out, nil
 }
 
-func (c *userServiceClient) GetUserAvatar(ctx context.Context, in *GetUserAvatarRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+func (c *userServiceClient) GetUserAvatarBinary(ctx context.Context, in *GetUserAvatarBinaryRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
 	out := new(httpbody.HttpBody)
-	err := c.cc.Invoke(ctx, UserService_GetUserAvatar_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, UserService_GetUserAvatarBinary_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -191,8 +191,8 @@ type UserServiceServer interface {
 	SearchUsers(context.Context, *SearchUsersRequest) (*SearchUsersResponse, error)
 	// GetUser gets a user by name.
 	GetUser(context.Context, *GetUserRequest) (*User, error)
-	// GetUserAvatar gets the avatar of a user.
-	GetUserAvatar(context.Context, *GetUserAvatarRequest) (*httpbody.HttpBody, error)
+	// GetUserAvatarBinary gets the avatar of a user.
+	GetUserAvatarBinary(context.Context, *GetUserAvatarBinaryRequest) (*httpbody.HttpBody, error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
 	// UpdateUser updates a user.
@@ -225,8 +225,8 @@ func (UnimplementedUserServiceServer) SearchUsers(context.Context, *SearchUsersR
 func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedUserServiceServer) GetUserAvatar(context.Context, *GetUserAvatarRequest) (*httpbody.HttpBody, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserAvatar not implemented")
+func (UnimplementedUserServiceServer) GetUserAvatarBinary(context.Context, *GetUserAvatarBinaryRequest) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserAvatarBinary not implemented")
 }
 func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
@@ -319,20 +319,20 @@ func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetUserAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserAvatarRequest)
+func _UserService_GetUserAvatarBinary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserAvatarBinaryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetUserAvatar(ctx, in)
+		return srv.(UserServiceServer).GetUserAvatarBinary(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_GetUserAvatar_FullMethodName,
+		FullMethod: UserService_GetUserAvatarBinary_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUserAvatar(ctx, req.(*GetUserAvatarRequest))
+		return srv.(UserServiceServer).GetUserAvatarBinary(ctx, req.(*GetUserAvatarBinaryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -501,8 +501,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetUser_Handler,
 		},
 		{
-			MethodName: "GetUserAvatar",
-			Handler:    _UserService_GetUserAvatar_Handler,
+			MethodName: "GetUserAvatarBinary",
+			Handler:    _UserService_GetUserAvatarBinary_Handler,
 		},
 		{
 			MethodName: "CreateUser",
