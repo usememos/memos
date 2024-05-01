@@ -21,5 +21,3 @@ build
 bin/air
 
 dev-dist
-
-dist/
