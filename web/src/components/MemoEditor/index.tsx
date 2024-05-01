@@ -1,4 +1,4 @@
-import { Select, Option, Button, IconButton, Divider } from "@mui/joy";
+import { Select, Option, Button, Divider } from "@mui/joy";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -17,12 +17,12 @@ import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import { extractTagsFromContent } from "@/utils/tag";
-import showCreateResourceDialog from "../CreateResourceDialog";
 import Icon from "../Icon";
 import VisibilityIcon from "../VisibilityIcon";
 import AddMemoRelationButton from "./ActionButton/AddMemoRelationButton";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
 import TagSelector from "./ActionButton/TagSelector";
+import UploadResourceButton from "./ActionButton/UploadResourceButton";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
@@ -174,17 +174,6 @@ const MemoEditor = (props: Props) => {
       ...prevState,
       memoVisibility: visibility,
     }));
-  };
-
-  const handleUploadFileBtnClick = () => {
-    showCreateResourceDialog({
-      onConfirm: (resourceList) => {
-        setState((prevState) => ({
-          ...prevState,
-          resourceList: [...prevState.resourceList, ...resourceList],
-        }));
-      },
-    });
   };
 
   const handleSetResourceList = (resourceList: Resource[]) => {
@@ -397,7 +386,14 @@ const MemoEditor = (props: Props) => {
   return (
     <MemoEditorContext.Provider
       value={{
+        resourceList: state.resourceList,
         relationList: state.relationList,
+        setResourceList: (resourceList: Resource[]) => {
+          setState((prevState) => ({
+            ...prevState,
+            resourceList,
+          }));
+        },
         setRelationList: (relationList: MemoRelation[]) => {
           setState((prevState) => ({
             ...prevState,
@@ -425,9 +421,7 @@ const MemoEditor = (props: Props) => {
           <div className="flex flex-row justify-start items-center opacity-80">
             <TagSelector editorRef={editorRef} />
             <MarkdownMenu editorRef={editorRef} />
-            <IconButton size="sm" onClick={handleUploadFileBtnClick}>
-              <Icon.Image className="w-5 h-5 mx-auto" />
-            </IconButton>
+            <UploadResourceButton />
             <AddMemoRelationButton editorRef={editorRef} />
           </div>
         </div>
