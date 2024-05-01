@@ -20,7 +20,6 @@ import (
 	"github.com/usememos/memos/plugin/idp/oauth2"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/route/api/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -57,7 +56,7 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		return nil, status.Errorf(codes.InvalidArgument, "unmatched email and password")
 	}
 
-	expireTime := time.Now().Add(auth.AccessTokenDuration)
+	expireTime := time.Now().Add(AccessTokenDuration)
 	if request.NeverExpire {
 		// Set the expire time to 100 years.
 		expireTime = time.Now().Add(100 * 365 * 24 * time.Hour)
@@ -138,14 +137,14 @@ func (s *APIV1Service) SignInWithSSO(ctx context.Context, request *v1pb.SignInWi
 		return nil, status.Errorf(codes.PermissionDenied, fmt.Sprintf("user has been archived with username %s", userInfo.Identifier))
 	}
 
-	if err := s.doSignIn(ctx, user, time.Now().Add(auth.AccessTokenDuration)); err != nil {
+	if err := s.doSignIn(ctx, user, time.Now().Add(AccessTokenDuration)); err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to sign in, err: %s", err))
 	}
 	return convertUserFromStore(user), nil
 }
 
 func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) error {
-	accessToken, err := auth.GenerateAccessToken(user.Email, user.ID, expireTime, []byte(s.Secret))
+	accessToken, err := GenerateAccessToken(user.Email, user.ID, expireTime, []byte(s.Secret))
 	if err != nil {
 		return status.Errorf(codes.Internal, fmt.Sprintf("failed to generate tokens, err: %s", err))
 	}
@@ -208,7 +207,7 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to create user, err: %s", err))
 	}
 
-	if err := s.doSignIn(ctx, user, time.Now().Add(auth.AccessTokenDuration)); err != nil {
+	if err := s.doSignIn(ctx, user, time.Now().Add(AccessTokenDuration)); err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to sign in, err: %s", err))
 	}
 	return convertUserFromStore(user), nil
@@ -236,7 +235,7 @@ func (s *APIV1Service) clearAccessTokenCookie(ctx context.Context) error {
 
 func (*APIV1Service) buildAccessTokenCookie(ctx context.Context, accessToken string, expireTime time.Time) (string, error) {
 	attrs := []string{
-		fmt.Sprintf("%s=%s", auth.AccessTokenCookieName, accessToken),
+		fmt.Sprintf("%s=%s", AccessTokenCookieName, accessToken),
 		"Path=/",
 		"HttpOnly",
 	}
