@@ -111,7 +111,8 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	if err := v1pb.RegisterIdentityProviderServiceHandler(context.Background(), gwMux, conn); err != nil {
 		return err
 	}
-	echoServer.Any("*", echo.WrapHandler(gwMux))
+	echoServer.Any("/api/v1/*", echo.WrapHandler(gwMux))
+	echoServer.Any("/o/*", echo.WrapHandler(gwMux))
 
 	// GRPC web proxy.
 	options := []grpcweb.Option{

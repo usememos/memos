@@ -41,7 +41,7 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 
 func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 	skipper := func(c echo.Context) bool {
-		return util.HasPrefixes(c.Path(), "/o/", "/api/", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
+		return util.HasPrefixes(c.Path(), "/o", "/api", "/memos.api.v1", "/robots.txt", "/sitemap.xml", "/m/:name")
 	}
 
 	// Use echo static middleware to serve the built dist folder.
@@ -64,7 +64,6 @@ func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 		}
 	})
 	g.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		HTML5:      true,
 		Filesystem: getFileSystem("dist/assets"),
 	}))
 

@@ -35,7 +35,11 @@ service ResourceService {
   }
   // GetResourceBinary returns a resource binary by name.
   rpc GetResourceBinary(GetResourceBinaryRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {get: "/o/r/{uid}"};
+    option (google.api.http) = {
+      get: "/o/{name=resources/*}"
+
+      additional_bindings {get: "/o/r/{uid}"}
+    };
     option (google.api.method_signature) = "name,uid";
   }
   // UpdateResource updates a resource.

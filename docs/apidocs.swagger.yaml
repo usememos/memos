@@ -1758,7 +1758,7 @@ paths:
   /o/r/{uid}:
     get:
       summary: GetResourceBinary returns a resource binary by name.
-      operationId: ResourceService_GetResourceBinary
+      operationId: ResourceService_GetResourceBinary2
       responses:
         "200":
           description: A successful response.
@@ -1784,10 +1784,10 @@ paths:
           type: string
       tags:
         - ResourceService
-  /o/{name}/avatar:
+  /o/{name}:
     get:
-      summary: GetUserAvatarBinary gets the avatar of a user.
-      operationId: UserService_GetUserAvatarBinary2
+      summary: GetResourceBinary returns a resource binary by name.
+      operationId: ResourceService_GetResourceBinary
       responses:
         "200":
           description: A successful response.
@@ -1800,26 +1800,21 @@ paths:
       parameters:
         - name: name
           description: |-
-            The name of the user.
-            Format: users/{id}
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
           in: path
           required: true
           type: string
-          pattern: users/[^/]+
-        - name: httpBody.contentType
-          description: The HTTP Content-Type header value specifying the content type of the body.
+          pattern: resources/[^/]+
+        - name: uid
+          description: The user defined id of the resource.
           in: query
           required: false
           type: string
-        - name: httpBody.data
-          description: The HTTP request/response body as raw binary.
-          in: query
-          required: false
-          type: string
-          format: byte
       tags:
-        - UserService
-  /{name}/avatar:
+        - ResourceService
+  /o/{name}/avatar:
     get:
       summary: GetUserAvatarBinary gets the avatar of a user.
       operationId: UserService_GetUserAvatarBinary

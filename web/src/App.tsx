@@ -4,12 +4,14 @@ import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { getSystemColorScheme } from "./helpers/utils";
+import useNavigateTo from "./hooks/useNavigateTo";
 import { useCommonContext } from "./layouts/CommonContextProvider";
 import { useUserStore, useWorkspaceSettingStore } from "./store/v1";
 import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "./types/proto/store/workspace_setting";
 
 const App = () => {
   const { i18n } = useTranslation();
+  const navigateTo = useNavigateTo();
   const { mode, setMode } = useColorScheme();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
@@ -26,7 +28,7 @@ const App = () => {
   // Redirect to sign up page if no instance owner.
   useEffect(() => {
     if (!workspaceProfile.owner) {
-      window.location.href = "/auth/signup";
+      navigateTo("/auth/signup");
     }
   }, [workspaceProfile.owner]);
 

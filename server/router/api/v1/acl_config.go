@@ -12,7 +12,7 @@ var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v1.AuthService/SignOut":                           true,
 	"/memos.api.v1.AuthService/SignUp":                            true,
 	"/memos.api.v1.UserService/GetUser":                           true,
-	"/memos.api.v1.UserService/GetUserAvatar":                     true,
+	"/memos.api.v1.UserService/GetUserAvatarBinary":               true,
 	"/memos.api.v1.UserService/SearchUsers":                       true,
 	"/memos.api.v1.MemoService/ListMemos":                         true,
 	"/memos.api.v1.MemoService/GetMemo":                           true,
@@ -20,7 +20,8 @@ var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v1.MemoService/ListMemoResources":                 true,
 	"/memos.api.v1.MemoService/ListMemoRelations":                 true,
 	"/memos.api.v1.MemoService/ListMemoComments":                  true,
-	"/memos.api.v1.LinkService/GetLinkMetadata":                   true,
+	"/memos.api.v1.MarkdownService/GetLinkMetadata":               true,
+	"/memos.api.v1.ResourceService/GetResourceBinary":             true,
 }
 
 // isUnauthorizeAllowedMethod returns whether the method is exempted from authentication.
