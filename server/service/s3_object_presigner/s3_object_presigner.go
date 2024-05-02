@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/plugin/storage/s3"
@@ -23,19 +22,19 @@ func NewS3ObjectPresigner(store *store.Store) *S3ObjectPresigner {
 	}
 }
 
-func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) error {
+func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) {
 	workspaceStorageSetting, err := p.Store.GetWorkspaceStorageSetting(ctx)
 	if err != nil {
-		return errors.Wrap(err, "failed to get workspace storage setting")
+		return
 	}
 
 	s3Config := workspaceStorageSetting.GetS3Config()
 	if s3Config == nil {
-		return errors.New("no actived external storage found")
+		return
 	}
 	s3Client, err := s3.NewClient(ctx, s3Config)
 	if err != nil {
-		return errors.Wrap(err, "Failed to create s3 client")
+		return
 	}
 
 	s3StorageType := storepb.ResourceStorageType_S3
@@ -44,7 +43,7 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) error {
 		StorageType: &s3StorageType,
 	})
 	if err != nil {
-		return errors.Wrapf(err, "list resources")
+		return
 	}
 
 	for _, resource := range resources {
@@ -61,7 +60,7 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) error {
 		}
 		presignURL, err := s3Client.PresignGetObject(ctx, s3ObjectPayload.Key)
 		if err != nil {
-			return errors.Wrap(err, "Failed to presign via s3 client")
+			return
 		}
 		s3ObjectPayload.LastPresignedTime = timestamppb.New(time.Now())
 		if err := p.Store.UpdateResource(ctx, &store.UpdateResource{
@@ -72,11 +71,9 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) error {
 				},
 			},
 		}); err != nil {
-			return errors.Wrap(err, "Failed to update resource")
+			return
 		}
 	}
-
-	return nil
 }
 
 func (p *S3ObjectPresigner) Start(ctx context.Context) {
