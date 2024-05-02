@@ -19,8 +19,10 @@ message ResourcePayload {
   }
 
   message S3Object {
-    string bucket = 1;
-    string key = 2;
-    google.protobuf.Timestamp last_presigned_time = 3;
+    // key is the S3 object key.
+    string key = 1;
+    // last_presigned_time is the last time the object was presigned.
+    // This is used to determine if the presigned URL is still valid.
+    google.protobuf.Timestamp last_presigned_time = 2;
   }
 }

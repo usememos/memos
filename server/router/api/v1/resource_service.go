@@ -376,7 +376,6 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		create.Payload = &storepb.ResourcePayload{
 			Payload: &storepb.ResourcePayload_S3Object_{
 				S3Object: &storepb.ResourcePayload_S3Object{
-					Bucket:            s3Config.Bucket,
 					Key:               key,
 					LastPresignedTime: timestamppb.New(time.Now()),
 				},
