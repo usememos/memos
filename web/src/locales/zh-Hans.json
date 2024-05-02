@@ -131,7 +131,8 @@
       "private": "私有",
       "protected": "工作区",
       "public": "公开"
-    }
+    },
+    "wrapping": "包装"
   },
   "message": {
     "archived-successfully": "归档成功",
