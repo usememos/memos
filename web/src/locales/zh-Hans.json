@@ -116,7 +116,7 @@
       "self": "评论"
     },
     "copy-link": "复制链接",
-    "count-memos-in-date": "{{count}} 备忘录 {{date}}",
+    "count-memos-in-date": "{{date}} 有 {{count}} 条memo",
     "delete-confirm": "您确定要删除此 Memo 吗？（此操作不可逆）",
     "delete-memo": "删除 Memo",
     "embed": "嵌入",
