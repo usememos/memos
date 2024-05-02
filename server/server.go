@@ -61,11 +61,8 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		return c.String(http.StatusOK, "Service ready.")
 	})
 
-	// Only serve frontend when it's enabled.
-	if profile.Frontend {
-		frontendService := frontend.NewFrontendService(profile, store)
-		frontendService.Serve(ctx, echoServer)
-	}
+	// Serve frontend resources.
+	frontend.NewFrontendService(profile, store).Serve(ctx, echoServer)
 
 	rootGroup := echoServer.Group("")
 
