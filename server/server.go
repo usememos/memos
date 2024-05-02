@@ -19,6 +19,7 @@ import (
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/rss"
+	s3objectpresigner "github.com/usememos/memos/server/service/s3_object_presigner"
 	versionchecker "github.com/usememos/memos/server/service/version_checker"
 	"github.com/usememos/memos/store"
 )
@@ -136,6 +137,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 func (s *Server) StartBackgroundRunners(ctx context.Context) {
 	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
+	go s3objectpresigner.NewS3ObjectPresigner(s.Store).Start(ctx)
 }
 
 func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb.WorkspaceBasicSetting, error) {

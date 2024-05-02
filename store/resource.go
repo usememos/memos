@@ -45,6 +45,7 @@ type FindResource struct {
 	Filename       *string
 	MemoID         *int32
 	HasRelatedMemo bool
+	StorageType    *storepb.ResourceStorageType
 	Limit          *int
 	Offset         *int
 }
@@ -55,6 +56,8 @@ type UpdateResource struct {
 	UpdatedTs *int64
 	Filename  *string
 	MemoID    *int32
+	Reference *string
+	Payload   *storepb.ResourcePayload
 }
 
 type DeleteResource struct {

@@ -15,6 +15,8 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
+// presignLifetimeSecs is the lifetime of a presigned URL in seconds.
+// The presigned URL is valid for 7 days.
 const presignLifetimeSecs = 7 * 24 * 60 * 60
 
 type Client struct {

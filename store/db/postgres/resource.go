@@ -57,6 +57,9 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	if find.HasRelatedMemo {
 		where = append(where, "memo_id IS NOT NULL")
 	}
+	if v := find.StorageType; v != nil {
+		where, args = append(where, "storage_type = "+placeholder(len(args)+1)), append(args, v.String())
+	}
 
 	fields := []string{"id", "uid", "filename", "type", "size", "creator_id", "created_ts", "updated_ts", "memo_id", "storage_type", "reference", "payload"}
 	if find.GetBlob {
@@ -143,6 +146,16 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) e
 	}
 	if v := update.MemoID; v != nil {
 		set, args = append(set, "memo_id = "+placeholder(len(args)+1)), append(args, *v)
+	}
+	if v := update.Reference; v != nil {
+		set, args = append(set, "reference = "+placeholder(len(args)+1)), append(args, *v)
+	}
+	if v := update.Payload; v != nil {
+		bytes, err := protojson.Marshal(v)
+		if err != nil {
+			return errors.Wrap(err, "failed to marshal resource payload")
+		}
+		set, args = append(set, "payload = "+placeholder(len(args)+1)), append(args, string(bytes))
 	}
 
 	stmt := `UPDATE resource SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1)
