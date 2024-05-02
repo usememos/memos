@@ -45,10 +45,10 @@ func NewClient(ctx context.Context, s3Config *storepb.WorkspaceStorageSetting_S3
 }
 
 // UploadObject uploads an object to S3.
-func (client *Client) UploadObject(ctx context.Context, key string, fileType string, content io.Reader) (string, error) {
-	uploader := manager.NewUploader(client.Client)
+func (c *Client) UploadObject(ctx context.Context, key string, fileType string, content io.Reader) (string, error) {
+	uploader := manager.NewUploader(c.Client)
 	putInput := s3.PutObjectInput{
-		Bucket:      client.Bucket,
+		Bucket:      c.Bucket,
 		Key:         aws.String(key),
 		ContentType: aws.String(fileType),
 		Body:        content,
@@ -66,10 +66,10 @@ func (client *Client) UploadObject(ctx context.Context, key string, fileType str
 }
 
 // PresignGetObject presigns an object in S3.
-func (client *Client) PresignGetObject(ctx context.Context, bucket, key string) (string, error) {
-	presignClient := s3.NewPresignClient(client.Client)
+func (c *Client) PresignGetObject(ctx context.Context, key string) (string, error) {
+	presignClient := s3.NewPresignClient(c.Client)
 	presignResult, err := presignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
-		Bucket: aws.String(bucket),
+		Bucket: aws.String(*c.Bucket),
 		Key:    aws.String(key),
 	}, func(opts *s3.PresignOptions) {
 		opts.Expires = time.Duration(presignLifetimeSecs * int64(time.Second))
@@ -78,4 +78,16 @@ func (client *Client) PresignGetObject(ctx context.Context, bucket, key string) 
 		return "", errors.Wrap(err, "failed to presign put object")
 	}
 	return presignResult.URL, nil
+}
+
+// DeleteObject deletes an object in S3.
+func (c *Client) DeleteObject(ctx context.Context, key string) error {
+	_, err := c.Client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: c.Bucket,
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return errors.Wrap(err, "failed to delete object")
+	}
+	return nil
 }

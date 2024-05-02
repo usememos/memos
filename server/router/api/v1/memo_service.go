@@ -314,6 +314,17 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		return nil, status.Errorf(codes.Internal, "failed to delete memo")
 	}
 
+	// Delete related resources.
+	resources, err := s.Store.ListResources(ctx, &store.FindResource{MemoID: &id})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list resources")
+	}
+	for _, resource := range resources {
+		if err := s.Store.DeleteResource(ctx, &store.DeleteResource{ID: resource.ID}); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to delete resource")
+		}
+	}
+
 	return &emptypb.Empty{}, nil
 }
 
@@ -841,34 +852,9 @@ func convertMemoToWebhookPayload(memo *v1pb.Memo) (*webhook.WebhookPayload, erro
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid memo creator")
 	}
-	id, err := ExtractMemoIDFromName(memo.Name)
-	if err != nil {
-		return nil, errors.Wrap(err, "invalid memo name")
-	}
 	return &webhook.WebhookPayload{
 		CreatorID: creatorID,
 		CreatedTs: time.Now().Unix(),
-		Memo: &webhook.Memo{
-			ID:         id,
-			CreatorID:  creatorID,
-			CreatedTs:  memo.CreateTime.Seconds,
-			UpdatedTs:  memo.UpdateTime.Seconds,
-			Content:    memo.Content,
-			Visibility: memo.Visibility.String(),
-			Pinned:     memo.Pinned,
-			ResourceList: func() []*webhook.Resource {
-				resources := []*webhook.Resource{}
-				for _, resource := range memo.Resources {
-					resources = append(resources, &webhook.Resource{
-						UID:          resource.Uid,
-						Filename:     resource.Filename,
-						ExternalLink: resource.ExternalLink,
-						Type:         resource.Type,
-						Size:         resource.Size,
-					})
-				}
-				return resources
-			}(),
-		},
+		Memo:      memo,
 	}, nil
 }

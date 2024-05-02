@@ -2,12 +2,14 @@ package store
 
 import (
 	"context"
+	"log/slog"
 	"os"
 	"path/filepath"
 
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/plugin/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -100,13 +102,45 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 		return errors.Wrap(nil, "resource not found")
 	}
 
-	// Delete the local file.
 	if resource.StorageType == storepb.ResourceStorageType_LOCAL {
-		p := filepath.FromSlash(resource.Reference)
-		if !filepath.IsAbs(p) {
-			p = filepath.Join(s.Profile.Data, p)
+		if err := func() error {
+			p := filepath.FromSlash(resource.Reference)
+			if !filepath.IsAbs(p) {
+				p = filepath.Join(s.Profile.Data, p)
+			}
+			err := os.Remove(p)
+			if err != nil {
+				return errors.Wrap(err, "failed to delete local file")
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrap(err, "failed to delete local file")
 		}
-		_ = os.Remove(p)
+	} else if resource.StorageType == storepb.ResourceStorageType_S3 {
+		if err := func() error {
+			s3ObjectPayload := resource.Payload.GetS3Object()
+			if s3ObjectPayload == nil {
+				return errors.Errorf("No s3 object found")
+			}
+			workspaceStorageSetting, err := s.GetWorkspaceStorageSetting(ctx)
+			if err != nil {
+				return errors.Wrap(err, "failed to get workspace storage setting")
+			}
+			s3Config := workspaceStorageSetting.S3Config
+			if s3Config == nil {
+				return errors.Errorf("No actived external storage found")
+			}
+			s3Client, err := s3.NewClient(ctx, s3Config)
+			if err != nil {
+				return errors.Wrap(err, "Failed to create s3 client")
+			}
+			if err := s3Client.DeleteObject(ctx, s3ObjectPayload.Key); err != nil {
+				return errors.Wrap(err, "Failed to delete s3 object")
+			}
+			return nil
+		}(); err != nil {
+			slog.Warn("Failed to delete s3 object", err)
+		}
 	}
 
 	return s.driver.DeleteResource(ctx, delete)

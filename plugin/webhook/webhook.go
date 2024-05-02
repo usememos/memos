@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
 
 var (
@@ -22,44 +24,19 @@ type Memo struct {
 	UpdatedTs int64 `json:"updatedTs"`
 
 	// Domain specific fields
-	Content      string          `json:"content"`
-	Visibility   string          `json:"visibility"`
-	Pinned       bool            `json:"pinned"`
-	ResourceList []*Resource     `json:"resourceList"`
-	RelationList []*MemoRelation `json:"relationList"`
-}
-
-type Resource struct {
-	ID  int32  `json:"id"`
-	UID string `json:"uid"`
-
-	// Standard fields
-	CreatorID int32 `json:"creatorId"`
-	CreatedTs int64 `json:"createdTs"`
-	UpdatedTs int64 `json:"updatedTs"`
-
-	// Domain specific fields
-	Filename     string `json:"filename"`
-	InternalPath string `json:"internalPath"`
-	ExternalLink string `json:"externalLink"`
-	Type         string `json:"type"`
-	Size         int64  `json:"size"`
-}
-
-type MemoRelation struct {
-	MemoID        int32  `json:"memoId"`
-	RelatedMemoID int32  `json:"relatedMemoId"`
-	Type          string `json:"type"`
+	Content    string `json:"content"`
+	Visibility string `json:"visibility"`
+	Pinned     bool   `json:"pinned"`
 }
 
 // WebhookPayload is the payload of webhook request.
 // nolint
 type WebhookPayload struct {
-	URL          string `json:"url"`
-	ActivityType string `json:"activityType"`
-	CreatorID    int32  `json:"creatorId"`
-	CreatedTs    int64  `json:"createdTs"`
-	Memo         *Memo  `json:"memo"`
+	URL          string     `json:"url"`
+	ActivityType string     `json:"activityType"`
+	CreatorID    int32      `json:"creatorId"`
+	CreatedTs    int64      `json:"createdTs"`
+	Memo         *v1pb.Memo `json:"memo"`
 }
 
 // WebhookResponse is the response of webhook request.
