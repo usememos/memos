@@ -43,7 +43,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "memos",
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
-		Run: func(_cmd *cobra.Command, _args []string) {
+		Run: func(_ *cobra.Command, _ []string) {
 			ctx, cancel := context.WithCancel(context.Background())
 			dbDriver, err := db.NewDBDriver(instanceProfile)
 			if err != nil {

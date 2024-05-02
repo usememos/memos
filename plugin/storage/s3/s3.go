@@ -68,7 +68,7 @@ func (c *Client) UploadObject(ctx context.Context, key string, fileType string, 
 // PresignGetObject presigns an object in S3.
 func (c *Client) PresignGetObject(ctx context.Context, key string) (string, error) {
 	presignClient := s3.NewPresignClient(c.Client)
-	presignResult, err := presignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
+	presignResult, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(*c.Bucket),
 		Key:    aws.String(key),
 	}, func(opts *s3.PresignOptions) {

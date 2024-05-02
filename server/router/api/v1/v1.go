@@ -117,7 +117,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	// GRPC web proxy.
 	options := []grpcweb.Option{
 		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
-		grpcweb.WithOriginFunc(func(origin string) bool {
+		grpcweb.WithOriginFunc(func(_ string) bool {
 			return true
 		}),
 	}
