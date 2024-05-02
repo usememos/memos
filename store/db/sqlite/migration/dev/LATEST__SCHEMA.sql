@@ -78,11 +78,12 @@ CREATE TABLE resource (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   filename TEXT NOT NULL DEFAULT '',
   blob BLOB DEFAULT NULL,
-  external_link TEXT NOT NULL DEFAULT '',
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
-  internal_path TEXT NOT NULL DEFAULT '',
-  memo_id INTEGER
+  memo_id INTEGER,
+  storage_type TEXT NOT NULL DEFAULT '',
+  reference TEXT NOT NULL DEFAULT '',
+  payload TEXT NOT NULL DEFAULT '{}'
 );
 
 CREATE INDEX idx_resource_creator_id ON resource (creator_id);
@@ -104,14 +105,6 @@ CREATE TABLE activity (
   type TEXT NOT NULL DEFAULT '',
   level TEXT NOT NULL CHECK (level IN ('INFO', 'WARN', 'ERROR')) DEFAULT 'INFO',
   payload TEXT NOT NULL DEFAULT '{}'
-);
-
--- storage
-CREATE TABLE storage (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  type TEXT NOT NULL,
-  config TEXT NOT NULL DEFAULT '{}'
 );
 
 -- idp

@@ -45,39 +45,6 @@ func (d *DB) GetDB() *sql.DB {
 	return d.db
 }
 
-func (d *DB) Vacuum(ctx context.Context) error {
-	tx, err := d.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	if err := vacuumMemo(ctx, tx); err != nil {
-		return err
-	}
-	if err := vacuumResource(ctx, tx); err != nil {
-		return err
-	}
-	if err := vacuumUserSetting(ctx, tx); err != nil {
-		return err
-	}
-	if err := vacuumMemoOrganizer(ctx, tx); err != nil {
-		return err
-	}
-	if err := vacuumMemoRelations(ctx, tx); err != nil {
-		return err
-	}
-	if err := vacuumInbox(ctx, tx); err != nil {
-		return err
-	}
-	if err := vacuumTag(ctx, tx); err != nil {
-		// Prevent revive warning.
-		return err
-	}
-
-	return tx.Commit()
-}
-
 func (d *DB) GetCurrentDBSize(ctx context.Context) (int64, error) {
 	query := "SELECT SUM(`data_length` + `index_length`) AS `size` " +
 		" FROM information_schema.TABLES" +

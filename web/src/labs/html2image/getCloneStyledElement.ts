@@ -13,13 +13,8 @@ const applyStyles = async (sourceElement: HTMLElement, clonedElement: HTMLElemen
     } catch (error) {
       covertFailed = true;
     }
-    // NOTE: Get image blob from backend to avoid CORS error.
     if (covertFailed) {
-      try {
-        (clonedElement as HTMLImageElement).src = await convertResourceToDataURL(`/o/get/image?url=${url}`);
-      } catch (error) {
-        // do nth
-      }
+      throw new Error(`Failed to convert image to data URL: ${url}`);
     }
   }
 

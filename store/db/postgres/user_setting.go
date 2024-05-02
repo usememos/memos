@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"strings"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -67,14 +66,4 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 	}
 
 	return userSettingList, nil
-}
-
-func vacuumUserSetting(ctx context.Context, tx *sql.Tx) error {
-	stmt := `DELETE FROM user_setting WHERE user_id NOT IN (SELECT id FROM "user")`
-	_, err := tx.ExecContext(ctx, stmt)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

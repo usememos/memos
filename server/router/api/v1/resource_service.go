@@ -6,7 +6,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -50,34 +49,23 @@ func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateR
 		Filename:  request.Resource.Filename,
 		Type:      request.Resource.Type,
 	}
-	if request.Resource.ExternalLink != "" {
-		// Only allow those external links scheme with http/https
-		linkURL, err := url.Parse(request.Resource.ExternalLink)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid external link: %v", err)
-		}
-		if linkURL.Scheme != "http" && linkURL.Scheme != "https" {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid external link scheme: %v", linkURL.Scheme)
-		}
-		create.ExternalLink = request.Resource.ExternalLink
-	} else {
-		workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get workspace storage setting: %v", err)
-		}
-		size := binary.Size(request.Resource.Content)
-		uploadSizeLimit := int(workspaceStorageSetting.UploadSizeLimitMb) * MebiByte
-		if uploadSizeLimit == 0 {
-			uploadSizeLimit = MaxUploadBufferSizeBytes
-		}
-		if size > uploadSizeLimit {
-			return nil, status.Errorf(codes.InvalidArgument, "file size exceeds the limit")
-		}
-		create.Size = int64(size)
-		create.Blob = request.Resource.Content
-		if err := SaveResourceBlob(ctx, s.Store, create); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to save resource blob: %v", err)
-		}
+
+	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace storage setting: %v", err)
+	}
+	size := binary.Size(request.Resource.Content)
+	uploadSizeLimit := int(workspaceStorageSetting.UploadSizeLimitMb) * MebiByte
+	if uploadSizeLimit == 0 {
+		uploadSizeLimit = MaxUploadBufferSizeBytes
+	}
+	if size > uploadSizeLimit {
+		return nil, status.Errorf(codes.InvalidArgument, "file size exceeds the limit")
+	}
+	create.Size = int64(size)
+	create.Blob = request.Resource.Content
+	if err := SaveResourceBlob(ctx, s.Store, create); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to save resource blob: %v", err)
 	}
 
 	if request.Resource.Memo != nil {
@@ -202,8 +190,8 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 	}
 
 	blob := resource.Blob
-	if resource.InternalPath != "" {
-		resourcePath := filepath.FromSlash(resource.InternalPath)
+	if resource.StorageType == storepb.ResourceStorageType_LOCAL {
+		resourcePath := filepath.FromSlash(resource.Reference)
 		if !filepath.IsAbs(resourcePath) {
 			resourcePath = filepath.Join(s.Profile.Data, resourcePath)
 		}
@@ -255,11 +243,12 @@ func (s *APIV1Service) UpdateResource(ctx context.Context, request *v1pb.UpdateR
 		}
 	}
 
-	resource, err := s.Store.UpdateResource(ctx, update)
-	if err != nil {
+	if err := s.Store.UpdateResource(ctx, update); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update resource: %v", err)
 	}
-	return s.convertResourceFromStore(ctx, resource), nil
+	return s.GetResource(ctx, &v1pb.GetResourceRequest{
+		Name: request.Resource.Name,
+	})
 }
 
 func (s *APIV1Service) DeleteResource(ctx context.Context, request *v1pb.DeleteResourceRequest) (*emptypb.Empty, error) {
@@ -292,13 +281,15 @@ func (s *APIV1Service) DeleteResource(ctx context.Context, request *v1pb.DeleteR
 
 func (s *APIV1Service) convertResourceFromStore(ctx context.Context, resource *store.Resource) *v1pb.Resource {
 	resourceMessage := &v1pb.Resource{
-		Name:         fmt.Sprintf("%s%d", ResourceNamePrefix, resource.ID),
-		Uid:          resource.UID,
-		CreateTime:   timestamppb.New(time.Unix(resource.CreatedTs, 0)),
-		Filename:     resource.Filename,
-		ExternalLink: resource.ExternalLink,
-		Type:         resource.Type,
-		Size:         resource.Size,
+		Name:       fmt.Sprintf("%s%d", ResourceNamePrefix, resource.ID),
+		Uid:        resource.UID,
+		CreateTime: timestamppb.New(time.Unix(resource.CreatedTs, 0)),
+		Filename:   resource.Filename,
+		Type:       resource.Type,
+		Size:       resource.Size,
+	}
+	if resource.StorageType == storepb.ResourceStorageType_EXTERNAL || resource.StorageType == storepb.ResourceStorageType_S3 {
+		resourceMessage.ExternalLink = resource.Reference
 	}
 	if resource.MemoID != nil {
 		memo, _ := s.Store.GetMemo(ctx, &store.FindMemo{
@@ -330,7 +321,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		if !strings.Contains(internalPath, "{filename}") {
 			internalPath = filepath.Join(internalPath, "{filename}")
 		}
-		internalPath = replacePathTemplate(internalPath, create.Filename)
+		internalPath = replaceFilenameWithPathTemplate(internalPath, create.Filename)
 		internalPath = filepath.ToSlash(internalPath)
 
 		// Ensure the directory exists.
@@ -352,20 +343,15 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		if err := os.WriteFile(osPath, create.Blob, 0644); err != nil {
 			return errors.Wrap(err, "Failed to write file")
 		}
-		create.InternalPath = internalPath
+		create.Reference = internalPath
 		create.Blob = nil
+		create.StorageType = storepb.ResourceStorageType_LOCAL
 	} else if workspaceStorageSetting.StorageType == storepb.WorkspaceStorageSetting_STORAGE_TYPE_S3 {
 		s3Config := workspaceStorageSetting.S3Config
 		if s3Config == nil {
 			return errors.Errorf("No actived external storage found")
 		}
-		s3Client, err := s3.NewClient(ctx, &s3.Config{
-			AccessKeyID:     s3Config.AccessKeyId,
-			AcesssKeySecret: s3Config.AccessKeySecret,
-			Endpoint:        s3Config.Endpoint,
-			Region:          s3Config.Region,
-			Bucket:          s3Config.Bucket,
-		})
+		s3Client, err := s3.NewClient(ctx, s3Config)
 		if err != nil {
 			return errors.Wrap(err, "Failed to create s3 client")
 		}
@@ -374,15 +360,28 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		if !strings.Contains(filepathTemplate, "{filename}") {
 			filepathTemplate = filepath.Join(filepathTemplate, "{filename}")
 		}
-		filepathTemplate = replacePathTemplate(filepathTemplate, create.Filename)
-		r := bytes.NewReader(create.Blob)
-		link, err := s3Client.UploadFile(ctx, filepathTemplate, create.Type, r)
+		filepathTemplate = replaceFilenameWithPathTemplate(filepathTemplate, create.Filename)
+		key, err := s3Client.UploadObject(ctx, filepathTemplate, create.Type, bytes.NewReader(create.Blob))
 		if err != nil {
 			return errors.Wrap(err, "Failed to upload via s3 client")
 		}
+		presignURL, err := s3Client.PresignGetObject(ctx, s3Config.Bucket, key)
+		if err != nil {
+			return errors.Wrap(err, "Failed to presign via s3 client")
+		}
 
-		create.ExternalLink = link
+		create.Reference = presignURL
 		create.Blob = nil
+		create.StorageType = storepb.ResourceStorageType_S3
+		create.Payload = &storepb.ResourcePayload{
+			Payload: &storepb.ResourcePayload_S3Object_{
+				S3Object: &storepb.ResourcePayload_S3Object{
+					Bucket:            s3Config.Bucket,
+					Key:               key,
+					LastPresignedTime: timestamppb.New(time.Now()),
+				},
+			},
+		}
 	}
 
 	return nil
@@ -390,7 +389,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
 
-func replacePathTemplate(path, filename string) string {
+func replaceFilenameWithPathTemplate(path, filename string) string {
 	t := time.Now()
 	path = fileKeyPattern.ReplaceAllStringFunc(path, func(s string) string {
 		switch s {

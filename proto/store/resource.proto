@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package memos.store;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/store";
+
+enum ResourceStorageType {
+  RESOURCE_STORAGE_TYPE_UNSPECIFIED = 0;
+  LOCAL = 1;
+  S3 = 2;
+  EXTERNAL = 3;
+}
+
+message ResourcePayload {
+  oneof payload {
+    S3Object s3_object = 1;
+  }
+
+  message S3Object {
+    string bucket = 1;
+    string key = 2;
+    google.protobuf.Timestamp last_presigned_time = 3;
+  }
+}

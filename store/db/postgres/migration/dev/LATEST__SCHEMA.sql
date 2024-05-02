@@ -71,11 +71,12 @@ CREATE TABLE resource (
   updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
   filename TEXT NOT NULL,
   blob BYTEA,
-  external_link TEXT NOT NULL,
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
-  internal_path TEXT NOT NULL DEFAULT '',
-  memo_id INTEGER DEFAULT NULL
+  memo_id INTEGER DEFAULT NULL,
+  storage_type TEXT NOT NULL DEFAULT '',
+  reference TEXT NOT NULL DEFAULT '',
+  payload TEXT NOT NULL DEFAULT '{}'
 );
 
 -- tag
@@ -93,14 +94,6 @@ CREATE TABLE activity (
   type TEXT NOT NULL DEFAULT '',
   level TEXT NOT NULL DEFAULT 'INFO',
   payload JSONB NOT NULL DEFAULT '{}'
-);
-
--- storage
-CREATE TABLE storage (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  type TEXT NOT NULL,
-  config JSONB NOT NULL DEFAULT '{}'
 );
 
 -- idp

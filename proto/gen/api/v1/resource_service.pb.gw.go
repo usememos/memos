@@ -569,7 +569,7 @@ func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.ResourceService/GetResourceBinary", runtime.WithHTTPPathPattern("/o/{name=resources/*}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.ResourceService/GetResourceBinary", runtime.WithHTTPPathPattern("/file/{name=resources/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -796,7 +796,7 @@ func RegisterResourceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.ResourceService/GetResourceBinary", runtime.WithHTTPPathPattern("/o/{name=resources/*}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.ResourceService/GetResourceBinary", runtime.WithHTTPPathPattern("/file/{name=resources/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -890,7 +890,7 @@ var (
 
 	pattern_ResourceService_GetResource_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "resources", "name"}, ""))
 
-	pattern_ResourceService_GetResourceBinary_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2}, []string{"o", "resources", "name"}, ""))
+	pattern_ResourceService_GetResourceBinary_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2}, []string{"file", "resources", "name"}, ""))
 
 	pattern_ResourceService_GetResourceBinary_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"o", "r", "uid"}, ""))
 

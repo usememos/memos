@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"context"
-	"database/sql"
 	"strings"
 
 	"github.com/usememos/memos/store"
@@ -61,15 +60,5 @@ func (d *DB) DeleteTag(ctx context.Context, delete *store.DeleteTag) error {
 	if _, err = result.RowsAffected(); err != nil {
 		return err
 	}
-	return nil
-}
-
-func vacuumTag(ctx context.Context, tx *sql.Tx) error {
-	stmt := "DELETE FROM `tag` WHERE `creator_id` NOT IN (SELECT `id` FROM `user`)"
-	_, err := tx.ExecContext(ctx, stmt)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }

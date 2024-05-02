@@ -112,7 +112,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	echoServer.Any("/api/v1/*", echo.WrapHandler(gwMux))
-	echoServer.Any("/o/*", echo.WrapHandler(gwMux))
+	echoServer.Any("/file/*", echo.WrapHandler(gwMux))
 
 	// GRPC web proxy.
 	options := []grpcweb.Option{

@@ -29,7 +29,7 @@ service UserService {
   }
   // GetUserAvatarBinary gets the avatar of a user.
   rpc GetUserAvatarBinary(GetUserAvatarBinaryRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {get: "/o/{name=users/*}/avatar"};
+    option (google.api.http) = {get: "/file/{name=users/*}/avatar"};
     option (google.api.method_signature) = "name";
   }
   // CreateUser creates a new user.

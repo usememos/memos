@@ -29,10 +29,6 @@ func (*Store) MigrateManually(context.Context) error {
 	return nil
 }
 
-func (s *Store) Vacuum(ctx context.Context) error {
-	return s.driver.Vacuum(ctx)
-}
-
 func (s *Store) Close() error {
 	return s.driver.Close()
 }

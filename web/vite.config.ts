@@ -23,7 +23,7 @@ export default defineConfig({
         target: devProxyServer,
         xfwd: true,
       },
-      "^/o/": {
+      "^/file": {
         target: devProxyServer,
         xfwd: true,
       },

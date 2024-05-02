@@ -2,18 +2,13 @@ package store
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/util"
-)
-
-const (
-	// thumbnailImagePath is the directory to store image thumbnails.
-	thumbnailImagePath = ".thumbnail_cache"
+	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 type Resource struct {
@@ -28,13 +23,16 @@ type Resource struct {
 	UpdatedTs int64
 
 	// Domain specific fields
-	Filename     string
-	Blob         []byte
-	InternalPath string
-	ExternalLink string
-	Type         string
-	Size         int64
-	MemoID       *int32
+	Filename    string
+	Blob        []byte
+	Type        string
+	Size        int64
+	StorageType storepb.ResourceStorageType
+	Reference   string
+	Payload     *storepb.ResourcePayload
+
+	// The related memo ID.
+	MemoID *int32
 }
 
 type FindResource struct {
@@ -50,14 +48,11 @@ type FindResource struct {
 }
 
 type UpdateResource struct {
-	ID           int32
-	UID          *string
-	UpdatedTs    *int64
-	Filename     *string
-	InternalPath *string
-	ExternalLink *string
-	MemoID       *int32
-	Blob         []byte
+	ID        int32
+	UID       *string
+	UpdatedTs *int64
+	Filename  *string
+	MemoID    *int32
 }
 
 type DeleteResource struct {
@@ -89,9 +84,9 @@ func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource,
 	return resources[0], nil
 }
 
-func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Resource, error) {
+func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) error {
 	if update.UID != nil && !util.UIDMatcher.MatchString(*update.UID) {
-		return nil, errors.New("invalid uid")
+		return errors.New("invalid uid")
 	}
 	return s.driver.UpdateResource(ctx, update)
 }
@@ -106,19 +101,13 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 	}
 
 	// Delete the local file.
-	if resource.InternalPath != "" {
-		resourcePath := filepath.FromSlash(resource.InternalPath)
-		if !filepath.IsAbs(resourcePath) {
-			resourcePath = filepath.Join(s.Profile.Data, resourcePath)
+	if resource.StorageType == storepb.ResourceStorageType_LOCAL {
+		p := filepath.FromSlash(resource.Reference)
+		if !filepath.IsAbs(p) {
+			p = filepath.Join(s.Profile.Data, p)
 		}
-		_ = os.Remove(resourcePath)
+		_ = os.Remove(p)
 	}
 
-	// Delete the thumbnail.
-	if util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
-		ext := filepath.Ext(resource.Filename)
-		thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
-		_ = os.Remove(thumbnailPath)
-	}
 	return s.driver.DeleteResource(ctx, delete)
 }

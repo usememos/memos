@@ -2,6 +2,7 @@ package rss
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -13,6 +14,7 @@ import (
 	"github.com/yourselfhosted/gomark/ast"
 	"github.com/yourselfhosted/gomark/renderer"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -124,10 +126,10 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 		if len(resources) > 0 {
 			resource := resources[0]
 			enclosure := feeds.Enclosure{}
-			if resource.ExternalLink != "" {
-				enclosure.Url = resource.ExternalLink
+			if resource.StorageType == storepb.ResourceStorageType_EXTERNAL || resource.StorageType == storepb.ResourceStorageType_S3 {
+				enclosure.Url = resource.Reference
 			} else {
-				enclosure.Url = baseURL + "/o/r/" + resource.UID
+				enclosure.Url = fmt.Sprintf("%s/file/resources/%d", baseURL, resource.ID)
 			}
 			enclosure.Length = strconv.Itoa(int(resource.Size))
 			enclosure.Type = resource.Type

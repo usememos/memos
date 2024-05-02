@@ -12,7 +12,6 @@ type Driver interface {
 	Close() error
 
 	Migrate(ctx context.Context) error
-	Vacuum(ctx context.Context) error
 
 	// current file is driver
 	GetCurrentDBSize(ctx context.Context) (int64, error)
@@ -28,7 +27,7 @@ type Driver interface {
 	// Resource model related methods.
 	CreateResource(ctx context.Context, create *Resource) (*Resource, error)
 	ListResources(ctx context.Context, find *FindResource) ([]*Resource, error)
-	UpdateResource(ctx context.Context, update *UpdateResource) (*Resource, error)
+	UpdateResource(ctx context.Context, update *UpdateResource) error
 	DeleteResource(ctx context.Context, delete *DeleteResource) error
 
 	// Memo model related methods.

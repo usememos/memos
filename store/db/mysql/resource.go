@@ -6,13 +6,29 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
+
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store.Resource, error) {
-	fields := []string{"`uid`", "`filename`", "`blob`", "`external_link`", "`type`", "`size`", "`creator_id`", "`internal_path`", "`memo_id`"}
-	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?", "?"}
-	args := []any{create.UID, create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.MemoID}
+	fields := []string{"`uid`", "`filename`", "`blob`", "`type`", "`size`", "`creator_id`", "`memo_id`", "`storage_type`", "`reference`", "`payload`"}
+	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?", "?", "?"}
+	storageType := ""
+	if create.StorageType != storepb.ResourceStorageType_RESOURCE_STORAGE_TYPE_UNSPECIFIED {
+		storageType = create.StorageType.String()
+	}
+	payloadString := "{}"
+	if create.Payload != nil {
+		bytes, err := protojson.Marshal(create.Payload)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to marshal resource payload")
+		}
+		payloadString = string(bytes)
+	}
+	args := []any{create.UID, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID, create.MemoID, storageType, create.Reference, payloadString}
 
 	stmt := "INSERT INTO `resource` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
@@ -51,12 +67,12 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		where = append(where, "`memo_id` IS NOT NULL")
 	}
 
-	fields := []string{"`id`", "`uid`", "`filename`", "`external_link`", "`type`", "`size`", "`creator_id`", "UNIX_TIMESTAMP(`created_ts`)", "UNIX_TIMESTAMP(`updated_ts`)", "`internal_path`", "`memo_id`"}
+	fields := []string{"`id`", "`uid`", "`filename`", "`type`", "`size`", "`creator_id`", "`created_ts`", "`updated_ts`", "`memo_id`", "`storage_type`", "`reference`", "`payload`"}
 	if find.GetBlob {
 		fields = append(fields, "`blob`")
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM `resource` WHERE %s ORDER BY `updated_ts` DESC, `created_ts` DESC", strings.Join(fields, ", "), strings.Join(where, " AND "))
+	query := fmt.Sprintf("SELECT %s FROM `resource` WHERE %s ORDER BY `created_ts` DESC", strings.Join(fields, ", "), strings.Join(where, " AND "))
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {
@@ -74,18 +90,21 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	for rows.Next() {
 		resource := store.Resource{}
 		var memoID sql.NullInt32
+		var storageType string
+		var payloadBytes []byte
 		dests := []any{
 			&resource.ID,
 			&resource.UID,
 			&resource.Filename,
-			&resource.ExternalLink,
 			&resource.Type,
 			&resource.Size,
 			&resource.CreatorID,
 			&resource.CreatedTs,
 			&resource.UpdatedTs,
-			&resource.InternalPath,
 			&memoID,
+			&storageType,
+			&resource.Reference,
+			&payloadBytes,
 		}
 		if find.GetBlob {
 			dests = append(dests, &resource.Blob)
@@ -93,9 +112,16 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		if err := rows.Scan(dests...); err != nil {
 			return nil, err
 		}
+
 		if memoID.Valid {
 			resource.MemoID = &memoID.Int32
 		}
+		resource.StorageType = storepb.ResourceStorageType(storepb.ResourceStorageType_value[storageType])
+		payload := &storepb.ResourcePayload{}
+		if err := protojsonUnmarshaler.Unmarshal(payloadBytes, payload); err != nil {
+			return nil, err
+		}
+		resource.Payload = payload
 		list = append(list, &resource)
 	}
 
@@ -118,7 +144,7 @@ func (d *DB) GetResource(ctx context.Context, find *store.FindResource) (*store.
 	return list[0], nil
 }
 
-func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (*store.Resource, error) {
+func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) error {
 	set, args := []string{}, []any{}
 
 	if v := update.UID; v != nil {
@@ -130,26 +156,20 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (
 	if v := update.Filename; v != nil {
 		set, args = append(set, "`filename` = ?"), append(args, *v)
 	}
-	if v := update.InternalPath; v != nil {
-		set, args = append(set, "`internal_path` = ?"), append(args, *v)
-	}
-	if v := update.ExternalLink; v != nil {
-		set, args = append(set, "`external_link` = ?"), append(args, *v)
-	}
 	if v := update.MemoID; v != nil {
 		set, args = append(set, "`memo_id` = ?"), append(args, *v)
-	}
-	if v := update.Blob; v != nil {
-		set, args = append(set, "`blob` = ?"), append(args, v)
 	}
 
 	args = append(args, update.ID)
 	stmt := "UPDATE `resource` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
-	if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
-		return nil, err
+	result, err := d.db.ExecContext(ctx, stmt, args...)
+	if err != nil {
+		return err
 	}
-
-	return d.GetResource(ctx, &store.FindResource{ID: &update.ID})
+	if _, err := result.RowsAffected(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (d *DB) DeleteResource(ctx context.Context, delete *store.DeleteResource) error {
@@ -159,21 +179,6 @@ func (d *DB) DeleteResource(ctx context.Context, delete *store.DeleteResource) e
 		return err
 	}
 	if _, err := result.RowsAffected(); err != nil {
-		return err
-	}
-
-	if err := d.Vacuum(ctx); err != nil {
-		// Prevent linter warning.
-		return err
-	}
-
-	return nil
-}
-
-func vacuumResource(ctx context.Context, tx *sql.Tx) error {
-	stmt := "DELETE FROM `resource` WHERE `creator_id` NOT IN (SELECT `id` FROM `user`)"
-	_, err := tx.ExecContext(ctx, stmt)
-	if err != nil {
 		return err
 	}
 

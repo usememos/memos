@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"context"
-	"database/sql"
 	"strings"
 
 	"github.com/usememos/memos/store"
@@ -99,16 +98,6 @@ func (d *DB) DeleteMemoRelation(ctx context.Context, delete *store.DeleteMemoRel
 		return err
 	}
 	if _, err = result.RowsAffected(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func vacuumMemoRelations(ctx context.Context, tx *sql.Tx) error {
-	if _, err := tx.ExecContext(ctx, `
-		DELETE FROM memo_relation
-		WHERE memo_id NOT IN (SELECT id FROM memo) OR related_memo_id NOT IN (SELECT id FROM memo)
-	`); err != nil {
 		return err
 	}
 	return nil

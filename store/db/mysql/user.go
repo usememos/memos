@@ -160,11 +160,5 @@ func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) error {
 	if _, err := result.RowsAffected(); err != nil {
 		return err
 	}
-
-	if err := d.Vacuum(ctx); err != nil {
-		// Prevent linter warning.
-		return err
-	}
-
 	return nil
 }
