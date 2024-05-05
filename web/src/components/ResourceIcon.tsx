@@ -27,7 +27,7 @@ const ResourceIcon = (props: Props) => {
     return (
       <SquareDiv className={clsx(className, "flex items-center justify-center overflow-clip")}>
         <img
-          className="min-w-full min-h-full object-cover border rounded dark:border-none"
+          className="min-w-full min-h-full object-cover"
           src={resource.externalLink ? resourceUrl : resourceUrl + "?thumbnail=1"}
           onClick={() => showPreviewImageDialog(resourceUrl)}
           decoding="async"

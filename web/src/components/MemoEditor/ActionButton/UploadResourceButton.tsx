@@ -66,7 +66,7 @@ const UploadResourceButton = () => {
 
   return (
     <IconButton size="sm">
-      <Icon.Image className="w-5 h-5 mx-auto" />
+      <Icon.Paperclip className="w-5 h-5 mx-auto" />
       <input
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         ref={fileInputRef}
