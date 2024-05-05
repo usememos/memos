@@ -137,13 +137,7 @@ func (s *APIV1Service) RenameTag(ctx context.Context, request *v1pb.RenameTagReq
 }
 
 func (s *APIV1Service) DeleteTag(ctx context.Context, request *v1pb.DeleteTagRequest) (*emptypb.Empty, error) {
-	userID, err := ExtractUserIDFromName(request.Tag.Creator)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
-	}
-	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
-	})
+	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}

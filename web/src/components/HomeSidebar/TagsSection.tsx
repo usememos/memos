@@ -130,6 +130,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       dialogName: "delete-tag-dialog",
       onConfirm: async () => {
         await tagStore.deleteTag(tag.text);
+        tagStore.fetchTags({ skipCache: true });
       },
     });
   };
