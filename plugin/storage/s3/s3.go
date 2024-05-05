@@ -15,10 +15,6 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
-// presignLifetimeSecs is the lifetime of a presigned URL in seconds.
-// The presigned URL is valid for 7 days.
-const presignLifetimeSecs = 7 * 24 * 60 * 60
-
 type Client struct {
 	Client *s3.Client
 	Bucket *string
@@ -74,7 +70,7 @@ func (c *Client) PresignGetObject(ctx context.Context, key string) (string, erro
 		Bucket: aws.String(*c.Bucket),
 		Key:    aws.String(key),
 	}, func(opts *s3.PresignOptions) {
-		opts.Expires = time.Duration(presignLifetimeSecs * int64(time.Second))
+		opts.Expires = time.Duration(7 * 24 * time.Hour)
 	})
 	if err != nil {
 		return "", errors.Wrap(err, "failed to presign put object")

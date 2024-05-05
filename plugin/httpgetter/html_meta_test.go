@@ -1,4 +1,4 @@
-package getter
+package httpgetter
 
 import (
 	"testing"

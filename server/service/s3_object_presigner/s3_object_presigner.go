@@ -53,8 +53,9 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) {
 		}
 
 		if s3ObjectPayload.LastPresignedTime != nil {
-			// Skip if the presigned URL is still valid.
-			if time.Now().Before(s3ObjectPayload.LastPresignedTime.AsTime().Add(24 * time.Hour)) {
+			// Skip if the presigned URL is still valid for the next 6 days.
+			// The default expiration time is 7 days.
+			if time.Now().Before(s3ObjectPayload.LastPresignedTime.AsTime().Add(6 * 24 * time.Hour)) {
 				continue
 			}
 		}
