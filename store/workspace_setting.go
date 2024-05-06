@@ -123,6 +123,11 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 	return workspaceGeneralSetting, nil
 }
 
+const (
+	// DefaultContentLengthLimit is the default limit of content length in bytes. 8KB.
+	DefaultContentLengthLimit = 8 * 1024
+)
+
 func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.WorkspaceMemoRelatedSetting, error) {
 	workspaceSetting, err := s.GetWorkspaceSetting(ctx, &FindWorkspaceSetting{
 		Name: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED.String(),
@@ -134,6 +139,9 @@ func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.Wo
 	workspaceMemoRelatedSetting := &storepb.WorkspaceMemoRelatedSetting{}
 	if workspaceSetting != nil {
 		workspaceMemoRelatedSetting = workspaceSetting.GetMemoRelatedSetting()
+	}
+	if workspaceMemoRelatedSetting.ContentLengthLimit < DefaultContentLengthLimit {
+		workspaceMemoRelatedSetting.ContentLengthLimit = DefaultContentLengthLimit
 	}
 	return workspaceMemoRelatedSetting, nil
 }

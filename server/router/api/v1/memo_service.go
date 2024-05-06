@@ -27,9 +27,7 @@ import (
 )
 
 const (
-	DefaultPageSize  = 10
-	MaxContentLength = 8 * 1024
-	ChunkSize        = 64 * 1024 // 64 KiB
+	DefaultPageSize = 10
 )
 
 func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoRequest) (*v1pb.Memo, error) {
@@ -39,9 +37,6 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-	if len(request.Content) > MaxContentLength {
-		return nil, status.Errorf(codes.InvalidArgument, "content too long")
 	}
 
 	create := &store.Memo{
@@ -56,6 +51,13 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	}
 	if workspaceMemoRelatedSetting.DisallowPublicVisible && create.Visibility == store.Public {
 		return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
+	}
+	contentLengthLimit, err := s.getContentLengthLimit(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get content length limit")
+	}
+	if len(create.Content) > contentLengthLimit {
+		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
 	}
 
 	memo, err := s.Store.CreateMemo(ctx, create)
@@ -257,8 +259,12 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			}
 		}
 	}
-	if update.Content != nil && len(*update.Content) > MaxContentLength {
-		return nil, status.Errorf(codes.InvalidArgument, "content too long")
+	contentLengthLimit, err := s.getContentLengthLimit(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get content length limit")
+	}
+	if update.Content != nil && len(*update.Content) > contentLengthLimit {
+		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
 	}
 
 	if err = s.Store.UpdateMemo(ctx, update); err != nil {
@@ -700,6 +706,14 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		find.OrderByUpdatedTs = true
 	}
 	return nil
+}
+
+func (s *APIV1Service) getContentLengthLimit(ctx context.Context) (int, error) {
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return 0, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+	}
+	return int(workspaceMemoRelatedSetting.ContentLengthLimit), nil
 }
 
 // SearchMemosFilterCELAttributes are the CEL attributes.

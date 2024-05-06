@@ -2096,6 +2096,10 @@ definitions:
       displayWithUpdateTime:
         type: boolean
         description: display_with_update_time orders and displays memo with update time.
+      contentLengthLimit:
+        type: string
+        format: int64
+        description: content_length_limit is the limit of content length.
   apiv1WorkspaceSetting:
     type: object
     properties:

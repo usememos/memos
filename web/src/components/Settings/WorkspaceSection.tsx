@@ -144,6 +144,20 @@ const WorkspaceSection = () => {
     });
   };
 
+  const handleMemoContentLengthLimitChanges = async (value: number) => {
+    if (value < 8 * 1024) {
+      toast.error("Content length limit should be greater than 8KB");
+      return;
+    }
+
+    const update: WorkspaceMemoRelatedSetting = { ...workspaceMemoRelatedSetting, contentLengthLimit: value };
+    setWorkspaceMemoRelatedSetting(update);
+    await workspaceSettingStore.setWorkspaceSetting({
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED}`,
+      memoRelatedSetting: update,
+    });
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
@@ -179,10 +193,6 @@ const WorkspaceSection = () => {
         </div>
         <Input
           className="w-full"
-          sx={{
-            fontFamily: "monospace",
-            fontSize: "14px",
-          }}
           placeholder={"Should be started with http:// or https://"}
           value={workspaceGeneralSetting.instanceUrl}
           onChange={(event) => handleInstanceUrlChanged(event.target.value)}
@@ -261,6 +271,15 @@ const WorkspaceSection = () => {
         <Switch
           checked={workspaceMemoRelatedSetting.displayWithUpdateTime}
           onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>Content length limit(Byte)</span>
+        <Input
+          className="w-32"
+          type="number"
+          defaultValue={workspaceMemoRelatedSetting.contentLengthLimit}
+          onBlur={(event) => handleMemoContentLengthLimitChanges(Number(event.target.value))}
         />
       </div>
     </div>

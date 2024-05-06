@@ -211,6 +211,7 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 	return &v1pb.WorkspaceMemoRelatedSetting{
 		DisallowPublicVisible: setting.DisallowPublicVisible,
 		DisplayWithUpdateTime: setting.DisplayWithUpdateTime,
+		ContentLengthLimit:    setting.ContentLengthLimit,
 	}
 }
 
@@ -221,5 +222,6 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 	return &storepb.WorkspaceMemoRelatedSetting{
 		DisallowPublicVisible: setting.DisallowPublicVisible,
 		DisplayWithUpdateTime: setting.DisplayWithUpdateTime,
+		ContentLengthLimit:    setting.ContentLengthLimit,
 	}
 }
