@@ -12,7 +12,7 @@
     "@emotion/styled": "^11.11.5",
     "@github/relative-time-element": "^4.4.0",
     "@matejmazur/react-katex": "^3.1.3",
-    "@mui/joy": "5.0.0-beta.32",
+    "@mui/joy": "5.0.0-beta.36",
     "@reduxjs/toolkit": "^2.2.3",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
