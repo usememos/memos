@@ -1,7 +1,5 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
-import { useEffect, useState } from "react";
 import useDebounce from "react-use/lib/useDebounce";
-import useToggle from "react-use/lib/useToggle";
 import { useFilterStore } from "@/store/module";
 import { useMemoList, useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
@@ -10,23 +8,13 @@ import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import showRenameTagDialog from "../RenameTagDialog";
 
-interface KVObject<T = any> {
-  [key: string]: T;
-}
-
-interface Tag {
-  key: string;
-  text: string;
-  subTags: Tag[];
-}
-
 const TagsSection = () => {
   const t = useTranslate();
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
   const memoList = useMemoList();
   const filter = filterStore.state;
-  const [tags, setTags] = useState<Tag[]>([]);
+  const tags = tagStore.tags;
 
   useDebounce(
     () => {
@@ -36,42 +24,6 @@ const TagsSection = () => {
     [memoList.size()],
   );
 
-  useEffect(() => {
-    const sortedTags = Array.from(tagStore.getState().tags).sort();
-    const root: KVObject<any> = {
-      subTags: [],
-    };
-
-    for (const tag of sortedTags) {
-      const subtags = tag.split("/");
-      let tempObj = root;
-      let tagText = "";
-
-      for (let i = 0; i < subtags.length; i++) {
-        const key = subtags[i];
-        if (i === 0) {
-          tagText += key;
-        } else {
-          tagText += "/" + key;
-        }
-
-        let obj = tempObj.subTags.find((t: Tag) => t.text === tagText);
-        if (!obj) {
-          obj = {
-            key,
-            text: tagText,
-            subTags: [],
-          };
-          tempObj.subTags.push(obj);
-        }
-
-        tempObj = obj;
-      }
-    }
-
-    setTags(root.subTags as Tag[]);
-  }, [tagStore.getState().tags]);
-
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-start items-center w-full">
@@ -79,10 +31,10 @@ const TagsSection = () => {
           {t("common.tags")}
         </span>
       </div>
-      {tags.length > 0 ? (
+      {tags.size > 0 ? (
         <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap gap-2 mt-1">
-          {tags.map((t, idx) => (
-            <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
+          {Array.from(tags).map((tag) => (
+            <TagItemContainer key={tag} tag={tag} tagQuery={filter.tag} />
           ))}
         </div>
       ) : (
@@ -96,7 +48,7 @@ const TagsSection = () => {
 };
 
 interface TagItemContainerProps {
-  tag: Tag;
+  tag: string;
   tagQuery?: string;
 }
 
@@ -105,21 +57,14 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
   const { tag, tagQuery } = props;
-  const isActive = tagQuery === tag.text;
-  const hasSubTags = tag.subTags.length > 0;
-  const [showSubTags, toggleSubTags] = useToggle(false);
+  const isActive = tagQuery === tag;
 
   const handleTagClick = () => {
     if (isActive) {
       filterStore.setTagFilter(undefined);
     } else {
-      filterStore.setTagFilter(tag.text);
+      filterStore.setTagFilter(tag);
     }
-  };
-
-  const handleToggleBtnClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    toggleSubTags();
   };
 
   const handleDeleteTag = async () => {
@@ -129,7 +74,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       style: "danger",
       dialogName: "delete-tag-dialog",
       onConfirm: async () => {
-        await tagStore.deleteTag(tag.text);
+        await tagStore.deleteTag(tag);
         tagStore.fetchTags({ skipCache: true });
       },
     });
@@ -151,7 +96,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
               </div>
             </MenuButton>
             <Menu size="sm" placement="bottom">
-              <MenuItem onClick={() => showRenameTagDialog({ tag: tag.text })}>
+              <MenuItem onClick={() => showRenameTagDialog({ tag: tag })}>
                 <Icon.Edit3 className="w-4 h-auto" />
                 {t("common.rename")}
               </MenuItem>
@@ -162,31 +107,10 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
             </Menu>
           </Dropdown>
           <span className="truncate cursor-pointer hover:opacity-80" onClick={handleTagClick}>
-            {tag.key}
+            {tag}
           </span>
         </div>
-        <div className="flex flex-row justify-end items-center">
-          {hasSubTags ? (
-            <span
-              className={`flex flex-row justify-center items-center w-6 h-6 shrink-0 transition-all rotate-0 ${showSubTags && "rotate-90"}`}
-              onClick={handleToggleBtnClick}
-            >
-              <Icon.ChevronRight className="w-5 h-5 cursor-pointer opacity-40 dark:text-gray-400" />
-            </span>
-          ) : null}
-        </div>
       </div>
-      {hasSubTags ? (
-        <div
-          className={`w-[calc(100%-0.5rem)] flex flex-col justify-start items-start h-auto ml-2 pl-2 border-l-2 border-l-gray-200 dark:border-l-zinc-800 ${
-            !showSubTags && "!hidden"
-          }`}
-        >
-          {tag.subTags.map((st, idx) => (
-            <TagItemContainer key={st.text + "-" + idx} tag={st} tagQuery={tagQuery} />
-          ))}
-        </div>
-      ) : null}
     </>
   );
 };
