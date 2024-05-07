@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { absolutifyLink } from "@/helpers/utils";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
 import MemoResource from "./MemoResource";
@@ -28,7 +27,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
     showPreviewImageDialog(imgUrls, index);
   };
 
-  const MediaCard = ({ resource, thumbnail }: { resource: Resource; thumbnail?: boolean }) => {
+  const MediaCard = ({ resource }: { resource: Resource }) => {
     const type = getResourceType(resource);
     const url = getResourceUrl(resource);
 
@@ -36,7 +35,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
       return (
         <img
           className="cursor-pointer min-h-full w-auto object-cover"
-          src={resource.externalLink ? url : `${url}${thumbnail ? "?thumbnail=1" : ""}`}
+          src={url}
           onClick={() => handleImageClick(url)}
           decoding="async"
           loading="lazy"
@@ -48,7 +47,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
           className="cursor-pointer w-full h-full object-contain bg-zinc-100 dark:bg-zinc-800"
           preload="metadata"
           crossOrigin="anonymous"
-          src={absolutifyLink(url)}
+          src={url}
           controls
         />
       );
@@ -73,7 +72,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
         key={resource.name}
         className="flex justify-center items-center border dark:border-zinc-900 rounded overflow-hidden hide-scrollbar hover:shadow-md"
       >
-        <MediaCard resource={resource} thumbnail />
+        <MediaCard resource={resource} />
       </SquareDiv>
     ));
 

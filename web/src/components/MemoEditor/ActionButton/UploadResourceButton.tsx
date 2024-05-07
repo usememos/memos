@@ -38,12 +38,7 @@ const UploadResourceButton = () => {
       if (!fileInputRef.current || !fileInputRef.current.files) {
         return;
       }
-      const filesOnInput = Array.from(fileInputRef.current.files);
       for (const file of fileInputRef.current.files) {
-        const fileOnInput = filesOnInput.find((fileOnInput) => fileOnInput.name === file.name);
-        if (!fileOnInput) {
-          continue;
-        }
         const { name: filename, size, type } = file;
         const buffer = new Uint8Array(await file.arrayBuffer());
         const resource = await resourceStore.createResource({
@@ -65,7 +60,7 @@ const UploadResourceButton = () => {
   };
 
   return (
-    <IconButton size="sm">
+    <IconButton size="sm" disabled={state.uploadingFlag}>
       <Icon.Paperclip className="w-5 h-5 mx-auto" />
       <input
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
