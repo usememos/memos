@@ -69,10 +69,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	// Create and register RSS routes.
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
-	grpcServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
-		apiv1.NewLoggerInterceptor().LoggerInterceptor,
-		apiv1.NewGRPCAuthInterceptor(store, secret).AuthenticationInterceptor,
-	))
+	grpcServer := grpc.NewServer(
+		// Override the maximum receiving message size to 100M for uploading large resources.
+		grpc.MaxRecvMsgSize(100*1024*1024),
+		grpc.ChainUnaryInterceptor(
+			apiv1.NewLoggerInterceptor().LoggerInterceptor,
+			apiv1.NewGRPCAuthInterceptor(store, secret).AuthenticationInterceptor,
+		))
 	s.grpcServer = grpcServer
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, grpcServer)
