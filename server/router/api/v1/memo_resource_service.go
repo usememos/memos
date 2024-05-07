@@ -73,7 +73,7 @@ func (s *APIV1Service) ListMemoResources(ctx context.Context, request *v1pb.List
 		MemoID: &id,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list resources")
+		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)
 	}
 
 	response := &v1pb.ListMemoResourcesResponse{

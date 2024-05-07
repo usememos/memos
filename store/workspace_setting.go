@@ -69,6 +69,9 @@ func (s *Store) ListWorkspaceSettings(ctx context.Context, find *FindWorkspaceSe
 		if err != nil {
 			return nil, errors.Wrap(err, "Failed to convert workspace setting")
 		}
+		if workspaceSetting == nil {
+			continue
+		}
 		s.workspaceSettingCache.Store(workspaceSetting.Key.String(), workspaceSetting)
 		workspaceSettings = append(workspaceSettings, workspaceSetting)
 	}
@@ -206,7 +209,8 @@ func convertWorkspaceSettingFromRaw(workspaceSettingRaw *WorkspaceSetting) (*sto
 		}
 		workspaceSetting.Value = &storepb.WorkspaceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
 	default:
-		return nil, errors.Errorf("unsupported workspace setting key: %v", workspaceSettingRaw.Name)
+		// Skip unsupported workspace setting key.
+		return nil, nil
 	}
 	return workspaceSetting, nil
 }
