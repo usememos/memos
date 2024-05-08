@@ -138,7 +138,8 @@
   "reference": {
     "add-references": "Adicionar referências",
     "embedded-usage": "Usar como Conteúdo Embutido",
-    "no-memos-found": "Nenhum memo encontrado"
+    "no-memos-found": "Nenhum memo encontrado",
+    "search-placeholder": "Pesquisar conteúdo"
   },
   "resource": {
     "clear": "Limpar",
@@ -298,7 +299,7 @@
     "all-tags": "Todas as Tags",
     "create-tag": "Criar Tag",
     "create-tags-guide": "Você pode criar tags inserindo `#tag`.",
-    "delete-confirm": "Tem certeza de que deseja excluir esta tag?",
+    "delete-confirm": "Tem certeza de que deseja excluir esta tag?\\nTodos os memos relacionados serão arquivados.",
     "delete-tag": "Excluir Tag",
     "no-tag-found": "Nenhuma tag encontrada"
   },
