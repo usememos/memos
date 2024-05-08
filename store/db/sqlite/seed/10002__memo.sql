@@ -3,14 +3,16 @@ INSERT INTO
     `id`,
     `uid`,
     `content`,
-    `creator_id`
+    `creator_id`,
+    `tags`
   )
 VALUES
   (
     1,
     "FqaZcg5H6EdGB9ke8kYUcy",
     "#Hello 👋 Welcome to memos.",
-    101
+    101,
+    '["Hello"]'
   );
 
 INSERT INTO
@@ -19,7 +21,8 @@ INSERT INTO
     `uid`,
     `content`,
     `creator_id`,
-    `visibility`
+    `visibility`,
+    `tags`
   )
 VALUES
   (
@@ -30,7 +33,8 @@ VALUES
 - [x] Clean the room;
 - [ ] Read *📖 The Little Prince*;',
     101,
-    'PROTECTED'
+    'PROTECTED',
+    '["TODO"]'
   );
 
 INSERT INTO
@@ -57,7 +61,8 @@ INSERT INTO
     `uid`,
     `content`,
     `creator_id`,
-    `visibility`
+    `visibility`,
+    `tags`
   )
 VALUES
   (
@@ -68,7 +73,8 @@ VALUES
 - [ ] Clean the classroom;
 - [ ] Watch *👦 The Boys*;',
     102,
-    'PROTECTED'
+    'PROTECTED',
+    '["TODO"]'
   );
 
 INSERT INTO
