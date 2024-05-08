@@ -78,15 +78,8 @@
     "any-thoughts": "Ein Gedanke...",
     "save": "Speichern"
   },
-  "embed-memo": {
-    "copy": "Kopieren",
-    "only-public-supported": "* Nur öffentliche Notizen können eingebettet werden.",
-    "text": "Kopiere den unten stehenden Code und füge diesen in deinen Blog oder deine Website ein.",
-    "title": "Memo einbetten"
-  },
   "memo": {
     "archived-at": "Archiviert am",
-    "archived-memos": "Archivierte Memos",
     "comment": {
       "no-comment": "Kein Kommentar",
       "self": "Kommentare"
@@ -109,39 +102,16 @@
   },
   "message": {
     "change-memo-created-time": "Erstellungszeitpunkt ändern",
-    "change-resource-filename": "Dateinamen der Ressource ändern",
-    "click-to-save-the-image": "Klicken um Bild zu speichern",
     "copied": "Kopiert",
-    "count-selected-resources": "Insgesamt markiert",
     "fill-all": "Bitte alle Felder ausfüllen.",
-    "fill-form": "Bitte das Formular ausfüllen",
-    "fill-server-name": "Bitte Servernamen ausfüllen",
-    "generating-the-screenshot": "Erstelle Screenshot…",
-    "image-load-failed": "Laden des Bildes fehlgeschlagen",
-    "invalid-created-datetime": "Ungültiger Erstellungszeitpunkt",
-    "invalid-resource-filename": "Ungültiger Dateiname.",
-    "login-failed": "Anmeldung fehlgeschlagen",
     "maximum-upload-size-is": "Die maximal zulässige Upload-Größe beträgt {{size}} MiB",
     "memo-not-found": "Memo nicht gefunden.",
-    "memo-updated-datetime": "Erstellungszeitpunkt geändert.",
-    "memos-ready": "Alle Memos geladen",
     "new-password-not-match": "Neue Passwörter stimmen nicht überein.",
     "no-data": "Keine Daten gefunden,.",
     "password-changed": "Passwort geändert",
     "password-not-match": "Passwörter stimmen nicht überein",
-    "private-only": "Dieses Memo ist privat.",
-    "resource-filename-updated": "Dateiname der Ressource geändert.",
-    "resource-ready": "Alle Ressourcen geladen",
     "restored-successfully": "Erfolgreich wiederhergestellt",
-    "signup-failed": "Registrierung fehlgeschlagen",
-    "succeed-copy-code": "Code in die Zwischenablage kopieren.",
-    "succeed-copy-content": "Inhalt erfolgreich kopiert",
     "succeed-copy-link": "Link erfolgreich kopiert",
-    "succeed-copy-resource-link": "Link zur Ressource wurde erfolgreich kopiert",
-    "succeed-update-additional-script": "Zusätzliches Skript wurde erfolgreich aktualisiert",
-    "succeed-update-additional-style": "Zusätzlicher Stil wurde erfolgreich aktualisiert",
-    "succeed-update-customized-profile": "Server-Einstlelungen wurden erfolgreich gespeichert",
-    "succeed-vacuum-database": "Aufräumen der Datenbank erfolgreich",
     "update-succeed": "Update erfolgreich",
     "user-not-found": "Nutzer nicht gefunden"
   },
@@ -175,11 +145,7 @@
     "no-unused-resources": "Keine ungenutzten Ressourcen",
     "reset-link": "Link zurücksetzen",
     "reset-link-prompt": "Bist du sicher, dass du diesen Link zurücksetzen möchtest?\nDadurch werden alle aktuellen Linkverwendungen ungültig.\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
-    "reset-resource-link": "Ressourcen-Link zurücksetzen",
-    "search-bar-placeholder": "Ressource suchen",
-    "upload-successfully": "Upload erfolgreich",
-    "warning-text": "Möchtest du diese Ressource wirklich löschen? \n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
-    "warning-text-unused": "Möchtest du diese ungenutzte Ressource wirklich löschen? \n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN"
+    "reset-resource-link": "Ressourcen-Link zurücksetzen"
   },
   "router": {
     "back-to-top": "Zurück nach oben",

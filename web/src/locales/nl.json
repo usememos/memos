@@ -78,15 +78,8 @@
     "any-thoughts": "Leeg je gedachten...",
     "save": "Opslaan"
   },
-  "embed-memo": {
-    "copy": "Kopieer",
-    "only-public-supported": "* alleen openbare memos kunnen ingesloten worden",
-    "text": "Kopieer en plak onderstaande code op je eigen website",
-    "title": "Memo insluiten"
-  },
   "memo": {
     "archived-at": "Gearchiveerd op",
-    "archived-memos": "Gearchiveerde memos",
     "comment": {
       "no-comment": "Geen opmerking",
       "self": "Opmerkingen"
@@ -109,36 +102,15 @@
   },
   "message": {
     "change-memo-created-time": "Tijd van aanmaken wijzigen",
-    "change-resource-filename": "Bestandsnaam van bron wijzigen",
-    "click-to-save-the-image": "Klik om de afbeelding op te slaan",
     "copied": "Gekopieerd",
-    "count-selected-resources": "Totaal geselecteerd",
     "fill-all": "Vul alsjeblieft alle velden in.",
-    "fill-form": "Vul alsjeblieft het formulier in.",
-    "generating-the-screenshot": "Screenshot genereren...",
-    "image-load-failed": "Afbeelding laden mislukt",
-    "invalid-created-datetime": "Onjuiste tijd van aanmaken.",
-    "invalid-resource-filename": "Onjuiste bestandsnaam.",
-    "login-failed": "Inloggen mislukt",
     "memo-not-found": "Memo niet gevonden.",
-    "memo-updated-datetime": "Tijd van aanmaken gewijzigd.",
-    "memos-ready": "alle memos zijn geladen 🎉",
     "new-password-not-match": "Nieuwe wachtwoorden komen niet overeen.",
     "no-data": "Geen data gevonden.",
     "password-changed": "Wachtwoord gewijzigd.",
     "password-not-match": "Wachtwoorden komen niet overeen.",
-    "private-only": "Deze memo is privé.",
-    "resource-filename-updated": "Bestandsnaam van bron gewijzigd.",
     "restored-successfully": "Succesvol teruggezet",
-    "signup-failed": "Registreren mislukt",
-    "succeed-copy-code": "Code gekopieërd naar klembord.",
-    "succeed-copy-content": "Inhoud gekopieerd naar klembord.",
     "succeed-copy-link": "Link gekopieërd naar klembord.",
-    "succeed-copy-resource-link": "Link naar bron gekopieërd naar klembord.",
-    "succeed-update-additional-script": "Optioneel script bijgewerkt.",
-    "succeed-update-additional-style": "Optionele stijl bijgewerkt",
-    "succeed-update-customized-profile": "Profiel bijgewerkt.",
-    "succeed-vacuum-database": "Succeed to vacuum database",
     "update-succeed": "Update voltooid",
     "user-not-found": "Gebruiker niet gevonden"
   },
@@ -151,9 +123,7 @@
     "no-resources": "Geen bronnen.",
     "no-unused-resources": "Geen ongebruikte bronnen",
     "reset-link": "Link resetten",
-    "reset-resource-link": "Link resetten",
-    "warning-text": "Weet je zeker dat je deze bron wilt verwijderen? Deze actie is NIET terug te draaien!",
-    "warning-text-unused": "Weet je zeker dat je deze ongebruikte bron wilt verwijderen? Deze actie is NIET terug te draaien!"
+    "reset-resource-link": "Link resetten"
   },
   "router": {
     "back-to-top": "Terug naar boven",

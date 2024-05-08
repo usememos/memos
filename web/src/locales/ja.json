@@ -89,19 +89,12 @@
     "any-thoughts": "今思ったことは...",
     "save": "保存"
   },
-  "embed-memo": {
-    "copy": "コピー",
-    "only-public-supported": "公開メモのみ埋め込みできます",
-    "text": "コードをあなたのサイズにコピーペーストすればメモを埋め込めます",
-    "title": "メモを埋め込む"
-  },
   "inbox": {
     "memo-comment": "{{user}} があなたの {{memo}} にコメントしました。",
     "version-update": "新しいバージョン {{version}} が利用可能です!"
   },
   "memo": {
     "archived-at": "アーカイブ:",
-    "archived-memos": "メモをアーカイブする",
     "comment": {
       "no-comment": "コメントなし",
       "self": "コメント"
@@ -125,40 +118,16 @@
   },
   "message": {
     "change-memo-created-time": "メモの作成時間が変更されました。",
-    "change-resource-filename": "ファイルの名前を変更する",
-    "click-to-save-the-image": "クリックしてこの画像を保存します",
     "copied": "コピーしました！",
-    "count-selected-resources": "選択された項目の合計",
     "fill-all": "すべての項目を入力してください。",
-    "fill-form": "このフォームに必須事項を入力してください。",
-    "fill-server-name": "サーバーの名前を入力してください。",
-    "generating-the-screenshot": "スクリーンショットを生成中",
-    "image-load-failed": "画像の読み込みに失敗しました",
-    "invalid-created-datetime": "作成された日付が無効です。",
-    "invalid-resource-filename": "無効な名前です。",
-    "login-failed": "ログイン失敗",
     "maximum-upload-size-is": "ファイルの最大サイズは{{size}} MiBです。",
     "memo-not-found": "メモは見つかりませんでした",
-    "memo-updated-datetime": "メモの作成日時が変更されました。",
-    "memos-ready": "これですべてのメモを閲覧できました🎉",
     "new-password-not-match": "新しいパスワードが一致しません",
     "no-data": "ファイルが見つかりませんでした。",
     "password-changed": "パスワードを変更しました。",
     "password-not-match": "パスワードが一致しません。",
-    "private-only": "このメモは非公開です。",
-    "resource-filename-updated": "ファイルの名前を変更しました。",
-    "resource-ready": "これですべてのファイルを閲覧できました🎉",
     "restored-successfully": "リストア成功",
-    "signup-failed": "登録失敗",
-    "succeed-copy-code": "コードのコピーに成功しました",
-    "succeed-copy-content": "コンテンツのコピーに成功しました",
     "succeed-copy-link": "リンクのコピーに成功しました",
-    "succeed-copy-link-not-public": "リンクのコピーに成功しました。このメモはサインアウトした状態で閲覧できません。",
-    "succeed-copy-resource-link": "ファイルリンクのコピーに成功しました。",
-    "succeed-update-additional-script": "追加スクリプトの保存に成功しました",
-    "succeed-update-additional-style": "追加CSSの保存に成功しました。",
-    "succeed-update-customized-profile": "プロフィール変更の保存に成功しました",
-    "succeed-vacuum-database": "データベースの初期化に成功しました",
     "update-succeed": "変更は保存されました。",
     "user-not-found": "ユーザーが見つかりませんでした"
   },
@@ -195,11 +164,7 @@
     "no-unused-resources": "未使用のファイルはありません。",
     "reset-link": "リンクをリセット",
     "reset-link-prompt": "本当にリンクをリセットしますか？\n実行すると既存のリンクは無効化されます。\n\n実行後の復元は不可能です。",
-    "reset-resource-link": "リンクをリセットする",
-    "search-bar-placeholder": "ファイルを検索する",
-    "upload-successfully": "アップロードされました",
-    "warning-text": "本当にファイルを削除しますか?\n\n実行すると取り消せません。",
-    "warning-text-unused": "本当に未使用のファイルを削除しますか？\n\n実行すると取り消せません。"
+    "reset-resource-link": "リンクをリセットする"
   },
   "router": {
     "back-to-top": "トップに戻る",
