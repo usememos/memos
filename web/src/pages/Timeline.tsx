@@ -1,6 +1,6 @@
-import { Button, Divider, IconButton } from "@mui/joy";
+import { Button, IconButton } from "@mui/joy";
 import clsx from "clsx";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ActivityCalendar from "@/components/ActivityCalendar";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
@@ -11,38 +11,13 @@ import MobileHeader from "@/components/MobileHeader";
 import { TimelineSidebar, TimelineSidebarDrawer } from "@/components/TimelineSidebar";
 import { memoServiceClient } from "@/grpcweb";
 import { DAILY_TIMESTAMP, DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
-import { getNormalizedTimeString, getTimeStampByDate } from "@/helpers/datetime";
+import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
 import { useMemoList, useMemoStore } from "@/store/v1";
-import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
-
-interface GroupedByMonthItem {
-  // Format: 2021-1
-  month: string;
-  data: Record<string, number>;
-  memos: Memo[];
-}
-
-const groupByMonth = (dateCountMap: Record<string, number>, memos: Memo[]): GroupedByMonthItem[] => {
-  const groupedByMonth: GroupedByMonthItem[] = [];
-
-  Object.entries(dateCountMap).forEach(([date, count]) => {
-    const month = date.split("-").slice(0, 2).join("-");
-    const existingMonth = groupedByMonth.find((group) => group.month === month);
-    if (existingMonth) {
-      existingMonth.data[date] = count;
-    } else {
-      const monthMemos = memos.filter((memo) => getNormalizedTimeString(memo.displayTime).startsWith(month));
-      groupedByMonth.push({ month, data: { [date]: count }, memos: monthMemos });
-    }
-  });
-
-  return groupedByMonth.filter((group) => group.memos.length > 0).sort((a, b) => getTimeStampByDate(b.month) - getTimeStampByDate(a.month));
-};
 
 const Timeline = () => {
   const t = useTranslate();
@@ -50,19 +25,24 @@ const Timeline = () => {
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
+  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
-  const [selectedDay, setSelectedDay] = useState<string | undefined>();
+  const [selectedDateString, setSelectedDateString] = useState<string>(new Date().toDateString());
   const [isRequesting, setIsRequesting] = useState(true);
   const nextPageTokenRef = useRef<string | undefined>(undefined);
-  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
-  const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
-  const groupedByMonth = groupByMonth(activityStats, sortedMemos);
+  const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(a.displayTime) - getTimeStampByDate(b.displayTime));
+  const monthString = new Date(selectedDateString).getFullYear() + "-" + (new Date(selectedDateString).getMonth() + 1);
 
   useEffect(() => {
+    setIsRequesting(true);
     nextPageTokenRef.current = undefined;
-    memoList.reset();
-    fetchMemos();
-  }, [selectedDay, tagQuery, textQuery]);
+    setTimeout(async () => {
+      memoList.reset();
+      const nextPageToken = await fetchMemos();
+      nextPageTokenRef.current = nextPageToken;
+      setIsRequesting(false);
+    });
+  }, [selectedDateString, tagQuery, textQuery]);
 
   useEffect(() => {
     (async () => {
@@ -82,7 +62,15 @@ const Timeline = () => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         filter: filters.join(" && "),
       });
-      setActivityStats(stats);
+
+      setActivityStats(
+        Object.fromEntries(
+          Object.entries(stats).filter(([date]) => {
+            const d = new Date(date);
+            return `${d.getFullYear()}-${d.getMonth() + 1}` === monthString;
+          }),
+        ),
+      );
     })();
   }, [sortedMemos.length]);
 
@@ -98,20 +86,18 @@ const Timeline = () => {
     if (tagQuery) {
       filters.push(`tag == "${tagQuery}"`);
     }
-    if (selectedDay) {
-      const selectedDateStamp = getTimeStampByDate(selectedDay) + new Date().getTimezoneOffset() * 60 * 1000;
+    if (selectedDateString) {
+      const selectedDateStamp = getTimeStampByDate(selectedDateString);
       filters.push(
         ...[`display_time_after == ${selectedDateStamp / 1000}`, `display_time_before == ${(selectedDateStamp + DAILY_TIMESTAMP) / 1000}`],
       );
     }
-    setIsRequesting(true);
-    const data = await memoStore.fetchMemos({
+    const { nextPageToken } = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
       filter: filters.join(" && "),
       pageToken: nextPageTokenRef.current,
     });
-    setIsRequesting(false);
-    nextPageTokenRef.current = data.nextPageToken;
+    return nextPageToken;
   };
 
   const handleNewMemo = () => {
@@ -132,7 +118,7 @@ const Timeline = () => {
               <div>
                 <div
                   className="py-1 flex flex-row justify-start items-center select-none opacity-80"
-                  onClick={() => setSelectedDay(undefined)}
+                  onClick={() => setSelectedDateString(new Date().toDateString())}
                 >
                   <Icon.GanttChartSquare className="w-6 h-auto mr-1 opacity-80" />
                   <span className="text-lg">{t("timeline.title")}</span>
@@ -145,43 +131,44 @@ const Timeline = () => {
               </div>
             </div>
             <div className="w-full h-auto flex flex-col justify-start items-start">
-              <MemoFilter className="px-2 my-4" />
+              <MemoFilter className="p-2 my-2 rounded-lg dark:bg-zinc-900" />
 
-              {groupedByMonth.map((group, index) => (
-                <Fragment key={group.month}>
-                  <div className={clsx("flex flex-col justify-start items-start w-full mt-2 last:mb-4")}>
-                    <div className={clsx("flex shrink-0 flex-row w-full pl-1 mt-2 mb-2")}>
-                      <div className={clsx("w-full flex flex-col")}>
-                        <span className="font-medium text-3xl leading-tight mb-1">
-                          {new Date(group.month).toLocaleString(i18n.language, { month: "short", timeZone: "UTC" })}
-                        </span>
-                        <span className="opacity-60">{new Date(group.month).getUTCFullYear()}</span>
-                      </div>
-                      <ActivityCalendar month={group.month} data={group.data} onClick={(date) => setSelectedDay(date)} />
-                    </div>
-
-                    <div className={clsx("w-full flex flex-col justify-start items-start")}>
-                      {group.memos.map((memo, index) => (
-                        <div
-                          key={`${memo.name}-${memo.displayTime}`}
-                          className={clsx("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
-                        >
-                          <MemoView className="!border max-w-full !border-gray-100 dark:!border-zinc-700" memo={memo} />
-                          <div className="absolute -left-2 sm:left-2 top-4 h-full">
-                            {index !== group.memos.length - 1 && (
-                              <div className="absolute top-2 left-[7px] h-full w-0.5 bg-gray-200 dark:bg-gray-700 block"></div>
-                            )}
-                            <div className="border-4 rounded-full border-white relative dark:border-zinc-800">
-                              <Icon.Circle className="w-2 h-auto bg-gray-200 text-gray-200 dark:bg-gray-700 dark:text-gray-700 rounded-full" />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+              <div className={clsx("flex flex-col justify-start items-start w-full mt-2 last:mb-4")}>
+                <div className={clsx("flex shrink-0 flex-row w-full pl-1 mt-2 mb-2")}>
+                  <div className={clsx("w-full flex flex-col")}>
+                    <span className="font-medium text-3xl sm:text-4xl">
+                      {new Date(selectedDateString).toLocaleDateString(i18n.language, { month: "short", day: "numeric" })}
+                    </span>
+                    <span className="opacity-60 text-lg">{new Date(monthString).getFullYear()}</span>
                   </div>
-                  {index !== groupedByMonth.length - 1 && <Divider className="w-full !my-4 md:!mb-8 !bg-gray-100 dark:!bg-zinc-700" />}
-                </Fragment>
-              ))}
+                  <ActivityCalendar
+                    month={monthString}
+                    selectedDate={selectedDateString}
+                    data={activityStats}
+                    onClick={(date) => setSelectedDateString(date)}
+                  />
+                </div>
+
+                <div className={clsx("w-full flex flex-col justify-start items-start")}>
+                  {sortedMemos.map((memo, index) => (
+                    <div
+                      key={`${memo.name}-${memo.displayTime}`}
+                      className={clsx("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
+                    >
+                      <MemoView className="!border max-w-full !border-gray-100 dark:!border-zinc-700" memo={memo} />
+                      <div className="absolute -left-2 sm:left-2 top-4 h-full">
+                        {index !== sortedMemos.length - 1 && (
+                          <div className="absolute top-2 left-[7px] h-full w-0.5 bg-gray-200 dark:bg-gray-700 block"></div>
+                        )}
+                        <div className="border-4 rounded-full border-white relative dark:border-zinc-800">
+                          <Icon.Circle className="w-2 h-auto bg-gray-200 text-gray-200 dark:bg-gray-700 dark:text-gray-700 rounded-full" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {isRequesting ? (
                 <div className="flex flex-row justify-center items-center w-full my-4 text-gray-400">
                   <Icon.Loader className="w-4 h-auto animate-spin mr-1" />

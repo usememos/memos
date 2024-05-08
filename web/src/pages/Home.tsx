@@ -33,9 +33,14 @@ const Home = () => {
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
+    setIsRequesting(true);
     nextPageTokenRef.current = undefined;
-    memoList.reset();
-    fetchMemos();
+    setTimeout(async () => {
+      memoList.reset();
+      const nextPageToken = await fetchMemos();
+      nextPageTokenRef.current = nextPageToken;
+      setIsRequesting(false);
+    });
   }, [tagQuery, textQuery]);
 
   const fetchMemos = async () => {
@@ -50,14 +55,12 @@ const Home = () => {
     if (tagQuery) {
       filters.push(`tag == "${tagQuery}"`);
     }
-    setIsRequesting(true);
-    const data = await memoStore.fetchMemos({
+    const { nextPageToken } = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
       filter: filters.join(" && "),
       pageToken: nextPageTokenRef.current,
     });
-    setIsRequesting(false);
-    nextPageTokenRef.current = data.nextPageToken;
+    return nextPageToken;
   };
 
   const handleEditPrevious = useCallback(() => {

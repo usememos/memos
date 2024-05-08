@@ -28,14 +28,5 @@ export const useTagStore = create(
       const { tagAmounts } = await memoServiceClient.listMemoTags({ parent: "memos/-" });
       set({ tagAmounts });
     },
-    deleteTag: async (tagName: string) => {
-      await memoServiceClient.deleteMemoTag({
-        parent: "memos/-",
-        tag: tagName,
-      });
-      const { tagAmounts } = get();
-      delete tagAmounts[tagName];
-      set({ tagAmounts });
-    },
   })),
 );

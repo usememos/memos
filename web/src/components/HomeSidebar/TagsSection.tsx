@@ -94,8 +94,12 @@ const TagContainer: React.FC<TagContainerProps> = (props: TagContainerProps) => 
       style: "danger",
       dialogName: "delete-tag-dialog",
       onConfirm: async () => {
-        await tagStore.deleteTag(tag);
-        tagStore.fetchTags({ skipCache: true });
+        await memoServiceClient.deleteMemoTag({
+          parent: "memos/-",
+          tag: tag,
+        });
+        await tagStore.fetchTags({ skipCache: true });
+        toast.success(t("message.deleted-successfully"));
       },
     });
   };

@@ -4,12 +4,11 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { extractMemoIdFromName, useUserStore } from "@/store/v1";
+import { useUserStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
-import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import Icon from "./Icon";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
@@ -56,12 +55,8 @@ const MemoView: React.FC<Props> = (props: Props) => {
     })();
   }, []);
 
-  const handleGotoMemoDetailPage = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.altKey) {
-      showChangeMemoCreatedTsDialog(extractMemoIdFromName(memo.name));
-    } else {
-      navigateTo(`/m/${memo.uid}`);
-    }
+  const handleGotoMemoDetailPage = () => {
+    navigateTo(`/m/${memo.uid}`);
   };
 
   const handleMemoContentClick = useCallback(async (e: React.MouseEvent) => {
