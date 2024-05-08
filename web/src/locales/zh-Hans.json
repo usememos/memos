@@ -1,13 +1,4 @@
 {
-  "about": {
-    "about-memos": "关于 Memos",
-    "memos-description": "Memos 是一个基于网页的笔记应用程序，您可以使用它来编写、组织和共享笔记。",
-    "no-server-description": "没有为此服务器配置描述。",
-    "other-projects": "其他的项目"
-  },
-  "amount-text": {
-    "memo": "MEMO"
-  },
   "auth": {
     "create-your-account": "创建您的账户",
     "host-tip": "您正在注册为站点管理员。",
@@ -328,7 +319,6 @@
         "locale": "服务器语言环境",
         "title": "自定义服务"
       },
-      "database-file-size": "数据库文件大小",
       "disable-password-login": "禁用密码登录",
       "disable-password-login-final-warning": "如果您知道自己在做什么，请输入 \"CONFIRM\"。",
       "disable-password-login-warning": "所有用户将无法使用密码登录。如果配置的身份提供程序失效，不在数据库中恢复此设置将无法登录。删除身份提供程序时也要格外小心",
@@ -338,8 +328,7 @@
       "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用单点登录和密码登录，请开启密码登录",
       "max-upload-size": "最大上传大小 (MiB)",
       "max-upload-size-hint": "建议值为 32 MiB。",
-      "server-name": "服务名称",
-      "vacuum-hint": "清理未使用的数据。"
+      "server-name": "服务名称"
     }
   },
   "tag": {
@@ -348,14 +337,7 @@
     "create-tags-guide": "您可以通过输入 “#tag” 创建标签。",
     "delete-confirm": "您确定要删除此标签吗?（此操作不可逆）",
     "delete-tag": "删除标签",
-    "hide": "收起",
-    "invalid-tag-name": "无效的标签名称",
-    "no-tag-found": "没找到此标签",
-    "save-all": "全部保存",
-    "show": "展开",
-    "tag-name": "标签名称",
-    "tag-suggestions": "标签建议",
-    "tip-text": "输入`#tag`来创建标签"
+    "no-tag-found": "没找到此标签"
   },
   "timeline": {
     "title": "时间线"

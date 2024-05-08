@@ -1,15 +1,4 @@
 {
-  "about": {
-    "about-memos": "Acerca de Memos",
-    "memos-description": "Memos es una aplicación web para tomar notas que puedes usar para escribir, organizar, y compartir notas.",
-    "no-server-description": "No hay descripción configurada para este servidor.",
-    "other-projects": "Otros proyectos"
-  },
-  "amount-text": {
-    "memo_many": "MEMOS",
-    "memo_one": "MEMO",
-    "memo_other": "MEMOS"
-  },
   "auth": {
     "create-your-account": "Crea tu cuenta",
     "host-tip": "Te estás registrando como anfitrión del sitio.",
@@ -303,7 +292,6 @@
         "icon-url": "URL del icono",
         "title": "Personalizar servidor"
       },
-      "database-file-size": "Tamaño de la base de datos",
       "disable-password-login": "Desactivar el inicio de sesión con contraseña",
       "disable-password-login-final-warning": "Por favor escriba \"CONFIRM\" si sabe lo que esta haciendo.",
       "disable-password-login-warning": "Esto deshabilitará el inicio de sesión con contraseña para todos los usuarios. No es posible iniciar sesión sin revertir esta configuración en la base de datos si sus proveedores de identidad configurados fallan. También tendrás que tener especial cuidado al eliminar un proveedor de identidades",
@@ -313,20 +301,12 @@
       "enable-password-login-warning": "Esto habilitará el inicio de sesión con contraseña para todos los usuarios. Continúa sólo si deseas que los usuarios puedan iniciar sesión mediante SSO y contraseña",
       "max-upload-size": "Tamaño máximo de subida (MiB)",
       "max-upload-size-hint": "El valor recomendado es de 32 MiB.",
-      "server-name": "Nombre del servidor",
-      "vacuum-hint": "Limpia los datos no utilizados."
+      "server-name": "Nombre del servidor"
     }
   },
   "tag": {
     "all-tags": "Todas las etiquetas",
-    "create-tag": "Crear etiqueta",
-    "hide": "Ocultar",
-    "invalid-tag-name": "Nombre de etiqueta inválido",
-    "save-all": "Guardar todo",
-    "show": "Mostrar",
-    "tag-name": "NOMBRE_DE_ETIQUETA",
-    "tag-suggestions": "Sugerencias de etiquetas",
-    "tip-text": "Escribe `#etiqueta` para crearlo"
+    "create-tag": "Crear etiqueta"
   },
   "timeline": {
     "title": "Línea de tiempo"

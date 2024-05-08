@@ -1,14 +1,4 @@
 {
-  "about": {
-    "about-memos": "Notlar hakkında",
-    "memos-description": "memos, not yazmak, düzenlemek ve paylaşmak için kullanabileceğiniz web tabanlı bir not alma uygulamasıdır.",
-    "no-server-description": "Bu sunucu için yapılandırılmış bir açıklama yok.",
-    "other-projects": "Diğer Projeler"
-  },
-  "amount-text": {
-    "memo_one": "NOT",
-    "memo_other": "NOTLAR"
-  },
   "auth": {
     "create-your-account": "Hesap oluşturun",
     "host-tip": "Site sahibi olarak kaydoluyorsunuz.",
@@ -329,7 +319,6 @@
         "locale": "Sunucu Yerel Ayarı",
         "title": "Uygulamayı özelleştir"
       },
-      "database-file-size": "Veritabanı Dosya Boyutu",
       "disable-password-login": "Parola girişini devre dışı bırak",
       "disable-password-login-final-warning": "Ne yaptığınızı biliyorsanız lütfen \"ONAYLA\" yazın.",
       "disable-password-login-warning": "Bu, tüm kullanıcılar için parola girişini devre dışı bırakacaktır. Yapılandırılmış kimlik sağlayıcılarınız başarısız olursa, veritabanındaki bu ayarı geri almadan oturum açmak mümkün değildir. Ayrıca bir kimlik sağlayıcısını kaldırırken ekstra dikkatli olmanız gerekecektir",
@@ -339,8 +328,7 @@
       "enable-password-login-warning": "Bu, tüm kullanıcılar için parola girişini etkinleştirecektir. Yalnızca kullanıcıların hem SSO hem de parola kullanarak oturum açabilmesini istiyorsanız devam edin",
       "max-upload-size": "Maksimum yükleme boyutu (MiB)",
       "max-upload-size-hint": "Önerilen değer 32 MiB'dir.",
-      "server-name": "Uygulama Adı",
-      "vacuum-hint": "Kullanılmayan verileri temizler."
+      "server-name": "Uygulama Adı"
     }
   },
   "tag": {
@@ -349,14 +337,7 @@
     "create-tags-guide": "'#tag' girerek etiket oluşturabilirsiniz.",
     "delete-confirm": "Bu etiketi sileceğinizden emin misiniz?",
     "delete-tag": "Etiketi Sil",
-    "hide": "Gizle",
-    "invalid-tag-name": "Geçersiz etiket adı",
-    "no-tag-found": "Etiket bulunamadı",
-    "save-all": "Tümünü kaydet",
-    "show": "Göster",
-    "tag-name": "ETİKET_ADI",
-    "tag-suggestions": "Etiket önerileri",
-    "tip-text": "Oluşturmak için #etiket girin"
+    "no-tag-found": "Etiket bulunamadı"
   },
   "timeline": {
     "title": "Zaman Çizelgesi"

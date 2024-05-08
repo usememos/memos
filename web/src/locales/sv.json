@@ -1,8 +1,4 @@
 {
-  "amount-text": {
-    "memo_one": "ANTECKNING",
-    "memo_other": "ANTECKNINGAR"
-  },
   "auth": {
     "host-tip": "Du registerar dig som webbplatsvärd."
   },
@@ -158,13 +154,9 @@
         "icon-url": "Icon URL",
         "title": "Customize Server"
       },
-      "database-file-size": "Databas filstorlek",
       "disable-public-memos": "Inaktivera offentliga anteckningar",
       "display-with-updated-time": "Display with updated time",
       "server-name": "Server Name"
     }
-  },
-  "tag": {
-    "tip-text": "Ange `#tag ` för att skapa"
   }
 }

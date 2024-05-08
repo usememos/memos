@@ -1,15 +1,4 @@
 {
-  "about": {
-    "about-memos": "Sobre o memos",
-    "memos-description": "memos é um aplicativo de bloco de notas baseado na web que você pode usar para escrever, organizar e compartilhar anotações.",
-    "no-server-description": "Nenhuma descrição configurada para este servidor.",
-    "other-projects": "Outros projetos"
-  },
-  "amount-text": {
-    "memo_many": "MEMOS",
-    "memo_one": "MEMO",
-    "memo_other": ""
-  },
   "auth": {
     "create-your-account": "Crie sua conta",
     "host-tip": "Você está se registrando como Host do Site.",
@@ -330,7 +319,6 @@
         "locale": "Localização do servidor",
         "title": "Personalizar Servidor"
       },
-      "database-file-size": "Tamanho do banco de dados",
       "disable-password-login": "Desabilitar login com senha",
       "disable-password-login-final-warning": "Por favor, digite \"CONFIRM\" para prosseguir.",
       "disable-password-login-warning": "Isso desabilitará o login com senha para todos os usuários. Caso seus provedores de identidade (SSO) configurados falhem, não será possível fazer login sem reverter esse ajuste manualmente no banco de dados. Você também deverá tomar precauções adicionais ao remover qualquer provedor de identidade ❗",
@@ -340,8 +328,7 @@
       "enable-password-login-warning": "Isso permitirá o login com senha para todos os usuários. Continue apenas se desejar que os usuários possam fazer login usando SSO e senha local❗",
       "max-upload-size": "Tamanho máximo de upload (MiB)",
       "max-upload-size-hint": "O valor recomendado é 32 MiB.",
-      "server-name": "Nome do servidor",
-      "vacuum-hint": "Limpa dados não utilizados."
+      "server-name": "Nome do servidor"
     }
   },
   "tag": {
@@ -350,14 +337,7 @@
     "create-tags-guide": "Você pode criar tags inserindo `#tag`.",
     "delete-confirm": "Tem certeza de que deseja excluir esta tag?",
     "delete-tag": "Excluir Tag",
-    "hide": "Ocultar",
-    "invalid-tag-name": "Nome de tag inválido",
-    "no-tag-found": "Nenhuma tag encontrada",
-    "save-all": "Salvar tudo",
-    "show": "Mostrar",
-    "tag-name": "NOME_DA_TAG",
-    "tag-suggestions": "Sugestões de Tag",
-    "tip-text": "Insira `#tag` para criar uma nova"
+    "no-tag-found": "Nenhuma tag encontrada"
   },
   "timeline": {
     "title": "Linha do tempo"

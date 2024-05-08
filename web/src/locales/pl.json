@@ -1,9 +1,4 @@
 {
-  "amount-text": {
-    "memo_few": "",
-    "memo_many": "",
-    "memo_one": "NOTATKA"
-  },
   "auth": {
     "create-your-account": "Utwórz swoje konto",
     "host-tip": "Rejestrujesz się jako właściciel strony.",
@@ -201,13 +196,9 @@
         "icon-url": "URL ikony",
         "title": "Personalizuj serwer"
       },
-      "database-file-size": "Rozmiar bazy danych",
       "disable-public-memos": "Wyłącz publiczne notatki",
       "display-with-updated-time": "Display with updated time",
       "server-name": "Nazwa serwera"
     }
-  },
-  "tag": {
-    "tip-text": "Wprowadź `#tag` aby utworzyć"
   }
 }

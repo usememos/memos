@@ -1,14 +1,4 @@
 {
-  "about": {
-    "about-memos": "Over Memos",
-    "memos-description": "Memos is een web-based noteerapplicatie die je kan gebruiekn om notities te schrijven, organiseren en delen.",
-    "no-server-description": "Geen beschrijving geconfigureerd.",
-    "other-projects": "Andere projecten"
-  },
-  "amount-text": {
-    "memo_one": "MEMO",
-    "memo_other": "MEMOS"
-  },
   "auth": {
     "create-your-account": "Maak je account",
     "host-tip": "Je registreert je als Site Host.",
@@ -267,7 +257,6 @@
         "locale": "Server taal",
         "title": "Server aanpassen"
       },
-      "database-file-size": "Database bestandsgrootte",
       "disable-password-login": "Wachtwoordlogin uitzetten",
       "disable-password-login-final-warning": "Typ \"CONFIRM\" als je zeker weet wat je doet.",
       "disable-password-login-warning": "Als je dit uitzet, kan je niet meer inloggen met een wachtwoord, zonder de database aan te passen. Als je inlogprovider niet werkt, kan je memos niet in.",
@@ -282,9 +271,6 @@
   },
   "tag": {
     "all-tags": "Alle labels",
-    "create-tag": "Label maken",
-    "invalid-tag-name": "Onjuiste label naam",
-    "tag-name": "LABEL_NAAM",
-    "tip-text": "Typ `#label` om aan te maken"
+    "create-tag": "Label maken"
   }
 }

@@ -1,15 +1,4 @@
 {
-  "about": {
-    "about-memos": "À propos des memos",
-    "memos-description": "Memos est une application web de prise de notes que vous pouvez utiliser pour écrire, organiser et partager des notes.",
-    "no-server-description": "Aucune description n'est configurée pour ce serveur.",
-    "other-projects": "Autres projets"
-  },
-  "amount-text": {
-    "memo_many": "MEMOS",
-    "memo_one": "MEMO",
-    "memo_other": "MEMOS"
-  },
   "auth": {
     "create-your-account": "Créez votre compte",
     "host-tip": "Vous vous inscrivez en tant qu'hébergeur du site.",
@@ -329,7 +318,6 @@
         "locale": "Langue du serveur",
         "title": "Serveur personnalisé"
       },
-      "database-file-size": "Taille de la base de données",
       "disable-password-login": "Désactiver la connexion par mot de passe",
       "disable-password-login-final-warning": "Veuillez taper \"CONFIRM\" si vous savez ce que vous faites.",
       "disable-password-login-warning": "Cela désactivera la connexion par mot de passe pour tous les utilisateurs. Il n'est pas possible de se connecter sans revenir sur ce paramètre dans la base de données si les fournisseurs d'identité configurés échouent. Vous devrez également être très prudent lorsque vous supprimez un fournisseur d'identité",
@@ -339,8 +327,7 @@
       "enable-password-login-warning": "Ceci activera la connexion par mot de passe pour tous les utilisateurs. Ne continuez que si vous souhaitez que les utilisateurs puissent se connecter à la fois par SSO et par mot de passe",
       "max-upload-size": "Taille maximale du téléversement (MiB)",
       "max-upload-size-hint": "La valeur recommandée est 32 MiB.",
-      "server-name": "Nom du serveur",
-      "vacuum-hint": "Nettoyer les données inutilisées."
+      "server-name": "Nom du serveur"
     }
   },
   "tag": {
@@ -349,14 +336,7 @@
     "create-tags-guide": "Vous pouvez ajouter des tags en écrivant `#tag`.",
     "delete-confirm": "Voulez-vous vraiment supprimer ce tag ?",
     "delete-tag": "Supprimer le tag",
-    "hide": "Cacher",
-    "invalid-tag-name": "Nom d'étiquette invalide",
-    "no-tag-found": "Aucun tag trouvé",
-    "save-all": "Tout enregistrer",
-    "show": "Afficher",
-    "tag-name": "NOM_ÉTIQUETTE",
-    "tag-suggestions": "Suggestions d'Étiquettes",
-    "tip-text": "Entrez `#tag ` pour créer"
+    "no-tag-found": "Aucun tag trouvé"
   },
   "timeline": {
     "title": "Timeline"

@@ -1,13 +1,4 @@
 {
-  "about": {
-    "about-memos": "Memos について",
-    "memos-description": "Memos は、メモを書き、整理し、共有するために使用できる Web ベースのノートアプリです。",
-    "no-server-description": "このサーバーについての説明は設定されていません",
-    "other-projects": "他のプロジェクト"
-  },
-  "amount-text": {
-    "memo": "MEMO"
-  },
   "auth": {
     "create-your-account": "アカウントを作成",
     "host-tip": "管理者として登録されます。",
@@ -320,7 +311,6 @@
         "locale": "サーバーの言語",
         "title": "サーバーをカスタマイズ"
       },
-      "database-file-size": "データベースのファイルサイズ",
       "disable-password-login": "パスワードでのログインを無効にする",
       "disable-password-login-final-warning": "何をしているか理解している場合は、「CONFIRM」と入力してください。",
       "disable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが無効になります。設定済みのIDプロバイダーが失敗した場合、この設定をデータベースで元に戻さない限り、ログインすることはできません。IDプロバイダーを削除する際も、非常に注意が必要です❗",
@@ -330,20 +320,12 @@
       "enable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが有効になります。SSOとパスワードの両方を使用してログインできるようにしたい場合のみ、続行してください❗",
       "max-upload-size": "最大ファイルサイズ(MiB)",
       "max-upload-size-hint": "推奨サイズは32 MiBです。",
-      "server-name": "サーバーの名前",
-      "vacuum-hint": "未使用のデータを削除する"
+      "server-name": "サーバーの名前"
     }
   },
   "tag": {
     "all-tags": "すべてのタグ",
-    "create-tag": "タグを作成する",
-    "hide": "非表示",
-    "invalid-tag-name": "無効なタグ名",
-    "save-all": "すべて保存",
-    "show": "表示",
-    "tag-name": "タグの名前",
-    "tag-suggestions": "タグの提案",
-    "tip-text": "作成するには`#tag`のように入力してください"
+    "create-tag": "タグを作成する"
   },
   "timeline": {
     "title": "タイムライン"

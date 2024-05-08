@@ -1,10 +1,4 @@
 {
-  "amount-text": {
-    "memo_few": "",
-    "memo_one": "BELEŽKA",
-    "memo_other": "BELEŽKE",
-    "memo_two": ""
-  },
   "auth": {
     "host-tip": "Registrirani ste kot gostitelj strani."
   },
@@ -192,7 +186,6 @@
         "icon-url": "URL ikone",
         "title": "Prilagodi strežnik"
       },
-      "database-file-size": "Velikost podatkovne baze",
       "disable-public-memos": "Onemogočite javne beležke",
       "display-with-updated-time": "Display with updated time",
       "server-name": "Ime strežnika"
@@ -200,8 +193,6 @@
   },
   "tag": {
     "all-tags": "Vse značke",
-    "create-tag": "Kreiraj značko",
-    "tag-name": "IME_ZNAČKE",
-    "tip-text": "Vnesite `#značka` za izdalavo"
+    "create-tag": "Kreiraj značko"
   }
 }
