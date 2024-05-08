@@ -1,14 +1,4 @@
 {
-  "about": {
-    "about-memos": "Über Memos",
-    "memos-description": "Memos ist eine webbasierte Anwendung zur Erstellung von Notizen, mit der Sie Notizen schreiben, organisieren und teilen können.",
-    "no-server-description": "Für diesen Server ist keine Beschreibung konfiguriert.",
-    "other-projects": "Andere Projekte"
-  },
-  "amount-text": {
-    "memo_one": "MEMO",
-    "memo_other": "MEMOS"
-  },
   "auth": {
     "create-your-account": "Benutzerkonto anlegen",
     "host-tip": "Du registrierst dich als Host dieser Seite.",
@@ -299,7 +289,6 @@
         "locale": "Sprache",
         "title": "Server bearbeiten"
       },
-      "database-file-size": "Dateigröße der Datenbank",
       "disable-password-login": "Anmeldung mit Passwort deaktivieren",
       "disable-password-login-final-warning": "Bitte gebe \"CONFIRM\" ein, wenn du weißt, was du tust.",
       "disable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer deaktiviert. Es ist nicht möglich sich anzumelden, ohne diese Einstellung in der Datenbank rückgängig zu machen, wenn deine konfigurierten Provider ausfallen. Du musst auch besonders vorsichtig sein, wenn du einen Identitätsanbieter entfernst",
@@ -314,13 +303,6 @@
   },
   "tag": {
     "all-tags": "Alle Tags",
-    "create-tag": "Tag erstellen",
-    "hide": "Ausblenden",
-    "invalid-tag-name": "Ungültiger Tag-Name",
-    "save-all": "Alle speichern",
-    "show": "Anzeigen",
-    "tag-name": "TAG_NAME",
-    "tag-suggestions": "Tag-Vorschläge",
-    "tip-text": "Erstelle einen Tag mit `#tag`"
+    "create-tag": "Tag erstellen"
   }
 }

@@ -1,9 +1,4 @@
 {
-  "amount-text": {
-    "memo_few": "",
-    "memo_many": "",
-    "memo_one": "НОТАТКА"
-  },
   "auth": {
     "host-tip": "Ви реєструєте власника сайту."
   },
@@ -159,13 +154,9 @@
         "icon-url": "URL іконки",
         "title": "Налаштувати додаток"
       },
-      "database-file-size": "Розмір файлу бази даних",
       "disable-public-memos": "Disable public memos",
       "display-with-updated-time": "Display with updated time",
       "server-name": "Назва додатка"
     }
-  },
-  "tag": {
-    "tip-text": "Введіть `#tag` щоб створити"
   }
 }

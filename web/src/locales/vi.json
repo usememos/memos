@@ -284,7 +284,6 @@
         "locale": "Ngôn ngữ máy chủ",
         "title": "Tùy chỉnh máy chủ"
       },
-      "database-file-size": "Kích thước tệp cơ sở dữ liệu",
       "disable-password-login": "Vô hiệu hóa đăng nhập bằng mật khẩu",
       "disable-password-login-final-warning": "Vui lòng nhập \"CONFIRM\" nếu bạn biết mình đang làm gì.",
       "disable-password-login-warning": "Điều này sẽ vô hiệu hóa đăng nhập bằng mật khẩu cho tất cả người dùng. Không thể đăng nhập nếu không đảo ngược cài đặt này trong cơ sở dữ liệu nếu nhà cung cấp danh tính đã cấu hình của bạn gặp sự cố. Bạn cũng phải cẩn thận hơn khi xóa một nhà cung cấp danh tính",
@@ -294,20 +293,12 @@
       "enable-password-login-warning": "Điều này sẽ cho phép đăng nhập bằng mật khẩu cho tất cả người dùng. Tiếp tục chỉ nếu bạn muốn người dùng có thể đăng nhập bằng cả SSO và mật khẩu",
       "max-upload-size": "Kích thước tải lên tối đa (MiB)",
       "max-upload-size-hint": "Giá trị khuyến nghị là 32 MiB.",
-      "server-name": "Tên máy chủ",
-      "vacuum-hint": "Dọn dẹp dữ liệu không sử dụng."
+      "server-name": "Tên máy chủ"
     }
   },
   "tag": {
     "all-tags": "Tất cả thẻ",
-    "create-tag": "Tạo thẻ",
-    "hide": "Ẩn",
-    "invalid-tag-name": "Tên thẻ không hợp lệ",
-    "save-all": "Lưu tất cả",
-    "show": "Hiển thị",
-    "tag-name": "TÊN_THẺ",
-    "tag-suggestions": "Gợi ý thẻ",
-    "tip-text": "Nhập `#tag` để tạo mới"
+    "create-tag": "Tạo thẻ"
   },
   "timeline": {
     "title": "Dòng thời gian"

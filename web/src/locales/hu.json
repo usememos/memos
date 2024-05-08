@@ -1,10 +1,4 @@
 {
-  "about": {
-    "about-memos": "A Memos névjegye",
-    "memos-description": "A Memos egy webalapú jegyzetkészítő alkalmazás, amivel jegyzeteket írhat, rendszerezhet és oszthat meg másokkal.",
-    "no-server-description": "Ennek a kiszolgálónak nincs leírása beállítva.",
-    "other-projects": "Egyéb projektek"
-  },
   "auth": {
     "create-your-account": "Fiók létrehozása",
     "host-tip": "A weboldal rendszergazdájaként regisztrál.",
@@ -322,7 +316,6 @@
         "locale": "Szerver nyelve",
         "title": "Szerver személyre szabása"
       },
-      "database-file-size": "Adatbázis fájlmérete",
       "disable-password-login": "Jelszavas bejelentkezés letiltása",
       "disable-password-login-final-warning": "Írd be, hogy \"CONFIRM\" ha tudod mit csinálsz.",
       "disable-password-login-warning": "Ez letiltja a jelszavas bejelentkezést minden felhasználó számára. Ha a konfigurált identitásszolgáltatók nem elérhetőek, a bejelentkezés nem lehetséges, ezen beállítás kikapcsolása nélkül az adatbázisban. Ezen kívül fokozott figyelem szükséges identitásszolgálók eltávolítása során is",
@@ -332,8 +325,7 @@
       "enable-password-login-warning": "Ez engedélyezi a jelszavas bejelentkezést minden felhasználó számára. Csak akkor folytasd, ha szeretnéd, ha a felhasználók SSO és jelszó használatával is be tudjanak jelentkezni",
       "max-upload-size": "Maximális feltöltési méret (MiB)",
       "max-upload-size-hint": "Az ajánlott érték 32 MiB.",
-      "server-name": "Szerver neve",
-      "vacuum-hint": "Törli a nem használt adatokat."
+      "server-name": "Szerver neve"
     }
   },
   "tag": {
@@ -342,14 +334,7 @@
     "create-tags-guide": "Létrehozhatsz címkéket `#címke` beírásával.",
     "delete-confirm": "Biztosan törlöd ezt a címkét?",
     "delete-tag": "Címke törlése",
-    "hide": "Elrejt",
-    "invalid-tag-name": "Érvénytelen címkenév",
-    "no-tag-found": "Nem található címke",
-    "save-all": "Összes mentése",
-    "show": "Megmutat",
-    "tag-name": "CÍMKE_NEVE",
-    "tag-suggestions": "Címke javaslatok",
-    "tip-text": "Létrehozás '#címke' írásával"
+    "no-tag-found": "Nem található címke"
   },
   "timeline": {
     "title": "Idővonal"

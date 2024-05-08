@@ -1,13 +1,4 @@
 {
-  "about": {
-    "about-memos": "關於 memos",
-    "memos-description": "memos 是一個網頁式的筆記應用程式，您可用它記錄、組織以及分享你的筆記。",
-    "no-server-description": "此伺服器未設置說明。",
-    "other-projects": "其他專案"
-  },
-  "amount-text": {
-    "memo": "MEMO"
-  },
   "auth": {
     "create-your-account": "建立您的帳號",
     "host-tip": "您註冊為此站台之管理員。",
@@ -328,7 +319,6 @@
         "locale": "伺服器語言",
         "title": "自訂伺服器"
       },
-      "database-file-size": "資料庫檔案大小",
       "disable-password-login": "禁用密碼登入",
       "disable-password-login-final-warning": "如果你知道自己在做什麼，請輸入「CONFIRM」。",
       "disable-password-login-warning": "所有使用者將無法使用密碼登入。如果設定的身份識別提供者失效，不在資料庫中恢復此設定將無法登入。刪除身分識別提供者時也要特別小心❗",
@@ -338,8 +328,7 @@
       "enable-password-login-warning": "啟用所有使用者的密碼登入。如果希望使用者同時使用 SSO 和密碼登入，請開啟密碼登入",
       "max-upload-size": "最大上傳檔案大小 (MiB)",
       "max-upload-size-hint": "建議值為 32 MiB。",
-      "server-name": "伺服器名稱",
-      "vacuum-hint": "清理未使用的資料"
+      "server-name": "伺服器名稱"
     }
   },
   "tag": {
@@ -348,14 +337,7 @@
     "create-tags-guide": "您可以通過輸入`#標籤`來創建標籤。",
     "delete-confirm": "您確定要刪除此標籤嗎？",
     "delete-tag": "刪除標籤",
-    "hide": "隱藏",
-    "invalid-tag-name": "無效的標籤名稱",
-    "no-tag-found": "找不到標籤",
-    "save-all": "全部儲存",
-    "show": "顯示",
-    "tag-name": "標籤名稱",
-    "tag-suggestions": "標籤建議",
-    "tip-text": "輸入 `#tag` 以新增標籤"
+    "no-tag-found": "找不到標籤"
   },
   "timeline": {
     "title": "時間軸"

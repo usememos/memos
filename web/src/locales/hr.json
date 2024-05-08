@@ -1,13 +1,4 @@
 {
-  "about": {
-    "about-memos": "O Memo aplikaciji",
-    "memos-description": "Memo je web bazirana aplikacija koju možeš koristiti za pisanje, organiziranje i dijeljenje bilješki.",
-    "no-server-description": "Za ovaj server nije konfiguriran opis.",
-    "other-projects": "Drugi projekti"
-  },
-  "amount-text": {
-    "memo": "MEMO"
-  },
   "auth": {
     "create-your-account": "Stvori svoj račun",
     "host-tip": "Registriraš se kao Vlasnik sajta.",
@@ -303,7 +294,6 @@
         "locale": "Server Locale",
         "title": "Uredi Server"
       },
-      "database-file-size": "Veličina baze podataka",
       "disable-password-login": "Onemogući prijavu putem lozinke",
       "disable-password-login-final-warning": "Molimo unesi \"POTVRDI\" ako znaš što radiš.",
       "disable-public-memos": "Onemogući javne memoe",
@@ -317,13 +307,6 @@
   },
   "tag": {
     "all-tags": "Svi Tagovi",
-    "create-tag": "Stvori Tag",
-    "hide": "Sakrij",
-    "invalid-tag-name": "Ime taga nije valjano",
-    "save-all": "Sačuvaj sve",
-    "show": "Pokaži",
-    "tag-name": "IME_TAGA",
-    "tag-suggestions": "Prijedlozi tagova",
-    "tip-text": "Unesi `#tag` kako bi stvorio"
+    "create-tag": "Stvori Tag"
   }
 }

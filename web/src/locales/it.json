@@ -1,15 +1,4 @@
 {
-  "about": {
-    "about-memos": "Informazioni su Memos",
-    "memos-description": "Memos è un'applicazione per prendere appunti basata sul Web che puoi utilizzare per scrivere, organizzare e condividere appunti.",
-    "no-server-description": "Nessuna descrizione configurata per questo server.",
-    "other-projects": "Altri progetti"
-  },
-  "amount-text": {
-    "memo_many": "",
-    "memo_one": "MEMO",
-    "memo_other": "MEMOS"
-  },
   "auth": {
     "host-tip": "Ti stai registrando come proprietario del sito.",
     "new-password": "Nuova password",
@@ -289,7 +278,6 @@
         "locale": "Server Locale",
         "title": "Personalizza server"
       },
-      "database-file-size": "Dimensione file database",
       "disable-password-login": "Disabilita login password",
       "disable-password-login-final-warning": "Digita \"CONFERMA\" se sai cosa stai facendo.",
       "disable-password-login-warning": "Ciò disabiliterà l'accesso tramite password per tutti gli utenti. Non è possibile accedere senza ripristinare questa impostazione nel database se i provider di identità configurati falliscono. Dovrai anche prestare molta attenzione quando rimuovi un provider di identità❗",
@@ -304,9 +292,6 @@
   },
   "tag": {
     "all-tags": "Tutti i Tags",
-    "create-tag": "Crea Tag",
-    "invalid-tag-name": "Nome tag non valido",
-    "tag-name": "NOME_TAG",
-    "tip-text": "Scrivi `#tag` per crearlo"
+    "create-tag": "Crea Tag"
   }
 }
