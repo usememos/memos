@@ -67,11 +67,6 @@ type Driver interface {
 	UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProvider) (*IdentityProvider, error)
 	DeleteIdentityProvider(ctx context.Context, delete *DeleteIdentityProvider) error
 
-	// Tag model related methods.
-	UpsertTag(ctx context.Context, upsert *Tag) (*Tag, error)
-	ListTags(ctx context.Context, find *FindTag) ([]*Tag, error)
-	DeleteTag(ctx context.Context, delete *DeleteTag) error
-
 	// Inbox model related methods.
 	CreateInbox(ctx context.Context, create *Inbox) (*Inbox, error)
 	ListInboxes(ctx context.Context, find *FindInbox) ([]*Inbox, error)
