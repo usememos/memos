@@ -35,15 +35,8 @@ service ResourceService {
   }
   // GetResourceBinary returns a resource binary by name.
   rpc GetResourceBinary(GetResourceBinaryRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {
-      get: "/file/{name=resources/*}"
-
-      additional_bindings {
-        // DEPRECATED: Will be removed in the future. Use `/file/{name}` instead.
-        get: "/o/r/{uid}"
-      }
-    };
-    option (google.api.method_signature) = "name,uid";
+    option (google.api.http) = {get: "/file/{name=resources/*}"};
+    option (google.api.method_signature) = "name";
   }
   // UpdateResource updates a resource.
   rpc UpdateResource(UpdateResourceRequest) returns (Resource) {
@@ -116,9 +109,6 @@ message GetResourceBinaryRequest {
   // Format: resources/{id}
   // id is the system generated unique identifier.
   string name = 1;
-
-  // The user defined id of the resource.
-  string uid = 2;
 }
 
 message UpdateResourceRequest {

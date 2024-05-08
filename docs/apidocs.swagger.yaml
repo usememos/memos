@@ -1742,11 +1742,6 @@ paths:
           required: true
           type: string
           pattern: resources/[^/]+
-        - name: uid
-          description: The user defined id of the resource.
-          in: query
-          required: false
-          type: string
       tags:
         - ResourceService
   /file/{name}/avatar:
@@ -1784,35 +1779,6 @@ paths:
           format: byte
       tags:
         - UserService
-  /o/r/{uid}:
-    get:
-      summary: GetResourceBinary returns a resource binary by name.
-      operationId: ResourceService_GetResourceBinary2
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/apiHttpBody'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: uid
-          description: The user defined id of the resource.
-          in: path
-          required: true
-          type: string
-        - name: name
-          description: |-
-            The name of the resource.
-            Format: resources/{id}
-            id is the system generated unique identifier.
-          in: query
-          required: false
-          type: string
-      tags:
-        - ResourceService
 definitions:
   MemoServiceRenameMemoTagBody:
     type: object

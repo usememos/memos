@@ -160,9 +160,6 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 		}
 		resourceFind.ID = &id
 	}
-	if request.Uid != "" {
-		resourceFind.UID = &request.Uid
-	}
 	resource, err := s.Store.GetResource(ctx, resourceFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
