@@ -81,19 +81,12 @@
     "any-thoughts": "Alguna idea...",
     "save": "Guardar"
   },
-  "embed-memo": {
-    "copy": "Copiar",
-    "only-public-supported": "* Sólo se pueden insertar memos públicos.",
-    "text": "Copia y pega el siguiente código en tu blog o sitio web.",
-    "title": "Insertar memo"
-  },
   "inbox": {
     "memo-comment": "{{user}} tiene un comentario sobre tu {{memo}}.",
     "version-update": "¡Ya está disponible la nueva versión {{version}}!"
   },
   "memo": {
     "archived-at": "Archivado en",
-    "archived-memos": "Memos archivados",
     "comment": {
       "no-comment": "No hay comentarios",
       "self": "Comentarios"
@@ -117,40 +110,16 @@
   },
   "message": {
     "change-memo-created-time": "Cambiar la hora de creación del memo",
-    "change-resource-filename": "Cambiar el nombre del archivo de recursos",
-    "click-to-save-the-image": "Haz clic para guardar la imagen",
     "copied": "Copiado",
-    "count-selected-resources": "Total seleccionado",
     "fill-all": "Por favor rellena todos los campos.",
-    "fill-form": "Por favor rellena este formulario",
-    "fill-server-name": "Por favor ingresa el nombre del servidor",
-    "generating-the-screenshot": "Generando la captura de pantalla…",
-    "image-load-failed": "Error al subir la imagen",
-    "invalid-created-datetime": "Fecha de creación no válida.",
-    "invalid-resource-filename": "El nombre del archivo de recursos no es válido.",
-    "login-failed": "Error al iniciar sesión",
     "maximum-upload-size-is": "El tamaño máximo de subida es de {{size}} MiB",
     "memo-not-found": "Memo no encontrado.",
-    "memo-updated-datetime": "Fecha de creación del memo modificada.",
-    "memos-ready": "Todos los memos están listos 🎉",
     "new-password-not-match": "Las nuevas contraseñas no coinciden.",
     "no-data": "No se encontraron datos.",
     "password-changed": "Contraseña cambiada",
     "password-not-match": "Las contraseñas no coinciden.",
-    "private-only": "Este memo es privado.",
-    "resource-filename-updated": "El nombre del archivo de recursos se ha cambiado correctamente.",
-    "resource-ready": "Todos los recursos están listos 🎉",
     "restored-successfully": "Restaurado con éxito",
-    "signup-failed": "Error al registrarse",
-    "succeed-copy-code": "Código copiado correctamente.",
-    "succeed-copy-content": "Contenido copiado correctamente.",
     "succeed-copy-link": "Enlace copiado correctamente.",
-    "succeed-copy-link-not-public": "Contenido copiado correctamente. No se puede acceder a este memo sin iniciar sesión.",
-    "succeed-copy-resource-link": "Enlace del recurso copiado correctamente.",
-    "succeed-update-additional-script": "Script adicional actualizado correctamente.",
-    "succeed-update-additional-style": "Estilo adicional actualizado correctamente.",
-    "succeed-update-customized-profile": "Perfil personalizado correctamente.",
-    "succeed-vacuum-database": "Exito al limpiar la base de datos",
     "update-succeed": "Actualización exitosa",
     "user-not-found": "Usuario no encontrado"
   },
@@ -184,11 +153,7 @@
     "no-unused-resources": "No hay recursos sin utilizar",
     "reset-link": "Restablecer enlace",
     "reset-link-prompt": "¿Está seguro de restablecer el enlace? Esto romperá todos los usos actuales del enlace. ESTA ACCIÓN ES IRREVERSIBLE",
-    "reset-resource-link": "Restablecer enlace de recursos",
-    "search-bar-placeholder": "Buscar recurso",
-    "upload-successfully": "Se subió correctamente",
-    "warning-text": "¿Está seguro de eliminar este recurso? ESTA ACCIÓN ES IRREVERSIBLE❗",
-    "warning-text-unused": "¿Está seguro de eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE❗"
+    "reset-resource-link": "Restablecer enlace de recursos"
   },
   "router": {
     "back-to-top": "Volver al principio",

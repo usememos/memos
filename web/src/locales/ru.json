@@ -89,18 +89,11 @@
     "any-thoughts": "Ваши мысли...",
     "save": "Сохранить"
   },
-  "embed-memo": {
-    "copy": "Скопировать",
-    "only-public-supported": "* Поддерживаются только публичные записи",
-    "text": "Скопируйте и вставьте код в Ваш блог или сайт",
-    "title": "Встраивание записи"
-  },
   "inbox": {
     "version-update": "Новая версия {{version}} уже доступна!"
   },
   "memo": {
     "archived-at": "Архив",
-    "archived-memos": "Заархивированные записи",
     "comment": {
       "no-comment": "Комментариев нет",
       "self": "Комментарии"
@@ -126,47 +119,23 @@
   "message": {
     "archived-successfully": "Успешная архивация",
     "change-memo-created-time": "Изменить время создания записи",
-    "change-resource-filename": "Изменить имя файла",
-    "click-to-save-the-image": "Нажмите для сохранения изображения",
     "copied": "Скопировано",
-    "count-selected-resources": "Всего выбрано",
     "deleted-successfully": "Успешное удаление",
     "fill-all": "Пожалуйста, заполните все поля.",
-    "fill-form": "Пожалуйста, заполните форму",
-    "fill-server-name": "Пожалуйста, введите имя сервера",
-    "generating-the-screenshot": "Создание скриншота…",
-    "image-load-failed": "Ошибка загрузки изображения",
-    "invalid-created-datetime": "Неверное время создания.",
-    "invalid-resource-filename": "Неверное имя файла.",
-    "login-failed": "Ошибка входа",
     "maximum-upload-size-is": "Максимальный размер для загрузки {{size}} МБ",
     "memo-not-found": "Запись не найдена.",
-    "memo-updated-datetime": "Время создания изменено.",
-    "memos-ready": "больше записей нет",
     "new-password-not-match": "Новый пароль не совпадает.",
     "no-data": "Данные не были найдены.",
     "password-changed": "Пароль изменён",
     "password-not-match": "Пароли не совпадают.",
-    "private-only": "Это частная заметка.",
-    "resource-filename-updated": "Имя файла изменено.",
-    "resource-ready": "больше ресурсов нет",
     "restored-successfully": "Успешно восстановлено.",
-    "signup-failed": "Ошибка регистрации",
-    "succeed-copy-code": "Код успешно скопирован.",
-    "succeed-copy-content": "Скопировано в буфер обмена.",
     "succeed-copy-link": "Ссылка скопирована в буфер обмена.",
-    "succeed-copy-resource-link": "Ссылка на файл скопирована в буфер обмена",
-    "succeed-update-additional-script": "Настраиваемый скрипт успешно обновлён",
-    "succeed-update-additional-style": "Настраиваемый стиль успешно обновлен",
-    "succeed-update-customized-profile": "Собственный профиль успешно обновлён",
-    "succeed-vacuum-database": "База данных успешно сжата",
     "update-succeed": "Успешно обновлено",
     "user-not-found": "Пользователь не найден"
   },
   "reference": {
     "add-references": "Добавить ссылку",
-    "embedded-usage": "Вставить контент",
-    "search-bar-placeholder": "Поиск"
+    "embedded-usage": "Вставить контент"
   },
   "resource": {
     "clear": "Удалить неиспользуемые",
@@ -198,11 +167,7 @@
     "no-unused-resources": "Нет неиспользуемых ресурсов",
     "reset-link": "Удалить ссылку",
     "reset-link-prompt": "Вы уверены, что хотите удалить ссылку? Все использования этой ссылки будут сломаны.\nЭТО ДЕЙСТВИЕ НЕВОЗМОЖНО ОТМЕНИТЬ!",
-    "reset-resource-link": "Удаление ссылки на ресурс",
-    "search-bar-placeholder": "Поиск ресурсов",
-    "upload-successfully": "Загрузка окончена",
-    "warning-text": "Вы уверены, что хотите выбранные ресурсы?\nЭТО ДЕЙСТВИЕ НЕВОЗМОЖНО ОТМЕНИТЬ!",
-    "warning-text-unused": "Вы уверены, что хотите удалить неиспользуемые ресурсы?\nЭТО ДЕЙСТВИЕ НЕВОЗМОЖНО ОТМЕНИТЬ❗"
+    "reset-resource-link": "Удаление ссылки на ресурс"
   },
   "router": {
     "back-to-top": "В начало",

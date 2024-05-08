@@ -60,12 +60,6 @@
     "any-thoughts": "Kakšne misli...",
     "save": "Shrani"
   },
-  "embed-memo": {
-    "copy": "Kopiraj",
-    "only-public-supported": "* Podprte so samo javne beležke.",
-    "text": "Kopirajte in prilepite spodnjo kodo v vaš blog ali spletno stran.",
-    "title": "Vdelaj beležko"
-  },
   "memo": {
     "copy-link": "Kopiraj povezavo",
     "embed": "Vdelaj beležko",
@@ -79,35 +73,14 @@
   },
   "message": {
     "change-memo-created-time": "Spremeni čas izdelave beležke",
-    "change-resource-filename": "Spremenite ime vira",
-    "click-to-save-the-image": "Kliknite za shranjevanje slike",
     "copied": "Skopirano",
-    "count-selected-resources": "Skupaj izbrano",
     "fill-all": "Prosim izpolnite vsa polja.",
-    "fill-form": "Prosim izpolnite ta obrazec",
-    "generating-the-screenshot": "Generiram zajem zaslona...",
-    "image-load-failed": "Napaka pri nalaganju slike",
-    "invalid-created-datetime": "Neveljavno ustvarjen čas.",
-    "invalid-resource-filename": "Neveljavno ime datoteke.",
-    "login-failed": "Napaka pri prijavi",
     "memo-not-found": "Ne najdem beležke.",
-    "memo-updated-datetime": "Spremenjen čas ustvarjene beležke.",
-    "memos-ready": "vse beležke so pripravljene 🎉",
     "new-password-not-match": "Novi gesli se ne ujemata.",
     "password-changed": "Geslo je spremenjeno",
     "password-not-match": "Gesli se ne ujemata.",
-    "private-only": "Ta beležka je zasebna.",
-    "resource-filename-updated": "Ime vira je spremenjeno.",
     "restored-successfully": "Uspešno obnovljeno",
-    "signup-failed": "Napaka pri registraciji",
-    "succeed-copy-code": "Koda je uspešno skopirana.",
-    "succeed-copy-content": "Vsebina je uspešno skopirana.",
     "succeed-copy-link": "Povezava je uspešno skopirana.",
-    "succeed-copy-resource-link": "Povezava do vira je uspešno skopirana.",
-    "succeed-update-additional-script": "Dodatne skripte so uspešno posodobljene.",
-    "succeed-update-additional-style": "Dodatni stili so uspešno posodobljeni.",
-    "succeed-update-customized-profile": "Profil je uspešno prilagojen.",
-    "succeed-vacuum-database": "Baza je uspešno skrčena",
     "update-succeed": "Posodobitev je uspešna",
     "user-not-found": "Ne najdem uporabnika"
   },
@@ -137,11 +110,7 @@
     "linked-amount": "Povezana količina beležk",
     "no-files-selected": "Nobena datoteka ni označena❗",
     "no-resources": "Ni virov.",
-    "no-unused-resources": "Ni neuporabljenih virov",
-    "search-bar-placeholder": "Iskanje virov",
-    "upload-successfully": "Nalaganje uspešno",
-    "warning-text": "Ali ste prepričani, da želite izbrisati ta vir? TA AKCIJA JE NEPOVRATNA❗",
-    "warning-text-unused": "Ali ste prepričani, da želite izbrisati neuporabljene vire? TA AKCIJA JE NEPOVRATNA❗"
+    "no-unused-resources": "Ni neuporabljenih virov"
   },
   "setting": {
     "account-section": {

@@ -89,19 +89,12 @@
     "any-thoughts": "Alguma ideia…",
     "save": "Salvar"
   },
-  "embed-memo": {
-    "copy": "Copiar",
-    "only-public-supported": "* Somente memos públicos podem ser embutidos.",
-    "text": "Copie o código abaixo para incorporar este memo em seu site.",
-    "title": "Embutir memo"
-  },
   "inbox": {
     "memo-comment": "{{user}} tem um comentário sobre o seu {{memo}}.",
     "version-update": "A nova versão {{version}} já está disponível!"
   },
   "memo": {
     "archived-at": "Arquivado em",
-    "archived-memos": "Memos arquivados",
     "comment": {
       "no-comment": "Nenhum comentário",
       "self": "Comentários"
@@ -128,50 +121,24 @@
   "message": {
     "archived-successfully": "Arquivado com êxito",
     "change-memo-created-time": "Alterar data de criação do memo",
-    "change-resource-filename": "Alterar nome do arquivo do recurso",
-    "click-to-save-the-image": "Clique para salvar a imagem",
     "copied": "Copiado",
-    "count-selected-resources": "Total selecionado",
     "deleted-successfully": "Êxito na exclusão",
-    "failed-to-embed-memo": "Falha ao embutir o memo",
     "fill-all": "Por favor, preencha todos os campos.",
-    "fill-form": "Por favor, preencha o formulário",
-    "fill-server-name": "Por favor, preencha o nome do servidor",
-    "generating-the-screenshot": "Gerando a captura de tela…",
-    "image-load-failed": "Falha ao carregar a imagem",
-    "invalid-created-datetime": "Data de criação inválida.",
-    "invalid-resource-filename": "Nome de arquivo de recurso inválido.",
-    "login-failed": "Falha no login",
     "maximum-upload-size-is": "O tamanho máximo permitido para upload é {{size}} MiB",
     "memo-not-found": "Memo não encontrado.",
-    "memo-updated-datetime": "Data de criação do memo atualizada.",
-    "memos-ready": "todos os memos estão prontos 🎉",
     "new-password-not-match": "As novas senhas não coincidem.",
     "no-data": "Nenhum dado encontrado.",
     "password-changed": "Senha alterada",
     "password-not-match": "As senhas não coincidem.",
-    "private-only": "Este memo é privado.",
-    "resource-filename-updated": "Nome do arquivo do recurso atualizado.",
-    "resource-ready": "todos os recursos estão prontos 🎉",
     "restored-successfully": "Restaurado com êxito",
-    "signup-failed": "Falha no registro",
-    "succeed-copy-code": "Código copiado com êxito.",
-    "succeed-copy-content": "Conteúdo copiado com êxito.",
     "succeed-copy-link": "Link copiado com êxito.",
-    "succeed-copy-link-not-public": "Conteúdo copiado com êxito. Este memo não pode ser acessado sem fazer login.",
-    "succeed-copy-resource-link": "Link do recurso copiado com êxito.",
-    "succeed-update-additional-script": "Script adicional atualizado com êxito.",
-    "succeed-update-additional-style": "Folha de estilos adicional atualizada com êxito.",
-    "succeed-update-customized-profile": "Perfil personalizado com êxito.",
-    "succeed-vacuum-database": "Banco de dados compactado com êxito.",
     "update-succeed": "Atualizado com êxito",
     "user-not-found": "Usuário não encontrado"
   },
   "reference": {
     "add-references": "Adicionar referências",
     "embedded-usage": "Usar como Conteúdo Embutido",
-    "no-memos-found": "Nenhum memo encontrado",
-    "search-bar-placeholder": "Pesquisar conteúdo"
+    "no-memos-found": "Nenhum memo encontrado"
   },
   "resource": {
     "clear": "Limpar",
@@ -203,11 +170,7 @@
     "no-unused-resources": "Nenhum recurso não utilizado",
     "reset-link": "Redefinir link",
     "reset-link-prompt": "Tem certeza de que deseja redefinir o link?\nIsso quebrará todos os vínculos atuais.\n\nESTA AÇÃO É IRREVERSÍVEL",
-    "reset-resource-link": "Redefinir link do recurso",
-    "search-bar-placeholder": "Pesquisar recurso",
-    "upload-successfully": "Carregado com êxito",
-    "warning-text": "Tem certeza de que deseja deletar este recurso?\n\nESTA AÇÃO É IRREVERSÍVEL",
-    "warning-text-unused": "Tem certeza de que deseja deletar este recurso não utilizado?\n\nESTA AÇÃO É IRREVERSÍVEL"
+    "reset-resource-link": "Redefinir link do recurso"
   },
   "router": {
     "back-to-top": "Voltar ao Topo",

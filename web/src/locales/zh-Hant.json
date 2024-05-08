@@ -89,19 +89,12 @@
     "any-thoughts": "任何想法...",
     "save": "儲存"
   },
-  "embed-memo": {
-    "copy": "複製",
-    "only-public-supported": "* 只有公開的 Memo 可以被嵌入。",
-    "text": "將以下程式碼複製並貼上到您的網誌或網站中。",
-    "title": "嵌入 Memo"
-  },
   "inbox": {
     "memo-comment": "{{user}} 對您的 {{memo}} 發表了評論。",
     "version-update": "新版本 {{version}} 現已推出！"
   },
   "memo": {
     "archived-at": "封存於",
-    "archived-memos": "封存的 Memo",
     "comment": {
       "no-comment": "沒有評論",
       "self": "評論"
@@ -128,50 +121,24 @@
   "message": {
     "archived-successfully": "封存成功",
     "change-memo-created-time": "變更 Memo 建立時間",
-    "change-resource-filename": "變更資源檔名",
-    "click-to-save-the-image": "點選以儲存圖片",
     "copied": "已複製",
-    "count-selected-resources": "全部選取",
     "deleted-successfully": "已成功刪除",
-    "failed-to-embed-memo": "嵌入備忘錄失敗",
     "fill-all": "請填寫所有欄位。",
-    "fill-form": "請填寫此表單",
-    "fill-server-name": "請填寫伺服器名稱",
-    "generating-the-screenshot": "正在產生截圖…",
-    "image-load-failed": "圖片讀取失敗",
-    "invalid-created-datetime": "建立的日期時間無效。",
-    "invalid-resource-filename": "無效的檔名。",
-    "login-failed": "登入失敗",
     "maximum-upload-size-is": "最大允許檔案上傳大小 {{size}} MiB",
     "memo-not-found": "找不到 Memo",
-    "memo-updated-datetime": "Memo 建立日期時間已變更。",
-    "memos-ready": "所有 Memo 已就緒",
     "new-password-not-match": "新密碼不一致。",
     "no-data": "或許尋覓虛空，或者改換選擇之軌跡。",
     "password-changed": "密碼變更完成",
     "password-not-match": "密碼不一致。",
-    "private-only": "此 Memo 僅自己可見。",
-    "resource-filename-updated": "資源檔名變更成功。",
-    "resource-ready": "所有資源已就緒",
     "restored-successfully": "還原成功",
-    "signup-failed": "註冊失敗",
-    "succeed-copy-code": "複製程式碼到剪貼簿成功。",
-    "succeed-copy-content": "複製內容到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
-    "succeed-copy-link-not-public": "複製連結到剪貼簿成功，請注意本條 Memo 在未登入情況下無法瀏覽。",
-    "succeed-copy-resource-link": "複製資源連結到剪貼簿成功。",
-    "succeed-update-additional-script": "更新附加腳本成功。",
-    "succeed-update-additional-style": "更新附加樣式成功。",
-    "succeed-update-customized-profile": "更新自訂設定文件成功。",
-    "succeed-vacuum-database": "清理資料庫成功。",
     "update-succeed": "更新成功",
     "user-not-found": "查無該使用者"
   },
   "reference": {
     "add-references": "添加參考資料",
     "embedded-usage": "作為嵌入式內容使用",
-    "no-memos-found": "未找到任何備忘錄",
-    "search-bar-placeholder": "搜索內容"
+    "no-memos-found": "未找到任何備忘錄"
   },
   "resource": {
     "clear": "清除",
@@ -203,11 +170,7 @@
     "no-unused-resources": "無未使用的資源",
     "reset-link": "重設連結",
     "reset-link-prompt": "您確定要重設鏈接嗎？\n這將中斷所有當前的鏈接用法。\n\n此操作是不可逆的。",
-    "reset-resource-link": "重設資源連結",
-    "search-bar-placeholder": "搜尋資源",
-    "upload-successfully": "上傳成功",
-    "warning-text": "您確定要刪除此資源嗎？此操作是不可逆的。",
-    "warning-text-unused": "您確定要刪除此資源嗎？\n\n此操作是不可逆的。"
+    "reset-resource-link": "重設資源連結"
   },
   "router": {
     "back-to-top": "回到頂部",

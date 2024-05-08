@@ -89,19 +89,12 @@
     "any-thoughts": "Une idée...",
     "save": "Enregistrer"
   },
-  "embed-memo": {
-    "copy": "Copier",
-    "only-public-supported": "* Seuls les memos publics peuvent être intégrés.",
-    "text": "Copiez et collez le code ci-dessous dans votre blog ou site web.",
-    "title": "Intégrer Memo"
-  },
   "inbox": {
     "memo-comment": "{{user}} a fait un commentaire sur votre {{memo}}.",
     "version-update": "Une nouvelle version {{version}} est disponible dès maintenant !"
   },
   "memo": {
     "archived-at": "Archivé le",
-    "archived-memos": "Memos Archivés",
     "comment": {
       "no-comment": "Pas de commentaires",
       "self": "Commentaires"
@@ -127,50 +120,24 @@
   "message": {
     "archived-successfully": "Archivé avec succès",
     "change-memo-created-time": "Modifier l'heure de création du memo",
-    "change-resource-filename": "Changer le nom du fichier de ressources",
-    "click-to-save-the-image": "Cliquez pour enregistrer l'image",
     "copied": "Copié",
-    "count-selected-resources": "Total de la sélection",
     "deleted-successfully": "Supprimé avec succès",
-    "failed-to-embed-memo": "Échec de l'intégration du mémo",
     "fill-all": "Veuillez remplir tous les champs.",
-    "fill-form": "Veuillez remplir ce formulaire",
-    "fill-server-name": "Veuillez indiquer le nom du serveur",
-    "generating-the-screenshot": "Génération de la capture d'écran…",
-    "image-load-failed": "Le chargement de l'image a échoué",
-    "invalid-created-datetime": "Date/heure de création non valide.",
-    "invalid-resource-filename": "Nom de fichier invalide.",
-    "login-failed": "Connexion échouée",
     "maximum-upload-size-is": "La taille maximale autorisée pour le téléversement est {{size}} MiB",
     "memo-not-found": "Memo introuvable.",
-    "memo-updated-datetime": "La date et l'heure de création du memo ont été modifiées.",
-    "memos-ready": "tous les memos sont prêts",
     "new-password-not-match": "Les nouveaux mots de passe ne correspondent pas.",
     "no-data": "Aucune donnée n'a été trouvée.",
     "password-changed": "Mot de passe modifié",
     "password-not-match": "Les mots de passe ne correspondent pas.",
-    "private-only": "Ce memo est uniquement privé.",
-    "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
-    "resource-ready": "toutes les ressources sont prêtes",
     "restored-successfully": "Restauré avec succès",
-    "signup-failed": "L'inscription a échoué",
-    "succeed-copy-code": "Copie du code dans le presse-papier effectuée.",
-    "succeed-copy-content": "Contenu copié avec succès.",
     "succeed-copy-link": "Succeed to copy link to clipboard.",
-    "succeed-copy-link-not-public": "Contenu copié avec succès. Ce memos n'est pas accessible sans connexion.",
-    "succeed-copy-resource-link": "Le lien de la ressource a été copié avec succès.",
-    "succeed-update-additional-script": "Le script additionnel a été mis à jour avec succès.",
-    "succeed-update-additional-style": "Le style additionnel à été mis à jour avec succès.",
-    "succeed-update-customized-profile": "Profil personnalisé avec succès.",
-    "succeed-vacuum-database": "La base de données a été vidée avec succès.",
     "update-succeed": "Mise à jour effectuée",
     "user-not-found": "Utilisateur introuvable"
   },
   "reference": {
     "add-references": "Ajouter des références",
     "embedded-usage": "Utiliser comme contenu intégré",
-    "no-memos-found": "Aucun mémo trouvé",
-    "search-bar-placeholder": "Rechercher du contenu"
+    "no-memos-found": "Aucun mémo trouvé"
   },
   "resource": {
     "clear": "Nettoyer",
@@ -202,11 +169,7 @@
     "no-unused-resources": "Aucune ressource inutilisée",
     "reset-link": "Réinitialiser le lien",
     "reset-link-prompt": "Êtes-vous sûr de réinitialiser le lien ? Cette action interrompra toutes les utilisations actuelles du lien. CETTE ACTION EST IRRÉVERSIBLE",
-    "reset-resource-link": "Réinitialiser le lien de ressource",
-    "search-bar-placeholder": "Recherche de ressources",
-    "upload-successfully": "Téléversement réussi",
-    "warning-text": "Êtes-vous sûr de vouloir supprimer cette ressource ? CETTE ACTION EST IRRÉVERSIBLE",
-    "warning-text-unused": "Êtes-vous sûr de vouloir supprimer ces ressources inutilisées ? CETTE ACTION EST IRRÉVERSIBLE"
+    "reset-resource-link": "Réinitialiser le lien de ressource"
   },
   "router": {
     "back-to-top": "Haut de page",

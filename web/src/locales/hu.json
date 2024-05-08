@@ -88,19 +88,12 @@
     "any-thoughts": "Bármi ami a fejedben jár...",
     "save": "Mentés"
   },
-  "embed-memo": {
-    "copy": "Másolás",
-    "only-public-supported": "* Csak a nyilvános jegyzetek beágyazhatóak.",
-    "text": "Másold ki és illeszd be az alábbi kódot a blogodra vagy a weboldaladra.",
-    "title": "Jegyzet beágyazása"
-  },
   "inbox": {
     "memo-comment": "{{user}} hozzászólt ehhez: {{memo}}.",
     "version-update": "Az új {{version}} verzió már elérhető!"
   },
   "memo": {
     "archived-at": "Archiválva:",
-    "archived-memos": "Archivált jegyzetek",
     "comment": {
       "no-comment": "Nincs hozzászólás",
       "self": "Hozzászólások"
@@ -126,50 +119,24 @@
   "message": {
     "archived-successfully": "Sikeres archiválás",
     "change-memo-created-time": "Jegyzet létrehozási idejének változtatása",
-    "change-resource-filename": "Állomány fájlnevének módosítása",
-    "click-to-save-the-image": "Kattintás a kép mentéséhez",
     "copied": "Másolva",
-    "count-selected-resources": "Összes kiválasztott",
     "deleted-successfully": "Sikeres törlés",
-    "failed-to-embed-memo": "Jegyzet beágyazása sikertelen",
     "fill-all": "Töltsd ki az összes mezőt.",
-    "fill-form": "Töltsd ki ezeket a mezőket",
-    "fill-server-name": "Töltsd ki a szerver nevét",
-    "generating-the-screenshot": "Képernyőkép létrehozása…",
-    "image-load-failed": "Kép betöltése sikertelen",
-    "invalid-created-datetime": "Érvénytelen létrehozási idő.",
-    "invalid-resource-filename": "Érvénytelen fájlnév.",
-    "login-failed": "Sikertelen bejelentkezés",
     "maximum-upload-size-is": "A maximálisan megengedett feltöltési méret {{size}} MiB",
     "memo-not-found": "Jegyzet nem található.",
-    "memo-updated-datetime": "A jegyzet létrehozási ideje módosítva.",
-    "memos-ready": "Minden jegyzet kész",
     "new-password-not-match": "Az új jelszavak nem egyeznek.",
     "no-data": "Nem található adat.",
     "password-changed": "Jelszó megváltoztatva",
     "password-not-match": "A jelszavak nem egyeznek.",
-    "private-only": "Ez a jegyzet privát.",
-    "resource-filename-updated": "Állomány fájlneve módosítva.",
-    "resource-ready": "Minden állomány kész",
     "restored-successfully": "Sikeres visszaállítás",
-    "signup-failed": "Sikertelen regisztráció",
-    "succeed-copy-code": "Kód sikeresen másolva.",
-    "succeed-copy-content": "Tartalom sikeresen másolva.",
     "succeed-copy-link": "Hivatkozás sikeresen másolva.",
-    "succeed-copy-link-not-public": "Tartalom sikeresen másolva. Ez a jegyzet nem elérhető bejelentkezés nélkül.",
-    "succeed-copy-resource-link": "Állomány hivatkozása sikeresen másolva.",
-    "succeed-update-additional-script": "Kiegészítő szkript sikeresen frissítve.",
-    "succeed-update-additional-style": "Kiegészítő stílus sikeresen frissítve.",
-    "succeed-update-customized-profile": "Profil sikeresen testreszabva.",
-    "succeed-vacuum-database": "Adatbázis sikeresen kitisztítva.",
     "update-succeed": "Sikeres frissítés",
     "user-not-found": "Felhasználó nem található"
   },
   "reference": {
     "add-references": "Referenciák hozzáadása",
     "embedded-usage": "Használat mint beépülő tartalom",
-    "no-memos-found": "Nem található jegyzet",
-    "search-bar-placeholder": "Tartalom keresése"
+    "no-memos-found": "Nem található jegyzet"
   },
   "resource": {
     "clear": "Töröl",
@@ -201,11 +168,7 @@
     "no-unused-resources": "Nincsenek nem használt állományok",
     "reset-link": "Hivatkozás visszaállítása",
     "reset-link-prompt": "Biztosan visszaállítod ezt a hivatkozást? Ez minden létező linket érvénytelenít. EZ A MŰVELET VÉGLEGES",
-    "reset-resource-link": "Állomány hivatkozásának visszaállítása",
-    "search-bar-placeholder": "Állomány keresése",
-    "upload-successfully": "Sikeres feltöltés",
-    "warning-text": "Biztosan törlöd ezt az állományt? EZ A MŰVELET VÉGLEGES",
-    "warning-text-unused": "Biztosan törlöd ezeket a nem használt állományokat? EZ A MŰVELET VÉGLEGES"
+    "reset-resource-link": "Állomány hivatkozásának visszaállítása"
   },
   "router": {
     "back-to-top": "Vissza az oldal tetejére",

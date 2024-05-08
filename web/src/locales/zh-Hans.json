@@ -89,19 +89,12 @@
     "any-thoughts": "此刻的想法...",
     "save": "保存"
   },
-  "embed-memo": {
-    "copy": "复制",
-    "only-public-supported": "* 仅支持公开 Memo。",
-    "text": "将以下代码复制并粘贴到您的博客或网站中。",
-    "title": "嵌入 Memo"
-  },
   "inbox": {
     "memo-comment": "{{user}} 评论了您的“{{memo}}”。",
     "version-update": "新版本 {{version}} 现已推出！"
   },
   "memo": {
     "archived-at": "存档于",
-    "archived-memos": "归档 Memo",
     "comment": {
       "no-comment": "没有评论",
       "self": "评论"
@@ -128,50 +121,24 @@
   "message": {
     "archived-successfully": "归档成功",
     "change-memo-created-time": "更改 Memo 创建时间",
-    "change-resource-filename": "更改资源文件名",
-    "click-to-save-the-image": "点击保存图片",
     "copied": "已复制",
-    "count-selected-resources": "所选资源总数",
     "deleted-successfully": "成功删除！",
-    "failed-to-embed-memo": "嵌入备忘录失败",
     "fill-all": "请填写所有栏目。",
-    "fill-form": "请填写此表单",
-    "fill-server-name": "请填写服务器名称",
-    "generating-the-screenshot": "正在生成截图…",
-    "image-load-failed": "图片加载失败",
-    "invalid-created-datetime": "创建的日期时间无效。",
-    "invalid-resource-filename": "无效的资源文件名。",
-    "login-failed": "登录失败",
     "maximum-upload-size-is": "允许的最大上传大小为 {{size}} MiB",
     "memo-not-found": "找不到 Memo",
-    "memo-updated-datetime": "Memo 创建日期时间已更改。",
-    "memos-ready": "所有 Memo 已就绪",
     "new-password-not-match": "新密码不匹配。",
     "no-data": "未找到任何数据。",
     "password-changed": "密码已修改",
     "password-not-match": "密码不一致。",
-    "private-only": "此 Memo 仅自己可见。",
-    "resource-filename-updated": "资源文件名更改成功。",
-    "resource-ready": "所有资源已就绪",
     "restored-successfully": "恢复成功",
-    "signup-failed": "注册失败",
-    "succeed-copy-code": "复制代码到剪贴板成功。",
-    "succeed-copy-content": "复制内容到剪贴板成功。",
     "succeed-copy-link": "复制链接到剪贴板成功。",
-    "succeed-copy-link-not-public": "复制链接到剪贴板成功，请注意本条 Memo在未登录情况下不可访问。",
-    "succeed-copy-resource-link": "复制资源链接到剪贴板成功。",
-    "succeed-update-additional-script": "更新附加脚本成功。",
-    "succeed-update-additional-style": "更新附加样式成功。",
-    "succeed-update-customized-profile": "更新自定义配置文件成功。",
-    "succeed-vacuum-database": "清理数据库成功。",
     "update-succeed": "更新成功",
     "user-not-found": "未找到该用户"
   },
   "reference": {
     "add-references": "添加引用",
     "embedded-usage": "作为嵌入内容使用",
-    "no-memos-found": "没有发现备忘录",
-    "search-bar-placeholder": "搜索内容"
+    "no-memos-found": "没有发现备忘录"
   },
   "resource": {
     "clear": "清除",
@@ -203,11 +170,7 @@
     "no-unused-resources": "无可删除的资源",
     "reset-link": "重置链接",
     "reset-link-prompt": "您确定要重置链接吗？这将导致当前使用的链接失效。（此操作不可逆）",
-    "reset-resource-link": "重置资源链接",
-    "search-bar-placeholder": "搜索资源",
-    "upload-successfully": "上传成功",
-    "warning-text": "您确定要删除这项资源吗？（此操作不可逆）",
-    "warning-text-unused": "您确定要删除这些未使用的资源吗？（此操作不可逆）"
+    "reset-resource-link": "重置资源链接"
   },
   "router": {
     "back-to-top": "回到顶部",
