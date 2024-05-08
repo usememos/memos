@@ -103,7 +103,7 @@ const WorkspaceSection = () => {
       console.error(error);
       return;
     }
-    toast.success(t("message.succeed-update-additional-style"));
+    toast.success(t("message.update-succeed"));
   };
 
   const handleAdditionalScriptChanged = (value: string) => {
@@ -123,7 +123,7 @@ const WorkspaceSection = () => {
       console.error(error);
       return;
     }
-    toast.success(t("message.succeed-update-additional-script"));
+    toast.success(t("message.update-succeed"));
   };
 
   const handleDisablePublicMemosChanged = async (value: boolean) => {

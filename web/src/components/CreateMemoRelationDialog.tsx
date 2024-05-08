@@ -96,7 +96,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           size="md"
           clearOnBlur
           disableClearable
-          placeholder={t("reference.search-bar-placeholder")}
+          placeholder={t("reference.search-placeholder")}
           noOptionsText={t("reference.no-memos-found")}
           options={filteredMemos}
           loading={isFetching}

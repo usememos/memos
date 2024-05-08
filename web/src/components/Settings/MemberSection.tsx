@@ -71,7 +71,7 @@ const MemberSection = () => {
 
   const handleCreateUserBtnClick = async () => {
     if (state.creatingUser.username === "" || state.creatingUser.password === "") {
-      toast.error(t("message.fill-form"));
+      toast.error(t("message.fill-all"));
       return;
     }
 

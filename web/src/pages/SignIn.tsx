@@ -85,7 +85,7 @@ const SignIn = () => {
       navigateTo("/");
     } catch (error: any) {
       console.error(error);
-      toast.error((error as ClientError).details || t("message.login-failed"));
+      toast.error((error as ClientError).details || "Failed to sign in.");
     }
     actionBtnLoadingState.setFinish();
   };

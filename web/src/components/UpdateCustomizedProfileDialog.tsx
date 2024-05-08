@@ -78,7 +78,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   const handleSaveButtonClick = async () => {
     if (customProfile.title === "") {
-      toast.error(t("message.fill-server-name"));
+      toast.error("Title cannot be empty.");
       return;
     }
 
@@ -94,7 +94,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
       console.error(error);
       return;
     }
-    toast.success(t("message.succeed-update-customized-profile"));
+    toast.success(t("message.update-succeed"));
     destroy();
   };
 

@@ -89,19 +89,12 @@
     "any-thoughts": "Any thoughts...",
     "save": "Save"
   },
-  "embed-memo": {
-    "copy": "Copy",
-    "only-public-supported": "* Only public memos can be embedded.",
-    "text": "Copy and paste the below code into your blog or website.",
-    "title": "Embed Memo"
-  },
   "inbox": {
     "memo-comment": "{{user}} has a comment on your {{memo}}.",
     "version-update": "New version {{version}} is available now!"
   },
   "memo": {
     "archived-at": "Archived at",
-    "archived-memos": "Archived Memos",
     "comment": {
       "no-comment": "No comment",
       "self": "Comments"
@@ -128,42 +121,17 @@
   "message": {
     "archived-successfully": "Archived successfully",
     "change-memo-created-time": "Change memo created time",
-    "change-resource-filename": "Change resource filename",
-    "click-to-save-the-image": "Click to save the image",
     "copied": "Copied",
-    "count-selected-resources": "Total selected",
     "deleted-successfully": "Deleted successfully",
-    "failed-to-embed-memo": "Failed to embed memo",
     "fill-all": "Please fill in all fields.",
-    "fill-form": "Please fill out this form",
-    "fill-server-name": "Please fill in the server name",
-    "generating-the-screenshot": "Generating the screenshot…",
-    "image-load-failed": "Image load failed",
-    "invalid-created-datetime": "Invalid created datetime.",
-    "invalid-resource-filename": "Invalid filename.",
-    "login-failed": "Login failed",
     "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
     "memo-not-found": "Memo not found.",
-    "memo-updated-datetime": "Memo created datetime changed.",
-    "memos-ready": "all memos are ready",
     "new-password-not-match": "New passwords do not match.",
     "no-data": "No data found.",
     "password-changed": "Password Changed",
     "password-not-match": "Passwords do not match.",
-    "private-only": "This memo is set to private.",
-    "resource-filename-updated": "Resource filename changed.",
-    "resource-ready": "all resource are ready",
     "restored-successfully": "Restored successfully",
-    "signup-failed": "Signup failed",
-    "succeed-copy-code": "Code copied successfully.",
-    "succeed-copy-content": "Content copied successfully.",
     "succeed-copy-link": "Link copied successfully.",
-    "succeed-copy-link-not-public": "Content copied successfully. This memo is not accessible without logging in.",
-    "succeed-copy-resource-link": "Resource link copied successfully.",
-    "succeed-update-additional-script": "Additional script updated successfully.",
-    "succeed-update-additional-style": "Additional style updated successfully.",
-    "succeed-update-customized-profile": "Profile successfully customized.",
-    "succeed-vacuum-database": "Successfully vacuumed database.",
     "update-succeed": "Update succeeded",
     "user-not-found": "User not found"
   },
@@ -171,7 +139,7 @@
     "add-references": "Add references",
     "embedded-usage": "Use as Embedded Content",
     "no-memos-found": "No memos found",
-    "search-bar-placeholder": "Search content"
+    "search-placeholder": "Search content"
   },
   "resource": {
     "clear": "Clear",
@@ -203,11 +171,7 @@
     "no-unused-resources": "No unused resources",
     "reset-link": "Reset Link",
     "reset-link-prompt": "Are you sure to reset the link? This will break all current link usages. THIS ACTION IS IRREVERSIBLE",
-    "reset-resource-link": "Reset Resource Link",
-    "search-bar-placeholder": "Search resource",
-    "upload-successfully": "Upload successfully",
-    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIBLE",
-    "warning-text-unused": "Are you sure to delete these unused resources? THIS ACTION IS IRREVERSIBLE"
+    "reset-resource-link": "Reset Resource Link"
   },
   "router": {
     "back-to-top": "Back to Top",

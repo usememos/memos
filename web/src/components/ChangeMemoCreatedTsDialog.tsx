@@ -48,7 +48,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
         },
         ["created_ts"],
       );
-      toast.success(t("message.memo-updated-datetime"));
+      toast.success("Updated memo created time successfully.");
       handleCloseBtnClick();
     } catch (error: any) {
       console.error(error);
