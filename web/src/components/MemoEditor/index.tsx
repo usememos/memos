@@ -7,7 +7,7 @@ import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore, useResourceStore, useUserStore, useWorkspaceSettingStore, useTagStore } from "@/store/v1";
+import { useMemoStore, useResourceStore, useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
@@ -16,7 +16,6 @@ import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_sett
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
-import { extractTagsFromContent } from "@/utils/tag";
 import Icon from "../Icon";
 import VisibilityIcon from "../VisibilityIcon";
 import AddMemoRelationButton from "./ActionButton/AddMemoRelationButton";
@@ -58,7 +57,6 @@ const MemoEditor = (props: Props) => {
   const userStore = useUserStore();
   const memoStore = useMemoStore();
   const resourceStore = useResourceStore();
-  const tagStore = useTagStore();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
     memoVisibility: Visibility.PRIVATE,
@@ -352,10 +350,6 @@ const MemoEditor = (props: Props) => {
       toast.error(error.details);
     }
 
-    // Batch upsert tags.
-    const tags = await extractTagsFromContent(content);
-    await tagStore.batchUpsertTag(tags);
-
     setState((state) => {
       return {
         ...state,
@@ -447,6 +441,7 @@ const MemoEditor = (props: Props) => {
           </div>
           <div className="shrink-0 flex flex-row justify-end items-center">
             <Button
+              className="!font-normal"
               disabled={!allowSave}
               loading={state.isRequesting}
               endDecorator={<Icon.Send className="w-4 h-auto" />}

@@ -1,4 +1,3 @@
-import { Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import useDebounce from "react-use/lib/useDebounce";
 import { useFilterStore } from "@/store/module";
@@ -28,11 +27,10 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="w-full h-9 flex flex-row justify-start items-center">
-      <Input
-        className="w-full !text-sm !shadow-none !border-gray-200 dark:!border-zinc-800"
-        size="md"
-        startDecorator={<Icon.Search className="w-4 h-auto opacity-30" />}
+    <div className="relative w-full h-auto flex flex-row justify-start items-center">
+      <Icon.Search className="absolute left-3 w-4 h-auto opacity-30" />
+      <input
+        className="w-full text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 border dark:border-zinc-800 text-sm leading-6 rounded-lg p-1 pl-8 outline-none"
         placeholder={t("memo.search-placeholder")}
         value={queryText}
         onChange={handleTextQueryInput}

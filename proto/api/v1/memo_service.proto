@@ -57,6 +57,21 @@ service MemoService {
       body: "*"
     };
   }
+  // ListMemoTags lists tags for a memo.
+  rpc ListMemoTags(ListMemoTagsRequest) returns (ListMemoTagsResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=memos/*}/tags"};
+  }
+  // RenameMemoTag renames a tag for a memo.
+  rpc RenameMemoTag(RenameMemoTagRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      patch: "/api/v1/{parent=memos/*}/tags:rename"
+      body: "*"
+    };
+  }
+  // DeleteMemoTag deletes a tag for a memo.
+  rpc DeleteMemoTag(DeleteMemoTagRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{parent=memos/*}/tags/{tag}"};
+  }
   // SetMemoResources sets resources for a memo.
   rpc SetMemoResources(SetMemoResourcesRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
@@ -155,15 +170,17 @@ message Memo {
 
   Visibility visibility = 10;
 
-  bool pinned = 11;
+  repeated string tags = 11;
 
-  optional int32 parent_id = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  bool pinned = 12;
 
-  repeated Resource resources = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  optional int32 parent_id = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated MemoRelation relations = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated Resource resources = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated Reaction reactions = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  repeated Reaction reactions = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {
@@ -228,6 +245,38 @@ message ExportMemosRequest {
 
 message ExportMemosResponse {
   bytes content = 1;
+}
+
+message ListMemoTagsRequest {
+  // The parent, who owns the tags.
+  // Format: memos/{id}. Use "memos/-" to list all tags.
+  string parent = 1;
+
+  // Rebuild the tags.
+  bool rebuild = 2;
+}
+
+message ListMemoTagsResponse {
+  // tag_amounts is the amount of tags.
+  // key is the tag name. e.g. "tag1".
+  // value is the amount of the tag.
+  map<string, int32> tag_amounts = 1;
+}
+
+message RenameMemoTagRequest {
+  // The parent, who owns the tags.
+  // Format: memos/{id}. Use "memos/-" to rename all tags.
+  string parent = 1;
+  string old_tag = 2;
+  string new_tag = 3;
+}
+
+message DeleteMemoTagRequest {
+  // The parent, who owns the tags.
+  // Format: memos/{id}. Use "memos/-" to delete all tags.
+  string parent = 1;
+  string tag = 2;
+  bool delete_related_memos = 3;
 }
 
 message SetMemoResourcesRequest {

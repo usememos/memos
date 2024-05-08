@@ -27,6 +27,9 @@ const (
 	MemoService_UpdateMemo_FullMethodName         = "/memos.api.v1.MemoService/UpdateMemo"
 	MemoService_DeleteMemo_FullMethodName         = "/memos.api.v1.MemoService/DeleteMemo"
 	MemoService_ExportMemos_FullMethodName        = "/memos.api.v1.MemoService/ExportMemos"
+	MemoService_ListMemoTags_FullMethodName       = "/memos.api.v1.MemoService/ListMemoTags"
+	MemoService_RenameMemoTag_FullMethodName      = "/memos.api.v1.MemoService/RenameMemoTag"
+	MemoService_DeleteMemoTag_FullMethodName      = "/memos.api.v1.MemoService/DeleteMemoTag"
 	MemoService_SetMemoResources_FullMethodName   = "/memos.api.v1.MemoService/SetMemoResources"
 	MemoService_ListMemoResources_FullMethodName  = "/memos.api.v1.MemoService/ListMemoResources"
 	MemoService_SetMemoRelations_FullMethodName   = "/memos.api.v1.MemoService/SetMemoRelations"
@@ -57,6 +60,12 @@ type MemoServiceClient interface {
 	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ExportMemos exports memos.
 	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error)
+	// ListMemoTags lists tags for a memo.
+	ListMemoTags(ctx context.Context, in *ListMemoTagsRequest, opts ...grpc.CallOption) (*ListMemoTagsResponse, error)
+	// RenameMemoTag renames a tag for a memo.
+	RenameMemoTag(ctx context.Context, in *RenameMemoTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// DeleteMemoTag deletes a tag for a memo.
+	DeleteMemoTag(ctx context.Context, in *DeleteMemoTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// SetMemoResources sets resources for a memo.
 	SetMemoResources(ctx context.Context, in *SetMemoResourcesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListMemoResources lists resources for a memo.
@@ -144,6 +153,33 @@ func (c *memoServiceClient) DeleteMemo(ctx context.Context, in *DeleteMemoReques
 func (c *memoServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error) {
 	out := new(ExportMemosResponse)
 	err := c.cc.Invoke(ctx, MemoService_ExportMemos_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) ListMemoTags(ctx context.Context, in *ListMemoTagsRequest, opts ...grpc.CallOption) (*ListMemoTagsResponse, error) {
+	out := new(ListMemoTagsResponse)
+	err := c.cc.Invoke(ctx, MemoService_ListMemoTags_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) RenameMemoTag(ctx context.Context, in *RenameMemoTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MemoService_RenameMemoTag_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) DeleteMemoTag(ctx context.Context, in *DeleteMemoTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MemoService_DeleteMemoTag_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -258,6 +294,12 @@ type MemoServiceServer interface {
 	DeleteMemo(context.Context, *DeleteMemoRequest) (*emptypb.Empty, error)
 	// ExportMemos exports memos.
 	ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error)
+	// ListMemoTags lists tags for a memo.
+	ListMemoTags(context.Context, *ListMemoTagsRequest) (*ListMemoTagsResponse, error)
+	// RenameMemoTag renames a tag for a memo.
+	RenameMemoTag(context.Context, *RenameMemoTagRequest) (*emptypb.Empty, error)
+	// DeleteMemoTag deletes a tag for a memo.
+	DeleteMemoTag(context.Context, *DeleteMemoTagRequest) (*emptypb.Empty, error)
 	// SetMemoResources sets resources for a memo.
 	SetMemoResources(context.Context, *SetMemoResourcesRequest) (*emptypb.Empty, error)
 	// ListMemoResources lists resources for a memo.
@@ -305,6 +347,15 @@ func (UnimplementedMemoServiceServer) DeleteMemo(context.Context, *DeleteMemoReq
 }
 func (UnimplementedMemoServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportMemos not implemented")
+}
+func (UnimplementedMemoServiceServer) ListMemoTags(context.Context, *ListMemoTagsRequest) (*ListMemoTagsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMemoTags not implemented")
+}
+func (UnimplementedMemoServiceServer) RenameMemoTag(context.Context, *RenameMemoTagRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RenameMemoTag not implemented")
+}
+func (UnimplementedMemoServiceServer) DeleteMemoTag(context.Context, *DeleteMemoTagRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMemoTag not implemented")
 }
 func (UnimplementedMemoServiceServer) SetMemoResources(context.Context, *SetMemoResourcesRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetMemoResources not implemented")
@@ -471,6 +522,60 @@ func _MemoService_ExportMemos_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemoServiceServer).ExportMemos(ctx, req.(*ExportMemosRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_ListMemoTags_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMemoTagsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).ListMemoTags(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_ListMemoTags_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).ListMemoTags(ctx, req.(*ListMemoTagsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_RenameMemoTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RenameMemoTagRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).RenameMemoTag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_RenameMemoTag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).RenameMemoTag(ctx, req.(*RenameMemoTagRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_DeleteMemoTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMemoTagRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).DeleteMemoTag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_DeleteMemoTag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).DeleteMemoTag(ctx, req.(*DeleteMemoTagRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -689,6 +794,18 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExportMemos",
 			Handler:    _MemoService_ExportMemos_Handler,
+		},
+		{
+			MethodName: "ListMemoTags",
+			Handler:    _MemoService_ListMemoTags_Handler,
+		},
+		{
+			MethodName: "RenameMemoTag",
+			Handler:    _MemoService_RenameMemoTag_Handler,
+		},
+		{
+			MethodName: "DeleteMemoTag",
+			Handler:    _MemoService_DeleteMemoTag_Handler,
 		},
 		{
 			MethodName: "SetMemoResources",

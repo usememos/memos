@@ -39,14 +39,14 @@ const Archived = () => {
   const fetchMemos = async () => {
     const filters = [`creator == "${user.name}"`, `row_status == "ARCHIVED"`];
     const contentSearch: string[] = [];
-    if (tagQuery) {
-      contentSearch.push(JSON.stringify(`#${tagQuery}`));
-    }
     if (textQuery) {
       contentSearch.push(JSON.stringify(textQuery));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
+    }
+    if (tagQuery) {
+      filters.push(`tag == "${tagQuery}"`);
     }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({

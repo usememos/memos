@@ -46,6 +46,7 @@ type Memo struct {
 	// Domain specific fields
 	Content    string
 	Visibility Visibility
+	Tags       []string
 
 	// Composed fields
 	Pinned   bool
@@ -67,6 +68,7 @@ type FindMemo struct {
 	// Domain specific fields
 	ContentSearch   []string
 	VisibilityList  []Visibility
+	Tag             *string
 	ExcludeContent  bool
 	ExcludeComments bool
 	Random          bool
@@ -86,6 +88,7 @@ type UpdateMemo struct {
 	RowStatus  *RowStatus
 	Content    *string
 	Visibility *Visibility
+	Tags       *[]string
 }
 
 type DeleteMemo struct {

@@ -17,7 +17,7 @@ const TagSelector = (props: Props) => {
   const tagStore = useTagStore();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const tags = Array.from(tagStore.getState().tags);
+  const tags = tagStore.sortedTags();
 
   useEffect(() => {
     (async () => {

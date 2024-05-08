@@ -11,7 +11,6 @@ tags:
   - name: MarkdownService
   - name: ResourceService
   - name: MemoService
-  - name: TagService
   - name: WebhookService
   - name: WorkspaceService
   - name: WorkspaceSettingService
@@ -494,137 +493,6 @@ paths:
           type: string
       tags:
         - ResourceService
-  /api/v1/tags:
-    get:
-      summary: ListTags lists tags.
-      operationId: TagService_ListTags
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1ListTagsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      tags:
-        - TagService
-    delete:
-      summary: DeleteTag deletes a tag.
-      operationId: TagService_DeleteTag
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            type: object
-            properties: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: tag.name
-          in: query
-          required: false
-          type: string
-        - name: tag.creator
-          description: |-
-            The creator of tags.
-            Format: users/{id}
-          in: query
-          required: false
-          type: string
-      tags:
-        - TagService
-    post:
-      summary: UpsertTag upserts a tag.
-      operationId: TagService_UpsertTag
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Tag'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1UpsertTagRequest'
-      tags:
-        - TagService
-  /api/v1/tags/suggestion:
-    get:
-      summary: GetTagSuggestions gets tag suggestions from the user's memos.
-      operationId: TagService_GetTagSuggestions
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1GetTagSuggestionsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user
-          description: |-
-            The creator of tags.
-            Format: users/{id}
-          in: query
-          required: false
-          type: string
-      tags:
-        - TagService
-  /api/v1/tags:batchUpsert:
-    post:
-      summary: BatchUpsertTag upserts multiple tags.
-      operationId: TagService_BatchUpsertTag
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            type: object
-            properties: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1BatchUpsertTagRequest'
-      tags:
-        - TagService
-  /api/v1/tags:rename:
-    patch:
-      summary: |-
-        RenameTag renames a tag.
-        All related memos will be updated.
-      operationId: TagService_RenameTag
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            type: object
-            properties: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1RenameTagRequest'
-      tags:
-        - TagService
   /api/v1/users:
     get:
       summary: ListUsers returns a list of users.
@@ -1044,6 +912,10 @@ paths:
                 readOnly: true
               visibility:
                 $ref: '#/definitions/v1Visibility'
+              tags:
+                type: array
+                items:
+                  type: string
               pinned:
                 type: boolean
               parentId:
@@ -1605,6 +1477,98 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
+  /api/v1/{parent}/tags:
+    get:
+      summary: ListMemoTags lists tags for a memo.
+      operationId: MemoService_ListMemoTags
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListMemoTagsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to list all tags.
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: rebuild
+          description: Rebuild the tags.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - MemoService
+  /api/v1/{parent}/tags/{tag}:
+    delete:
+      summary: DeleteMemoTag deletes a tag for a memo.
+      operationId: MemoService_DeleteMemoTag
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to delete all tags.
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: tag
+          in: path
+          required: true
+          type: string
+        - name: deleteRelatedMemos
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - MemoService
+  /api/v1/{parent}/tags:rename:
+    patch:
+      summary: RenameMemoTag renames a tag for a memo.
+      operationId: MemoService_RenameMemoTag
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to rename all tags.
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceRenameMemoTagBody'
+      tags:
+        - MemoService
   /api/v1/{resource.name}:
     patch:
       summary: UpdateResource updates a resource.
@@ -1850,6 +1814,13 @@ paths:
       tags:
         - ResourceService
 definitions:
+  MemoServiceRenameMemoTagBody:
+    type: object
+    properties:
+      oldTag:
+        type: string
+      newTag:
+        type: string
   MemoServiceSetMemoRelationsBody:
     type: object
     properties:
@@ -2323,14 +2294,6 @@ definitions:
         type: string
       isRawText:
         type: boolean
-  v1BatchUpsertTagRequest:
-    type: object
-    properties:
-      requests:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1UpsertTagRequest'
   v1BlockquoteNode:
     type: object
     properties:
@@ -2406,13 +2369,6 @@ definitions:
       content:
         type: string
         format: byte
-  v1GetTagSuggestionsResponse:
-    type: object
-    properties:
-      tags:
-        type: array
-        items:
-          type: string
   v1GetUserMemosStatsResponse:
     type: object
     properties:
@@ -2563,6 +2519,18 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Resource'
+  v1ListMemoTagsResponse:
+    type: object
+    properties:
+      tagAmounts:
+        type: object
+        additionalProperties:
+          type: integer
+          format: int32
+        description: |-
+          tag_amounts is the amount of tags.
+          key is the tag name. e.g. "tag1".
+          value is the amount of the tag.
   v1ListMemosResponse:
     type: object
     properties:
@@ -2584,14 +2552,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Resource'
-  v1ListTagsResponse:
-    type: object
-    properties:
-      tags:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Tag'
   v1ListUserAccessTokensResponse:
     type: object
     properties:
@@ -2672,6 +2632,10 @@ definitions:
         readOnly: true
       visibility:
         $ref: '#/definitions/v1Visibility'
+      tags:
+        type: array
+        items:
+          type: string
       pinned:
         type: boolean
       parentId:
@@ -2888,18 +2852,6 @@ definitions:
         type: string
       params:
         type: string
-  v1RenameTagRequest:
-    type: object
-    properties:
-      user:
-        type: string
-        title: |-
-          The creator of tags.
-          Format: users/{id}
-      oldName:
-        type: string
-      newName:
-        type: string
   v1Resource:
     type: object
     properties:
@@ -3013,16 +2965,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/TableNodeRow'
-  v1Tag:
-    type: object
-    properties:
-      name:
-        type: string
-      creator:
-        type: string
-        title: |-
-          The creator of tags.
-          Format: users/{id}
   v1TagNode:
     type: object
     properties:
@@ -3061,11 +3003,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Node'
-  v1UpsertTagRequest:
-    type: object
-    properties:
-      name:
-        type: string
   v1User:
     type: object
     properties:

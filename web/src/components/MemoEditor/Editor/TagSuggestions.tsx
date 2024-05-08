@@ -16,8 +16,7 @@ type Position = { left: number; top: number; height: number };
 const TagSuggestions = ({ editorRef, editorActions }: Props) => {
   const [position, setPosition] = useState<Position | null>(null);
   const tagStore = useTagStore();
-  const tagsRef = useRef(Array.from(tagStore.getState().tags));
-  tagsRef.current = Array.from(tagStore.getState().tags);
+  const tags = tagStore.sortedTags();
 
   const [selected, select] = useState(0);
   const selectedRef = useRef(selected);
@@ -37,7 +36,7 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
   const suggestionsRef = useRef<string[]>([]);
   suggestionsRef.current = (() => {
     const search = getCurrentWord()[0].slice(1).toLowerCase();
-    const fuse = new Fuse(tagsRef.current);
+    const fuse = new Fuse(tags);
     return fuse.search(search).map((result) => result.item);
   })();
 

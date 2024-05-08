@@ -68,14 +68,14 @@ const Timeline = () => {
     (async () => {
       const filters = [`row_status == "NORMAL"`];
       const contentSearch: string[] = [];
-      if (tagQuery) {
-        contentSearch.push(JSON.stringify(`#${tagQuery}`));
-      }
       if (textQuery) {
         contentSearch.push(JSON.stringify(textQuery));
       }
       if (contentSearch.length > 0) {
         filters.push(`content_search == [${contentSearch.join(", ")}]`);
+      }
+      if (tagQuery) {
+        filters.push(`tag == "${tagQuery}"`);
       }
       const { stats } = await memoServiceClient.getUserMemosStats({
         name: user.name,
@@ -89,14 +89,14 @@ const Timeline = () => {
   const fetchMemos = async () => {
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
     const contentSearch: string[] = [];
-    if (tagQuery) {
-      contentSearch.push(JSON.stringify(`#${tagQuery}`));
-    }
     if (textQuery) {
       contentSearch.push(JSON.stringify(textQuery));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
+    }
+    if (tagQuery) {
+      filters.push(`tag == "${tagQuery}"`);
     }
     if (selectedDay) {
       const selectedDateStamp = getTimeStampByDate(selectedDay) + new Date().getTimezoneOffset() * 60 * 1000;

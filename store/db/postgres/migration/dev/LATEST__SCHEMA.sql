@@ -43,7 +43,8 @@ CREATE TABLE memo (
   updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   content TEXT NOT NULL,
-  visibility TEXT NOT NULL DEFAULT 'PRIVATE'
+  visibility TEXT NOT NULL DEFAULT 'PRIVATE',
+  tags JSONB NOT NULL DEFAULT '[]'
 );
 
 -- memo_organizer

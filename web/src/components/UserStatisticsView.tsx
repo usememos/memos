@@ -18,7 +18,7 @@ const UserStatisticsView = (props: Props) => {
   const [isRequesting, setIsRequesting] = useState(false);
   const days = Math.ceil((Date.now() - user.createTime!.getTime()) / 86400000);
   const memos = Object.values(memoStore.getState().memoMapByName);
-  const tags = tagStore.getState().tags.size;
+  const tags = tagStore.sortedTags().length;
 
   useEffect(() => {
     if (memos.length === 0) {
@@ -37,7 +37,7 @@ const UserStatisticsView = (props: Props) => {
   }, [memos.length, user.name]);
 
   return (
-    <div className="w-full border mt-2 py-2 px-3 rounded-md space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
+    <div className="w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
       <div className="mb-1 w-full flex flex-row justify-between items-center">
         <p className="text-sm font-medium leading-6 dark:text-gray-500">{t("common.statistics")}</p>
       </div>

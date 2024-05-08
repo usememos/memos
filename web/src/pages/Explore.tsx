@@ -35,14 +35,14 @@ const Explore = () => {
   const fetchMemos = async () => {
     const filters = [`row_status == "NORMAL"`, `visibilities == [${user ? "'PUBLIC', 'PROTECTED'" : "'PUBLIC'"}]`];
     const contentSearch: string[] = [];
-    if (tagQuery) {
-      contentSearch.push(JSON.stringify(`#${tagQuery}`));
-    }
     if (textQuery) {
       contentSearch.push(JSON.stringify(textQuery));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
+    }
+    if (tagQuery) {
+      filters.push(`tag == "${tagQuery}"`);
     }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({

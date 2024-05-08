@@ -43,7 +43,8 @@ CREATE TABLE `memo` (
   `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
   `content` TEXT NOT NULL,
-  `visibility` VARCHAR(256) NOT NULL DEFAULT 'PRIVATE'
+  `visibility` VARCHAR(256) NOT NULL DEFAULT 'PRIVATE',
+  `tags` JSON NOT NULL
 );
 
 -- memo_organizer

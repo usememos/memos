@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -11,8 +12,16 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"uid", "creator_id", "content", "visibility"}
-	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility}
+	fields := []string{"uid", "creator_id", "content", "visibility", "tags"}
+	tags := "[]"
+	if len(create.Tags) != 0 {
+		tagsBytes, err := json.Marshal(create.Tags)
+		if err != nil {
+			return nil, err
+		}
+		tags = string(tagsBytes)
+	}
+	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, tags}
 
 	stmt := "INSERT INTO memo (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts, row_status"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
@@ -67,6 +76,10 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(holders, ", ")))
 	}
+	if v := find.Tag; v != nil {
+		where = append(where, "memo.tags @> "+placeholder(len(args)+1))
+		args = append(args, fmt.Sprintf(`["%s"]`, *v))
+	}
 	if find.ExcludeComments {
 		where = append(where, "memo_relation.related_memo_id IS NULL")
 	}
@@ -93,6 +106,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		`memo.updated_ts AS updated_ts`,
 		`memo.row_status AS row_status`,
 		`memo.visibility AS visibility`,
+		`memo.tags AS tags`,
 		`COALESCE(memo_organizer.pinned, 0) AS pinned`,
 		`memo_relation.related_memo_id AS parent_id`,
 	}
@@ -122,6 +136,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	list := make([]*store.Memo, 0)
 	for rows.Next() {
 		var memo store.Memo
+		var tagsBytes []byte
 		dests := []any{
 			&memo.ID,
 			&memo.UID,
@@ -130,6 +145,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.UpdatedTs,
 			&memo.RowStatus,
 			&memo.Visibility,
+			&tagsBytes,
 			&memo.Pinned,
 			&memo.ParentID,
 		}
@@ -138,6 +154,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		if err := rows.Scan(dests...); err != nil {
 			return nil, err
+		}
+		if err := json.Unmarshal(tagsBytes, &memo.Tags); err != nil {
+			return nil, errors.Wrap(err, "failed to unmarshal tags")
 		}
 		list = append(list, &memo)
 	}
@@ -181,6 +200,13 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	}
 	if v := update.Visibility; v != nil {
 		set, args = append(set, "visibility = "+placeholder(len(args)+1)), append(args, *v)
+	}
+	if v := update.Tags; v != nil {
+		tagsBytes, err := json.Marshal(v)
+		if err != nil {
+			return err
+		}
+		set, args = append(set, "tags = "+placeholder(len(args)+1)), append(args, string(tagsBytes))
 	}
 	stmt := `UPDATE memo SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1)
 	args = append(args, update.ID)

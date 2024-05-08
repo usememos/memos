@@ -1,53 +1,41 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
-import { tagServiceClient } from "@/grpcweb";
+import { memoServiceClient } from "@/grpcweb";
 
 interface State {
-  tags: Set<string>;
+  tagAmounts: Record<string, number>;
 }
 
 const getDefaultState = (): State => ({
-  tags: new Set(),
+  tagAmounts: {},
 });
 
 export const useTagStore = create(
   combine(getDefaultState(), (set, get) => ({
     setState: (state: State) => set(state),
     getState: () => get(),
+    sortedTags: () => {
+      return Object.entries(get().tagAmounts)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .sort((a, b) => b[1] - a[1])
+        .map(([tag]) => tag);
+    },
     fetchTags: async (options?: { skipCache: boolean }) => {
-      const { tags: tagsCache } = get();
-      if (tagsCache.size && !options?.skipCache) {
-        return tagsCache;
+      const { tagAmounts: cache } = get();
+      if (cache.length > 0 && !options?.skipCache) {
+        return cache;
       }
-      const { tags } = await tagServiceClient.listTags({});
-      set({ tags: new Set(tags.map((tag) => tag.name)) });
-      return tags;
-    },
-    upsertTag: async (tagName: string) => {
-      await tagServiceClient.upsertTag({
-        name: tagName,
-      });
-      const { tags } = get();
-      set({ tags: new Set([...tags, tagName]) });
-    },
-    batchUpsertTag: async (tagNames: string[]) => {
-      await tagServiceClient.batchUpsertTag({
-        requests: tagNames.map((name) => ({
-          name,
-        })),
-      });
-      const { tags } = get();
-      set({ tags: new Set([...tags, ...tagNames]) });
+      const { tagAmounts } = await memoServiceClient.listMemoTags({ parent: "memos/-" });
+      set({ tagAmounts });
     },
     deleteTag: async (tagName: string) => {
-      await tagServiceClient.deleteTag({
-        tag: {
-          name: tagName,
-        },
+      await memoServiceClient.deleteMemoTag({
+        parent: "memos/-",
+        tag: tagName,
       });
-      const { tags } = get();
-      tags.delete(tagName);
-      set({ tags });
+      const { tagAmounts } = get();
+      delete tagAmounts[tagName];
+      set({ tagAmounts });
     },
   })),
 );

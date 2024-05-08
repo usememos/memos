@@ -1,13 +1,4 @@
 {
-  "about": {
-    "about-memos": "About memos",
-    "memos-description": "memos is a web-based note-taking application that you can use to write, organize, and share notes.",
-    "no-server-description": "No description configured for this server.",
-    "other-projects": "Other Projects"
-  },
-  "amount-text": {
-    "memo": "MEMO"
-  },
   "auth": {
     "create-your-account": "Create your account",
     "host-tip": "You are registering as the Site Host.",
@@ -328,7 +319,6 @@
         "locale": "Server Locale",
         "title": "Customize Server"
       },
-      "database-file-size": "Database File Size",
       "disable-password-login": "Disable password login",
       "disable-password-login-final-warning": "Please type \"CONFIRM\" if you know what you are doing.",
       "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra carefull when removing an identity provider",
@@ -338,24 +328,16 @@
       "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password",
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
-      "server-name": "Server Name",
-      "vacuum-hint": "Cleans up unused data."
+      "server-name": "Server Name"
     }
   },
   "tag": {
     "all-tags": "All Tags",
     "create-tag": "Create Tag",
     "create-tags-guide": "You can create tags by inputting `#tag`.",
-    "delete-confirm": "Are you sure to delete this tag?",
+    "delete-confirm": "Are you sure to delete this tag? All related memos will be archived.",
     "delete-tag": "Delete Tag",
-    "hide": "Hide",
-    "invalid-tag-name": "Invalid tag name",
-    "no-tag-found": "No tag found",
-    "save-all": "Save all",
-    "show": "Show",
-    "tag-name": "TAG_NAME",
-    "tag-suggestions": "Tag suggestions",
-    "tip-text": "Input `#tag` to create"
+    "no-tag-found": "No tag found"
   },
   "timeline": {
     "title": "Timeline"
