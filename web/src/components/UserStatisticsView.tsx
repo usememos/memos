@@ -57,7 +57,7 @@ const UserStatisticsView = (props: Props) => {
       </div>
       <div className="w-full flex justify-between items-center">
         <div className="w-full flex justify-start items-center">
-          <Icon.Hash className="w-4 h-auto mr-1" />
+          <Icon.Tags className="w-4 h-auto mr-1" />
           <span className="block text-base sm:text-sm">{t("common.tags")}</span>
         </div>
         <span className="font-mono">{tags}</span>

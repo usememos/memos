@@ -28,6 +28,7 @@ module.exports = {
         20: "20",
         100: "100",
         1000: "1000",
+        2000: "2000",
       },
       gridTemplateRows: {
         7: "repeat(7, minmax(0, 1fr))",

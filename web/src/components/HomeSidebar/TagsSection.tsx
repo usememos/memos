@@ -11,10 +11,8 @@ import showRenameTagDialog from "../RenameTagDialog";
 
 const TagsSection = () => {
   const t = useTranslate();
-  const filterStore = useFilterStore();
   const tagStore = useTagStore();
   const memoList = useMemoList();
-  const filter = filterStore.state;
   const tagAmounts = Object.entries(tagStore.getState().tagAmounts)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
@@ -55,9 +53,9 @@ const TagsSection = () => {
         </div>
       </div>
       {tagAmounts.length > 0 ? (
-        <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-1">
+        <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
           {tagAmounts.map(([tag, amount]) => (
-            <TagContainer key={tag} tag={tag} amount={amount} tagQuery={filter.tag} />
+            <TagContainer key={tag} tag={tag} amount={amount} />
           ))}
         </div>
       ) : (
@@ -73,18 +71,16 @@ const TagsSection = () => {
 interface TagContainerProps {
   tag: string;
   amount: number;
-  tagQuery?: string;
 }
 
 const TagContainer: React.FC<TagContainerProps> = (props: TagContainerProps) => {
   const t = useTranslate();
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
-  const { tag, amount, tagQuery } = props;
-  const isActive = tagQuery === tag;
+  const { tag, amount } = props;
 
   const handleTagClick = () => {
-    if (isActive) {
+    if (filterStore.getState().tag === tag) {
       filterStore.setTagFilter(undefined);
     } else {
       filterStore.setTagFilter(tag);
@@ -106,14 +102,12 @@ const TagContainer: React.FC<TagContainerProps> = (props: TagContainerProps) => 
 
   return (
     <div
-      className={`shrink-0 w-auto max-w-full border text-sm rounded-md leading-6 flex flex-row justify-start items-center select-none hover:shadow-sm dark:hover:opacity-80 text-gray-600 dark:text-gray-400 dark:border-zinc-800 ${
-        isActive && "bg-blue-50 dark:bg-zinc-800"
-      }`}
+      className={`shrink-0 w-auto max-w-full text-sm rounded-md leading-6 flex flex-row justify-start items-center select-none hover:opacity-80 text-gray-600 dark:text-gray-400 dark:border-zinc-800`}
     >
       <Dropdown>
         <MenuButton slots={{ root: "div" }}>
-          <div className="shrink-0 group ml-1">
-            <Icon.Hash className="group-hover:hidden w-4 h-auto shrink-0 opacity-60" />
+          <div className="shrink-0 group">
+            <Icon.Hash className="group-hover:hidden w-4 h-auto shrink-0 opacity-40" />
             <Icon.MoreVertical className="hidden group-hover:block w-4 h-auto shrink-0 opacity-60" />
           </div>
         </MenuButton>
@@ -128,9 +122,9 @@ const TagContainer: React.FC<TagContainerProps> = (props: TagContainerProps) => 
           </MenuItem>
         </Menu>
       </Dropdown>
-      <div className="inline-flex flex-nowrap pl-0.5 pr-1 gap-1 cursor-pointer max-w-[calc(100%-20px)]" onClick={handleTagClick}>
-        <span className="truncate">{tag}</span>
-        <span className="opacity-60 shrink-0">({amount})</span>
+      <div className="inline-flex flex-nowrap ml-0.5 gap-0.5 cursor-pointer max-w-[calc(100%-16px)]" onClick={handleTagClick}>
+        <span className="truncate dark:opacity-80">{tag}</span>
+        {amount > 1 && <span className="opacity-60 shrink-0">({amount})</span>}
       </div>
     </div>
   );
