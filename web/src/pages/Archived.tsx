@@ -90,12 +90,16 @@ const Archived = () => {
   };
 
   return (
-    <section className="@container w-full max-w-4xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
+    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
       <div className="w-full px-4 sm:px-6">
         <div className="w-full flex flex-col justify-start items-start">
-          <div className="w-full flex flex-row justify-end items-center mb-2">
-            <div className="w-40">
+          <div className="w-full flex flex-row justify-between items-center mb-2">
+            <div className="flex flex-row justify-start items-center gap-1">
+              <Icon.Archive className="w-5 h-auto opacity-70 shrink-0" />
+              <span className="font-medium">{t("common.archived")}</span>
+            </div>
+            <div className="w-44">
               <SearchBar />
             </div>
           </div>

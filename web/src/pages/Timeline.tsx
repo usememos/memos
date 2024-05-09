@@ -100,12 +100,18 @@ const Timeline = () => {
     return nextPageToken;
   };
 
+  const handleSelectedDataChange = (date: string) => {
+    if (dayjs(date).isValid()) {
+      setSelectedDateString(new Date(date).toDateString());
+    }
+  };
+
   const handleNewMemo = () => {
     showMemoEditorDialog({});
   };
 
   return (
-    <section className="@container w-full max-w-4xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
+    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && (
         <MobileHeader>
           <TimelineSidebarDrawer />
@@ -141,9 +147,10 @@ const Timeline = () => {
                       <input
                         className="inset-0 absolute z-1 opacity-0"
                         type="date"
-                        defaultValue={dayjs(selectedDateString).format("YYYY-MM-DD")}
+                        max={dayjs().format("YYYY-MM-DD")}
+                        value={dayjs(selectedDateString).format("YYYY-MM-DD")}
                         onFocus={(e) => e.target.showPicker()}
-                        onChange={(e) => setSelectedDateString(e.target.value)}
+                        onChange={(e) => handleSelectedDataChange(e.target.value)}
                       />
                     </div>
                     <span className="opacity-60 text-lg">{dayjs(monthString).year()}</span>
