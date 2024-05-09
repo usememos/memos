@@ -1,9 +1,10 @@
+import { Button } from "@mui/joy";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import Icon from "@/components/Icon";
-import MemoEditor from "@/components/MemoEditor";
+import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -60,6 +61,14 @@ const MemoDetail = () => {
     return null;
   }
 
+  const handleShowCommentEditor = () => {
+    showMemoEditorDialog({
+      placeholder: t("editor.add-your-comment-here"),
+      parentMemoName: memo.name,
+      onConfirm: handleCommentCreated,
+    });
+  };
+
   const handleCommentCreated = async (memoCommentName: string) => {
     await memoStore.getOrFetchMemoByName(memoCommentName);
     await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
@@ -96,32 +105,34 @@ const MemoDetail = () => {
           </h2>
           <div className="relative mx-auto flex-grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
             {comments.length === 0 ? (
-              <div className="w-full flex flex-col justify-center items-center py-6 mb-2">
-                <Icon.MessageCircle strokeWidth={1} className="w-8 h-auto text-gray-400" />
-                <p className="text-gray-400 italic text-sm">{t("memo.comment.no-comment")}</p>
-              </div>
+              currentUser && (
+                <div className="w-full flex flex-row justify-center items-center py-6">
+                  <Button
+                    variant="plain"
+                    color="neutral"
+                    startDecorator={<Icon.MessageCircle className="w-5 h-auto text-gray-400" />}
+                    onClick={handleShowCommentEditor}
+                  >
+                    <span className="">{t("memo.comment.write-a-comment")}</span>
+                  </Button>
+                </div>
+              )
             ) : (
               <>
-                <div className="w-full flex flex-row justify-start items-center pl-3 mb-3">
-                  <Icon.MessageCircle className="w-5 h-auto text-gray-400 mr-1" />
-                  <span className="text-gray-400 text-sm">{t("memo.comment.self")}</span>
-                  <span className="text-gray-400 text-sm ml-0.5">({comments.length})</span>
+                <div className="w-full flex flex-row justify-between items-center px-3 mb-2">
+                  <div className="flex flex-row justify-start items-center">
+                    <Icon.MessageCircle className="w-5 h-auto text-gray-400 mr-1" />
+                    <span className="text-gray-400 text-sm">{t("memo.comment.self")}</span>
+                    <span className="text-gray-400 text-sm ml-1">({comments.length})</span>
+                  </div>
+                  <Button variant="plain" color="neutral" onClick={handleShowCommentEditor}>
+                    <span className="font-normal">{t("memo.comment.write-a-comment")}</span>
+                  </Button>
                 </div>
                 {comments.map((comment) => (
                   <MemoView key={`${comment.name}-${comment.displayTime}`} memo={comment} showCreator />
                 ))}
               </>
-            )}
-
-            {/* Only show comment editor when user login */}
-            {currentUser && (
-              <MemoEditor
-                key={memo.name}
-                cacheKey={`comment-editor-${memo.name}`}
-                placeholder={t("editor.add-your-comment-here")}
-                parentMemoName={memo.name}
-                onConfirm={handleCommentCreated}
-              />
             )}
           </div>
         </div>

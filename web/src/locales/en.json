@@ -96,8 +96,8 @@
   "memo": {
     "archived-at": "Archived at",
     "comment": {
-      "no-comment": "No comment",
-      "self": "Comments"
+      "self": "Comments",
+      "write-a-comment": "Write a comment"
     },
     "copy-link": "Copy Link",
     "count-memos-in-date": "{{count}} memos in {{date}}",

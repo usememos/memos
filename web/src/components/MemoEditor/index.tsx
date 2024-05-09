@@ -28,7 +28,7 @@ import ResourceListView from "./ResourceListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
 
-interface Props {
+export interface Props {
   className?: string;
   cacheKey?: string;
   placeholder?: string;

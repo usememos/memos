@@ -1,18 +1,21 @@
 import { IconButton } from "@mui/joy";
 import { useEffect } from "react";
 import { useTagStore } from "@/store/v1";
-import { MemoRelation } from "@/types/proto/api/v1/memo_relation_service";
-import MemoEditor from ".";
+import MemoEditor, { Props as MemoEditorProps } from ".";
 import { generateDialog } from "../Dialog";
 import Icon from "../Icon";
 
-interface Props extends DialogProps {
-  memoName?: string;
-  cacheKey?: string;
-  relationList?: MemoRelation[];
-}
+interface Props extends DialogProps, MemoEditorProps {}
 
-const MemoEditorDialog: React.FC<Props> = ({ memoName: memo, cacheKey, relationList, destroy }: Props) => {
+const MemoEditorDialog: React.FC<Props> = ({
+  memoName: memo,
+  parentMemoName,
+  placeholder,
+  cacheKey,
+  relationList,
+  onConfirm,
+  destroy,
+}: Props) => {
   const tagStore = useTagStore();
 
   useEffect(() => {
@@ -21,6 +24,13 @@ const MemoEditorDialog: React.FC<Props> = ({ memoName: memo, cacheKey, relationL
 
   const handleCloseBtnClick = () => {
     destroy();
+  };
+
+  const handleConfirm = (memoName: string) => {
+    handleCloseBtnClick();
+    if (onConfirm) {
+      onConfirm(memoName);
+    }
   };
 
   return (
@@ -39,8 +49,10 @@ const MemoEditorDialog: React.FC<Props> = ({ memoName: memo, cacheKey, relationL
           className="border-none !p-0 -mb-2"
           cacheKey={`memo-editor-${cacheKey || memo}`}
           memoName={memo}
+          parentMemoName={parentMemoName}
+          placeholder={placeholder}
           relationList={relationList}
-          onConfirm={handleCloseBtnClick}
+          onConfirm={handleConfirm}
           autoFocus
         />
       </div>
@@ -48,7 +60,7 @@ const MemoEditorDialog: React.FC<Props> = ({ memoName: memo, cacheKey, relationL
   );
 };
 
-export default function showMemoEditorDialog(props: Pick<Props, "memoName" | "cacheKey" | "relationList"> = {}): void {
+export default function showMemoEditorDialog(props: Partial<Props> = {}): void {
   generateDialog(
     {
       className: "memo-editor-dialog",
