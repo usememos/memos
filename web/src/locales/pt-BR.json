@@ -96,7 +96,8 @@
   "memo": {
     "archived-at": "Arquivado em",
     "comment": {
-      "self": "Comentários"
+      "self": "Comentários",
+      "write-a-comment": "Escreva um comentário"
     },
     "copy-link": "Copiar link",
     "count-memos-in-date": "{{count}} memos em {{date}}",
