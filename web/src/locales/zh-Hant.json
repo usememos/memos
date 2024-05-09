@@ -96,7 +96,6 @@
   "memo": {
     "archived-at": "封存於",
     "comment": {
-      "no-comment": "沒有評論",
       "self": "評論"
     },
     "copy-link": "複製連結",
