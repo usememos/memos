@@ -85,7 +85,6 @@
   "memo": {
     "archived-at": "보관된 날짜",
     "comment": {
-      "no-comment": "댓글 없음",
       "self": "댓글"
     },
     "copy-link": "링크 복사",
