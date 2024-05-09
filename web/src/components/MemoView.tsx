@@ -22,6 +22,7 @@ import VisibilityIcon from "./VisibilityIcon";
 
 interface Props {
   memo: Memo;
+  displayTimeFormat?: "auto" | "time";
   compact?: boolean;
   showCreator?: boolean;
   showVisibility?: boolean;
@@ -70,6 +71,13 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
+  const displayTime =
+    props.displayTimeFormat === "time" ? (
+      memo.displayTime?.toLocaleTimeString()
+    ) : (
+      <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
+    );
+
   return (
     <div
       className={clsx(
@@ -98,13 +106,13 @@ const MemoView: React.FC<Props> = (props: Props) => {
                   className="w-auto -mt-0.5 text-xs leading-tight text-gray-400 dark:text-gray-500 select-none"
                   onClick={handleGotoMemoDetailPage}
                 >
-                  <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
+                  {displayTime}
                 </div>
               </div>
             </div>
           ) : (
             <div className="w-full text-sm leading-tight text-gray-400 dark:text-gray-500 select-none" onClick={handleGotoMemoDetailPage}>
-              <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
+              {displayTime}
             </div>
           )}
         </div>

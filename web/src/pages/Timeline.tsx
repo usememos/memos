@@ -1,5 +1,6 @@
 import { Button, IconButton } from "@mui/joy";
 import clsx from "clsx";
+import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 import ActivityCalendar from "@/components/ActivityCalendar";
 import Empty from "@/components/Empty";
@@ -31,7 +32,7 @@ const Timeline = () => {
   const [isRequesting, setIsRequesting] = useState(true);
   const nextPageTokenRef = useRef<string | undefined>(undefined);
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(a.displayTime) - getTimeStampByDate(b.displayTime));
-  const monthString = new Date(selectedDateString).getFullYear() + "-" + (new Date(selectedDateString).getMonth() + 1);
+  const monthString = dayjs(selectedDateString).format("YYYY-MM");
 
   useEffect(() => {
     setIsRequesting(true);
@@ -66,8 +67,7 @@ const Timeline = () => {
       setActivityStats(
         Object.fromEntries(
           Object.entries(stats).filter(([date]) => {
-            const d = new Date(date);
-            return `${d.getFullYear()}-${d.getMonth() + 1}` === monthString;
+            return dayjs(date).format("YYYY-MM") === monthString;
           }),
         ),
       );
@@ -139,7 +139,7 @@ const Timeline = () => {
                     <span className="font-medium text-3xl sm:text-4xl">
                       {new Date(selectedDateString).toLocaleDateString(i18n.language, { month: "short", day: "numeric" })}
                     </span>
-                    <span className="opacity-60 text-lg">{new Date(monthString).getFullYear()}</span>
+                    <span className="opacity-60 text-lg">{dayjs(monthString).year()}</span>
                   </div>
                   <ActivityCalendar
                     month={monthString}
@@ -155,7 +155,11 @@ const Timeline = () => {
                       key={`${memo.name}-${memo.displayTime}`}
                       className={clsx("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
                     >
-                      <MemoView className="!border max-w-full !border-gray-100 dark:!border-zinc-700" memo={memo} />
+                      <MemoView
+                        className="!border max-w-full !border-gray-100 dark:!border-zinc-700"
+                        memo={memo}
+                        displayTimeFormat="time"
+                      />
                       <div className="absolute -left-2 sm:left-2 top-4 h-full">
                         {index !== sortedMemos.length - 1 && (
                           <div className="absolute top-2 left-[7px] h-full w-0.5 bg-gray-200 dark:bg-gray-700 block"></div>

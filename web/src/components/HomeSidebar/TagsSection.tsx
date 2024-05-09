@@ -44,11 +44,14 @@ const TagsSection = () => {
 
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
-      <div className="flex flex-row justify-between items-center w-full mb-1">
+      <div className="flex flex-row justify-start items-center w-full gap-1 mb-1">
         <span className="text-sm leading-6 font-mono text-gray-400 select-none">{t("common.tags")}</span>
         <div>
           <Tooltip title={"Rebuild"} placement="top">
-            <Icon.RefreshCcw className="text-gray-400 w-4 h-auto cursor-pointer hover:opacity-80" onClick={handleRebuildMemoTags} />
+            <Icon.RefreshCcw
+              className="text-gray-400 w-4 h-auto cursor-pointer opacity-60 hover:opacity-100"
+              onClick={handleRebuildMemoTags}
+            />
           </Tooltip>
         </div>
       </div>
