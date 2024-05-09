@@ -96,7 +96,8 @@
   "memo": {
     "archived-at": "封存於",
     "comment": {
-      "self": "評論"
+      "self": "評論",
+      "write-a-comment": "寫下留言"
     },
     "copy-link": "複製連結",
     "count-memos-in-date": "{{date}}的{{count}}個備忘錄",
@@ -137,7 +138,8 @@
   "reference": {
     "add-references": "添加參考資料",
     "embedded-usage": "作為嵌入式內容使用",
-    "no-memos-found": "未找到任何備忘錄"
+    "no-memos-found": "未找到任何備忘錄",
+    "search-placeholder": "搜尋內容"
   },
   "resource": {
     "clear": "清除",
