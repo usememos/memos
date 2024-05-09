@@ -7,7 +7,7 @@ interface Props {
 }
 
 const Math: React.FC<Props> = ({ content, block }: Props) => {
-  return <TeX block={block} math={content}></TeX>;
+  return <TeX className="max-w-full inline-block overflow-auto" block={block} math={content}></TeX>;
 };
 
 export default Math;
