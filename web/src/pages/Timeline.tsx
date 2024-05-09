@@ -133,12 +133,19 @@ const Timeline = () => {
             <div className="w-full h-auto flex flex-col justify-start items-start">
               <MemoFilter className="p-2 my-2 rounded-lg dark:bg-zinc-900" />
 
-              <div className={clsx("flex flex-col justify-start items-start w-full mt-2 last:mb-4")}>
-                <div className={clsx("flex shrink-0 flex-row w-full pl-1 mt-2 mb-2")}>
-                  <div className={clsx("w-full flex flex-col")}>
-                    <span className="font-medium text-3xl sm:text-4xl">
+              <div className="flex flex-col justify-start items-start w-full mt-2">
+                <div className="w-full flex shrink-0 flex-row justify-between pl-1 mt-1 mb-3">
+                  <div className="w-auto flex flex-col">
+                    <div className="relative font-medium text-3xl sm:text-4xl">
                       {new Date(selectedDateString).toLocaleDateString(i18n.language, { month: "short", day: "numeric" })}
-                    </span>
+                      <input
+                        className="inset-0 absolute z-1 opacity-0"
+                        type="date"
+                        defaultValue={dayjs(selectedDateString).format("YYYY-MM-DD")}
+                        onFocus={(e) => e.target.showPicker()}
+                        onChange={(e) => setSelectedDateString(e.target.value)}
+                      />
+                    </div>
                     <span className="opacity-60 text-lg">{dayjs(monthString).year()}</span>
                   </div>
                   <ActivityCalendar
