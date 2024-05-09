@@ -61,24 +61,11 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 
 // RegisterGateway registers the gRPC-Gateway with the given Echo instance.
 func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
-	// Override the default service config:
-	// * Set the maximum request/response message size to 100MB.
-	serviceConfig := `
-{
-	"methodConfig": [
-		{
-			"name": [{}],
-			"maxRequestMessageBytes": 104857600,
-			"maxResponseMessageBytes": 104857600
-		}
-	]
-}
-`
 	conn, err := grpc.DialContext(
 		ctx,
 		fmt.Sprintf(":%d", s.Profile.Port),
-		grpc.WithDefaultServiceConfig(serviceConfig),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(100*1024*1024)),
 	)
 	if err != nil {
 		return err
