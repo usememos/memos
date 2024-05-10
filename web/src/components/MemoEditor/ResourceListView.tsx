@@ -2,6 +2,7 @@ import { DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSens
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import Icon from "../Icon";
+import ResourceIcon from "../ResourceIcon";
 import SortableItem from "./SortableItem";
 
 interface Props {
@@ -11,8 +12,11 @@ interface Props {
 
 const ResourceListView = (props: Props) => {
   const { resourceList, setResourceList } = props;
-
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
+
+  const handleDeleteResource = async (name: string) => {
+    setResourceList(resourceList.filter((resource) => resource.name !== name));
+  };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -35,10 +39,14 @@ const ResourceListView = (props: Props) => {
                 <SortableItem
                   key={resource.name}
                   id={resource.name}
-                  className="max-w-full flex flex-row justify-start items-center flex-nowrap gap-x-1 bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded text-gray-500 dark:text-gray-400"
+                  className="max-w-full w-auto flex flex-row justify-start items-center flex-nowrap gap-x-1 bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded hover:shadow-sm text-gray-500 dark:text-gray-400"
                 >
-                  <Icon.File className="w-4 h-auto" />
+                  <ResourceIcon resource={resource} className="!w-4 !h-4 !opacity-100" />
                   <span className="text-sm max-w-[8rem] truncate">{resource.filename}</span>
+                  <Icon.X
+                    className="w-4 h-auto cursor-pointer opacity-60 hover:opacity-100"
+                    onClick={() => handleDeleteResource(resource.name)}
+                  />
                 </SortableItem>
               );
             })}
