@@ -12,6 +12,6 @@ UPDATE resource
 SET storage_type = 'EXTERNAL', reference = external_link
 WHERE external_link IS NOT NULL AND external_link != '';
 
-ALTER TABLE resource
-  DROP COLUMN internal_path,
-  DROP COLUMN external_link;
+ALTER TABLE resource DROP COLUMN internal_path;
+
+ALTER TABLE resource DROP COLUMN external_link;
