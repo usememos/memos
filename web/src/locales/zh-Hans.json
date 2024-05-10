@@ -96,7 +96,8 @@
   "memo": {
     "archived-at": "存档于",
     "comment": {
-      "self": "评论"
+      "self": "评论",
+      "write-a-comment": "写评论"
     },
     "copy-link": "复制链接",
     "count-memos-in-date": "{{date}} 有 {{count}} 条memo",
@@ -137,7 +138,8 @@
   "reference": {
     "add-references": "添加引用",
     "embedded-usage": "作为嵌入内容使用",
-    "no-memos-found": "没有发现备忘录"
+    "no-memos-found": "没有发现备忘录",
+    "search-placeholder": "搜索内容"
   },
   "resource": {
     "clear": "清除",
