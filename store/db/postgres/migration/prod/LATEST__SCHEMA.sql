@@ -43,7 +43,9 @@ CREATE TABLE memo (
   updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   content TEXT NOT NULL,
-  visibility TEXT NOT NULL DEFAULT 'PRIVATE'
+  visibility TEXT NOT NULL DEFAULT 'PRIVATE',
+  tags JSONB NOT NULL DEFAULT '[]',
+  payload JSONB NOT NULL DEFAULT '{}'
 );
 
 -- memo_organizer
@@ -71,18 +73,12 @@ CREATE TABLE resource (
   updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
   filename TEXT NOT NULL,
   blob BYTEA,
-  external_link TEXT NOT NULL,
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
-  internal_path TEXT NOT NULL DEFAULT '',
-  memo_id INTEGER DEFAULT NULL
-);
-
--- tag
-CREATE TABLE tag (
-  name TEXT NOT NULL,
-  creator_id INTEGER NOT NULL,
-  UNIQUE(name, creator_id)
+  memo_id INTEGER DEFAULT NULL,
+  storage_type TEXT NOT NULL DEFAULT '',
+  reference TEXT NOT NULL DEFAULT '',
+  payload TEXT NOT NULL DEFAULT '{}'
 );
 
 -- activity
@@ -93,14 +89,6 @@ CREATE TABLE activity (
   type TEXT NOT NULL DEFAULT '',
   level TEXT NOT NULL DEFAULT 'INFO',
   payload JSONB NOT NULL DEFAULT '{}'
-);
-
--- storage
-CREATE TABLE storage (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  type TEXT NOT NULL,
-  config JSONB NOT NULL DEFAULT '{}'
 );
 
 -- idp

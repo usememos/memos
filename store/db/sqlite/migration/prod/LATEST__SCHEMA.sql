@@ -46,12 +46,15 @@ CREATE TABLE memo (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   content TEXT NOT NULL DEFAULT '',
-  visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE'
+  visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE',
+  tags TEXT NOT NULL DEFAULT '[]',
+  payload TEXT NOT NULL DEFAULT '{}'
 );
 
 CREATE INDEX idx_memo_creator_id ON memo (creator_id);
 CREATE INDEX idx_memo_content ON memo (content);
 CREATE INDEX idx_memo_visibility ON memo (visibility);
+CREATE INDEX idx_memo_tags ON memo (tags);
 
 -- memo_organizer
 CREATE TABLE memo_organizer (
@@ -78,23 +81,17 @@ CREATE TABLE resource (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   filename TEXT NOT NULL DEFAULT '',
   blob BLOB DEFAULT NULL,
-  external_link TEXT NOT NULL DEFAULT '',
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
-  internal_path TEXT NOT NULL DEFAULT '',
-  memo_id INTEGER
+  memo_id INTEGER,
+  storage_type TEXT NOT NULL DEFAULT '',
+  reference TEXT NOT NULL DEFAULT '',
+  payload TEXT NOT NULL DEFAULT '{}'
 );
 
 CREATE INDEX idx_resource_creator_id ON resource (creator_id);
 
 CREATE INDEX idx_resource_memo_id ON resource (memo_id);
-
--- tag
-CREATE TABLE tag (
-  name TEXT NOT NULL,
-  creator_id INTEGER NOT NULL,
-  UNIQUE(name, creator_id)
-);
 
 -- activity
 CREATE TABLE activity (
@@ -104,14 +101,6 @@ CREATE TABLE activity (
   type TEXT NOT NULL DEFAULT '',
   level TEXT NOT NULL CHECK (level IN ('INFO', 'WARN', 'ERROR')) DEFAULT 'INFO',
   payload TEXT NOT NULL DEFAULT '{}'
-);
-
--- storage
-CREATE TABLE storage (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  type TEXT NOT NULL,
-  config TEXT NOT NULL DEFAULT '{}'
 );
 
 -- idp

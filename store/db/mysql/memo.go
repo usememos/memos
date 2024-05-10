@@ -12,8 +12,8 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`tags`"}
-	placeholder := []string{"?", "?", "?", "?", "?"}
+	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`tags`", "`payload`"}
+	placeholder := []string{"?", "?", "?", "?", "?", "?"}
 	tags := "[]"
 	if len(create.Tags) != 0 {
 		tagsBytes, err := json.Marshal(create.Tags)
@@ -22,7 +22,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		}
 		tags = string(tagsBytes)
 	}
-	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, tags}
+	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, tags, "{}"}
 
 	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)

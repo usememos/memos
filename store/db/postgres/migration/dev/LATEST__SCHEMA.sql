@@ -44,7 +44,8 @@ CREATE TABLE memo (
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   content TEXT NOT NULL,
   visibility TEXT NOT NULL DEFAULT 'PRIVATE',
-  tags JSONB NOT NULL DEFAULT '[]'
+  tags JSONB NOT NULL DEFAULT '[]',
+  payload JSONB NOT NULL DEFAULT '{}'
 );
 
 -- memo_organizer
@@ -78,13 +79,6 @@ CREATE TABLE resource (
   storage_type TEXT NOT NULL DEFAULT '',
   reference TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '{}'
-);
-
--- tag
-CREATE TABLE tag (
-  name TEXT NOT NULL,
-  creator_id INTEGER NOT NULL,
-  UNIQUE(name, creator_id)
 );
 
 -- activity

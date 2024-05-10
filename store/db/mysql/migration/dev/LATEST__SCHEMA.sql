@@ -44,7 +44,8 @@ CREATE TABLE `memo` (
   `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
   `content` TEXT NOT NULL,
   `visibility` VARCHAR(256) NOT NULL DEFAULT 'PRIVATE',
-  `tags` JSON NOT NULL
+  `tags` JSON NOT NULL,
+  `payload` JSON NOT NULL
 );
 
 -- memo_organizer
@@ -78,13 +79,6 @@ CREATE TABLE `resource` (
   `storage_type` VARCHAR(256) NOT NULL DEFAULT '',
   `reference` VARCHAR(256) NOT NULL DEFAULT '',
   `payload` TEXT NOT NULL
-);
-
--- tag
-CREATE TABLE `tag` (
-  `name` VARCHAR(256) NOT NULL,
-  `creator_id` INT NOT NULL,
-  UNIQUE(`name`,`creator_id`)
 );
 
 -- activity
