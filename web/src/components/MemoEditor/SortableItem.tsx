@@ -1,21 +1,14 @@
-import { memo } from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-interface SortableItemProps {
+interface Props {
   id: string;
   className: string;
   children: React.ReactNode;
 }
 
-const SortableItem: React.FC<SortableItemProps> = memo(({ id, className, children }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id });
+const SortableItem: React.FC<Props> = ({ id, className, children }: Props) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -27,6 +20,6 @@ const SortableItem: React.FC<SortableItemProps> = memo(({ id, className, childre
       {children}
     </div>
   );
-});
+};
 
 export default SortableItem;
