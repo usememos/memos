@@ -63,7 +63,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
 	conn, err := grpc.DialContext(
 		ctx,
-		fmt.Sprintf(":%d", s.Profile.Port),
+		fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(100*1024*1024)),
 	)

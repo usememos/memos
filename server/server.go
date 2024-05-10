@@ -88,7 +88,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 }
 
 func (s *Server) Start(ctx context.Context) error {
-	address := fmt.Sprintf(":%d", s.Profile.Port)
+	address := fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		return errors.Wrap(err, "failed to listen")
