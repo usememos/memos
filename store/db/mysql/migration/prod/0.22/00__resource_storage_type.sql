@@ -1,7 +1,6 @@
-ALTER TABLE `resource`
-  ADD COLUMN `storage_type` VARCHAR(256) NOT NULL DEFAULT '',
-  ADD COLUMN `reference` VARCHAR(256) NOT NULL DEFAULT '',
-  ADD COLUMN `payload` TEXT NOT NULL;
+ALTER TABLE `resource` ADD COLUMN `storage_type` VARCHAR(256) NOT NULL DEFAULT '',
+ALTER TABLE `resource` ADD COLUMN `reference` VARCHAR(256) NOT NULL DEFAULT '',
+ALTER TABLE `resource` ADD COLUMN `payload` TEXT NOT NULL;
 
 UPDATE `resource`
 SET `storage_type` = 'LOCAL', `reference` = `internal_path`
