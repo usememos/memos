@@ -27,7 +27,7 @@
     "description": "説明",
     "edit": "編集する",
     "email": "Eメール",
-    "explore": "カレンダービュー",
+    "explore": "共有メモ",
     "file": "ファイル",
     "filter": "フィルター",
     "home": "ホーム",
@@ -96,7 +96,8 @@
   "memo": {
     "archived-at": "アーカイブ:",
     "comment": {
-      "self": "コメント"
+      "self": "コメント",
+      "write-a-comment": "コメントを書く"
     },
     "copy-link": "リンクをコピー",
     "count-memos-in-date": "{{date}} 日に {{count}} 件のメモ",
