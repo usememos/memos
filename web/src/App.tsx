@@ -1,7 +1,7 @@
 import { useColorScheme } from "@mui/joy";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { getSystemColorScheme } from "./helpers/utils";
 import useNavigateTo from "./hooks/useNavigateTo";
@@ -119,7 +119,12 @@ const App = () => {
     commonContext.setAppearance(userSetting.appearance);
   }, [userSetting?.locale, userSetting?.appearance]);
 
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <ScrollRestoration />
+    </>
+  );
 };
 
 export default App;

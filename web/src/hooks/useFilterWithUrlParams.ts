@@ -1,39 +1,44 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useFilterStore } from "@/store/module";
 
 const useFilterWithUrlParams = () => {
-  const location = useLocation();
-  const filterStore = useFilterStore();
-  const { tag, text } = filterStore.state;
+  const {
+    state: { tag, text },
+  } = useFilterStore();
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  // sync url params with filter state
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const tag = urlParams.get("tag");
-    const text = urlParams.get("text");
-    if (tag) {
-      filterStore.setTagFilter(tag);
-    }
-    if (text) {
-      filterStore.setTextFilter(text);
-    }
-  }, []);
+    const tagFromUrl = searchParams.get("tag") || undefined;
+    const textFromUrl = searchParams.get("text") || undefined;
+    const newParam = searchParams;
+    let newParamChanged = false;
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    if (tag) {
-      urlParams.set("tag", tag);
-    } else {
-      urlParams.delete("tag");
+    if (tag !== tagFromUrl) {
+      if (tag) {
+        newParam.set("tag", tag);
+      } else {
+        newParam.delete("tag");
+      }
+
+      newParamChanged = true;
     }
-    if (text) {
-      urlParams.set("text", text);
-    } else {
-      urlParams.delete("text");
+
+    if (text !== textFromUrl) {
+      if (text) {
+        newParam.set("text", text);
+      } else {
+        newParam.delete("text");
+      }
+
+      newParamChanged = true;
     }
-    const params = urlParams.toString();
-    window.history.replaceState({}, "", `${location.pathname}${params?.length > 0 ? `?${params}` : ""}`);
-  }, [tag, text]);
+
+    if (newParamChanged) {
+      setSearchParams(newParam);
+    }
+  }, [tag, text, searchParams]);
 
   return {
     tag,

@@ -1,6 +1,6 @@
 import { Button } from "@mui/joy";
 import clsx from "clsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import Icon from "@/components/Icon";
@@ -25,7 +25,7 @@ const Home = () => {
   const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
-  const nextPageTokenRef = useRef<string | undefined>(undefined);
+  const [nextPageToken, setNextPageToken] = useState<string | undefined>(undefined);
   const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
@@ -34,34 +34,43 @@ const Home = () => {
 
   useEffect(() => {
     setIsRequesting(true);
-    nextPageTokenRef.current = undefined;
-    setTimeout(async () => {
-      memoList.reset();
-      const nextPageToken = await fetchMemos();
-      nextPageTokenRef.current = nextPageToken;
+    (async () => {
+      // reset only when tagQuery or textQuery is not empty
+      let requestNextPageToken = nextPageToken || "";
+      if (tagQuery || textQuery) {
+        memoList.reset();
+        requestNextPageToken = "";
+      }
+      const newNextPageToken = await fetchMemos(requestNextPageToken);
+      setNextPageToken(newNextPageToken);
       setIsRequesting(false);
-    });
+    })();
   }, [tagQuery, textQuery]);
 
-  const fetchMemos = async () => {
-    const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
-    const contentSearch: string[] = [];
-    if (textQuery) {
-      contentSearch.push(JSON.stringify(textQuery));
-    }
-    if (contentSearch.length > 0) {
-      filters.push(`content_search == [${contentSearch.join(", ")}]`);
-    }
-    if (tagQuery) {
-      filters.push(`tag == "${tagQuery}"`);
-    }
-    const { nextPageToken } = await memoStore.fetchMemos({
-      pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
-      filter: filters.join(" && "),
-      pageToken: nextPageTokenRef.current,
-    });
-    return nextPageToken;
-  };
+  const fetchMemos = useCallback(
+    async (nextPageToken: string) => {
+      const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
+      const contentSearch: string[] = [];
+      if (textQuery) {
+        contentSearch.push(JSON.stringify(textQuery));
+      }
+      if (contentSearch.length > 0) {
+        filters.push(`content_search == [${contentSearch.join(", ")}]`);
+      }
+      if (tagQuery) {
+        filters.push(`tag == "${tagQuery}"`);
+      }
+      const { memos, nextPageToken: newNextPageToken } = await memoStore.fetchMemos({
+        pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
+        filter: filters.join(" && "),
+        pageToken: nextPageToken,
+      });
+      console.log("fetchMemos from BE: ", memos);
+
+      return newNextPageToken;
+    },
+    [user, tagQuery, textQuery, memoStore],
+  );
 
   const handleEditPrevious = useCallback(() => {
     const lastMemo = memoList.value[memoList.value.length - 1];
@@ -91,7 +100,7 @@ const Home = () => {
                 <Icon.Loader className="w-4 h-auto animate-spin mr-1" />
                 <p className="text-sm italic">{t("memo.fetching-data")}</p>
               </div>
-            ) : !nextPageTokenRef.current ? (
+            ) : !nextPageToken ? (
               sortedMemos.length === 0 && (
                 <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
                   <Empty />
@@ -100,7 +109,14 @@ const Home = () => {
               )
             ) : (
               <div className="w-full flex flex-row justify-center items-center my-4">
-                <Button variant="plain" endDecorator={<Icon.ArrowDown className="w-5 h-auto" />} onClick={fetchMemos}>
+                <Button
+                  variant="plain"
+                  endDecorator={<Icon.ArrowDown className="w-5 h-auto" />}
+                  onClick={async () => {
+                    const newNextPageToken = await fetchMemos(nextPageToken);
+                    setNextPageToken(newNextPageToken);
+                  }}
+                >
                   {t("memo.fetch-more")}
                 </Button>
               </div>
@@ -117,4 +133,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default memo(Home);
