@@ -60,13 +60,11 @@ const Home = () => {
       if (tagQuery) {
         filters.push(`tag == "${tagQuery}"`);
       }
-      const { memos, nextPageToken: newNextPageToken } = await memoStore.fetchMemos({
+      const { nextPageToken: newNextPageToken } = await memoStore.fetchMemos({
         pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
         filter: filters.join(" && "),
         pageToken: nextPageToken,
       });
-      console.log("fetchMemos from BE: ", memos);
-
       return newNextPageToken;
     },
     [user, tagQuery, textQuery, memoStore],
