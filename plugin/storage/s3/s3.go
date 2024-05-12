@@ -70,7 +70,9 @@ func (c *Client) PresignGetObject(ctx context.Context, key string) (string, erro
 		Bucket: aws.String(*c.Bucket),
 		Key:    aws.String(key),
 	}, func(opts *s3.PresignOptions) {
-		opts.Expires = time.Duration(7 * 24 * time.Hour)
+		// Set the expiration time of the presigned URL to 5 days.
+		// Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
+		opts.Expires = time.Duration(5 * 24 * time.Hour)
 	})
 	if err != nil {
 		return "", errors.Wrap(err, "failed to presign put object")
