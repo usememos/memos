@@ -18,10 +18,6 @@ export const useWorkspaceSettingStore = create(
     getState: () => {
       return get();
     },
-    listWorkspaceSettings: async () => {
-      const { settings } = await workspaceSettingServiceClient.listWorkspaceSettings({});
-      set({ workspaceSettingByName: settings.reduce((acc, setting) => ({ ...acc, [setting.name]: setting }), {}) });
-    },
     fetchWorkspaceSetting: async (key: WorkspaceSettingKey) => {
       const setting = await workspaceSettingServiceClient.getWorkspaceSetting({ name: `${WorkspaceSettingPrefix}${key}` });
       set({ workspaceSettingByName: { ...get().workspaceSettingByName, [setting.name]: setting } });

@@ -36,7 +36,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const initialWorkspace = async () => {
       const workspaceProfile = await workspaceServiceClient.getWorkspaceProfile({});
-      await workspaceSettingStore.listWorkspaceSettings();
+      await workspaceSettingStore.fetchWorkspaceSetting(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL);
 
       const workspaceGeneralSetting =
         workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||

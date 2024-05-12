@@ -9,10 +9,6 @@ import "google/api/field_behavior.proto";
 option go_package = "gen/api/v1";
 
 service WorkspaceSettingService {
-  // ListWorkspaceSetting returns the list of settings.
-  rpc ListWorkspaceSettings(ListWorkspaceSettingsRequest) returns (ListWorkspaceSettingsResponse) {
-    option (google.api.http) = {get: "/api/v1/workspace/settings"};
-  }
   // GetWorkspaceSetting returns the setting by name.
   rpc GetWorkspaceSetting(GetWorkspaceSettingRequest) returns (WorkspaceSetting) {
     option (google.api.http) = {get: "/api/v1/workspace/{name=settings/*}"};
@@ -98,12 +94,6 @@ message WorkspaceMemoRelatedSetting {
   bool display_with_update_time = 2;
   // content_length_limit is the limit of content length. Unit is byte.
   int32 content_length_limit = 3;
-}
-
-message ListWorkspaceSettingsRequest {}
-
-message ListWorkspaceSettingsResponse {
-  repeated WorkspaceSetting settings = 1;
 }
 
 message GetWorkspaceSettingRequest {

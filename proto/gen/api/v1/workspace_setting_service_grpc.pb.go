@@ -19,17 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	WorkspaceSettingService_ListWorkspaceSettings_FullMethodName = "/memos.api.v1.WorkspaceSettingService/ListWorkspaceSettings"
-	WorkspaceSettingService_GetWorkspaceSetting_FullMethodName   = "/memos.api.v1.WorkspaceSettingService/GetWorkspaceSetting"
-	WorkspaceSettingService_SetWorkspaceSetting_FullMethodName   = "/memos.api.v1.WorkspaceSettingService/SetWorkspaceSetting"
+	WorkspaceSettingService_GetWorkspaceSetting_FullMethodName = "/memos.api.v1.WorkspaceSettingService/GetWorkspaceSetting"
+	WorkspaceSettingService_SetWorkspaceSetting_FullMethodName = "/memos.api.v1.WorkspaceSettingService/SetWorkspaceSetting"
 )
 
 // WorkspaceSettingServiceClient is the client API for WorkspaceSettingService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WorkspaceSettingServiceClient interface {
-	// ListWorkspaceSetting returns the list of settings.
-	ListWorkspaceSettings(ctx context.Context, in *ListWorkspaceSettingsRequest, opts ...grpc.CallOption) (*ListWorkspaceSettingsResponse, error)
 	// GetWorkspaceSetting returns the setting by name.
 	GetWorkspaceSetting(ctx context.Context, in *GetWorkspaceSettingRequest, opts ...grpc.CallOption) (*WorkspaceSetting, error)
 	// SetWorkspaceSetting updates the setting.
@@ -42,15 +39,6 @@ type workspaceSettingServiceClient struct {
 
 func NewWorkspaceSettingServiceClient(cc grpc.ClientConnInterface) WorkspaceSettingServiceClient {
 	return &workspaceSettingServiceClient{cc}
-}
-
-func (c *workspaceSettingServiceClient) ListWorkspaceSettings(ctx context.Context, in *ListWorkspaceSettingsRequest, opts ...grpc.CallOption) (*ListWorkspaceSettingsResponse, error) {
-	out := new(ListWorkspaceSettingsResponse)
-	err := c.cc.Invoke(ctx, WorkspaceSettingService_ListWorkspaceSettings_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *workspaceSettingServiceClient) GetWorkspaceSetting(ctx context.Context, in *GetWorkspaceSettingRequest, opts ...grpc.CallOption) (*WorkspaceSetting, error) {
@@ -75,8 +63,6 @@ func (c *workspaceSettingServiceClient) SetWorkspaceSetting(ctx context.Context,
 // All implementations must embed UnimplementedWorkspaceSettingServiceServer
 // for forward compatibility
 type WorkspaceSettingServiceServer interface {
-	// ListWorkspaceSetting returns the list of settings.
-	ListWorkspaceSettings(context.Context, *ListWorkspaceSettingsRequest) (*ListWorkspaceSettingsResponse, error)
 	// GetWorkspaceSetting returns the setting by name.
 	GetWorkspaceSetting(context.Context, *GetWorkspaceSettingRequest) (*WorkspaceSetting, error)
 	// SetWorkspaceSetting updates the setting.
@@ -88,9 +74,6 @@ type WorkspaceSettingServiceServer interface {
 type UnimplementedWorkspaceSettingServiceServer struct {
 }
 
-func (UnimplementedWorkspaceSettingServiceServer) ListWorkspaceSettings(context.Context, *ListWorkspaceSettingsRequest) (*ListWorkspaceSettingsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListWorkspaceSettings not implemented")
-}
 func (UnimplementedWorkspaceSettingServiceServer) GetWorkspaceSetting(context.Context, *GetWorkspaceSettingRequest) (*WorkspaceSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorkspaceSetting not implemented")
 }
@@ -109,24 +92,6 @@ type UnsafeWorkspaceSettingServiceServer interface {
 
 func RegisterWorkspaceSettingServiceServer(s grpc.ServiceRegistrar, srv WorkspaceSettingServiceServer) {
 	s.RegisterService(&WorkspaceSettingService_ServiceDesc, srv)
-}
-
-func _WorkspaceSettingService_ListWorkspaceSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListWorkspaceSettingsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WorkspaceSettingServiceServer).ListWorkspaceSettings(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: WorkspaceSettingService_ListWorkspaceSettings_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkspaceSettingServiceServer).ListWorkspaceSettings(ctx, req.(*ListWorkspaceSettingsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkspaceSettingService_GetWorkspaceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -172,10 +137,6 @@ var WorkspaceSettingService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "memos.api.v1.WorkspaceSettingService",
 	HandlerType: (*WorkspaceSettingServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ListWorkspaceSettings",
-			Handler:    _WorkspaceSettingService_ListWorkspaceSettings_Handler,
-		},
 		{
 			MethodName: "GetWorkspaceSetting",
 			Handler:    _WorkspaceSettingService_GetWorkspaceSetting_Handler,

@@ -12,40 +12,32 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV1Service) ListWorkspaceSettings(ctx context.Context, _ *v1pb.ListWorkspaceSettingsRequest) (*v1pb.ListWorkspaceSettingsResponse, error) {
-	user, err := getCurrentUser(ctx, s.Store)
+func (s *APIV1Service) GetWorkspaceSetting(ctx context.Context, request *v1pb.GetWorkspaceSettingRequest) (*v1pb.WorkspaceSetting, error) {
+	workspaceSettingKeyString, err := ExtractWorkspaceSettingKeyFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid workspace setting name: %v", err)
 	}
 
-	workspaceSettingFind := &store.FindWorkspaceSetting{}
-	if user == nil || user.Role == store.RoleUser {
-		workspaceSettingFind.Name = storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String()
+	workspaceSettingKey := storepb.WorkspaceSettingKey(storepb.WorkspaceSettingKey_value[workspaceSettingKeyString])
+	// Get workspace setting from store with default value.
+	switch workspaceSettingKey {
+	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC:
+		_, err = s.Store.GetWorkspaceBasicSetting(ctx)
+	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL:
+		_, err = s.Store.GetWorkspaceGeneralSetting(ctx)
+	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED:
+		_, err = s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE:
+		_, err = s.Store.GetWorkspaceStorageSetting(ctx)
+	default:
+		return nil, status.Errorf(codes.InvalidArgument, "unsupported workspace setting key: %v", workspaceSettingKey)
 	}
-	workspaceSettings, err := s.Store.ListWorkspaceSettings(ctx, workspaceSettingFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get workspace setting: %v", err)
 	}
 
-	response := &v1pb.ListWorkspaceSettingsResponse{
-		Settings: []*v1pb.WorkspaceSetting{},
-	}
-	for _, workspaceSetting := range workspaceSettings {
-		if workspaceSetting.Key == storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC {
-			continue
-		}
-		response.Settings = append(response.Settings, convertWorkspaceSettingFromStore(workspaceSetting))
-	}
-	return response, nil
-}
-
-func (s *APIV1Service) GetWorkspaceSetting(ctx context.Context, request *v1pb.GetWorkspaceSettingRequest) (*v1pb.WorkspaceSetting, error) {
-	settingKeyString, err := ExtractWorkspaceSettingKeyFromName(request.Name)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid workspace setting name: %v", err)
-	}
 	workspaceSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: settingKeyString,
+		Name: workspaceSettingKey.String(),
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get workspace setting: %v", err)

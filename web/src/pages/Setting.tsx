@@ -1,6 +1,6 @@
 import { Option, Select } from "@mui/joy";
 import { LucideIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
 import MemberSection from "@/components/Settings/MemberSection";
@@ -12,7 +12,9 @@ import StorageSection from "@/components/Settings/StorageSection";
 import WorkspaceSection from "@/components/Settings/WorkspaceSection";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
+import { useWorkspaceSettingStore } from "@/store/v1";
 import { User_Role } from "@/types/proto/api/v1/user_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 type SettingSection = "my-account" | "preference" | "member" | "system" | "storage" | "sso";
@@ -36,10 +38,10 @@ const Setting = () => {
   const t = useTranslate();
   const commonContext = useCommonContext();
   const user = useCurrentUser();
+  const workspaceSettingStore = useWorkspaceSettingStore();
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });
-
   const isHost = user.role === User_Role.HOST;
 
   const settingsSectionList = useMemo(() => {
@@ -48,6 +50,19 @@ const Setting = () => {
       settingList = settingList.concat(ADMIN_SECTIONS);
     }
     return settingList;
+  }, [isHost]);
+
+  useEffect(() => {
+    if (!isHost) {
+      return;
+    }
+
+    // Initial fetch for workspace settings.
+    (async () => {
+      [WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED, WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE].forEach(async (key) => {
+        await workspaceSettingStore.fetchWorkspaceSetting(key);
+      });
+    })();
   }, [isHost]);
 
   const handleSectionSelectorItemClick = useCallback((settingSection: SettingSection) => {

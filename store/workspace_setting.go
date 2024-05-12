@@ -111,6 +111,10 @@ func (s *Store) GetWorkspaceBasicSetting(ctx context.Context) (*storepb.Workspac
 	if workspaceSetting != nil {
 		workspaceBasicSetting = workspaceSetting.GetBasicSetting()
 	}
+	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC.String(), &storepb.WorkspaceSetting{
+		Key:   storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC,
+		Value: &storepb.WorkspaceSetting_BasicSetting{BasicSetting: workspaceBasicSetting},
+	})
 	return workspaceBasicSetting, nil
 }
 
@@ -126,6 +130,10 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 	if workspaceSetting != nil {
 		workspaceGeneralSetting = workspaceSetting.GetGeneralSetting()
 	}
+	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String(), &storepb.WorkspaceSetting{
+		Key:   storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL,
+		Value: &storepb.WorkspaceSetting_GeneralSetting{GeneralSetting: workspaceGeneralSetting},
+	})
 	return workspaceGeneralSetting, nil
 }
 
@@ -149,6 +157,10 @@ func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.Wo
 	if workspaceMemoRelatedSetting.ContentLengthLimit < DefaultContentLengthLimit {
 		workspaceMemoRelatedSetting.ContentLengthLimit = DefaultContentLengthLimit
 	}
+	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED.String(), &storepb.WorkspaceSetting{
+		Key:   storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED,
+		Value: &storepb.WorkspaceSetting_MemoRelatedSetting{MemoRelatedSetting: workspaceMemoRelatedSetting},
+	})
 	return workspaceMemoRelatedSetting, nil
 }
 
@@ -179,6 +191,10 @@ func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.Worksp
 	if workspaceStorageSetting.FilepathTemplate == "" {
 		workspaceStorageSetting.FilepathTemplate = defaultWorkspaceFilepathTemplate
 	}
+	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE.String(), &storepb.WorkspaceSetting{
+		Key:   storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE,
+		Value: &storepb.WorkspaceSetting_StorageSetting{StorageSetting: workspaceStorageSetting},
+	})
 	return workspaceStorageSetting, nil
 }
 
