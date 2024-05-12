@@ -131,9 +131,11 @@ func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 		if *find.ID == SystemBotID {
 			return SystemBot, nil
 		}
-
 		if cache, ok := s.userCache.Load(*find.ID); ok {
-			return cache.(*User), nil
+			user, ok := cache.(*User)
+			if ok {
+				return user, nil
+			}
 		}
 	}
 

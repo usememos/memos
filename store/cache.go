@@ -5,5 +5,5 @@ import (
 )
 
 func getUserSettingCacheKey(userID int32, key string) string {
-	return fmt.Sprintf("%d-%s-v1", userID, key)
+	return fmt.Sprintf("%d-%s", userID, key)
 }

@@ -65,7 +65,10 @@ func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]
 func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*storepb.UserSetting, error) {
 	if find.UserID != nil {
 		if cache, ok := s.userSettingCache.Load(getUserSettingCacheKey(*find.UserID, find.Key.String())); ok {
-			return cache.(*storepb.UserSetting), nil
+			userSetting, ok := cache.(*storepb.UserSetting)
+			if ok {
+				return userSetting, nil
+			}
 		}
 	}
 

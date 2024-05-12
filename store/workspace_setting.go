@@ -80,7 +80,10 @@ func (s *Store) ListWorkspaceSettings(ctx context.Context, find *FindWorkspaceSe
 
 func (s *Store) GetWorkspaceSetting(ctx context.Context, find *FindWorkspaceSetting) (*storepb.WorkspaceSetting, error) {
 	if cache, ok := s.workspaceSettingCache.Load(find.Name); ok {
-		return cache.(*storepb.WorkspaceSetting), nil
+		workspaceSetting, ok := cache.(*storepb.WorkspaceSetting)
+		if ok {
+			return workspaceSetting, nil
+		}
 	}
 
 	list, err := s.ListWorkspaceSettings(ctx, find)
@@ -91,7 +94,7 @@ func (s *Store) GetWorkspaceSetting(ctx context.Context, find *FindWorkspaceSett
 		return nil, nil
 	}
 	if len(list) > 1 {
-		return nil, errors.Errorf("Found multiple workspace settings with key %s", find.Name)
+		return nil, errors.Errorf("found multiple workspace settings with key %s", find.Name)
 	}
 	return list[0], nil
 }
