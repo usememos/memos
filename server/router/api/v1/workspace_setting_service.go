@@ -13,7 +13,16 @@ import (
 )
 
 func (s *APIV1Service) ListWorkspaceSettings(ctx context.Context, _ *v1pb.ListWorkspaceSettingsRequest) (*v1pb.ListWorkspaceSettingsResponse, error) {
-	workspaceSettings, err := s.Store.ListWorkspaceSettings(ctx, &store.FindWorkspaceSetting{})
+	user, err := getCurrentUser(ctx, s.Store)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+
+	workspaceSettingFind := &store.FindWorkspaceSetting{}
+	if user == nil || user.Role == store.RoleUser {
+		workspaceSettingFind.Name = storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL.String()
+	}
+	workspaceSettings, err := s.Store.ListWorkspaceSettings(ctx, workspaceSettingFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get workspace setting: %v", err)
 	}
@@ -35,9 +44,8 @@ func (s *APIV1Service) GetWorkspaceSetting(ctx context.Context, request *v1pb.Ge
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid workspace setting name: %v", err)
 	}
-	settingKey := storepb.WorkspaceSettingKey(storepb.WorkspaceSettingKey_value[settingKeyString])
 	workspaceSetting, err := s.Store.GetWorkspaceSetting(ctx, &store.FindWorkspaceSetting{
-		Name: settingKey.String(),
+		Name: settingKeyString,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get workspace setting: %v", err)
