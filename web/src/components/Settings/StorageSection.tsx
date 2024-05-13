@@ -28,11 +28,11 @@ const StorageSection = () => {
     const origin = WorkspaceStorageSetting.fromPartial(
       workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {},
     );
-    if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.STORAGE_TYPE_LOCAL) {
+    if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.LOCAL) {
       if (workspaceStorageSetting.filepathTemplate.length === 0) {
         return false;
       }
-    } else if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.STORAGE_TYPE_S3) {
+    } else if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.S3) {
       if (
         workspaceStorageSetting.s3Config?.accessKeyId.length === 0 ||
         workspaceStorageSetting.s3Config?.accessKeySecret.length === 0 ||
@@ -124,9 +124,9 @@ const StorageSection = () => {
           handleStorageTypeChanged(event.target.value as WorkspaceStorageSetting_StorageType);
         }}
       >
-        <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_DATABASE} label={t("setting.storage-section.type-database")} />
-        <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_LOCAL} label={t("setting.storage-section.type-local")} />
-        <Radio value={WorkspaceStorageSetting_StorageType.STORAGE_TYPE_S3} label={"S3"} />
+        <Radio value={WorkspaceStorageSetting_StorageType.DATABASE} label={t("setting.storage-section.type-database")} />
+        <Radio value={WorkspaceStorageSetting_StorageType.LOCAL} label={t("setting.storage-section.type-local")} />
+        <Radio value={WorkspaceStorageSetting_StorageType.S3} label={"S3"} />
       </RadioGroup>
       <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">
@@ -140,49 +140,45 @@ const StorageSection = () => {
           sx={{
             fontFamily: "monospace",
           }}
-          defaultValue={workspaceStorageSetting.uploadSizeLimitMb}
+          value={workspaceStorageSetting.uploadSizeLimitMb}
           onChange={handleMaxUploadSizeChanged}
         />
       </div>
-      {workspaceStorageSetting.storageType !== WorkspaceStorageSetting_StorageType.STORAGE_TYPE_DATABASE && (
+      {workspaceStorageSetting.storageType !== WorkspaceStorageSetting_StorageType.DATABASE && (
         <div className="w-full flex flex-row justify-between items-center">
           <span className="text-gray-700 dark:text-gray-500 mr-1">Filepath template</span>
           <Input
-            defaultValue={workspaceStorageSetting.filepathTemplate}
+            value={workspaceStorageSetting.filepathTemplate}
             placeholder="assets/{timestamp}_{filename}"
             onChange={handleFilepathTemplateChanged}
           />
         </div>
       )}
-      {workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.STORAGE_TYPE_S3 && (
+      {workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.S3 && (
         <>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-gray-700 dark:text-gray-500 mr-1">Access key id</span>
-            <Input
-              defaultValue={workspaceStorageSetting.s3Config?.accessKeyId}
-              placeholder=""
-              onChange={handleS3ConfigAccessKeyIdChanged}
-            />
+            <Input value={workspaceStorageSetting.s3Config?.accessKeyId} placeholder="" onChange={handleS3ConfigAccessKeyIdChanged} />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-gray-700 dark:text-gray-500 mr-1">Access key secret</span>
             <Input
-              defaultValue={workspaceStorageSetting.s3Config?.accessKeySecret}
+              value={workspaceStorageSetting.s3Config?.accessKeySecret}
               placeholder=""
               onChange={handleS3ConfigAccessKeySecretChanged}
             />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-gray-700 dark:text-gray-500 mr-1">Endpoint</span>
-            <Input defaultValue={workspaceStorageSetting.s3Config?.endpoint} placeholder="" onChange={handleS3ConfigEndpointChanged} />
+            <Input value={workspaceStorageSetting.s3Config?.endpoint} placeholder="" onChange={handleS3ConfigEndpointChanged} />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-gray-700 dark:text-gray-500 mr-1">Region</span>
-            <Input defaultValue={workspaceStorageSetting.s3Config?.region} placeholder="" onChange={handleS3ConfigRegionChanged} />
+            <Input value={workspaceStorageSetting.s3Config?.region} placeholder="" onChange={handleS3ConfigRegionChanged} />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-gray-700 dark:text-gray-500 mr-1">Bucket</span>
-            <Input defaultValue={workspaceStorageSetting.s3Config?.bucket} placeholder="" onChange={handleS3ConfigBucketChanged} />
+            <Input value={workspaceStorageSetting.s3Config?.bucket} placeholder="" onChange={handleS3ConfigBucketChanged} />
           </div>
         </>
       )}

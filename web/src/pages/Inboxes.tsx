@@ -42,9 +42,9 @@ const Inboxes = () => {
             )}
             <div className="flex flex-col justify-start items-start w-full mt-4 gap-4">
               {inboxes.map((inbox) => {
-                if (inbox.type === Inbox_Type.TYPE_MEMO_COMMENT) {
+                if (inbox.type === Inbox_Type.MEMO_COMMENT) {
                   return <MemoCommentMessage key={`${inbox.name}-${inbox.status}`} inbox={inbox} />;
-                } else if (inbox.type === Inbox_Type.TYPE_VERSION_UPDATE) {
+                } else if (inbox.type === Inbox_Type.VERSION_UPDATE) {
                   return <VersionUpdateMessage key={`${inbox.name}-${inbox.status}`} inbox={inbox} />;
                 }
                 return undefined;
