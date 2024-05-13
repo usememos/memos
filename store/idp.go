@@ -62,6 +62,7 @@ func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityPro
 		if err != nil {
 			return nil, err
 		}
+		identityProviders = append(identityProviders, identityProvider)
 		s.idpCache.Store(identityProvider.Id, identityProvider)
 	}
 	return identityProviders, nil

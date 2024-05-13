@@ -191,7 +191,7 @@ const SignIn = () => {
                   size="md"
                   onClick={() => handleSignInWithIdentityProvider(identityProvider)}
                 >
-                  {t("common.sign-in-with", { provider: identityProvider.name })}
+                  {t("common.sign-in-with", { provider: identityProvider.title })}
                 </Button>
               ))}
             </div>

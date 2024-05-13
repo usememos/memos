@@ -78,6 +78,8 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 		switch field {
 		case "title":
 			update.Name = &request.IdentityProvider.Title
+		case "identifier_filter":
+			update.IdentifierFilter = &request.IdentityProvider.IdentifierFilter
 		case "config":
 			update.Config = convertIdentityProviderConfigToStore(request.IdentityProvider.Type, request.IdentityProvider.Config)
 		}

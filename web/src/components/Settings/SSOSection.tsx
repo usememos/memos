@@ -24,7 +24,7 @@ const SSOSection = () => {
   };
 
   const handleDeleteIdentityProvider = async (identityProvider: IdentityProvider) => {
-    const content = t("setting.sso-section.confirm-delete", { name: identityProvider.name });
+    const content = t("setting.sso-section.confirm-delete", { name: identityProvider.title });
 
     showCommonDialog({
       title: t("setting.sso-section.delete-sso"),

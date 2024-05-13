@@ -105,7 +105,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   const identityProviderTypes = [...new Set(templateList.map((t) => t.type))];
   const { confirmCallback, destroy, identityProvider } = props;
   const [basicInfo, setBasicInfo] = useState({
-    name: "",
+    title: "",
     identifierFilter: "",
   });
   const [type, setType] = useState<IdentityProvider_Type>(IdentityProvider_Type.OAUTH2);
@@ -129,7 +129,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (identityProvider) {
       setBasicInfo({
-        name: identityProvider.name,
+        title: identityProvider.title,
         identifierFilter: identityProvider.identifierFilter,
       });
       setType(identityProvider.type);
@@ -149,7 +149,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     const template = templateList.find((t) => t.title === selectedTemplate);
     if (template) {
       setBasicInfo({
-        name: template.name,
+        title: template.title,
         identifierFilter: template.identifierFilter,
       });
       setType(template.type);
@@ -166,7 +166,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   };
 
   const allowConfirmAction = () => {
-    if (basicInfo.name === "") {
+    if (basicInfo.title === "") {
       return false;
     }
     if (type === "OAUTH2") {
@@ -205,11 +205,12 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             },
           },
         });
-        toast.success(t("setting.sso-section.sso-created", { name: basicInfo.name }));
+        toast.success(t("setting.sso-section.sso-created", { name: basicInfo.title }));
       } else {
         await identityProviderServiceClient.updateIdentityProvider({
           identityProvider: {
             ...basicInfo,
+            name: identityProvider!.name,
             type: type,
             config: {
               oauth2Config: {
@@ -218,9 +219,9 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               },
             },
           },
-          updateMask: ["title", "identifierFilter", "config"],
+          updateMask: ["title", "identifier_filter", "config"],
         });
-        toast.success(t("setting.sso-section.sso-updated", { name: basicInfo.name }));
+        toast.success(t("setting.sso-section.sso-updated", { name: basicInfo.title }));
       }
     } catch (error: any) {
       console.error(error);
@@ -280,11 +281,11 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         <Input
           className="mb-2"
           placeholder={t("common.name")}
-          value={basicInfo.name}
+          value={basicInfo.title}
           onChange={(e) =>
             setBasicInfo({
               ...basicInfo,
-              name: e.target.value,
+              title: e.target.value,
             })
           }
           fullWidth

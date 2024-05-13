@@ -1057,23 +1057,6 @@ func getMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, 
 	return property, nil
 }
 
-func ExtractTagsFromContent(content string) ([]string, error) {
-	nodes, err := parser.Parse(tokenizer.Tokenize(content))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse content")
-	}
-	tags := []string{}
-	TraverseASTNodes(nodes, func(node ast.Node) {
-		if tagNode, ok := node.(*ast.Tag); ok {
-			tag := tagNode.Content
-			if !slices.Contains(tags, tag) {
-				tags = append(tags, tag)
-			}
-		}
-	})
-	return tags, nil
-}
-
 func TraverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {
 	for _, node := range nodes {
 		fn(node)
