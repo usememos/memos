@@ -286,11 +286,11 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, _ *v1pb.GetUserSettin
 	}
 	userSettingMessage := getDefaultUserSetting()
 	for _, setting := range userSettings {
-		if setting.Key == storepb.UserSettingKey_USER_SETTING_LOCALE {
+		if setting.Key == storepb.UserSettingKey_LOCALE {
 			userSettingMessage.Locale = setting.GetLocale()
-		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_APPEARANCE {
+		} else if setting.Key == storepb.UserSettingKey_APPEARANCE {
 			userSettingMessage.Appearance = setting.GetAppearance()
-		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY {
+		} else if setting.Key == storepb.UserSettingKey_MEMO_VISIBILITY {
 			userSettingMessage.MemoVisibility = setting.GetMemoVisibility()
 		}
 	}
@@ -311,7 +311,7 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		if field == "locale" {
 			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 				UserId: user.ID,
-				Key:    storepb.UserSettingKey_USER_SETTING_LOCALE,
+				Key:    storepb.UserSettingKey_LOCALE,
 				Value: &storepb.UserSetting_Locale{
 					Locale: request.Setting.Locale,
 				},
@@ -321,7 +321,7 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		} else if field == "appearance" {
 			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 				UserId: user.ID,
-				Key:    storepb.UserSettingKey_USER_SETTING_APPEARANCE,
+				Key:    storepb.UserSettingKey_APPEARANCE,
 				Value: &storepb.UserSetting_Appearance{
 					Appearance: request.Setting.Appearance,
 				},
@@ -331,7 +331,7 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		} else if field == "memo_visibility" {
 			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 				UserId: user.ID,
-				Key:    storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY,
+				Key:    storepb.UserSettingKey_MEMO_VISIBILITY,
 				Value: &storepb.UserSetting_MemoVisibility{
 					MemoVisibility: request.Setting.MemoVisibility,
 				},
@@ -467,7 +467,7 @@ func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.
 	}
 	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
+		Key:    storepb.UserSettingKey_ACCESS_TOKENS,
 		Value: &storepb.UserSetting_AccessTokens{
 			AccessTokens: &storepb.AccessTokensUserSetting{
 				AccessTokens: updatedUserAccessTokens,
@@ -492,7 +492,7 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 	userAccessTokens = append(userAccessTokens, &userAccessToken)
 	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
+		Key:    storepb.UserSettingKey_ACCESS_TOKENS,
 		Value: &storepb.UserSetting_AccessTokens{
 			AccessTokens: &storepb.AccessTokensUserSetting{
 				AccessTokens: userAccessTokens,

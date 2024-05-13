@@ -15,13 +15,11 @@ const WorkspaceSection = () => {
   const t = useTranslate();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(
-    WorkspaceGeneralSetting.fromPartial(
-      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL)?.generalSetting || {},
-    ),
+    WorkspaceGeneralSetting.fromPartial(workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {}),
   );
   const [workspaceMemoRelatedSetting, setWorkspaceMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(
     WorkspaceMemoRelatedSetting.fromPartial(
-      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED)?.memoRelatedSetting || {},
+      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
     ),
   );
 
@@ -29,7 +27,7 @@ const WorkspaceSection = () => {
     const setting = { ...workspaceGeneralSetting, disallowSignup: !value };
     await workspaceSettingServiceClient.setWorkspaceSetting({
       setting: {
-        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
         generalSetting: setting,
       },
     });
@@ -41,7 +39,7 @@ const WorkspaceSection = () => {
       const setting = { ...workspaceGeneralSetting, disallowPasswordLogin: value };
       await workspaceSettingServiceClient.setWorkspaceSetting({
         setting: {
-          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
           generalSetting: setting,
         },
       });
@@ -74,7 +72,7 @@ const WorkspaceSection = () => {
     try {
       await workspaceSettingServiceClient.setWorkspaceSetting({
         setting: {
-          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
           generalSetting: workspaceGeneralSetting,
         },
       });
@@ -94,7 +92,7 @@ const WorkspaceSection = () => {
     try {
       await workspaceSettingServiceClient.setWorkspaceSetting({
         setting: {
-          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
           generalSetting: workspaceGeneralSetting,
         },
       });
@@ -114,7 +112,7 @@ const WorkspaceSection = () => {
     try {
       await workspaceSettingServiceClient.setWorkspaceSetting({
         setting: {
-          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
           generalSetting: workspaceGeneralSetting,
         },
       });
@@ -130,7 +128,7 @@ const WorkspaceSection = () => {
     const update: WorkspaceMemoRelatedSetting = { ...workspaceMemoRelatedSetting, disallowPublicVisible: value };
     setWorkspaceMemoRelatedSetting(update);
     await workspaceSettingStore.setWorkspaceSetting({
-      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED}`,
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
       memoRelatedSetting: update,
     });
   };
@@ -139,7 +137,7 @@ const WorkspaceSection = () => {
     const update: WorkspaceMemoRelatedSetting = { ...workspaceMemoRelatedSetting, displayWithUpdateTime: value };
     setWorkspaceMemoRelatedSetting(update);
     await workspaceSettingStore.setWorkspaceSetting({
-      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED}`,
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
       memoRelatedSetting: update,
     });
   };
@@ -153,7 +151,7 @@ const WorkspaceSection = () => {
     const update: WorkspaceMemoRelatedSetting = { ...workspaceMemoRelatedSetting, contentLengthLimit: value };
     setWorkspaceMemoRelatedSetting(update);
     await workspaceSettingStore.setWorkspaceSetting({
-      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED}`,
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
       memoRelatedSetting: update,
     });
   };

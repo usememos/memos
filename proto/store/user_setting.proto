@@ -7,13 +7,13 @@ option go_package = "gen/store";
 enum UserSettingKey {
   USER_SETTING_KEY_UNSPECIFIED = 0;
   // Access tokens for the user.
-  USER_SETTING_ACCESS_TOKENS = 1;
+  ACCESS_TOKENS = 1;
   // The locale of the user.
-  USER_SETTING_LOCALE = 2;
+  LOCALE = 2;
   // The appearance of the user.
-  USER_SETTING_APPEARANCE = 3;
+  APPEARANCE = 3;
   // The visibility of the memo.
-  USER_SETTING_MEMO_VISIBILITY = 4;
+  MEMO_VISIBILITY = 4;
 }
 
 message UserSetting {

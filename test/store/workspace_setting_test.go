@@ -14,7 +14,7 @@ func TestWorkspaceSettingV1Store(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	workspaceSetting, err := ts.UpsertWorkspaceSetting(ctx, &storepb.WorkspaceSetting{
-		Key: storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL,
+		Key: storepb.WorkspaceSettingKey_GENERAL,
 		Value: &storepb.WorkspaceSetting_GeneralSetting{
 			GeneralSetting: &storepb.WorkspaceGeneralSetting{
 				DisallowSignup: true,

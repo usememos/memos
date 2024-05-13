@@ -22,8 +22,7 @@ const App = () => {
   const userSetting = userStore.userSetting;
 
   const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
-    WorkspaceGeneralSetting.fromPartial({});
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
 
   // Redirect to sign up page if no instance owner.
   useEffect(() => {

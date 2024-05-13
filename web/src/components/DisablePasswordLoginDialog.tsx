@@ -18,8 +18,7 @@ const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
   const t = useTranslate();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
-    WorkspaceGeneralSetting.fromPartial({});
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
   const [state, setState] = useState<State>({
     disablePasswordLogin: workspaceGeneralSetting.disallowPasswordLogin,
   });
@@ -41,7 +40,7 @@ const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
       setState({ ...state, disablePasswordLogin: true });
       try {
         await workspaceSettingStore.setWorkspaceSetting({
-          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
           generalSetting: {
             ...workspaceGeneralSetting,
             disallowPasswordLogin: true,

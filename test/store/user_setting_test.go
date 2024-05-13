@@ -17,7 +17,7 @@ func TestUserSettingStore(t *testing.T) {
 	require.NoError(t, err)
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSettingKey_USER_SETTING_LOCALE,
+		Key:    storepb.UserSettingKey_LOCALE,
 		Value:  &storepb.UserSetting_Locale{Locale: "en"},
 	})
 	require.NoError(t, err)

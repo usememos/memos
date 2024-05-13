@@ -6,14 +6,14 @@ option go_package = "gen/store";
 
 enum WorkspaceSettingKey {
   WORKSPACE_SETTING_KEY_UNSPECIFIED = 0;
-  // WORKSPACE_SETTING_BASIC is the key for basic settings.
-  WORKSPACE_SETTING_BASIC = 1;
-  // WORKSPACE_SETTING_GENERAL is the key for general settings.
-  WORKSPACE_SETTING_GENERAL = 2;
-  // WORKSPACE_SETTING_STORAGE is the key for storage settings.
-  WORKSPACE_SETTING_STORAGE = 3;
-  // WORKSPACE_SETTING_MEMO_RELATED is the key for memo related settings.
-  WORKSPACE_SETTING_MEMO_RELATED = 4;
+  // BASIC is the key for basic settings.
+  BASIC = 1;
+  // GENERAL is the key for general settings.
+  GENERAL = 2;
+  // STORAGE is the key for storage settings.
+  STORAGE = 3;
+  // MEMO_RELATED is the key for memo related settings.
+  MEMO_RELATED = 4;
 }
 
 message WorkspaceSetting {
@@ -57,11 +57,11 @@ message WorkspaceStorageSetting {
   enum StorageType {
     STORAGE_TYPE_UNSPECIFIED = 0;
     // STORAGE_TYPE_DATABASE is the database storage type.
-    STORAGE_TYPE_DATABASE = 1;
+    DATABASE = 1;
     // STORAGE_TYPE_LOCAL is the local storage type.
-    STORAGE_TYPE_LOCAL = 2;
+    LOCAL = 2;
     // STORAGE_TYPE_S3 is the S3 storage type.
-    STORAGE_TYPE_S3 = 3;
+    S3 = 3;
   }
   // storage_type is the storage type.
   StorageType storage_type = 1;

@@ -59,7 +59,7 @@ const Setting = () => {
 
     // Initial fetch for workspace settings.
     (async () => {
-      [WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED, WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE].forEach(async (key) => {
+      [WorkspaceSettingKey.MEMO_RELATED, WorkspaceSettingKey.STORAGE].forEach(async (key) => {
         await workspaceSettingStore.fetchWorkspaceSetting(key);
       });
     })();

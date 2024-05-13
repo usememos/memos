@@ -77,7 +77,7 @@ const MemoEditor = (props: Props) => {
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const workspaceMemoRelatedSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_MEMO_RELATED)?.memoRelatedSetting ||
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
     WorkspaceMemoRelatedSetting.fromPartial({});
 
   useEffect(() => {

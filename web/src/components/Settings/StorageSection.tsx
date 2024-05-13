@@ -17,9 +17,7 @@ const StorageSection = () => {
   const t = useTranslate();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceStorageSetting>(
-    WorkspaceStorageSetting.fromPartial(
-      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE)?.storageSetting || {},
-    ),
+    WorkspaceStorageSetting.fromPartial(workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {}),
   );
 
   const allowSaveStorageSetting = useMemo(() => {
@@ -28,7 +26,7 @@ const StorageSection = () => {
     }
 
     const origin = WorkspaceStorageSetting.fromPartial(
-      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE)?.storageSetting || {},
+      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {},
     );
     if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.STORAGE_TYPE_LOCAL) {
       if (workspaceStorageSetting.filepathTemplate.length === 0) {
@@ -109,7 +107,7 @@ const StorageSection = () => {
 
   const saveWorkspaceStorageSetting = async () => {
     await workspaceSettingStore.setWorkspaceSetting({
-      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_STORAGE}`,
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.STORAGE}`,
       storageSetting: workspaceStorageSetting,
     });
     toast.success("Updated");

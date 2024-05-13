@@ -28,8 +28,7 @@ const SignIn = () => {
   const [remember, setRemember] = useState(true);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL).generalSetting ||
-    WorkspaceGeneralSetting.fromPartial({});
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
 
   useEffect(() => {
     const fetchIdentityProviderList = async () => {

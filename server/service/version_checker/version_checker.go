@@ -110,7 +110,7 @@ func (c *VersionChecker) Check(ctx context.Context) {
 		ReceiverID: hostUser.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type:       storepb.InboxMessage_TYPE_VERSION_UPDATE,
+			Type:       storepb.InboxMessage_VERSION_UPDATE,
 			ActivityId: &activity.ID,
 		},
 	}); err != nil {

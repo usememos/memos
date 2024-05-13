@@ -17,7 +17,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
   const t = useTranslate();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const workspaceGeneralSetting = WorkspaceGeneralSetting.fromPartial(
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL)?.generalSetting || {},
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {},
   );
   const [customProfile, setCustomProfile] = useState<WorkspaceCustomProfile>(
     WorkspaceCustomProfile.fromPartial(workspaceGeneralSetting.customProfile || {}),
@@ -84,7 +84,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     try {
       await workspaceSettingStore.setWorkspaceSetting({
-        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.WORKSPACE_SETTING_GENERAL}`,
+        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
         generalSetting: {
           ...workspaceGeneralSetting,
           customProfile: customProfile,

@@ -21,13 +21,13 @@ func (s *APIV1Service) GetWorkspaceSetting(ctx context.Context, request *v1pb.Ge
 	workspaceSettingKey := storepb.WorkspaceSettingKey(storepb.WorkspaceSettingKey_value[workspaceSettingKeyString])
 	// Get workspace setting from store with default value.
 	switch workspaceSettingKey {
-	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_BASIC:
+	case storepb.WorkspaceSettingKey_BASIC:
 		_, err = s.Store.GetWorkspaceBasicSetting(ctx)
-	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL:
+	case storepb.WorkspaceSettingKey_GENERAL:
 		_, err = s.Store.GetWorkspaceGeneralSetting(ctx)
-	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED:
+	case storepb.WorkspaceSettingKey_MEMO_RELATED:
 		_, err = s.Store.GetWorkspaceMemoRelatedSetting(ctx)
-	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE:
+	case storepb.WorkspaceSettingKey_STORAGE:
 		_, err = s.Store.GetWorkspaceStorageSetting(ctx)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported workspace setting key: %v", workspaceSettingKey)
@@ -100,15 +100,15 @@ func convertWorkspaceSettingToStore(setting *v1pb.WorkspaceSetting) *storepb.Wor
 		},
 	}
 	switch workspaceSetting.Key {
-	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_GENERAL:
+	case storepb.WorkspaceSettingKey_GENERAL:
 		workspaceSetting.Value = &storepb.WorkspaceSetting_GeneralSetting{
 			GeneralSetting: convertWorkspaceGeneralSettingToStore(setting.GetGeneralSetting()),
 		}
-	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_STORAGE:
+	case storepb.WorkspaceSettingKey_STORAGE:
 		workspaceSetting.Value = &storepb.WorkspaceSetting_StorageSetting{
 			StorageSetting: convertWorkspaceStorageSettingToStore(setting.GetStorageSetting()),
 		}
-	case storepb.WorkspaceSettingKey_WORKSPACE_SETTING_MEMO_RELATED:
+	case storepb.WorkspaceSettingKey_MEMO_RELATED:
 		workspaceSetting.Value = &storepb.WorkspaceSetting_MemoRelatedSetting{
 			MemoRelatedSetting: convertWorkspaceMemoRelatedSettingToStore(setting.GetMemoRelatedSetting()),
 		}

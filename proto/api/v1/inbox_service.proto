@@ -50,8 +50,8 @@ message Inbox {
 
   enum Type {
     TYPE_UNSPECIFIED = 0;
-    TYPE_MEMO_COMMENT = 1;
-    TYPE_VERSION_UPDATE = 2;
+    MEMO_COMMENT = 1;
+    VERSION_UPDATE = 2;
   }
   Type type = 6;
 

@@ -2072,14 +2072,14 @@ definitions:
     type: string
     enum:
       - STORAGE_TYPE_UNSPECIFIED
-      - STORAGE_TYPE_DATABASE
-      - STORAGE_TYPE_LOCAL
-      - STORAGE_TYPE_S3
+      - DATABASE
+      - LOCAL
+      - S3
     default: STORAGE_TYPE_UNSPECIFIED
     description: |2-
-       - STORAGE_TYPE_DATABASE: STORAGE_TYPE_DATABASE is the database storage type.
-       - STORAGE_TYPE_LOCAL: STORAGE_TYPE_LOCAL is the local storage type.
-       - STORAGE_TYPE_S3: STORAGE_TYPE_S3 is the S3 storage type.
+       - DATABASE: DATABASE is the database storage type.
+       - LOCAL: LOCAL is the local storage type.
+       - S3: S3 is the S3 storage type.
   googlerpcStatus:
     type: object
     properties:
@@ -2394,8 +2394,8 @@ definitions:
     type: string
     enum:
       - TYPE_UNSPECIFIED
-      - TYPE_MEMO_COMMENT
-      - TYPE_VERSION_UPDATE
+      - MEMO_COMMENT
+      - VERSION_UPDATE
     default: TYPE_UNSPECIFIED
   v1ItalicNode:
     type: object

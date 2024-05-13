@@ -403,7 +403,7 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 			ReceiverID: relatedMemo.CreatorID,
 			Status:     store.UNREAD,
 			Message: &storepb.InboxMessage{
-				Type:       storepb.InboxMessage_TYPE_MEMO_COMMENT,
+				Type:       storepb.InboxMessage_MEMO_COMMENT,
 				ActivityId: &activity.ID,
 			},
 		}); err != nil {

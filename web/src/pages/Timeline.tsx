@@ -149,7 +149,7 @@ const Timeline = () => {
                         type="date"
                         max={dayjs().format("YYYY-MM-DD")}
                         value={dayjs(selectedDateString).format("YYYY-MM-DD")}
-                        onFocus={(e) => e.target.showPicker()}
+                        onFocus={(e: any) => e.target.showPicker()}
                         onChange={(e) => handleSelectedDataChange(e.target.value)}
                       />
                     </div>
