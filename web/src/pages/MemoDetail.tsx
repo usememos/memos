@@ -110,10 +110,10 @@ const MemoDetail = () => {
                   <Button
                     variant="plain"
                     color="neutral"
-                    endDecorator={<Icon.MessageCircle className="w-5 h-auto text-gray-400" />}
+                    endDecorator={<Icon.MessageCircle className="w-5 h-auto text-gray-500" />}
                     onClick={handleShowCommentEditor}
                   >
-                    <span className="font-normal">{t("memo.comment.write-a-comment")}</span>
+                    <span className="font-normal text-gray-500">{t("memo.comment.write-a-comment")}</span>
                   </Button>
                 </div>
               )
@@ -126,7 +126,7 @@ const MemoDetail = () => {
                     <span className="text-gray-400 text-sm ml-1">({comments.length})</span>
                   </div>
                   <Button variant="plain" color="neutral" onClick={handleShowCommentEditor}>
-                    <span className="font-normal">{t("memo.comment.write-a-comment")}</span>
+                    <span className="font-normal text-gray-500">{t("memo.comment.write-a-comment")}</span>
                   </Button>
                 </div>
                 {comments.map((comment) => (

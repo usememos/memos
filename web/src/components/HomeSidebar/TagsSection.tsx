@@ -1,4 +1,5 @@
 import { Dropdown, Menu, MenuButton, MenuItem, Tooltip } from "@mui/joy";
+import clsx from "clsx";
 import toast from "react-hot-toast";
 import useDebounce from "react-use/lib/useDebounce";
 import { memoServiceClient } from "@/grpcweb";
@@ -46,7 +47,7 @@ const TagsSection = () => {
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="group flex flex-row justify-start items-center w-full gap-1 mb-1">
         <span className="text-sm leading-6 font-mono text-gray-400 select-none">{t("common.tags")}</span>
-        <div className="hidden group-hover:block">
+        <div className={clsx("group-hover:block", tagAmounts.length > 0 ? "hidden" : "")}>
           <Tooltip title={"Rebuild"} placement="top">
             <Icon.RefreshCcw
               className="text-gray-400 w-4 h-auto cursor-pointer opacity-60 hover:opacity-100"
@@ -62,7 +63,7 @@ const TagsSection = () => {
           ))}
         </div>
       ) : (
-        <div className="p-2 border border-dashed rounded-md flex flex-row justify-start items-start gap-1 text-gray-400 dark:text-gray-500">
+        <div className="p-2 border border-dashed dark:border-zinc-800 rounded-md flex flex-row justify-start items-start gap-1 text-gray-400 dark:text-gray-500">
           <Icon.Tags />
           <p className="mt-0.5 text-sm leading-snug italic">{t("tag.create-tags-guide")}</p>
         </div>
