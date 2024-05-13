@@ -96,7 +96,8 @@
   "memo": {
     "archived-at": "Arşivlendi",
     "comment": {
-      "self": "Yorumlar"
+      "self": "Yorumlar",
+      "write-a-comment": "Bir yorum yazın"
     },
     "copy-link": "Bağlantıyı kopyala",
     "count-memos-in-date": "{{count}}notlar{{date}}",
@@ -137,7 +138,8 @@
   "reference": {
     "add-references": "Referans ekle",
     "embedded-usage": "Gömülü İçerik Olarak Kullan",
-    "no-memos-found": "Hiçbir not bulunamadı"
+    "no-memos-found": "Hiçbir not bulunamadı",
+    "search-placeholder": "İçerik arayın"
   },
   "resource": {
     "clear": "Temizle",
@@ -297,7 +299,7 @@
     "all-tags": "Tüm Etiketler",
     "create-tag": "Etiket Oluştur",
     "create-tags-guide": "'#tag' girerek etiket oluşturabilirsiniz.",
-    "delete-confirm": "Bu etiketi sileceğinizden emin misiniz?",
+    "delete-confirm": "Bu etiketi silmek istediğinizden emin misiniz? İlgili tüm notlar arşivlenecektir.",
     "delete-tag": "Etiketi Sil",
     "no-tag-found": "Etiket bulunamadı"
   },
