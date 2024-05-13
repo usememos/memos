@@ -5,6 +5,8 @@ import (
 	"errors"
 
 	"github.com/usememos/memos/internal/util"
+
+	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 // Visibility is the type of a visibility.
@@ -47,6 +49,7 @@ type Memo struct {
 	Content    string
 	Visibility Visibility
 	Tags       []string
+	Payload    *storepb.MemoPayload
 
 	// Composed fields
 	Pinned   bool
@@ -89,6 +92,7 @@ type UpdateMemo struct {
 	Content    *string
 	Visibility *Visibility
 	Tags       *[]string
+	Payload    *storepb.MemoPayload
 }
 
 type DeleteMemo struct {
