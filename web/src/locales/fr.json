@@ -37,7 +37,7 @@
     "learn-more": "En savoir plus",
     "link": "Lien",
     "mark": "Lier",
-    "memos": "Mémos",
+    "memos": "Memos",
     "name": "Nom",
     "new": "Nouveau",
     "nickname": "Surnom",
@@ -96,10 +96,11 @@
   "memo": {
     "archived-at": "Archivé le",
     "comment": {
-      "self": "Commentaires"
+      "self": "Commentaires",
+      "write-a-comment": "Écrire un commentaire"
     },
     "copy-link": "Copier le lien",
-    "count-memos-in-date": "{{count}} mémos le {{date}}",
+    "count-memos-in-date": "{{count}} memos le {{date}}",
     "delete-confirm": "Êtes-vous sûr de vouloir supprimer ce memos ? CETTE ACTION EST IRRÉVERSIBLE",
     "delete-memo": "Supprimer Memo",
     "embed": "Intégrer",
@@ -114,7 +115,8 @@
       "private": "Privé",
       "protected": "Accès aux membres",
       "public": "Public"
-    }
+    },
+    "wrapping": "Enveloppe"
   },
   "message": {
     "archived-successfully": "Archivé avec succès",
@@ -136,7 +138,8 @@
   "reference": {
     "add-references": "Ajouter des références",
     "embedded-usage": "Utiliser comme contenu intégré",
-    "no-memos-found": "Aucun mémo trouvé"
+    "no-memos-found": "Aucun memos trouvé",
+    "search-placeholder": "Rechercher du contenu"
   },
   "resource": {
     "clear": "Nettoyer",
@@ -296,7 +299,7 @@
     "all-tags": "Toutes les Étiquettes",
     "create-tag": "Créer une Étiquette",
     "create-tags-guide": "Vous pouvez ajouter des tags en écrivant `#tag`.",
-    "delete-confirm": "Voulez-vous vraiment supprimer ce tag ?",
+    "delete-confirm": "Voulez-vous vraiment supprimer ce tag ? Tous les memos y afférents seront archivés.",
     "delete-tag": "Supprimer le tag",
     "no-tag-found": "Aucun tag trouvé"
   },
