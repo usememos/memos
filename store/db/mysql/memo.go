@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -16,14 +15,6 @@ import (
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
 	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`tags`", "`payload`"}
 	placeholder := []string{"?", "?", "?", "?", "?", "?"}
-	tags := "[]"
-	if len(create.Tags) != 0 {
-		tagsBytes, err := json.Marshal(create.Tags)
-		if err != nil {
-			return nil, err
-		}
-		tags = string(tagsBytes)
-	}
 	payload := "{}"
 	if create.Payload != nil {
 		payloadBytes, err := protojson.Marshal(create.Payload)
@@ -32,7 +23,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		}
 		payload = string(payloadBytes)
 	}
-	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, tags, payload}
+	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, "[]", payload}
 
 	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
@@ -129,7 +120,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"UNIX_TIMESTAMP(`memo`.`updated_ts`) AS `updated_ts`",
 		"`memo`.`row_status` AS `row_status`",
 		"`memo`.`visibility` AS `visibility`",
-		"`memo`.`tags` AS `tags`",
 		"`memo`.`payload` AS `payload`",
 		"IFNULL(`memo_organizer`.`pinned`, 0) AS `pinned`",
 		"`memo_relation`.`related_memo_id` AS `parent_id`",
@@ -155,7 +145,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	list := make([]*store.Memo, 0)
 	for rows.Next() {
 		var memo store.Memo
-		var tagsBytes, payloadBytes []byte
+		var payloadBytes []byte
 		dests := []any{
 			&memo.ID,
 			&memo.UID,
@@ -164,7 +154,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.UpdatedTs,
 			&memo.RowStatus,
 			&memo.Visibility,
-			&tagsBytes,
 			&payloadBytes,
 			&memo.Pinned,
 			&memo.ParentID,
@@ -174,9 +163,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		if err := rows.Scan(dests...); err != nil {
 			return nil, err
-		}
-		if err := json.Unmarshal(tagsBytes, &memo.Tags); err != nil {
-			return nil, errors.Wrap(err, "failed to unmarshal tags")
 		}
 		payload := &storepb.MemoPayload{}
 		if err := protojsonUnmarshaler.Unmarshal(payloadBytes, payload); err != nil {

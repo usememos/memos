@@ -780,7 +780,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Content:     memo.Content,
 		Nodes:       convertFromASTNodes(nodes),
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
-		Tags:        memo.Tags,
 		Pinned:      memo.Pinned,
 		ParentId:    memo.ParentID,
 		Relations:   listMemoRelationsResponse.Relations,

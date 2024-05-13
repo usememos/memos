@@ -48,7 +48,6 @@ type Memo struct {
 	// Domain specific fields
 	Content    string
 	Visibility Visibility
-	Tags       []string
 	Payload    *storepb.MemoPayload
 
 	// Composed fields
