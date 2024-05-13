@@ -33,9 +33,8 @@ const TagsSection = () => {
       style: "warning",
       dialogName: "rebuild-memo-tags-dialog",
       onConfirm: async () => {
-        await memoServiceClient.listMemoTags({
-          parent: "memos/-",
-          rebuild: true,
+        await memoServiceClient.rebuildMemoProperty({
+          name: "memos/-",
         });
         await tagStore.fetchTags({ skipCache: true });
         toast.success("Rebuild tags successfully");

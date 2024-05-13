@@ -11,6 +11,6 @@ message MemoPayload {
   message Property {
     repeated string tags = 1;
     bool has_link = 2;
-    bool has_todo = 3;
+    bool has_task_list = 3;
   }
 }

@@ -86,9 +86,13 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(holders, ", ")))
 	}
-	if v := find.Tag; v != nil {
-		where = append(where, "memo.tags @> "+placeholder(len(args)+1))
-		args = append(args, fmt.Sprintf(`["%s"]`, *v))
+	if v := find.PayloadFind; v != nil {
+		if v.Raw != nil {
+			where, args = append(where, "memo.payload = "+placeholder(len(args)+1)), append(args, *v.Raw)
+		}
+		if v.Tag != nil {
+			where, args = append(where, "memo.payload->'property'->'tags' @> "+placeholder(len(args)+1)), append(args, fmt.Sprintf(`["%s"]`, *v.Tag))
+		}
 	}
 	if find.ExcludeComments {
 		where = append(where, "memo_relation.related_memo_id IS NULL")
@@ -217,13 +221,6 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	}
 	if v := update.Visibility; v != nil {
 		set, args = append(set, "visibility = "+placeholder(len(args)+1)), append(args, *v)
-	}
-	if v := update.Tags; v != nil {
-		tagsBytes, err := json.Marshal(v)
-		if err != nil {
-			return err
-		}
-		set, args = append(set, "tags = "+placeholder(len(args)+1)), append(args, string(tagsBytes))
 	}
 	if v := update.Payload; v != nil {
 		payloadBytes, err := protojson.Marshal(v)

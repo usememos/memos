@@ -20,26 +20,27 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	MemoService_CreateMemo_FullMethodName         = "/memos.api.v1.MemoService/CreateMemo"
-	MemoService_ListMemos_FullMethodName          = "/memos.api.v1.MemoService/ListMemos"
-	MemoService_SearchMemos_FullMethodName        = "/memos.api.v1.MemoService/SearchMemos"
-	MemoService_GetMemo_FullMethodName            = "/memos.api.v1.MemoService/GetMemo"
-	MemoService_UpdateMemo_FullMethodName         = "/memos.api.v1.MemoService/UpdateMemo"
-	MemoService_DeleteMemo_FullMethodName         = "/memos.api.v1.MemoService/DeleteMemo"
-	MemoService_ExportMemos_FullMethodName        = "/memos.api.v1.MemoService/ExportMemos"
-	MemoService_ListMemoTags_FullMethodName       = "/memos.api.v1.MemoService/ListMemoTags"
-	MemoService_RenameMemoTag_FullMethodName      = "/memos.api.v1.MemoService/RenameMemoTag"
-	MemoService_DeleteMemoTag_FullMethodName      = "/memos.api.v1.MemoService/DeleteMemoTag"
-	MemoService_SetMemoResources_FullMethodName   = "/memos.api.v1.MemoService/SetMemoResources"
-	MemoService_ListMemoResources_FullMethodName  = "/memos.api.v1.MemoService/ListMemoResources"
-	MemoService_SetMemoRelations_FullMethodName   = "/memos.api.v1.MemoService/SetMemoRelations"
-	MemoService_ListMemoRelations_FullMethodName  = "/memos.api.v1.MemoService/ListMemoRelations"
-	MemoService_CreateMemoComment_FullMethodName  = "/memos.api.v1.MemoService/CreateMemoComment"
-	MemoService_ListMemoComments_FullMethodName   = "/memos.api.v1.MemoService/ListMemoComments"
-	MemoService_GetUserMemosStats_FullMethodName  = "/memos.api.v1.MemoService/GetUserMemosStats"
-	MemoService_ListMemoReactions_FullMethodName  = "/memos.api.v1.MemoService/ListMemoReactions"
-	MemoService_UpsertMemoReaction_FullMethodName = "/memos.api.v1.MemoService/UpsertMemoReaction"
-	MemoService_DeleteMemoReaction_FullMethodName = "/memos.api.v1.MemoService/DeleteMemoReaction"
+	MemoService_CreateMemo_FullMethodName          = "/memos.api.v1.MemoService/CreateMemo"
+	MemoService_ListMemos_FullMethodName           = "/memos.api.v1.MemoService/ListMemos"
+	MemoService_SearchMemos_FullMethodName         = "/memos.api.v1.MemoService/SearchMemos"
+	MemoService_GetMemo_FullMethodName             = "/memos.api.v1.MemoService/GetMemo"
+	MemoService_UpdateMemo_FullMethodName          = "/memos.api.v1.MemoService/UpdateMemo"
+	MemoService_DeleteMemo_FullMethodName          = "/memos.api.v1.MemoService/DeleteMemo"
+	MemoService_ExportMemos_FullMethodName         = "/memos.api.v1.MemoService/ExportMemos"
+	MemoService_RebuildMemoProperty_FullMethodName = "/memos.api.v1.MemoService/RebuildMemoProperty"
+	MemoService_ListMemoTags_FullMethodName        = "/memos.api.v1.MemoService/ListMemoTags"
+	MemoService_RenameMemoTag_FullMethodName       = "/memos.api.v1.MemoService/RenameMemoTag"
+	MemoService_DeleteMemoTag_FullMethodName       = "/memos.api.v1.MemoService/DeleteMemoTag"
+	MemoService_SetMemoResources_FullMethodName    = "/memos.api.v1.MemoService/SetMemoResources"
+	MemoService_ListMemoResources_FullMethodName   = "/memos.api.v1.MemoService/ListMemoResources"
+	MemoService_SetMemoRelations_FullMethodName    = "/memos.api.v1.MemoService/SetMemoRelations"
+	MemoService_ListMemoRelations_FullMethodName   = "/memos.api.v1.MemoService/ListMemoRelations"
+	MemoService_CreateMemoComment_FullMethodName   = "/memos.api.v1.MemoService/CreateMemoComment"
+	MemoService_ListMemoComments_FullMethodName    = "/memos.api.v1.MemoService/ListMemoComments"
+	MemoService_GetUserMemosStats_FullMethodName   = "/memos.api.v1.MemoService/GetUserMemosStats"
+	MemoService_ListMemoReactions_FullMethodName   = "/memos.api.v1.MemoService/ListMemoReactions"
+	MemoService_UpsertMemoReaction_FullMethodName  = "/memos.api.v1.MemoService/UpsertMemoReaction"
+	MemoService_DeleteMemoReaction_FullMethodName  = "/memos.api.v1.MemoService/DeleteMemoReaction"
 )
 
 // MemoServiceClient is the client API for MemoService service.
@@ -60,6 +61,8 @@ type MemoServiceClient interface {
 	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ExportMemos exports memos.
 	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error)
+	// RebuildMemoProperty rebuilds a memo property.
+	RebuildMemoProperty(ctx context.Context, in *RebuildMemoPropertyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListMemoTags lists tags for a memo.
 	ListMemoTags(ctx context.Context, in *ListMemoTagsRequest, opts ...grpc.CallOption) (*ListMemoTagsResponse, error)
 	// RenameMemoTag renames a tag for a memo.
@@ -153,6 +156,15 @@ func (c *memoServiceClient) DeleteMemo(ctx context.Context, in *DeleteMemoReques
 func (c *memoServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error) {
 	out := new(ExportMemosResponse)
 	err := c.cc.Invoke(ctx, MemoService_ExportMemos_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) RebuildMemoProperty(ctx context.Context, in *RebuildMemoPropertyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MemoService_RebuildMemoProperty_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -294,6 +306,8 @@ type MemoServiceServer interface {
 	DeleteMemo(context.Context, *DeleteMemoRequest) (*emptypb.Empty, error)
 	// ExportMemos exports memos.
 	ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error)
+	// RebuildMemoProperty rebuilds a memo property.
+	RebuildMemoProperty(context.Context, *RebuildMemoPropertyRequest) (*emptypb.Empty, error)
 	// ListMemoTags lists tags for a memo.
 	ListMemoTags(context.Context, *ListMemoTagsRequest) (*ListMemoTagsResponse, error)
 	// RenameMemoTag renames a tag for a memo.
@@ -347,6 +361,9 @@ func (UnimplementedMemoServiceServer) DeleteMemo(context.Context, *DeleteMemoReq
 }
 func (UnimplementedMemoServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportMemos not implemented")
+}
+func (UnimplementedMemoServiceServer) RebuildMemoProperty(context.Context, *RebuildMemoPropertyRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RebuildMemoProperty not implemented")
 }
 func (UnimplementedMemoServiceServer) ListMemoTags(context.Context, *ListMemoTagsRequest) (*ListMemoTagsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMemoTags not implemented")
@@ -522,6 +539,24 @@ func _MemoService_ExportMemos_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemoServiceServer).ExportMemos(ctx, req.(*ExportMemosRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_RebuildMemoProperty_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RebuildMemoPropertyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).RebuildMemoProperty(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_RebuildMemoProperty_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).RebuildMemoProperty(ctx, req.(*RebuildMemoPropertyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -794,6 +829,10 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExportMemos",
 			Handler:    _MemoService_ExportMemos_Handler,
+		},
+		{
+			MethodName: "RebuildMemoProperty",
+			Handler:    _MemoService_RebuildMemoProperty_Handler,
 		},
 		{
 			MethodName: "ListMemoTags",

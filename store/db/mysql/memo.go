@@ -95,8 +95,13 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("`memo`.`visibility` in (%s)", strings.Join(placeholder, ",")))
 	}
-	if v := find.Tag; v != nil {
-		where, args = append(where, "JSON_CONTAINS(`memo`.`tags`, ?, '$')"), append(args, *v)
+	if v := find.PayloadFind; v != nil {
+		if v.Raw != nil {
+			where, args = append(where, "`memo`.`payload` = ?"), append(args, *v.Raw)
+		}
+		if v.Tag != nil {
+			where, args = append(where, "JSON_CONTAINS(JSON_EXTRACT(payload, '$.property.tags[*]'), ?, '$')"), append(args, *v.Tag)
+		}
 	}
 	if find.ExcludeComments {
 		having = append(having, "`parent_id` IS NULL")
@@ -220,13 +225,6 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	}
 	if v := update.Visibility; v != nil {
 		set, args = append(set, "`visibility` = ?"), append(args, *v)
-	}
-	if v := update.Tags; v != nil {
-		tagsBytes, err := json.Marshal(v)
-		if err != nil {
-			return err
-		}
-		set, args = append(set, "`tags` = ?"), append(args, string(tagsBytes))
 	}
 	if v := update.Payload; v != nil {
 		payloadBytes, err := protojson.Marshal(v)

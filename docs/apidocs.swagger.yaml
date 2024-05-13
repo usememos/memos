@@ -1462,6 +1462,36 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
+  /api/v1/{name}:rebuild:
+    post:
+      summary: RebuildMemoProperty rebuilds a memo property.
+      operationId: MemoService_RebuildMemoProperty
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{id}. Use "memos/-" to rebuild all memos.
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceRebuildMemoPropertyBody'
+      tags:
+        - MemoService
   /api/v1/{parent}/tags:
     get:
       summary: ListMemoTags lists tags for a memo.
@@ -1484,11 +1514,6 @@ paths:
           required: true
           type: string
           pattern: memos/[^/]+
-        - name: rebuild
-          description: Rebuild the tags.
-          in: query
-          required: false
-          type: boolean
       tags:
         - MemoService
   /api/v1/{parent}/tags/{tag}:
@@ -1765,6 +1790,8 @@ paths:
       tags:
         - UserService
 definitions:
+  MemoServiceRebuildMemoPropertyBody:
+    type: object
   MemoServiceRenameMemoTagBody:
     type: object
     properties:
