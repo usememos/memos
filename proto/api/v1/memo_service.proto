@@ -264,6 +264,10 @@ message ListMemoTagsRequest {
   // The parent, who owns the tags.
   // Format: memos/{id}. Use "memos/-" to list all tags.
   string parent = 1;
+
+  // Filter is used to filter memos.
+  // Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+  string filter = 2;
 }
 
 message ListMemoTagsResponse {

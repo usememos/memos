@@ -20,12 +20,12 @@ export const useTagStore = create(
         .sort((a, b) => b[1] - a[1])
         .map(([tag]) => tag);
     },
-    fetchTags: async (options?: { skipCache: boolean }) => {
+    fetchTags: async (filter?: string, options?: { skipCache: boolean }) => {
       const { tagAmounts: cache } = get();
       if (cache.length > 0 && !options?.skipCache) {
         return cache;
       }
-      const { tagAmounts } = await memoServiceClient.listMemoTags({ parent: "memos/-" });
+      const { tagAmounts } = await memoServiceClient.listMemoTags({ parent: "memos/-", filter });
       set({ tagAmounts });
     },
   })),

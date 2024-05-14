@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import SearchBar from "@/components/SearchBar";
-import UsersSection from "./UsersSection";
+import TagsSection from "../HomeSidebar/TagsSection";
 
 interface Props {
   className?: string;
@@ -15,7 +15,7 @@ const ExploreSidebar = (props: Props) => {
       )}
     >
       <SearchBar />
-      <UsersSection />
+      <TagsSection hideTips={true} />
     </aside>
   );
 };

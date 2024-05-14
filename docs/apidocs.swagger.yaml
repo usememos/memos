@@ -1514,6 +1514,13 @@ paths:
           required: true
           type: string
           pattern: memos/[^/]+
+        - name: filter
+          description: |-
+            Filter is used to filter memos.
+            Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+          in: query
+          required: false
+          type: string
       tags:
         - MemoService
   /api/v1/{parent}/tags/{tag}:

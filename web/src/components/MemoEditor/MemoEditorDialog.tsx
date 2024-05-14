@@ -19,7 +19,7 @@ const MemoEditorDialog: React.FC<Props> = ({
   const tagStore = useTagStore();
 
   useEffect(() => {
-    tagStore.fetchTags({ skipCache: false });
+    tagStore.fetchTags(undefined, { skipCache: false });
   }, []);
 
   const handleCloseBtnClick = () => {

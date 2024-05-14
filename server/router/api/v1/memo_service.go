@@ -595,14 +595,8 @@ func (s *APIV1Service) RebuildMemoProperty(ctx context.Context, request *v1pb.Re
 }
 
 func (s *APIV1Service) ListMemoTags(ctx context.Context, request *v1pb.ListMemoTagsRequest) (*v1pb.ListMemoTagsResponse, error) {
-	user, err := getCurrentUser(ctx, s.Store)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user")
-	}
-
 	normalRowStatus := store.Normal
 	memoFind := &store.FindMemo{
-		CreatorID:       &user.ID,
 		RowStatus:       &normalRowStatus,
 		ExcludeComments: true,
 		// Default exclude content for performance.
@@ -614,6 +608,9 @@ func (s *APIV1Service) ListMemoTags(ctx context.Context, request *v1pb.ListMemoT
 			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 		}
 		memoFind.ID = &memoID
+	}
+	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to build find memos with filter: %v", err)
 	}
 
 	memos, err := s.Store.ListMemos(ctx, memoFind)
@@ -815,7 +812,6 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 }
 
 func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
-	user, _ := getCurrentUser(ctx, s.Store)
 	if find == nil {
 		find = &store.FindMemo{}
 	}
@@ -894,6 +890,7 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		}
 	}
 
+	user, _ := getCurrentUser(ctx, s.Store)
 	// If the user is not authenticated, only public memos are visible.
 	if user == nil {
 		if filter == "" {
