@@ -27,7 +27,7 @@ jobs:
           go mod tidy -go=1.22
           git diff --exit-code
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v5
+        uses: golangci/golangci-lint-action@v6
         with:
           version: v1.54.1
           args: --verbose --timeout=3m
