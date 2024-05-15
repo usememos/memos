@@ -1,6 +1,6 @@
 import { Button } from "@mui/joy";
 import clsx from "clsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import Icon from "@/components/Icon";
@@ -25,7 +25,7 @@ const Home = () => {
   const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
-  const nextPageTokenRef = useRef<string | undefined>(undefined);
+  const [nextPageToken, setNextPageToken] = useState<string>("");
   const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
@@ -33,17 +33,12 @@ const Home = () => {
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
-    setIsRequesting(true);
-    nextPageTokenRef.current = undefined;
-    setTimeout(async () => {
-      memoList.reset();
-      const nextPageToken = await fetchMemos();
-      nextPageTokenRef.current = nextPageToken;
-      setIsRequesting(false);
-    });
+    memoList.reset();
+    fetchMemos("");
   }, [tagQuery, textQuery]);
 
-  const fetchMemos = async () => {
+  const fetchMemos = async (nextPageToken: string) => {
+    setIsRequesting(true);
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
     if (textQuery) {
@@ -55,12 +50,13 @@ const Home = () => {
     if (tagQuery) {
       filters.push(`tag == "${tagQuery}"`);
     }
-    const { nextPageToken } = await memoStore.fetchMemos({
+    const response = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
       filter: filters.join(" && "),
-      pageToken: nextPageTokenRef.current,
+      pageToken: nextPageToken,
     });
-    return nextPageToken;
+    setIsRequesting(false);
+    setNextPageToken(response.nextPageToken);
   };
 
   const handleEditPrevious = useCallback(() => {
@@ -91,7 +87,7 @@ const Home = () => {
                 <Icon.Loader className="w-4 h-auto animate-spin mr-1" />
                 <p className="text-sm italic">{t("memo.fetching-data")}</p>
               </div>
-            ) : !nextPageTokenRef.current ? (
+            ) : !nextPageToken ? (
               sortedMemos.length === 0 && (
                 <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
                   <Empty />
@@ -100,7 +96,7 @@ const Home = () => {
               )
             ) : (
               <div className="w-full flex flex-row justify-center items-center my-4">
-                <Button variant="plain" endDecorator={<Icon.ArrowDown className="w-5 h-auto" />} onClick={fetchMemos}>
+                <Button variant="plain" endDecorator={<Icon.ArrowDown className="w-5 h-auto" />} onClick={() => fetchMemos(nextPageToken)}>
                   {t("memo.fetch-more")}
                 </Button>
               </div>

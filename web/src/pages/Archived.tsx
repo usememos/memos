@@ -1,6 +1,6 @@
 import { Button, Tooltip } from "@mui/joy";
 import { ClientError } from "nice-grpc-web";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import Empty from "@/components/Empty";
@@ -24,24 +24,19 @@ const Archived = () => {
   const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
-  const nextPageTokenRef = useRef<string | undefined>(undefined);
+  const [nextPageToken, setNextPageToken] = useState<string>("");
   const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ARCHIVED)
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
 
   useEffect(() => {
-    setIsRequesting(true);
-    nextPageTokenRef.current = undefined;
-    setTimeout(async () => {
-      memoList.reset();
-      const nextPageToken = await fetchMemos();
-      nextPageTokenRef.current = nextPageToken;
-      setIsRequesting(false);
-    });
+    memoList.reset();
+    fetchMemos("");
   }, [tagQuery, textQuery]);
 
-  const fetchMemos = async () => {
+  const fetchMemos = async (nextPageToken: string) => {
+    setIsRequesting(true);
     const filters = [`creator == "${user.name}"`, `row_status == "ARCHIVED"`];
     const contentSearch: string[] = [];
     if (textQuery) {
@@ -53,12 +48,13 @@ const Archived = () => {
     if (tagQuery) {
       filters.push(`tag == "${tagQuery}"`);
     }
-    const { nextPageToken } = await memoStore.fetchMemos({
+    const response = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
       filter: filters.join(" && "),
-      pageToken: nextPageTokenRef.current,
+      pageToken: nextPageToken,
     });
-    return nextPageToken;
+    setIsRequesting(false);
+    setNextPageToken(response.nextPageToken);
   };
 
   const handleDeleteMemoClick = async (memo: Memo) => {
@@ -136,7 +132,7 @@ const Archived = () => {
               <Icon.Loader className="w-4 h-auto animate-spin mr-1" />
               <p className="text-sm italic">{t("memo.fetching-data")}</p>
             </div>
-          ) : !nextPageTokenRef.current ? (
+          ) : !nextPageToken ? (
             sortedMemos.length === 0 && (
               <div className="w-full mt-16 mb-8 flex flex-col justify-center items-center italic">
                 <Empty />
@@ -145,7 +141,7 @@ const Archived = () => {
             )
           ) : (
             <div className="w-full flex flex-row justify-center items-center my-4">
-              <Button variant="plain" endDecorator={<Icon.ArrowDown className="w-5 h-auto" />} onClick={fetchMemos}>
+              <Button variant="plain" endDecorator={<Icon.ArrowDown className="w-5 h-auto" />} onClick={() => fetchMemos(nextPageToken)}>
                 {t("memo.fetch-more")}
               </Button>
             </div>

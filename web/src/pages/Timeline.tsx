@@ -1,7 +1,7 @@
 import { Button, IconButton } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import ActivityCalendar from "@/components/ActivityCalendar";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
@@ -30,19 +30,13 @@ const Timeline = () => {
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDateString, setSelectedDateString] = useState<string>(new Date().toDateString());
   const [isRequesting, setIsRequesting] = useState(true);
-  const nextPageTokenRef = useRef<string | undefined>(undefined);
+  const [nextPageToken, setNextPageToken] = useState<string>("");
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(a.displayTime) - getTimeStampByDate(b.displayTime));
   const monthString = dayjs(selectedDateString).format("YYYY-MM");
 
   useEffect(() => {
-    setIsRequesting(true);
-    nextPageTokenRef.current = undefined;
-    setTimeout(async () => {
-      memoList.reset();
-      const nextPageToken = await fetchMemos();
-      nextPageTokenRef.current = nextPageToken;
-      setIsRequesting(false);
-    });
+    memoList.reset();
+    fetchMemos("");
   }, [selectedDateString, tagQuery, textQuery]);
 
   useEffect(() => {
@@ -74,7 +68,8 @@ const Timeline = () => {
     })();
   }, [sortedMemos.length]);
 
-  const fetchMemos = async () => {
+  const fetchMemos = async (nextPageToken: string) => {
+    setIsRequesting(true);
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
     const contentSearch: string[] = [];
     if (textQuery) {
@@ -92,12 +87,13 @@ const Timeline = () => {
         ...[`display_time_after == ${selectedDateStamp / 1000}`, `display_time_before == ${(selectedDateStamp + DAILY_TIMESTAMP) / 1000}`],
       );
     }
-    const { nextPageToken } = await memoStore.fetchMemos({
+    const response = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
       filter: filters.join(" && "),
-      pageToken: nextPageTokenRef.current,
+      pageToken: nextPageToken,
     });
-    return nextPageToken;
+    setIsRequesting(false);
+    setNextPageToken(response.nextPageToken);
   };
 
   const handleSelectedDataChange = (date: string) => {
@@ -192,7 +188,7 @@ const Timeline = () => {
                   <Icon.Loader className="w-4 h-auto animate-spin mr-1" />
                   <p className="text-sm italic">{t("memo.fetching-data")}</p>
                 </div>
-              ) : !nextPageTokenRef.current ? (
+              ) : !nextPageToken ? (
                 sortedMemos.length === 0 && (
                   <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
                     <Empty />
@@ -201,7 +197,11 @@ const Timeline = () => {
                 )
               ) : (
                 <div className="w-full flex flex-row justify-center items-center my-4">
-                  <Button variant="plain" endDecorator={<Icon.ArrowDown className="w-5 h-auto" />} onClick={fetchMemos}>
+                  <Button
+                    variant="plain"
+                    endDecorator={<Icon.ArrowDown className="w-5 h-auto" />}
+                    onClick={() => fetchMemos(nextPageToken)}
+                  >
                     {t("memo.fetch-more")}
                   </Button>
                 </div>
