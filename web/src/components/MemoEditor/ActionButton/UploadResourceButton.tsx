@@ -57,6 +57,12 @@ const UploadResourceButton = () => {
     }
 
     context.setResourceList([...context.resourceList, ...createdResourceList]);
+    setState((state) => {
+      return {
+        ...state,
+        uploadingFlag: false,
+      };
+    });
   };
 
   return (
