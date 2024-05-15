@@ -70,7 +70,7 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		where, args = append(where, "`storage_type` = ?"), append(args, find.StorageType.String())
 	}
 
-	fields := []string{"`id`", "`uid`", "`filename`", "`type`", "`size`", "`creator_id`", "`created_ts`", "`updated_ts`", "`memo_id`", "`storage_type`", "`reference`", "`payload`"}
+	fields := []string{"`id`", "`uid`", "`filename`", "`type`", "`size`", "`creator_id`", "UNIX_TIMESTAMP(`created_ts`)", "UNIX_TIMESTAMP(`updated_ts`)", "`memo_id`", "`storage_type`", "`reference`", "`payload`"}
 	if find.GetBlob {
 		fields = append(fields, "`blob`")
 	}
