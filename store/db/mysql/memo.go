@@ -91,7 +91,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			where, args = append(where, "`memo`.`payload` = ?"), append(args, *v.Raw)
 		}
 		if v.Tag != nil {
-			where, args = append(where, "JSON_CONTAINS(JSON_EXTRACT(payload, '$.property.tags[*]'), ?, '$')"), append(args, *v.Tag)
+			where, args = append(where, "JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.property.tags'), ?)"), append(args, fmt.Sprintf(`["%s"]`, *v.Tag))
 		}
 	}
 	if find.ExcludeComments {
