@@ -31,7 +31,11 @@ func (s *APIV1Service) ListInboxes(ctx context.Context, _ *v1pb.ListInboxesReque
 		Inboxes: []*v1pb.Inbox{},
 	}
 	for _, inbox := range inboxes {
-		response.Inboxes = append(response.Inboxes, convertInboxFromStore(inbox))
+		inboxMessage := convertInboxFromStore(inbox)
+		if inboxMessage.Type == v1pb.Inbox_TYPE_UNSPECIFIED {
+			continue
+		}
+		response.Inboxes = append(response.Inboxes, inboxMessage)
 	}
 
 	return response, nil
