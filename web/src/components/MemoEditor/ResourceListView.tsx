@@ -36,18 +36,18 @@ const ResourceListView = (props: Props) => {
           <div className="w-full flex flex-row justify-start flex-wrap gap-2 mt-2">
             {resourceList.map((resource) => {
               return (
-                <SortableItem
+                <div
                   key={resource.name}
-                  id={resource.name}
                   className="max-w-full w-auto flex flex-row justify-start items-center flex-nowrap gap-x-1 bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded hover:shadow-sm text-gray-500 dark:text-gray-400"
                 >
-                  <ResourceIcon resource={resource} className="!w-4 !h-4 !opacity-100" />
-                  <span className="text-sm max-w-[8rem] truncate">{resource.filename}</span>
-                  <Icon.X
-                    className="w-4 h-auto cursor-pointer opacity-60 hover:opacity-100"
-                    onClick={() => handleDeleteResource(resource.name)}
-                  />
-                </SortableItem>
+                  <SortableItem id={resource.name} className="flex flex-row justify-start items-center gap-x-1">
+                    <ResourceIcon resource={resource} className="!w-4 !h-4 !opacity-100" />
+                    <span className="text-sm max-w-[8rem] truncate">{resource.filename}</span>
+                  </SortableItem>
+                  <button className="shrink-0" onClick={() => handleDeleteResource(resource.name)}>
+                    <Icon.X className="w-4 h-auto cursor-pointer opacity-60 hover:opacity-100" />
+                  </button>
+                </div>
               );
             })}
           </div>
