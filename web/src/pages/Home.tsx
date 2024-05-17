@@ -1,11 +1,10 @@
 import { Button } from "@mui/joy";
 import clsx from "clsx";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import Icon from "@/components/Icon";
 import MemoEditor from "@/components/MemoEditor";
-import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
 import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
@@ -59,14 +58,6 @@ const Home = () => {
     setNextPageToken(response.nextPageToken);
   };
 
-  const handleEditPrevious = useCallback(() => {
-    const lastMemo = memoList.value[memoList.value.length - 1];
-    showMemoEditorDialog({
-      memoName: lastMemo.name,
-      cacheKey: `${lastMemo.name}-${lastMemo.displayTime}`,
-    });
-  }, [memoList]);
-
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && (
@@ -76,7 +67,7 @@ const Home = () => {
       )}
       <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
         <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
-          <MemoEditor className="mb-2" cacheKey="home-memo-editor" onEditPrevious={handleEditPrevious} />
+          <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
           <div className="flex flex-col justify-start items-start w-full max-w-full">
             <MemoFilter className="px-2 pb-2" />
             {sortedMemos.map((memo) => (

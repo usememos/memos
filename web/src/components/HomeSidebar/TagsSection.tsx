@@ -14,7 +14,7 @@ import Icon from "../Icon";
 import showRenameTagDialog from "../RenameTagDialog";
 
 interface Props {
-  hideTips?: boolean;
+  readonly?: boolean;
 }
 
 const TagsSection = (props: Props) => {
@@ -62,7 +62,7 @@ const TagsSection = (props: Props) => {
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="group flex flex-row justify-start items-center w-full gap-1 mb-1">
         <span className="text-sm leading-6 font-mono text-gray-400 select-none">{t("common.tags")}</span>
-        {!props.hideTips && (
+        {!props.readonly && (
           <div className={clsx("group-hover:block", tagAmounts.length > 0 ? "hidden" : "")}>
             <Tooltip title={"Rebuild"} placement="top">
               <Icon.RefreshCcw
@@ -80,7 +80,7 @@ const TagsSection = (props: Props) => {
           ))}
         </div>
       ) : (
-        !props.hideTips && (
+        !props.readonly && (
           <div className="p-2 border border-dashed dark:border-zinc-800 rounded-md flex flex-row justify-start items-start gap-1 text-gray-400 dark:text-gray-500">
             <Icon.Tags />
             <p className="mt-0.5 text-sm leading-snug italic">{t("tag.create-tags-guide")}</p>

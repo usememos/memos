@@ -277,6 +277,17 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		} else if path == "created_ts" {
 			createdTs := request.Memo.CreateTime.AsTime().Unix()
 			update.CreatedTs = &createdTs
+		} else if path == "display_ts" {
+			displayTs := request.Memo.DisplayTime.AsTime().Unix()
+			memoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+			}
+			if memoRelatedSetting.DisplayWithUpdateTime {
+				update.UpdatedTs = &displayTs
+			} else {
+				update.CreatedTs = &displayTs
+			}
 		} else if path == "pinned" {
 			if _, err := s.Store.UpsertMemoOrganizer(ctx, &store.MemoOrganizer{
 				MemoID: id,

@@ -15,7 +15,7 @@ const ExploreSidebar = (props: Props) => {
       )}
     >
       <SearchBar />
-      <TagsSection hideTips={true} />
+      <TagsSection readonly={true} />
     </aside>
   );
 };

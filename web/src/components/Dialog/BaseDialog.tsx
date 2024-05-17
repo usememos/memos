@@ -77,10 +77,8 @@ export function generateDialog<T extends DialogProps>(
   const cbs: DialogCallback = {
     destroy: () => {
       document.body.style.removeProperty("overflow");
-      setTimeout(() => {
-        dialog.unmount();
-        tempDiv.remove();
-      });
+      dialog.unmount();
+      tempDiv.remove();
     },
   };
 
