@@ -93,7 +93,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		ExcludeComments: true,
 	}
 	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter")
+		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
 	}
 
 	var limit, offset int
@@ -151,12 +151,12 @@ func (s *APIV1Service) SearchMemos(ctx context.Context, request *v1pb.SearchMemo
 	}
 	err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter")
+		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
 	}
 
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to search memos")
+		return nil, status.Errorf(codes.Internal, "failed to search memos: %v", err)
 	}
 
 	memoMessages := []*v1pb.Memo{}
@@ -519,7 +519,7 @@ func (s *APIV1Service) ExportMemos(ctx context.Context, request *v1pb.ExportMemo
 		ExcludeComments: true,
 	}
 	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to build find memos with filter: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
 	}
 
 	memos, err := s.Store.ListMemos(ctx, memoFind)
@@ -610,7 +610,7 @@ func (s *APIV1Service) ListMemoTags(ctx context.Context, request *v1pb.ListMemoT
 		memoFind.ID = &memoID
 	}
 	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to build find memos with filter: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
 	}
 
 	memos, err := s.Store.ListMemos(ctx, memoFind)

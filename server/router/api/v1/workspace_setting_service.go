@@ -193,7 +193,7 @@ func convertWorkspaceStorageSettingToStore(setting *v1pb.WorkspaceStorageSetting
 		UploadSizeLimitMb: setting.UploadSizeLimitMb,
 	}
 	if setting.S3Config != nil {
-		settingpb.S3Config = &storepb.WorkspaceStorageSetting_S3Config{
+		settingpb.S3Config = &storepb.StorageS3Config{
 			AccessKeyId:     setting.S3Config.AccessKeyId,
 			AccessKeySecret: setting.S3Config.AccessKeySecret,
 			Endpoint:        setting.S3Config.Endpoint,

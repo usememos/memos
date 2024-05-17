@@ -129,10 +129,14 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 			if err != nil {
 				return errors.Wrap(err, "failed to get workspace storage setting")
 			}
-			s3Config := workspaceStorageSetting.S3Config
+			s3Config := s3ObjectPayload.S3Config
 			if s3Config == nil {
-				return errors.Errorf("No actived external storage found")
+				if workspaceStorageSetting.S3Config == nil {
+					return errors.Errorf("S3 config is not found")
+				}
+				s3Config = workspaceStorageSetting.S3Config
 			}
+
 			s3Client, err := s3.NewClient(ctx, s3Config)
 			if err != nil {
 				return errors.Wrap(err, "Failed to create s3 client")

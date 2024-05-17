@@ -3,6 +3,7 @@ syntax = "proto3";
 package memos.store;
 
 import "google/protobuf/timestamp.proto";
+import "store/workspace_setting.proto";
 
 option go_package = "gen/store";
 
@@ -19,10 +20,11 @@ message ResourcePayload {
   }
 
   message S3Object {
+    StorageS3Config s3_config = 1;
     // key is the S3 object key.
-    string key = 1;
+    string key = 2;
     // last_presigned_time is the last time the object was presigned.
     // This is used to determine if the presigned URL is still valid.
-    google.protobuf.Timestamp last_presigned_time = 2;
+    google.protobuf.Timestamp last_presigned_time = 3;
   }
 }

@@ -20,7 +20,7 @@ type Client struct {
 	Bucket *string
 }
 
-func NewClient(ctx context.Context, s3Config *storepb.WorkspaceStorageSetting_S3Config) (*Client, error) {
+func NewClient(ctx context.Context, s3Config *storepb.StorageS3Config) (*Client, error) {
 	resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...any) (aws.Endpoint, error) {
 		return aws.Endpoint{
 			URL: s3Config.Endpoint,

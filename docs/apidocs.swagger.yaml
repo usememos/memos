@@ -1850,6 +1850,20 @@ definitions:
       expiresAt:
         type: string
         format: date-time
+  WorkspaceStorageSettingS3Config:
+    type: object
+    properties:
+      accessKeyId:
+        type: string
+      accessKeySecret:
+        type: string
+      endpoint:
+        type: string
+      region:
+        type: string
+      bucket:
+        type: string
+    title: 'Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/'
   apiHttpBody:
     type: object
     properties:
@@ -2086,22 +2100,8 @@ definitions:
         format: int64
         description: The max upload size in megabytes.
       s3Config:
-        $ref: '#/definitions/apiv1WorkspaceStorageSettingS3Config'
+        $ref: '#/definitions/WorkspaceStorageSettingS3Config'
         description: The S3 config.
-  apiv1WorkspaceStorageSettingS3Config:
-    type: object
-    properties:
-      accessKeyId:
-        type: string
-      accessKeySecret:
-        type: string
-      endpoint:
-        type: string
-      region:
-        type: string
-      bucket:
-        type: string
-    title: 'Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/'
   apiv1WorkspaceStorageSettingStorageType:
     type: string
     enum:

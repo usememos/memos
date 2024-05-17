@@ -70,16 +70,17 @@ message WorkspaceStorageSetting {
   string filepath_template = 2;
   // The max upload size in megabytes.
   int64 upload_size_limit_mb = 3;
-  // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
-  message S3Config {
-    string access_key_id = 1;
-    string access_key_secret = 2;
-    string endpoint = 3;
-    string region = 4;
-    string bucket = 5;
-  }
   // The S3 config.
-  S3Config s3_config = 4;
+  StorageS3Config s3_config = 4;
+}
+
+// Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+message StorageS3Config {
+  string access_key_id = 1;
+  string access_key_secret = 2;
+  string endpoint = 3;
+  string region = 4;
+  string bucket = 5;
 }
 
 message WorkspaceMemoRelatedSetting {
