@@ -74,6 +74,7 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) {
 		s3ObjectPayload.S3Config = s3Config
 		s3ObjectPayload.LastPresignedTime = timestamppb.New(time.Now())
 		if err := p.Store.UpdateResource(ctx, &store.UpdateResource{
+			ID:        resource.ID,
 			Reference: &presignURL,
 			Payload: &storepb.ResourcePayload{
 				Payload: &storepb.ResourcePayload_S3Object_{
