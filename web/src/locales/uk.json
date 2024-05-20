@@ -56,6 +56,9 @@
     "any-thoughts": "Ваші думки...",
     "save": "Зберегти"
   },
+  "inbox": {
+    "memo-comment": "{{user}} має коментар на {{memo}}."
+  },
   "memo": {
     "copy-link": "Копіювати посилання",
     "view-detail": "Деталі",
