@@ -176,8 +176,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         insertText = `${Number(number) + 1}. `;
       }
       if (insertText) {
-        editorActions.insertText(`\n${insertText}`);
-        event.preventDefault();
+        editorActions.insertText(insertText);
       }
     }
   };
