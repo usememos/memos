@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"regexp"
 	"strings"
 	"time"
@@ -214,6 +215,17 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 }
 
 func (s *APIV1Service) SignOut(ctx context.Context, _ *v1pb.SignOutRequest) (*emptypb.Empty, error) {
+	accessToken, ok := ctx.Value(accessTokenContextKey).(string)
+	// Try to delete the access token from the store.
+	if ok {
+		_, err := s.DeleteUserAccessToken(ctx, &v1pb.DeleteUserAccessTokenRequest{
+			AccessToken: accessToken,
+		})
+		if err != nil {
+			slog.Error("failed to delete access token", err)
+		}
+	}
+
 	if err := s.clearAccessTokenCookie(ctx); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to set grpc header, error: %v", err)
 	}
