@@ -129,7 +129,7 @@ message ListUsersResponse {
 
 message SearchUsersRequest {
   // Filter is used to filter users returned in the list.
-  // Format: "username == frank"
+  // Format: "username == 'frank'"
   string filter = 1;
 }
 

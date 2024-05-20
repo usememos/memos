@@ -310,7 +310,7 @@ paths:
         - name: filter
           description: |-
             Filter is used to filter memos returned in the list.
-            Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+            Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -410,7 +410,7 @@ paths:
         - name: filter
           description: |-
             Filter is used to filter memos returned.
-            Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+            Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -545,7 +545,7 @@ paths:
         - name: filter
           description: |-
             Filter is used to filter users returned in the list.
-            Format: "username == frank"
+            Format: "username == 'frank'"
           in: query
           required: false
           type: string
@@ -1517,7 +1517,7 @@ paths:
         - name: filter
           description: |-
             Filter is used to filter memos.
-            Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+            Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string

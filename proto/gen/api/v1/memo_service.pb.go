@@ -315,7 +315,7 @@ type ListMemosRequest struct {
 	// Provide this to retrieve the subsequent page.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Filter is used to filter memos returned in the list.
-	// Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+	// Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 
@@ -435,7 +435,7 @@ type SearchMemosRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Filter is used to filter memos returned.
-	// Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+	// Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
 	Filter string `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 
@@ -831,7 +831,7 @@ type ListMemoTagsRequest struct {
 	// Format: memos/{id}. Use "memos/-" to list all tags.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Filter is used to filter memos.
-	// Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+	// Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 

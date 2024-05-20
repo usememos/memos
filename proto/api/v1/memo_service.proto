@@ -205,7 +205,7 @@ message ListMemosRequest {
   string page_token = 2;
 
   // Filter is used to filter memos returned in the list.
-  // Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+  // Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
   string filter = 3;
 }
 
@@ -219,7 +219,7 @@ message ListMemosResponse {
 
 message SearchMemosRequest {
   // Filter is used to filter memos returned.
-  // Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+  // Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
   string filter = 1;
 }
 
@@ -266,7 +266,7 @@ message ListMemoTagsRequest {
   string parent = 1;
 
   // Filter is used to filter memos.
-  // Format: "creator == users/{uid} && visibilities == ['PUBLIC', 'PROTECTED']"
+  // Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
   string filter = 2;
 }
 
