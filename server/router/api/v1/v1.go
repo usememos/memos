@@ -71,37 +71,37 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	}
 
 	gwMux := runtime.NewServeMux()
-	if err := v1pb.RegisterWorkspaceServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterWorkspaceServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterWorkspaceSettingServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterWorkspaceSettingServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterAuthServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterAuthServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterUserServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterUserServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterMemoServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterMemoServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterResourceServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterResourceServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterInboxServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterInboxServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterActivityServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterActivityServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterWebhookServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterWebhookServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterMarkdownServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterMarkdownServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	if err := v1pb.RegisterIdentityProviderServiceHandler(context.Background(), gwMux, conn); err != nil {
+	if err := v1pb.RegisterIdentityProviderServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
 	echoServer.Any("/api/v1/*", echo.WrapHandler(gwMux))
