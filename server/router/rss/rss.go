@@ -129,7 +129,7 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 			if resource.StorageType == storepb.ResourceStorageType_EXTERNAL || resource.StorageType == storepb.ResourceStorageType_S3 {
 				enclosure.Url = resource.Reference
 			} else {
-				enclosure.Url = fmt.Sprintf("%s/file/resources/%d", baseURL, resource.ID)
+				enclosure.Url = fmt.Sprintf("%s/file/resources/%d/%s", baseURL, resource.ID, resource.Filename)
 			}
 			enclosure.Length = strconv.Itoa(int(resource.Size))
 			enclosure.Type = resource.Type

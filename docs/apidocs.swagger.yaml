@@ -1736,31 +1736,6 @@ paths:
                 format: date-time
       tags:
         - UserService
-  /file/{name}:
-    get:
-      summary: GetResourceBinary returns a resource binary by name.
-      operationId: ResourceService_GetResourceBinary
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/apiHttpBody'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The name of the resource.
-            Format: resources/{id}
-            id is the system generated unique identifier.
-          in: path
-          required: true
-          type: string
-          pattern: resources/[^/]+
-      tags:
-        - ResourceService
   /file/{name}/avatar:
     get:
       summary: GetUserAvatarBinary gets the avatar of a user.
@@ -1796,6 +1771,36 @@ paths:
           format: byte
       tags:
         - UserService
+  /file/{name}/{filename}:
+    get:
+      summary: GetResourceBinary returns a resource binary by name.
+      operationId: ResourceService_GetResourceBinary
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiHttpBody'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+
+        - name: filename
+          description: The filename of the resource. Mainly used for downloading.
+          in: path
+          required: true
+          type: string
+      tags:
+        - ResourceService
 definitions:
   MemoServiceRebuildMemoPropertyBody:
     type: object

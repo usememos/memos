@@ -5,7 +5,7 @@ export const getResourceUrl = (resource: Resource) => {
     return resource.externalLink;
   }
 
-  return `${window.location.origin}/file/${resource.name}`;
+  return `${window.location.origin}/file/${resource.name}/${resource.filename}`;
 };
 
 export const getResourceType = (resource: Resource) => {
