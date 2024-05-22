@@ -57,10 +57,14 @@ service MemoService {
       body: "*"
     };
   }
+  // ListMemoProperties lists memo properties.
+  rpc ListMemoProperties(ListMemoPropertiesRequest) returns (ListMemoPropertiesResponse) {
+    option (google.api.http) = {get: "/api/v1/{name=memos/*}/properties"};
+  }
   // RebuildMemoProperty rebuilds a memo property.
   rpc RebuildMemoProperty(RebuildMemoPropertyRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/{name=memos/*}:rebuild"
+      post: "/api/v1/{name=memos/*}/properties:rebuild"
       body: "*"
     };
   }
@@ -181,13 +185,24 @@ message Memo {
 
   bool pinned = 12;
 
-  optional int32 parent_id = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  MemoProperty property = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated Resource resources = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The name of the parent memo.
+  // Format: memos/{id}
+  // id is the system generated id.
+  optional string parent = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated MemoRelation relations = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated Resource resources = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  repeated Reaction reactions = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  repeated Reaction reactions = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+message MemoProperty {
+  repeated string tags = 1;
+  bool has_link = 2;
+  bool has_task_list = 3;
 }
 
 message CreateMemoRequest {
@@ -252,6 +267,16 @@ message ExportMemosRequest {
 
 message ExportMemosResponse {
   bytes content = 1;
+}
+
+message ListMemoPropertiesRequest {
+  // The name of the memo.
+  // Format: memos/{id}. Use "memos/-" to list all properties.
+  string name = 1;
+}
+
+message ListMemoPropertiesResponse {
+  repeated MemoProperty properties = 1;
 }
 
 message RebuildMemoPropertyRequest {

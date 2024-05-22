@@ -777,7 +777,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		return nil, errors.Wrap(err, "failed to parse content")
 	}
 
-	return &v1pb.Memo{
+	memoMessage := &v1pb.Memo{
 		Name:        name,
 		Uid:         memo.UID,
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
@@ -789,11 +789,29 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Nodes:       convertFromASTNodes(nodes),
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
-		ParentId:    memo.ParentID,
 		Relations:   listMemoRelationsResponse.Relations,
 		Resources:   listMemoResourcesResponse.Resources,
 		Reactions:   listMemoReactionsResponse.Reactions,
-	}, nil
+	}
+	if memo.Payload != nil {
+		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
+	}
+	if memo.ParentID != nil {
+		parent := fmt.Sprintf("%s%d", MemoNamePrefix, *memo.ParentID)
+		memoMessage.Parent = &parent
+	}
+	return memoMessage, nil
+}
+
+func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.MemoProperty {
+	if property == nil {
+		return nil
+	}
+	return &v1pb.MemoProperty{
+		Tags:        property.Tags,
+		HasLink:     property.HasLink,
+		HasTaskList: property.HasTaskList,
+	}
 }
 
 func convertVisibilityFromStore(visibility store.Visibility) v1pb.Visibility {

@@ -160,25 +160,13 @@ const Timeline = () => {
                 </div>
 
                 <div className={clsx("w-full flex flex-col justify-start items-start")}>
-                  {sortedMemos.map((memo, index) => (
-                    <div
+                  {sortedMemos.map((memo) => (
+                    <MemoView
                       key={`${memo.name}-${memo.displayTime}`}
-                      className={clsx("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
-                    >
-                      <MemoView
-                        className="!border max-w-full !border-gray-100 dark:!border-zinc-700"
-                        memo={memo}
-                        displayTimeFormat="time"
-                      />
-                      <div className="absolute -left-2 sm:left-2 top-4 h-full">
-                        {index !== sortedMemos.length - 1 && (
-                          <div className="absolute top-2 left-[7px] h-full w-0.5 bg-gray-200 dark:bg-gray-700 block"></div>
-                        )}
-                        <div className="border-4 rounded-full border-white relative dark:border-zinc-800">
-                          <Icon.Circle className="w-2 h-auto bg-gray-200 text-gray-200 dark:bg-gray-700 dark:text-gray-700 rounded-full" />
-                        </div>
-                      </div>
-                    </div>
+                      className="!border w-full !border-gray-100 dark:!border-zinc-700"
+                      memo={memo}
+                      displayTimeFormat="time"
+                    />
                   ))}
                 </div>
               </div>

@@ -9,7 +9,7 @@ import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { MemoNamePrefix, useMemoStore } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -46,8 +46,8 @@ const MemoDetail = () => {
     }
 
     (async () => {
-      if (memo.parentId) {
-        memoStore.getOrFetchMemoByName(`${MemoNamePrefix}${memo.parentId}`).then((memo: Memo) => {
+      if (memo.parent) {
+        memoStore.getOrFetchMemoByName(memo.parent).then((memo: Memo) => {
           setParentMemo(memo);
         });
       } else {

@@ -903,9 +903,15 @@ paths:
                   type: string
               pinned:
                 type: boolean
-              parentId:
-                type: integer
-                format: int32
+              property:
+                $ref: '#/definitions/v1MemoProperty'
+                readOnly: true
+              parent:
+                type: string
+                description: |-
+                  The name of the parent memo.
+                  Format: memos/{id}
+                  id is the system generated id.
                 readOnly: true
               resources:
                 type: array
@@ -1280,6 +1286,60 @@ paths:
             $ref: '#/definitions/v1CreateMemoRequest'
       tags:
         - MemoService
+  /api/v1/{name}/properties:
+    get:
+      summary: ListMemoProperties lists memo properties.
+      operationId: MemoService_ListMemoProperties
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListMemoPropertiesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{id}. Use "memos/-" to list all properties.
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
+  /api/v1/{name}/properties:rebuild:
+    post:
+      summary: RebuildMemoProperty rebuilds a memo property.
+      operationId: MemoService_RebuildMemoProperty
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the memo.
+            Format: memos/{id}. Use "memos/-" to rebuild all memos.
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceRebuildMemoPropertyBody'
+      tags:
+        - MemoService
   /api/v1/{name}/reactions:
     get:
       summary: ListMemoReactions lists reactions for a memo.
@@ -1462,36 +1522,6 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
-  /api/v1/{name}:rebuild:
-    post:
-      summary: RebuildMemoProperty rebuilds a memo property.
-      operationId: MemoService_RebuildMemoProperty
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            type: object
-            properties: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}. Use "memos/-" to rebuild all memos.
-          in: path
-          required: true
-          type: string
-          pattern: memos/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/MemoServiceRebuildMemoPropertyBody'
-      tags:
-        - MemoService
   /api/v1/{parent}/tags:
     get:
       summary: ListMemoTags lists tags for a memo.
@@ -2485,6 +2515,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Memo'
+  v1ListMemoPropertiesResponse:
+    type: object
+    properties:
+      properties:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1MemoProperty'
   v1ListMemoReactionsResponse:
     type: object
     properties:
@@ -2620,9 +2658,15 @@ definitions:
           type: string
       pinned:
         type: boolean
-      parentId:
-        type: integer
-        format: int32
+      property:
+        $ref: '#/definitions/v1MemoProperty'
+        readOnly: true
+      parent:
+        type: string
+        description: |-
+          The name of the parent memo.
+          Format: memos/{id}
+          id is the system generated id.
         readOnly: true
       resources:
         type: array
@@ -2642,6 +2686,17 @@ definitions:
           type: object
           $ref: '#/definitions/v1Reaction'
         readOnly: true
+  v1MemoProperty:
+    type: object
+    properties:
+      tags:
+        type: array
+        items:
+          type: string
+      hasLink:
+        type: boolean
+      hasTaskList:
+        type: boolean
   v1MemoRelation:
     type: object
     properties:

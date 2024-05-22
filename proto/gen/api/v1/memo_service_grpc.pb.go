@@ -27,6 +27,7 @@ const (
 	MemoService_UpdateMemo_FullMethodName          = "/memos.api.v1.MemoService/UpdateMemo"
 	MemoService_DeleteMemo_FullMethodName          = "/memos.api.v1.MemoService/DeleteMemo"
 	MemoService_ExportMemos_FullMethodName         = "/memos.api.v1.MemoService/ExportMemos"
+	MemoService_ListMemoProperties_FullMethodName  = "/memos.api.v1.MemoService/ListMemoProperties"
 	MemoService_RebuildMemoProperty_FullMethodName = "/memos.api.v1.MemoService/RebuildMemoProperty"
 	MemoService_ListMemoTags_FullMethodName        = "/memos.api.v1.MemoService/ListMemoTags"
 	MemoService_RenameMemoTag_FullMethodName       = "/memos.api.v1.MemoService/RenameMemoTag"
@@ -61,6 +62,8 @@ type MemoServiceClient interface {
 	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ExportMemos exports memos.
 	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error)
+	// ListMemoProperties lists memo properties.
+	ListMemoProperties(ctx context.Context, in *ListMemoPropertiesRequest, opts ...grpc.CallOption) (*ListMemoPropertiesResponse, error)
 	// RebuildMemoProperty rebuilds a memo property.
 	RebuildMemoProperty(ctx context.Context, in *RebuildMemoPropertyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListMemoTags lists tags for a memo.
@@ -156,6 +159,15 @@ func (c *memoServiceClient) DeleteMemo(ctx context.Context, in *DeleteMemoReques
 func (c *memoServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*ExportMemosResponse, error) {
 	out := new(ExportMemosResponse)
 	err := c.cc.Invoke(ctx, MemoService_ExportMemos_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) ListMemoProperties(ctx context.Context, in *ListMemoPropertiesRequest, opts ...grpc.CallOption) (*ListMemoPropertiesResponse, error) {
+	out := new(ListMemoPropertiesResponse)
+	err := c.cc.Invoke(ctx, MemoService_ListMemoProperties_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -306,6 +318,8 @@ type MemoServiceServer interface {
 	DeleteMemo(context.Context, *DeleteMemoRequest) (*emptypb.Empty, error)
 	// ExportMemos exports memos.
 	ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error)
+	// ListMemoProperties lists memo properties.
+	ListMemoProperties(context.Context, *ListMemoPropertiesRequest) (*ListMemoPropertiesResponse, error)
 	// RebuildMemoProperty rebuilds a memo property.
 	RebuildMemoProperty(context.Context, *RebuildMemoPropertyRequest) (*emptypb.Empty, error)
 	// ListMemoTags lists tags for a memo.
@@ -361,6 +375,9 @@ func (UnimplementedMemoServiceServer) DeleteMemo(context.Context, *DeleteMemoReq
 }
 func (UnimplementedMemoServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*ExportMemosResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportMemos not implemented")
+}
+func (UnimplementedMemoServiceServer) ListMemoProperties(context.Context, *ListMemoPropertiesRequest) (*ListMemoPropertiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMemoProperties not implemented")
 }
 func (UnimplementedMemoServiceServer) RebuildMemoProperty(context.Context, *RebuildMemoPropertyRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RebuildMemoProperty not implemented")
@@ -539,6 +556,24 @@ func _MemoService_ExportMemos_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemoServiceServer).ExportMemos(ctx, req.(*ExportMemosRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_ListMemoProperties_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMemoPropertiesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).ListMemoProperties(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_ListMemoProperties_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).ListMemoProperties(ctx, req.(*ListMemoPropertiesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -829,6 +864,10 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExportMemos",
 			Handler:    _MemoService_ExportMemos_Handler,
+		},
+		{
+			MethodName: "ListMemoProperties",
+			Handler:    _MemoService_ListMemoProperties_Handler,
 		},
 		{
 			MethodName: "RebuildMemoProperty",
