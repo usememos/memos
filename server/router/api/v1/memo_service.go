@@ -797,7 +797,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
 	}
 	if memo.ParentID != nil {
-		memoMessage.ParentId = memo.ParentID
 		parent := fmt.Sprintf("%s%d", MemoNamePrefix, *memo.ParentID)
 		memoMessage.Parent = &parent
 	}
