@@ -185,18 +185,22 @@ message Memo {
 
   bool pinned = 12;
 
-  MemoProperty property = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  optional int32 parent_id = 13 [
+    deprecated = true,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+
+  repeated Resource resources = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  repeated MemoRelation relations = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  repeated Reaction reactions = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  MemoProperty property = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The name of the parent memo.
   // Format: memos/{id}
-  // id is the system generated id.
-  optional string parent = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  repeated Resource resources = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  repeated MemoRelation relations = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  repeated Reaction reactions = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  optional string parent = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message MemoProperty {

@@ -903,15 +903,9 @@ paths:
                   type: string
               pinned:
                 type: boolean
-              property:
-                $ref: '#/definitions/v1MemoProperty'
-                readOnly: true
-              parent:
-                type: string
-                description: |-
-                  The name of the parent memo.
-                  Format: memos/{id}
-                  id is the system generated id.
+              parentId:
+                type: integer
+                format: int32
                 readOnly: true
               resources:
                 type: array
@@ -930,6 +924,15 @@ paths:
                 items:
                   type: object
                   $ref: '#/definitions/v1Reaction'
+                readOnly: true
+              property:
+                $ref: '#/definitions/v1MemoProperty'
+                readOnly: true
+              parent:
+                type: string
+                title: |-
+                  The name of the parent memo.
+                  Format: memos/{id}
                 readOnly: true
       tags:
         - MemoService
@@ -2658,15 +2661,9 @@ definitions:
           type: string
       pinned:
         type: boolean
-      property:
-        $ref: '#/definitions/v1MemoProperty'
-        readOnly: true
-      parent:
-        type: string
-        description: |-
-          The name of the parent memo.
-          Format: memos/{id}
-          id is the system generated id.
+      parentId:
+        type: integer
+        format: int32
         readOnly: true
       resources:
         type: array
@@ -2685,6 +2682,15 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Reaction'
+        readOnly: true
+      property:
+        $ref: '#/definitions/v1MemoProperty'
+        readOnly: true
+      parent:
+        type: string
+        title: |-
+          The name of the parent memo.
+          Format: memos/{id}
         readOnly: true
   v1MemoProperty:
     type: object
