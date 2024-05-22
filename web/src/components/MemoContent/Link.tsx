@@ -23,6 +23,7 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
   const [linkMetadata, setLinkMetadata] = useState<LinkMetadata | undefined>();
 
   const handleMouseEnter = async () => {
+    setShowTooltip(true);
     if (!initialized) {
       try {
         const linkMetadata = await markdownServiceClient.getLinkMetadata({ link: url });
@@ -32,7 +33,6 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
       }
       setInitialized(true);
     }
-    setTimeout(() => setShowTooltip(true), 0);
   };
 
   return (
