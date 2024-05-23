@@ -24,11 +24,27 @@ A privacy-first, lightweight note-taking service. Easily capture and share your 
 
 ## Deploy with Docker in seconds
 
+### Mac/Linux
 ```bash
-docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:stable
+docker run -d --restart unless-stopped --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:stable
 ```
 
 > The `~/.memos/` directory will be used as the data directory on your local machine, while `/var/opt/memos` is the directory of the volume in Docker and should not be modified.
+
+### Windows
+cmd/command prompt:
+
+```cmd
+docker run -d --restart unless-stopped --name memos -p 5230:5230 -v %USERPROFILE%\.memos\:/var/opt/memos neosmemo/memos:stable
+```
+
+ps/powershell:
+```powershell
+docker run -d --restart unless-stopped --name memos -p 5230:5230 -v $env:USERPROFILE%\.memos\:/var/opt/memos neosmemo/memos:stable
+```
+
+> The `.memos` directory will be used as the data directory on your local machine (located in `C:\Users\<user_name>\.memos`, while `/var/opt/memos` is the directory of the volume in Docker and should not be modified.
+
 
 Learn more about [other installation methods](https://www.usememos.com/docs/install).
 
