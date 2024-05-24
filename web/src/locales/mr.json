@@ -59,6 +59,251 @@
     "select": "निवडा",
     "settings": "सेटिंग्ज",
     "share": "शेअर करा",
-    "sign-in": "साइन इन करा"
+    "sign-in": "साइन इन करा",
+    "sign-in-with": "{{provider}} सह साइन इन करा",
+    "sign-out": "साइन आउट करा",
+    "sign-up": "साइन अप करा",
+    "statistics": "आकडेवारी",
+    "tags": "टॅग्ज",
+    "title": "शीर्षक",
+    "type": "प्रकार",
+    "unpin": "अनपिन",
+    "update": "अपडेट करा",
+    "upload": "अपलोड करा",
+    "username": "वापरकर्तानाव",
+    "version": "आवृत्ती",
+    "visibility": "दृश्यमानता",
+    "yourself": "स्वतः"
+  },
+  "days": {
+    "fri": "शुक्र",
+    "mon": "सोम",
+    "sat": "शनि",
+    "sun": "रवि",
+    "thu": "गुरु",
+    "tue": "मंगळ",
+    "wed": "बुध"
+  },
+  "editor": {
+    "add-your-comment-here": "तुमची टिप्पणी येथे जो़डा",
+    "any-thoughts": "आपले विचार...",
+    "save": "जतन"
+  },
+  "inbox": {
+    "memo-comment": "{{user}} ची तुमच्या {{memo}} वर टिप्पणी आहे.",
+    "version-update": "नवीन आवृत्ती {{version}} आता उपलब्ध आहे!"
+  },
+  "memo": {
+    "archived-at": "येथे संग्रहित",
+    "comment": {
+      "self": "टिप्पण्या",
+      "write-a-comment": "टिप्पणी लिहा"
+    },
+    "copy-link": "लिंकची प्रत बनवा",
+    "count-memos-in-date": "{{date}} ला {{count}} मेमो लिहीलीत",
+    "delete-confirm": "हा मेमो हटवण्याची तुम्हाला खात्री आहे का? हि क्रिया अपरिवर्तनीय आहे",
+    "delete-memo": "मेमो हटवा",
+    "embed": "एम्बेड करा",
+    "fetch-more": "अधिकसाठी क्लिक करा",
+    "fetching-data": "माहिती मागवत आहे…",
+    "no-archived-memos": "कोणतेही संग्रहित मेमो नाहीत.",
+    "search-placeholder": "मेमोज शोधा",
+    "show-more": "अधिक दाखवा",
+    "view-detail": "तपशील दाखवा",
+    "visibility": {
+      "disabled": "सार्वजनिक मेमो अक्षम केले आहेत",
+      "private": "खाजगी",
+      "protected": "कार्यक्षेत्र",
+      "public": "सार्वजनिक"
+    },
+    "wrapping": "गुंडाळा"
+  },
+  "message": {
+    "archived-successfully": "यशस्वीरित्या संग्रहित केले",
+    "change-memo-created-time": "मेमो तयार केलेली वेळ बदला",
+    "copied": "प्रत बनवली",
+    "deleted-successfully": "यशस्वीरित्या हटवले",
+    "fill-all": "कृपया सर्व फील्ड भरा.",
+    "maximum-upload-size-is": "कमाल अनुमत अपलोड आकार {{size}} MiB आहे",
+    "memo-not-found": "मेमो सापडला नाही.",
+    "new-password-not-match": "नवीन पासवर्ड जुळत नाहीत.",
+    "no-data": "माहिती आढळली नाही.",
+    "password-changed": "पासवर्ड बदलला",
+    "password-not-match": "पासवर्ड जुळत नाही.",
+    "restored-successfully": "यशस्वीरित्या पुनर्संचयित केले",
+    "succeed-copy-link": "लिंक यशस्वीरित्या कॉपी केली.",
+    "update-succeed": "अपडेट यशस्वी झाले",
+    "user-not-found": "वापरकर्ता सापडला नाही"
+  },
+  "reference": {
+    "add-references": "संदर्भ जोडा",
+    "embedded-usage": "एम्बेडेड सामग्री म्हणून वापरा",
+    "no-memos-found": "कोणतेही मेमो आढळले नाहीत",
+    "search-placeholder": "सामग्री शोधा"
+  },
+  "resource": {
+    "clear": "साफ",
+    "copy-link": "लिंक कॉपी करा",
+    "create-dialog": {
+      "external-link": {
+        "file-name": "फाईलचे नाव",
+        "file-name-placeholder": "फाईलचे नाव",
+        "link": "लिंक",
+        "link-placeholder": "https://the.link.to/your/resource",
+        "option": "बाह्य लिंक",
+        "type": "प्रकार",
+        "type-placeholder": "फाईल प्रकार"
+      },
+      "local-file": {
+        "choose": "एक फाइल निवडा…",
+        "option": "स्थानिक फाइल"
+      },
+      "title": "संसाधन तयार करा",
+      "upload-method": "अपलोड पद्धत"
+    },
+    "delete-resource": "संसाधन हटवा",
+    "delete-selected-resources": "निवडलेली संसाधने हटवा",
+    "fetching-data": "डेटा आणत आहे…",
+    "file-drag-drop-prompt": "फाइल अपलोड करण्यासाठी तुमची फाइल येथे ड्रॅग आणि ड्रॉप करा",
+    "linked-amount": "लिंक केलेली रक्कम",
+    "no-files-selected": "कोणत्याही फाइल्स निवडल्या नाहीत",
+    "no-resources": "संसाधने नाहीत.",
+    "no-unused-resources": "कोणतीही न वापरलेली संसाधने नाहीत",
+    "reset-link": "लिंक रीसेट करा",
+    "reset-link-prompt": "तुम्हाला लिंक रीसेट करण्याची खात्री आहे का? हे सर्व वर्तमान लिंक वापर खंडित करेल. ही क्रिया अपरिवर्तनीय आहे",
+    "reset-resource-link": "संसाधन लिंक रीसेट करा"
+  },
+  "router": {
+    "back-to-top": "परत वर जा",
+    "go-to-home": "घरी जा"
+  },
+  "setting": {
+    "account-section": {
+      "change-password": "पासवर्ड बदला",
+      "email-note": "ऐच्छिक",
+      "export-memos": "मेमो निर्यात करा",
+      "nickname-note": "बॅनर मध्ये प्रदर्शित",
+      "openapi-reset": "OpenAPI की रीसेट करा",
+      "openapi-sample-post": "{{url}} कडून नमस्कार #मेमो",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API रीसेट करा",
+      "title": "खाते माहिती",
+      "update-information": "माहिती अपडेट करा",
+      "username-note": "साइन इन करण्यासाठी वापरले जाते"
+    },
+    "appearance-option": {
+      "dark": "नेहमी अंधार",
+      "light": "नेहमी प्रकाश",
+      "system": "प्रणालीचे अनुसरण करा"
+    },
+    "member": "सदस्य",
+    "member-list": "सदस्य यादी",
+    "member-section": {
+      "archive-member": "संग्रहण सदस्य",
+      "archive-warning": "तुम्हाला {{username}} संग्रहित करण्याची खात्री आहे?",
+      "create-a-member": "सदस्य तयार करा",
+      "delete-member": "सदस्य हटवा",
+      "delete-warning": "तुम्हाला नक्की {{username}} हटवायचे आहे का? ही क्रिया अपरिवर्तनीय आहे"
+    },
+    "my-account": "माझे खाते",
+    "preference": "प्राधान्ये",
+    "preference-section": {
+      "default-memo-sort-option": "मेमो प्रदर्शन वेळ",
+      "default-memo-visibility": "डीफॉल्ट मेमो दृश्यमानता",
+      "theme": "थीम"
+    },
+    "sso": "SSO",
+    "sso-section": {
+      "authorization-endpoint": "अधिकृतता एन्डपाॅंइन्ट",
+      "client-id": "क्लायंट आयडी",
+      "client-secret": "क्लायंट गुपित",
+      "confirm-delete": "तुम्हाला \"{{name}}\" SSO कॉन्फिगरेशन हटवण्याची खात्री आहे का? ही क्रिया अपरिवर्तनीय आहे",
+      "create-sso": "SSO तयार करा",
+      "custom": "सानुकूल",
+      "delete-sso": "हटविण्याची पुष्टी करा",
+      "disabled-password-login-warning": "पासवर्ड-लॉगिन अक्षम केले आहे, ओळख प्रदाते काढताना अधिक काळजी घ्या",
+      "display-name": "प्रदर्शनासाठी नाव",
+      "identifier": "ओळखकर्ता",
+      "identifier-filter": "अभिज्ञापक फिल्टर",
+      "redirect-url": "URL पुनर्निर्देशित करा",
+      "scopes": "व्याप्ती",
+      "sso-created": "SSO {{name}} तयार केले",
+      "sso-list": "SSO सूची",
+      "sso-updated": "SSO {{name}} अपडेट केले",
+      "template": "साचा",
+      "token-endpoint": "टोकन एंडपॉइंट",
+      "update-sso": "SSO अपडेट करा",
+      "user-endpoint": "वापरकर्ता एंडपॉइंट"
+    },
+    "storage": "स्टोरेज",
+    "storage-section": {
+      "accesskey": "प्रवेश की",
+      "accesskey-placeholder": "प्रवेश की / प्रवेश आयडी",
+      "bucket": "बादली",
+      "bucket-placeholder": "बादली नाव",
+      "create-a-service": "सेवा तयार करा",
+      "create-storage": "स्टोरेज तयार करा",
+      "current-storage": "वर्तमान ऑब्जेक्ट स्टोरेज",
+      "delete-storage": "स्टोरेज हटवा",
+      "endpoint": "एन्डपाॅंईन्ट",
+      "local-storage-path": "स्थानिक स्टोरेज मार्ग",
+      "path": "स्टोरेज पथ",
+      "path-description": "तुम्ही स्थानिक स्टोरेजमधून समान डायनॅमिक व्हेरिएबल्स वापरू शकता, जसे की {filename}",
+      "path-placeholder": "सानुकूल/पथ",
+      "presign-placeholder": "पूर्व-स्वाक्षरी URL, पर्यायी",
+      "region": "प्रदेश",
+      "region-placeholder": "प्रदेशाचे नाव",
+      "s3-compatible-url": "S3 सुसंगत URL",
+      "secretkey": "गुप्त की",
+      "secretkey-placeholder": "गुप्त की / प्रवेश की",
+      "storage-services": "स्टोरेज सेवा",
+      "type-database": "डेटाबेस",
+      "type-local": "स्थानिक फाइल सिस्टम",
+      "update-a-service": "सेवा अपडेट करा",
+      "update-local-path": "स्थानिक स्टोरेज पथ अपडेट करा",
+      "update-local-path-description": "स्थानिक स्टोरेज पथ हा तुमच्या डेटाबेस फाइलचा सापेक्ष मार्ग आहे",
+      "update-storage": "स्टोरेज अपडेट करा",
+      "url-prefix": "URL prefix",
+      "url-prefix-placeholder": "सानुकूल URL उपसर्ग, पर्यायी",
+      "url-suffix": "URL प्रत्यय",
+      "url-suffix-placeholder": "सानुकूल URL प्रत्यय, पर्यायी",
+      "warning-text": "तुम्हाला स्टोरेज सेवा \"{{name}}\" हटवायची खात्री आहे का? ही क्रिया अपरिवर्तनीय आहे"
+    },
+    "system": "प्रणाली",
+    "system-section": {
+      "additional-script": "अतिरिक्त स्क्रिप्ट",
+      "additional-script-placeholder": "अतिरिक्त JavaScript कोड",
+      "additional-style": "अतिरिक्त शैली",
+      "additional-style-placeholder": "अतिरिक्त CSS कोड",
+      "allow-user-signup": "वापरकर्ता साइनअपला अनुमती द्या",
+      "customize-server": {
+        "appearance": "सर्व्हरचे स्वरूप",
+        "description": "वर्णन",
+        "icon-url": "चिन्ह URL",
+        "locale": "सर्व्हर लोकेल",
+        "title": "सर्व्हर सानुकूलित करा"
+      },
+      "disable-password-login": "पासवर्ड लॉगिन अक्षम करा",
+      "disable-password-login-final-warning": "तुम्ही काय करत आहात हे तुम्हाला माहीत असल्यास कृपया \"CONFIRM\" टाइप करा.",
+      "disable-password-login-warning": "हे सर्व वापरकर्त्यांसाठी पासवर्ड लॉगिन अक्षम करेल. तुमचे कॉन्फिगर केलेले ओळख प्रदाते अयशस्वी झाल्यास डेटाबेसमध्ये ही सेटिंग पूर्ववत केल्याशिवाय लॉग इन करणे शक्य नाही. ओळख प्रदाता काढून टाकताना तुम्हाला अधिक सावधगिरी बाळगावी लागेल",
+      "disable-public-memos": "सार्वजनिक मेमो अक्षम करा",
+      "display-with-updated-time": "अद्यतनित वेळेसह प्रदर्शित करा",
+      "enable-password-login": "पासवर्ड लॉगिन सक्षम करा",
+      "enable-password-login-warning": "हे सर्व वापरकर्त्यांसाठी पासवर्ड लॉगिन सक्षम करेल. जर तुम्ही वापरकर्त्यांना SSO आणि पासवर्ड दोन्ही वापरून लॉग इन करू इच्छित असाल तरच सुरू ठेवा",
+      "max-upload-size": "कमाल अपलोड आकार (MiB)",
+      "max-upload-size-hint": "शिफारस केलेले मूल्य 32 MiB आहे.",
+      "server-name": "सर्व्हरचे नाव"
+    }
+  },
+  "tag": {
+    "all-tags": "सर्व टॅग",
+    "create-tag": "टॅग तयार करा",
+    "create-tags-guide": "तुम्ही `#tag` इनपुट करून टॅग तयार करू शकता.",
+    "delete-confirm": "तुम्हाला हा टॅग हटवण्याची खात्री आहे का? सर्व संबंधित मेमो संग्रहित केले जातील.",
+    "delete-tag": "टॅग हटवा",
+    "no-tag-found": "कोणताही टॅग आढळला नाही"
+  },
+  "timeline": {
+    "title": "कालक्रम"
   }
 }
