@@ -924,7 +924,7 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 	if user == nil {
 		if filter == "" {
 			// If no filter is provided, return an error.
-			return status.Errorf(codes.InvalidArgument, "filter is required")
+			return status.Errorf(codes.InvalidArgument, "filter is required for unauthenticated user")
 		}
 
 		find.VisibilityList = []store.Visibility{store.Public}
