@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
 
-	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/profile"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
