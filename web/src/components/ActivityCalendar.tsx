@@ -66,7 +66,7 @@ const ActivityCalendar = (props: Props) => {
                 isToday && "border-gray-600 dark:border-zinc-300",
                 isSelected && "font-bold border-gray-600 dark:border-zinc-300",
                 !isToday && !isSelected && "border-transparent",
-                count > 0 && "cursor-pointer",
+                count > 0 ? "cursor-pointer" : "cursor-default",
               )}
               onClick={() => count && onClick && onClick(new Date(date).toDateString())}
             >

@@ -15,7 +15,7 @@ import (
 )
 
 func (s *APIV1Service) ListInboxes(ctx context.Context, _ *v1pb.ListInboxesRequest) (*v1pb.ListInboxesResponse, error) {
-	user, err := getCurrentUser(ctx, s.Store)
+	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
 	}

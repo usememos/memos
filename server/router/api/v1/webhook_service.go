@@ -14,7 +14,7 @@ import (
 )
 
 func (s *APIV1Service) CreateWebhook(ctx context.Context, request *v1pb.CreateWebhookRequest) (*v1pb.Webhook, error) {
-	currentUser, err := getCurrentUser(ctx, s.Store)
+	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
@@ -48,7 +48,7 @@ func (s *APIV1Service) ListWebhooks(ctx context.Context, request *v1pb.ListWebho
 }
 
 func (s *APIV1Service) GetWebhook(ctx context.Context, request *v1pb.GetWebhookRequest) (*v1pb.Webhook, error) {
-	currentUser, err := getCurrentUser(ctx, s.Store)
+	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}

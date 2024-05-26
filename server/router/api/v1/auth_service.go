@@ -25,7 +25,7 @@ import (
 )
 
 func (s *APIV1Service) GetAuthStatus(ctx context.Context, _ *v1pb.GetAuthStatusRequest) (*v1pb.User, error) {
-	user, err := getCurrentUser(ctx, s.Store)
+	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
 	}
@@ -273,4 +273,18 @@ func (*APIV1Service) buildAccessTokenCookie(ctx context.Context, accessToken str
 		attrs = append(attrs, "SameSite=Strict")
 	}
 	return strings.Join(attrs, "; "), nil
+}
+
+func (s *APIV1Service) GetCurrentUser(ctx context.Context) (*store.User, error) {
+	username, ok := ctx.Value(usernameContextKey).(string)
+	if !ok {
+		return nil, nil
+	}
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		Username: &username,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

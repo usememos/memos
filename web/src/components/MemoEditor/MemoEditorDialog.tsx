@@ -71,7 +71,7 @@ const MemoEditorDialog: React.FC<Props> = ({
           <Icon.X className="w-5 h-auto" />
         </IconButton>
       </div>
-      <div className="flex flex-col justify-start items-start max-w-full w-[36rem]">
+      <div className="flex flex-col justify-start items-start max-w-full w-[40rem]">
         <MemoEditor
           className="border-none !p-0 -mb-2"
           cacheKey={`memo-editor-${cacheKey || memoName}`}

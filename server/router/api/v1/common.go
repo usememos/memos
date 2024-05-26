@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"context"
 	"encoding/base64"
 
 	"github.com/pkg/errors"
@@ -31,20 +30,6 @@ func convertRowStatusToStore(rowStatus v1pb.RowStatus) store.RowStatus {
 	default:
 		return store.Normal
 	}
-}
-
-func getCurrentUser(ctx context.Context, s *store.Store) (*store.User, error) {
-	username, ok := ctx.Value(usernameContextKey).(string)
-	if !ok {
-		return nil, nil
-	}
-	user, err := s.GetUser(ctx, &store.FindUser{
-		Username: &username,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
 }
 
 func getPageToken(limit int, offset int) (string, error) {
