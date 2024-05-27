@@ -5,7 +5,7 @@ import { useFilterStore } from "@/store/module";
 const useFilterWithUrlParams = () => {
   const location = useLocation();
   const filterStore = useFilterStore();
-  const { tag, text } = filterStore.state;
+  const { tag, text, memoPropertyFilter } = filterStore.state;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -38,6 +38,7 @@ const useFilterWithUrlParams = () => {
   return {
     tag,
     text,
+    memoPropertyFilter,
   };
 };
 

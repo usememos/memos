@@ -883,6 +883,9 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 	if find == nil {
 		find = &store.FindMemo{}
 	}
+	if find.PayloadFind == nil {
+		find.PayloadFind = &store.FindMemoPayload{}
+	}
 	if filter != "" {
 		filter, err := parseSearchMemosFilter(filter)
 		if err != nil {
@@ -956,6 +959,15 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if filter.IncludeComments {
 			find.ExcludeComments = false
 		}
+		if filter.HasLink {
+			find.PayloadFind.HasLink = true
+		}
+		if filter.HasTaskList {
+			find.PayloadFind.HasTaskList = true
+		}
+		if filter.HasCode {
+			find.PayloadFind.HasCode = true
+		}
 	}
 
 	user, err := s.GetCurrentUser(ctx)
@@ -1006,6 +1018,9 @@ var SearchMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("random", cel.BoolType),
 	cel.Variable("limit", cel.IntType),
 	cel.Variable("include_comments", cel.BoolType),
+	cel.Variable("has_link", cel.BoolType),
+	cel.Variable("has_task_list", cel.BoolType),
+	cel.Variable("has_code", cel.BoolType),
 }
 
 type SearchMemosFilter struct {
@@ -1021,6 +1036,9 @@ type SearchMemosFilter struct {
 	Random            bool
 	Limit             *int
 	IncludeComments   bool
+	HasLink           bool
+	HasTaskList       bool
+	HasCode           bool
 }
 
 func parseSearchMemosFilter(expression string) (*SearchMemosFilter, error) {
@@ -1090,6 +1108,15 @@ func findSearchMemosField(callExpr *expr.Expr_Call, filter *SearchMemosFilter) {
 			} else if idExpr.Name == "include_comments" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.IncludeComments = value
+			} else if idExpr.Name == "has_link" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.HasLink = value
+			} else if idExpr.Name == "has_task_list" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.HasTaskList = value
+			} else if idExpr.Name == "has_code" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.HasCode = value
 			}
 			return
 		}

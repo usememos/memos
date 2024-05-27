@@ -1,6 +1,6 @@
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 import store, { useAppSelector } from "..";
-import { setFilter } from "../reducer/filter";
+import { MemoPropertyFilter, setFilter, setMemoPropertyFilter } from "../reducer/filter";
 
 export const useFilterStore = () => {
   const state = useAppSelector((state) => state.filter);
@@ -16,6 +16,7 @@ export const useFilterStore = () => {
           tag: undefined,
           text: undefined,
           visibility: undefined,
+          memoPropertyFilter: undefined,
         }),
       );
     },
@@ -37,6 +38,13 @@ export const useFilterStore = () => {
       store.dispatch(
         setFilter({
           visibility: visibility,
+        }),
+      );
+    },
+    setMemoPropertyFilter: (memoPropertyFilter: Partial<MemoPropertyFilter>) => {
+      store.dispatch(
+        setMemoPropertyFilter({
+          ...memoPropertyFilter,
         }),
       );
     },

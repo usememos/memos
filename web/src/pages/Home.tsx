@@ -25,7 +25,7 @@ const Home = () => {
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
+  const filter = useFilterWithUrlParams();
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
@@ -34,20 +34,31 @@ const Home = () => {
   useEffect(() => {
     memoList.reset();
     fetchMemos("");
-  }, [tagQuery, textQuery]);
+  }, [filter.tag, filter.text, filter.memoPropertyFilter]);
 
   const fetchMemos = async (nextPageToken: string) => {
     setIsRequesting(true);
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
-    if (textQuery) {
-      contentSearch.push(JSON.stringify(textQuery));
+    if (filter.tag) {
+      contentSearch.push(JSON.stringify(filter.tag));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
     }
-    if (tagQuery) {
-      filters.push(`tag == "${tagQuery}"`);
+    if (filter.text) {
+      filters.push(`tag == "${filter.text}"`);
+    }
+    if (filter.memoPropertyFilter) {
+      if (filter.memoPropertyFilter.hasLink) {
+        filters.push(`has_link == true`);
+      }
+      if (filter.memoPropertyFilter.hasTaskList) {
+        filters.push(`has_task_list == true`);
+      }
+      if (filter.memoPropertyFilter.hasCode) {
+        filters.push(`has_code == true`);
+      }
     }
     const response = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,

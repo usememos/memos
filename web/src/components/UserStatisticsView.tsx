@@ -1,6 +1,8 @@
+import { Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { memoServiceClient } from "@/grpcweb";
-import { useMemoStore, useTagStore } from "@/store/v1";
+import { useFilterStore } from "@/store/module";
+import { useMemoStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
@@ -19,13 +21,12 @@ const UserStatisticsView = (props: Props) => {
   const { user } = props;
   const t = useTranslate();
   const memoStore = useMemoStore();
-  const tagStore = useTagStore();
+  const filterStore = useFilterStore();
   const [memoAmount, setMemoAmount] = useState(0);
   const [isRequesting, setIsRequesting] = useState(false);
   const [memoStats, setMemoStats] = useState<UserMemoStats>({ links: 0, todos: 0, code: 0 });
   const days = Math.ceil((Date.now() - user.createTime!.getTime()) / 86400000);
   const memos = Object.values(memoStore.getState().memoMapByName);
-  const tags = tagStore.sortedTags().length;
 
   useEffect(() => {
     if (memos.length === 0) {
@@ -60,7 +61,7 @@ const UserStatisticsView = (props: Props) => {
       <div className="w-full flex flex-row justify-between items-center">
         <p className="text-sm font-medium leading-6 dark:text-gray-500">{t("common.statistics")}</p>
       </div>
-      <div className="w-full grid grid-cols-2 gap-x-4">
+      <div className="w-full grid grid-cols-1 gap-x-4">
         <div className="w-full flex justify-between items-center">
           <div className="w-auto flex justify-start items-center">
             <Icon.CalendarDays className="w-4 h-auto mr-1" />
@@ -75,33 +76,38 @@ const UserStatisticsView = (props: Props) => {
           </div>
           {isRequesting ? <Icon.Loader className="animate-spin w-4 h-auto text-gray-400" /> : <span className="">{memoAmount}</span>}
         </div>
-        <div className="w-full flex justify-between items-center">
-          <div className="w-auto flex justify-start items-center">
-            <Icon.Hash className="w-4 h-auto mr-1" />
-            <span className="block text-base sm:text-sm">{t("common.tags")}</span>
+        <Divider className="!my-1 opacity-50" />
+        <div className="w-full mt-1 flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
+          <div
+            className="w-auto border dark:border-zinc-800 px-1 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
+            onClick={() => filterStore.setMemoPropertyFilter({ hasLink: true })}
+          >
+            <div className="w-auto flex justify-start items-center mr-1">
+              <Icon.Link className="w-4 h-auto mr-1" />
+              <span className="block text-sm">Links</span>
+            </div>
+            <span className="text-sm truncate">{memoStats.links}</span>
           </div>
-          <span>{tags}</span>
-        </div>
-        <div className="w-full flex justify-between items-center">
-          <div className="w-auto flex justify-start items-center">
-            <Icon.Link className="w-4 h-auto mr-1" />
-            <span className="block text-base sm:text-sm">Links</span>
+          <div
+            className="w-auto border dark:border-zinc-800 px-1 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
+            onClick={() => filterStore.setMemoPropertyFilter({ hasTaskList: true })}
+          >
+            <div className="w-auto flex justify-start items-center mr-1">
+              <Icon.CheckCircle className="w-4 h-auto mr-1" />
+              <span className="block text-sm">Todos</span>
+            </div>
+            <span className="text-sm truncate">{memoStats.todos}</span>
           </div>
-          <span className="">{memoStats.links}</span>
-        </div>
-        <div className="w-full flex justify-between items-center">
-          <div className="w-auto flex justify-start items-center">
-            <Icon.CheckCircle className="w-4 h-auto mr-1" />
-            <span className="block text-base sm:text-sm">Todos</span>
+          <div
+            className="w-auto border dark:border-zinc-800 px-1 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
+            onClick={() => filterStore.setMemoPropertyFilter({ hasCode: true })}
+          >
+            <div className="w-auto flex justify-start items-center mr-1">
+              <Icon.Code2 className="w-4 h-auto mr-1" />
+              <span className="block text-sm">Code</span>
+            </div>
+            <span className="text-sm truncate">{memoStats.code}</span>
           </div>
-          <span className="">{memoStats.todos}</span>
-        </div>
-        <div className="w-full flex justify-between items-center">
-          <div className="w-auto flex justify-start items-center">
-            <Icon.Code2 className="w-4 h-auto mr-1" />
-            <span className="block text-base sm:text-sm">Code</span>
-          </div>
-          <span className="">{memoStats.code}</span>
         </div>
       </div>
     </div>

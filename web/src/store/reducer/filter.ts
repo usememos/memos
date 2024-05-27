@@ -5,6 +5,13 @@ interface State {
   tag?: string;
   text?: string;
   visibility?: Visibility;
+  memoPropertyFilter?: MemoPropertyFilter;
+}
+
+export interface MemoPropertyFilter {
+  hasLink?: boolean;
+  hasTaskList?: boolean;
+  hasCode?: boolean;
 }
 
 export type Filter = State;
@@ -37,9 +44,22 @@ const filterSlice = createSlice({
         ...action.payload,
       };
     },
+    setMemoPropertyFilter: (state, action: PayloadAction<Partial<MemoPropertyFilter>>) => {
+      if (JSON.stringify(action.payload) === state.memoPropertyFilter) {
+        return state;
+      }
+
+      return {
+        ...state,
+        memoPropertyFilter: {
+          ...state.memoPropertyFilter,
+          ...action.payload,
+        },
+      };
+    },
   },
 });
 
-export const { setFilter } = filterSlice.actions;
+export const { setFilter, setMemoPropertyFilter } = filterSlice.actions;
 
 export default filterSlice.reducer;
