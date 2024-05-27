@@ -54,7 +54,7 @@
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.10.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
