@@ -563,6 +563,44 @@ func (s *APIV1Service) ExportMemos(ctx context.Context, request *v1pb.ExportMemo
 	}, nil
 }
 
+func (s *APIV1Service) ListMemoProperties(ctx context.Context, request *v1pb.ListMemoPropertiesRequest) (*v1pb.ListMemoPropertiesResponse, error) {
+	user, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user")
+	}
+
+	normalRowStatus := store.Normal
+	memoFind := &store.FindMemo{
+		CreatorID:       &user.ID,
+		RowStatus:       &normalRowStatus,
+		ExcludeComments: true,
+		// Default exclude content for performance.
+		ExcludeContent: true,
+	}
+	if request.Name != "memos/-" {
+		memoID, err := ExtractMemoIDFromName(request.Name)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+		}
+		memoFind.ID = &memoID
+	}
+
+	memos, err := s.Store.ListMemos(ctx, memoFind)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list memos")
+	}
+
+	properties := []*v1pb.MemoProperty{}
+	for _, memo := range memos {
+		if memo.Payload.Property != nil {
+			properties = append(properties, convertMemoPropertyFromStore(memo.Payload.Property))
+		}
+	}
+	return &v1pb.ListMemoPropertiesResponse{
+		Properties: properties,
+	}, nil
+}
+
 func (s *APIV1Service) RebuildMemoProperty(ctx context.Context, request *v1pb.RebuildMemoPropertyRequest) (*emptypb.Empty, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
