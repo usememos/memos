@@ -811,6 +811,7 @@ func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.
 		Tags:        property.Tags,
 		HasLink:     property.HasLink,
 		HasTaskList: property.HasTaskList,
+		HasCode:     property.HasCode,
 	}
 }
 
@@ -1081,6 +1082,8 @@ func getMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, 
 			property.HasLink = true
 		case *ast.TaskList:
 			property.HasTaskList = true
+		case *ast.Code, *ast.CodeBlock:
+			property.HasCode = true
 		}
 	})
 	return property, nil

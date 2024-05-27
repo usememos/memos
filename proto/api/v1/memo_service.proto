@@ -207,6 +207,7 @@ message MemoProperty {
   repeated string tags = 1;
   bool has_link = 2;
   bool has_task_list = 3;
+  bool has_code = 4;
 }
 
 message CreateMemoRequest {

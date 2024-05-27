@@ -2703,6 +2703,8 @@ definitions:
         type: boolean
       hasTaskList:
         type: boolean
+      hasCode:
+        type: boolean
   v1MemoRelation:
     type: object
     properties:
