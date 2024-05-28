@@ -12,6 +12,7 @@ import MemoDetail from "@/pages/MemoDetail";
 import NotFound from "@/pages/NotFound";
 import PermissionDenied from "@/pages/PermissionDenied";
 import Resources from "@/pages/Resources";
+import RootRedirector from "@/pages/RootRedirector";
 import Setting from "@/pages/Setting";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
@@ -19,7 +20,8 @@ import Timeline from "@/pages/Timeline";
 import UserProfile from "@/pages/UserProfile";
 
 export enum Routes {
-  HOME = "/",
+  ROOT = "/",
+  HOME = "/home",
   TIMELINE = "/timeline",
   RESOURCES = "/resources",
   INBOX = "/inbox",
@@ -57,6 +59,10 @@ const router = createBrowserRouter([
         path: "/",
         element: <HomeLayout />,
         children: [
+          {
+            path: Routes.ROOT,
+            element: <RootRedirector />,
+          },
           {
             path: Routes.HOME,
             element: <Home />,

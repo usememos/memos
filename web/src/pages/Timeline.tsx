@@ -2,6 +2,7 @@ import { Button, IconButton } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import { useLocalStorage } from "react-use";
 import ActivityCalendar from "@/components/ActivityCalendar";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
@@ -17,6 +18,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
+import { Routes } from "@/router";
 import { useMemoList, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
@@ -26,6 +28,7 @@ const Timeline = () => {
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
+  const [, setLastVisited] = useLocalStorage<string>("lastVisited", Routes.TIMELINE);
   const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDateString, setSelectedDateString] = useState<string>(new Date().toDateString());
@@ -33,6 +36,10 @@ const Timeline = () => {
   const [nextPageToken, setNextPageToken] = useState<string>("");
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(a.displayTime) - getTimeStampByDate(b.displayTime));
   const monthString = dayjs(selectedDateString).format("YYYY-MM");
+
+  useEffect(() => {
+    setLastVisited(Routes.TIMELINE);
+  }, []);
 
   useEffect(() => {
     memoList.reset();

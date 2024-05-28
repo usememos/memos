@@ -29,10 +29,6 @@ const UserStatisticsView = (props: Props) => {
   const memos = Object.values(memoStore.getState().memoMapByName);
 
   useEffect(() => {
-    if (memos.length === 0) {
-      return;
-    }
-
     (async () => {
       setIsRequesting(true);
       const { properties } = await memoServiceClient.listMemoProperties({
