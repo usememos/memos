@@ -116,7 +116,9 @@
       "protected": "工作区",
       "public": "公开"
     },
-    "wrapping": "包装"
+    "links": "链接",
+    "to-do": "待办",
+    "code": "代码"
   },
   "message": {
     "archived-successfully": "归档成功",

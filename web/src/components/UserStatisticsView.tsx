@@ -61,46 +61,46 @@ const UserStatisticsView = (props: Props) => {
         <div className="w-full flex justify-between items-center">
           <div className="w-auto flex justify-start items-center">
             <Icon.CalendarDays className="w-4 h-auto mr-1" />
-            <span className="block text-base sm:text-sm">{t("common.days")}</span>
+            <span className="block text-base sm:text-sm">Days</span>
           </div>
           <span>{days}</span>
         </div>
         <div className="w-full flex justify-between items-center">
           <div className="w-auto flex justify-start items-center">
             <Icon.Library className="w-4 h-auto mr-1" />
-            <span className="block text-base sm:text-sm">{t("common.memos")}</span>
+            <span className="block text-base sm:text-sm">Memos</span>
           </div>
           {isRequesting ? <Icon.Loader className="animate-spin w-4 h-auto text-gray-400" /> : <span className="">{memoAmount}</span>}
         </div>
         <Divider className="!my-1 opacity-50" />
         <div className="w-full mt-1 flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
           <div
-            className="w-auto border dark:border-zinc-800 px-1 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
+            className="w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
             onClick={() => filterStore.setMemoPropertyFilter({ hasLink: true })}
           >
             <div className="w-auto flex justify-start items-center mr-1">
               <Icon.Link className="w-4 h-auto mr-1" />
-              <span className="block text-sm">Links</span>
+              <span className="block text-sm">{t("memo.links")}</span>
             </div>
             <span className="text-sm truncate">{memoStats.links}</span>
           </div>
           <div
-            className="w-auto border dark:border-zinc-800 px-1 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
+            className="w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
             onClick={() => filterStore.setMemoPropertyFilter({ hasTaskList: true })}
           >
             <div className="w-auto flex justify-start items-center mr-1">
               <Icon.CheckCircle className="w-4 h-auto mr-1" />
-              <span className="block text-sm">Todos</span>
+              <span className="block text-sm">{t("memo.to-do")}</span>
             </div>
             <span className="text-sm truncate">{memoStats.todos}</span>
           </div>
           <div
-            className="w-auto border dark:border-zinc-800 px-1 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
+            className="w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
             onClick={() => filterStore.setMemoPropertyFilter({ hasCode: true })}
           >
             <div className="w-auto flex justify-start items-center mr-1">
               <Icon.Code2 className="w-4 h-auto mr-1" />
-              <span className="block text-sm">Code</span>
+              <span className="block text-sm">{t("memo.code")}</span>
             </div>
             <span className="text-sm truncate">{memoStats.code}</span>
           </div>

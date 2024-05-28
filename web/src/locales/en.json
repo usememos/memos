@@ -116,7 +116,9 @@
       "protected": "Workspace",
       "public": "Public"
     },
-    "wrapping": "Wrapping"
+    "links": "Links",
+    "to-do": "To-do",
+    "code": "Code"
   },
   "message": {
     "archived-successfully": "Archived successfully",

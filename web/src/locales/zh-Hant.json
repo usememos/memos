@@ -116,7 +116,9 @@
       "protected": "成員可見",
       "public": "公開給所有人"
     },
-    "wrapping": "包裝"
+    "links": "連結",
+    "to-do": "待辦",
+    "code": "代碼"
   },
   "message": {
     "archived-successfully": "封存成功",

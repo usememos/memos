@@ -93,7 +93,7 @@ const Archived = () => {
           <div className="w-full flex flex-row justify-between items-center mb-2">
             <div className="flex flex-row justify-start items-center gap-1">
               <Icon.Archive className="w-5 h-auto opacity-70 shrink-0" />
-              <span className="font-medium">{t("common.archived")}</span>
+              <span>{t("common.archived")}</span>
             </div>
             <div className="w-44">
               <SearchBar />
