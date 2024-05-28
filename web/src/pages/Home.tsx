@@ -1,7 +1,7 @@
 import { Button } from "@mui/joy";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import { useLocalStorage } from "react-use";
+import useLocalStorage from "react-use/lib/useLocalStorage";
 import Empty from "@/components/Empty";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import Icon from "@/components/Icon";

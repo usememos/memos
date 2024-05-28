@@ -2,7 +2,7 @@ import { Button, IconButton } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useLocalStorage } from "react-use";
+import useLocalStorage from "react-use/lib/useLocalStorage";
 import ActivityCalendar from "@/components/ActivityCalendar";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
