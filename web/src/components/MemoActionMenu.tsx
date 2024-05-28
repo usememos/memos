@@ -53,7 +53,7 @@ const MemoActionMenu = (props: Props) => {
   const handleEditMemoClick = () => {
     showMemoEditorDialog({
       memoName: memo.name,
-      cacheKey: `${memo.name}-${memo.displayTime}`,
+      cacheKey: `${memo.name}-${memo.updateTime}`,
     });
   };
 
