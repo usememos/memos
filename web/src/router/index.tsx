@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
-import HomeLayout from "@/layouts/HomeLayout";
+import RootLayout from "@/layouts/RootLayout";
 import SuspenseWrapper from "@/layouts/SuspenseWrapper";
 import About from "@/pages/About";
 import Archived from "@/pages/Archived";
@@ -12,7 +12,6 @@ import MemoDetail from "@/pages/MemoDetail";
 import NotFound from "@/pages/NotFound";
 import PermissionDenied from "@/pages/PermissionDenied";
 import Resources from "@/pages/Resources";
-import RootRedirector from "@/pages/RootRedirector";
 import Setting from "@/pages/Setting";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
@@ -56,13 +55,9 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/",
-        element: <HomeLayout />,
+        path: Routes.ROOT,
+        element: <RootLayout />,
         children: [
-          {
-            path: Routes.ROOT,
-            element: <RootRedirector />,
-          },
           {
             path: Routes.HOME,
             element: <Home />,

@@ -10,23 +10,33 @@ import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
 
-const HomeLayout = () => {
+const RootLayout = () => {
   const location = useLocation();
   const { sm } = useResponsiveWidth();
   const currentUser = useCurrentUser();
+  const [lastVisited] = useLocalStorage<string>("lastVisited", "/home");
   const [collapsed, setCollapsed] = useLocalStorage<boolean>("navigation-collapsed", false);
   const [initialized, setInitialized] = useState(false);
 
-  // Redirect to explore page if not logged in.
   useEffect(() => {
-    if (
-      !currentUser &&
-      ([Routes.HOME, Routes.TIMELINE, Routes.RESOURCES, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(
-        location.pathname,
-      )
-    ) {
-      window.location.href = Routes.EXPLORE;
-      return;
+    if (!currentUser) {
+      if (
+        ([Routes.ROOT, Routes.HOME, Routes.TIMELINE, Routes.RESOURCES, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(
+          location.pathname,
+        )
+      ) {
+        window.location.href = Routes.EXPLORE;
+        return;
+      }
+    } else {
+      if (location.pathname === Routes.ROOT) {
+        if (lastVisited && ([Routes.HOME, Routes.TIMELINE] as string[]).includes(lastVisited)) {
+          window.location.href = lastVisited;
+        } else {
+          window.location.href = Routes.HOME;
+        }
+        return;
+      }
     }
 
     setInitialized(true);
@@ -75,4 +85,4 @@ const HomeLayout = () => {
   );
 };
 
-export default HomeLayout;
+export default RootLayout;
