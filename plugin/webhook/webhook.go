@@ -17,18 +17,6 @@ var (
 	timeout = 30 * time.Second
 )
 
-type Memo struct {
-	ID        int32 `json:"id"`
-	CreatorID int32 `json:"creatorId"`
-	CreatedTs int64 `json:"createdTs"`
-	UpdatedTs int64 `json:"updatedTs"`
-
-	// Domain specific fields
-	Content    string `json:"content"`
-	Visibility string `json:"visibility"`
-	Pinned     bool   `json:"pinned"`
-}
-
 // WebhookPayload is the payload of webhook request.
 // nolint
 type WebhookPayload struct {
