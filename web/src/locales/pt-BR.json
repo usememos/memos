@@ -115,8 +115,7 @@
       "private": "Privado (eu)",
       "protected": "Protegido (membros)",
       "public": "Público (todos)"
-    },
-    "wrapping": "Quebra"
+    }
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",

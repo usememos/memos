@@ -115,8 +115,7 @@
       "private": "खाजगी",
       "protected": "कार्यक्षेत्र",
       "public": "सार्वजनिक"
-    },
-    "wrapping": "गुंडाळा"
+    }
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",

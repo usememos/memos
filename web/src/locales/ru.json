@@ -112,8 +112,7 @@
       "private": "Видно только вам",
       "protected": "Видно только пользователям",
       "public": "Видно всем"
-    },
-    "wrapping": "Перенос"
+    }
   },
   "message": {
     "archived-successfully": "Успешная архивация",
