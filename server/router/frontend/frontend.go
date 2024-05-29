@@ -29,7 +29,7 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 	}
 }
 
-func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
+func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 	skipper := func(c echo.Context) bool {
 		return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1")
 	}
