@@ -95,6 +95,7 @@
   },
   "memo": {
     "archived-at": "Arşivlendi",
+    "code": "Kod",
     "comment": {
       "self": "Yorumlar",
       "write-a-comment": "Bir yorum yazın"
@@ -106,9 +107,11 @@
     "embed": "Yerleştir",
     "fetch-more": "Daha fazlasını almak için tıklayın",
     "fetching-data": "Veri getiriliyor…",
+    "links": "Bağlantılar",
     "no-archived-memos": "Arşivlenmiş not yok.",
     "search-placeholder": "Notları ara",
     "show-more": "Daha fazlasını göster",
+    "to-do": "Yapılacaklar",
     "view-detail": "Detayları görüntüle",
     "visibility": {
       "disabled": "Halka açık notlar devre dışı bırakıldı",
