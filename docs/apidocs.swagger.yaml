@@ -2108,6 +2108,12 @@ definitions:
         type: integer
         format: int32
         description: content_length_limit is the limit of content length. Unit is byte.
+      enableAutoCompact:
+        type: boolean
+        description: enable_auto_compact enables auto compact for large content.
+      enableDoubleClickEdit:
+        type: boolean
+        description: enable_double_click_edit enables editing on double click.
   apiv1WorkspaceSetting:
     type: object
     properties:

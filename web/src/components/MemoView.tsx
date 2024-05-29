@@ -4,14 +4,17 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore } from "@/store/v1";
+import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
+import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import Icon from "./Icon";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
+import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
@@ -38,6 +41,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const currentUser = useCurrentUser();
   const userStore = useUserStore();
   const user = useCurrentUser();
+  const workspaceSettingStore = useWorkspaceSettingStore();
+  const workspaceMemoRelatedSetting =
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
+    WorkspaceMemoRelatedSetting.fromPartial({});
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
@@ -68,6 +75,20 @@ const MemoView: React.FC<Props> = (props: Props) => {
       if (imgUrl) {
         showPreviewImageDialog([imgUrl], 0);
       }
+    }
+  }, []);
+
+  const handleMemoContentDoubleClick = useCallback(async (e: React.MouseEvent) => {
+    if (readonly) {
+      return;
+    }
+
+    if (workspaceMemoRelatedSetting.enableDoubleClickEdit) {
+      e.preventDefault();
+      showMemoEditorDialog({
+        memoName: memo.name,
+        cacheKey: `${memo.name}-${memo.updateTime}`,
+      });
     }
   }, []);
 
@@ -154,7 +175,8 @@ const MemoView: React.FC<Props> = (props: Props) => {
         nodes={memo.nodes}
         readonly={readonly}
         onClick={handleMemoContentClick}
-        compact={props.compact ?? true}
+        onDoubleClick={handleMemoContentDoubleClick}
+        compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
       />
       <MemoResourceListView resources={memo.resources} />
       <MemoRelationListView memo={memo} relations={referencedMemos} />

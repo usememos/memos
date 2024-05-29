@@ -62,7 +62,13 @@ const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
           <Icon.ArrowUpRight className="w-5 h-auto opacity-80 text-gray-400" />
         </Link>
       </div>
-      <MemoContent key={`${memo.name}-${memo.updateTime}`} memoName={memo.name} nodes={memo.nodes} embeddedMemos={context.embeddedMemos} />
+      <MemoContent
+        contentClassName="line-clamp-3"
+        key={`${memo.name}-${memo.updateTime}`}
+        memoName={memo.name}
+        nodes={memo.nodes}
+        embeddedMemos={context.embeddedMemos}
+      />
       <MemoResourceListView resources={memo.resources} />
     </div>
   );

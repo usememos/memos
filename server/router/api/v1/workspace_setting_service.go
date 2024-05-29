@@ -212,6 +212,8 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		DisallowPublicVisible: setting.DisallowPublicVisible,
 		DisplayWithUpdateTime: setting.DisplayWithUpdateTime,
 		ContentLengthLimit:    setting.ContentLengthLimit,
+		EnableAutoCompact:     setting.EnableAutoCompact,
+		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
 	}
 }
 
@@ -223,5 +225,7 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		DisallowPublicVisible: setting.DisallowPublicVisible,
 		DisplayWithUpdateTime: setting.DisplayWithUpdateTime,
 		ContentLengthLimit:    setting.ContentLengthLimit,
+		EnableAutoCompact:     setting.EnableAutoCompact,
+		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
 	}
 }

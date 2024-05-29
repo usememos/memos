@@ -142,6 +142,24 @@ const WorkspaceSection = () => {
     });
   };
 
+  const handleMemoEnableAutoCompact = async (value: boolean) => {
+    const update: WorkspaceMemoRelatedSetting = { ...workspaceMemoRelatedSetting, enableAutoCompact: value };
+    setWorkspaceMemoRelatedSetting(update);
+    await workspaceSettingStore.setWorkspaceSetting({
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
+      memoRelatedSetting: update,
+    });
+  };
+
+  const handleMemoEnableDoubleClickToEdit = async (value: boolean) => {
+    const update: WorkspaceMemoRelatedSetting = { ...workspaceMemoRelatedSetting, enableDoubleClickEdit: value };
+    setWorkspaceMemoRelatedSetting(update);
+    await workspaceSettingStore.setWorkspaceSetting({
+      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
+      memoRelatedSetting: update,
+    });
+  };
+
   const handleMemoContentLengthLimitChanges = async (value: number) => {
     if (value < 8 * 1024) {
       toast.error("Content length limit should be greater than 8KB");
@@ -269,6 +287,20 @@ const WorkspaceSection = () => {
         <Switch
           checked={workspaceMemoRelatedSetting.displayWithUpdateTime}
           onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("setting.system-section.enable-auto-compact")}</span>
+        <Switch
+          checked={workspaceMemoRelatedSetting.enableAutoCompact}
+          onChange={(event) => handleMemoEnableAutoCompact(event.target.checked)}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("setting.system-section.enable-double-click-to-edit")}</span>
+        <Switch
+          checked={workspaceMemoRelatedSetting.enableDoubleClickEdit}
+          onChange={(event) => handleMemoEnableDoubleClickToEdit(event.target.checked)}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">

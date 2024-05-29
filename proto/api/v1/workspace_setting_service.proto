@@ -94,6 +94,10 @@ message WorkspaceMemoRelatedSetting {
   bool display_with_update_time = 2;
   // content_length_limit is the limit of content length. Unit is byte.
   int32 content_length_limit = 3;
+  // enable_auto_compact enables auto compact for large content.
+  bool enable_auto_compact = 4;
+  // enable_double_click_edit enables editing on double click.
+  bool enable_double_click_edit = 5;
 }
 
 message GetWorkspaceSettingRequest {
