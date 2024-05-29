@@ -31,18 +31,16 @@ message WorkspaceBasicSetting {
 }
 
 message WorkspaceGeneralSetting {
-  // instance_url is the instance URL.
-  string instance_url = 1;
   // disallow_signup is the flag to disallow signup.
-  bool disallow_signup = 2;
+  bool disallow_signup = 1;
   // disallow_password_login is the flag to disallow password login.
-  bool disallow_password_login = 3;
+  bool disallow_password_login = 2;
   // additional_script is the additional script.
-  string additional_script = 4;
+  string additional_script = 3;
   // additional_style is the additional style.
-  string additional_style = 5;
+  string additional_style = 4;
   // custom_profile is the custom profile.
-  WorkspaceCustomProfile custom_profile = 6;
+  WorkspaceCustomProfile custom_profile = 5;
 }
 
 message WorkspaceCustomProfile {

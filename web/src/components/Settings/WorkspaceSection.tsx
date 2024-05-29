@@ -64,26 +64,6 @@ const WorkspaceSection = () => {
     showUpdateCustomizedProfileDialog();
   };
 
-  const handleInstanceUrlChanged = (value: string) => {
-    setWorkspaceGeneralSetting({ ...workspaceGeneralSetting, instanceUrl: value });
-  };
-
-  const handleSaveInstanceUrl = async () => {
-    try {
-      await workspaceSettingServiceClient.setWorkspaceSetting({
-        setting: {
-          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
-          generalSetting: workspaceGeneralSetting,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response.data.message);
-      return;
-    }
-    toast.success("Instance URL updated");
-  };
-
   const handleAdditionalStyleChanged = (value: string) => {
     setWorkspaceGeneralSetting({ ...workspaceGeneralSetting, additionalStyle: value });
   };
@@ -195,34 +175,6 @@ const WorkspaceSection = () => {
           checked={workspaceGeneralSetting.disallowPasswordLogin}
           onChange={(event) => handleDisablePasswordLoginChanged(event.target.checked)}
         />
-      </div>
-      <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
-        <div className="w-full flex flex-row justify-between items-center">
-          <div className="flex flex-row items-center">
-            <div className="w-auto flex items-center">
-              <span className="mr-1">Instance URL</span>
-            </div>
-          </div>
-          <Button variant="outlined" color="neutral" onClick={handleSaveInstanceUrl}>
-            {t("common.save")}
-          </Button>
-        </div>
-        <Input
-          className="w-full"
-          placeholder={"Should be started with http:// or https://"}
-          value={workspaceGeneralSetting.instanceUrl}
-          onChange={(event) => handleInstanceUrlChanged(event.target.value)}
-        />
-        <div className="w-full">
-          <Link
-            className="text-gray-500 text-sm inline-flex flex-row justify-start items-center hover:underline hover:text-blue-600"
-            to="https://usememos.com/docs/advanced-settings/seo"
-            target="_blank"
-          >
-            {t("common.learn-more")}
-            <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
-          </Link>
-        </div>
       </div>
       <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
         <div className="w-full flex flex-row justify-between items-center">

@@ -2077,9 +2077,6 @@ definitions:
   apiv1WorkspaceGeneralSetting:
     type: object
     properties:
-      instanceUrl:
-        type: string
-        description: instance_url is the instance URL.
       disallowSignup:
         type: boolean
         description: disallow_signup is the flag to disallow signup.

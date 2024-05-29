@@ -121,7 +121,6 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 		return nil
 	}
 	generalSetting := &v1pb.WorkspaceGeneralSetting{
-		InstanceUrl:           setting.InstanceUrl,
 		DisallowSignup:        setting.DisallowSignup,
 		DisallowPasswordLogin: setting.DisallowPasswordLogin,
 		AdditionalScript:      setting.AdditionalScript,
@@ -144,7 +143,6 @@ func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting
 		return nil
 	}
 	generalSetting := &storepb.WorkspaceGeneralSetting{
-		InstanceUrl:           setting.InstanceUrl,
 		DisallowSignup:        setting.DisallowSignup,
 		DisallowPasswordLogin: setting.DisallowPasswordLogin,
 		AdditionalScript:      setting.AdditionalScript,
