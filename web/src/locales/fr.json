@@ -115,8 +115,7 @@
       "private": "Privé",
       "protected": "Accès aux membres",
       "public": "Public"
-    },
-    "wrapping": "Enveloppe"
+    }
   },
   "message": {
     "archived-successfully": "Archivé avec succès",

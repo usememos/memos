@@ -115,8 +115,7 @@
       "private": "Sadece sizin için görünür",
       "protected": "Çalışma Alanı",
       "public": "Herkese açık"
-    },
-    "wrapping": "Paketleme"
+    }
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",

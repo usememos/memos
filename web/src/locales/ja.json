@@ -115,8 +115,7 @@
       "private": "非公開",
       "protected": "メンバーに表示",
       "public": "公開メモ"
-    },
-    "wrapping": "ラッピング"
+    }
   },
   "message": {
     "archived-successfully": "アーカイブが完了しました",
