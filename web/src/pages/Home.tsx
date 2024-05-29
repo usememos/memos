@@ -47,14 +47,14 @@ const Home = () => {
     setIsRequesting(true);
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
-    if (filter.tag) {
-      contentSearch.push(JSON.stringify(filter.tag));
+    if (filter.text) {
+      contentSearch.push(JSON.stringify(filter.text));
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
     }
-    if (filter.text) {
-      filters.push(`tag == "${filter.text}"`);
+    if (filter.tag) {
+      filters.push(`tag == "${filter.tag}"`);
     }
     if (filter.memoPropertyFilter) {
       if (filter.memoPropertyFilter.hasLink) {
