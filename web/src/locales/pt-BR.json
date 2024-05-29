@@ -11,7 +11,7 @@
     "about": "Sobre",
     "admin": "Admin",
     "archive": "Arquivar",
-    "archived": "Arquivado",
+    "archived": "Arquivo",
     "avatar": "Avatar",
     "basic": "Básico",
     "beta": "Beta",
@@ -32,7 +32,7 @@
     "filter": "Filtro",
     "home": "Início",
     "image": "Imagem",
-    "inbox": "Caixa de Entrada",
+    "inbox": "Notificações",
     "language": "Idioma",
     "learn-more": "Saiba mais",
     "link": "Link",
@@ -57,7 +57,7 @@
     "save": "Salvar",
     "search": "Pesquisar",
     "select": "Selecionar",
-    "settings": "Configurações",
+    "settings": "Ajustes",
     "share": "Compartilhar",
     "sign-in": "Entrar",
     "sign-in-with": "Entrar com {{provider}}",
@@ -90,11 +90,12 @@
     "save": "Salvar"
   },
   "inbox": {
-    "memo-comment": "{{user}} tem um comentário sobre o seu {{memo}}.",
+    "memo-comment": "{{user}} tem um comentário sobre {{memo}}.",
     "version-update": "A nova versão {{version}} já está disponível!"
   },
   "memo": {
     "archived-at": "Arquivado em",
+    "code": "Código",
     "comment": {
       "self": "Comentários",
       "write-a-comment": "Escreva um comentário"
@@ -106,9 +107,11 @@
     "embed": "Embutir",
     "fetch-more": "Clique para carregar mais",
     "fetching-data": "Obtendo dados…",
+    "links": "Links",
     "no-archived-memos": "Nenhum memo arquivado.",
     "search-placeholder": "Pesquisar memos",
     "show-more": "Mostrar mais",
+    "to-do": "Tarefas",
     "view-detail": "Ver detalhes",
     "visibility": {
       "disabled": "Memos públicos estão desabilitados",
@@ -303,6 +306,6 @@
     "no-tag-found": "Nenhuma tag encontrada"
   },
   "timeline": {
-    "title": "Linha do tempo"
+    "title": "Histórico"
   }
 }
