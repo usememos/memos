@@ -1,5 +1,4 @@
-import { Dropdown, Menu, MenuButton, MenuItem, Tooltip } from "@mui/joy";
-import clsx from "clsx";
+import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
@@ -42,36 +41,11 @@ const TagsSection = (props: Props) => {
     await tagStore.fetchTags(filters.join(" && "));
   };
 
-  const handleRebuildMemoTags = () => {
-    showCommonDialog({
-      title: "Rebuild tags",
-      content: "It will rebuild tags for all memos, are you sure?",
-      style: "warning",
-      dialogName: "rebuild-memo-tags-dialog",
-      onConfirm: async () => {
-        await memoServiceClient.rebuildMemoProperty({
-          name: "memos/-",
-        });
-        await fetchTags();
-        toast.success("Rebuild tags successfully");
-      },
-    });
-  };
-
   return (
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
-      <div className="group flex flex-row justify-start items-center w-full gap-1 mb-1">
-        <span className="text-sm leading-6 font-mono text-gray-400 select-none">{t("common.tags")}</span>
-        {!props.readonly && (
-          <div className={clsx("group-hover:block", tagAmounts.length > 0 ? "hidden" : "")}>
-            <Tooltip title={"Rebuild"} placement="top">
-              <Icon.RefreshCcw
-                className="text-gray-400 w-4 h-auto cursor-pointer opacity-60 hover:opacity-100"
-                onClick={handleRebuildMemoTags}
-              />
-            </Tooltip>
-          </div>
-        )}
+      <div className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 select-none">
+        <span>{t("common.tags")}</span>
+        {tagAmounts.length > 0 && <span className="shrink-0">({tagAmounts.length})</span>}
       </div>
       {tagAmounts.length > 0 ? (
         <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">

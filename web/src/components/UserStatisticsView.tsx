@@ -1,10 +1,12 @@
-import { Divider } from "@mui/joy";
+import { Divider, Tooltip } from "@mui/joy";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
 import { useFilterStore } from "@/store/module";
 import { useMemoStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
+import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 
 interface Props {
@@ -52,10 +54,34 @@ const UserStatisticsView = (props: Props) => {
     })();
   }, [memos.length, user.name]);
 
+  const handleRebuildMemoTags = () => {
+    showCommonDialog({
+      title: "Refresh",
+      content: "It will refersh memo properties, are you sure?",
+      style: "warning",
+      dialogName: "refersh-memo-property-dialog",
+      onConfirm: async () => {
+        await memoServiceClient.rebuildMemoProperty({
+          name: "memos/-",
+        });
+        toast.success("Refresh successfully");
+        window.location.reload();
+      },
+    });
+  };
+
   return (
     <div className="w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
-      <div className="w-full flex flex-row justify-between items-center">
+      <div className="group w-full flex flex-row justify-between items-center">
         <p className="text-sm font-medium leading-6 dark:text-gray-500">{t("common.statistics")}</p>
+        <div className="hidden group-hover:block">
+          <Tooltip title={"Refresh"} placement="top">
+            <Icon.RefreshCcw
+              className="text-gray-400 w-4 h-auto cursor-pointer opacity-60 hover:opacity-100"
+              onClick={handleRebuildMemoTags}
+            />
+          </Tooltip>
+        </div>
       </div>
       <div className="w-full grid grid-cols-1 gap-x-4">
         <div className="w-full flex justify-between items-center">
