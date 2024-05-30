@@ -290,6 +290,8 @@
       "disable-password-login-warning": "Bu, tüm kullanıcılar için parola girişini devre dışı bırakacaktır. Yapılandırılmış kimlik sağlayıcılarınız başarısız olursa, veritabanındaki bu ayarı geri almadan oturum açmak mümkün değildir. Ayrıca bir kimlik sağlayıcısını kaldırırken ekstra dikkatli olmanız gerekecektir",
       "disable-public-memos": "Halka açık notları devre dışı bırak",
       "display-with-updated-time": "Güncellenmiş zaman göstergesi",
+      "enable-auto-compact": "Otomatik sıkıştırmayı etkinleştir",
+      "enable-double-click-to-edit": "Düzenlemek için çift tıklamayı etkinleştir",
       "enable-password-login": "Parola girişini etkinleştir",
       "enable-password-login-warning": "Bu, tüm kullanıcılar için parola girişini etkinleştirecektir. Yalnızca kullanıcıların hem SSO hem de parola kullanarak oturum açabilmesini istiyorsanız devam edin",
       "max-upload-size": "Maksimum yükleme boyutu (MiB)",
