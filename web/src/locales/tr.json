@@ -207,6 +207,7 @@
       "delete-member": "Üye Sil",
       "delete-warning": "{{kullanıcıadı}} öğesini silmek istediğinizden emin misiniz? BU EYLEM GERI DÖNDÜRÜLEMEZ"
     },
+    "memo-related": "Not",
     "my-account": "Hesabım",
     "preference": "Tercihler",
     "preference-section": {
