@@ -8,8 +8,6 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-
-	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
 
 var (
@@ -17,14 +15,26 @@ var (
 	timeout = 30 * time.Second
 )
 
+type Memo struct {
+	// The name of the memo.
+	// Format: memos/{id}
+	// id is the system generated id.
+	Name string
+	// The name of the creator.
+	// Format: users/{id}
+	Creator string
+	// The raw content.
+	Content string
+}
+
 // WebhookPayload is the payload of webhook request.
 // nolint
 type WebhookPayload struct {
-	URL          string     `json:"url"`
-	ActivityType string     `json:"activityType"`
-	CreatorID    int32      `json:"creatorId"`
-	CreatedTs    int64      `json:"createdTs"`
-	Memo         *v1pb.Memo `json:"memo"`
+	URL          string `json:"url"`
+	ActivityType string `json:"activityType"`
+	CreatorID    int32  `json:"creatorId"`
+	CreatedTs    int64  `json:"createdTs"`
+	Memo         *Memo  `json:"memo"`
 }
 
 // WebhookResponse is the response of webhook request.
@@ -40,8 +50,8 @@ func Post(payload WebhookPayload) error {
 	if err != nil {
 		return errors.Wrapf(err, "failed to marshal webhook request to %s", payload.URL)
 	}
-	req, err := http.NewRequest("POST",
-		payload.URL, bytes.NewBuffer(body))
+
+	req, err := http.NewRequest("POST", payload.URL, bytes.NewBuffer(body))
 	if err != nil {
 		return errors.Wrapf(err, "failed to construct webhook request to %s", payload.URL)
 	}

@@ -1224,6 +1224,10 @@ func convertMemoToWebhookPayload(memo *v1pb.Memo) (*webhook.WebhookPayload, erro
 	return &webhook.WebhookPayload{
 		CreatorID: creatorID,
 		CreatedTs: time.Now().Unix(),
-		Memo:      memo,
+		Memo: &webhook.Memo{
+			Name:    memo.Name,
+			Creator: memo.Creator,
+			Content: memo.Content,
+		},
 	}, nil
 }
