@@ -297,7 +297,8 @@
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
       "server-name": "Server Name"
-    }
+    },
+    "memo-related": "Memo"
   },
   "tag": {
     "all-tags": "All Tags",

@@ -46,6 +46,17 @@ func (s *APIV1Service) GetWorkspaceSetting(ctx context.Context, request *v1pb.Ge
 		return nil, status.Errorf(codes.NotFound, "workspace setting not found")
 	}
 
+	// For storage setting, only host can get it.
+	if workspaceSetting.Key == storepb.WorkspaceSettingKey_STORAGE {
+		user, err := s.GetCurrentUser(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+		}
+		if user == nil || user.Role != store.RoleHost {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
 	return convertWorkspaceSettingFromStore(workspaceSetting), nil
 }
 
