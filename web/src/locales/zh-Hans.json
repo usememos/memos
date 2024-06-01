@@ -95,6 +95,7 @@
   },
   "memo": {
     "archived-at": "存档于",
+    "code": "代码",
     "comment": {
       "self": "评论",
       "write-a-comment": "写评论"
@@ -106,19 +107,18 @@
     "embed": "嵌入",
     "fetch-more": "点击获取更多",
     "fetching-data": "正在获取数据…",
+    "links": "链接",
     "no-archived-memos": "无存档的 Memo。",
     "search-placeholder": "搜索 Memos",
     "show-more": "查看更多",
+    "to-do": "待办",
     "view-detail": "查看详情",
     "visibility": {
       "disabled": "公共 Memo 已禁用",
       "private": "私有",
       "protected": "工作区",
       "public": "公开"
-    },
-    "links": "链接",
-    "to-do": "待办",
-    "code": "代码"
+    }
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -290,6 +290,8 @@
       "disable-password-login-warning": "所有用户将无法使用密码登录。如果配置的身份提供程序失效，不在数据库中恢复此设置将无法登录。删除身份提供程序时也要格外小心",
       "disable-public-memos": "禁用公共 Memo",
       "display-with-updated-time": "根据最后修改时间顺序显示",
+      "enable-auto-compact": "启用自动超长折叠显示",
+      "enable-double-click-to-edit": "启用双击编辑",
       "enable-password-login": "启用密码登录",
       "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用单点登录和密码登录，请开启密码登录",
       "max-upload-size": "最大上传大小 (MiB)",
