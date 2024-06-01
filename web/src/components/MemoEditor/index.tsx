@@ -349,6 +349,7 @@ const MemoEditor = (props: Props) => {
       toast.error(error.details);
     }
 
+    localStorage.removeItem(contentCacheKey);
     setState((state) => {
       return {
         ...state,

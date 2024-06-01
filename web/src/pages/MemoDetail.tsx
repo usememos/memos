@@ -66,6 +66,7 @@ const MemoDetail = () => {
       placeholder: t("editor.add-your-comment-here"),
       parentMemoName: memo.name,
       onConfirm: handleCommentCreated,
+      cacheKey: `${memo.name}-${memo.updateTime}-comment`,
     });
   };
 
