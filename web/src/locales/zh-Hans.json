@@ -290,7 +290,7 @@
       "disable-password-login-warning": "所有用户将无法使用密码登录。如果配置的身份提供程序失效，不在数据库中恢复此设置将无法登录。删除身份提供程序时也要格外小心",
       "disable-public-memos": "禁用公共 Memo",
       "display-with-updated-time": "根据最后修改时间顺序显示",
-      "enable-auto-compact": "启用自动压缩",
+      "enable-auto-compact": "启用自动超长折叠显示",
       "enable-double-click-to-edit": "启用双击编辑",
       "enable-password-login": "启用密码登录",
       "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用单点登录和密码登录，请开启密码登录",
