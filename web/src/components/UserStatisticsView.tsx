@@ -1,12 +1,12 @@
 import { Divider, Tooltip } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
+import useAsyncEffect from "@/hooks/useAsyncEffect";
 import { useFilterStore } from "@/store/module";
 import { useMemoStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 
 interface Props {
@@ -30,51 +30,41 @@ const UserStatisticsView = (props: Props) => {
   const days = Math.ceil((Date.now() - user.createTime!.getTime()) / 86400000);
   const memos = Object.values(memoStore.getState().memoMapByName);
 
-  useEffect(() => {
-    (async () => {
-      setIsRequesting(true);
-      const { properties } = await memoServiceClient.listMemoProperties({
-        name: `memos/-`,
-      });
-      const memoStats: UserMemoStats = { links: 0, todos: 0, code: 0 };
-      properties.forEach((property) => {
-        if (property.hasLink) {
-          memoStats.links += 1;
-        }
-        if (property.hasTaskList) {
-          memoStats.todos += 1;
-        }
-        if (property.hasCode) {
-          memoStats.code += 1;
-        }
-      });
-      setMemoStats(memoStats);
-      setMemoAmount(properties.length);
-      setIsRequesting(false);
-    })();
+  useAsyncEffect(async () => {
+    setIsRequesting(true);
+    const { properties } = await memoServiceClient.listMemoProperties({
+      name: `memos/-`,
+    });
+    const memoStats: UserMemoStats = { links: 0, todos: 0, code: 0 };
+    properties.forEach((property) => {
+      if (property.hasLink) {
+        memoStats.links += 1;
+      }
+      if (property.hasTaskList) {
+        memoStats.todos += 1;
+      }
+      if (property.hasCode) {
+        memoStats.code += 1;
+      }
+    });
+    setMemoStats(memoStats);
+    setMemoAmount(properties.length);
+    setIsRequesting(false);
   }, [memos.length, user.name]);
 
-  const handleRebuildMemoTags = () => {
-    showCommonDialog({
-      title: "Refresh",
-      content: "It will refersh memo properties, are you sure?",
-      style: "warning",
-      dialogName: "refersh-memo-property-dialog",
-      onConfirm: async () => {
-        await memoServiceClient.rebuildMemoProperty({
-          name: "memos/-",
-        });
-        toast.success("Refresh successfully");
-        window.location.reload();
-      },
+  const handleRebuildMemoTags = async () => {
+    await memoServiceClient.rebuildMemoProperty({
+      name: "memos/-",
     });
+    toast.success("Refresh successfully");
+    window.location.reload();
   };
 
   return (
     <div className="w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
-      <div className="group w-full flex flex-row justify-between items-center">
+      <div className="w-full mb-1 flex flex-row justify-between items-center">
         <p className="text-sm font-medium leading-6 dark:text-gray-500">{t("common.statistics")}</p>
-        <div className="hidden group-hover:block">
+        <div className="">
           <Tooltip title={"Refresh"} placement="top">
             <Icon.RefreshCcw
               className="text-gray-400 w-4 h-auto cursor-pointer opacity-60 hover:opacity-100"
