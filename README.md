@@ -39,10 +39,6 @@ Learn more about [other installation methods](https://www.usememos.com/docs/inst
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. We greatly appreciate any contributions you make. Thank you for being a part of our community! 🥰
 
-<a href="https://github.com/usememos/memos/graphs/contributors">
-  <img src="https://contri-graphy.yourselfhosted.com/graph?repo=usememos/memos&format=svg" />
-</a>
-
 ## Internationalization
 
 Memos supports multiple languages. You can help us translate Memos into your language. We use Weblate to manage translations.
