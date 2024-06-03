@@ -369,14 +369,22 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	}
 
 	// Delete memo comments
-	relations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{RelatedMemoID: &id})
+	commentType := store.MemoRelationComment
+	relations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{RelatedMemoID: &id, Type: &commentType})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memo relations")
+		return nil, status.Errorf(codes.Internal, "failed to list memo comments")
 	}
 	for _, relation := range relations {
 		if _, err := s.DeleteMemo(ctx, &v1pb.DeleteMemoRequest{Name: fmt.Sprintf("%s%d", MemoNamePrefix, relation.MemoID)}); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to delete memo comment")
 		}
+
+	}
+
+	// Delete memo references
+	referenceType := store.MemoRelationReference
+	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{RelatedMemoID: &id, Type: &referenceType}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete memo references")
 	}
 
 	return &emptypb.Empty{}, nil
