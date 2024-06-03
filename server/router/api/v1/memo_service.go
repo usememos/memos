@@ -378,7 +378,6 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		if _, err := s.DeleteMemo(ctx, &v1pb.DeleteMemoRequest{Name: fmt.Sprintf("%s%d", MemoNamePrefix, relation.MemoID)}); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to delete memo comment")
 		}
-
 	}
 
 	// Delete memo references
