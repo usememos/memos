@@ -131,7 +131,7 @@ const MemoDetail = () => {
                   </Button>
                 </div>
                 {comments.map((comment) => (
-                  <MemoView key={`${comment.name}-${comment.displayTime}`} memo={comment} showCreator />
+                  <MemoView key={`${comment.name}-${comment.displayTime}`} memo={comment} showCreator compact />
                 ))}
               </>
             )}

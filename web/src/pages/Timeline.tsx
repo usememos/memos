@@ -174,6 +174,7 @@ const Timeline = () => {
                       className="!border w-full !border-gray-100 dark:!border-zinc-700"
                       memo={memo}
                       displayTimeFormat="time"
+                      compact
                     />
                   ))}
                 </div>
