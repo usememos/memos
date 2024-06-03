@@ -95,6 +95,7 @@
   },
   "memo": {
     "archived-at": "封存於",
+    "code": "代碼",
     "comment": {
       "self": "評論",
       "write-a-comment": "寫下留言"
@@ -106,19 +107,18 @@
     "embed": "內嵌",
     "fetch-more": "點此以載入更多",
     "fetching-data": "抓取資料中…",
+    "links": "連結",
     "no-archived-memos": "無封存的 Memos",
     "search-placeholder": "搜尋 Memos",
     "show-more": "查看更多",
+    "to-do": "待辦",
     "view-detail": "查看詳情",
     "visibility": {
       "disabled": "公共 Memo 已停用",
       "private": "私人",
       "protected": "成員可見",
       "public": "公開給所有人"
-    },
-    "links": "連結",
-    "to-do": "待辦",
-    "code": "代碼"
+    }
   },
   "message": {
     "archived-successfully": "封存成功",
@@ -207,6 +207,7 @@
       "delete-member": "刪除使用者",
       "delete-warning": "您確定要刪除 {{username}}?\n\n此操作無法逆轉"
     },
+    "memo-related": "Memo",
     "my-account": "我的帳號",
     "preference": "偏好設定",
     "preference-section": {
@@ -290,6 +291,8 @@
       "disable-password-login-warning": "所有使用者將無法使用密碼登入。如果設定的身份識別提供者失效，不在資料庫中恢復此設定將無法登入。刪除身分識別提供者時也要特別小心❗",
       "disable-public-memos": "停用公共 Memo",
       "display-with-updated-time": "顯示更新時間",
+      "enable-auto-compact": "啟用摺疊顯示",
+      "enable-double-click-to-edit": "啟用雙擊後編輯",
       "enable-password-login": "啟用密碼登入",
       "enable-password-login-warning": "啟用所有使用者的密碼登入。如果希望使用者同時使用 SSO 和密碼登入，請開啟密碼登入",
       "max-upload-size": "最大上傳檔案大小 (MiB)",
@@ -301,7 +304,7 @@
     "all-tags": "所有標籤",
     "create-tag": "建立標籤",
     "create-tags-guide": "您可以通過輸入`#標籤`來創建標籤。",
-    "delete-confirm": "您確定要刪除此標籤嗎？",
+    "delete-confirm": "您確定要刪除此標籤嗎？所有關聯的memos將會被封存",
     "delete-tag": "刪除標籤",
     "no-tag-found": "找不到標籤"
   },
