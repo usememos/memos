@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import copy from "copy-to-clipboard";
+import DOMPurify from "dompurify";
 import hljs from "highlight.js";
 import { useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
@@ -23,7 +24,8 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
 
   // Users can set Markdown code blocks as `__html` to render HTML directly.
   if (formatedLanguage === SpecialLanguage.HTML) {
-    return <div className="w-full overflow-auto !my-2" dangerouslySetInnerHTML={{ __html: content }} />;
+    const purify = DOMPurify(window);
+    return <div className="w-full overflow-auto !my-2" dangerouslySetInnerHTML={{ __html: purify.sanitize(content) }} />;
   } else if (formatedLanguage === SpecialLanguage.MERMAID) {
     return <MermaidBlock content={content} />;
   }
