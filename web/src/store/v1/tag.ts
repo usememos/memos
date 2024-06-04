@@ -23,7 +23,7 @@ export const useTagStore = create(
         .sort((a, b) => b[1] - a[1])
         .map(([tag]) => tag);
     },
-    fetchTags: async (params: { user?: User; location?: Location<any> }, options?: { skipCache?: boolean; }) => {
+    fetchTags: async (params: { user?: User; location?: Location<any> }, options?: { skipCache?: boolean }) => {
       const { tagAmounts: cache } = get();
       if (cache.length > 0 && !options?.skipCache) {
         return cache;
