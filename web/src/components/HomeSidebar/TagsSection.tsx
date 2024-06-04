@@ -65,7 +65,7 @@ const TagContainer: React.FC<TagContainerProps> = (props: TagContainerProps) => 
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
   const { tag, amount } = props;
-  const user = useCurrentUser()
+  const user = useCurrentUser();
   const location = useLocation();
 
   const handleTagClick = () => {
