@@ -23,17 +23,17 @@ export const useTagStore = create(
         .sort((a, b) => b[1] - a[1])
         .map(([tag]) => tag);
     },
-    fetchTags: async (options: { skipCache?: boolean; user?: User; location?: Location<any> }) => {
+    fetchTags: async (params: { user?: User; location?: Location<any> }, options?: { skipCache?: boolean; }) => {
       const { tagAmounts: cache } = get();
-      if (cache.length > 0 && !options.skipCache) {
+      if (cache.length > 0 && !options?.skipCache) {
         return cache;
       }
       const filters = [`row_status == "NORMAL"`];
-      if (options.user) {
-        if (location?.pathname === Routes.EXPLORE) {
+      if (params.user) {
+        if (params.location?.pathname === Routes.EXPLORE) {
           filters.push(`visibilities == ["PUBLIC", "PROTECTED"]`);
         }
-        filters.push(`creator == "${options.user.name}"`);
+        filters.push(`creator == "${params.user.name}"`);
       } else {
         filters.push(`visibilities == ["PUBLIC"]`);
       }

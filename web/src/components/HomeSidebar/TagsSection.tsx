@@ -87,7 +87,7 @@ const TagContainer: React.FC<TagContainerProps> = (props: TagContainerProps) => 
           parent: "memos/-",
           tag: tag,
         });
-        await tagStore.fetchTags({ skipCache: true, location, user });
+        await tagStore.fetchTags({ location, user }, { skipCache: true });
         toast.success(t("message.deleted-successfully"));
       },
     });

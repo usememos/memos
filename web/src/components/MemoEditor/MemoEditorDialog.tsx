@@ -28,7 +28,7 @@ const MemoEditorDialog: React.FC<Props> = ({
   const user = useCurrentUser();
 
   useEffect(() => {
-    tagStore.fetchTags({ skipCache: false, user });
+    tagStore.fetchTags({ user }, { skipCache: false });
   }, []);
 
   const updateDisplayTime = (displayTime: string) => {

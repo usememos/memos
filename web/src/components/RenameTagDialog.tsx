@@ -45,7 +45,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
       });
       toast.success("Rename tag successfully");
       filterStore.setTagFilter(newName);
-      tagStore.fetchTags({ skipCache: true, user });
+      tagStore.fetchTags({ user }, { skipCache: true });
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
