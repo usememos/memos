@@ -17,7 +17,7 @@ export const useMemoStore = create(
     getState: () => get(),
     fetchMemos: async (request: Partial<ListMemosRequest>) => {
       const { memos, nextPageToken } = await memoServiceClient.listMemos(request);
-      const memoMap = {...get().memoMapByName};
+      const memoMap = { ...get().memoMapByName };
       for (const memo of memos) {
         memoMap[memo.name] = memo;
       }
