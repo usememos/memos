@@ -50,7 +50,7 @@ const AddMemoRelationButton = (props: Props) => {
                 type: MemoRelation_Type.REFERENCE,
               })),
               ...context.relationList,
-            ],
+            ].filter((relation) => relation.relatedMemo !== context.memoName),
             "relatedMemo",
           ),
         );
