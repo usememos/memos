@@ -1,4 +1,5 @@
 import { Divider, Tooltip } from "@mui/joy";
+import clsx from "clsx";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
@@ -29,6 +30,7 @@ const UserStatisticsView = (props: Props) => {
   const [memoStats, setMemoStats] = useState<UserMemoStats>({ links: 0, todos: 0, code: 0 });
   const days = Math.ceil((Date.now() - user.createTime!.getTime()) / 86400000);
   const memos = Object.values(memoStore.getState().memoMapByName);
+  const filter = filterStore.state;
 
   useAsyncEffect(async () => {
     setIsRequesting(true);
@@ -91,8 +93,11 @@ const UserStatisticsView = (props: Props) => {
         <Divider className="!my-1 opacity-50" />
         <div className="w-full mt-1 flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
           <div
-            className="w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
-            onClick={() => filterStore.setMemoPropertyFilter({ hasLink: true })}
+            className={clsx(
+              "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80",
+              filter.memoPropertyFilter?.hasLink ? "bg-blue-50 dark:bg-blue-900 shadow" : "",
+            )}
+            onClick={() => filterStore.setMemoPropertyFilter({ hasLink: !filter.memoPropertyFilter?.hasLink })}
           >
             <div className="w-auto flex justify-start items-center mr-1">
               <Icon.Link className="w-4 h-auto mr-1" />
@@ -101,8 +106,11 @@ const UserStatisticsView = (props: Props) => {
             <span className="text-sm truncate">{memoStats.links}</span>
           </div>
           <div
-            className="w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
-            onClick={() => filterStore.setMemoPropertyFilter({ hasTaskList: true })}
+            className={clsx(
+              "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80",
+              filter.memoPropertyFilter?.hasTaskList ? "bg-blue-50 dark:bg-blue-900 shadow" : "",
+            )}
+            onClick={() => filterStore.setMemoPropertyFilter({ hasTaskList: !filter.memoPropertyFilter?.hasTaskList })}
           >
             <div className="w-auto flex justify-start items-center mr-1">
               <Icon.CheckCircle className="w-4 h-auto mr-1" />
@@ -111,8 +119,11 @@ const UserStatisticsView = (props: Props) => {
             <span className="text-sm truncate">{memoStats.todos}</span>
           </div>
           <div
-            className="w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80"
-            onClick={() => filterStore.setMemoPropertyFilter({ hasCode: true })}
+            className={clsx(
+              "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80",
+              filter.memoPropertyFilter?.hasCode ? "bg-blue-50 dark:bg-blue-900 shadow" : "",
+            )}
+            onClick={() => filterStore.setMemoPropertyFilter({ hasCode: !filter.memoPropertyFilter?.hasCode })}
           >
             <div className="w-auto flex justify-start items-center mr-1">
               <Icon.Code2 className="w-4 h-auto mr-1" />

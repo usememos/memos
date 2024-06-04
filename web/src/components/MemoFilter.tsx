@@ -14,14 +14,7 @@ const MemoFilter = (props: Props) => {
   const location = useLocation();
   const filterStore = useFilterStore();
   const filter = filterStore.state;
-  const showFilter = Boolean(
-    filter.tag ||
-      filter.text ||
-      filter.visibility ||
-      filter.memoPropertyFilter?.hasLink ||
-      filter.memoPropertyFilter?.hasTaskList ||
-      filter.memoPropertyFilter?.hasCode,
-  );
+  const showFilter = Boolean(filter.tag || filter.text || filter.visibility);
 
   useEffect(() => {
     filterStore.clearFilter();
@@ -72,39 +65,6 @@ const MemoFilter = (props: Props) => {
           }}
         >
           <Icon.Search className="w-4 h-auto mr-1 text-gray-500 dark:text-gray-400" /> {filter.text}
-          <Icon.X className="w-4 h-auto ml-1 opacity-40" />
-        </div>
-      )}
-      {filter.memoPropertyFilter?.hasLink && (
-        <div
-          className="max-w-xs flex flex-row justify-start items-center px-2 cursor-pointer dark:text-gray-400 bg-gray-200 dark:bg-zinc-800 rounded whitespace-nowrap truncate hover:line-through"
-          onClick={() => {
-            filterStore.setMemoPropertyFilter({ hasLink: false });
-          }}
-        >
-          <Icon.Link className="w-4 h-auto mr-1 text-gray-500 dark:text-gray-400" /> Has Link
-          <Icon.X className="w-4 h-auto ml-1 opacity-40" />
-        </div>
-      )}
-      {filter.memoPropertyFilter?.hasTaskList && (
-        <div
-          className="max-w-xs flex flex-row justify-start items-center px-2 cursor-pointer dark:text-gray-400 bg-gray-200 dark:bg-zinc-800 rounded whitespace-nowrap truncate hover:line-through"
-          onClick={() => {
-            filterStore.setMemoPropertyFilter({ hasTaskList: false });
-          }}
-        >
-          <Icon.CheckCircle className="w-4 h-auto mr-1 text-gray-500 dark:text-gray-400" /> Has Task
-          <Icon.X className="w-4 h-auto ml-1 opacity-40" />
-        </div>
-      )}
-      {filter.memoPropertyFilter?.hasCode && (
-        <div
-          className="max-w-xs flex flex-row justify-start items-center px-2 cursor-pointer dark:text-gray-400 bg-gray-200 dark:bg-zinc-800 rounded whitespace-nowrap truncate hover:line-through"
-          onClick={() => {
-            filterStore.setMemoPropertyFilter({ hasCode: false });
-          }}
-        >
-          <Icon.Code2 className="w-4 h-auto mr-1 text-gray-500 dark:text-gray-400" /> Has Code
           <Icon.X className="w-4 h-auto ml-1 opacity-40" />
         </div>
       )}
