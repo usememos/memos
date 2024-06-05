@@ -51,7 +51,7 @@ const AddMemoRelationButton = (props: Props) => {
               })),
               ...context.relationList,
             ].filter((relation) => relation.relatedMemo !== context.memoName),
-            "relatedMemoId",
+            "relatedMemo",
           ),
         );
       },
