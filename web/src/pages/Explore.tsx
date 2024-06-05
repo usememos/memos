@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import { ExploreSidebar, ExploreSidebarDrawer } from "@/components/ExploreSidebar";
 import Icon from "@/components/Icon";
-import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
@@ -63,7 +62,6 @@ const Explore = () => {
       <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
         <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
           <div className="flex flex-col justify-start items-start w-full max-w-full">
-            <MemoFilter className="px-2 pb-2" />
             {sortedMemos.map((memo) => (
               <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showCreator showVisibility showPinned compact />
             ))}

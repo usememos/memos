@@ -6,7 +6,6 @@ import Empty from "@/components/Empty";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import Icon from "@/components/Icon";
 import MemoEditor from "@/components/MemoEditor";
-import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
@@ -87,7 +86,6 @@ const Home = () => {
         <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
           <div className="flex flex-col justify-start items-start w-full max-w-full">
-            <MemoFilter className="px-2 pb-2" />
             {sortedMemos.map((memo) => (
               <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility showPinned compact />
             ))}

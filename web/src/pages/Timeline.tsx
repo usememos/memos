@@ -7,7 +7,6 @@ import ActivityCalendar from "@/components/ActivityCalendar";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
-import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { TimelineSidebar, TimelineSidebarDrawer } from "@/components/TimelineSidebar";
@@ -141,8 +140,6 @@ const Timeline = () => {
               </div>
             </div>
             <div className="w-full h-auto flex flex-col justify-start items-start">
-              <MemoFilter className="p-2 my-2 rounded-lg dark:bg-zinc-900" />
-
               <div className="flex flex-col justify-start items-start w-full mt-2">
                 <div className="w-full flex shrink-0 flex-row justify-between pl-1 mt-1 mb-3">
                   <div className="w-auto flex flex-col">

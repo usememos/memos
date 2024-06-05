@@ -6,7 +6,6 @@ import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MemoContent from "@/components/MemoContent";
-import MemoFilter from "@/components/MemoFilter";
 import MobileHeader from "@/components/MobileHeader";
 import SearchBar from "@/components/SearchBar";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
@@ -99,7 +98,6 @@ const Archived = () => {
               <SearchBar />
             </div>
           </div>
-          <MemoFilter className="px-2 pb-2" />
           {sortedMemos.map((memo) => (
             <div
               key={memo.name}
