@@ -1,6 +1,7 @@
 import { IconButton } from "@mui/joy";
 import clsx from "clsx";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import useDateTime from "@/hooks/useDateTime";
 import { useMemoStore, useTagStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import MemoEditor, { Props as MemoEditorProps } from ".";
@@ -20,7 +21,7 @@ const MemoEditorDialog: React.FC<Props> = ({
 }: Props) => {
   const tagStore = useTagStore();
   const memoStore = useMemoStore();
-  const [displayTime, setDisplayTime] = useState<string | undefined>(memoStore.getMemoByName(memoName || "")?.displayTime?.toISOString());
+  const dateTime = useDateTime(memoStore.getMemoByName(memoName || "")?.displayTime);
   const memoPatchRef = useRef<Partial<Memo>>({
     displayTime: memoStore.getMemoByName(memoName || "")?.displayTime,
   });
@@ -30,7 +31,7 @@ const MemoEditorDialog: React.FC<Props> = ({
   }, []);
 
   const updateDisplayTime = (displayTime: string) => {
-    setDisplayTime(displayTime);
+    dateTime.setDateTime(displayTime);
     memoPatchRef.current.displayTime = new Date(displayTime);
   };
 
@@ -48,14 +49,14 @@ const MemoEditorDialog: React.FC<Props> = ({
   return (
     <>
       <div className="w-full flex flex-row justify-between items-center">
-        <div className={clsx("flex flex-row justify-start items-center", !displayTime && "mb-2")}>
-          {displayTime ? (
+        <div className={clsx("flex flex-row justify-start items-center", !dateTime.displayDateTime && "mb-2")}>
+          {dateTime.displayDateTime ? (
             <div className="relative">
-              <span className="cursor-pointer text-gray-500 dark:text-gray-400">{new Date(displayTime).toLocaleString()}</span>
+              <span className="cursor-pointer text-gray-500 dark:text-gray-400">{dateTime.displayDateTime}</span>
               <input
                 className="inset-0 absolute z-1 opacity-0"
                 type="datetime-local"
-                value={displayTime}
+                value={dateTime.datePickerDateTime}
                 onFocus={(e: any) => e.target.showPicker()}
                 onChange={(e) => updateDisplayTime(e.target.value)}
               />
