@@ -22,7 +22,7 @@ const MemoEditorDialog: React.FC<Props> = ({
 }: Props) => {
   const tagStore = useTagStore();
   const memoStore = useMemoStore();
-  const dateTime = useDateTime(memoStore.getMemoByName(memoName || "")?.displayTime);
+  const { setDateTime, displayDateTime, datePickerDateTime } = useDateTime(memoStore.getMemoByName(memoName || "")?.displayTime);
   const memoPatchRef = useRef<Partial<Memo>>({
     displayTime: memoStore.getMemoByName(memoName || "")?.displayTime,
   });
@@ -33,7 +33,7 @@ const MemoEditorDialog: React.FC<Props> = ({
   }, []);
 
   const updateDisplayTime = (displayTime: string) => {
-    dateTime.setDateTime(displayTime);
+    setDateTime(displayTime);
     memoPatchRef.current.displayTime = new Date(displayTime);
   };
 
@@ -51,14 +51,14 @@ const MemoEditorDialog: React.FC<Props> = ({
   return (
     <>
       <div className="w-full flex flex-row justify-between items-center">
-        <div className={clsx("flex flex-row justify-start items-center", !dateTime.displayDateTime && "mb-2")}>
-          {dateTime.displayDateTime ? (
+        <div className={clsx("flex flex-row justify-start items-center", !displayDateTime && "mb-2")}>
+          {displayDateTime ? (
             <div className="relative">
-              <span className="cursor-pointer text-gray-500 dark:text-gray-400">{dateTime.displayDateTime}</span>
+              <span className="cursor-pointer text-gray-500 dark:text-gray-400">{displayDateTime}</span>
               <input
                 className="inset-0 absolute z-1 opacity-0"
                 type="datetime-local"
-                value={dateTime.datePickerDateTime}
+                value={datePickerDateTime}
                 onFocus={(e: any) => e.target.showPicker()}
                 onChange={(e) => updateDisplayTime(e.target.value)}
               />
