@@ -3,6 +3,7 @@ syntax = "proto3";
 package memos.api.v1;
 
 import "api/v1/common.proto";
+import "api/v1/memo_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/protobuf/empty.proto";
@@ -48,9 +49,9 @@ message Webhook {
 
   int32 creator_id = 2;
 
-  google.protobuf.Timestamp created_time = 3;
+  google.protobuf.Timestamp create_time = 3;
 
-  google.protobuf.Timestamp updated_time = 4;
+  google.protobuf.Timestamp update_time = 4;
 
   RowStatus row_status = 5;
 
@@ -85,4 +86,16 @@ message UpdateWebhookRequest {
 
 message DeleteWebhookRequest {
   int32 id = 1;
+}
+
+message WebhookRequestPayload {
+  string url = 1;
+
+  string activity_type = 2;
+
+  int32 creator_id = 3;
+
+  google.protobuf.Timestamp create_time = 4;
+
+  Memo memo = 5;
 }

@@ -1243,26 +1243,22 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 			return errors.Wrap(err, "failed to convert memo to webhook payload")
 		}
 		payload.ActivityType = activityType
-		payload.URL = hook.URL
-		if err := webhook.Post(*payload); err != nil {
+		payload.Url = hook.URL
+		if err := webhook.Post(payload); err != nil {
 			return errors.Wrap(err, "failed to post webhook")
 		}
 	}
 	return nil
 }
 
-func convertMemoToWebhookPayload(memo *v1pb.Memo) (*webhook.WebhookPayload, error) {
+func convertMemoToWebhookPayload(memo *v1pb.Memo) (*v1pb.WebhookRequestPayload, error) {
 	creatorID, err := ExtractUserIDFromName(memo.Creator)
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid memo creator")
 	}
-	return &webhook.WebhookPayload{
-		CreatorID: creatorID,
-		CreatedTs: time.Now().Unix(),
-		Memo: &webhook.Memo{
-			Name:    memo.Name,
-			Creator: memo.Creator,
-			Content: memo.Content,
-		},
+	return &v1pb.WebhookRequestPayload{
+		CreatorId:  creatorID,
+		CreateTime: timestamppb.New(time.Now()),
+		Memo:       memo,
 	}, nil
 }

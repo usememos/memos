@@ -103,12 +103,12 @@ func (s *APIV1Service) DeleteWebhook(ctx context.Context, request *v1pb.DeleteWe
 
 func convertWebhookFromStore(webhook *store.Webhook) *v1pb.Webhook {
 	return &v1pb.Webhook{
-		Id:          webhook.ID,
-		CreatedTime: timestamppb.New(time.Unix(webhook.CreatedTs, 0)),
-		UpdatedTime: timestamppb.New(time.Unix(webhook.UpdatedTs, 0)),
-		RowStatus:   convertRowStatusFromStore(webhook.RowStatus),
-		CreatorId:   webhook.CreatorID,
-		Name:        webhook.Name,
-		Url:         webhook.URL,
+		Id:         webhook.ID,
+		CreateTime: timestamppb.New(time.Unix(webhook.CreatedTs, 0)),
+		UpdateTime: timestamppb.New(time.Unix(webhook.UpdatedTs, 0)),
+		RowStatus:  convertRowStatusFromStore(webhook.RowStatus),
+		CreatorId:  webhook.CreatorID,
+		Name:       webhook.Name,
+		Url:        webhook.URL,
 	}
 }

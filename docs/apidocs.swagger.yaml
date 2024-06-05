@@ -662,10 +662,10 @@ paths:
               creatorId:
                 type: integer
                 format: int32
-              createdTime:
+              createTime:
                 type: string
                 format: date-time
-              updatedTime:
+              updateTime:
                 type: string
                 format: date-time
               rowStatus:
@@ -3117,10 +3117,10 @@ definitions:
       creatorId:
         type: integer
         format: int32
-      createdTime:
+      createTime:
         type: string
         format: date-time
-      updatedTime:
+      updateTime:
         type: string
         format: date-time
       rowStatus:

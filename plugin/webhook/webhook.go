@@ -8,6 +8,9 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
+
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
 
 var (
@@ -15,45 +18,16 @@ var (
 	timeout = 30 * time.Second
 )
 
-type Memo struct {
-	// The name of the memo.
-	// Format: memos/{id}
-	// id is the system generated id.
-	Name string
-	// The name of the creator.
-	// Format: users/{id}
-	Creator string
-	// The raw content.
-	Content string
-}
-
-// WebhookPayload is the payload of webhook request.
-// nolint
-type WebhookPayload struct {
-	URL          string `json:"url"`
-	ActivityType string `json:"activityType"`
-	CreatorID    int32  `json:"creatorId"`
-	CreatedTs    int64  `json:"createdTs"`
-	Memo         *Memo  `json:"memo"`
-}
-
-// WebhookResponse is the response of webhook request.
-// nolint
-type WebhookResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
 // Post posts the message to webhook endpoint.
-func Post(payload WebhookPayload) error {
-	body, err := json.Marshal(&payload)
+func Post(requestPayload *v1pb.WebhookRequestPayload) error {
+	body, err := protojson.Marshal(requestPayload)
 	if err != nil {
-		return errors.Wrapf(err, "failed to marshal webhook request to %s", payload.URL)
+		return errors.Wrapf(err, "failed to marshal webhook request to %s", requestPayload.Url)
 	}
 
-	req, err := http.NewRequest("POST", payload.URL, bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", requestPayload.Url, bytes.NewBuffer(body))
 	if err != nil {
-		return errors.Wrapf(err, "failed to construct webhook request to %s", payload.URL)
+		return errors.Wrapf(err, "failed to construct webhook request to %s", requestPayload.Url)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -62,22 +36,25 @@ func Post(payload WebhookPayload) error {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return errors.Wrapf(err, "failed to post webhook to %s", payload.URL)
+		return errors.Wrapf(err, "failed to post webhook to %s", requestPayload.Url)
 	}
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return errors.Wrapf(err, "failed to read webhook response from %s", payload.URL)
+		return errors.Wrapf(err, "failed to read webhook response from %s", requestPayload.Url)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return errors.Errorf("failed to post webhook %s, status code: %d, response body: %s", payload.URL, resp.StatusCode, b)
+		return errors.Errorf("failed to post webhook %s, status code: %d, response body: %s", requestPayload.Url, resp.StatusCode, b)
 	}
 
-	response := &WebhookResponse{}
+	response := &struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}{}
 	if err := json.Unmarshal(b, response); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal webhook response from %s", payload.URL)
+		return errors.Wrapf(err, "failed to unmarshal webhook response from %s", requestPayload.Url)
 	}
 
 	if response.Code != 0 {
