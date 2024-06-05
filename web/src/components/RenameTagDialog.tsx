@@ -2,6 +2,7 @@ import { Button, IconButton, Input, List, ListItem } from "@mui/joy";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useFilterStore } from "@/store/module";
 import { useTagStore } from "@/store/v1";
@@ -20,6 +21,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
   const filterStore = useFilterStore();
   const [newName, setNewName] = useState(tag);
   const requestState = useLoading(false);
+  const user = useCurrentUser();
 
   const handleTagNameInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value.trim());
@@ -43,7 +45,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
       });
       toast.success("Rename tag successfully");
       filterStore.setTagFilter(newName);
-      tagStore.fetchTags(undefined, { skipCache: true });
+      tagStore.fetchTags({ user }, { skipCache: true });
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);

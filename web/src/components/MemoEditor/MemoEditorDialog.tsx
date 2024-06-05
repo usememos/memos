@@ -1,6 +1,7 @@
 import { IconButton } from "@mui/joy";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore, useTagStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import MemoEditor, { Props as MemoEditorProps } from ".";
@@ -24,9 +25,10 @@ const MemoEditorDialog: React.FC<Props> = ({
   const memoPatchRef = useRef<Partial<Memo>>({
     displayTime: memoStore.getMemoByName(memoName || "")?.displayTime,
   });
+  const user = useCurrentUser();
 
   useEffect(() => {
-    tagStore.fetchTags(undefined, { skipCache: false });
+    tagStore.fetchTags({ user }, { skipCache: false });
   }, []);
 
   const updateDisplayTime = (displayTime: string) => {

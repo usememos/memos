@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { Routes } from "@/router";
 import { useFilterStore } from "@/store/module";
 import { useMemoList, useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
@@ -29,16 +28,7 @@ const TagsSection = (props: Props) => {
   useDebounce(() => fetchTags(), 300, [memoList.size(), location.pathname]);
 
   const fetchTags = async () => {
-    const filters = [`row_status == "NORMAL"`];
-    if (user) {
-      if (location.pathname === Routes.EXPLORE) {
-        filters.push(`visibilities == ["PUBLIC", "PROTECTED"]`);
-      }
-      filters.push(`creator == "${user.name}"`);
-    } else {
-      filters.push(`visibilities == ["PUBLIC"]`);
-    }
-    await tagStore.fetchTags(filters.join(" && "));
+    await tagStore.fetchTags({ user, location });
   };
 
   return (
@@ -75,6 +65,8 @@ const TagContainer: React.FC<TagContainerProps> = (props: TagContainerProps) => 
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
   const { tag, amount } = props;
+  const user = useCurrentUser();
+  const location = useLocation();
 
   const handleTagClick = () => {
     if (filterStore.getState().tag === tag) {
@@ -95,7 +87,7 @@ const TagContainer: React.FC<TagContainerProps> = (props: TagContainerProps) => 
           parent: "memos/-",
           tag: tag,
         });
-        await tagStore.fetchTags(undefined, { skipCache: true });
+        await tagStore.fetchTags({ location, user }, { skipCache: true });
         toast.success(t("message.deleted-successfully"));
       },
     });
