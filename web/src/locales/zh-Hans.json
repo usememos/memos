@@ -207,6 +207,7 @@
       "delete-member": "删除成员",
       "delete-warning": "您确定要删除 {{username}} 吗？（此操作不可逆）"
     },
+    "memo-related": "Memo",
     "my-account": "我的账号",
     "preference": "偏好设置",
     "preference-section": {
