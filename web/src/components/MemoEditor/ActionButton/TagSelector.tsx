@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import Icon from "@/components/Icon";
 import OverflowTip from "@/components/kit/OverflowTip";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
@@ -19,12 +18,11 @@ const TagSelector = (props: Props) => {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const tags = tagStore.sortedTags();
-  const user = useCurrentUser();
 
   useEffect(() => {
     (async () => {
       try {
-        await tagStore.fetchTags({ user });
+        await tagStore.fetchTags();
       } catch (error) {
         // do nothing.
       }
