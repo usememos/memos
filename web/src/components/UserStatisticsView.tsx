@@ -4,15 +4,11 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilterStore } from "@/store/module";
 import { useMemoStore } from "@/store/v1";
-import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
-
-interface Props {
-  user: User;
-}
 
 interface UserMemoStats {
   link: number;
@@ -21,16 +17,15 @@ interface UserMemoStats {
   incompleteTasks: number;
 }
 
-const UserStatisticsView = (props: Props) => {
-  const { user } = props;
+const UserStatisticsView = () => {
   const t = useTranslate();
+  const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const filterStore = useFilterStore();
   const [memoAmount, setMemoAmount] = useState(0);
   const [isRequesting, setIsRequesting] = useState(false);
   const [memoStats, setMemoStats] = useState<UserMemoStats>({ link: 0, taskList: 0, code: 0, incompleteTasks: 0 });
-  const days = Math.ceil((Date.now() - user.createTime!.getTime()) / 86400000);
-  const memos = Object.values(memoStore.getState().memoMapByName);
+  const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
   const filter = filterStore.state;
 
   useAsyncEffect(async () => {
@@ -56,7 +51,7 @@ const UserStatisticsView = (props: Props) => {
     setMemoStats(memoStats);
     setMemoAmount(properties.length);
     setIsRequesting(false);
-  }, [memos.length, user.name]);
+  }, [memoStore.stateId]);
 
   const handleRebuildMemoTags = async () => {
     await memoServiceClient.rebuildMemoProperty({
@@ -117,20 +112,24 @@ const UserStatisticsView = (props: Props) => {
             onClick={() => filterStore.setMemoPropertyFilter({ hasTaskList: !filter.memoPropertyFilter?.hasTaskList })}
           >
             <div className="w-auto flex justify-start items-center mr-1">
-              <Icon.CheckCircle className="w-4 h-auto mr-1" />
+              {memoStats.incompleteTasks > 0 ? (
+                <Icon.ListTodo className="w-4 h-auto mr-1" />
+              ) : (
+                <Icon.CheckCircle className="w-4 h-auto mr-1" />
+              )}
               <span className="block text-sm">{t("memo.to-do")}</span>
             </div>
-            {memoStats.incompleteTasks > 0 && (
-              <>
-                <Tooltip title={"Done"} placement="top" arrow>
-                  <span className="text-sm truncate">{memoStats.taskList - memoStats.incompleteTasks}</span>
-                </Tooltip>
-                <span className="text-sm font-mono opacity-50">/</span>
-              </>
-            )}
-            <Tooltip title={"Total"} placement="top" arrow>
+            {memoStats.incompleteTasks > 0 ? (
+              <Tooltip title={"Done / Total"} placement="top" arrow>
+                <div className="text-sm flex flex-row items-start justify-center">
+                  <span className="truncate">{memoStats.taskList - memoStats.incompleteTasks}</span>
+                  <span className="font-mono opacity-50">/</span>
+                  <span className="truncate">{memoStats.taskList}</span>
+                </div>
+              </Tooltip>
+            ) : (
               <span className="text-sm truncate">{memoStats.taskList}</span>
-            </Tooltip>
+            )}
           </div>
           <div
             className={clsx(

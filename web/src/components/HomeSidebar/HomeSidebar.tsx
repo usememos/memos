@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import SearchBar from "@/components/SearchBar";
 import UserStatisticsView from "@/components/UserStatisticsView";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import TagsSection from "./TagsSection";
 
 interface Props {
@@ -9,8 +8,6 @@ interface Props {
 }
 
 const HomeSidebar = (props: Props) => {
-  const currentUser = useCurrentUser();
-
   return (
     <aside
       className={clsx(
@@ -19,7 +16,7 @@ const HomeSidebar = (props: Props) => {
       )}
     >
       <SearchBar />
-      <UserStatisticsView user={currentUser} />
+      <UserStatisticsView />
       <TagsSection />
     </aside>
   );
