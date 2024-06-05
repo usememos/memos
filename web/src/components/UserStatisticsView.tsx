@@ -15,9 +15,10 @@ interface Props {
 }
 
 interface UserMemoStats {
-  links: number;
-  todos: number;
+  link: number;
+  taskList: number;
   code: number;
+  incompleteTasks: number;
 }
 
 const UserStatisticsView = (props: Props) => {
@@ -27,7 +28,7 @@ const UserStatisticsView = (props: Props) => {
   const filterStore = useFilterStore();
   const [memoAmount, setMemoAmount] = useState(0);
   const [isRequesting, setIsRequesting] = useState(false);
-  const [memoStats, setMemoStats] = useState<UserMemoStats>({ links: 0, todos: 0, code: 0 });
+  const [memoStats, setMemoStats] = useState<UserMemoStats>({ link: 0, taskList: 0, code: 0, incompleteTasks: 0 });
   const days = Math.ceil((Date.now() - user.createTime!.getTime()) / 86400000);
   const memos = Object.values(memoStore.getState().memoMapByName);
   const filter = filterStore.state;
@@ -37,16 +38,19 @@ const UserStatisticsView = (props: Props) => {
     const { properties } = await memoServiceClient.listMemoProperties({
       name: `memos/-`,
     });
-    const memoStats: UserMemoStats = { links: 0, todos: 0, code: 0 };
+    const memoStats: UserMemoStats = { link: 0, taskList: 0, code: 0, incompleteTasks: 0 };
     properties.forEach((property) => {
       if (property.hasLink) {
-        memoStats.links += 1;
+        memoStats.link += 1;
       }
       if (property.hasTaskList) {
-        memoStats.todos += 1;
+        memoStats.taskList += 1;
       }
       if (property.hasCode) {
         memoStats.code += 1;
+      }
+      if (property.hasIncompleteTasks) {
+        memoStats.incompleteTasks += 1;
       }
     });
     setMemoStats(memoStats);
@@ -94,7 +98,7 @@ const UserStatisticsView = (props: Props) => {
         <div className="w-full mt-1 flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
           <div
             className={clsx(
-              "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80",
+              "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:shadow",
               filter.memoPropertyFilter?.hasLink ? "bg-blue-50 dark:bg-blue-900 shadow" : "",
             )}
             onClick={() => filterStore.setMemoPropertyFilter({ hasLink: !filter.memoPropertyFilter?.hasLink })}
@@ -103,11 +107,11 @@ const UserStatisticsView = (props: Props) => {
               <Icon.Link className="w-4 h-auto mr-1" />
               <span className="block text-sm">{t("memo.links")}</span>
             </div>
-            <span className="text-sm truncate">{memoStats.links}</span>
+            <span className="text-sm truncate">{memoStats.link}</span>
           </div>
           <div
             className={clsx(
-              "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80",
+              "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:shadow",
               filter.memoPropertyFilter?.hasTaskList ? "bg-blue-50 dark:bg-blue-900 shadow" : "",
             )}
             onClick={() => filterStore.setMemoPropertyFilter({ hasTaskList: !filter.memoPropertyFilter?.hasTaskList })}
@@ -116,11 +120,21 @@ const UserStatisticsView = (props: Props) => {
               <Icon.CheckCircle className="w-4 h-auto mr-1" />
               <span className="block text-sm">{t("memo.to-do")}</span>
             </div>
-            <span className="text-sm truncate">{memoStats.todos}</span>
+            {memoStats.incompleteTasks > 0 && (
+              <>
+                <Tooltip title={"Done"} placement="top" arrow>
+                  <span className="text-sm truncate">{memoStats.taskList - memoStats.incompleteTasks}</span>
+                </Tooltip>
+                <span className="text-sm font-mono opacity-50">/</span>
+              </>
+            )}
+            <Tooltip title={"Total"} placement="top" arrow>
+              <span className="text-sm truncate">{memoStats.taskList}</span>
+            </Tooltip>
           </div>
           <div
             className={clsx(
-              "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:opacity-80",
+              "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:shadow",
               filter.memoPropertyFilter?.hasCode ? "bg-blue-50 dark:bg-blue-900 shadow" : "",
             )}
             onClick={() => filterStore.setMemoPropertyFilter({ hasCode: !filter.memoPropertyFilter?.hasCode })}

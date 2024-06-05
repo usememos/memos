@@ -34,7 +34,7 @@ VALUES
 - [ ] Read *📖 The Little Prince*;',
     101,
     'PROTECTED',
-    '{"property": {"tags": ["TODO"], "hasTaskList": true}}'
+    '{"property": {"tags": ["TODO"], "hasTaskList": true, "hasIncompleteTasks":true}}'
   );
 
 INSERT INTO
@@ -76,7 +76,7 @@ VALUES
 - [ ] Watch *👦 The Boys*;',
     102,
     'PROTECTED',
-    '{"property": {"tags": ["TODO"], "hasTaskList": true}}'
+    '{"property": {"tags": ["TODO"], "hasTaskList": true, "hasIncompleteTasks":true}}'
   );
 
 INSERT INTO

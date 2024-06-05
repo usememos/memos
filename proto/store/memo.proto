@@ -13,5 +13,6 @@ message MemoPayload {
     bool has_link = 2;
     bool has_task_list = 3;
     bool has_code = 4;
+    bool has_incomplete_tasks = 5;
   }
 }

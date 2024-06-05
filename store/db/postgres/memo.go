@@ -93,6 +93,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if v.HasCode {
 			where = append(where, "(memo.payload->'property'->>'hasCode')::BOOLEAN IS TRUE")
 		}
+		if v.HasIncompleteTasks {
+			where = append(where, "(memo.payload->'property'->>'hasIncompleteTasks')::BOOLEAN IS TRUE")
+		}
 	}
 	if find.ExcludeComments {
 		where = append(where, "memo_relation.related_memo_id IS NULL")
