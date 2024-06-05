@@ -869,10 +869,11 @@ func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.
 		return nil
 	}
 	return &v1pb.MemoProperty{
-		Tags:        property.Tags,
-		HasLink:     property.HasLink,
-		HasTaskList: property.HasTaskList,
-		HasCode:     property.HasCode,
+		Tags:               property.Tags,
+		HasLink:            property.HasLink,
+		HasTaskList:        property.HasTaskList,
+		HasCode:            property.HasCode,
+		HasIncompleteTasks: property.HasIncompleteTasks,
 	}
 }
 
@@ -991,6 +992,9 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if filter.HasCode {
 			find.PayloadFind.HasCode = true
 		}
+		if filter.HasIncompleteTasks {
+			find.PayloadFind.HasIncompleteTasks = true
+		}
 	}
 
 	user, err := s.GetCurrentUser(ctx)
@@ -1044,24 +1048,26 @@ var SearchMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("has_link", cel.BoolType),
 	cel.Variable("has_task_list", cel.BoolType),
 	cel.Variable("has_code", cel.BoolType),
+	cel.Variable("has_incomplete_tasks", cel.BoolType),
 }
 
 type SearchMemosFilter struct {
-	ContentSearch     []string
-	Visibilities      []store.Visibility
-	Tag               *string
-	OrderByPinned     bool
-	DisplayTimeBefore *int64
-	DisplayTimeAfter  *int64
-	Creator           *string
-	UID               *string
-	RowStatus         *store.RowStatus
-	Random            bool
-	Limit             *int
-	IncludeComments   bool
-	HasLink           bool
-	HasTaskList       bool
-	HasCode           bool
+	ContentSearch      []string
+	Visibilities       []store.Visibility
+	Tag                *string
+	OrderByPinned      bool
+	DisplayTimeBefore  *int64
+	DisplayTimeAfter   *int64
+	Creator            *string
+	UID                *string
+	RowStatus          *store.RowStatus
+	Random             bool
+	Limit              *int
+	IncludeComments    bool
+	HasLink            bool
+	HasTaskList        bool
+	HasCode            bool
+	HasIncompleteTasks bool
 }
 
 func parseSearchMemosFilter(expression string) (*SearchMemosFilter, error) {
@@ -1140,6 +1146,9 @@ func findSearchMemosField(callExpr *expr.Expr_Call, filter *SearchMemosFilter) {
 			} else if idExpr.Name == "has_code" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.HasCode = value
+			} else if idExpr.Name == "has_incomplete_tasks" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.HasIncompleteTasks = value
 			}
 			return
 		}
@@ -1170,6 +1179,9 @@ func getMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, 
 			property.HasLink = true
 		case *ast.TaskList:
 			property.HasTaskList = true
+			if !n.Complete {
+				property.HasIncompleteTasks = true
+			}
 		case *ast.Code, *ast.CodeBlock:
 			property.HasCode = true
 		}

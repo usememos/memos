@@ -102,6 +102,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if v.HasCode {
 			where = append(where, "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') IS TRUE")
 		}
+		if v.HasIncompleteTasks {
+			where = append(where, "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE")
+		}
 	}
 	if find.ExcludeComments {
 		having = append(having, "`parent_id` IS NULL")
