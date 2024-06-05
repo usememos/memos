@@ -122,13 +122,15 @@ const UserStatisticsView = (props: Props) => {
             </div>
             {memoStats.incompleteTasks > 0 && (
               <>
-                <Tooltip title={"Incomplete tasks"} placement="top" arrow>
+                <Tooltip title={"Done"} placement="top" arrow>
                   <span className="text-sm truncate">{memoStats.taskList - memoStats.incompleteTasks}</span>
                 </Tooltip>
                 <span className="text-sm font-mono opacity-50">/</span>
               </>
             )}
-            <span className="text-sm truncate">{memoStats.taskList}</span>
+            <Tooltip title={"Total"} placement="top" arrow>
+              <span className="text-sm truncate">{memoStats.taskList}</span>
+            </Tooltip>
           </div>
           <div
             className={clsx(
