@@ -95,6 +95,7 @@
   },
   "memo": {
     "archived-at": "アーカイブ:",
+    "code": "コード",
     "comment": {
       "self": "コメント",
       "write-a-comment": "コメントを書く"
@@ -106,9 +107,11 @@
     "embed": "埋め込む",
     "fetch-more": "クリックしてさらに取得する",
     "fetching-data": "取得中…",
+    "links": "リンク",
     "no-archived-memos": "アーカイブされたメモはありません。",
     "search-placeholder": "メモを検索",
     "show-more": "続きを見る",
+    "to-do": "To-do",
     "view-detail": "詳細を見る",
     "visibility": {
       "disabled": "公開メモは無効化されています。",
@@ -204,6 +207,7 @@
       "delete-member": "メンバーを消去する",
       "delete-warning": "本当に{{username}}を消去していいですか?\n\n消去後、元に戻せません！"
     },
+    "memo-related": "Memo",
     "my-account": "アカウント設定",
     "preference": "設定",
     "preference-section": {
@@ -287,6 +291,8 @@
       "disable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが無効になります。設定済みのIDプロバイダーが失敗した場合、この設定をデータベースで元に戻さない限り、ログインすることはできません。IDプロバイダーを削除する際も、非常に注意が必要です",
       "disable-public-memos": "公開メモを無効化する",
       "display-with-updated-time": "更新日時を表示する",
+      "enable-auto-compact": "折りたたみを有効化",
+      "enable-double-click-to-edit": "ダブルクリックで編集を有効化",
       "enable-password-login": "パスワードでのログインを有効にする",
       "enable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが有効になります。SSOとパスワードの両方を使用してログインできるようにしたい場合のみ、続行してください",
       "max-upload-size": "最大ファイルサイズ(MiB)",
