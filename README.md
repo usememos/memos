@@ -54,4 +54,4 @@ Memos supports multiple languages. You can help us translate Memos into your lan
 ## Other projects
 
 - [**Slash**](https://github.com/yourselfhosted/slash): An open source, self-hosted bookmarks and link sharing platform. Save and share your links very easily.
-- [**Gomark**](https://github.com/yourselfhosted/gomark): A markdown parser written in Go for Memos. And its [WebAssembly version](https://github.com/yourselfhosted/gomark-wasm) is also available.
+- [**Gomark**](https://github.com/usememos/gomark): A markdown parser written in Go for Memos. And its [WebAssembly version](https://github.com/usememos/gomark-wasm) is also available.

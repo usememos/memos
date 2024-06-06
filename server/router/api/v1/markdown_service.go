@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	"github.com/yourselfhosted/gomark/ast"
-	"github.com/yourselfhosted/gomark/parser"
-	"github.com/yourselfhosted/gomark/parser/tokenizer"
-	"github.com/yourselfhosted/gomark/restore"
+	"github.com/usememos/gomark/ast"
+	"github.com/usememos/gomark/parser"
+	"github.com/usememos/gomark/parser/tokenizer"
+	"github.com/usememos/gomark/restore"
 
 	"github.com/usememos/memos/plugin/httpgetter"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"

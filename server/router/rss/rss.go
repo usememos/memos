@@ -10,9 +10,9 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
-	"github.com/yourselfhosted/gomark"
-	"github.com/yourselfhosted/gomark/ast"
-	"github.com/yourselfhosted/gomark/renderer"
+	"github.com/usememos/gomark"
+	"github.com/usememos/gomark/ast"
+	"github.com/usememos/gomark/renderer"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/profile"
