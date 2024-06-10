@@ -198,6 +198,9 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 
 		file, err := os.Open(resourcePath)
 		if err != nil {
+			if os.IsNotExist(err) {
+				return nil, status.Errorf(codes.NotFound, "file not found for resource: %s", request.Name)
+			}
 			return nil, status.Errorf(codes.Internal, "failed to open the file: %v", err)
 		}
 		defer file.Close()
