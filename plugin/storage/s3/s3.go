@@ -21,13 +21,7 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, s3Config *storepb.StorageS3Config) (*Client, error) {
-	resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...any) (aws.Endpoint, error) {
-		return aws.Endpoint{
-			URL: s3Config.Endpoint,
-		}, nil
-	})
 	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithEndpointResolverWithOptions(resolver),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(s3Config.AccessKeyId, s3Config.AccessKeySecret, "")),
 		config.WithRegion(s3Config.Region),
 	)
@@ -35,7 +29,9 @@ func NewClient(ctx context.Context, s3Config *storepb.StorageS3Config) (*Client,
 		return nil, errors.Wrap(err, "failed to load s3 config")
 	}
 
-	client := s3.NewFromConfig(cfg)
+	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(s3Config.Endpoint)
+	})
 	return &Client{
 		Client: client,
 		Bucket: aws.String(s3Config.Bucket),
