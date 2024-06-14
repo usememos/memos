@@ -7,6 +7,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -104,8 +105,12 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	if err := v1pb.RegisterIdentityProviderServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
-	echoServer.Any("/api/v1/*", echo.WrapHandler(gwMux))
-	echoServer.Any("/file/*", echo.WrapHandler(gwMux))
+	gwGroup := echoServer.Group("")
+	gwGroup.Use(middleware.CORS())
+	handler := echo.WrapHandler(gwMux)
+
+	gwGroup.Any("/api/v1/*", handler)
+	gwGroup.Any("/file/*", handler)
 
 	// GRPC web proxy.
 	options := []grpcweb.Option{
