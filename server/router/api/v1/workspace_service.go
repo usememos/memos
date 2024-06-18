@@ -15,6 +15,7 @@ func (s *APIV1Service) GetWorkspaceProfile(ctx context.Context, _ *v1pb.GetWorks
 	workspaceProfile := &v1pb.WorkspaceProfile{
 		Version: s.Profile.Version,
 		Mode:    s.Profile.Mode,
+		Public:  s.Profile.Public,
 	}
 	owner, err := s.GetInstanceOwner(ctx)
 	if err != nil {

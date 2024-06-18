@@ -1,4 +1,4 @@
-import { Button, Switch, Textarea } from "@mui/joy";
+import { Button, Textarea } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -7,7 +7,6 @@ import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
-import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 
@@ -17,43 +16,6 @@ const WorkspaceSection = () => {
   const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(
     WorkspaceGeneralSetting.fromPartial(workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {}),
   );
-
-  const handleAllowSignUpChanged = async (value: boolean) => {
-    const setting = { ...workspaceGeneralSetting, disallowSignup: !value };
-    await workspaceSettingServiceClient.setWorkspaceSetting({
-      setting: {
-        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
-        generalSetting: setting,
-      },
-    });
-    setWorkspaceGeneralSetting(setting);
-  };
-
-  const handleDisablePasswordLoginChanged = async (value: boolean) => {
-    const updateSetting = async () => {
-      const setting = { ...workspaceGeneralSetting, disallowPasswordLogin: value };
-      await workspaceSettingServiceClient.setWorkspaceSetting({
-        setting: {
-          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
-          generalSetting: setting,
-        },
-      });
-      setWorkspaceGeneralSetting(setting);
-    };
-    if (value) {
-      showCommonDialog({
-        title: "Confirm",
-        content: "Are you sure to disable password login?",
-        style: "danger",
-        dialogName: "disable-password-login-dialog",
-        onConfirm: async () => {
-          await updateSetting();
-        },
-      });
-    } else {
-      await updateSetting();
-    }
-  };
 
   const handleUpdateCustomizedProfileButtonClick = () => {
     showUpdateCustomizedProfileDialog();
@@ -110,17 +72,6 @@ const WorkspaceSection = () => {
         <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
       </div>
       <p className="font-medium text-gray-700 dark:text-gray-500">General</p>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span className="mr-1">{t("setting.system-section.allow-user-signup")}</span>
-        <Switch checked={!workspaceGeneralSetting.disallowSignup} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span className="mr-1">{t("setting.system-section.disable-password-login")}</span>
-        <Switch
-          checked={workspaceGeneralSetting.disallowPasswordLogin}
-          onChange={(event) => handleDisablePasswordLoginChanged(event.target.checked)}
-        />
-      </div>
       <div className="space-y-2 border rounded-md py-2 px-3 dark:border-zinc-700">
         <div className="w-full flex flex-row justify-between items-center">
           <span>{t("setting.system-section.additional-style")}</span>

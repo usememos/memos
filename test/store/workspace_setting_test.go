@@ -17,7 +17,7 @@ func TestWorkspaceSettingV1Store(t *testing.T) {
 		Key: storepb.WorkspaceSettingKey_GENERAL,
 		Value: &storepb.WorkspaceSetting_GeneralSetting{
 			GeneralSetting: &storepb.WorkspaceGeneralSetting{
-				DisallowSignup: true,
+				AdditionalScript: "",
 			},
 		},
 	})

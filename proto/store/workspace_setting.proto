@@ -31,10 +31,6 @@ message WorkspaceBasicSetting {
 }
 
 message WorkspaceGeneralSetting {
-  // disallow_signup is the flag to disallow signup.
-  bool disallow_signup = 1;
-  // disallow_password_login is the flag to disallow password login.
-  bool disallow_password_login = 2;
   // additional_script is the additional script.
   string additional_script = 3;
   // additional_style is the additional style.
