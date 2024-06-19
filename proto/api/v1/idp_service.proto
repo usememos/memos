@@ -22,7 +22,7 @@ service IdentityProviderService {
   // CreateIdentityProvider creates an identity provider.
   rpc CreateIdentityProvider(CreateIdentityProviderRequest) returns (IdentityProvider) {
     option (google.api.http) = {
-      post: "/api/v1/identityProviders",
+      post: "/api/v1/identityProviders"
       body: "identity_provider"
     };
   }

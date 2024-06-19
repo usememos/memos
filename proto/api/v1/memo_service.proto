@@ -53,7 +53,7 @@ service MemoService {
   // ExportMemos exports memos.
   rpc ExportMemos(ExportMemosRequest) returns (ExportMemosResponse) {
     option (google.api.http) = {
-      post: "/api/v1/memos:export",
+      post: "/api/v1/memos:export"
       body: "*"
     };
   }
@@ -112,7 +112,7 @@ service MemoService {
   // CreateMemoComment creates a comment for a memo.
   rpc CreateMemoComment(CreateMemoCommentRequest) returns (Memo) {
     option (google.api.http) = {
-      post: "/api/v1/{name=memos/*}/comments",
+      post: "/api/v1/{name=memos/*}/comments"
       body: "comment"
     };
     option (google.api.method_signature) = "name";
@@ -135,7 +135,7 @@ service MemoService {
   // UpsertMemoReaction upserts a reaction for a memo.
   rpc UpsertMemoReaction(UpsertMemoReactionRequest) returns (Reaction) {
     option (google.api.http) = {
-      post: "/api/v1/{name=memos/*}/reactions",
+      post: "/api/v1/{name=memos/*}/reactions"
       body: "*"
     };
     option (google.api.method_signature) = "name";

@@ -16,7 +16,7 @@ service ResourceService {
   // CreateResource creates a new resource.
   rpc CreateResource(CreateResourceRequest) returns (Resource) {
     option (google.api.http) = {
-      post: "/api/v1/resources",
+      post: "/api/v1/resources"
       body: "resource"
     };
   }
@@ -41,7 +41,7 @@ service ResourceService {
   // UpdateResource updates a resource.
   rpc UpdateResource(UpdateResourceRequest) returns (Resource) {
     option (google.api.http) = {
-      patch: "/api/v1/{resource.name=resources/*}",
+      patch: "/api/v1/{resource.name=resources/*}"
       body: "resource"
     };
     option (google.api.method_signature) = "resource,update_mask";

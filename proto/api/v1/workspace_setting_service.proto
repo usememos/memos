@@ -17,7 +17,7 @@ service WorkspaceSettingService {
   // SetWorkspaceSetting updates the setting.
   rpc SetWorkspaceSetting(SetWorkspaceSettingRequest) returns (WorkspaceSetting) {
     option (google.api.http) = {
-      patch: "/api/v1/workspace/{setting.name=settings/*}",
+      patch: "/api/v1/workspace/{setting.name=settings/*}"
       body: "setting"
     };
     option (google.api.method_signature) = "setting";
