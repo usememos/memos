@@ -36,6 +36,7 @@ var (
 	data            string
 	driver          string
 	dsn             string
+	public          bool
 	instanceProfile *profile.Profile
 
 	rootCmd = &cobra.Command{
@@ -109,6 +110,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&data, "data", "d", "", "data directory")
 	rootCmd.PersistentFlags().StringVarP(&driver, "driver", "", "", "database driver")
 	rootCmd.PersistentFlags().StringVarP(&dsn, "dsn", "", "", "database source name(aka. DSN)")
+	rootCmd.PersistentFlags().BoolVarP(&public, "public", "", true, "")
 
 	err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode"))
 	if err != nil {
@@ -134,11 +136,16 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	err = viper.BindPFlag("public", rootCmd.PersistentFlags().Lookup("public"))
+	if err != nil {
+		panic(err)
+	}
 
 	viper.SetDefault("mode", "demo")
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("addr", "")
 	viper.SetDefault("port", 8081)
+	viper.SetDefault("public", true)
 	viper.SetEnvPrefix("memos")
 }
 

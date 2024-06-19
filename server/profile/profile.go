@@ -30,6 +30,8 @@ type Profile struct {
 	Driver string `json:"-"`
 	// Version is the current version of server
 	Version string `json:"version"`
+	// Pubic is the flag whether the instance is public for others.
+	Public bool `json:"public"`
 }
 
 func (p *Profile) IsDev() bool {

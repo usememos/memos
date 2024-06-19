@@ -132,10 +132,8 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 		return nil
 	}
 	generalSetting := &v1pb.WorkspaceGeneralSetting{
-		DisallowSignup:        setting.DisallowSignup,
-		DisallowPasswordLogin: setting.DisallowPasswordLogin,
-		AdditionalScript:      setting.AdditionalScript,
-		AdditionalStyle:       setting.AdditionalStyle,
+		AdditionalScript: setting.AdditionalScript,
+		AdditionalStyle:  setting.AdditionalStyle,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &v1pb.WorkspaceCustomProfile{
@@ -154,10 +152,8 @@ func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting
 		return nil
 	}
 	generalSetting := &storepb.WorkspaceGeneralSetting{
-		DisallowSignup:        setting.DisallowSignup,
-		DisallowPasswordLogin: setting.DisallowPasswordLogin,
-		AdditionalScript:      setting.AdditionalScript,
-		AdditionalStyle:       setting.AdditionalStyle,
+		AdditionalScript: setting.AdditionalScript,
+		AdditionalStyle:  setting.AdditionalStyle,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.WorkspaceCustomProfile{

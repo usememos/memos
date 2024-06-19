@@ -21,6 +21,8 @@ message WorkspaceProfile {
   string version = 2;
   // mode is the instance mode (e.g. "prod", "dev" or "demo").
   string mode = 3;
+  // public is a flag that the instance is open for other users.
+  bool public = 4;
 }
 
 message GetWorkspaceProfileRequest {}
