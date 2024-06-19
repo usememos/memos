@@ -101,8 +101,8 @@ dependencies:
 
 devDependencies:
   '@bufbuild/buf':
-    specifier: ^1.32.1
-    version: 1.32.2
+    specifier: ^1.33.0
+    version: 1.33.0
   '@trivago/prettier-plugin-sort-imports':
     specifier: ^4.3.0
     version: 4.3.0(prettier@3.3.2)
@@ -455,8 +455,8 @@ packages:
     resolution: {integrity: sha512-s3jaWicZd0pkP0jf5ysyHUI/RE7MHos6qlToFcGWXVp+ykHOy77OUMrfbgJ9it2C5bow7OIQwYYaHjk9XlBQ2A==}
     dev: false
 
-  /@bufbuild/buf-darwin-arm64@1.32.2:
-    resolution: {integrity: sha512-AR6WlhY6CmLlZetvYzLjbyVpU5jM4eDd3PRTUAK5NcpqIPdCMiMK9nc33Yxc8pO04Lv4yrYdzWnFqZdbCzsS2g==}
+  /@bufbuild/buf-darwin-arm64@1.33.0:
+    resolution: {integrity: sha512-h2CKZUS3apPDxuB/HQHIvbzh+xXVsRik7w/AbeYO1r9PKjdet/8F53t3KrdQa4NFF948JGxQ/0/1VvVowjjZUA==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [darwin]
@@ -464,8 +464,8 @@ packages:
     dev: true
     optional: true
 
-  /@bufbuild/buf-darwin-x64@1.32.2:
-    resolution: {integrity: sha512-ZmVYsMcS06KHZYy4DmKf95BnDWji5/xo42oybqjtlE/wPGKNpqgiq0UGHSlK0oCh67sybHidXVci6LC95xHNrw==}
+  /@bufbuild/buf-darwin-x64@1.33.0:
+    resolution: {integrity: sha512-DMBkAJVwwRHF0gwiCWyqToOVfcNAU8WYOkE3M2NYvQDIdeiSKw0+OjD0l+CYfppMOGh9MJWQV7di96ugDO+VbA==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [darwin]
@@ -473,8 +473,8 @@ packages:
     dev: true
     optional: true
 
-  /@bufbuild/buf-linux-aarch64@1.32.2:
-    resolution: {integrity: sha512-OG509xwJHjuzSn5nNrVWghW/RpB76Ovhj7LCKi52QVh/qQq6VUXeQk42XIWjXY/Cmzmg81G7t97kLw27JLzH0w==}
+  /@bufbuild/buf-linux-aarch64@1.33.0:
+    resolution: {integrity: sha512-68OxC000rHtXzV2zxHXJ54ZkkPy/3yrm9HLALo8vUk4p5/fupwzjkGMQqD6BmL/ThDO8AX3jUvhJUAg+kS1+Hw==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [linux]
@@ -482,8 +482,8 @@ packages:
     dev: true
     optional: true
 
-  /@bufbuild/buf-linux-x64@1.32.2:
-    resolution: {integrity: sha512-TFNN87nhLyGFUKOy3beU/0GZk7TEs57J5VQczSq83rHLC+7t1nDuk5Rew8QEyV0OzEzZF+BkpLZj0jY+dWg6/g==}
+  /@bufbuild/buf-linux-x64@1.33.0:
+    resolution: {integrity: sha512-KsED6sanzwZCviSCMlq/P2yuuTVbgWGeUmS9CGsVn28sdjFCJb7bNhB6CKpUhox617XwqTPYZzEulQ1fF/sqJg==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [linux]
@@ -491,8 +491,8 @@ packages:
     dev: true
     optional: true
 
-  /@bufbuild/buf-win32-arm64@1.32.2:
-    resolution: {integrity: sha512-SsGUfILZblPNbCgG6W9DxzCdfHnT2YTYQEkCS877DL1wkWMlMJ/ijZA9Cg2fx8NrLKzFTKC1nlTfqRBcLPf2Mg==}
+  /@bufbuild/buf-win32-arm64@1.33.0:
+    resolution: {integrity: sha512-QEGjUNEDI2zfajtHlbjZsM05ya9dtza5X3q95IeUJmy+7NOhV9OOLqtWnHv2iCh1zvyzefKSXWfmQhNs+M/0qA==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [win32]
@@ -500,8 +500,8 @@ packages:
     dev: true
     optional: true
 
-  /@bufbuild/buf-win32-x64@1.32.2:
-    resolution: {integrity: sha512-FXOHmXB0kxQ7nQ0JYWpByl6/ebkKwWPPjucOHIDcfo7czg5ZD/fRusb738YJ1qeN+5RXybkvhJIrewxVnhYuhg==}
+  /@bufbuild/buf-win32-x64@1.33.0:
+    resolution: {integrity: sha512-JdPxQc7m5L6BsMzrqecKGmgJSYn3k3389dFtEXIEB2D7u2G3AWoRbPluzggo6udBYtjq+ZMdErdPjDDknNQvEg==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
@@ -509,18 +509,18 @@ packages:
     dev: true
     optional: true
 
-  /@bufbuild/buf@1.32.2:
-    resolution: {integrity: sha512-WL2mpou8k9EBo2US0KyZhFSHrDmRZvv5ZMp7lywUFb+3lW1+E/OZnBaBYTrSAb9vfzSmwdRsSOJwKdDpfbjdSg==}
+  /@bufbuild/buf@1.33.0:
+    resolution: {integrity: sha512-VnXdRDsfr1aO7gqy/geVK4/r9w4K6lj3ypsZwu75gdXMq9QXtOmdEO6QqlXO/BpjYG4Aw/Z6Bt/WEezA6hqJow==}
     engines: {node: '>=12'}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      '@bufbuild/buf-darwin-arm64': 1.32.2
-      '@bufbuild/buf-darwin-x64': 1.32.2
-      '@bufbuild/buf-linux-aarch64': 1.32.2
-      '@bufbuild/buf-linux-x64': 1.32.2
-      '@bufbuild/buf-win32-arm64': 1.32.2
-      '@bufbuild/buf-win32-x64': 1.32.2
+      '@bufbuild/buf-darwin-arm64': 1.33.0
+      '@bufbuild/buf-darwin-x64': 1.33.0
+      '@bufbuild/buf-linux-aarch64': 1.33.0
+      '@bufbuild/buf-linux-x64': 1.33.0
+      '@bufbuild/buf-win32-arm64': 1.33.0
+      '@bufbuild/buf-win32-x64': 1.33.0
     dev: true
 
   /@dnd-kit/accessibility@3.1.0(react@18.3.1):
