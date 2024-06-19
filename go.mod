@@ -13,7 +13,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/google/cel-go v0.20.1
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/feeds v1.1.2
+	github.com/gorilla/feeds v1.2.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
 	github.com/improbable-eng/grpc-web v0.15.0
