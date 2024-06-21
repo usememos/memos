@@ -106,7 +106,7 @@ func (s *Server) Start(ctx context.Context) error {
 		}
 	}()
 	go func() {
-		httpListener := muxServer.Match(cmux.HTTP1Fast())
+		httpListener := muxServer.Match(cmux.HTTP1Fast(http.MethodPatch))
 		s.echoServer.Listener = httpListener
 		if err := s.echoServer.Start(address); err != nil {
 			slog.Error("failed to start echo server", err)
