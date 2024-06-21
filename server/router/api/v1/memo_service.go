@@ -78,7 +78,7 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	}
 	// Try to dispatch webhook when memo is created.
 	if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
-		slog.Warn("Failed to dispatch memo created webhook", err)
+		slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
 	}
 
 	return memoMessage, nil
@@ -312,7 +312,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	}
 	// Try to dispatch webhook when memo is updated.
 	if err := s.DispatchMemoUpdatedWebhook(ctx, memoMessage); err != nil {
-		slog.Warn("Failed to dispatch memo updated webhook", err)
+		slog.Warn("Failed to dispatch memo updated webhook", slog.Any("err", err))
 	}
 
 	return memoMessage, nil
@@ -344,7 +344,7 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	if memoMessage, err := s.convertMemoFromStore(ctx, memo); err == nil {
 		// Try to dispatch webhook when memo is deleted.
 		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
-			slog.Warn("Failed to dispatch memo deleted webhook", err)
+			slog.Warn("Failed to dispatch memo deleted webhook", slog.Any("err", err))
 		}
 	}
 
