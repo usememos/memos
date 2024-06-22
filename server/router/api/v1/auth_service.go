@@ -218,7 +218,7 @@ func (s *APIV1Service) SignOut(ctx context.Context, _ *v1pb.SignOutRequest) (*em
 			AccessToken: accessToken,
 		})
 		if err != nil {
-			slog.Error("failed to delete access token", err)
+			slog.Error("failed to delete access token", slog.Any("err", err))
 		}
 	}
 
