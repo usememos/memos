@@ -210,8 +210,13 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 		}
 	}
 
+	contentType := resource.Type
+	if strings.HasPrefix(contentType, "text/") {
+		contentType += "; charset=utf-8"
+	}
+
 	httpBody := &httpbody.HttpBody{
-		ContentType: resource.Type,
+		ContentType: contentType,
 		Data:        blob,
 	}
 	return httpBody, nil
