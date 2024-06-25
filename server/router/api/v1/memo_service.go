@@ -254,7 +254,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			payload.Property = property
 			update.Payload = payload
 		} else if path == "uid" {
-			update.UID = &request.Memo.Name
+			update.UID = &request.Memo.Uid
 			if !util.UIDMatcher.MatchString(*update.UID) {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name")
 			}
