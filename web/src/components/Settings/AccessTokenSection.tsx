@@ -13,7 +13,7 @@ import LearnMore from "../LearnMore";
 
 const listAccessTokens = async (name: string) => {
   const { accessTokens } = await userServiceClient.listUserAccessTokens({ name });
-  return accessTokens;
+  return accessTokens.sort((a, b) => (b.issuedAt?.getTime() ?? 0) - (a.issuedAt?.getTime() ?? 0));
 };
 
 const AccessTokenSection = () => {

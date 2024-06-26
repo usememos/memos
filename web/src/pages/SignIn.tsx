@@ -118,7 +118,7 @@ const SignIn = () => {
         </div>
         <form className="w-full mt-2" onSubmit={handleFormSubmit}>
           <div className="flex flex-col justify-start items-start w-full gap-4">
-            <div className="w-full flex flex-col justify-start items-start gap-2">
+            <div className="w-full flex flex-col justify-start items-start">
               <span className="leading-8 text-gray-600">{t("common.username")}</span>
               <Input
                 className="w-full"
@@ -131,7 +131,7 @@ const SignIn = () => {
                 required
               />
             </div>
-            <div className="w-full flex flex-col justify-start items-start gap-2">
+            <div className="w-full flex flex-col justify-start items-start">
               <span className="leading-8 text-gray-600">{t("common.password")}</span>
               <Input
                 className="w-full"
