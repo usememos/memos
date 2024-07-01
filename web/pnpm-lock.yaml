@@ -99,8 +99,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
       zustand:
-        specifier: ^4.5.2
-        version: 4.5.2(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
+        specifier: ^4.5.4
+        version: 4.5.4(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
     devDependencies:
       '@bufbuild/buf':
         specifier: ^1.33.0
@@ -3072,8 +3072,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zustand@4.5.2:
-    resolution: {integrity: sha512-2cN1tPkDVkwCy5ickKrI7vijSjPksFRfqS6237NzT0vqSsztTNnQdHw9mmN7uBdk3gceVXU0a+21jFzFzAc9+g==}
+  zustand@4.5.4:
+    resolution: {integrity: sha512-/BPMyLKJPtFEvVL0E9E9BTUM63MNyhPGlvxk1XjrfWTUlV+BR8jufjsovHzrtR6YNcBEcL7cMHovL1n9xHawEg==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
       '@types/react': '>=16.8'
@@ -6293,7 +6293,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zustand@4.5.2(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1):
+  zustand@4.5.4(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1):
     dependencies:
       use-sync-external-store: 1.2.0(react@18.3.1)
     optionalDependencies:

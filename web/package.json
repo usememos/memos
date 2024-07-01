@@ -39,7 +39,7 @@
     "tailwindcss": "^3.4.3",
     "textarea-caret": "^3.1.0",
     "uuid": "^10.0.0",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.33.0",
