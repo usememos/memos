@@ -9,7 +9,6 @@ import { RowStatus } from "@/types/proto/api/v1/common";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
-import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 
 interface State {
@@ -101,23 +100,18 @@ const MemberSection = () => {
     showChangeMemberPasswordDialog(user);
   };
 
-  const handleArchiveUserClick = (user: User) => {
-    showCommonDialog({
-      title: t("setting.member-section.archive-member"),
-      content: t("setting.member-section.archive-warning", { username: user.nickname }),
-      style: "danger",
-      dialogName: "archive-user-dialog",
-      onConfirm: async () => {
-        await userServiceClient.updateUser({
-          user: {
-            name: user.name,
-            rowStatus: RowStatus.ARCHIVED,
-          },
-          updateMask: ["row_status"],
-        });
-        fetchUsers();
-      },
-    });
+  const handleArchiveUserClick = async (user: User) => {
+    const confirmed = window.confirm(t("setting.member-section.archive-warning", { username: user.nickname }));
+    if (confirmed) {
+      await userServiceClient.updateUser({
+        user: {
+          name: user.name,
+          rowStatus: RowStatus.ARCHIVED,
+        },
+        updateMask: ["row_status"],
+      });
+      fetchUsers();
+    }
   };
 
   const handleRestoreUserClick = async (user: User) => {
@@ -131,17 +125,12 @@ const MemberSection = () => {
     fetchUsers();
   };
 
-  const handleDeleteUserClick = (user: User) => {
-    showCommonDialog({
-      title: t("setting.member-section.delete-member"),
-      content: t("setting.member-section.delete-warning", { username: user.nickname }),
-      style: "danger",
-      dialogName: "delete-user-dialog",
-      onConfirm: async () => {
-        await userStore.deleteUser(user.name);
-        fetchUsers();
-      },
-    });
+  const handleDeleteUserClick = async (user: User) => {
+    const confirmed = window.confirm(t("setting.member-section.delete-warning", { username: user.nickname }));
+    if (confirmed) {
+      await userStore.deleteUser(user.name);
+      fetchUsers();
+    }
   };
 
   return (

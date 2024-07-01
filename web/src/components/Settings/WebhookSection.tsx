@@ -6,7 +6,6 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { Webhook } from "@/types/proto/api/v1/webhook_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateWebhookDialog from "../CreateWebhookDialog";
-import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 
 const listWebhooks = async (userId: number) => {
@@ -33,16 +32,11 @@ const WebhookSection = () => {
   };
 
   const handleDeleteWebhook = async (webhook: Webhook) => {
-    showCommonDialog({
-      title: "Delete Webhook",
-      content: `Are you sure to delete webhook \`${webhook.name}\`? You cannot undo this action.`,
-      style: "danger",
-      dialogName: "delete-webhook-dialog",
-      onConfirm: async () => {
-        await webhookServiceClient.deleteWebhook({ id: webhook.id });
-        setWebhooks(webhooks.filter((item) => item.id !== webhook.id));
-      },
-    });
+    const confirmed = window.confirm(`Are you sure to delete webhook \`${webhook.name}\`? You cannot undo this action.`);
+    if (confirmed) {
+      await webhookServiceClient.deleteWebhook({ id: webhook.id });
+      setWebhooks(webhooks.filter((item) => item.id !== webhook.id));
+    }
   };
 
   return (

@@ -8,7 +8,6 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilterStore } from "@/store/module";
 import { useMemoList, useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
-import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import showRenameTagDialog from "../RenameTagDialog";
 
@@ -42,20 +41,15 @@ const TagsSection = (props: Props) => {
   };
 
   const handleDeleteTag = async (tag: string) => {
-    showCommonDialog({
-      title: t("tag.delete-tag"),
-      content: t("tag.delete-confirm"),
-      style: "danger",
-      dialogName: "delete-tag-dialog",
-      onConfirm: async () => {
-        await memoServiceClient.deleteMemoTag({
-          parent: "memos/-",
-          tag: tag,
-        });
-        await tagStore.fetchTags({ location, user }, { skipCache: true });
-        toast.success(t("message.deleted-successfully"));
-      },
-    });
+    const confirmed = window.confirm(t("tag.delete-confirm"));
+    if (confirmed) {
+      await memoServiceClient.deleteMemoTag({
+        parent: "memos/-",
+        tag: tag,
+      });
+      await tagStore.fetchTags({ location, user }, { skipCache: true });
+      toast.success(t("message.deleted-successfully"));
+    }
   };
 
   return (

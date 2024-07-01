@@ -1,7 +1,6 @@
 import { Divider, IconButton, Input, Tooltip } from "@mui/joy";
 import { includes } from "lodash-es";
 import { useEffect, useState } from "react";
-import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
@@ -58,19 +57,14 @@ const Resources = () => {
     });
   }, []);
 
-  const handleDeleteUnusedResources = () => {
-    showCommonDialog({
-      title: "Delete all unused resources",
-      content: "Are you sure to delete all unused resources? This action cannot be undone.",
-      style: "warning",
-      dialogName: "delete-unused-resources-dialog",
-      onConfirm: async () => {
-        for (const resource of unusedResources) {
-          await resourceServiceClient.deleteResource({ name: resource.name });
-        }
-        setResources(resources.filter((resource) => resource.memo));
-      },
-    });
+  const handleDeleteUnusedResources = async () => {
+    const confirmed = window.confirm("Are you sure to delete all unused resources? This action cannot be undone.");
+    if (confirmed) {
+      for (const resource of unusedResources) {
+        await resourceServiceClient.deleteResource({ name: resource.name });
+      }
+      setResources(resources.filter((resource) => resource.memo));
+    }
   };
 
   return (

@@ -9,7 +9,6 @@ import { useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
-import { showCommonDialog } from "./Dialog/CommonDialog";
 import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 
 interface Props {
@@ -95,19 +94,14 @@ const MemoActionMenu = (props: Props) => {
   };
 
   const handleDeleteMemoClick = async () => {
-    showCommonDialog({
-      title: t("memo.delete-memo"),
-      content: t("memo.delete-confirm"),
-      style: "danger",
-      dialogName: "delete-memo-dialog",
-      onConfirm: async () => {
-        await memoStore.deleteMemo(memo.name);
-        toast.success(t("message.deleted-successfully"));
-        if (isInMemoDetailPage) {
-          navigateTo("/");
-        }
-      },
-    });
+    const confirmed = window.confirm(t("memo.delete-confirm"));
+    if (confirmed) {
+      await memoStore.deleteMemo(memo.name);
+      toast.success(t("message.deleted-successfully"));
+      if (isInMemoDetailPage) {
+        navigateTo("/");
+      }
+    }
   };
 
   return (

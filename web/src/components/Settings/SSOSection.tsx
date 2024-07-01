@@ -6,7 +6,6 @@ import { identityProviderServiceClient } from "@/grpcweb";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
-import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 
@@ -24,23 +23,16 @@ const SSOSection = () => {
   };
 
   const handleDeleteIdentityProvider = async (identityProvider: IdentityProvider) => {
-    const content = t("setting.sso-section.confirm-delete", { name: identityProvider.title });
-
-    showCommonDialog({
-      title: t("setting.sso-section.delete-sso"),
-      content: content,
-      style: "danger",
-      dialogName: "delete-identity-provider-dialog",
-      onConfirm: async () => {
-        try {
-          await identityProviderServiceClient.deleteIdentityProvider({ name: identityProvider.name });
-        } catch (error: any) {
-          console.error(error);
-          toast.error(error.details);
-        }
-        await fetchIdentityProviderList();
-      },
-    });
+    const confirmed = window.confirm(t("setting.sso-section.confirm-delete", { name: identityProvider.title }));
+    if (confirmed) {
+      try {
+        await identityProviderServiceClient.deleteIdentityProvider({ name: identityProvider.name });
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.details);
+      }
+      await fetchIdentityProviderList();
+    }
   };
 
   return (
