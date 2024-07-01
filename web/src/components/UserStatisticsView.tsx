@@ -62,10 +62,10 @@ const UserStatisticsView = () => {
   };
 
   return (
-    <div className="w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
+    <div className="group w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
       <div className="w-full mb-1 flex flex-row justify-between items-center">
         <p className="text-sm font-medium leading-6 dark:text-gray-500">{t("common.statistics")}</p>
-        <div className="">
+        <div className="group-hover:block hidden">
           <Tooltip title={"Refresh"} placement="top">
             <Icon.RefreshCcw
               className="text-gray-400 w-4 h-auto cursor-pointer opacity-60 hover:opacity-100"

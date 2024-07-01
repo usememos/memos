@@ -1,10 +1,15 @@
 import { Drawer, IconButton } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { Memo } from "@/types/proto/api/v1/memo_service";
 import Icon from "../Icon";
-import TimelineSidebar from "./TimelineSidebar";
+import MemoDetailSidebar from "./MemoDetailSidebar";
 
-const TimelineSidebarDrawer = () => {
+interface Props {
+  memo: Memo;
+}
+
+const MemoDetailSidebarDrawer = ({ memo }: Props) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -16,22 +21,21 @@ const TimelineSidebarDrawer = () => {
     if (event.type === "keydown" && ((event as React.KeyboardEvent).key === "Tab" || (event as React.KeyboardEvent).key === "Shift")) {
       return;
     }
-
     setOpen(inOpen);
   };
 
   return (
     <>
       <IconButton onClick={toggleDrawer(true)}>
-        <Icon.Search className="w-5 h-auto dark:text-gray-400" />
+        <Icon.GanttChart className="w-5 h-auto dark:text-gray-400" />
       </IconButton>
       <Drawer anchor="right" size="sm" open={open} onClose={toggleDrawer(false)}>
         <div className="w-full h-full px-4 bg-zinc-100 dark:bg-zinc-900">
-          <TimelineSidebar className="py-4" />
+          <MemoDetailSidebar className="py-4" memo={memo} />
         </div>
       </Drawer>
     </>
   );
 };
 
-export default TimelineSidebarDrawer;
+export default MemoDetailSidebarDrawer;
