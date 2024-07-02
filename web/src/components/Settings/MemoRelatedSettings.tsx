@@ -54,6 +54,13 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
+        <span>Enable link preview</span>
+        <Switch
+          checked={memoRelatedSetting.enableLinkPreview}
+          onChange={(event) => updatePartialSetting({ enableLinkPreview: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.enable-double-click-to-edit")}</span>
         <Switch
           checked={memoRelatedSetting.enableDoubleClickEdit}
