@@ -88,4 +88,6 @@ message WorkspaceMemoRelatedSetting {
   bool enable_auto_compact = 4;
   // enable_double_click_edit enables editing on double click.
   bool enable_double_click_edit = 5;
+  // enable_link_preview enables links preview.
+  bool enable_link_preview = 6;
 }
