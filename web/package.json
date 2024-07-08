@@ -54,7 +54,7 @@
     "@types/react-dom": "^18.3.0",
     "@types/textarea-caret": "^3.0.3",
     "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.14.1",
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.19",
