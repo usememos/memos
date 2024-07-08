@@ -289,7 +289,7 @@ const MemoEditor = (props: Props) => {
         if (prevMemo) {
           const updateMask = ["content", "visibility"];
           if (props.memoPatchRef?.current?.displayTime) {
-            updateMask.push("display_ts");
+            updateMask.push("display_time");
           }
           const memo = await memoStore.updateMemo(
             {
