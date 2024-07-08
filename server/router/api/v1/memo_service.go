@@ -271,10 +271,10 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		} else if path == "row_status" {
 			rowStatus := convertRowStatusToStore(request.Memo.RowStatus)
 			update.RowStatus = &rowStatus
-		} else if path == "created_ts" {
+		} else if path == "create_time" {
 			createdTs := request.Memo.CreateTime.AsTime().Unix()
 			update.CreatedTs = &createdTs
-		} else if path == "display_ts" {
+		} else if path == "display_time" {
 			displayTs := request.Memo.DisplayTime.AsTime().Unix()
 			memoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
