@@ -28,7 +28,7 @@ importers:
         version: 4.4.2
       '@matejmazur/react-katex':
         specifier: ^3.1.3
-        version: 3.1.3(katex@0.16.10)(react@18.3.1)
+        version: 3.1.3(katex@0.16.11)(react@18.3.1)
       '@mui/joy':
         specifier: 5.0.0-beta.36
         version: 5.0.0-beta.36(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -57,8 +57,8 @@ importers:
         specifier: ^23.11.5
         version: 23.11.5
       katex:
-        specifier: ^0.16.10
-        version: 0.16.10
+        specifier: ^0.16.11
+        version: 0.16.11
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -2140,8 +2140,8 @@ packages:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
 
-  katex@0.16.10:
-    resolution: {integrity: sha512-ZiqaC04tp2O5utMsl2TEZTXxa6WSC4yo0fv5ML++D3QZv/vx2Mct0mTlRx3O+uUkjfuAgOkzsCmq5MiUEsDDdA==}
+  katex@0.16.11:
+    resolution: {integrity: sha512-RQrI8rlHY92OLf3rho/Ts8i/XvjgguEjOkO1BEXcU3N8BqPpSzBNwV/G0Ukr+P/l3ivvJUE/Fa/CwbS6HesGNQ==}
     hasBin: true
 
   keyv@4.5.4:
@@ -3557,9 +3557,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@matejmazur/react-katex@3.1.3(katex@0.16.10)(react@18.3.1)':
+  '@matejmazur/react-katex@3.1.3(katex@0.16.11)(react@18.3.1)':
     dependencies:
-      katex: 0.16.10
+      katex: 0.16.11
       react: 18.3.1
 
   '@mui/base@5.0.0-beta.42(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
@@ -5214,7 +5214,7 @@ snapshots:
       object.assign: 4.1.5
       object.values: 1.2.0
 
-  katex@0.16.10:
+  katex@0.16.11:
     dependencies:
       commander: 8.3.0
 
@@ -5323,7 +5323,7 @@ snapshots:
       dayjs: 1.11.11
       dompurify: 3.1.5
       elkjs: 0.9.3
-      katex: 0.16.10
+      katex: 0.16.11
       khroma: 2.1.0
       lodash-es: 4.17.21
       mdast-util-from-markdown: 1.3.1

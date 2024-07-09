@@ -25,7 +25,7 @@
     "fuse.js": "^7.0.0",
     "highlight.js": "^11.10.0",
     "i18next": "^23.11.5",
-    "katex": "^0.16.10",
+    "katex": "^0.16.11",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.399.0",
     "mermaid": "^10.9.0",
