@@ -294,6 +294,7 @@
       "enable-double-click-to-edit": "Enable double click to edit",
       "enable-password-login": "Enable password login",
       "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password",
+      "enable-members-edit": "Let members edit workspace's memos",
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
       "server-name": "Server Name"

@@ -68,6 +68,13 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("setting.system-section.enable-members-edit")}</span>
+        <Switch
+          checked={memoRelatedSetting.enableMembersEdit}
+          onChange={(event) => updatePartialSetting({ enableMembersEdit: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
         <span>Content length limit(Byte)</span>
         <Input
           className="w-24"

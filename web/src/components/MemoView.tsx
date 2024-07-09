@@ -52,7 +52,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo === memo.name,
   ).length;
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
-  const readonly = memo.creator !== user?.name;
+  const readonly = !user || (!workspaceMemoRelatedSetting.enableMembersEdit && memo.creator !== user?.name);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
 
   // Initial related data: creator.
