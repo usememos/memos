@@ -220,6 +220,7 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		EnableAutoCompact:     setting.EnableAutoCompact,
 		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
 		EnableLinkPreview:     setting.EnableLinkPreview,
+		EnableMembersEdit:     setting.EnableMembersEdit,
 	}
 }
 
@@ -234,5 +235,6 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		EnableAutoCompact:     setting.EnableAutoCompact,
 		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
 		EnableLinkPreview:     setting.EnableLinkPreview,
+		EnableMembersEdit:     setting.EnableMembersEdit,
 	}
 }
