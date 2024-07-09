@@ -232,7 +232,8 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 	}
 
-	if !workspaceMemoRelatedSetting.EnableMembersEdit && memo.CreatorID != user.ID {
+	membersCanEdit := memo.Visibility == store.Protected && workspaceMemoRelatedSetting.EnableMembersEdit
+	if !membersCanEdit && memo.CreatorID != user.ID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 

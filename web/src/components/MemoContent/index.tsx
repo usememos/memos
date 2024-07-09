@@ -38,8 +38,8 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<boolean>(false);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
-  const readonly = !currentUser || (!workspaceMemoRelatedSetting.enableMembersEdit && currentUser.name !== memo?.name);
-  const allowEdit = !props.readonly && memo && !readonly;
+  const membersCanEdit = memo?.visibility === "PROTECTED" && workspaceMemoRelatedSetting.enableMembersEdit;
+  const allowEdit = !props.readonly && memo && (membersCanEdit || memo.creator === currentUser?.name);
 
   // Initial compact mode.
   useEffect(() => {
