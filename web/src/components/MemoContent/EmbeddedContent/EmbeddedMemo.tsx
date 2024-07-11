@@ -13,22 +13,22 @@ interface Props {
   params: string;
 }
 
-const EmbeddedMemo = ({ resourceId, params: paramsStr }: Props) => {
+const EmbeddedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
   const context = useContext(RendererContext);
   const loadingState = useLoading();
   const memoStore = useMemoStore();
-  const memo = memoStore.getMemoByUid(resourceId);
-  const resourceName = `memos/${resourceId}`;
+  const memo = memoStore.getMemoByUid(uid);
+  const resourceName = `memos/${uid}`;
 
   useEffect(() => {
-    memoStore.searchMemos(`uid == "${resourceId}" && include_comments == true`).finally(() => loadingState.setFinish());
-  }, [resourceId]);
+    memoStore.fetchMemoByUid(uid).finally(() => loadingState.setFinish());
+  }, [uid]);
 
   if (loadingState.isLoading) {
     return null;
   }
   if (!memo) {
-    return <Error message={`Memo not found: ${resourceId}`} />;
+    return <Error message={`Memo not found: ${uid}`} />;
   }
   if (memo.name === context.memoName || context.embeddedMemos.has(resourceName)) {
     return <Error message={`Nested Rendering Error: ![[${resourceName}]]`} />;

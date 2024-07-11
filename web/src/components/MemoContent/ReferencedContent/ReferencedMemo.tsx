@@ -9,22 +9,22 @@ interface Props {
   params: string;
 }
 
-const ReferencedMemo = ({ resourceId, params: paramsStr }: Props) => {
+const ReferencedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
   const navigateTo = useNavigateTo();
   const loadingState = useLoading();
   const memoStore = useMemoStore();
-  const memo = memoStore.getMemoByUid(resourceId);
+  const memo = memoStore.getMemoByUid(uid);
   const params = new URLSearchParams(paramsStr);
 
   useEffect(() => {
-    memoStore.searchMemos(`uid == "${resourceId}" && include_comments == true`).finally(() => loadingState.setFinish());
-  }, [resourceId]);
+    memoStore.fetchMemoByUid(uid).finally(() => loadingState.setFinish());
+  }, [uid]);
 
   if (loadingState.isLoading) {
     return null;
   }
   if (!memo) {
-    return <Error message={`Memo not found: ${resourceId}`} />;
+    return <Error message={`Memo not found: ${uid}`} />;
   }
 
   const paramsText = params.has("text") ? params.get("text") : undefined;
