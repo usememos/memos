@@ -26,6 +26,15 @@ export const useResourceStore = create(
       set({ resourceMapByName: resourceMap });
       return resources;
     },
+    fetchResourceByUID: async (uid: string) => {
+      const resource = await resourceServiceClient.getResourceByUid({
+        uid,
+      });
+      const resourceMap = get().resourceMapByName;
+      resourceMap[resource.name] = resource;
+      set({ resourceMapByName: resourceMap });
+      return resource;
+    },
     getResourceByName: (name: string) => {
       const resourceMap = get().resourceMapByName;
       return Object.values(resourceMap).find((r) => r.name === name);

@@ -51,6 +51,9 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	if v := find.Filename; v != nil {
 		where, args = append(where, "filename = "+placeholder(len(args)+1)), append(args, *v)
 	}
+	if v := find.FilenameSearch; v != nil {
+		where, args = append(where, "filename LIKE "+placeholder(len(args)+1)), append(args, fmt.Sprintf("%%%s%%", *v))
+	}
 	if v := find.MemoID; v != nil {
 		where, args = append(where, "memo_id = "+placeholder(len(args)+1)), append(args, *v)
 	}

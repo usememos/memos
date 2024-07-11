@@ -494,6 +494,27 @@ paths:
             $ref: '#/definitions/v1Resource'
       tags:
         - ResourceService
+  /api/v1/resources:by-uid/{uid}:
+    get:
+      summary: GetResourceByUid returns a resource by uid.
+      operationId: ResourceService_GetResourceByUid
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Resource'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: uid
+          description: The uid of the resource.
+          in: path
+          required: true
+          type: string
+      tags:
+        - ResourceService
   /api/v1/resources:search:
     get:
       summary: SearchResources searches memos.
