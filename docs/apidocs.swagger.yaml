@@ -372,6 +372,27 @@ paths:
           type: string
       tags:
         - MemoService
+  /api/v1/memos:by-uid/{uid}:
+    get:
+      summary: GetMemoByUid gets a memo by uid
+      operationId: MemoService_GetMemoByUid
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Memo'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: uid
+          description: The uid of the memo.
+          in: path
+          required: true
+          type: string
+      tags:
+        - MemoService
   /api/v1/memos:export:
     post:
       summary: ExportMemos exports memos.
@@ -471,6 +492,27 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/v1Resource'
+      tags:
+        - ResourceService
+  /api/v1/resources:by-uid/{uid}:
+    get:
+      summary: GetResourceByUid returns a resource by uid.
+      operationId: ResourceService_GetResourceByUid
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Resource'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: uid
+          description: The uid of the resource.
+          in: path
+          required: true
+          type: string
       tags:
         - ResourceService
   /api/v1/resources:search:

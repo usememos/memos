@@ -111,8 +111,8 @@ func (s *APIV1Service) SearchResources(ctx context.Context, request *v1pb.Search
 		return nil, status.Errorf(codes.InvalidArgument, "failed to parse filter: %v", err)
 	}
 	resourceFind := &store.FindResource{}
-	if filter.UID != nil {
-		resourceFind.UID = filter.UID
+	if filter.Filename != nil {
+		resourceFind.FilenameSearch = filter.Filename
 	}
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
@@ -145,7 +145,20 @@ func (s *APIV1Service) GetResource(ctx context.Context, request *v1pb.GetResourc
 	if resource == nil {
 		return nil, status.Errorf(codes.NotFound, "resource not found")
 	}
+	return s.convertResourceFromStore(ctx, resource), nil
+}
 
+//nolint:all
+func (s *APIV1Service) GetResourceByUid(ctx context.Context, request *v1pb.GetResourceByUidRequest) (*v1pb.Resource, error) {
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{
+		UID: &request.Uid,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+	}
+	if resource == nil {
+		return nil, status.Errorf(codes.NotFound, "resource not found")
+	}
 	return s.convertResourceFromStore(ctx, resource), nil
 }
 
@@ -427,11 +440,11 @@ func replaceFilenameWithPathTemplate(path, filename string) string {
 
 // SearchResourcesFilterCELAttributes are the CEL attributes for SearchResourcesFilter.
 var SearchResourcesFilterCELAttributes = []cel.EnvOption{
-	cel.Variable("uid", cel.StringType),
+	cel.Variable("filename", cel.StringType),
 }
 
 type SearchResourcesFilter struct {
-	UID *string
+	Filename *string
 }
 
 func parseSearchResourcesFilter(expression string) (*SearchResourcesFilter, error) {
@@ -457,9 +470,9 @@ func findSearchResourcesField(callExpr *expr.Expr_Call, filter *SearchResourcesF
 	if len(callExpr.Args) == 2 {
 		idExpr := callExpr.Args[0].GetIdentExpr()
 		if idExpr != nil {
-			if idExpr.Name == "uid" {
-				uid := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.UID = &uid
+			if idExpr.Name == "filename" {
+				filename := callExpr.Args[1].GetConstExpr().GetStringValue()
+				filter.Filename = &filename
 			}
 			return
 		}

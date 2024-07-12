@@ -24,6 +24,7 @@ const (
 	MemoService_ListMemos_FullMethodName           = "/memos.api.v1.MemoService/ListMemos"
 	MemoService_SearchMemos_FullMethodName         = "/memos.api.v1.MemoService/SearchMemos"
 	MemoService_GetMemo_FullMethodName             = "/memos.api.v1.MemoService/GetMemo"
+	MemoService_GetMemoByUid_FullMethodName        = "/memos.api.v1.MemoService/GetMemoByUid"
 	MemoService_UpdateMemo_FullMethodName          = "/memos.api.v1.MemoService/UpdateMemo"
 	MemoService_DeleteMemo_FullMethodName          = "/memos.api.v1.MemoService/DeleteMemo"
 	MemoService_ExportMemos_FullMethodName         = "/memos.api.v1.MemoService/ExportMemos"
@@ -56,6 +57,8 @@ type MemoServiceClient interface {
 	SearchMemos(ctx context.Context, in *SearchMemosRequest, opts ...grpc.CallOption) (*SearchMemosResponse, error)
 	// GetMemo gets a memo.
 	GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*Memo, error)
+	// GetMemoByUid gets a memo by uid
+	GetMemoByUid(ctx context.Context, in *GetMemoByUidRequest, opts ...grpc.CallOption) (*Memo, error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*Memo, error)
 	// DeleteMemo deletes a memo.
@@ -136,6 +139,16 @@ func (c *memoServiceClient) GetMemo(ctx context.Context, in *GetMemoRequest, opt
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Memo)
 	err := c.cc.Invoke(ctx, MemoService_GetMemo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) GetMemoByUid(ctx context.Context, in *GetMemoByUidRequest, opts ...grpc.CallOption) (*Memo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Memo)
+	err := c.cc.Invoke(ctx, MemoService_GetMemoByUid_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -334,6 +347,8 @@ type MemoServiceServer interface {
 	SearchMemos(context.Context, *SearchMemosRequest) (*SearchMemosResponse, error)
 	// GetMemo gets a memo.
 	GetMemo(context.Context, *GetMemoRequest) (*Memo, error)
+	// GetMemoByUid gets a memo by uid
+	GetMemoByUid(context.Context, *GetMemoByUidRequest) (*Memo, error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(context.Context, *UpdateMemoRequest) (*Memo, error)
 	// DeleteMemo deletes a memo.
@@ -388,6 +403,9 @@ func (UnimplementedMemoServiceServer) SearchMemos(context.Context, *SearchMemosR
 }
 func (UnimplementedMemoServiceServer) GetMemo(context.Context, *GetMemoRequest) (*Memo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemo not implemented")
+}
+func (UnimplementedMemoServiceServer) GetMemoByUid(context.Context, *GetMemoByUidRequest) (*Memo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMemoByUid not implemented")
 }
 func (UnimplementedMemoServiceServer) UpdateMemo(context.Context, *UpdateMemoRequest) (*Memo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemo not implemented")
@@ -524,6 +542,24 @@ func _MemoService_GetMemo_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemoServiceServer).GetMemo(ctx, req.(*GetMemoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_GetMemoByUid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMemoByUidRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).GetMemoByUid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_GetMemoByUid_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).GetMemoByUid(ctx, req.(*GetMemoByUidRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -874,6 +910,10 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMemo",
 			Handler:    _MemoService_GetMemo_Handler,
+		},
+		{
+			MethodName: "GetMemoByUid",
+			Handler:    _MemoService_GetMemoByUid_Handler,
 		},
 		{
 			MethodName: "UpdateMemo",

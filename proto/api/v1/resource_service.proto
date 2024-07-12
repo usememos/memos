@@ -33,6 +33,11 @@ service ResourceService {
     option (google.api.http) = {get: "/api/v1/{name=resources/*}"};
     option (google.api.method_signature) = "name";
   }
+  // GetResourceByUid returns a resource by uid.
+  rpc GetResourceByUid(GetResourceByUidRequest) returns (Resource) {
+    option (google.api.http) = {get: "/api/v1/resources:by-uid/{uid}"};
+    option (google.api.method_signature) = "uid";
+  }
   // GetResourceBinary returns a resource binary by name.
   rpc GetResourceBinary(GetResourceBinaryRequest) returns (google.api.HttpBody) {
     option (google.api.http) = {get: "/file/{name=resources/*}/{filename}"};
@@ -102,6 +107,11 @@ message GetResourceRequest {
   // Format: resources/{id}
   // id is the system generated unique identifier.
   string name = 1;
+}
+
+message GetResourceByUidRequest {
+  // The uid of the resource.
+  string uid = 1;
 }
 
 message GetResourceBinaryRequest {

@@ -34,7 +34,7 @@ const MemoDetail = () => {
   // Prepare memo.
   useEffect(() => {
     if (uid) {
-      memoStore.searchMemos(`uid == "${uid}"`).catch((error: ClientError) => {
+      memoStore.fetchMemoByUid(uid).catch((error: ClientError) => {
         toast.error(error.details);
         navigateTo("/403");
       });

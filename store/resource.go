@@ -43,6 +43,7 @@ type FindResource struct {
 	UID            *string
 	CreatorID      *int32
 	Filename       *string
+	FilenameSearch *string
 	MemoID         *int32
 	HasRelatedMemo bool
 	StorageType    *storepb.ResourceStorageType
