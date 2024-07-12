@@ -148,6 +148,7 @@ func (s *APIV1Service) GetResource(ctx context.Context, request *v1pb.GetResourc
 	return s.convertResourceFromStore(ctx, resource), nil
 }
 
+//nolint:all
 func (s *APIV1Service) GetResourceByUid(ctx context.Context, request *v1pb.GetResourceByUidRequest) (*v1pb.Resource, error) {
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
 		UID: &request.Uid,

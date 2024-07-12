@@ -205,7 +205,8 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 	return memoMessage, nil
 }
 
-func (s *APIV1Service) GetMemoByUID(ctx context.Context, request *v1pb.GetMemoByUidRequest) (*v1pb.Memo, error) {
+//nolint:all
+func (s *APIV1Service) GetMemoByUid(ctx context.Context, request *v1pb.GetMemoByUidRequest) (*v1pb.Memo, error) {
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 		UID: &request.Uid,
 	})
