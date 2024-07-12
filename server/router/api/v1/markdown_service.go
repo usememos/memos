@@ -133,11 +133,11 @@ func convertFromASTNodes(rawNodes []ast.Node) []*v1pb.Node {
 
 func convertTableFromASTNode(node *ast.Table) *v1pb.TableNode {
 	table := &v1pb.TableNode{
-		Header:    node.Header,
+		Header:    convertFromASTNodes(node.Header),
 		Delimiter: node.Delimiter,
 	}
 	for _, row := range node.Rows {
-		table.Rows = append(table.Rows, &v1pb.TableNode_Row{Cells: row})
+		table.Rows = append(table.Rows, &v1pb.TableNode_Row{Cells: convertFromASTNodes(row)})
 	}
 	return table
 }
@@ -225,11 +225,11 @@ func convertToASTNodes(nodes []*v1pb.Node) []ast.Node {
 
 func convertTableToASTNode(node *v1pb.TableNode) *ast.Table {
 	table := &ast.Table{
-		Header:    node.Header,
+		Header:    convertToASTNodes(node.Header),
 		Delimiter: node.Delimiter,
 	}
 	for _, row := range node.Rows {
-		table.Rows = append(table.Rows, row.Cells)
+		table.Rows = append(table.Rows, convertToASTNodes(row.Cells))
 	}
 	return table
 }
