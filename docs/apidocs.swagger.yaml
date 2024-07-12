@@ -1913,7 +1913,8 @@ definitions:
       cells:
         type: array
         items:
-          type: string
+          type: object
+          $ref: '#/definitions/v1Node'
   UserRole:
     type: string
     enum:
@@ -3045,7 +3046,8 @@ definitions:
       header:
         type: array
         items:
-          type: string
+          type: object
+          $ref: '#/definitions/v1Node'
       delimiter:
         type: array
         items:

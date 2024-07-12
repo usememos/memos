@@ -25,7 +25,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
-	github.com/usememos/gomark v0.0.0-20240630131948-9cc984646479
+	github.com/usememos/gomark v0.0.0-20240712135956-99d0ab9b9aa1
 	golang.org/x/crypto v0.25.0
 	golang.org/x/mod v0.19.0
 	golang.org/x/net v0.27.0

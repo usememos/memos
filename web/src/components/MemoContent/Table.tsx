@@ -1,7 +1,9 @@
-import { TableNode_Row } from "@/types/proto/api/v1/markdown_service";
+import { Node, TableNode_Row } from "@/types/proto/api/v1/markdown_service";
+import Renderer from "./Renderer";
 
 interface Props {
-  header: string[];
+  index: string;
+  header: Node[];
   rows: TableNode_Row[];
 }
 
@@ -12,7 +14,7 @@ const Table = ({ header, rows }: Props) => {
         <tr className="divide-x divide-gray-300 dark:divide-zinc-600">
           {header.map((h, i) => (
             <th key={i} className="py-1 px-2">
-              {h}
+              <Renderer key={`${h.type}-${i}`} index={String(i)} node={h} />
             </th>
           ))}
         </tr>
@@ -22,7 +24,7 @@ const Table = ({ header, rows }: Props) => {
           <tr key={i} className="divide-x divide-gray-300 dark:divide-zinc-600">
             {row.cells.map((r, j) => (
               <td key={j} className="py-1 px-2">
-                {r}
+                <Renderer key={`${r.type}-${i}-${j}`} index={String(j)} node={r} />
               </td>
             ))}
           </tr>

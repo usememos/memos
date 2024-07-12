@@ -169,11 +169,11 @@ message MathBlockNode {
 }
 
 message TableNode {
-  repeated string header = 1;
+  repeated Node header = 1;
   repeated string delimiter = 2;
 
   message Row {
-    repeated string cells = 1;
+    repeated Node cells = 1;
   }
   repeated Row rows = 3;
 }

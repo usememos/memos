@@ -86,7 +86,7 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
     case NodeType.MATH_BLOCK:
       return <Math {...(node.mathBlockNode as MathBlockNode)} block={true} />;
     case NodeType.TABLE:
-      return <Table {...(node.tableNode as TableNode)} />;
+      return <Table index={index} {...(node.tableNode as TableNode)} />;
     case NodeType.EMBEDDED_CONTENT:
       return <EmbeddedContent {...(node.embeddedContentNode as EmbeddedContentNode)} />;
     case NodeType.TEXT:
