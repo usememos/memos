@@ -214,11 +214,14 @@ func (s *APIV1Service) SignOut(ctx context.Context, _ *v1pb.SignOutRequest) (*em
 	accessToken, ok := ctx.Value(accessTokenContextKey).(string)
 	// Try to delete the access token from the store.
 	if ok {
-		_, err := s.DeleteUserAccessToken(ctx, &v1pb.DeleteUserAccessTokenRequest{
-			AccessToken: accessToken,
-		})
-		if err != nil {
-			slog.Error("failed to delete access token", slog.Any("err", err))
+		user, _ := s.GetCurrentUser(ctx)
+		if user != nil {
+			if _, err := s.DeleteUserAccessToken(ctx, &v1pb.DeleteUserAccessTokenRequest{
+				Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
+				AccessToken: accessToken,
+			}); err != nil {
+				slog.Error("failed to delete access token", slog.Any("err", err))
+			}
 		}
 	}
 
