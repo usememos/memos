@@ -2447,6 +2447,15 @@ definitions:
         description: |-
           stats is the stats of memo creating/updating activities.
           key is the year-month-day string. e.g. "2020-01-01".
+  v1HTMLElementNode:
+    type: object
+    properties:
+      tagName:
+        type: string
+      attributes:
+        type: object
+        additionalProperties:
+          type: string
   v1HeadingNode:
     type: object
     properties:
@@ -2836,6 +2845,8 @@ definitions:
         $ref: '#/definitions/v1ReferencedContentNode'
       spoilerNode:
         $ref: '#/definitions/v1SpoilerNode'
+      htmlElementNode:
+        $ref: '#/definitions/v1HTMLElementNode'
   v1NodeType:
     type: string
     enum:
@@ -2869,6 +2880,7 @@ definitions:
       - SUPERSCRIPT
       - REFERENCED_CONTENT
       - SPOILER
+      - HTML_ELEMENT
     default: NODE_UNSPECIFIED
   v1OrderedListNode:
     type: object

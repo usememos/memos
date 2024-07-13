@@ -116,6 +116,8 @@ func convertFromASTNode(rawNode ast.Node) *v1pb.Node {
 		node.Node = &v1pb.Node_ReferencedContentNode{ReferencedContentNode: &v1pb.ReferencedContentNode{ResourceName: n.ResourceName, Params: n.Params}}
 	case *ast.Spoiler:
 		node.Node = &v1pb.Node_SpoilerNode{SpoilerNode: &v1pb.SpoilerNode{Content: n.Content}}
+	case *ast.HTMLElement:
+		node.Node = &v1pb.Node_HtmlElementNode{HtmlElementNode: &v1pb.HTMLElementNode{TagName: n.TagName, Attributes: n.Attributes}}
 	default:
 		node.Node = &v1pb.Node_TextNode{TextNode: &v1pb.TextNode{}}
 	}
@@ -209,6 +211,8 @@ func convertToASTNode(node *v1pb.Node) ast.Node {
 		return &ast.ReferencedContent{ResourceName: n.ReferencedContentNode.ResourceName, Params: n.ReferencedContentNode.Params}
 	case *v1pb.Node_SpoilerNode:
 		return &ast.Spoiler{Content: n.SpoilerNode.Content}
+	case *v1pb.Node_HtmlElementNode:
+		return &ast.HTMLElement{TagName: n.HtmlElementNode.TagName, Attributes: n.HtmlElementNode.Attributes}
 	default:
 		return &ast.Text{}
 	}

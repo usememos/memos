@@ -84,6 +84,7 @@ enum NodeType {
   SUPERSCRIPT = 27;
   REFERENCED_CONTENT = 28;
   SPOILER = 29;
+  HTML_ELEMENT = 30;
 }
 
 message Node {
@@ -118,6 +119,7 @@ message Node {
     SuperscriptNode superscript_node = 28;
     ReferencedContentNode referenced_content_node = 29;
     SpoilerNode spoiler_node = 30;
+    HTMLElementNode html_element_node = 31;
   }
 }
 
@@ -256,4 +258,9 @@ message ReferencedContentNode {
 
 message SpoilerNode {
   string content = 1;
+}
+
+message HTMLElementNode {
+  string tag_name = 1;
+  map<string, string> attributes = 2;
 }

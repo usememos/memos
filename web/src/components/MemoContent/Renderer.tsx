@@ -10,6 +10,7 @@ import {
   HeadingNode,
   HighlightNode,
   HorizontalRuleNode,
+  HTMLElementNode,
   ImageNode,
   ItalicNode,
   LinkNode,
@@ -37,6 +38,7 @@ import Code from "./Code";
 import CodeBlock from "./CodeBlock";
 import EmbeddedContent from "./EmbeddedContent";
 import EscapingCharacter from "./EscapingCharacter";
+import HTMLElement from "./HTMLElement";
 import Heading from "./Heading";
 import Highlight from "./Highlight";
 import HorizontalRule from "./HorizontalRule";
@@ -123,6 +125,8 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
       return <ReferencedContent {...(node.referencedContentNode as ReferencedContentNode)} />;
     case NodeType.SPOILER:
       return <Spoiler {...(node.spoilerNode as SpoilerNode)} />;
+    case NodeType.HTML_ELEMENT:
+      return <HTMLElement {...(node.htmlElementNode as HTMLElementNode)} />;
     default:
       return null;
   }
