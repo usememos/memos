@@ -37,7 +37,7 @@ const TaskList: React.FC<Props> = ({ index, indent, complete, children }: Props)
     }
 
     (node.taskListNode as TaskListNode)!.complete = on;
-    const { markdown } = await markdownServiceClient.restoreMarkdown({ nodes: context.nodes });
+    const { markdown } = await markdownServiceClient.restoreMarkdownNodes({ nodes: context.nodes });
     await memoStore.updateMemo(
       {
         name: context.memoName,

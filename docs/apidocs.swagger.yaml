@@ -238,9 +238,51 @@ paths:
           type: string
       tags:
         - MarkdownService
-  /api/v1/markdown/parse:
+  /api/v1/markdown/node:restore:
     post:
-      summary: Parses the given markdown content and returns a list of nodes.
+      summary: RestoreMarkdownNodes restores the given nodes to markdown content.
+      operationId: MarkdownService_RestoreMarkdownNodes
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1RestoreMarkdownNodesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1RestoreMarkdownNodesRequest'
+      tags:
+        - MarkdownService
+  /api/v1/markdown/node:stringify:
+    post:
+      summary: StringifyMarkdownNodes stringify the given nodes to plain text content.
+      operationId: MarkdownService_StringifyMarkdownNodes
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1StringifyMarkdownNodesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1StringifyMarkdownNodesRequest'
+      tags:
+        - MarkdownService
+  /api/v1/markdown:parse:
+    post:
+      summary: ParseMarkdown parses the given markdown content and returns a list of nodes.
       operationId: MarkdownService_ParseMarkdown
       responses:
         "200":
@@ -257,27 +299,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/v1ParseMarkdownRequest'
-      tags:
-        - MarkdownService
-  /api/v1/markdown:restore:
-    post:
-      summary: Restores the given nodes to markdown content.
-      operationId: MarkdownService_RestoreMarkdown
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1RestoreMarkdownResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1RestoreMarkdownRequest'
       tags:
         - MarkdownService
   /api/v1/memos:
@@ -2855,7 +2876,7 @@ definitions:
       memo:
         type: string
         title: "The related memo.\r\nFormat: memos/{id}"
-  v1RestoreMarkdownRequest:
+  v1RestoreMarkdownNodesRequest:
     type: object
     properties:
       nodes:
@@ -2863,7 +2884,7 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Node'
-  v1RestoreMarkdownResponse:
+  v1RestoreMarkdownNodesResponse:
     type: object
     properties:
       markdown:
@@ -2908,6 +2929,19 @@ definitions:
     type: object
     properties:
       content:
+        type: string
+  v1StringifyMarkdownNodesRequest:
+    type: object
+    properties:
+      nodes:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Node'
+  v1StringifyMarkdownNodesResponse:
+    type: object
+    properties:
+      plainText:
         type: string
   v1SubscriptNode:
     type: object

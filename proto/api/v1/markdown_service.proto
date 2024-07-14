@@ -7,17 +7,24 @@ import "google/api/annotations.proto";
 option go_package = "gen/api/v1";
 
 service MarkdownService {
-  // Parses the given markdown content and returns a list of nodes.
+  // ParseMarkdown parses the given markdown content and returns a list of nodes.
   rpc ParseMarkdown(ParseMarkdownRequest) returns (ParseMarkdownResponse) {
     option (google.api.http) = {
-      post: "/api/v1/markdown/parse"
+      post: "/api/v1/markdown:parse"
       body: "*"
     };
   }
-  // Restores the given nodes to markdown content.
-  rpc RestoreMarkdown(RestoreMarkdownRequest) returns (RestoreMarkdownResponse) {
+  // RestoreMarkdownNodes restores the given nodes to markdown content.
+  rpc RestoreMarkdownNodes(RestoreMarkdownNodesRequest) returns (RestoreMarkdownNodesResponse) {
     option (google.api.http) = {
-      post: "/api/v1/markdown:restore"
+      post: "/api/v1/markdown/node:restore"
+      body: "*"
+    };
+  }
+  // StringifyMarkdownNodes stringify the given nodes to plain text content.
+  rpc StringifyMarkdownNodes(StringifyMarkdownNodesRequest) returns (StringifyMarkdownNodesResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/markdown/node:stringify"
       body: "*"
     };
   }
@@ -35,12 +42,20 @@ message ParseMarkdownResponse {
   repeated Node nodes = 1;
 }
 
-message RestoreMarkdownRequest {
+message RestoreMarkdownNodesRequest {
   repeated Node nodes = 1;
 }
 
-message RestoreMarkdownResponse {
+message RestoreMarkdownNodesResponse {
   string markdown = 1;
+}
+
+message StringifyMarkdownNodesRequest {
+  repeated Node nodes = 1;
+}
+
+message StringifyMarkdownNodesResponse {
+  string plain_text = 1;
 }
 
 message GetLinkMetadataRequest {
