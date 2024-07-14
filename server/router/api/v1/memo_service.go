@@ -15,6 +15,7 @@ import (
 	"github.com/usememos/gomark/ast"
 	"github.com/usememos/gomark/parser"
 	"github.com/usememos/gomark/parser/tokenizer"
+	"github.com/usememos/gomark/renderer"
 	"github.com/usememos/gomark/restore"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
@@ -869,6 +870,11 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		return nil, errors.Wrap(err, "failed to parse content")
 	}
 
+	snippet, err := getMemoContentSnippet(memo.Content)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get memo content snippet")
+	}
+
 	memoMessage := &v1pb.Memo{
 		Name:        name,
 		Uid:         memo.UID,
@@ -878,6 +884,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
 		Content:     memo.Content,
+		Snippet:     snippet,
 		Nodes:       convertFromASTNodes(nodes),
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
@@ -1285,4 +1292,17 @@ func convertMemoToWebhookPayload(memo *v1pb.Memo) (*v1pb.WebhookRequestPayload, 
 		CreateTime: timestamppb.New(time.Now()),
 		Memo:       memo,
 	}, nil
+}
+
+func getMemoContentSnippet(content string) (string, error) {
+	nodes, err := parser.Parse(tokenizer.Tokenize(content))
+	if err != nil {
+		return "", errors.Wrap(err, "failed to parse content")
+	}
+
+	plainText := renderer.NewStringRenderer().Render(nodes)
+	if len(plainText) > 100 {
+		return plainText[:100] + "...", nil
+	}
+	return plainText, nil
 }

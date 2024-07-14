@@ -104,16 +104,14 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           value={selectedMemos}
           multiple
           onInputChange={(_, value) => setSearchText(value.trim())}
-          getOptionKey={(option) => option.name}
-          getOptionLabel={(option) => option.content}
-          isOptionEqualToValue={(option, value) => option.name === value.name}
-          renderOption={(props, option) => (
+          getOptionKey={(memo) => memo.name}
+          getOptionLabel={(memo) => memo.content}
+          isOptionEqualToValue={(memo, value) => memo.name === value.name}
+          renderOption={(props, memo) => (
             <AutocompleteOption {...props}>
               <div className="w-full flex flex-col justify-start items-start">
-                <p className="text-xs text-gray-400 select-none">{getDateTimeString(option.displayTime)}</p>
-                <p className="mt-0.5 text-sm leading-5 line-clamp-2">
-                  {searchText ? getHighlightedContent(option.content) : option.content}
-                </p>
+                <p className="text-xs text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</p>
+                <p className="mt-0.5 text-sm leading-5 line-clamp-2">{searchText ? getHighlightedContent(memo.content) : memo.snippet}</p>
               </div>
             </AutocompleteOption>
           )}

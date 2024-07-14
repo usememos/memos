@@ -969,6 +969,9 @@ paths:
                 type: string
                 title: "The name of the parent memo.\r\nFormat: memos/{id}"
                 readOnly: true
+              snippet:
+                type: string
+                description: The snippet of the memo content. Plain text only.
       tags:
         - MemoService
   /api/v1/{name_1}:
@@ -2644,6 +2647,9 @@ definitions:
         type: string
         title: "The name of the parent memo.\r\nFormat: memos/{id}"
         readOnly: true
+      snippet:
+        type: string
+        description: The snippet of the memo content. Plain text only.
   v1MemoProperty:
     type: object
     properties:
