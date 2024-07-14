@@ -19,19 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	MarkdownService_ParseMarkdown_FullMethodName   = "/memos.api.v1.MarkdownService/ParseMarkdown"
-	MarkdownService_RestoreMarkdown_FullMethodName = "/memos.api.v1.MarkdownService/RestoreMarkdown"
-	MarkdownService_GetLinkMetadata_FullMethodName = "/memos.api.v1.MarkdownService/GetLinkMetadata"
+	MarkdownService_ParseMarkdown_FullMethodName          = "/memos.api.v1.MarkdownService/ParseMarkdown"
+	MarkdownService_RestoreMarkdownNodes_FullMethodName   = "/memos.api.v1.MarkdownService/RestoreMarkdownNodes"
+	MarkdownService_StringifyMarkdownNodes_FullMethodName = "/memos.api.v1.MarkdownService/StringifyMarkdownNodes"
+	MarkdownService_GetLinkMetadata_FullMethodName        = "/memos.api.v1.MarkdownService/GetLinkMetadata"
 )
 
 // MarkdownServiceClient is the client API for MarkdownService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MarkdownServiceClient interface {
-	// Parses the given markdown content and returns a list of nodes.
+	// ParseMarkdown parses the given markdown content and returns a list of nodes.
 	ParseMarkdown(ctx context.Context, in *ParseMarkdownRequest, opts ...grpc.CallOption) (*ParseMarkdownResponse, error)
-	// Restores the given nodes to markdown content.
-	RestoreMarkdown(ctx context.Context, in *RestoreMarkdownRequest, opts ...grpc.CallOption) (*RestoreMarkdownResponse, error)
+	// RestoreMarkdownNodes restores the given nodes to markdown content.
+	RestoreMarkdownNodes(ctx context.Context, in *RestoreMarkdownNodesRequest, opts ...grpc.CallOption) (*RestoreMarkdownNodesResponse, error)
+	// StringifyMarkdownNodes stringify the given nodes to plain text content.
+	StringifyMarkdownNodes(ctx context.Context, in *StringifyMarkdownNodesRequest, opts ...grpc.CallOption) (*StringifyMarkdownNodesResponse, error)
 	// GetLinkMetadata returns metadata for a given link.
 	GetLinkMetadata(ctx context.Context, in *GetLinkMetadataRequest, opts ...grpc.CallOption) (*LinkMetadata, error)
 }
@@ -54,10 +57,20 @@ func (c *markdownServiceClient) ParseMarkdown(ctx context.Context, in *ParseMark
 	return out, nil
 }
 
-func (c *markdownServiceClient) RestoreMarkdown(ctx context.Context, in *RestoreMarkdownRequest, opts ...grpc.CallOption) (*RestoreMarkdownResponse, error) {
+func (c *markdownServiceClient) RestoreMarkdownNodes(ctx context.Context, in *RestoreMarkdownNodesRequest, opts ...grpc.CallOption) (*RestoreMarkdownNodesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RestoreMarkdownResponse)
-	err := c.cc.Invoke(ctx, MarkdownService_RestoreMarkdown_FullMethodName, in, out, cOpts...)
+	out := new(RestoreMarkdownNodesResponse)
+	err := c.cc.Invoke(ctx, MarkdownService_RestoreMarkdownNodes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *markdownServiceClient) StringifyMarkdownNodes(ctx context.Context, in *StringifyMarkdownNodesRequest, opts ...grpc.CallOption) (*StringifyMarkdownNodesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StringifyMarkdownNodesResponse)
+	err := c.cc.Invoke(ctx, MarkdownService_StringifyMarkdownNodes_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,10 +91,12 @@ func (c *markdownServiceClient) GetLinkMetadata(ctx context.Context, in *GetLink
 // All implementations must embed UnimplementedMarkdownServiceServer
 // for forward compatibility
 type MarkdownServiceServer interface {
-	// Parses the given markdown content and returns a list of nodes.
+	// ParseMarkdown parses the given markdown content and returns a list of nodes.
 	ParseMarkdown(context.Context, *ParseMarkdownRequest) (*ParseMarkdownResponse, error)
-	// Restores the given nodes to markdown content.
-	RestoreMarkdown(context.Context, *RestoreMarkdownRequest) (*RestoreMarkdownResponse, error)
+	// RestoreMarkdownNodes restores the given nodes to markdown content.
+	RestoreMarkdownNodes(context.Context, *RestoreMarkdownNodesRequest) (*RestoreMarkdownNodesResponse, error)
+	// StringifyMarkdownNodes stringify the given nodes to plain text content.
+	StringifyMarkdownNodes(context.Context, *StringifyMarkdownNodesRequest) (*StringifyMarkdownNodesResponse, error)
 	// GetLinkMetadata returns metadata for a given link.
 	GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*LinkMetadata, error)
 	mustEmbedUnimplementedMarkdownServiceServer()
@@ -94,8 +109,11 @@ type UnimplementedMarkdownServiceServer struct {
 func (UnimplementedMarkdownServiceServer) ParseMarkdown(context.Context, *ParseMarkdownRequest) (*ParseMarkdownResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ParseMarkdown not implemented")
 }
-func (UnimplementedMarkdownServiceServer) RestoreMarkdown(context.Context, *RestoreMarkdownRequest) (*RestoreMarkdownResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RestoreMarkdown not implemented")
+func (UnimplementedMarkdownServiceServer) RestoreMarkdownNodes(context.Context, *RestoreMarkdownNodesRequest) (*RestoreMarkdownNodesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RestoreMarkdownNodes not implemented")
+}
+func (UnimplementedMarkdownServiceServer) StringifyMarkdownNodes(context.Context, *StringifyMarkdownNodesRequest) (*StringifyMarkdownNodesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StringifyMarkdownNodes not implemented")
 }
 func (UnimplementedMarkdownServiceServer) GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*LinkMetadata, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLinkMetadata not implemented")
@@ -131,20 +149,38 @@ func _MarkdownService_ParseMarkdown_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MarkdownService_RestoreMarkdown_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RestoreMarkdownRequest)
+func _MarkdownService_RestoreMarkdownNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreMarkdownNodesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MarkdownServiceServer).RestoreMarkdown(ctx, in)
+		return srv.(MarkdownServiceServer).RestoreMarkdownNodes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MarkdownService_RestoreMarkdown_FullMethodName,
+		FullMethod: MarkdownService_RestoreMarkdownNodes_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MarkdownServiceServer).RestoreMarkdown(ctx, req.(*RestoreMarkdownRequest))
+		return srv.(MarkdownServiceServer).RestoreMarkdownNodes(ctx, req.(*RestoreMarkdownNodesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MarkdownService_StringifyMarkdownNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringifyMarkdownNodesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MarkdownServiceServer).StringifyMarkdownNodes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MarkdownService_StringifyMarkdownNodes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MarkdownServiceServer).StringifyMarkdownNodes(ctx, req.(*StringifyMarkdownNodesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -179,8 +215,12 @@ var MarkdownService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MarkdownService_ParseMarkdown_Handler,
 		},
 		{
-			MethodName: "RestoreMarkdown",
-			Handler:    _MarkdownService_RestoreMarkdown_Handler,
+			MethodName: "RestoreMarkdownNodes",
+			Handler:    _MarkdownService_RestoreMarkdownNodes_Handler,
+		},
+		{
+			MethodName: "StringifyMarkdownNodes",
+			Handler:    _MarkdownService_StringifyMarkdownNodes_Handler,
 		},
 		{
 			MethodName: "GetLinkMetadata",

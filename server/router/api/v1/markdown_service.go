@@ -7,6 +7,7 @@ import (
 	"github.com/usememos/gomark/ast"
 	"github.com/usememos/gomark/parser"
 	"github.com/usememos/gomark/parser/tokenizer"
+	"github.com/usememos/gomark/renderer"
 	"github.com/usememos/gomark/restore"
 
 	"github.com/usememos/memos/plugin/httpgetter"
@@ -25,10 +26,18 @@ func (*APIV1Service) ParseMarkdown(_ context.Context, request *v1pb.ParseMarkdow
 	}, nil
 }
 
-func (*APIV1Service) RestoreMarkdown(_ context.Context, request *v1pb.RestoreMarkdownRequest) (*v1pb.RestoreMarkdownResponse, error) {
+func (*APIV1Service) RestoreMarkdownNodes(_ context.Context, request *v1pb.RestoreMarkdownNodesRequest) (*v1pb.RestoreMarkdownNodesResponse, error) {
 	markdown := restore.Restore(convertToASTNodes(request.Nodes))
-	return &v1pb.RestoreMarkdownResponse{
+	return &v1pb.RestoreMarkdownNodesResponse{
 		Markdown: markdown,
+	}, nil
+}
+
+func (*APIV1Service) StringifyMarkdownNodes(_ context.Context, request *v1pb.StringifyMarkdownNodesRequest) (*v1pb.StringifyMarkdownNodesResponse, error) {
+	stringRenderer := renderer.NewStringRenderer()
+	plainText := stringRenderer.Render(convertToASTNodes(request.Nodes))
+	return &v1pb.StringifyMarkdownNodesResponse{
+		PlainText: plainText,
 	}, nil
 }
 
