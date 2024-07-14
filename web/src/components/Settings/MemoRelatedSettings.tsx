@@ -35,8 +35,8 @@ const MemoRelatedSettings = () => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.disable-public-memos")}</span>
         <Switch
-          checked={memoRelatedSetting.disallowPublicVisible}
-          onChange={(event) => updatePartialSetting({ disallowPublicVisible: event.target.checked })}
+          checked={memoRelatedSetting.disallowPublicVisibility}
+          onChange={(event) => updatePartialSetting({ disallowPublicVisibility: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">

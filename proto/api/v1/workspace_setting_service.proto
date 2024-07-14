@@ -82,8 +82,8 @@ message WorkspaceStorageSetting {
 }
 
 message WorkspaceMemoRelatedSetting {
-  // disallow_public_share disallows set memo as public visible.
-  bool disallow_public_visible = 1;
+  // disallow_public_visibility disallows set memo as public visibility.
+  bool disallow_public_visibility = 1;
   // display_with_update_time orders and displays memo with update time.
   bool display_with_update_time = 2;
   // content_length_limit is the limit of content length. Unit is byte.
