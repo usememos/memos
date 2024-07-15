@@ -21,7 +21,7 @@
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
     "dayjs": "^1.11.11",
-    "dompurify": "^3.1.5",
+    "dompurify": "^3.1.6",
     "fuse.js": "^7.0.0",
     "highlight.js": "^11.10.0",
     "i18next": "^23.11.5",
