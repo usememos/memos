@@ -1301,8 +1301,5 @@ func getMemoContentSnippet(content string) (string, error) {
 	}
 
 	plainText := renderer.NewStringRenderer().Render(nodes)
-	if len(plainText) > 100 {
-		return plainText[:100] + "...", nil
-	}
 	return plainText, nil
 }
