@@ -66,7 +66,7 @@
     "long": "^5.2.3",
     "nice-grpc-web": "^3.3.3",
     "postcss": "^8.4.39",
-    "prettier": "^3.3.2",
+    "prettier": "^3.3.3",
     "protobufjs": "^7.3.2",
     "typescript": "^5.5.3",
     "vite": "^5.3.1"
