@@ -12,7 +12,7 @@ import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 import showRenameTagDialog from "../RenameTagDialog";
 import TagTree from "../TagTree";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
 
 interface Props {
   readonly?: boolean;
