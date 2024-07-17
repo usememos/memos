@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"slices"
 	"time"
+	"unicode/utf8"
 
 	"github.com/google/cel-go/cel"
 	"github.com/lithammer/shortuuid/v4"
@@ -1301,5 +1302,27 @@ func getMemoContentSnippet(content string) (string, error) {
 	}
 
 	plainText := renderer.NewStringRenderer().Render(nodes)
+	if len(plainText) > 100 {
+		return substring(plainText, 100) + "...", nil
+	}
 	return plainText, nil
+}
+
+func substring(s string, length int) string {
+	if length <= 0 {
+		return ""
+	}
+
+	runeCount := 0
+	byteIndex := 0
+	for byteIndex < len(s) {
+		_, size := utf8.DecodeRuneInString(s[byteIndex:])
+		byteIndex += size
+		runeCount++
+		if runeCount == length {
+			break
+		}
+	}
+
+	return s[:byteIndex]
 }
