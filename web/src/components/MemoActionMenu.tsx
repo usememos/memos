@@ -15,6 +15,7 @@ interface Props {
   memo: Memo;
   className?: string;
   hiddenActions?: ("edit" | "archive" | "delete" | "share" | "pin")[];
+  onEdit?: () => void;
 }
 
 const MemoActionMenu = (props: Props) => {
@@ -50,6 +51,12 @@ const MemoActionMenu = (props: Props) => {
   };
 
   const handleEditMemoClick = () => {
+    if (props.onEdit) {
+      props.onEdit();
+      return;
+    }
+
+    // TODO: remove me later.
     showMemoEditorDialog({
       memoName: memo.name,
       cacheKey: `${memo.name}-${memo.updateTime}`,

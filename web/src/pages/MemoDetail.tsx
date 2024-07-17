@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import Icon from "@/components/Icon";
 import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDetailSidebar";
-import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
+import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -27,6 +27,7 @@ const MemoDetail = () => {
   const uid = params.uid;
   const memo = memoStore.getMemoByUid(uid || "");
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
+  const [showCommentEditor, setShowCommentEditor] = useState(false);
   const commentRelations =
     memo?.relations.filter((relation) => relation.relatedMemo === memo.name && relation.type === MemoRelation_Type.COMMENT) || [];
   const comments = commentRelations.map((relation) => memoStore.getMemoByName(relation.memo)).filter((memo) => memo) as any as Memo[];
@@ -66,17 +67,13 @@ const MemoDetail = () => {
   }
 
   const handleShowCommentEditor = () => {
-    showMemoEditorDialog({
-      placeholder: t("editor.add-your-comment-here"),
-      parentMemoName: memo.name,
-      onConfirm: handleCommentCreated,
-      cacheKey: `${memo.name}-${memo.updateTime}-comment`,
-    });
+    setShowCommentEditor(true);
   };
 
   const handleCommentCreated = async (memoCommentName: string) => {
     await memoStore.getOrFetchMemoByName(memoCommentName);
     await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
+    setShowCommentEditor(false);
   };
 
   return (
@@ -145,6 +142,18 @@ const MemoDetail = () => {
                 </>
               )}
             </div>
+            {showCommentEditor && (
+              <div className="w-full">
+                <MemoEditor
+                  cacheKey={`${memo.name}-${memo.updateTime}-comment`}
+                  placeholder={t("editor.add-your-comment-here")}
+                  parentMemoName={memo.name}
+                  autoFocus
+                  onConfirm={handleCommentCreated}
+                  onCancel={() => setShowCommentEditor(false)}
+                />
+              </div>
+            )}
           </div>
         </div>
         {md && (

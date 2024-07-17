@@ -38,6 +38,7 @@ export interface Props {
   autoFocus?: boolean;
   memoPatchRef?: React.MutableRefObject<Partial<Memo>>;
   onConfirm?: (memoName: string) => void;
+  onCancel?: () => void;
 }
 
 interface State {
@@ -439,7 +440,12 @@ const MemoEditor = (props: Props) => {
               ))}
             </Select>
           </div>
-          <div className="shrink-0 flex flex-row justify-end items-center">
+          <div className="shrink-0 flex flex-row justify-end items-center gap-2">
+            {props.onCancel && (
+              <Button className="!font-normal" color="neutral" variant="plain" loading={state.isRequesting} onClick={props.onCancel}>
+                {t("common.cancel")}
+              </Button>
+            )}
             <Button
               className="!font-normal"
               disabled={!allowSave}

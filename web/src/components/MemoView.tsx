@@ -14,7 +14,7 @@ import { convertVisibilityToString } from "@/utils/memo";
 import Icon from "./Icon";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
-import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
+import MemoEditor from "./MemoEditor";
 import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
@@ -45,6 +45,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const workspaceMemoRelatedSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
     WorkspaceMemoRelatedSetting.fromPartial({});
+  const [showEditor, setShowEditor] = useState<boolean>(false);
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
@@ -85,10 +86,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
 
     if (workspaceMemoRelatedSetting.enableDoubleClickEdit) {
       e.preventDefault();
-      showMemoEditorDialog({
-        memoName: memo.name,
-        cacheKey: `${memo.name}-${memo.updateTime}`,
-      });
+      setShowEditor(true);
     }
   }, []);
 
@@ -137,50 +135,73 @@ const MemoView: React.FC<Props> = (props: Props) => {
             </div>
           )}
         </div>
-        <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
-          <div className="w-auto invisible group-hover:visible flex flex-row justify-between items-center gap-2">
-            {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
-              <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
-                <span className="flex justify-center items-center hover:opacity-70">
-                  <VisibilityIcon visibility={memo.visibility} />
-                </span>
+        {!showEditor && (
+          <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
+            <div className="w-auto invisible group-hover:visible flex flex-row justify-between items-center gap-2">
+              {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
+                <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
+                  <span className="flex justify-center items-center hover:opacity-70">
+                    <VisibilityIcon visibility={memo.visibility} />
+                  </span>
+                </Tooltip>
+              )}
+              {currentUser && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
+            </div>
+            {!isInMemoDetailPage && (
+              <Link
+                className={clsx(
+                  "flex flex-row justify-start items-center hover:opacity-70",
+                  commentAmount === 0 && "invisible group-hover:visible",
+                )}
+                to={`/m/${memo.uid}#comments`}
+                unstable_viewTransition
+              >
+                <Icon.MessageCircleMore className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
+                {commentAmount > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{commentAmount}</span>}
+              </Link>
+            )}
+            {props.showPinned && memo.pinned && (
+              <Tooltip title={t("common.pinned")} placement="top">
+                <Icon.Bookmark className="w-4 h-auto text-amber-500" />
               </Tooltip>
             )}
-            {currentUser && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
+            {!readonly && (
+              <MemoActionMenu
+                className="-ml-1"
+                memo={memo}
+                hiddenActions={props.showPinned ? [] : ["pin"]}
+                onEdit={() => setShowEditor(true)}
+              />
+            )}
           </div>
-          {!isInMemoDetailPage && (
-            <Link
-              className={clsx(
-                "flex flex-row justify-start items-center hover:opacity-70",
-                commentAmount === 0 && "invisible group-hover:visible",
-              )}
-              to={`/m/${memo.uid}#comments`}
-              unstable_viewTransition
-            >
-              <Icon.MessageCircleMore className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
-              {commentAmount > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{commentAmount}</span>}
-            </Link>
-          )}
-          {props.showPinned && memo.pinned && (
-            <Tooltip title={t("common.pinned")} placement="top">
-              <Icon.Bookmark className="w-4 h-auto text-amber-500" />
-            </Tooltip>
-          )}
-          {!readonly && <MemoActionMenu className="-ml-1" memo={memo} hiddenActions={props.showPinned ? [] : ["pin"]} />}
-        </div>
+        )}
       </div>
-      <MemoContent
-        key={`${memo.name}-${memo.updateTime}`}
-        memoName={memo.name}
-        nodes={memo.nodes}
-        readonly={readonly}
-        onClick={handleMemoContentClick}
-        onDoubleClick={handleMemoContentDoubleClick}
-        compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
-      />
-      <MemoResourceListView resources={memo.resources} />
-      <MemoRelationListView memo={memo} relations={referencedMemos} />
-      <MemoReactionistView memo={memo} reactions={memo.reactions} />
+
+      {showEditor ? (
+        <MemoEditor
+          autoFocus
+          className="border-none !p-0 -mb-2"
+          cacheKey={`inline-memo-editor-${memo.name}`}
+          memoName={memo.name}
+          onConfirm={() => setShowEditor(false)}
+          onCancel={() => setShowEditor(false)}
+        />
+      ) : (
+        <>
+          <MemoContent
+            key={`${memo.name}-${memo.updateTime}`}
+            memoName={memo.name}
+            nodes={memo.nodes}
+            readonly={readonly}
+            onClick={handleMemoContentClick}
+            onDoubleClick={handleMemoContentDoubleClick}
+            compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
+          />
+          <MemoResourceListView resources={memo.resources} />
+          <MemoRelationListView memo={memo} relations={referencedMemos} />
+          <MemoReactionistView memo={memo} reactions={memo.reactions} />
+        </>
+      )}
     </div>
   );
 };
