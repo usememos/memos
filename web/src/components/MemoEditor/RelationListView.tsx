@@ -42,7 +42,7 @@ const RelationListView = (props: Props) => {
                 onClick={() => handleDeleteRelation(memo)}
               >
                 <Icon.Link className="w-4 h-auto shrink-0 opacity-80" />
-                <span className="mx-1 max-w-full text-ellipsis whitespace-nowrap overflow-hidden">{memo.content}</span>
+                <span className="mx-1 max-w-full text-ellipsis whitespace-nowrap overflow-hidden">{memo.snippet}</span>
                 <Icon.X className="w-4 h-auto cursor-pointer shrink-0 opacity-60 hover:opacity-100" />
               </div>
             );

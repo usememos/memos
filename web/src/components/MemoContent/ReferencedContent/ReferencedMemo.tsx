@@ -28,7 +28,7 @@ const ReferencedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
   }
 
   const paramsText = params.has("text") ? params.get("text") : undefined;
-  const displayContent = paramsText || (memo.content.length > 12 ? `${memo.content.slice(0, 12)}...` : memo.content);
+  const displayContent = paramsText || (memo.snippet.length > 12 ? `${memo.snippet.slice(0, 12)}...` : memo.snippet);
 
   const handleGotoMemoDetailPage = () => {
     navigateTo(`/m/${memo.uid}`);
