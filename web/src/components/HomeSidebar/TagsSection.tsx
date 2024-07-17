@@ -12,6 +12,7 @@ import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 import showRenameTagDialog from "../RenameTagDialog";
 import TagTree from "../TagTree";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface Props {
   readonly?: boolean;
@@ -59,17 +60,17 @@ const TagsSection = (props: Props) => {
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 select-none">
         <span>{t("common.tags")}</span>
-        <Dropdown>
-          <MenuButton slots={{ root: "div" }}>
+        <Popover>
+          <PopoverTrigger>
             <Icon.MoreHorizontal className="w-4 h-auto shrink-0 opacity-60" />
-          </MenuButton>
-          <Menu size="sm" placement="bottom-end">
-            <MenuItem>
-              <span className="text-sm shrink-0 mr-2">Tree mode</span>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className="w-auto flex flex-row justify-between items-center gap-2">
+              <span className="text-sm shrink-0">Tree mode</span>
               <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />
-            </MenuItem>
-          </Menu>
-        </Dropdown>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
       {tagAmounts.length > 0 ? (
         treeMode ? (
