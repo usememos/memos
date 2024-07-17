@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import copy from "copy-to-clipboard";
 import { useContext, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -43,22 +44,20 @@ const EmbeddedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
   // Add the memo to the set of embedded memos. This is used to prevent infinite loops when a memo embeds itself.
   context.embeddedMemos.add(resourceName);
   const contentNode = useSnippet ? (
-    <div className={inlineMode ? "" : "line-clamp-3"}>{memo.snippet}</div>
+    <div className={clsx("text-gray-800 dark:text-gray-400", inlineMode ? "" : "line-clamp-3")}>{memo.snippet}</div>
   ) : (
-    <MemoContent
-      contentClassName={inlineMode ? "" : "line-clamp-3"}
-      memoName={memo.name}
-      nodes={memo.nodes}
-      embeddedMemos={context.embeddedMemos}
-    />
+    <>
+      <MemoContent
+        contentClassName={inlineMode ? "" : "line-clamp-3"}
+        memoName={memo.name}
+        nodes={memo.nodes}
+        embeddedMemos={context.embeddedMemos}
+      />
+      <MemoResourceListView resources={memo.resources} />
+    </>
   );
   if (inlineMode) {
-    return (
-      <div className="w-full">
-        {contentNode}
-        <MemoResourceListView resources={memo.resources} />
-      </div>
-    );
+    return <div className="w-full">{contentNode}</div>;
   }
 
   const copyMemoUid = (uid: string) => {
@@ -67,22 +66,21 @@ const EmbeddedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
   };
 
   return (
-    <div className="relative flex flex-col justify-start items-start w-full px-3 py-2 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 hover:shadow">
-      <div className="w-full mb-1 flex flex-row justify-between items-center">
-        <div className="text-sm leading-6 text-gray-400 select-none">
+    <div className="relative flex flex-col justify-start items-start w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700 hover:shadow">
+      <div className="w-full mb-1 flex flex-row justify-between items-center text-gray-400 dark:text-gray-500">
+        <div className="text-sm leading-5 select-none">
           <relative-time datetime={memo.displayTime?.toISOString()} format="datetime" tense="past"></relative-time>
         </div>
         <div className="flex justify-end items-center gap-1">
-          <span className="text-xs opacity-40 leading-4 cursor-pointer hover:opacity-60" onClick={() => copyMemoUid(memo.uid)}>
+          <span className="text-xs opacity-60 leading-5 cursor-pointer hover:opacity-80" onClick={() => copyMemoUid(memo.uid)}>
             {memo.uid.slice(0, 8)}
           </span>
-          <Link className="hover:opacity-80" to={`/m/${memo.uid}`} unstable_viewTransition>
-            <Icon.ArrowUpRight className="w-5 h-auto opacity-80 text-gray-400" />
+          <Link className="opacity-60 hover:opacity-80" to={`/m/${memo.uid}`} unstable_viewTransition>
+            <Icon.ArrowUpRight className="w-5 h-auto" />
           </Link>
         </div>
       </div>
       {contentNode}
-      <MemoResourceListView resources={memo.resources} />
     </div>
   );
 };

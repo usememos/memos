@@ -60,17 +60,19 @@ const TagsSection = (props: Props) => {
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 select-none">
         <span>{t("common.tags")}</span>
-        <Popover>
-          <PopoverTrigger>
-            <Icon.MoreHorizontal className="w-4 h-auto shrink-0 opacity-60" />
-          </PopoverTrigger>
-          <PopoverContent>
-            <div className="w-auto flex flex-row justify-between items-center gap-2">
-              <span className="text-sm shrink-0">Tree mode</span>
-              <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />
-            </div>
-          </PopoverContent>
-        </Popover>
+        {tagAmounts.length > 0 && (
+          <Popover>
+            <PopoverTrigger>
+              <Icon.MoreVertical className="w-4 h-auto shrink-0 opacity-60" />
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="w-auto flex flex-row justify-between items-center gap-2">
+                <span className="text-sm shrink-0">Tree mode</span>
+                <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
       {tagAmounts.length > 0 ? (
         treeMode ? (
