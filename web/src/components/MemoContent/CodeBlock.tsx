@@ -43,7 +43,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
     }
 
     // escape any HTML entities when rendering original content
-    return Object.assign(document.createElement('span'), {
+    return Object.assign(document.createElement("span"), {
       textContent: content,
     }).innerHTML;
   }, [formatedLanguage, content]);
