@@ -67,7 +67,7 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) {
 			continue
 		}
 
-		presignURL, err := s3Client.PresignGetObject(ctx, s3ObjectPayload.Key)
+		presignURL, err := s3Client.PresignGetObject(ctx, s3ObjectPayload.Key, s3Config)
 		if err != nil {
 			return
 		}

@@ -75,6 +75,7 @@ message StorageS3Config {
   string endpoint = 3;
   string region = 4;
   string bucket = 5;
+  string prefix_url = 6;
 }
 
 message WorkspaceMemoRelatedSetting {

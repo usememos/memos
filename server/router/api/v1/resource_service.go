@@ -386,7 +386,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		if err != nil {
 			return errors.Wrap(err, "Failed to upload via s3 client")
 		}
-		presignURL, err := s3Client.PresignGetObject(ctx, key)
+		presignURL, err := s3Client.PresignGetObject(ctx, key, s3Config)
 		if err != nil {
 			return errors.Wrap(err, "Failed to presign via s3 client")
 		}
