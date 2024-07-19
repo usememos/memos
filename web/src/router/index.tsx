@@ -15,13 +15,10 @@ import Resources from "@/pages/Resources";
 import Setting from "@/pages/Setting";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
-import Timeline from "@/pages/Timeline";
 import UserProfile from "@/pages/UserProfile";
 
 export enum Routes {
   ROOT = "/",
-  HOME = "/home",
-  TIMELINE = "/timeline",
   RESOURCES = "/resources",
   INBOX = "/inbox",
   ARCHIVED = "/archived",
@@ -59,12 +56,8 @@ const router = createBrowserRouter([
         element: <RootLayout />,
         children: [
           {
-            path: Routes.HOME,
+            path: "",
             element: <Home />,
-          },
-          {
-            path: Routes.TIMELINE,
-            element: <Timeline />,
           },
           {
             path: Routes.RESOURCES,

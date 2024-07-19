@@ -1,7 +1,6 @@
 import { Button } from "@mui/joy";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import useLocalStorage from "react-use/lib/useLocalStorage";
 import Empty from "@/components/Empty";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import Icon from "@/components/Icon";
@@ -13,7 +12,6 @@ import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { Routes } from "@/router";
 import { useMemoList, useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v1/common";
 import { useTranslate } from "@/utils/i18n";
@@ -24,7 +22,6 @@ const Home = () => {
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
-  const [, setLastVisited] = useLocalStorage<string>("lastVisited", Routes.HOME);
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
   const filter = useFilterWithUrlParams();
@@ -32,10 +29,6 @@ const Home = () => {
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
-
-  useEffect(() => {
-    setLastVisited(Routes.HOME);
-  }, []);
 
   useEffect(() => {
     memoList.reset();

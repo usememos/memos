@@ -1,13 +1,16 @@
 import { Divider, Tooltip } from "@mui/joy";
 import clsx from "clsx";
+import dayjs from "dayjs";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import i18n from "@/i18n";
 import { useFilterStore } from "@/store/module";
 import { useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
+import ActivityCalendar from "./ActivityCalendar";
 import Icon from "./Icon";
 
 interface UserMemoStats {
@@ -25,6 +28,8 @@ const UserStatisticsView = () => {
   const [memoAmount, setMemoAmount] = useState(0);
   const [isRequesting, setIsRequesting] = useState(false);
   const [memoStats, setMemoStats] = useState<UserMemoStats>({ link: 0, taskList: 0, code: 0, incompleteTasks: 0 });
+  const [activityStats, setActivityStats] = useState<Record<string, number>>({});
+  const monthString = dayjs(new Date().toDateString()).format("YYYY-MM");
   const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
   const filter = filterStore.state;
 
@@ -50,6 +55,21 @@ const UserStatisticsView = () => {
     });
     setMemoStats(memoStats);
     setMemoAmount(properties.length);
+
+    const filters = [`row_status == "NORMAL"`];
+    const { stats } = await memoServiceClient.getUserMemosStats({
+      name: currentUser.name,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      filter: filters.join(" && "),
+    });
+
+    setActivityStats(
+      Object.fromEntries(
+        Object.entries(stats).filter(([date]) => {
+          return dayjs(date).format("YYYY-MM") === monthString;
+        }),
+      ),
+    );
     setIsRequesting(false);
   }, [memoStore.stateId]);
 
@@ -64,7 +84,9 @@ const UserStatisticsView = () => {
   return (
     <div className="group w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
       <div className="w-full mb-1 flex flex-row justify-between items-center">
-        <p className="text-sm font-medium leading-6 dark:text-gray-500">{t("common.statistics")}</p>
+        <p className="text-sm font-medium leading-6 dark:text-gray-400">
+          {new Date().toLocaleDateString(i18n.language, { month: "long", day: "numeric" })}
+        </p>
         <div className="group-hover:block hidden">
           <Tooltip title={"Refresh"} placement="top">
             <Icon.RefreshCcw
@@ -73,6 +95,9 @@ const UserStatisticsView = () => {
             />
           </Tooltip>
         </div>
+      </div>
+      <div className="w-full pb-2">
+        <ActivityCalendar month={monthString} selectedDate={new Date().toDateString()} data={activityStats} />
       </div>
       <div className="w-full grid grid-cols-1 gap-x-4">
         <div className="w-full flex justify-between items-center">

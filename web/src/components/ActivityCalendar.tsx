@@ -18,11 +18,11 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
 
   const ratio = count / maxCount;
   if (ratio > 0.7) {
-    return "bg-blue-600 text-gray-100 dark:opacity-80";
+    return "bg-teal-600 text-gray-100 dark:opacity-80";
   } else if (ratio > 0.4) {
-    return "bg-blue-400 text-gray-200 dark:opacity-80";
+    return "bg-teal-400 text-gray-100 dark:opacity-80";
   } else {
-    return "bg-blue-300 text-gray-600 dark:opacity-80";
+    return "bg-teal-300 text-gray-100 dark:opacity-80";
   }
 };
 
@@ -48,7 +48,7 @@ const ActivityCalendar = (props: Props) => {
   }
 
   return (
-    <div className={clsx("w-36 h-auto p-0.5 shrink-0 grid grid-cols-7 grid-flow-row gap-1")}>
+    <div className={clsx("w-full h-auto shrink-0 grid grid-cols-7 grid-flow-row gap-1")}>
       {days.map((day, index) => {
         const date = getNormalizedDateString(
           getDateWithOffset(`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`),
@@ -61,7 +61,7 @@ const ActivityCalendar = (props: Props) => {
           <Tooltip className="shrink-0" key={`${date}-${index}`} title={tooltipText} placement="top" arrow>
             <div
               className={clsx(
-                "w-4 h-4 text-[9px] rounded-md flex justify-center items-center border",
+                "w-6 h-6 text-xs rounded-xl flex justify-center items-center border",
                 getCellAdditionalStyles(count, maxCount),
                 isToday && "border-gray-600 dark:border-zinc-300",
                 isSelected && "font-bold border-gray-600 dark:border-zinc-300",
@@ -77,7 +77,7 @@ const ActivityCalendar = (props: Props) => {
           <div
             key={`${date}-${index}`}
             className={clsx(
-              "shrink-0 opacity-30 w-4 h-4 rounded-md flex justify-center items-center border border-transparent",
+              "shrink-0 opacity-30 w-6 h-6 rounded-xl flex justify-center items-center border border-transparent",
               getCellAdditionalStyles(count, maxCount),
             )}
           ></div>
