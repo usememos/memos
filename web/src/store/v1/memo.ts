@@ -48,17 +48,6 @@ export const useMemoStore = create(
     getMemoByName: (name: string) => {
       return get().memoMapByName[name];
     },
-    searchMemos: async (filter: string) => {
-      const { memos } = await memoServiceClient.searchMemos({
-        filter,
-      });
-      const memoMap = get().memoMapByName;
-      for (const memo of memos) {
-        memoMap[memo.name] = memo;
-      }
-      set({ stateId: uniqueId(), memoMapByName: memoMap });
-      return memos;
-    },
     fetchMemoByUid: async (uid: string) => {
       const memo = await memoServiceClient.getMemoByUid({
         uid,
