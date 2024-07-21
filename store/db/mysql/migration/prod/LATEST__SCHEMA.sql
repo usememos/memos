@@ -31,7 +31,7 @@ CREATE TABLE `user_setting` (
   `user_id` INT NOT NULL,
   `key` VARCHAR(256) NOT NULL,
   `value` LONGTEXT NOT NULL,
-  UNIQUE(`user_id`,`key`)
+  PRIMARY KEY(`user_id`, `key`)
 );
 
 -- memo
@@ -53,7 +53,7 @@ CREATE TABLE `memo_organizer` (
   `memo_id` INT NOT NULL,
   `user_id` INT NOT NULL,
   `pinned` INT NOT NULL DEFAULT '0',
-  UNIQUE(`memo_id`,`user_id`)
+  PRIMARY KEY(`memo_id`, `user_id`)
 );
 
 -- memo_relation
@@ -61,7 +61,7 @@ CREATE TABLE `memo_relation` (
   `memo_id` INT NOT NULL,
   `related_memo_id` INT NOT NULL,
   `type` VARCHAR(256) NOT NULL,
-  UNIQUE(`memo_id`,`related_memo_id`,`type`)
+  PRIMARY KEY(`memo_id`, `related_memo_id`, `type`)
 );
 
 -- resource
@@ -128,5 +128,5 @@ CREATE TABLE `reaction` (
   `creator_id` INT NOT NULL,
   `content_id` VARCHAR(256) NOT NULL,
   `reaction_type` VARCHAR(256) NOT NULL,
-  UNIQUE(`creator_id`,`content_id`,`reaction_type`)  
+  UNIQUE(`creator_id`, `content_id`, `reaction_type`)  
 );
