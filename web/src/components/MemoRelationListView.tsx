@@ -44,7 +44,7 @@ const MemoRelationListView = (props: Props) => {
   }
 
   return (
-    <div className="relative flex flex-col justify-start items-start w-full px-2 pt-2 pb-1 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700">
+    <div className="relative flex flex-col justify-start items-start w-full px-2 pt-2 pb-1.5 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700">
       <div className="w-full flex flex-row justify-start items-center mb-1 gap-3 opacity-60">
         {referencingMemoList.length > 0 && (
           <button
@@ -56,6 +56,7 @@ const MemoRelationListView = (props: Props) => {
           >
             <Icon.Link className="w-3 h-auto shrink-0 opacity-70" />
             <span>Referencing</span>
+            <span className="opacity-80">({referencingMemoList.length})</span>
           </button>
         )}
         {referencedMemoList.length > 0 && (
@@ -68,6 +69,7 @@ const MemoRelationListView = (props: Props) => {
           >
             <Icon.Milestone className="w-3 h-auto shrink-0 opacity-70" />
             <span>Referenced by</span>
+            <span className="opacity-80">({referencedMemoList.length})</span>
           </button>
         )}
       </div>
@@ -81,7 +83,7 @@ const MemoRelationListView = (props: Props) => {
                 to={`/m/${memo.uid}`}
                 unstable_viewTransition
               >
-                <Icon.Dot className="shrink-0 -ml-1 opacity-60" />
+                <Icon.Dot className="shrink-0 w-4 h-auto opacity-40" />
                 <span className="truncate">{memo.snippet}</span>
               </Link>
             );
@@ -98,7 +100,7 @@ const MemoRelationListView = (props: Props) => {
                 to={`/m/${memo.uid}`}
                 unstable_viewTransition
               >
-                <Icon.Dot className="shrink-0 -ml-1 opacity-60" />
+                <Icon.Dot className="shrink-0 w-4 h-auto opacity-40" />
                 <span className="truncate">{memo.snippet}</span>
               </Link>
             );
