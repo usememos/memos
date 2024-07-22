@@ -141,38 +141,6 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	return response, nil
 }
 
-func (s *APIV1Service) SearchMemos(ctx context.Context, request *v1pb.SearchMemosRequest) (*v1pb.SearchMemosResponse, error) {
-	defaultSearchLimit := 10
-	memoFind := &store.FindMemo{
-		// Exclude comments by default.
-		ExcludeComments: true,
-		Limit:           &defaultSearchLimit,
-	}
-	err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
-	}
-
-	memos, err := s.Store.ListMemos(ctx, memoFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to search memos: %v", err)
-	}
-
-	memoMessages := []*v1pb.Memo{}
-	for _, memo := range memos {
-		memoMessage, err := s.convertMemoFromStore(ctx, memo)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to convert memo")
-		}
-		memoMessages = append(memoMessages, memoMessage)
-	}
-
-	response := &v1pb.SearchMemosResponse{
-		Memos: memoMessages,
-	}
-	return response, nil
-}
-
 func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest) (*v1pb.Memo, error) {
 	id, err := ExtractMemoIDFromName(request.Name)
 	if err != nil {
@@ -950,7 +918,7 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		find.PayloadFind = &store.FindMemoPayload{}
 	}
 	if filter != "" {
-		filter, err := parseSearchMemosFilter(filter)
+		filter, err := parseMemoFilter(filter)
 		if err != nil {
 			return status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 		}
@@ -1067,8 +1035,8 @@ func (s *APIV1Service) getContentLengthLimit(ctx context.Context) (int, error) {
 	return int(workspaceMemoRelatedSetting.ContentLengthLimit), nil
 }
 
-// SearchMemosFilterCELAttributes are the CEL attributes.
-var SearchMemosFilterCELAttributes = []cel.EnvOption{
+// MemoFilterCELAttributes are the CEL attributes.
+var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content_search", cel.ListType(cel.StringType)),
 	cel.Variable("visibilities", cel.ListType(cel.StringType)),
 	cel.Variable("tag", cel.StringType),
@@ -1087,7 +1055,7 @@ var SearchMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("has_incomplete_tasks", cel.BoolType),
 }
 
-type SearchMemosFilter struct {
+type MemoFilter struct {
 	ContentSearch      []string
 	Visibilities       []store.Visibility
 	Tag                *string
@@ -1105,8 +1073,8 @@ type SearchMemosFilter struct {
 	HasIncompleteTasks bool
 }
 
-func parseSearchMemosFilter(expression string) (*SearchMemosFilter, error) {
-	e, err := cel.NewEnv(SearchMemosFilterCELAttributes...)
+func parseMemoFilter(expression string) (*MemoFilter, error) {
+	e, err := cel.NewEnv(MemoFilterCELAttributes...)
 	if err != nil {
 		return nil, err
 	}
@@ -1114,17 +1082,17 @@ func parseSearchMemosFilter(expression string) (*SearchMemosFilter, error) {
 	if issues != nil {
 		return nil, errors.Errorf("found issue %v", issues)
 	}
-	filter := &SearchMemosFilter{}
+	filter := &MemoFilter{}
 	expr, err := cel.AstToParsedExpr(ast)
 	if err != nil {
 		return nil, err
 	}
 	callExpr := expr.GetExpr().GetCallExpr()
-	findSearchMemosField(callExpr, filter)
+	findMemoField(callExpr, filter)
 	return filter, nil
 }
 
-func findSearchMemosField(callExpr *expr.Expr_Call, filter *SearchMemosFilter) {
+func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 	if len(callExpr.Args) == 2 {
 		idExpr := callExpr.Args[0].GetIdentExpr()
 		if idExpr != nil {
@@ -1188,7 +1156,7 @@ func findSearchMemosField(callExpr *expr.Expr_Call, filter *SearchMemosFilter) {
 	for _, arg := range callExpr.Args {
 		callExpr := arg.GetCallExpr()
 		if callExpr != nil {
-			findSearchMemosField(callExpr, filter)
+			findMemoField(callExpr, filter)
 		}
 	}
 }

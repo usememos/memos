@@ -435,29 +435,6 @@ paths:
             $ref: '#/definitions/v1ExportMemosRequest'
       tags:
         - MemoService
-  /api/v1/memos:search:
-    get:
-      summary: SearchMemos searches memos.
-      operationId: MemoService_SearchMemos
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1SearchMemosResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: filter
-          description: |-
-            Filter is used to filter memos returned.
-            Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
-          in: query
-          required: false
-          type: string
-      tags:
-        - MemoService
   /api/v1/reactions/{reactionId}:
     delete:
       summary: DeleteMemoReaction deletes a reaction for a memo.
@@ -533,26 +510,6 @@ paths:
           description: The uid of the resource.
           in: path
           required: true
-          type: string
-      tags:
-        - ResourceService
-  /api/v1/resources:search:
-    get:
-      summary: SearchResources searches memos.
-      operationId: ResourceService_SearchResources
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1SearchResourcesResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: filter
-          in: query
-          required: false
           type: string
       tags:
         - ResourceService
@@ -3035,22 +2992,6 @@ definitions:
       - ACTIVE
       - ARCHIVED
     default: ROW_STATUS_UNSPECIFIED
-  v1SearchMemosResponse:
-    type: object
-    properties:
-      memos:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Memo'
-  v1SearchResourcesResponse:
-    type: object
-    properties:
-      resources:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Resource'
   v1SearchUsersResponse:
     type: object
     properties:

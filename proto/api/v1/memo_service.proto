@@ -28,10 +28,6 @@ service MemoService {
   rpc ListMemos(ListMemosRequest) returns (ListMemosResponse) {
     option (google.api.http) = {get: "/api/v1/memos"};
   }
-  // SearchMemos searches memos.
-  rpc SearchMemos(SearchMemosRequest) returns (SearchMemosResponse) {
-    option (google.api.http) = {get: "/api/v1/memos:search"};
-  }
   // GetMemo gets a memo.
   rpc GetMemo(GetMemoRequest) returns (Memo) {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}"};
@@ -244,16 +240,6 @@ message ListMemosResponse {
   // A token, which can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
   string next_page_token = 2;
-}
-
-message SearchMemosRequest {
-  // Filter is used to filter memos returned.
-  // Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
-  string filter = 1;
-}
-
-message SearchMemosResponse {
-  repeated Memo memos = 1;
 }
 
 message GetMemoRequest {
