@@ -167,7 +167,11 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 }
 
 func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) (*v1pb.User, error) {
-	if !s.Profile.Public {
+	workspaceProfile, err := s.GetWorkspaceProfile(ctx, &v1pb.GetWorkspaceProfileRequest{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace profile, err: %s", err))
+	}
+	if !workspaceProfile.Public {
 		return nil, status.Errorf(codes.PermissionDenied, "sign up is not allowed")
 	}
 
