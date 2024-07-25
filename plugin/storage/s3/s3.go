@@ -62,8 +62,8 @@ func (c *Client) UploadObject(ctx context.Context, key string, fileType string, 
 
 // PresignGetObject presigns an object in S3.
 func (c *Client) PresignGetObject(ctx context.Context, key string, s3Config *storepb.StorageS3Config) (string, error) {
-	if s3Config.PrefixUrl != "" {
-		return fmt.Sprintf("%s/%s", s3Config.PrefixUrl, key), nil
+	if s3Config.CustomDomain != "" {
+		return fmt.Sprintf("%s/%s", s3Config.CustomDomain, key), nil
 	}
 	presignClient := s3.NewPresignClient(c.Client)
 	presignResult, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
