@@ -23,6 +23,9 @@ func (s *APIV1Service) GetWorkspaceProfile(ctx context.Context, _ *v1pb.GetWorks
 	}
 	if owner != nil {
 		workspaceProfile.Owner = owner.Name
+	} else {
+		// If owner is not found, set public to true.
+		workspaceProfile.Public = true
 	}
 	return workspaceProfile, nil
 }

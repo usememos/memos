@@ -42,7 +42,10 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
       // Skip error and use default highlighted code.
     }
 
-    return content;
+    // escape any HTML entities when rendering original content
+    return Object.assign(document.createElement("span"), {
+      textContent: content,
+    }).innerHTML;
   }, [formatedLanguage, content]);
 
   const handleCopyButtonClick = useCallback(() => {

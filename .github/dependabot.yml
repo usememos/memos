@@ -5,16 +5,16 @@ updates:
       prefix: "chore"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
   - package-ecosystem: npm
     commit-message:
       prefix: "chore"
     directory: "/web"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
   - package-ecosystem: "gomod"
     commit-message:
       prefix: "chore"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"

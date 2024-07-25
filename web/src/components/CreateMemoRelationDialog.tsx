@@ -13,6 +13,8 @@ import Icon from "./Icon";
 
 interface Props extends DialogProps {
   onConfirm: (memos: Memo[], embedded?: boolean) => void;
+  // Custom filter function for filtering memos.
+  filter?: (memo: Memo) => boolean;
 }
 
 const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
@@ -24,7 +26,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
   const [fetchedMemos, setFetchedMemos] = useState<Memo[]>([]);
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
   const [embedded, setEmbedded] = useState<boolean>(true);
-  const filteredMemos = fetchedMemos.filter((memo) => !selectedMemos.includes(memo));
+  const filteredMemos = fetchedMemos.filter((memo) => !selectedMemos.includes(memo) && (!props.filter || props.filter(memo)));
 
   useDebounce(
     async () => {

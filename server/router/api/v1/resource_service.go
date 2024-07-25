@@ -12,10 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/cel-go/cel"
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
-	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -96,35 +94,6 @@ func (s *APIV1Service) ListResources(ctx context.Context, _ *v1pb.ListResourcesR
 	}
 
 	response := &v1pb.ListResourcesResponse{}
-	for _, resource := range resources {
-		response.Resources = append(response.Resources, s.convertResourceFromStore(ctx, resource))
-	}
-	return response, nil
-}
-
-func (s *APIV1Service) SearchResources(ctx context.Context, request *v1pb.SearchResourcesRequest) (*v1pb.SearchResourcesResponse, error) {
-	if request.Filter == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "filter is empty")
-	}
-	filter, err := parseSearchResourcesFilter(request.Filter)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to parse filter: %v", err)
-	}
-	resourceFind := &store.FindResource{}
-	if filter.Filename != nil {
-		resourceFind.FilenameSearch = filter.Filename
-	}
-	user, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
-	}
-	resourceFind.CreatorID = &user.ID
-	resources, err := s.Store.ListResources(ctx, resourceFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to search resources: %v", err)
-	}
-
-	response := &v1pb.SearchResourcesResponse{}
 	for _, resource := range resources {
 		response.Resources = append(response.Resources, s.convertResourceFromStore(ctx, resource))
 	}
@@ -436,51 +405,4 @@ func replaceFilenameWithPathTemplate(path, filename string) string {
 		return s
 	})
 	return path
-}
-
-// SearchResourcesFilterCELAttributes are the CEL attributes for SearchResourcesFilter.
-var SearchResourcesFilterCELAttributes = []cel.EnvOption{
-	cel.Variable("filename", cel.StringType),
-}
-
-type SearchResourcesFilter struct {
-	Filename *string
-}
-
-func parseSearchResourcesFilter(expression string) (*SearchResourcesFilter, error) {
-	e, err := cel.NewEnv(SearchResourcesFilterCELAttributes...)
-	if err != nil {
-		return nil, err
-	}
-	ast, issues := e.Compile(expression)
-	if issues != nil {
-		return nil, errors.Errorf("found issue %v", issues)
-	}
-	filter := &SearchResourcesFilter{}
-	expr, err := cel.AstToParsedExpr(ast)
-	if err != nil {
-		return nil, err
-	}
-	callExpr := expr.GetExpr().GetCallExpr()
-	findSearchResourcesField(callExpr, filter)
-	return filter, nil
-}
-
-func findSearchResourcesField(callExpr *expr.Expr_Call, filter *SearchResourcesFilter) {
-	if len(callExpr.Args) == 2 {
-		idExpr := callExpr.Args[0].GetIdentExpr()
-		if idExpr != nil {
-			if idExpr.Name == "filename" {
-				filename := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.Filename = &filename
-			}
-			return
-		}
-	}
-	for _, arg := range callExpr.Args {
-		callExpr := arg.GetCallExpr()
-		if callExpr != nil {
-			findSearchResourcesField(callExpr, filter)
-		}
-	}
 }

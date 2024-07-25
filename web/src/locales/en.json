@@ -307,8 +307,5 @@
     "delete-confirm": "Are you sure to delete this tag? All related memos will be archived.",
     "delete-tag": "Delete Tag",
     "no-tag-found": "No tag found"
-  },
-  "timeline": {
-    "title": "Timeline"
   }
 }

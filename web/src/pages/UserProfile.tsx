@@ -105,11 +105,6 @@ const UserProfile = () => {
           (user ? (
             <>
               <div className="my-4 w-full flex justify-end items-center gap-2">
-                <a className="" href={`/u/${encodeURIComponent(user?.username)}/rss.xml`} target="_blank" rel="noopener noreferrer">
-                  <Button color="neutral" variant="outlined" endDecorator={<Icon.Rss className="w-4 h-auto opacity-60" />}>
-                    RSS
-                  </Button>
-                </a>
                 <Button
                   color="neutral"
                   variant="outlined"

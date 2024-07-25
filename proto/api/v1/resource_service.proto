@@ -24,10 +24,6 @@ service ResourceService {
   rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse) {
     option (google.api.http) = {get: "/api/v1/resources"};
   }
-  // SearchResources searches memos.
-  rpc SearchResources(SearchResourcesRequest) returns (SearchResourcesResponse) {
-    option (google.api.http) = {get: "/api/v1/resources:search"};
-  }
   // GetResource returns a resource by name.
   rpc GetResource(GetResourceRequest) returns (Resource) {
     option (google.api.http) = {get: "/api/v1/{name=resources/*}"};
@@ -91,14 +87,6 @@ message CreateResourceRequest {
 message ListResourcesRequest {}
 
 message ListResourcesResponse {
-  repeated Resource resources = 1;
-}
-
-message SearchResourcesRequest {
-  string filter = 1;
-}
-
-message SearchResourcesResponse {
   repeated Resource resources = 1;
 }
 
