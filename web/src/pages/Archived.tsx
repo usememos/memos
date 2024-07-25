@@ -5,13 +5,13 @@ import toast from "react-hot-toast";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MemoContent from "@/components/MemoContent";
+import MemoFilters from "@/components/MemoFilters";
 import MobileHeader from "@/components/MobileHeader";
 import SearchBar from "@/components/SearchBar";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
-import { useMemoList, useMemoStore } from "@/store/v1";
+import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -21,9 +21,9 @@ const Archived = () => {
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
+  const memoFilterStore = useMemoFilterStore();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ARCHIVED)
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
@@ -31,20 +31,21 @@ const Archived = () => {
   useEffect(() => {
     memoList.reset();
     fetchMemos("");
-  }, [tagQuery, textQuery]);
+  }, [memoFilterStore.filters]);
 
   const fetchMemos = async (nextPageToken: string) => {
     setIsRequesting(true);
     const filters = [`creator == "${user.name}"`, `row_status == "ARCHIVED"`];
     const contentSearch: string[] = [];
-    if (textQuery) {
-      contentSearch.push(JSON.stringify(textQuery));
+    for (const filter of memoFilterStore.filters) {
+      if (filter.factor === "contentSearch") {
+        contentSearch.push(`"${filter.value}"`);
+      } else if (filter.factor === "tag") {
+        filters.push(`tag == "${filter.value}"`);
+      }
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
-    }
-    if (tagQuery) {
-      filters.push(`tag == "${tagQuery}"`);
     }
     const response = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
@@ -92,6 +93,7 @@ const Archived = () => {
               <SearchBar />
             </div>
           </div>
+          <MemoFilters />
           {sortedMemos.map((memo) => (
             <div
               key={memo.name}

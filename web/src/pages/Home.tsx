@@ -5,14 +5,14 @@ import Empty from "@/components/Empty";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import Icon from "@/components/Icon";
 import MemoEditor from "@/components/MemoEditor";
+import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { useMemoList, useMemoStore } from "@/store/v1";
+import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v1/common";
 import { useTranslate } from "@/utils/i18n";
 
@@ -22,9 +22,9 @@ const Home = () => {
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
+  const memoFilterStore = useMemoFilterStore();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const filter = useFilterWithUrlParams();
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
@@ -33,31 +33,27 @@ const Home = () => {
   useEffect(() => {
     memoList.reset();
     fetchMemos("");
-  }, [filter.tag, filter.text, filter.memoPropertyFilter]);
+  }, [memoFilterStore.filters]);
 
   const fetchMemos = async (nextPageToken: string) => {
     setIsRequesting(true);
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
-    if (filter.text) {
-      contentSearch.push(JSON.stringify(filter.text));
+    for (const filter of memoFilterStore.filters) {
+      if (filter.factor === "contentSearch") {
+        contentSearch.push(`"${filter.value}"`);
+      } else if (filter.factor === "tag") {
+        filters.push(`tag == "${filter.value}"`);
+      } else if (filter.factor === "property.hasLink") {
+        filters.push(`has_link == true`);
+      } else if (filter.factor === "property.hasTaskList") {
+        filters.push(`has_task_list == true`);
+      } else if (filter.factor === "property.hasCode") {
+        filters.push(`has_code == true`);
+      }
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
-    }
-    if (filter.tag) {
-      filters.push(`tag == "${filter.tag}"`);
-    }
-    if (filter.memoPropertyFilter) {
-      if (filter.memoPropertyFilter.hasLink) {
-        filters.push(`has_link == true`);
-      }
-      if (filter.memoPropertyFilter.hasTaskList) {
-        filters.push(`has_task_list == true`);
-      }
-      if (filter.memoPropertyFilter.hasCode) {
-        filters.push(`has_code == true`);
-      }
     }
     const response = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
@@ -78,6 +74,7 @@ const Home = () => {
       <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
         <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
+          <MemoFilters />
           <div className="flex flex-col justify-start items-start w-full max-w-full">
             {sortedMemos.map((memo) => (
               <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility showPinned compact />

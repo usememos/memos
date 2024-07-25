@@ -4,7 +4,6 @@ import { toast } from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
-import { useFilterStore } from "@/store/module";
 import { useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
@@ -18,7 +17,6 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
   const { tag, destroy } = props;
   const t = useTranslate();
   const tagStore = useTagStore();
-  const filterStore = useFilterStore();
   const [newName, setNewName] = useState(tag);
   const requestState = useLoading(false);
   const user = useCurrentUser();
@@ -44,7 +42,6 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
         newTag: newName,
       });
       toast.success("Rename tag successfully");
-      filterStore.setTagFilter(newName);
       tagStore.fetchTags({ user }, { skipCache: true });
     } catch (error: any) {
       console.error(error);

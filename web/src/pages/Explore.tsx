@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import { ExploreSidebar, ExploreSidebarDrawer } from "@/components/ExploreSidebar";
 import Icon from "@/components/Icon";
+import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useFilterWithUrlParams from "@/hooks/useFilterWithUrlParams";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { useMemoList, useMemoStore } from "@/store/v1";
+import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const Explore = () => {
@@ -20,28 +20,29 @@ const Explore = () => {
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
+  const memoFilterStore = useMemoFilterStore();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const { tag: tagQuery, text: textQuery } = useFilterWithUrlParams();
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
 
   useEffect(() => {
     memoList.reset();
     fetchMemos("");
-  }, [tagQuery, textQuery]);
+  }, [memoFilterStore.filters]);
 
   const fetchMemos = async (nextPageToken: string) => {
     setIsRequesting(true);
     const filters = [`row_status == "NORMAL"`, `visibilities == [${user ? "'PUBLIC', 'PROTECTED'" : "'PUBLIC'"}]`];
     const contentSearch: string[] = [];
-    if (textQuery) {
-      contentSearch.push(JSON.stringify(textQuery));
+    for (const filter of memoFilterStore.filters) {
+      if (filter.factor === "contentSearch") {
+        contentSearch.push(`"${filter.value}"`);
+      } else if (filter.factor === "tag") {
+        filters.push(`tag == "${filter.value}"`);
+      }
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
-    }
-    if (tagQuery) {
-      filters.push(`tag == "${tagQuery}"`);
     }
     const response = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
@@ -61,6 +62,7 @@ const Explore = () => {
       )}
       <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
         <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
+          <MemoFilters />
           <div className="flex flex-col justify-start items-start w-full max-w-full">
             {sortedMemos.map((memo) => (
               <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showCreator showVisibility showPinned compact />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
-import { useFilterStore } from "@/store/module";
+import { useMemoFilterStore } from "@/store/v1";
 import Icon from "./Icon";
 
 interface Tag {
@@ -14,8 +14,6 @@ interface Props {
 }
 
 const TagTree = ({ tags: rawTags }: Props) => {
-  const filterStore = useFilterStore();
-  const filter = filterStore.state;
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
@@ -67,7 +65,7 @@ const TagTree = ({ tags: rawTags }: Props) => {
   return (
     <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap gap-2 mt-1">
       {tags.map((t, idx) => (
-        <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
+        <TagItemContainer key={t.text + "-" + idx} tag={t} />
       ))}
     </div>
   );
@@ -75,21 +73,24 @@ const TagTree = ({ tags: rawTags }: Props) => {
 
 interface TagItemContainerProps {
   tag: Tag;
-  tagQuery?: string;
 }
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
-  const filterStore = useFilterStore();
-  const { tag, tagQuery } = props;
-  const isActive = tagQuery === tag.text;
+  const { tag } = props;
+  const memoFilterStore = useMemoFilterStore();
+  const tagFilters = memoFilterStore.getFiltersByFactor("tag");
+  const isActive = tagFilters.some((f) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
   const [showSubTags, toggleSubTags] = useToggle(false);
 
   const handleTagClick = () => {
     if (isActive) {
-      filterStore.setTagFilter(undefined);
+      memoFilterStore.removeFilter((f) => f.factor === "tag" && f.value === tag.text);
     } else {
-      filterStore.setTagFilter(tag.text);
+      memoFilterStore.addFilter({
+        factor: "tag",
+        value: tag.text,
+      });
     }
   };
 
@@ -131,7 +132,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
           }`}
         >
           {tag.subTags.map((st, idx) => (
-            <TagItemContainer key={st.text + "-" + idx} tag={st} tagQuery={tagQuery} />
+            <TagItemContainer key={st.text + "-" + idx} tag={st} />
           ))}
         </div>
       ) : null}

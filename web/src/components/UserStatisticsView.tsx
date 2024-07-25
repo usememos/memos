@@ -7,8 +7,7 @@ import { memoServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
-import { useFilterStore } from "@/store/module";
-import { useMemoStore } from "@/store/v1";
+import { useMemoFilterStore, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
 import Icon from "./Icon";
@@ -25,14 +24,13 @@ const UserStatisticsView = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
-  const filterStore = useFilterStore();
+  const memoFilterStore = useMemoFilterStore();
   const [memoAmount, setMemoAmount] = useState(0);
   const [memoStats, setMemoStats] = useState<UserMemoStats>({ link: 0, taskList: 0, code: 0, incompleteTasks: 0 });
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDate] = useState(new Date());
   const [monthString, setMonthString] = useState(dayjs(selectedDate.toDateString()).format("YYYY-MM"));
   const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
-  const filter = filterStore.state;
 
   useAsyncEffect(async () => {
     const { properties } = await memoServiceClient.listMemoProperties({
@@ -120,9 +118,8 @@ const UserStatisticsView = () => {
         <div
           className={clsx(
             "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:shadow",
-            filter.memoPropertyFilter?.hasLink ? "bg-blue-50 dark:bg-blue-900 shadow" : "",
           )}
-          onClick={() => filterStore.setMemoPropertyFilter({ hasLink: !filter.memoPropertyFilter?.hasLink })}
+          onClick={() => memoFilterStore.addFilter({ factor: "property.hasLink", value: "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
             <Icon.Link className="w-4 h-auto mr-1" />
@@ -133,9 +130,8 @@ const UserStatisticsView = () => {
         <div
           className={clsx(
             "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:shadow",
-            filter.memoPropertyFilter?.hasTaskList ? "bg-blue-50 dark:bg-blue-900 shadow" : "",
           )}
-          onClick={() => filterStore.setMemoPropertyFilter({ hasTaskList: !filter.memoPropertyFilter?.hasTaskList })}
+          onClick={() => memoFilterStore.addFilter({ factor: "property.hasTaskList", value: "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
             {memoStats.incompleteTasks > 0 ? (
@@ -160,9 +156,8 @@ const UserStatisticsView = () => {
         <div
           className={clsx(
             "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:shadow",
-            filter.memoPropertyFilter?.hasCode ? "bg-blue-50 dark:bg-blue-900 shadow" : "",
           )}
-          onClick={() => filterStore.setMemoPropertyFilter({ hasCode: !filter.memoPropertyFilter?.hasCode })}
+          onClick={() => memoFilterStore.addFilter({ factor: "property.hasCode", value: "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
             <Icon.Code2 className="w-4 h-auto mr-1" />
