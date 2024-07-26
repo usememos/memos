@@ -2,6 +2,7 @@ package s3objectpresigner
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -67,15 +68,21 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) {
 			continue
 		}
 
-		presignURL, err := s3Client.PresignGetObject(ctx, s3ObjectPayload.Key, s3Config)
-		if err != nil {
-			return
+		var referenceURL string
+		if s3Config.CustomDomain != "" {
+			referenceURL = fmt.Sprintf("%s/%s", s3Config.CustomDomain, s3ObjectPayload.Key)
+		} else {
+			referenceURL, err = s3Client.PresignGetObject(ctx, s3ObjectPayload.Key)
+			if err != nil {
+				return
+			}
 		}
+
 		s3ObjectPayload.S3Config = s3Config
 		s3ObjectPayload.LastPresignedTime = timestamppb.New(time.Now())
 		if err := p.Store.UpdateResource(ctx, &store.UpdateResource{
 			ID:        resource.ID,
-			Reference: &presignURL,
+			Reference: &referenceURL,
 			Payload: &storepb.ResourcePayload{
 				Payload: &storepb.ResourcePayload_S3Object_{
 					S3Object: s3ObjectPayload,
