@@ -6,8 +6,7 @@ import useDebounce from "react-use/lib/useDebounce";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useFilterStore } from "@/store/module";
-import { useMemoList, useTagStore } from "@/store/v1";
+import { useMemoFilterStore, useMemoList, useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 import showRenameTagDialog from "../RenameTagDialog";
@@ -22,7 +21,7 @@ const TagsSection = (props: Props) => {
   const t = useTranslate();
   const location = useLocation();
   const user = useCurrentUser();
-  const filterStore = useFilterStore();
+  const memoFilterStore = useMemoFilterStore();
   const tagStore = useTagStore();
   const memoList = useMemoList();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
@@ -37,10 +36,14 @@ const TagsSection = (props: Props) => {
   };
 
   const handleTagClick = (tag: string) => {
-    if (filterStore.getState().tag === tag) {
-      filterStore.setTagFilter(undefined);
+    const isActive = memoFilterStore.getFiltersByFactor("tag").some((filter) => filter.value === tag);
+    if (isActive) {
+      memoFilterStore.removeFilter((f) => f.factor === "tag" && f.value === tag);
     } else {
-      filterStore.setTagFilter(tag);
+      memoFilterStore.addFilter({
+        factor: "tag",
+        value: tag,
+      });
     }
   };
 
@@ -103,10 +106,7 @@ const TagsSection = (props: Props) => {
                   </Menu>
                 </Dropdown>
                 <div
-                  className={clsx(
-                    "inline-flex flex-nowrap ml-0.5 gap-0.5 cursor-pointer max-w-[calc(100%-16px)]",
-                    filterStore.state.tag === tag && "text-blue-600 dark:text-blue-400",
-                  )}
+                  className={clsx("inline-flex flex-nowrap ml-0.5 gap-0.5 cursor-pointer max-w-[calc(100%-16px)]")}
                   onClick={() => handleTagClick(tag)}
                 >
                   <span className="truncate dark:opacity-80">{tag}</span>

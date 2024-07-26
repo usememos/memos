@@ -21,6 +21,7 @@ const SearchBar = () => {
           factor: "contentSearch",
           value: queryText,
         });
+        setQueryText("");
       }
     }
   };

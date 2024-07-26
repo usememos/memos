@@ -116,9 +116,7 @@ const UserStatisticsView = () => {
       <Divider className="!my-2 opacity-50" />
       <div className="w-full flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
         <div
-          className={clsx(
-            "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:shadow",
-          )}
+          className={clsx("w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center")}
           onClick={() => memoFilterStore.addFilter({ factor: "property.hasLink", value: "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
@@ -128,9 +126,7 @@ const UserStatisticsView = () => {
           <span className="text-sm truncate">{memoStats.link}</span>
         </div>
         <div
-          className={clsx(
-            "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:shadow",
-          )}
+          className={clsx("w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center")}
           onClick={() => memoFilterStore.addFilter({ factor: "property.hasTaskList", value: "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
@@ -154,9 +150,7 @@ const UserStatisticsView = () => {
           )}
         </div>
         <div
-          className={clsx(
-            "w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center cursor-pointer hover:shadow",
-          )}
+          className={clsx("w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center")}
           onClick={() => memoFilterStore.addFilter({ factor: "property.hasCode", value: "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
