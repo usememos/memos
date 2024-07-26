@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { combine } from "zustand/middleware";
 
 export type FilterFactor =
-  | "tag"
+  | "tagSearch"
   | "visibility"
   | "contentSearch"
   | "displayTime"

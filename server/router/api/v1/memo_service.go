@@ -711,7 +711,7 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
-		PayloadFind:     &store.FindMemoPayload{Tag: &request.OldTag},
+		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.OldTag}},
 		ExcludeComments: true,
 	}
 	if (request.Parent) != "memos/-" {
@@ -765,7 +765,7 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
-		PayloadFind:     &store.FindMemoPayload{Tag: &request.Tag},
+		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.Tag}},
 		ExcludeContent:  true,
 		ExcludeComments: true,
 	}
@@ -928,11 +928,11 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if len(filter.Visibilities) > 0 {
 			find.VisibilityList = filter.Visibilities
 		}
-		if filter.Tag != nil {
+		if filter.TagSearch != nil {
 			if find.PayloadFind == nil {
 				find.PayloadFind = &store.FindMemoPayload{}
 			}
-			find.PayloadFind.Tag = filter.Tag
+			find.PayloadFind.TagSearch = filter.TagSearch
 		}
 		if filter.OrderByPinned {
 			find.OrderByPinned = filter.OrderByPinned
@@ -1039,7 +1039,7 @@ func (s *APIV1Service) getContentLengthLimit(ctx context.Context) (int, error) {
 var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content_search", cel.ListType(cel.StringType)),
 	cel.Variable("visibilities", cel.ListType(cel.StringType)),
-	cel.Variable("tag", cel.StringType),
+	cel.Variable("tag_search", cel.ListType(cel.StringType)),
 	cel.Variable("order_by_pinned", cel.BoolType),
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
@@ -1058,7 +1058,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 type MemoFilter struct {
 	ContentSearch      []string
 	Visibilities       []store.Visibility
-	Tag                *string
+	TagSearch          []string
 	OrderByPinned      bool
 	DisplayTimeBefore  *int64
 	DisplayTimeAfter   *int64
@@ -1110,9 +1110,13 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 					visibilities = append(visibilities, store.Visibility(value))
 				}
 				filter.Visibilities = visibilities
-			} else if idExpr.Name == "tag" {
-				tag := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.Tag = &tag
+			} else if idExpr.Name == "tag_search" {
+				tagSearch := []string{}
+				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
+					value := expr.GetConstExpr().GetStringValue()
+					tagSearch = append(tagSearch, value)
+				}
+				filter.TagSearch = tagSearch
 			} else if idExpr.Name == "order_by_pinned" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.OrderByPinned = value

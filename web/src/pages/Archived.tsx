@@ -37,15 +37,19 @@ const Archived = () => {
     setIsRequesting(true);
     const filters = [`creator == "${user.name}"`, `row_status == "ARCHIVED"`];
     const contentSearch: string[] = [];
+    const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
       if (filter.factor === "contentSearch") {
         contentSearch.push(`"${filter.value}"`);
-      } else if (filter.factor === "tag") {
-        filters.push(`tag == "${filter.value}"`);
+      } else if (filter.factor === "tagSearch") {
+        tagSearch.push(`"${filter.value}"`);
       }
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
+    }
+    if (tagSearch.length > 0) {
+      filters.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
     const response = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,

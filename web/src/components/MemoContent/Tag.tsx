@@ -16,12 +16,12 @@ const Tag: React.FC<Props> = ({ content }: Props) => {
       return;
     }
 
-    const isActive = memoFilterStore.getFiltersByFactor("tag").some((filter) => filter.value === content);
+    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter) => filter.value === content);
     if (isActive) {
-      memoFilterStore.removeFilter((f) => f.factor === "tag" && f.value === content);
+      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === content);
     } else {
       memoFilterStore.addFilter({
-        factor: "tag",
+        factor: "tagSearch",
         value: content,
       });
     }

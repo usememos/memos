@@ -78,17 +78,17 @@ interface TagItemContainerProps {
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
   const { tag } = props;
   const memoFilterStore = useMemoFilterStore();
-  const tagFilters = memoFilterStore.getFiltersByFactor("tag");
+  const tagFilters = memoFilterStore.getFiltersByFactor("tagSearch");
   const isActive = tagFilters.some((f) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
   const [showSubTags, toggleSubTags] = useToggle(false);
 
   const handleTagClick = () => {
     if (isActive) {
-      memoFilterStore.removeFilter((f) => f.factor === "tag" && f.value === tag.text);
+      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === tag.text);
     } else {
       memoFilterStore.addFilter({
-        factor: "tag",
+        factor: "tagSearch",
         value: tag.text,
       });
     }

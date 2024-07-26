@@ -36,12 +36,12 @@ const TagsSection = (props: Props) => {
   };
 
   const handleTagClick = (tag: string) => {
-    const isActive = memoFilterStore.getFiltersByFactor("tag").some((filter) => filter.value === tag);
+    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter) => filter.value === tag);
     if (isActive) {
-      memoFilterStore.removeFilter((f) => f.factor === "tag" && f.value === tag);
+      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === tag);
     } else {
       memoFilterStore.addFilter({
-        factor: "tag",
+        factor: "tagSearch",
         value: tag,
       });
     }

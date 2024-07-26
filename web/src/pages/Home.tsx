@@ -39,11 +39,12 @@ const Home = () => {
     setIsRequesting(true);
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
+    const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
       if (filter.factor === "contentSearch") {
         contentSearch.push(`"${filter.value}"`);
-      } else if (filter.factor === "tag") {
-        filters.push(`tag == "${filter.value}"`);
+      } else if (filter.factor === "tagSearch") {
+        tagSearch.push(`"${filter.value}"`);
       } else if (filter.factor === "property.hasLink") {
         filters.push(`has_link == true`);
       } else if (filter.factor === "property.hasTaskList") {
@@ -54,6 +55,9 @@ const Home = () => {
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
+    }
+    if (tagSearch.length > 0) {
+      filters.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
     const response = await memoStore.fetchMemos({
       pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,

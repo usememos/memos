@@ -47,7 +47,7 @@ const MemoFilters = () => {
 
 const FactorIcon = ({ factor, className }: { factor: FilterFactor; className?: string }) => {
   const iconMap = {
-    tag: <Icon.Tag className={className} />,
+    tagSearch: <Icon.Tag className={className} />,
     visibility: <Icon.Eye className={className} />,
     contentSearch: <Icon.Search className={className} />,
     displayTime: <Icon.Calendar className={className} />,
