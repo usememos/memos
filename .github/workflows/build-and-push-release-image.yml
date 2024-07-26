@@ -54,6 +54,9 @@ jobs:
           tags: |
             type=semver,pattern={{version}},value=${{ env.VERSION }}
             type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
+            type=raw,value=stable
+          flavor: |
+            latest=true
 
       - name: Build and Push
         id: docker_build
