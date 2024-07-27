@@ -1,7 +1,7 @@
 import { Divider, Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { chain } from "lodash-es";
+import { countBy } from "lodash-es";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
@@ -53,14 +53,9 @@ const UserStatisticsView = () => {
         memoStats.incompleteTasks += 1;
       }
     });
-    const displayTimes = entities.map((entity) => entity.displayTime).filter(Boolean) as Date[];
-    const monthStrGroup = chain(displayTimes)
-      .map((date) => dayjs(date).format("YYYY-MM-DD"))
-      .countBy()
-      .value();
     setMemoStats(memoStats);
     setMemoAmount(entities.length);
-    setActivityStats(monthStrGroup);
+    setActivityStats(countBy(entities.map((entity) => dayjs(entity.displayTime).format("YYYY-MM-DD"))));
   }, [memoStore.stateId]);
 
   const rebuildMemoTags = async () => {
