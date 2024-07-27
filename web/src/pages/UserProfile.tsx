@@ -1,5 +1,6 @@
 import { Button } from "@mui/joy";
 import copy from "copy-to-clipboard";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -26,7 +27,9 @@ const UserProfile = () => {
   const memoFilterStore = useMemoFilterStore();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const sortedMemos = memoList.value.sort((a, b) => Number(b.pinned) - Number(a.pinned));
+  const sortedMemos = memoList.value
+    .sort((a, b) => dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix())
+    .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
     const username = params.username;

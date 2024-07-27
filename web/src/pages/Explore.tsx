@@ -1,5 +1,6 @@
 import { Button } from "@mui/joy";
 import clsx from "clsx";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import { ExploreSidebar, ExploreSidebarDrawer } from "@/components/ExploreSidebar";
@@ -22,7 +23,7 @@ const Explore = () => {
   const memoFilterStore = useMemoFilterStore();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const sortedMemos = memoList.value;
+  const sortedMemos = memoList.value.sort((a, b) => dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix());
 
   useEffect(() => {
     memoList.reset();

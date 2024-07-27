@@ -1,4 +1,5 @@
 import { Button, Tooltip } from "@mui/joy";
+import dayjs from "dayjs";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -23,7 +24,9 @@ const Archived = () => {
   const memoFilterStore = useMemoFilterStore();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const sortedMemos = memoList.value.filter((memo) => memo.rowStatus === RowStatus.ARCHIVED);
+  const sortedMemos = memoList.value
+    .filter((memo) => memo.rowStatus === RowStatus.ARCHIVED)
+    .sort((a, b) => dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix());
 
   useEffect(() => {
     memoList.reset();

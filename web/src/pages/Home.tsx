@@ -1,5 +1,6 @@
 import { Button } from "@mui/joy";
 import clsx from "clsx";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
@@ -26,6 +27,7 @@ const Home = () => {
   const [nextPageToken, setNextPageToken] = useState<string>("");
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
+    .sort((a, b) => dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix())
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
