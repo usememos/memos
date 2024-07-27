@@ -357,42 +357,6 @@ paths:
             $ref: '#/definitions/v1CreateMemoRequest'
       tags:
         - MemoService
-  /api/v1/memos/stats:
-    get:
-      summary: GetUserMemosStats gets stats of memos for a user.
-      operationId: MemoService_GetUserMemosStats
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1GetUserMemosStatsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            name is the name of the user to get stats for.
-            Format: users/{id}
-          in: query
-          required: false
-          type: string
-        - name: timezone
-          description: |-
-            timezone location
-            Format: uses tz identifier
-            https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-          in: query
-          required: false
-          type: string
-        - name: filter
-          description: Same as ListMemosRequest.filter
-          in: query
-          required: false
-          type: string
-      tags:
-        - MemoService
   /api/v1/memos:by-uid/{uid}:
     get:
       summary: GetMemoByUid gets a memo by uid
@@ -2417,17 +2381,6 @@ definitions:
       content:
         type: string
         format: byte
-  v1GetUserMemosStatsResponse:
-    type: object
-    properties:
-      stats:
-        type: object
-        additionalProperties:
-          type: integer
-          format: int32
-        description: |-
-          stats is the stats of memo creating/updating activities.
-          key is the year-month-day string. e.g. "2020-01-01".
   v1HTMLElementNode:
     type: object
     properties:
@@ -2555,11 +2508,11 @@ definitions:
   v1ListMemoPropertiesResponse:
     type: object
     properties:
-      properties:
+      entities:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1MemoProperty'
+          $ref: '#/definitions/v1MemoPropertyEntity'
   v1ListMemoReactionsResponse:
     type: object
     properties:
@@ -2744,6 +2697,21 @@ definitions:
         type: boolean
       hasIncompleteTasks:
         type: boolean
+  v1MemoPropertyEntity:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the memo property.
+          Format: memos/{id}/properties/{property_id}
+      property:
+        $ref: '#/definitions/v1MemoProperty'
+        readOnly: true
+      displayTime:
+        type: string
+        format: date-time
+        readOnly: true
   v1MemoRelation:
     type: object
     properties:

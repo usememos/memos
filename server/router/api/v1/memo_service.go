@@ -491,61 +491,6 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	return response, nil
 }
 
-func (s *APIV1Service) GetUserMemosStats(ctx context.Context, request *v1pb.GetUserMemosStatsRequest) (*v1pb.GetUserMemosStatsResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Name)
-	if err != nil {
-		return nil, errors.Wrap(err, "invalid user name")
-	}
-	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user")
-	}
-	if user == nil {
-		return nil, status.Errorf(codes.NotFound, "user not found")
-	}
-
-	normalRowStatus := store.Normal
-	memoFind := &store.FindMemo{
-		CreatorID:       &user.ID,
-		RowStatus:       &normalRowStatus,
-		ExcludeComments: true,
-		ExcludeContent:  true,
-	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter")
-	}
-
-	memos, err := s.Store.ListMemos(ctx, memoFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
-	}
-
-	location, err := time.LoadLocation(request.Timezone)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "invalid timezone location")
-	}
-
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
-	}
-	stats := make(map[string]int32)
-	for _, memo := range memos {
-		displayTs := memo.CreatedTs
-		if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
-			displayTs = memo.UpdatedTs
-		}
-		stats[time.Unix(displayTs, 0).In(location).Format("2006-01-02")]++
-	}
-
-	response := &v1pb.GetUserMemosStatsResponse{
-		Stats: stats,
-	}
-	return response, nil
-}
-
 func (s *APIV1Service) ExportMemos(ctx context.Context, request *v1pb.ExportMemosRequest) (*v1pb.ExportMemosResponse, error) {
 	normalRowStatus := store.Normal
 	memoFind := &store.FindMemo{
@@ -614,14 +559,28 @@ func (s *APIV1Service) ListMemoProperties(ctx context.Context, request *v1pb.Lis
 		return nil, status.Errorf(codes.Internal, "failed to list memos")
 	}
 
-	properties := []*v1pb.MemoProperty{}
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+	}
+
+	entities := []*v1pb.MemoPropertyEntity{}
 	for _, memo := range memos {
-		if memo.Payload.Property != nil {
-			properties = append(properties, convertMemoPropertyFromStore(memo.Payload.Property))
+		displayTs := memo.CreatedTs
+		if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+			displayTs = memo.UpdatedTs
 		}
+		entity := &v1pb.MemoPropertyEntity{
+			Name:        fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID),
+			DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
+		}
+		if memo.Payload.Property != nil {
+			entity.Property = convertMemoPropertyFromStore(memo.Payload.Property)
+		}
+		entities = append(entities, entity)
 	}
 	return &v1pb.ListMemoPropertiesResponse{
-		Properties: properties,
+		Entities: entities,
 	}, nil
 }
 

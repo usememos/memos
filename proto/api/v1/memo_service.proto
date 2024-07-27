@@ -123,11 +123,6 @@ service MemoService {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}/comments"};
     option (google.api.method_signature) = "name";
   }
-  // GetUserMemosStats gets stats of memos for a user.
-  rpc GetUserMemosStats(GetUserMemosStatsRequest) returns (GetUserMemosStatsResponse) {
-    option (google.api.http) = {get: "/api/v1/memos/stats"};
-    option (google.api.method_signature) = "username";
-  }
   // ListMemoReactions lists reactions for a memo.
   rpc ListMemoReactions(ListMemoReactionsRequest) returns (ListMemoReactionsResponse) {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}/reactions"};
@@ -281,7 +276,17 @@ message ListMemoPropertiesRequest {
 }
 
 message ListMemoPropertiesResponse {
-  repeated MemoProperty properties = 1;
+  repeated MemoPropertyEntity entities = 1;
+}
+
+message MemoPropertyEntity {
+  // The name of the memo property.
+  // Format: memos/{id}/properties/{property_id}
+  string name = 1;
+
+  MemoProperty property = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  google.protobuf.Timestamp display_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message RebuildMemoPropertyRequest {
@@ -375,26 +380,6 @@ message ListMemoCommentsRequest {
 
 message ListMemoCommentsResponse {
   repeated Memo memos = 1;
-}
-
-message GetUserMemosStatsRequest {
-  // name is the name of the user to get stats for.
-  // Format: users/{id}
-  string name = 1;
-
-  // timezone location
-  // Format: uses tz identifier
-  // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-  string timezone = 2;
-
-  // Same as ListMemosRequest.filter
-  string filter = 3;
-}
-
-message GetUserMemosStatsResponse {
-  // stats is the stats of memo creating/updating activities.
-  // key is the year-month-day string. e.g. "2020-01-01".
-  map<string, int32> stats = 1;
 }
 
 message ListMemoReactionsRequest {

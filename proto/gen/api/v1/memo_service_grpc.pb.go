@@ -38,7 +38,6 @@ const (
 	MemoService_ListMemoRelations_FullMethodName   = "/memos.api.v1.MemoService/ListMemoRelations"
 	MemoService_CreateMemoComment_FullMethodName   = "/memos.api.v1.MemoService/CreateMemoComment"
 	MemoService_ListMemoComments_FullMethodName    = "/memos.api.v1.MemoService/ListMemoComments"
-	MemoService_GetUserMemosStats_FullMethodName   = "/memos.api.v1.MemoService/GetUserMemosStats"
 	MemoService_ListMemoReactions_FullMethodName   = "/memos.api.v1.MemoService/ListMemoReactions"
 	MemoService_UpsertMemoReaction_FullMethodName  = "/memos.api.v1.MemoService/UpsertMemoReaction"
 	MemoService_DeleteMemoReaction_FullMethodName  = "/memos.api.v1.MemoService/DeleteMemoReaction"
@@ -84,8 +83,6 @@ type MemoServiceClient interface {
 	CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*Memo, error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error)
-	// GetUserMemosStats gets stats of memos for a user.
-	GetUserMemosStats(ctx context.Context, in *GetUserMemosStatsRequest, opts ...grpc.CallOption) (*GetUserMemosStatsResponse, error)
 	// ListMemoReactions lists reactions for a memo.
 	ListMemoReactions(ctx context.Context, in *ListMemoReactionsRequest, opts ...grpc.CallOption) (*ListMemoReactionsResponse, error)
 	// UpsertMemoReaction upserts a reaction for a memo.
@@ -282,16 +279,6 @@ func (c *memoServiceClient) ListMemoComments(ctx context.Context, in *ListMemoCo
 	return out, nil
 }
 
-func (c *memoServiceClient) GetUserMemosStats(ctx context.Context, in *GetUserMemosStatsRequest, opts ...grpc.CallOption) (*GetUserMemosStatsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetUserMemosStatsResponse)
-	err := c.cc.Invoke(ctx, MemoService_GetUserMemosStats_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *memoServiceClient) ListMemoReactions(ctx context.Context, in *ListMemoReactionsRequest, opts ...grpc.CallOption) (*ListMemoReactionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListMemoReactionsResponse)
@@ -362,8 +349,6 @@ type MemoServiceServer interface {
 	CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*Memo, error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error)
-	// GetUserMemosStats gets stats of memos for a user.
-	GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error)
 	// ListMemoReactions lists reactions for a memo.
 	ListMemoReactions(context.Context, *ListMemoReactionsRequest) (*ListMemoReactionsResponse, error)
 	// UpsertMemoReaction upserts a reaction for a memo.
@@ -430,9 +415,6 @@ func (UnimplementedMemoServiceServer) CreateMemoComment(context.Context, *Create
 }
 func (UnimplementedMemoServiceServer) ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMemoComments not implemented")
-}
-func (UnimplementedMemoServiceServer) GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserMemosStats not implemented")
 }
 func (UnimplementedMemoServiceServer) ListMemoReactions(context.Context, *ListMemoReactionsRequest) (*ListMemoReactionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMemoReactions not implemented")
@@ -780,24 +762,6 @@ func _MemoService_ListMemoComments_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemoService_GetUserMemosStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserMemosStatsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemoServiceServer).GetUserMemosStats(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MemoService_GetUserMemosStats_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemoServiceServer).GetUserMemosStats(ctx, req.(*GetUserMemosStatsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _MemoService_ListMemoReactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListMemoReactionsRequest)
 	if err := dec(in); err != nil {
@@ -930,10 +894,6 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListMemoComments",
 			Handler:    _MemoService_ListMemoComments_Handler,
-		},
-		{
-			MethodName: "GetUserMemosStats",
-			Handler:    _MemoService_GetUserMemosStats_Handler,
 		},
 		{
 			MethodName: "ListMemoReactions",

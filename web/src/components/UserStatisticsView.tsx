@@ -1,6 +1,7 @@
 import { Divider, Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import { chain } from "lodash-es";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
@@ -33,43 +34,36 @@ const UserStatisticsView = () => {
   const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
 
   useAsyncEffect(async () => {
-    const { properties } = await memoServiceClient.listMemoProperties({
+    const { entities } = await memoServiceClient.listMemoProperties({
       name: `memos/-`,
     });
     const memoStats: UserMemoStats = { link: 0, taskList: 0, code: 0, incompleteTasks: 0 };
-    properties.forEach((property) => {
-      if (property.hasLink) {
+    entities.forEach((entity) => {
+      const { property } = entity;
+      if (property?.hasLink) {
         memoStats.link += 1;
       }
-      if (property.hasTaskList) {
+      if (property?.hasTaskList) {
         memoStats.taskList += 1;
       }
-      if (property.hasCode) {
+      if (property?.hasCode) {
         memoStats.code += 1;
       }
-      if (property.hasIncompleteTasks) {
+      if (property?.hasIncompleteTasks) {
         memoStats.incompleteTasks += 1;
       }
     });
+    const displayTimes = entities.map((entity) => entity.displayTime).filter(Boolean) as Date[];
+    const monthStrGroup = chain(displayTimes)
+      .map((date) => dayjs(date).format("YYYY-MM-DD"))
+      .countBy()
+      .value();
     setMemoStats(memoStats);
-    setMemoAmount(properties.length);
-
-    const filters = [`row_status == "NORMAL"`];
-    const { stats } = await memoServiceClient.getUserMemosStats({
-      name: currentUser.name,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      filter: filters.join(" && "),
-    });
-    setActivityStats(
-      Object.fromEntries(
-        Object.entries(stats).filter(([date]) => {
-          return dayjs(date).format("YYYY-MM") === monthString;
-        }),
-      ),
-    );
+    setMemoAmount(entities.length);
+    setActivityStats(monthStrGroup);
   }, [memoStore.stateId]);
 
-  const handleRebuildMemoTags = async () => {
+  const rebuildMemoTags = async () => {
     await memoServiceClient.rebuildMemoProperty({
       name: "memos/-",
     });
@@ -77,12 +71,17 @@ const UserStatisticsView = () => {
     window.location.reload();
   };
 
+  const onCalendarClick = (date: string) => {
+    memoFilterStore.removeFilter((f) => f.factor === "displayTime");
+    memoFilterStore.addFilter({ factor: "displayTime", value: date });
+  };
+
   return (
     <div className="group w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
-      <div className="w-full mb-2 flex flex-row justify-between items-center">
+      <div className="w-full mb-1 flex flex-row justify-between items-center">
         <div className="relative text-base font-medium leading-6 flex flex-row items-center dark:text-gray-400">
           <Icon.CalendarDays className="w-5 h-auto mr-1 opacity-60" strokeWidth={1.5} />
-          <span>{new Date(monthString).toLocaleString(i18n.language, { year: "numeric", month: "long" })}</span>
+          <span>{dayjs(monthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}</span>
           <input
             className="inset-0 absolute z-1 opacity-0"
             type="month"
@@ -97,7 +96,7 @@ const UserStatisticsView = () => {
               <Icon.MoreVertical className="w-4 h-auto shrink-0 opacity-60" />
             </PopoverTrigger>
             <PopoverContent>
-              <button className="w-auto flex flex-row justify-between items-center gap-2 hover:opacity-80" onClick={handleRebuildMemoTags}>
+              <button className="w-auto flex flex-row justify-between items-center gap-2 hover:opacity-80" onClick={rebuildMemoTags}>
                 <Icon.RefreshCcw className="text-gray-400 w-4 h-auto cursor-pointer opacity-60" />
                 <span className="text-sm shrink-0 text-gray-500 dark:text-gray-400">Refresh</span>
               </button>
@@ -106,10 +105,10 @@ const UserStatisticsView = () => {
         </div>
       </div>
       <div className="w-full">
-        <ActivityCalendar month={monthString} selectedDate={selectedDate.toDateString()} data={activityStats} />
+        <ActivityCalendar month={monthString} selectedDate={selectedDate.toDateString()} data={activityStats} onClick={onCalendarClick} />
         {memoAmount > 0 && (
           <p className="mt-1 w-full text-xs italic opacity-80">
-            <span>{memoAmount}</span> memos in <span>{days}</span> days
+            <span>{memoAmount}</span> memos in <span>{days}</span> {days > 1 ? "days" : "day"}
           </p>
         )}
       </div>

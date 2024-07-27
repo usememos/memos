@@ -51,6 +51,10 @@ const Home = () => {
         filters.push(`has_task_list == true`);
       } else if (filter.factor === "property.hasCode") {
         filters.push(`has_code == true`);
+      } else if (filter.factor === "displayTime") {
+        const timestampAfter = getTimeStampByDate(new Date(filter.value)) / 1000;
+        filters.push(`display_time_after == ${timestampAfter}`);
+        filters.push(`display_time_before == ${timestampAfter + 60 * 60 * 24}`);
       }
     }
     if (contentSearch.length > 0) {

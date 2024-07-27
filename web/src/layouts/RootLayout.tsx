@@ -9,11 +9,13 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
+import { useMemoFilterStore } from "@/store/v1";
 
 const RootLayout = () => {
   const location = useLocation();
   const { sm } = useResponsiveWidth();
   const currentUser = useCurrentUser();
+  const memoFilterStore = useMemoFilterStore();
   const [collapsed, setCollapsed] = useLocalStorage<boolean>("navigation-collapsed", false);
   const [initialized, setInitialized] = useState(false);
 
@@ -26,6 +28,11 @@ const RootLayout = () => {
     }
     setInitialized(true);
   }, []);
+
+  useEffect(() => {
+    // When the route changes, remove all filters.
+    memoFilterStore.removeFilter(() => true);
+  }, [location.pathname]);
 
   return !initialized ? (
     <Loading />
