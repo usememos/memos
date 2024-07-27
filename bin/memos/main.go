@@ -31,12 +31,25 @@ const (
 )
 
 var (
-	instanceProfile *profile.Profile
-
 	rootCmd = &cobra.Command{
 		Use:   "memos",
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		Run: func(_ *cobra.Command, _ []string) {
+			instanceProfile := &profile.Profile{
+				Mode:         viper.GetString("mode"),
+				Addr:         viper.GetString("addr"),
+				Port:         viper.GetInt("port"),
+				Data:         viper.GetString("data"),
+				Driver:       viper.GetString("driver"),
+				DSN:          viper.GetString("dsn"),
+				Public:       viper.GetBool("public"),
+				PasswordAuth: viper.GetBool("password-auth"),
+				Version:      version.GetCurrentVersion(viper.GetString("mode")),
+			}
+			if err := instanceProfile.Validate(); err != nil {
+				panic(err)
+			}
+
 			ctx, cancel := context.WithCancel(context.Background())
 			dbDriver, err := db.NewDBDriver(instanceProfile)
 			if err != nil {
@@ -77,7 +90,7 @@ var (
 				}
 			}
 
-			printGreetings()
+			printGreetings(instanceProfile)
 
 			go func() {
 				<-c
@@ -91,11 +104,14 @@ var (
 	}
 )
 
-func Execute() error {
-	return rootCmd.Execute()
-}
-
 func init() {
+	viper.SetDefault("mode", "demo")
+	viper.SetDefault("driver", "sqlite")
+	viper.SetDefault("addr", "")
+	viper.SetDefault("port", 8081)
+	viper.SetDefault("public", false)
+	viper.SetDefault("password-auth", true)
+
 	rootCmd.PersistentFlags().String("mode", "demo", `mode of server, can be "prod" or "dev" or "demo"`)
 	rootCmd.PersistentFlags().String("addr", "", "address of server")
 	rootCmd.PersistentFlags().Int("port", 8081, "port of server")
@@ -143,29 +159,9 @@ func init() {
 	if err := viper.BindEnv("password-auth", "MEMOS_PASSWORD_AUTH"); err != nil {
 		panic(err)
 	}
+}
 
-	viper.SetDefault("mode", "demo")
-	viper.SetDefault("driver", "sqlite")
-	viper.SetDefault("addr", "")
-	viper.SetDefault("port", 8081)
-	viper.SetDefault("public", false)
-	viper.SetDefault("password-auth", true)
-
-	instanceProfile = &profile.Profile{
-		Mode:         viper.GetString("mode"),
-		Addr:         viper.GetString("addr"),
-		Port:         viper.GetInt("port"),
-		Data:         viper.GetString("data"),
-		Driver:       viper.GetString("driver"),
-		DSN:          viper.GetString("dsn"),
-		Public:       viper.GetBool("public"),
-		PasswordAuth: viper.GetBool("password-auth"),
-		Version:      version.GetCurrentVersion(viper.GetString("mode")),
-	}
-	if err := instanceProfile.Validate(); err != nil {
-		panic(err)
-	}
-
+func printGreetings(profile *profile.Profile) {
 	fmt.Printf(`---
 Server profile
 version: %s
@@ -178,15 +174,13 @@ public: %t
 password-auth: %t
 driver: %s
 ---
-`, instanceProfile.Version, instanceProfile.Data, instanceProfile.DSN, instanceProfile.Addr, instanceProfile.Port, instanceProfile.Mode, instanceProfile.Public, instanceProfile.PasswordAuth, instanceProfile.Driver)
-}
+`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Public, profile.PasswordAuth, profile.Driver)
 
-func printGreetings() {
 	print(greetingBanner)
-	if len(instanceProfile.Addr) == 0 {
-		fmt.Printf("Version %s has been started on port %d\n", instanceProfile.Version, instanceProfile.Port)
+	if len(profile.Addr) == 0 {
+		fmt.Printf("Version %s has been started on port %d\n", profile.Version, profile.Port)
 	} else {
-		fmt.Printf("Version %s has been started on address '%s' and port %d\n", instanceProfile.Version, instanceProfile.Addr, instanceProfile.Port)
+		fmt.Printf("Version %s has been started on address '%s' and port %d\n", profile.Version, profile.Addr, profile.Port)
 	}
 	fmt.Printf(`---
 See more in:
@@ -197,8 +191,7 @@ See more in:
 }
 
 func main() {
-	err := Execute()
-	if err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		panic(err)
 	}
 }

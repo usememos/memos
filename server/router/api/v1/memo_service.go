@@ -772,11 +772,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		displayTs = memo.UpdatedTs
 	}
 
-	creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &memo.CreatorID})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get creator")
-	}
-
 	name := fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID)
 	listMemoRelationsResponse, err := s.ListMemoRelations(ctx, &v1pb.ListMemoRelationsRequest{Name: name})
 	if err != nil {
@@ -807,7 +802,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Name:        name,
 		Uid:         memo.UID,
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
-		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
+		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, memo.CreatorID),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
