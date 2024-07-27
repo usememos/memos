@@ -140,7 +140,9 @@ func init() {
 
 	viper.SetEnvPrefix("memos")
 	viper.AutomaticEnv()
-	viper.BindEnv("password-auth", "MEMOS_PASSWORD_AUTH")
+	if err := viper.BindEnv("password-auth", "MEMOS_PASSWORD_AUTH"); err != nil {
+		panic(err)
+	}
 
 	viper.SetDefault("mode", "demo")
 	viper.SetDefault("driver", "sqlite")
