@@ -116,57 +116,61 @@ const SignIn = () => {
             {workspaceGeneralSetting.customProfile?.title || "Memos"}
           </p>
         </div>
-        <form className="w-full mt-2" onSubmit={handleFormSubmit}>
-          <div className="flex flex-col justify-start items-start w-full gap-4">
-            <div className="w-full flex flex-col justify-start items-start">
-              <span className="leading-8 text-gray-600">{t("common.username")}</span>
-              <Input
-                className="w-full"
-                size="lg"
-                type="text"
-                readOnly={actionBtnLoadingState.isLoading}
-                placeholder={t("common.username")}
-                value={username}
-                onChange={handleUsernameInputChanged}
-                required
+        {commonContext.profile.passwordAuth ? (
+          <form className="w-full mt-2" onSubmit={handleFormSubmit}>
+            <div className="flex flex-col justify-start items-start w-full gap-4">
+              <div className="w-full flex flex-col justify-start items-start">
+                <span className="leading-8 text-gray-600">{t("common.username")}</span>
+                <Input
+                  className="w-full"
+                  size="lg"
+                  type="text"
+                  readOnly={actionBtnLoadingState.isLoading}
+                  placeholder={t("common.username")}
+                  value={username}
+                  onChange={handleUsernameInputChanged}
+                  required
+                />
+              </div>
+              <div className="w-full flex flex-col justify-start items-start">
+                <span className="leading-8 text-gray-600">{t("common.password")}</span>
+                <Input
+                  className="w-full"
+                  size="lg"
+                  type="password"
+                  readOnly={actionBtnLoadingState.isLoading}
+                  placeholder={t("common.password")}
+                  value={password}
+                  onChange={handlePasswordInputChanged}
+                  required
+                />
+              </div>
+            </div>
+            <div className="flex flex-row justify-start items-center w-full mt-6">
+              <Checkbox
+                className="dark:!text-gray-400"
+                label={t("common.remember-me")}
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
               />
             </div>
-            <div className="w-full flex flex-col justify-start items-start">
-              <span className="leading-8 text-gray-600">{t("common.password")}</span>
-              <Input
+            <div className="flex flex-row justify-end items-center w-full mt-6">
+              <Button
                 className="w-full"
-                size="lg"
-                type="password"
-                readOnly={actionBtnLoadingState.isLoading}
-                placeholder={t("common.password")}
-                value={password}
-                onChange={handlePasswordInputChanged}
-                required
-              />
+                size="md"
+                type="submit"
+                disabled={actionBtnLoadingState.isLoading}
+                loading={actionBtnLoadingState.isLoading}
+                onClick={handleSignInButtonClick}
+              >
+                {t("common.sign-in")}
+              </Button>
             </div>
-          </div>
-          <div className="flex flex-row justify-start items-center w-full mt-6">
-            <Checkbox
-              className="dark:!text-gray-400"
-              label={t("common.remember-me")}
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-            />
-          </div>
-          <div className="flex flex-row justify-end items-center w-full mt-6">
-            <Button
-              className="w-full"
-              size="md"
-              type="submit"
-              disabled={actionBtnLoadingState.isLoading}
-              loading={actionBtnLoadingState.isLoading}
-              onClick={handleSignInButtonClick}
-            >
-              {t("common.sign-in")}
-            </Button>
-          </div>
-        </form>
-        {commonContext.profile.public && (
+          </form>
+        ) : (
+          <p className="w-full text-2xl mt-2 dark:text-gray-500">Password auth is not allowed.</p>
+        )}
+        {commonContext.profile.public && commonContext.profile.passwordAuth && (
           <p className="w-full mt-4 text-sm">
             <span className="dark:text-gray-500">{t("auth.sign-up-tip")}</span>
             <Link to="/auth/signup" className="cursor-pointer ml-2 text-blue-600 hover:underline" unstable_viewTransition>

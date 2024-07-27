@@ -52,7 +52,7 @@ func (d *DB) GetCurrentDBSize(ctx context.Context) (int64, error) {
 		" GROUP BY `table_schema`"
 	rows, err := d.db.QueryContext(ctx, query, d.config.DBName)
 	if err != nil {
-		slog.Error("Query db size error, make sure you have enough privilege", err)
+		slog.Error("Query db size error, make sure you have enough privilege", "error", err)
 		return 0, err
 	}
 	defer rows.Close()

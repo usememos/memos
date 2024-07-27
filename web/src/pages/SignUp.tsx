@@ -1,6 +1,6 @@
 import { Button, Input } from "@mui/joy";
 import { ClientError } from "nice-grpc-web";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import AppearanceSelect from "@/components/AppearanceSelect";
@@ -25,12 +25,6 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
-
-  useEffect(() => {
-    if (!commonContext.profile.public) {
-      toast.error("Sign up is not allowed.");
-    }
-  }, []);
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -85,49 +79,55 @@ const SignUp = () => {
             {workspaceGeneralSetting.customProfile?.title || "Memos"}
           </p>
         </div>
-        <p className="w-full text-2xl mt-2 dark:text-gray-500">{t("auth.create-your-account")}</p>
-        <form className="w-full mt-2" onSubmit={handleFormSubmit}>
-          <div className="flex flex-col justify-start items-start w-full gap-4">
-            <div className="w-full flex flex-col justify-start items-start">
-              <span className="leading-8 text-gray-600">{t("common.username")}</span>
-              <Input
-                className="w-full"
-                size="lg"
-                type="text"
-                readOnly={actionBtnLoadingState.isLoading}
-                placeholder={t("common.username")}
-                value={username}
-                onChange={handleUsernameInputChanged}
-                required
-              />
-            </div>
-            <div className="w-full flex flex-col justify-start items-start">
-              <span className="leading-8 text-gray-600">{t("common.password")}</span>
-              <Input
-                className="w-full"
-                size="lg"
-                type="password"
-                readOnly={actionBtnLoadingState.isLoading}
-                placeholder={t("common.password")}
-                value={password}
-                onChange={handlePasswordInputChanged}
-                required
-              />
-            </div>
-          </div>
-          <div className="flex flex-row justify-end items-center w-full mt-6">
-            <Button
-              className="w-full"
-              size="md"
-              type="submit"
-              disabled={actionBtnLoadingState.isLoading}
-              loading={actionBtnLoadingState.isLoading}
-              onClick={handleSignUpButtonClick}
-            >
-              {t("common.sign-up")}
-            </Button>
-          </div>
-        </form>
+        {commonContext.profile.public ? (
+          <>
+            <p className="w-full text-2xl mt-2 dark:text-gray-500">{t("auth.create-your-account")}</p>
+            <form className="w-full mt-2" onSubmit={handleFormSubmit}>
+              <div className="flex flex-col justify-start items-start w-full gap-4">
+                <div className="w-full flex flex-col justify-start items-start">
+                  <span className="leading-8 text-gray-600">{t("common.username")}</span>
+                  <Input
+                    className="w-full"
+                    size="lg"
+                    type="text"
+                    readOnly={actionBtnLoadingState.isLoading}
+                    placeholder={t("common.username")}
+                    value={username}
+                    onChange={handleUsernameInputChanged}
+                    required
+                  />
+                </div>
+                <div className="w-full flex flex-col justify-start items-start">
+                  <span className="leading-8 text-gray-600">{t("common.password")}</span>
+                  <Input
+                    className="w-full"
+                    size="lg"
+                    type="password"
+                    readOnly={actionBtnLoadingState.isLoading}
+                    placeholder={t("common.password")}
+                    value={password}
+                    onChange={handlePasswordInputChanged}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex flex-row justify-end items-center w-full mt-6">
+                <Button
+                  className="w-full"
+                  size="md"
+                  type="submit"
+                  disabled={actionBtnLoadingState.isLoading}
+                  loading={actionBtnLoadingState.isLoading}
+                  onClick={handleSignUpButtonClick}
+                >
+                  {t("common.sign-up")}
+                </Button>
+              </div>
+            </form>
+          </>
+        ) : (
+          <p className="w-full text-2xl mt-2 dark:text-gray-500">Sign up is not allowed.</p>
+        )}
         {!commonContext.profile.owner ? (
           <p className="w-full mt-4 text-sm font-medium dark:text-gray-500">{t("auth.host-tip")}</p>
         ) : (

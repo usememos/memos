@@ -3149,3 +3149,6 @@ definitions:
       public:
         type: boolean
         description: public is a flag that the instance is open for other users.
+      passwordAuth:
+        type: boolean
+        description: password_auth is a flag whether the instance allows password authentication.

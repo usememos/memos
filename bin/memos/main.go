@@ -14,6 +14,7 @@ import (
 
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/server/version"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 )
@@ -30,13 +31,6 @@ const (
 )
 
 var (
-	mode            string
-	addr            string
-	port            int
-	data            string
-	driver          string
-	dsn             string
-	public          bool
 	instanceProfile *profile.Profile
 
 	rootCmd = &cobra.Command{
@@ -47,26 +41,26 @@ var (
 			dbDriver, err := db.NewDBDriver(instanceProfile)
 			if err != nil {
 				cancel()
-				slog.Error("failed to create db driver", err)
+				slog.Error("failed to create db driver", "error", err)
 				return
 			}
 			if err := dbDriver.Migrate(ctx); err != nil {
 				cancel()
-				slog.Error("failed to migrate database", err)
+				slog.Error("failed to migrate database", "error", err)
 				return
 			}
 
 			storeInstance := store.New(dbDriver, instanceProfile)
 			if err := storeInstance.MigrateManually(ctx); err != nil {
 				cancel()
-				slog.Error("failed to migrate manually", err)
+				slog.Error("failed to migrate manually", "error", err)
 				return
 			}
 
 			s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 			if err != nil {
 				cancel()
-				slog.Error("failed to create server", err)
+				slog.Error("failed to create server", "error", err)
 				return
 			}
 
@@ -78,7 +72,7 @@ var (
 
 			if err := s.Start(ctx); err != nil {
 				if err != http.ErrServerClosed {
-					slog.Error("failed to start server", err)
+					slog.Error("failed to start server", "error", err)
 					cancel()
 				}
 			}
@@ -102,15 +96,14 @@ func Execute() error {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
-	rootCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "demo", `mode of server, can be "prod" or "dev" or "demo"`)
-	rootCmd.PersistentFlags().StringVarP(&addr, "addr", "a", "", "address of server")
-	rootCmd.PersistentFlags().IntVarP(&port, "port", "p", 8081, "port of server")
-	rootCmd.PersistentFlags().StringVarP(&data, "data", "d", "", "data directory")
-	rootCmd.PersistentFlags().StringVarP(&driver, "driver", "", "", "database driver")
-	rootCmd.PersistentFlags().StringVarP(&dsn, "dsn", "", "", "database source name(aka. DSN)")
-	rootCmd.PersistentFlags().BoolVarP(&public, "public", "", false, "")
+	rootCmd.PersistentFlags().String("mode", "demo", `mode of server, can be "prod" or "dev" or "demo"`)
+	rootCmd.PersistentFlags().String("addr", "", "address of server")
+	rootCmd.PersistentFlags().Int("port", 8081, "port of server")
+	rootCmd.PersistentFlags().String("data", "", "data directory")
+	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
+	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
+	rootCmd.PersistentFlags().Bool("public", false, "")
+	rootCmd.PersistentFlags().Bool("password-auth", true, "")
 
 	err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode"))
 	if err != nil {
@@ -140,22 +133,32 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	err = viper.BindPFlag("password-auth", rootCmd.PersistentFlags().Lookup("password-auth"))
+	if err != nil {
+		panic(err)
+	}
 
 	viper.SetDefault("mode", "demo")
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("addr", "")
 	viper.SetDefault("port", 8081)
 	viper.SetDefault("public", false)
+	viper.SetDefault("password-auth", true)
 	viper.SetEnvPrefix("memos")
-}
 
-func initConfig() {
-	viper.AutomaticEnv()
-	var err error
-	instanceProfile, err = profile.GetProfile()
-	if err != nil {
-		slog.Error("failed to get profile", err)
-		return
+	instanceProfile = &profile.Profile{
+		Mode:         viper.GetString("mode"),
+		Addr:         viper.GetString("addr"),
+		Port:         viper.GetInt("port"),
+		Data:         viper.GetString("data"),
+		Driver:       viper.GetString("driver"),
+		DSN:          viper.GetString("dsn"),
+		Public:       viper.GetBool("public"),
+		PasswordAuth: viper.GetBool("password-auth"),
+		Version:      version.GetCurrentVersion(viper.GetString("mode")),
+	}
+	if err := instanceProfile.Validate(); err != nil {
+		panic(err)
 	}
 
 	fmt.Printf(`---
@@ -167,9 +170,10 @@ addr: %s
 port: %d
 mode: %s
 public: %t
+password-auth: %t
 driver: %s
 ---
-`, instanceProfile.Version, instanceProfile.Data, instanceProfile.DSN, instanceProfile.Addr, instanceProfile.Port, instanceProfile.Mode, instanceProfile.Public, instanceProfile.Driver)
+`, instanceProfile.Version, instanceProfile.Data, instanceProfile.DSN, instanceProfile.Addr, instanceProfile.Port, instanceProfile.Mode, instanceProfile.Public, instanceProfile.PasswordAuth, instanceProfile.Driver)
 }
 
 func printGreetings() {

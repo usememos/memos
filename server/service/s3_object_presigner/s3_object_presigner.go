@@ -63,7 +63,7 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) {
 
 		s3Client, err := s3.NewClient(ctx, s3Config)
 		if err != nil {
-			slog.Error("Failed to create S3 client", slog.Any("err", err))
+			slog.Error("Failed to create S3 client", "error", err)
 			continue
 		}
 

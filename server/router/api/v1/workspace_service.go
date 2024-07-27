@@ -13,9 +13,10 @@ import (
 
 func (s *APIV1Service) GetWorkspaceProfile(ctx context.Context, _ *v1pb.GetWorkspaceProfileRequest) (*v1pb.WorkspaceProfile, error) {
 	workspaceProfile := &v1pb.WorkspaceProfile{
-		Version: s.Profile.Version,
-		Mode:    s.Profile.Mode,
-		Public:  s.Profile.Public,
+		Version:      s.Profile.Version,
+		Mode:         s.Profile.Mode,
+		Public:       s.Profile.Public,
+		PasswordAuth: s.Profile.PasswordAuth,
 	}
 	owner, err := s.GetInstanceOwner(ctx)
 	if err != nil {
@@ -24,8 +25,9 @@ func (s *APIV1Service) GetWorkspaceProfile(ctx context.Context, _ *v1pb.GetWorks
 	if owner != nil {
 		workspaceProfile.Owner = owner.Name
 	} else {
-		// If owner is not found, set public to true.
+		// If owner is not found, set Public/PasswordAuth to true.
 		workspaceProfile.Public = true
+		workspaceProfile.PasswordAuth = true
 	}
 	return workspaceProfile, nil
 }
