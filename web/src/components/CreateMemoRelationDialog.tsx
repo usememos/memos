@@ -4,7 +4,6 @@ import { toast } from "react-hot-toast";
 import useDebounce from "react-use/lib/useDebounce";
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
-import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -112,7 +111,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           renderOption={(props, memo) => (
             <AutocompleteOption {...props}>
               <div className="w-full flex flex-col justify-start items-start">
-                <p className="text-xs text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</p>
+                <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
                 <p className="mt-0.5 text-sm leading-5 line-clamp-2">{searchText ? getHighlightedContent(memo.content) : memo.snippet}</p>
               </div>
             </AutocompleteOption>
@@ -121,7 +120,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
             memos.map((memo) => (
               <Chip key={memo.name} className="!max-w-full !rounded" variant="outlined" color="neutral">
                 <div className="w-full flex flex-col justify-start items-start">
-                  <p className="text-xs text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</p>
+                  <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
                   <span className="w-full text-sm leading-5 truncate">{memo.content}</span>
                 </div>
               </Chip>

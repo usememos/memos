@@ -9,7 +9,6 @@ import MemoFilters from "@/components/MemoFilters";
 import MobileHeader from "@/components/MobileHeader";
 import SearchBar from "@/components/SearchBar";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
-import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v1/common";
@@ -24,9 +23,7 @@ const Archived = () => {
   const memoFilterStore = useMemoFilterStore();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const sortedMemos = memoList.value
-    .filter((memo) => memo.rowStatus === RowStatus.ARCHIVED)
-    .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
+  const sortedMemos = memoList.value.filter((memo) => memo.rowStatus === RowStatus.ARCHIVED);
 
   useEffect(() => {
     memoList.reset();

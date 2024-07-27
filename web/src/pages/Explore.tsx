@@ -8,7 +8,6 @@ import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
-import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
@@ -23,7 +22,7 @@ const Explore = () => {
   const memoFilterStore = useMemoFilterStore();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
+  const sortedMemos = memoList.value;
 
   useEffect(() => {
     memoList.reset();

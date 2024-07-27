@@ -9,7 +9,6 @@ import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
-import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
@@ -27,7 +26,6 @@ const Home = () => {
   const [nextPageToken, setNextPageToken] = useState<string>("");
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
-    .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
@@ -52,7 +50,7 @@ const Home = () => {
       } else if (filter.factor === "property.hasCode") {
         filters.push(`has_code == true`);
       } else if (filter.factor === "displayTime") {
-        const timestampAfter = getTimeStampByDate(new Date(filter.value)) / 1000;
+        const timestampAfter = new Date(filter.value).getTime() / 1000;
         filters.push(`display_time_after == ${timestampAfter}`);
         filters.push(`display_time_before == ${timestampAfter + 60 * 60 * 24}`);
       }

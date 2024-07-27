@@ -82,7 +82,7 @@ const UserStatisticsView = () => {
             type="month"
             value={monthString}
             onFocus={(e: any) => e.target.showPicker()}
-            onChange={(e) => setMonthString(e.target.value)}
+            onChange={(e) => setMonthString(e.target.value || dayjs().format("YYYY-MM"))}
           />
         </div>
         <div className="invisible group-hover:visible flex justify-end items-center">

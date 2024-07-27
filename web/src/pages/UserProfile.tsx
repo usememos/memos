@@ -10,7 +10,6 @@ import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import UserAvatar from "@/components/UserAvatar";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
-import { getTimeStampByDate } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
 import { useMemoFilterStore, useMemoList, useMemoStore, useUserStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -27,9 +26,7 @@ const UserProfile = () => {
   const memoFilterStore = useMemoFilterStore();
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
-  const sortedMemos = memoList.value
-    .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
-    .sort((a, b) => Number(b.pinned) - Number(a.pinned));
+  const sortedMemos = memoList.value.sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
     const username = params.username;
