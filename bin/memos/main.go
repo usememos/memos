@@ -138,13 +138,16 @@ func init() {
 		panic(err)
 	}
 
+	viper.SetEnvPrefix("memos")
+	viper.AutomaticEnv()
+	viper.BindEnv("password-auth", "MEMOS_PASSWORD_AUTH")
+
 	viper.SetDefault("mode", "demo")
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("addr", "")
 	viper.SetDefault("port", 8081)
 	viper.SetDefault("public", false)
 	viper.SetDefault("password-auth", true)
-	viper.SetEnvPrefix("memos")
 
 	instanceProfile = &profile.Profile{
 		Mode:         viper.GetString("mode"),
