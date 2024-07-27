@@ -40,8 +40,8 @@ const SignIn = () => {
 
   useEffect(() => {
     if (commonContext.profile.mode === "demo") {
-      setUsername("memos-demo");
-      setPassword("secret");
+      setUsername("yourselfhosted");
+      setPassword("yourselfhosted");
     }
   }, [commonContext.profile.mode]);
 
