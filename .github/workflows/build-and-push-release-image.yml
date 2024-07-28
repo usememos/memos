@@ -3,8 +3,11 @@ name: build-and-push-release-image
 on:
   push:
     tags:
-      # Run on pushing a tag in the format of 'v0.0.0'
-      - "v[0-9]+.[0-9]+.[0-9]+"
+      # Run on pushing tags like 'v1.0.0'
+      - "v*.*.*"
+    branches:
+      # Run on pushing branches like 'v1.0.0'
+      - "v*.*.*"
 
 jobs:
   build-and-push-release-image:
@@ -54,9 +57,15 @@ jobs:
           tags: |
             type=semver,pattern={{version}},value=${{ env.VERSION }}
             type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
-            type=raw,value=stable
           flavor: |
             latest=true
+          labels: |
+            org.opencontainers.image.version=${{ env.VERSION }}
+
+      # Add stable tag if it's from a tag release.
+      - name: Add stable tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "STABLE_TAG=stable" >> $GITHUB_ENV
 
       - name: Build and Push
         id: docker_build
@@ -66,5 +75,5 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}${{ env.STABLE_TAG && ','+env.STABLE_TAG }}
           labels: ${{ steps.meta.outputs.labels }}
