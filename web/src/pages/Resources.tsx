@@ -1,4 +1,5 @@
 import { Divider, IconButton, Input, Tooltip } from "@mui/joy";
+import dayjs from "dayjs";
 import { includes } from "lodash-es";
 import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
@@ -13,22 +14,15 @@ import { Resource } from "@/types/proto/api/v1/resource_service";
 import { useTranslate } from "@/utils/i18n";
 
 function groupResourcesByDate(resources: Resource[]) {
-  const grouped = new Map<number, Resource[]>();
+  const grouped = new Map<string, Resource[]>();
   resources
-    .sort((a: Resource, b: Resource) => {
-      const a_date = new Date(a.createTime as any);
-      const b_date = new Date(b.createTime as any);
-      return b_date.getTime() - a_date.getTime();
-    })
+    .sort((a, b) => dayjs(b.createTime).unix() - dayjs(a.createTime).unix())
     .forEach((item) => {
-      const date = new Date(item.createTime as any);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const timestamp = Date.UTC(year, month - 1, 1);
-      if (!grouped.has(timestamp)) {
-        grouped.set(timestamp, []);
+      const monthStr = dayjs(item.createTime).format("YYYY-MM");
+      if (!grouped.has(monthStr)) {
+        grouped.set(monthStr, []);
       }
-      grouped.get(timestamp)?.push(item);
+      grouped.get(monthStr)?.push(item);
     });
   return grouped;
 }
@@ -101,13 +95,14 @@ const Resources = () => {
                   </div>
                 ) : (
                   <div className={"w-full h-auto px-2 flex flex-col justify-start items-start gap-y-8"}>
-                    {Array.from(groupedResources.entries()).map(([timestamp, resources]) => {
-                      const date = new Date(timestamp);
+                    {Array.from(groupedResources.entries()).map(([monthStr, resources]) => {
                       return (
-                        <div key={timestamp} className="w-full flex flex-row justify-start items-start">
+                        <div key={monthStr} className="w-full flex flex-row justify-start items-start">
                           <div className="w-16 sm:w-24 pt-4 sm:pl-4 flex flex-col justify-start items-start">
-                            <span className="text-sm opacity-60">{date.getFullYear()}</span>
-                            <span className="font-medium text-xl">{date.toLocaleString(i18n.language, { month: "short" })}</span>
+                            <span className="text-sm opacity-60">{dayjs(monthStr).year()}</span>
+                            <span className="font-medium text-xl">
+                              {dayjs(monthStr).toDate().toLocaleString(i18n.language, { month: "short" })}
+                            </span>
                           </div>
                           <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                             {resources.map((resource) => {
