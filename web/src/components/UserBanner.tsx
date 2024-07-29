@@ -17,7 +17,7 @@ const UserBanner = (props: Props) => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const user = useCurrentUser();
-  const title = user ? user.nickname || user.username : "memos";
+  const title = user ? user.nickname || user.username : "Memos";
   const avatarUrl = user ? user.avatarUrl : "/full-logo.webp";
 
   const handleSignOut = async () => {
