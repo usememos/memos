@@ -92,7 +92,7 @@ const ActivityCalendar = (props: Props) => {
             </div>
           )
         ) : (
-          <div key={`${date}-${index}`} className={clsx("shrink-0 w-6 h-6 opacity-0", getCellAdditionalStyles(count, maxCount))}></div>
+          <div key={`${date}-${index}`} className="shrink-0 w-6 h-6 opacity-0"></div>
         );
       })}
     </div>
