@@ -108,12 +108,16 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if find.OrderByPinned {
 		orderBy = append(orderBy, "`pinned` DESC")
 	}
-	if find.OrderByUpdatedTs {
-		orderBy = append(orderBy, "`updated_ts` DESC")
-	} else {
-		orderBy = append(orderBy, "`created_ts` DESC")
+	order := "DESC"
+	if find.OrderByTimeAsc {
+		order = "ASC"
 	}
-	orderBy = append(orderBy, "`id` DESC")
+	if find.OrderByUpdatedTs {
+		orderBy = append(orderBy, "`updated_ts` "+order)
+	} else {
+		orderBy = append(orderBy, "`created_ts` "+order)
+	}
+	orderBy = append(orderBy, "`id` "+order)
 	if find.Random {
 		orderBy = []string{"RANDOM()"}
 	}

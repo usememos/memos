@@ -80,6 +80,8 @@ type FindMemo struct {
 	Offset           *int
 	OrderByUpdatedTs bool
 	OrderByPinned    bool
+
+	OrderByTimeAsc bool
 }
 
 type FindMemoPayload struct {

@@ -891,6 +891,9 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if filter.OrderByPinned {
 			find.OrderByPinned = filter.OrderByPinned
 		}
+		if filter.OrderByTimeAsc {
+			find.OrderByTimeAsc = filter.OrderByTimeAsc
+		}
 		if filter.DisplayTimeAfter != nil {
 			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
@@ -995,6 +998,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("visibilities", cel.ListType(cel.StringType)),
 	cel.Variable("tag_search", cel.ListType(cel.StringType)),
 	cel.Variable("order_by_pinned", cel.BoolType),
+	cel.Variable("order_by_time_asc", cel.BoolType),
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
@@ -1014,6 +1018,7 @@ type MemoFilter struct {
 	Visibilities       []store.Visibility
 	TagSearch          []string
 	OrderByPinned      bool
+	OrderByTimeAsc     bool
 	DisplayTimeBefore  *int64
 	DisplayTimeAfter   *int64
 	Creator            *string
@@ -1074,6 +1079,9 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 			} else if idExpr.Name == "order_by_pinned" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.OrderByPinned = value
+			} else if idExpr.Name == "order_by_time_asc" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.OrderByTimeAsc = value
 			} else if idExpr.Name == "display_time_before" {
 				displayTimeBefore := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.DisplayTimeBefore = &displayTimeBefore
