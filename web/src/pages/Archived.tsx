@@ -26,7 +26,11 @@ const Archived = () => {
   const [nextPageToken, setNextPageToken] = useState<string>("");
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ARCHIVED)
-    .sort((a, b) => dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix());
+    .sort((a, b) =>
+      memoFilterStore.orderByTimeAsc && memoFilterStore.filters.length > 0
+        ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
+        : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
+    );
 
   useEffect(() => {
     memoList.reset();
@@ -44,6 +48,9 @@ const Archived = () => {
       } else if (filter.factor === "tagSearch") {
         tagSearch.push(`"${filter.value}"`);
       }
+    }
+    if (memoFilterStore.orderByTimeAsc && memoFilterStore.filters.length > 0) {
+      filters.push(`order_by_time_asc == true`);
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);

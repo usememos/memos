@@ -27,7 +27,11 @@ const Home = () => {
   const [nextPageToken, setNextPageToken] = useState<string>("");
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
-    .sort((a, b) => dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix())
+    .sort((a, b) =>
+      memoFilterStore.orderByTimeAsc && memoFilterStore.filters.length > 0
+        ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
+        : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
+    )
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
@@ -56,6 +60,9 @@ const Home = () => {
         filters.push(`display_time_after == ${timestampAfter}`);
         filters.push(`display_time_before == ${timestampAfter + 60 * 60 * 24}`);
       }
+    }
+    if (memoFilterStore.orderByTimeAsc && memoFilterStore.filters.length > 0) {
+      filters.push(`order_by_time_asc == true`);
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
