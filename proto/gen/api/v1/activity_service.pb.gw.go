@@ -87,6 +87,7 @@ func local_request_ActivityService_GetActivity_0(ctx context.Context, marshaler 
 // UnaryRPC     :call ActivityServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterActivityServiceHandlerFromEndpoint instead.
+// GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterActivityServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ActivityServiceServer) error {
 
 	mux.Handle("GET", pattern_ActivityService_GetActivity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
@@ -152,7 +153,7 @@ func RegisterActivityServiceHandler(ctx context.Context, mux *runtime.ServeMux, 
 // to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ActivityServiceClient".
 // Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ActivityServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "ActivityServiceClient" to call the correct interceptors.
+// "ActivityServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
 func RegisterActivityServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ActivityServiceClient) error {
 
 	mux.Handle("GET", pattern_ActivityService_GetActivity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
