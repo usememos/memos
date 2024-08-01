@@ -12,15 +12,16 @@ option go_package = "gen/api/v1";
 service ActivityService {
   // GetActivity returns the activity with the given id.
   rpc GetActivity(GetActivityRequest) returns (Activity) {
-    option (google.api.http) = {get: "/api/v1/activities/{id}"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {get: "/api/v1/{name=activities/*}"};
+    option (google.api.method_signature) = "name";
   }
 }
 
 message Activity {
-  // The system-generated unique identifier for the activity.
-  int32 id = 1;
-  // The system-generated unique identifier for the user who created the activity.
+  // The name of the activity.
+  // Format: activities/{id}
+  string name = 1;
+  // The uid of the user who created the activity.
   int32 creator_id = 2;
   // The type of the activity.
   string type = 3;
@@ -30,6 +31,11 @@ message Activity {
   google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The payload of the activity.
   ActivityPayload payload = 6;
+}
+
+message ActivityPayload {
+  ActivityMemoCommentPayload memo_comment = 1;
+  ActivityVersionUpdatePayload version_update = 2;
 }
 
 // ActivityMemoCommentPayload represents the payload of a memo comment activity.
@@ -45,12 +51,8 @@ message ActivityVersionUpdatePayload {
   string version = 1;
 }
 
-message ActivityPayload {
-  ActivityMemoCommentPayload memo_comment = 1;
-  ActivityVersionUpdatePayload version_update = 2;
-}
-
 message GetActivityRequest {
-  // The system-generated unique identifier for the activity.
-  int32 id = 1;
+  // The name of the activity.
+  // Format: activities/{id}
+  string name = 1;
 }

@@ -3,7 +3,7 @@ import { combine } from "zustand/middleware";
 import { workspaceSettingServiceClient } from "@/grpcweb";
 import { WorkspaceSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
-import { WorkspaceSettingPrefix } from "./resourceName";
+import { workspaceSettingNamePrefix } from "./resourceName";
 
 interface State {
   workspaceSettingByName: Record<string, WorkspaceSetting>;
@@ -19,11 +19,11 @@ export const useWorkspaceSettingStore = create(
       return get();
     },
     fetchWorkspaceSetting: async (key: WorkspaceSettingKey) => {
-      const setting = await workspaceSettingServiceClient.getWorkspaceSetting({ name: `${WorkspaceSettingPrefix}${key}` });
+      const setting = await workspaceSettingServiceClient.getWorkspaceSetting({ name: `${workspaceSettingNamePrefix}${key}` });
       set({ workspaceSettingByName: { ...get().workspaceSettingByName, [setting.name]: setting } });
     },
     getWorkspaceSettingByKey: (key: WorkspaceSettingKey): WorkspaceSetting => {
-      return get().workspaceSettingByName[`${WorkspaceSettingPrefix}${key}`] || WorkspaceSetting.fromPartial({});
+      return get().workspaceSettingByName[`${workspaceSettingNamePrefix}${key}`] || WorkspaceSetting.fromPartial({});
     },
     setWorkspaceSetting: async (setting: WorkspaceSetting) => {
       await workspaceSettingServiceClient.setWorkspaceSetting({ setting });

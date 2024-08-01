@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
-import { useInboxStore } from "@/store/v1";
+import { activityNamePrefix, useInboxStore } from "@/store/v1";
 import { Activity } from "@/types/proto/api/v1/activity_service";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { useTranslate } from "@/utils/i18n";
@@ -25,7 +25,7 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
 
     (async () => {
       const activity = await activityServiceClient.getActivity({
-        id: inbox.activityId,
+        name: `${activityNamePrefix}${inbox.activityId}`,
       });
       setActivity(activity);
     })();

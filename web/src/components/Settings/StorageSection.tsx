@@ -3,7 +3,7 @@ import { isEqual } from "lodash-es";
 import { useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
 import {
   WorkspaceStorageSetting,
   WorkspaceStorageSetting_S3Config,
@@ -107,7 +107,7 @@ const StorageSection = () => {
 
   const saveWorkspaceStorageSetting = async () => {
     await workspaceSettingStore.setWorkspaceSetting({
-      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.STORAGE}`,
+      name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.STORAGE}`,
       storageSetting: workspaceStorageSetting,
     });
     toast.success("Updated");

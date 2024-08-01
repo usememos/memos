@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { workspaceSettingServiceClient } from "@/grpcweb";
-import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
@@ -29,7 +29,7 @@ const WorkspaceSection = () => {
     try {
       await workspaceSettingServiceClient.setWorkspaceSetting({
         setting: {
-          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
+          name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
           generalSetting: workspaceGeneralSetting,
         },
       });
@@ -49,7 +49,7 @@ const WorkspaceSection = () => {
     try {
       await workspaceSettingServiceClient.setWorkspaceSetting({
         setting: {
-          name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
+          name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
           generalSetting: workspaceGeneralSetting,
         },
       });
