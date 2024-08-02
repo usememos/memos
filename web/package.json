@@ -29,7 +29,7 @@
     "i18next": "^23.12.2",
     "katex": "^0.16.11",
     "lodash-es": "^4.17.21",
-    "lucide-react": "^0.399.0",
+    "lucide-react": "^0.419.0",
     "mermaid": "^10.9.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
