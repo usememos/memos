@@ -16,6 +16,11 @@ const theme = extendTheme({
       defaultProps: {
         size: "sm",
       },
+      styleOverrides: {
+        listbox: {
+          zIndex: 9999,
+        },
+      },
     },
   },
 });

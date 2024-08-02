@@ -90,7 +90,7 @@ const UserStatisticsView = () => {
             <PopoverTrigger>
               <Icon.MoreVertical className="w-4 h-auto shrink-0 opacity-60" />
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent align="end" alignOffset={-12}>
               <button className="w-auto flex flex-row justify-between items-center gap-2 hover:opacity-80" onClick={rebuildMemoTags}>
                 <Icon.RefreshCcw className="text-gray-400 w-4 h-auto cursor-pointer opacity-60" />
                 <span className="text-sm shrink-0 text-gray-500 dark:text-gray-400">Refresh</span>

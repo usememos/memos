@@ -40,15 +40,6 @@ const MemoFilters = () => {
             </button>
           </div>
         ))}
-        <div
-          className="flex flex-row items-center gap-1 pl-1.5 pr-1 hover:opacity-80 cursor-pointer"
-          onClick={() => memoFilterStore.setOrderByTimeAsc(!memoFilterStore.orderByTimeAsc)}
-        >
-          <Icon.Clock className="w-4 h-auto text-gray-500 dark:text-gray-400 opacity-60" />
-          <span className="text-gray-500 dark:text-gray-400 text-sm max-w-32 truncate">
-            {memoFilterStore.orderByTimeAsc ? "Asc" : "Desc"}
-          </span>
-        </div>
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ const Explore = () => {
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState<string>("");
   const sortedMemos = memoList.value.sort((a, b) =>
-    memoFilterStore.orderByTimeAsc && memoFilterStore.filters.length > 0
+    memoFilterStore.orderByTimeAsc
       ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
       : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
   );
@@ -46,7 +46,7 @@ const Explore = () => {
         tagSearch.push(`"${filter.value}"`);
       }
     }
-    if (memoFilterStore.orderByTimeAsc && memoFilterStore.filters.length > 0) {
+    if (memoFilterStore.orderByTimeAsc) {
       filters.push(`order_by_time_asc == true`);
     }
     if (contentSearch.length > 0) {

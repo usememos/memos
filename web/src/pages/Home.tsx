@@ -28,7 +28,7 @@ const Home = () => {
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
     .sort((a, b) =>
-      memoFilterStore.orderByTimeAsc && memoFilterStore.filters.length > 0
+      memoFilterStore.orderByTimeAsc
         ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
         : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
     )
@@ -61,7 +61,7 @@ const Home = () => {
         filters.push(`display_time_before == ${timestampAfter + 60 * 60 * 24}`);
       }
     }
-    if (memoFilterStore.orderByTimeAsc && memoFilterStore.filters.length > 0) {
+    if (memoFilterStore.orderByTimeAsc) {
       filters.push(`order_by_time_asc == true`);
     }
     if (contentSearch.length > 0) {
