@@ -381,6 +381,18 @@ const MemoEditor = (props: Props) => {
 
   const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
 
+  /**
+   * Format a date to a string yyyy-mm-ddThh:mm:ss
+   * 
+   * @param date The date to convert
+   * @returns A string representation of the date
+   */
+  const toCalendarFormatString = (date: Date): string => {
+    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
+      .toISOString()
+      .split(".")[0];
+  }
+
   return (
     <MemoEditorContext.Provider
       value={{
@@ -418,7 +430,7 @@ const MemoEditor = (props: Props) => {
             <input
               className="inset-0 absolute z-1 opacity-0"
               type="datetime-local"
-              value={displayTime.toLocaleString()}
+              value={toCalendarFormatString(displayTime)}
               onFocus={(e: any) => e.target.showPicker()}
               onChange={(e) => setDisplayTime(new Date(e.target.value))}
             />
