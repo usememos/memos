@@ -383,15 +383,12 @@ const MemoEditor = (props: Props) => {
 
   /**
    * Format a date to a string yyyy-mm-ddThh:mm:ss
-   * 
    * @param date The date to convert
    * @returns A string representation of the date
    */
   const toCalendarFormatString = (date: Date): string => {
-    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
-      .toISOString()
-      .split(".")[0];
-  }
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split(".")[0];
+  };
 
   return (
     <MemoEditorContext.Provider
