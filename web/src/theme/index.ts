@@ -22,6 +22,13 @@ const theme = extendTheme({
         },
       },
     },
+    JoyAutocomplete: {
+      styleOverrides: {
+        listbox: {
+          zIndex: 9999,
+        },
+      },
+    },
   },
 });
 
