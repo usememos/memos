@@ -1890,6 +1890,8 @@ definitions:
         type: string
       bucket:
         type: string
+      customDomain:
+        type: string
     title: 'Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/'
   apiHttpBody:
     type: object
