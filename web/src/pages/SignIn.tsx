@@ -128,6 +128,9 @@ const SignIn = () => {
                   readOnly={actionBtnLoadingState.isLoading}
                   placeholder={t("common.username")}
                   value={username}
+                  autoComplete="username"
+                  autoCapitalize="off"
+                  spellCheck={false}
                   onChange={handleUsernameInputChanged}
                   required
                 />
@@ -141,6 +144,9 @@ const SignIn = () => {
                   readOnly={actionBtnLoadingState.isLoading}
                   placeholder={t("common.password")}
                   value={password}
+                  autoComplete="password"
+                  autoCapitalize="off"
+                  spellCheck={false}
                   onChange={handlePasswordInputChanged}
                   required
                 />
