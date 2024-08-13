@@ -31,6 +31,8 @@ type Profile struct {
 	Public bool
 	// PasswordAuth is the flag whether the instance uses password authentication.
 	PasswordAuth bool
+	// InstanceURL is the url of your memos instance.
+	InstanceURL string
 }
 
 func (p *Profile) IsDev() bool {

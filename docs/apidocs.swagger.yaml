@@ -3154,3 +3154,6 @@ definitions:
       passwordAuth:
         type: boolean
         description: password_auth is a flag whether the instance allows password authentication.
+      instanceUrl:
+        type: string
+        description: instance_url is the URL of the instance.
