@@ -19,16 +19,16 @@ const MemoDisplaySettingMenu = ({ className }: Props) => {
       >
         <Icon.Settings2 className="w-4 h-auto shrink-0" />
       </PopoverTrigger>
-      <PopoverContent align="end" alignOffset={-12}>
+      <PopoverContent align="end" alignOffset={-12} sideOffset={14}>
         <div className="flex flex-col gap-2">
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-2">Order by</span>
+            <span className="text-sm shrink-0 mr-3">Order by</span>
             <Select value="displayTime">
               <Option value={"displayTime"}>Display Time</Option>
             </Select>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-2">Direction</span>
+            <span className="text-sm shrink-0 mr-3">Direction</span>
             <Select value={memoFilterStore.orderByTimeAsc} onChange={(_, value) => memoFilterStore.setOrderByTimeAsc(Boolean(value))}>
               <Option value={false}>DESC</Option>
               <Option value={true}>ASC</Option>
