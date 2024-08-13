@@ -11,7 +11,7 @@ interface Props {
 
 const MemoDetailSidebar = ({ memo, className }: Props) => {
   const t = useTranslate();
-  const property = memo.property as MemoProperty;
+  const property = MemoProperty.fromPartial(memo.property || {});
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode || property.hasIncompleteTasks;
 
   return (
