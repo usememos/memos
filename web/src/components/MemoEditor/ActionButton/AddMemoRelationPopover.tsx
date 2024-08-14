@@ -168,12 +168,10 @@ const AddMemoRelationPopover = (props: Props) => {
             }
             onChange={(_, value) => setSelectedMemos(value)}
           />
-          <div className="mt-2">
-            <Checkbox size="sm" label={t("reference.embedded-usage")} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
-          </div>
-          <div className="mt-1 w-full flex flex-row justify-start items-center space-x-1">
+          <div className="mt-2 w-full flex flex-row justify-end items-center gap-2">
+            <Checkbox size="sm" label={"Embed"} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
             <Button size="sm" onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
-              {t("common.confirm")}
+              {t("common.add")}
             </Button>
           </div>
         </div>
