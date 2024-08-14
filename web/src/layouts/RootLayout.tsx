@@ -10,8 +10,10 @@ import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
 import { useMemoFilterStore } from "@/store/v1";
+import { useTranslate } from "@/utils/i18n";
 
 const RootLayout = () => {
+  const t = useTranslate();
   const location = useLocation();
   const { sm } = useResponsiveWidth();
   const currentUser = useCurrentUser();
@@ -54,10 +56,10 @@ const RootLayout = () => {
               >
                 {!collapsed ? (
                   <Button variant="plain" color="neutral" startDecorator={<Icon.ChevronLeft className="w-5 h-auto opacity-70" />}>
-                    Collapse
+                    {t("common.collapse")}
                   </Button>
                 ) : (
-                  <Tooltip title="Expand" placement="right" arrow>
+                  <Tooltip title={t("common.expand")} placement="right" arrow>
                     <IconButton>
                       <Icon.ChevronRight className="w-5 h-auto opacity-70" />
                     </IconButton>
