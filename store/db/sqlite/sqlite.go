@@ -50,12 +50,12 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	return &driver, nil
 }
 
-func (d *DB) GetDB() *sql.DB {
-	return d.db
+func (*DB) Type() string {
+	return "sqlite"
 }
 
-func (d *DB) Type() string {
-	return "sqlite"
+func (d *DB) GetDB() *sql.DB {
+	return d.db
 }
 
 func (d *DB) Close() error {

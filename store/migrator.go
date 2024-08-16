@@ -10,6 +10,7 @@ import (
 	"sort"
 
 	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/server/version"
 )
 
