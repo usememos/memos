@@ -11,10 +11,9 @@ type Driver interface {
 	GetDB() *sql.DB
 	Close() error
 
-	Migrate(ctx context.Context) error
-
-	// current file is driver
-	GetCurrentDBSize(ctx context.Context) (int64, error)
+	// Type returns the type of the driver.
+	// Supported types are: sqlite, mysql, postgres.
+	Type() string
 
 	// MigrationHistory model related methods.
 	FindMigrationHistoryList(ctx context.Context, find *FindMigrationHistory) ([]*MigrationHistory, error)

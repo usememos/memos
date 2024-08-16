@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"context"
 	"database/sql"
 	"log"
 
@@ -44,8 +43,8 @@ func (d *DB) GetDB() *sql.DB {
 	return d.db
 }
 
-func (*DB) GetCurrentDBSize(context.Context) (int64, error) {
-	return 0, errors.New("unimplemented")
+func (d *DB) Type() string {
+	return "postgres"
 }
 
 func (d *DB) Close() error {

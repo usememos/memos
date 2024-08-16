@@ -58,16 +58,11 @@ var (
 				slog.Error("failed to create db driver", "error", err)
 				return
 			}
-			if err := dbDriver.Migrate(ctx); err != nil {
-				cancel()
-				slog.Error("failed to migrate database", "error", err)
-				return
-			}
 
 			storeInstance := store.New(dbDriver, instanceProfile)
-			if err := storeInstance.MigrateManually(ctx); err != nil {
+			if err := storeInstance.Migrate(ctx); err != nil {
 				cancel()
-				slog.Error("failed to migrate manually", "error", err)
+				slog.Error("failed to migrate", "error", err)
 				return
 			}
 

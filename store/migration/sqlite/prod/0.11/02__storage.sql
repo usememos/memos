@@ -1,0 +1,7 @@
+-- storage
+CREATE TABLE storage (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  config TEXT NOT NULL DEFAULT '{}'
+);
