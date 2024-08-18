@@ -77,8 +77,8 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
       onConfirm();
       destroy();
     } catch (error: any) {
+      toast.error(error.details);
       console.error(error);
-      toast.error(error.response.data.message);
     }
   };
 

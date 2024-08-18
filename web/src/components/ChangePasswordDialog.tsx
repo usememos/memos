@@ -60,8 +60,8 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       toast.success(t("message.password-changed"));
       handleCloseBtnClick();
     } catch (error: any) {
+      toast.error(error.details);
       console.error(error);
-      toast.error(error.response.data.message);
     }
   };
 

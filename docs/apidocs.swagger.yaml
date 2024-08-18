@@ -2075,6 +2075,13 @@ definitions:
       customProfile:
         $ref: '#/definitions/apiv1WorkspaceCustomProfile'
         description: custom_profile is the custom profile.
+      weekStartDayOffset:
+        type: integer
+        format: int32
+        description: |-
+          week_start_day_offset is the week start day offset from Sunday.
+          0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+          Default is Sunday.
   apiv1WorkspaceMemoRelatedSetting:
     type: object
     properties:

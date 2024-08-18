@@ -224,8 +224,8 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         toast.success(t("setting.sso-section.sso-updated", { name: basicInfo.title }));
       }
     } catch (error: any) {
+      toast.error(error.details);
       console.error(error);
-      toast.error(error.response.data.message);
     }
     if (confirmCallback) {
       confirmCallback();
