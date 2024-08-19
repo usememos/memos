@@ -160,7 +160,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 )}
                 {currentUser && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
               </div>
-              {!isInMemoDetailPage && (
+              {!isInMemoDetailPage && (workspaceMemoRelatedSetting.enableComment || commentAmount > 0) && (
                 <Link
                   className={clsx(
                     "flex flex-row justify-start items-center hover:opacity-70",
