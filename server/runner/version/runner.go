@@ -1,4 +1,4 @@
-// Packge version provides a runner to check the latest version of the application.
+// Package version provides a runner to check the latest version of the application.
 package version
 
 import (
