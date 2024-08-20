@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
@@ -78,7 +78,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		grpc.MaxRecvMsgSize(100*1024*1024),
 		grpc.ChainUnaryInterceptor(
 			apiv1.NewLoggerInterceptor().LoggerInterceptor,
-			grpc_recovery.UnaryServerInterceptor(),
+			grpcrecovery.UnaryServerInterceptor(),
 			apiv1.NewGRPCAuthInterceptor(store, secret).AuthenticationInterceptor,
 		))
 	s.grpcServer = grpcServer

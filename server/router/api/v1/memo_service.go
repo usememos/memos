@@ -60,7 +60,6 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	}
 	if len(create.Content) > contentLengthLimit {
 		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
-
 	}
 	property, err := memoproperty.GetMemoPropertyFromContent(create.Content)
 	if err != nil {
