@@ -21,8 +21,9 @@ import (
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/rss"
-	s3objectpresigner "github.com/usememos/memos/server/service/s3_object_presigner"
-	versionchecker "github.com/usememos/memos/server/service/version_checker"
+	memoproperty "github.com/usememos/memos/server/runner/memo_property"
+	s3presign "github.com/usememos/memos/server/runner/s3_presign"
+	"github.com/usememos/memos/server/runner/version"
 	"github.com/usememos/memos/store"
 )
 
@@ -140,8 +141,16 @@ func (s *Server) Shutdown(ctx context.Context) {
 }
 
 func (s *Server) StartBackgroundRunners(ctx context.Context) {
-	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
-	go s3objectpresigner.NewS3ObjectPresigner(s.Store).Start(ctx)
+	s3presignRunner := s3presign.NewRunner(s.Store)
+	s3presignRunner.RunOnce(ctx)
+	versionRunner := version.NewRunner(s.Store, s.Profile)
+	versionRunner.RunOnce(ctx)
+	memopropertyRunner := memoproperty.NewRunner(s.Store)
+	memopropertyRunner.RunOnce(ctx)
+
+	go s3presignRunner.Run(ctx)
+	go versionRunner.Run(ctx)
+	go memopropertyRunner.Run(ctx)
 }
 
 func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb.WorkspaceBasicSetting, error) {

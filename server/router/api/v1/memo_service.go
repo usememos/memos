@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"slices"
 	"time"
 	"unicode/utf8"
 
@@ -28,6 +27,7 @@ import (
 	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	memoproperty "github.com/usememos/memos/server/runner/memo_property"
 	"github.com/usememos/memos/store"
 )
 
@@ -60,8 +60,9 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	}
 	if len(create.Content) > contentLengthLimit {
 		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
+
 	}
-	property, err := getMemoPropertyFromContent(create.Content)
+	property, err := memoproperty.GetMemoPropertyFromContent(create.Content)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
 	}
@@ -247,7 +248,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			}
 			update.Content = &request.Memo.Content
 
-			property, err := getMemoPropertyFromContent(*update.Content)
+			property, err := memoproperty.GetMemoPropertyFromContent(*update.Content)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
 			}
@@ -610,7 +611,7 @@ func (s *APIV1Service) RebuildMemoProperty(ctx context.Context, request *v1pb.Re
 	}
 
 	for _, memo := range memos {
-		property, err := getMemoPropertyFromContent(memo.Content)
+		property, err := memoproperty.GetMemoPropertyFromContent(memo.Content)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
 		}
@@ -691,14 +692,14 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to parse memo: %v", err)
 		}
-		TraverseASTNodes(nodes, func(node ast.Node) {
+		memoproperty.TraverseASTNodes(nodes, func(node ast.Node) {
 			if tag, ok := node.(*ast.Tag); ok && tag.Content == request.OldTag {
 				tag.Content = request.NewTag
 			}
 		})
 		content := restore.Restore(nodes)
 
-		property, err := getMemoPropertyFromContent(content)
+		property, err := memoproperty.GetMemoPropertyFromContent(content)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
 		}
@@ -1123,56 +1124,6 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 		callExpr := arg.GetCallExpr()
 		if callExpr != nil {
 			findMemoField(callExpr, filter)
-		}
-	}
-}
-
-func getMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, error) {
-	nodes, err := parser.Parse(tokenizer.Tokenize(content))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse content")
-	}
-
-	property := &storepb.MemoPayload_Property{}
-	TraverseASTNodes(nodes, func(node ast.Node) {
-		switch n := node.(type) {
-		case *ast.Tag:
-			tag := n.Content
-			if !slices.Contains(property.Tags, tag) {
-				property.Tags = append(property.Tags, tag)
-			}
-		case *ast.Link, *ast.AutoLink:
-			property.HasLink = true
-		case *ast.TaskList:
-			property.HasTaskList = true
-			if !n.Complete {
-				property.HasIncompleteTasks = true
-			}
-		case *ast.Code, *ast.CodeBlock:
-			property.HasCode = true
-		}
-	})
-	return property, nil
-}
-
-func TraverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {
-	for _, node := range nodes {
-		fn(node)
-		switch n := node.(type) {
-		case *ast.Paragraph:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.Heading:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.Blockquote:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.OrderedList:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.UnorderedList:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.TaskList:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.Bold:
-			TraverseASTNodes(n.Children, fn)
 		}
 	}
 }

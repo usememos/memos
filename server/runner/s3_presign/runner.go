@@ -1,4 +1,4 @@
-package s3objectpresigner
+package s3presign
 
 import (
 	"context"
@@ -12,25 +12,45 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// nolint
-type S3ObjectPresigner struct {
+type Runner struct {
 	Store *store.Store
 }
 
-func NewS3ObjectPresigner(store *store.Store) *S3ObjectPresigner {
-	return &S3ObjectPresigner{
+func NewRunner(store *store.Store) *Runner {
+	return &Runner{
 		Store: store,
 	}
 }
 
-func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) {
-	workspaceStorageSetting, err := p.Store.GetWorkspaceStorageSetting(ctx)
+// Schedule runner every 12 hours.
+const runnerInterval = time.Hour * 12
+
+func (r *Runner) Run(ctx context.Context) {
+	ticker := time.NewTicker(runnerInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			r.RunOnce(ctx)
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
+func (r *Runner) RunOnce(ctx context.Context) {
+	r.CheckAndPresign(ctx)
+}
+
+func (r *Runner) CheckAndPresign(ctx context.Context) {
+	workspaceStorageSetting, err := r.Store.GetWorkspaceStorageSetting(ctx)
 	if err != nil {
 		return
 	}
 
 	s3StorageType := storepb.ResourceStorageType_S3
-	resources, err := p.Store.ListResources(ctx, &store.FindResource{
+	resources, err := r.Store.ListResources(ctx, &store.FindResource{
 		GetBlob:     false,
 		StorageType: &s3StorageType,
 	})
@@ -73,7 +93,7 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) {
 		}
 		s3ObjectPayload.S3Config = s3Config
 		s3ObjectPayload.LastPresignedTime = timestamppb.New(time.Now())
-		if err := p.Store.UpdateResource(ctx, &store.UpdateResource{
+		if err := r.Store.UpdateResource(ctx, &store.UpdateResource{
 			ID:        resource.ID,
 			Reference: &presignURL,
 			Payload: &storepb.ResourcePayload{
@@ -84,23 +104,5 @@ func (p *S3ObjectPresigner) CheckAndPresign(ctx context.Context) {
 		}); err != nil {
 			return
 		}
-	}
-}
-
-func (p *S3ObjectPresigner) Start(ctx context.Context) {
-	p.CheckAndPresign(ctx)
-
-	// Schedule runner every 24 hours.
-	ticker := time.NewTicker(24 * time.Hour)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-		}
-
-		p.CheckAndPresign(ctx)
 	}
 }
