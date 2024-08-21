@@ -178,7 +178,7 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 	thumbnail := Thumbnail{resource}
 	returnThumbnail := false
 
-	if request.Thumbnail && util.HasPrefixes(resource.Type, thumbnail.supportedMimeTypes()...) {
+	if request.Thumbnail && util.HasPrefixes(resource.Type, supportedThumbnailMimeTypes()...) {
 		returnThumbnail = true
 
 		thumbnailBlob, err := thumbnail.GetFile(s.Profile.Data)
@@ -220,7 +220,7 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 	if returnThumbnail {
 		// wrapping generation logic in a func to exit failed non critical flow using return
 		generateThumbnailBlob := func() ([]byte, error) {
-			thumbnailImage, err := thumbnail.GenerateImage(blob)
+			thumbnailImage, err := GenerateThumbnailImage(blob)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to generate resource thumbnail")
 			}

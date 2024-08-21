@@ -15,13 +15,13 @@ import (
 )
 
 // Thumbnail provides functionality to manage thumbnail images
-// for resources
+// for resources.
 type Thumbnail struct {
 	// The resource the thumbnail is for
 	resource *store.Resource
 }
 
-func (t *Thumbnail) supportedMimeTypes() []string {
+func supportedThumbnailMimeTypes() []string {
 	return []string{
 		"image/png",
 		"image/jpeg",
@@ -65,7 +65,7 @@ func (t Thumbnail) GetFile(assetsFolderPath string) ([]byte, error) {
 	return dstBlob, nil
 }
 
-func (t Thumbnail) GenerateImage(sourceBlob []byte) (image.Image, error) {
+func GenerateThumbnailImage(sourceBlob []byte) (image.Image, error) {
 	var availableGeneratorAmount int32 = 32
 
 	if atomic.LoadInt32(&availableGeneratorAmount) <= 0 {
