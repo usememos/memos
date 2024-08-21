@@ -35,7 +35,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
       return (
         <img
           className="cursor-pointer min-h-full w-auto object-cover"
-          src={url}
+          src={url + "?thumbnail=true"}
           onClick={() => handleImageClick(url)}
           decoding="async"
           loading="lazy"
