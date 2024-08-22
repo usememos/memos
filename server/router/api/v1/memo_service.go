@@ -368,8 +368,8 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 			return nil, status.Errorf(codes.Internal, "failed to delete resource")
 		}
 
-		thumbnail := Thumbnail{resource}
-		if err := thumbnail.DeleteFile(s.Profile.Data); err != nil {
+		thumb := thumbnail{resource}
+		if err := thumb.deleteFile(s.Profile.Data); err != nil {
 			slog.Warn("failed to delete resource thumbnail")
 		}
 	}

@@ -11,24 +11,25 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/store"
 )
 
-// Thumbnail provides functionality to manage thumbnail images
+// thumbnail provides functionality to manage thumbnail images
 // for resources.
-type Thumbnail struct {
+type thumbnail struct {
 	// The resource the thumbnail is for
 	resource *store.Resource
 }
 
-func supportedThumbnailMimeTypes() []string {
+func (thumbnail) supportedMimeTypes() []string {
 	return []string{
 		"image/png",
 		"image/jpeg",
 	}
 }
 
-func (t *Thumbnail) getFilePath(assetsFolderPath string) (string, error) {
+func (t *thumbnail) getFilePath(assetsFolderPath string) (string, error) {
 	if assetsFolderPath == "" {
 		return "", errors.New("aapplication path is not set")
 	}
@@ -39,8 +40,9 @@ func (t *Thumbnail) getFilePath(assetsFolderPath string) (string, error) {
 	return path, nil
 }
 
-func (t Thumbnail) GetFile(assetsFolderPath string) ([]byte, error) {
+func (t *thumbnail) getFile(assetsFolderPath string) ([]byte, error) {
 	path, err := t.getFilePath(assetsFolderPath)
+
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get thumbnail file path")
 	}
@@ -65,7 +67,7 @@ func (t Thumbnail) GetFile(assetsFolderPath string) ([]byte, error) {
 	return dstBlob, nil
 }
 
-func GenerateThumbnailImage(sourceBlob []byte) (image.Image, error) {
+func (thumbnail) generateImage(sourceBlob []byte) (image.Image, error) {
 	var availableGeneratorAmount int32 = 32
 
 	if atomic.LoadInt32(&availableGeneratorAmount) <= 0 {
@@ -87,7 +89,7 @@ func GenerateThumbnailImage(sourceBlob []byte) (image.Image, error) {
 	return thumbnailImage, nil
 }
 
-func (t Thumbnail) SaveAsFile(assetsFolderPath string, thumbnailImage image.Image) error {
+func (t *thumbnail) saveAsFile(assetsFolderPath string, thumbnailImage image.Image) error {
 	path, err := t.getFilePath(assetsFolderPath)
 	if err != nil {
 		return errors.Wrap(err, "failed to get thumbnail file path")
@@ -105,7 +107,7 @@ func (t Thumbnail) SaveAsFile(assetsFolderPath string, thumbnailImage image.Imag
 	return nil
 }
 
-func (t Thumbnail) ImageToBlob(thumbnailImage image.Image) ([]byte, error) {
+func (t *thumbnail) imageToBlob(thumbnailImage image.Image) ([]byte, error) {
 	mimeTypeMap := map[string]imaging.Format{
 		"image/png":  imaging.JPEG,
 		"image/jpeg": imaging.PNG,
@@ -124,7 +126,7 @@ func (t Thumbnail) ImageToBlob(thumbnailImage image.Image) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (t Thumbnail) DeleteFile(assetsFolderPath string) error {
+func (t *thumbnail) deleteFile(assetsFolderPath string) error {
 	path, err := t.getFilePath(assetsFolderPath)
 	if err != nil {
 		return errors.Wrap(err, "failed to get thumbnail file path")

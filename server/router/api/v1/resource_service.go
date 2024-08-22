@@ -175,17 +175,17 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 		}
 	}
 
-	thumbnail := Thumbnail{resource}
+	thumb := thumbnail{resource}
 	returnThumbnail := false
 
-	if request.Thumbnail && util.HasPrefixes(resource.Type, supportedThumbnailMimeTypes()...) {
+	if request.Thumbnail && util.HasPrefixes(resource.Type, thumb.supportedMimeTypes()...) {
 		returnThumbnail = true
 
-		thumbnailBlob, err := thumbnail.GetFile(s.Profile.Data)
+		thumbnailBlob, err := thumb.getFile(s.Profile.Data)
 		if err != nil {
 			// thumbnail failures are logged as warnings and not cosidered critical failures as
 			// a resource image can be used in its place
-			slog.Warn("failed to get resource thumbnail image", err)
+			slog.Warn("failed to get resource thumbnail image", slog.Any("error", err))
 		} else {
 			httpBody := &httpbody.HttpBody{
 				ContentType: resource.Type,
@@ -220,16 +220,16 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 	if returnThumbnail {
 		// wrapping generation logic in a func to exit failed non critical flow using return
 		generateThumbnailBlob := func() ([]byte, error) {
-			thumbnailImage, err := GenerateThumbnailImage(blob)
+			thumbnailImage, err := thumb.generateImage(blob)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to generate resource thumbnail")
 			}
 
-			if err := thumbnail.SaveAsFile(s.Profile.Data, thumbnailImage); err != nil {
+			if err := thumb.saveAsFile(s.Profile.Data, thumbnailImage); err != nil {
 				return nil, errors.Wrap(err, "failed to save generated resource thumbnail")
 			}
 
-			thumbnailBlob, err := thumbnail.ImageToBlob(thumbnailImage)
+			thumbnailBlob, err := thumb.imageToBlob(thumbnailImage)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to convert generate resource thumbnail to bytes")
 			}
@@ -239,7 +239,7 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 
 		thumbnailBlob, err := generateThumbnailBlob()
 		if err != nil {
-			slog.Warn("failed to generate a thumbnail blob for the resource", err)
+			slog.Warn("failed to generate a thumbnail blob for the resource", slog.Any("error", err))
 		} else {
 			blob = thumbnailBlob
 		}
@@ -320,8 +320,8 @@ func (s *APIV1Service) DeleteResource(ctx context.Context, request *v1pb.DeleteR
 		return nil, status.Errorf(codes.Internal, "failed to delete resource: %v", err)
 	}
 
-	thumbnail := Thumbnail{resource}
-	if err := thumbnail.DeleteFile(s.Profile.Data); err != nil {
+	thumb := thumbnail{resource}
+	if err := thumb.deleteFile(s.Profile.Data); err != nil {
 		slog.Warn("failed to delete resource thumbnail")
 	}
 
