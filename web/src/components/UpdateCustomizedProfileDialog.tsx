@@ -2,7 +2,7 @@ import { Button, IconButton, Input } from "@mui/joy";
 import Textarea from "@mui/joy/Textarea/Textarea";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceCustomProfile, WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
@@ -84,7 +84,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     try {
       await workspaceSettingStore.setWorkspaceSetting({
-        name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.GENERAL}`,
+        name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
         generalSetting: {
           ...workspaceGeneralSetting,
           customProfile: customProfile,

@@ -25,6 +25,8 @@ message WorkspaceProfile {
   bool public = 4;
   // password_auth is a flag whether the instance allows password authentication.
   bool password_auth = 5;
+  // instance_url is the URL of the instance.
+  string instance_url = 6;
 }
 
 message GetWorkspaceProfileRequest {}

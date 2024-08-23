@@ -26,7 +26,11 @@ const Archived = () => {
   const [nextPageToken, setNextPageToken] = useState<string>("");
   const sortedMemos = memoList.value
     .filter((memo) => memo.rowStatus === RowStatus.ARCHIVED)
-    .sort((a, b) => dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix());
+    .sort((a, b) =>
+      memoFilterStore.orderByTimeAsc
+        ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
+        : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
+    );
 
   useEffect(() => {
     memoList.reset();
@@ -44,6 +48,9 @@ const Archived = () => {
       } else if (filter.factor === "tagSearch") {
         tagSearch.push(`"${filter.value}"`);
       }
+    }
+    if (memoFilterStore.orderByTimeAsc) {
+      filters.push(`order_by_time_asc == true`);
     }
     if (contentSearch.length > 0) {
       filters.push(`content_search == [${contentSearch.join(", ")}]`);
@@ -125,23 +132,23 @@ const Archived = () => {
               <MemoContent key={`${memo.name}-${memo.displayTime}`} memoName={memo.name} nodes={memo.nodes} readonly={true} />
             </div>
           ))}
-          {isRequesting ? (
-            <div className="flex flex-row justify-center items-center w-full my-4 text-gray-400">
-              <Icon.Loader className="w-4 h-auto animate-spin mr-1" />
-              <p className="text-sm italic">{t("memo.fetching-data")}</p>
-            </div>
-          ) : !nextPageToken ? (
-            sortedMemos.length === 0 && (
-              <div className="w-full mt-16 mb-8 flex flex-col justify-center items-center italic">
-                <Empty />
-                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
-              </div>
-            )
-          ) : (
+          {nextPageToken && (
             <div className="w-full flex flex-row justify-center items-center my-4">
-              <Button variant="plain" endDecorator={<Icon.ArrowDown className="w-5 h-auto" />} onClick={() => fetchMemos(nextPageToken)}>
-                {t("memo.fetch-more")}
+              <Button
+                variant="plain"
+                color="neutral"
+                loading={isRequesting}
+                endDecorator={<Icon.ArrowDown className="w-4 h-auto" />}
+                onClick={() => fetchMemos(nextPageToken)}
+              >
+                {t("memo.load-more")}
               </Button>
+            </div>
+          )}
+          {!nextPageToken && sortedMemos.length === 0 && (
+            <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
+              <Empty />
+              <p className="mt-2 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
             </div>
           )}
         </div>

@@ -16,6 +16,18 @@ const theme = extendTheme({
       defaultProps: {
         size: "sm",
       },
+      styleOverrides: {
+        listbox: {
+          zIndex: 9999,
+        },
+      },
+    },
+    JoyAutocomplete: {
+      styleOverrides: {
+        listbox: {
+          zIndex: 9999,
+        },
+      },
     },
   },
 });

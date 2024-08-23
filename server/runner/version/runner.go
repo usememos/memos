@@ -1,4 +1,5 @@
-package versionchecker
+// Package version provides a runner to check the latest version of the application.
+package version
 
 import (
 	"bytes"
@@ -16,50 +17,50 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// nolint
-type VersionChecker struct {
+type Runner struct {
 	Store   *store.Store
 	Profile *profile.Profile
 }
 
-func NewVersionChecker(store *store.Store, profile *profile.Profile) *VersionChecker {
-	return &VersionChecker{
+func NewRunner(store *store.Store, profile *profile.Profile) *Runner {
+	return &Runner{
 		Store:   store,
 		Profile: profile,
 	}
 }
 
-func (*VersionChecker) GetLatestVersion() (string, error) {
-	response, err := http.Get("https://www.usememos.com/api/version")
-	if err != nil {
-		return "", errors.Wrap(err, "failed to make http request")
-	}
-	defer response.Body.Close()
+// Schedule checker every 8 hours.
+const runnerInterval = time.Hour * 8
 
-	buf := &bytes.Buffer{}
-	_, err = buf.ReadFrom(response.Body)
-	if err != nil {
-		return "", errors.Wrap(err, "fail to read response body")
-	}
+func (r *Runner) Run(ctx context.Context) {
+	ticker := time.NewTicker(runnerInterval)
+	defer ticker.Stop()
 
-	version := ""
-	if err = json.Unmarshal(buf.Bytes(), &version); err != nil {
-		return "", errors.Wrap(err, "fail to unmarshal get version response")
+	for {
+		select {
+		case <-ticker.C:
+			r.RunOnce(ctx)
+		case <-ctx.Done():
+			return
+		}
 	}
-	return version, nil
 }
 
-func (c *VersionChecker) Check(ctx context.Context) {
-	latestVersion, err := c.GetLatestVersion()
+func (r *Runner) RunOnce(ctx context.Context) {
+	r.Check(ctx)
+}
+
+func (r *Runner) Check(ctx context.Context) {
+	latestVersion, err := r.GetLatestVersion()
 	if err != nil {
 		return
 	}
-	if !version.IsVersionGreaterThan(latestVersion, version.GetCurrentVersion(c.Profile.Mode)) {
+	if !version.IsVersionGreaterThan(latestVersion, version.GetCurrentVersion(r.Profile.Mode)) {
 		return
 	}
 
 	versionUpdateActivityType := store.ActivityTypeVersionUpdate
-	list, err := c.Store.ListActivities(ctx, &store.FindActivity{
+	list, err := r.Store.ListActivities(ctx, &store.FindActivity{
 		Type: &versionUpdateActivityType,
 	})
 	if err != nil {
@@ -89,12 +90,12 @@ func (c *VersionChecker) Check(ctx context.Context) {
 			},
 		},
 	}
-	if _, err := c.Store.CreateActivity(ctx, activity); err != nil {
+	if _, err := r.Store.CreateActivity(ctx, activity); err != nil {
 		return
 	}
 
 	hostUserRole := store.RoleHost
-	users, err := c.Store.ListUsers(ctx, &store.FindUser{
+	users, err := r.Store.ListUsers(ctx, &store.FindUser{
 		Role: &hostUserRole,
 	})
 	if err != nil {
@@ -105,7 +106,7 @@ func (c *VersionChecker) Check(ctx context.Context) {
 	}
 
 	hostUser := users[0]
-	if _, err := c.Store.CreateInbox(ctx, &store.Inbox{
+	if _, err := r.Store.CreateInbox(ctx, &store.Inbox{
 		SenderID:   store.SystemBotID,
 		ReceiverID: hostUser.ID,
 		Status:     store.UNREAD,
@@ -118,20 +119,22 @@ func (c *VersionChecker) Check(ctx context.Context) {
 	}
 }
 
-func (c *VersionChecker) Start(ctx context.Context) {
-	c.Check(ctx)
-
-	// Schedule checker every 8 hours.
-	ticker := time.NewTicker(8 * time.Hour)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-		}
-
-		c.Check(ctx)
+func (*Runner) GetLatestVersion() (string, error) {
+	response, err := http.Get("https://www.usememos.com/api/version")
+	if err != nil {
+		return "", errors.Wrap(err, "failed to make http request")
 	}
+	defer response.Body.Close()
+
+	buf := &bytes.Buffer{}
+	_, err = buf.ReadFrom(response.Body)
+	if err != nil {
+		return "", errors.Wrap(err, "fail to read response body")
+	}
+
+	version := ""
+	if err = json.Unmarshal(buf.Bytes(), &version); err != nil {
+		return "", errors.Wrap(err, "fail to unmarshal get version response")
+	}
+	return version, nil
 }

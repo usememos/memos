@@ -1,7 +1,6 @@
 package store
 
 import (
-	"context"
 	"sync"
 
 	"github.com/usememos/memos/server/profile"
@@ -25,14 +24,6 @@ func New(driver Driver, profile *profile.Profile) *Store {
 	}
 }
 
-func (*Store) MigrateManually(context.Context) error {
-	return nil
-}
-
 func (s *Store) Close() error {
 	return s.driver.Close()
-}
-
-func (s *Store) GetCurrentDBSize(ctx context.Context) (int64, error) {
-	return s.driver.GetCurrentDBSize(ctx)
 }

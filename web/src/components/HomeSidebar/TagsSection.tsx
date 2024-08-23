@@ -68,7 +68,7 @@ const TagsSection = (props: Props) => {
             <PopoverTrigger>
               <Icon.MoreVertical className="w-4 h-auto shrink-0 opacity-60" />
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent align="end" alignOffset={-12}>
               <div className="w-auto flex flex-row justify-between items-center gap-2">
                 <span className="text-sm shrink-0">Tree mode</span>
                 <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />

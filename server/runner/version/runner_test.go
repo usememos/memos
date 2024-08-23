@@ -1,4 +1,4 @@
-package versionchecker
+package version
 
 import (
 	"testing"
@@ -7,6 +7,6 @@ import (
 )
 
 func TestGetLatestVersion(t *testing.T) {
-	_, err := NewVersionChecker(nil, nil).GetLatestVersion()
+	_, err := NewRunner(nil, nil).GetLatestVersion()
 	require.NoError(t, err)
 }

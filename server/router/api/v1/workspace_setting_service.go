@@ -132,8 +132,9 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 		return nil
 	}
 	generalSetting := &v1pb.WorkspaceGeneralSetting{
-		AdditionalScript: setting.AdditionalScript,
-		AdditionalStyle:  setting.AdditionalStyle,
+		AdditionalScript:   setting.AdditionalScript,
+		AdditionalStyle:    setting.AdditionalStyle,
+		WeekStartDayOffset: setting.WeekStartDayOffset,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &v1pb.WorkspaceCustomProfile{
@@ -152,8 +153,9 @@ func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting
 		return nil
 	}
 	generalSetting := &storepb.WorkspaceGeneralSetting{
-		AdditionalScript: setting.AdditionalScript,
-		AdditionalStyle:  setting.AdditionalStyle,
+		AdditionalScript:   setting.AdditionalScript,
+		AdditionalStyle:    setting.AdditionalStyle,
+		WeekStartDayOffset: setting.WeekStartDayOffset,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.WorkspaceCustomProfile{
@@ -220,6 +222,7 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		EnableAutoCompact:        setting.EnableAutoCompact,
 		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
 		EnableLinkPreview:        setting.EnableLinkPreview,
+		EnableComment:            setting.EnableComment,
 	}
 }
 
@@ -234,5 +237,6 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		EnableAutoCompact:        setting.EnableAutoCompact,
 		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
 		EnableLinkPreview:        setting.EnableLinkPreview,
+		EnableComment:            setting.EnableComment,
 	}
 }

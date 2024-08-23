@@ -78,8 +78,8 @@ const MemoActionMenu = (props: Props) => {
         toast.success(t("message.archived-successfully"));
       }
     } catch (error: any) {
+      toast.error(error.details);
       console.error(error);
-      toast.error(error.response.data.message);
       return;
     }
 

@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"context"
 	"database/sql"
 	"log"
 
@@ -40,12 +39,12 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	return driver, nil
 }
 
-func (d *DB) GetDB() *sql.DB {
-	return d.db
+func (*DB) Type() string {
+	return "postgres"
 }
 
-func (*DB) GetCurrentDBSize(context.Context) (int64, error) {
-	return 0, errors.New("unimplemented")
+func (d *DB) GetDB() *sql.DB {
+	return d.db
 }
 
 func (d *DB) Close() error {

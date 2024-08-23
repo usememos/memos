@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { MemoNamePrefix, useInboxStore, useMemoStore, useUserStore } from "@/store/v1";
+import { activityNamePrefix, MemoNamePrefix, useInboxStore, useMemoStore, useUserStore } from "@/store/v1";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -31,7 +31,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
 
     (async () => {
       const activity = await activityServiceClient.getActivity({
-        id: inbox.activityId,
+        name: `${activityNamePrefix}${inbox.activityId}`,
       });
       if (activity.payload?.memoComment) {
         const memoCommentPayload = activity.payload.memoComment;

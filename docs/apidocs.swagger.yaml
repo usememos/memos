@@ -19,28 +19,6 @@ consumes:
 produces:
   - application/json
 paths:
-  /api/v1/activities/{id}:
-    get:
-      summary: GetActivity returns the activity with the given id.
-      operationId: ActivityService_GetActivity
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Activity'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          description: The system-generated unique identifier for the activity.
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - ActivityService
   /api/v1/auth/signin:
     post:
       summary: SignIn signs in the user with the given username and password.
@@ -925,13 +903,13 @@ paths:
         - MemoService
   /api/v1/{name_1}:
     get:
-      summary: GetIdentityProvider gets an identity provider.
-      operationId: IdentityProviderService_GetIdentityProvider
+      summary: GetUser gets a user by name.
+      operationId: UserService_GetUser
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/apiv1IdentityProvider'
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
@@ -939,14 +917,14 @@ paths:
       parameters:
         - name: name_1
           description: |-
-            The name of the identityProvider to get.
-            Format: identityProviders/{id}
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
-          pattern: identityProviders/[^/]+
+          pattern: users/[^/]+
       tags:
-        - IdentityProviderService
+        - UserService
     delete:
       summary: DeleteIdentityProvider deletes an identity provider.
       operationId: IdentityProviderService_DeleteIdentityProvider
@@ -973,13 +951,13 @@ paths:
         - IdentityProviderService
   /api/v1/{name_2}:
     get:
-      summary: GetResource returns a resource by name.
-      operationId: ResourceService_GetResource
+      summary: GetIdentityProvider gets an identity provider.
+      operationId: IdentityProviderService_GetIdentityProvider
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Resource'
+            $ref: '#/definitions/apiv1IdentityProvider'
         default:
           description: An unexpected error response.
           schema:
@@ -987,15 +965,14 @@ paths:
       parameters:
         - name: name_2
           description: |-
-            The name of the resource.
-            Format: resources/{id}
-            id is the system generated unique identifier.
+            The name of the identityProvider to get.
+            Format: identityProviders/{id}
           in: path
           required: true
           type: string
-          pattern: resources/[^/]+
+          pattern: identityProviders/[^/]+
       tags:
-        - ResourceService
+        - IdentityProviderService
     delete:
       summary: DeleteInbox deletes an inbox.
       operationId: InboxService_DeleteInbox
@@ -1022,13 +999,13 @@ paths:
         - InboxService
   /api/v1/{name_3}:
     get:
-      summary: GetMemo gets a memo.
-      operationId: MemoService_GetMemo
+      summary: GetResource returns a resource by name.
+      operationId: ResourceService_GetResource
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Memo'
+            $ref: '#/definitions/v1Resource'
         default:
           description: An unexpected error response.
           schema:
@@ -1036,14 +1013,15 @@ paths:
       parameters:
         - name: name_3
           description: |-
-            The name of the memo.
-            Format: memos/{id}
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
           in: path
           required: true
           type: string
-          pattern: memos/[^/]+
+          pattern: resources/[^/]+
       tags:
-        - MemoService
+        - ResourceService
     delete:
       summary: DeleteResource deletes a resource by name.
       operationId: ResourceService_DeleteResource
@@ -1070,6 +1048,29 @@ paths:
       tags:
         - ResourceService
   /api/v1/{name_4}:
+    get:
+      summary: GetMemo gets a memo.
+      operationId: MemoService_GetMemo
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Memo'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_4
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
     delete:
       summary: DeleteMemo deletes a memo.
       operationId: MemoService_DeleteMemo
@@ -1096,13 +1097,13 @@ paths:
         - MemoService
   /api/v1/{name}:
     get:
-      summary: GetUser gets a user by name.
-      operationId: UserService_GetUser
+      summary: GetActivity returns the activity with the given id.
+      operationId: ActivityService_GetActivity
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1User'
+            $ref: '#/definitions/v1Activity'
         default:
           description: An unexpected error response.
           schema:
@@ -1110,14 +1111,14 @@ paths:
       parameters:
         - name: name
           description: |-
-            The name of the user.
-            Format: users/{id}
+            The name of the activity.
+            Format: activities/{id}
           in: path
           required: true
           type: string
-          pattern: users/[^/]+
+          pattern: activities/[^/]+
       tags:
-        - UserService
+        - ActivityService
     delete:
       summary: DeleteUser deletes a user.
       operationId: UserService_DeleteUser
@@ -2074,6 +2075,13 @@ definitions:
       customProfile:
         $ref: '#/definitions/apiv1WorkspaceCustomProfile'
         description: custom_profile is the custom profile.
+      weekStartDayOffset:
+        type: integer
+        format: int32
+        description: |-
+          week_start_day_offset is the week start day offset from Sunday.
+          0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+          Default is Sunday.
   apiv1WorkspaceMemoRelatedSetting:
     type: object
     properties:
@@ -2096,6 +2104,9 @@ definitions:
       enableLinkPreview:
         type: boolean
         description: enable_link_preview enables links preview.
+      enableComment:
+        type: boolean
+        description: enable_comment enables comment.
   apiv1WorkspaceSetting:
     type: object
     properties:
@@ -2277,14 +2288,15 @@ definitions:
   v1Activity:
     type: object
     properties:
-      id:
-        type: integer
-        format: int32
-        description: The system-generated unique identifier for the activity.
+      name:
+        type: string
+        title: |-
+          The name of the activity.
+          Format: activities/{id}
       creatorId:
         type: integer
         format: int32
-        description: The system-generated unique identifier for the user who created the activity.
+        description: The uid of the user who created the activity.
       type:
         type: string
         description: The type of the activity.
@@ -3152,3 +3164,6 @@ definitions:
       passwordAuth:
         type: boolean
         description: password_auth is a flag whether the instance allows password authentication.
+      instanceUrl:
+        type: string
+        description: instance_url is the URL of the instance.

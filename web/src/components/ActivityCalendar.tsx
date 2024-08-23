@@ -1,7 +1,12 @@
 import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import { useWorkspaceSettingStore } from "@/store/v1";
+import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
+
+const WEEK_DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 interface Props {
   // Format: 2021-1
@@ -29,11 +34,16 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
 const ActivityCalendar = (props: Props) => {
   const t = useTranslate();
   const { month: monthStr, data, onClick } = props;
+  const workspaceSettingStore = useWorkspaceSettingStore();
+  const weekStartDayOffset = (
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({})
+  ).weekStartDayOffset;
   const year = dayjs(monthStr).toDate().getFullYear();
   const month = dayjs(monthStr).toDate().getMonth() + 1;
   const dayInMonth = new Date(year, month, 0).getDate();
-  const firstDay = new Date(year, month - 1, 1).getDay();
-  const lastDay = new Date(year, month - 1, dayInMonth).getDay();
+  const firstDay = new Date(year, month - 1, 1).getDay() - weekStartDayOffset;
+  const lastDay = new Date(year, month - 1, dayInMonth).getDay() - weekStartDayOffset;
+  const weekDays = WEEK_DAYS.slice(weekStartDayOffset).concat(WEEK_DAYS.slice(0, weekStartDayOffset));
   const maxCount = Math.max(...Object.values(data));
   const days = [];
 
@@ -49,13 +59,13 @@ const ActivityCalendar = (props: Props) => {
 
   return (
     <div className={clsx("w-full h-auto shrink-0 grid grid-cols-7 grid-flow-row gap-1")}>
-      <div className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>Su</div>
-      <div className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>Mo</div>
-      <div className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>Tu</div>
-      <div className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>We</div>
-      <div className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>Th</div>
-      <div className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>Fr</div>
-      <div className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>Sa</div>
+      {weekDays.map((day, index) => {
+        return (
+          <div key={index} className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>
+            {day}
+          </div>
+        );
+      })}
       {days.map((day, index) => {
         const date = dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
         const count = data[date] || 0;
@@ -92,7 +102,7 @@ const ActivityCalendar = (props: Props) => {
             </div>
           )
         ) : (
-          <div key={`${date}-${index}`} className={clsx("shrink-0 w-6 h-6 opacity-0", getCellAdditionalStyles(count, maxCount))}></div>
+          <div key={`${date}-${index}`} className="shrink-0 w-6 h-6 opacity-0"></div>
         );
       })}
     </div>

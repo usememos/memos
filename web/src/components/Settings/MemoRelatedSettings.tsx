@@ -1,7 +1,7 @@
 import { Button, Input, Switch } from "@mui/joy";
 import { isEqual } from "lodash-es";
 import { useState } from "react";
-import { WorkspaceSettingPrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
@@ -24,7 +24,7 @@ const MemoRelatedSettings = () => {
 
   const updateSetting = async () => {
     await workspaceSettingStore.setWorkspaceSetting({
-      name: `${WorkspaceSettingPrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
+      name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
       memoRelatedSetting,
     });
   };
@@ -58,6 +58,13 @@ const MemoRelatedSettings = () => {
         <Switch
           checked={memoRelatedSetting.enableLinkPreview}
           onChange={(event) => updatePartialSetting({ enableLinkPreview: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>Enable memo comments</span>
+        <Switch
+          checked={memoRelatedSetting.enableComment}
+          onChange={(event) => updatePartialSetting({ enableComment: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">

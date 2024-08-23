@@ -32,11 +32,15 @@ message WorkspaceBasicSetting {
 
 message WorkspaceGeneralSetting {
   // additional_script is the additional script.
-  string additional_script = 3;
+  string additional_script = 1;
   // additional_style is the additional style.
-  string additional_style = 4;
+  string additional_style = 2;
   // custom_profile is the custom profile.
-  WorkspaceCustomProfile custom_profile = 5;
+  WorkspaceCustomProfile custom_profile = 3;
+  // week_start_day_offset is the week start day offset from Sunday.
+  // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+  // Default is Sunday.
+  int32 week_start_day_offset = 4;
 }
 
 message WorkspaceCustomProfile {
@@ -90,4 +94,6 @@ message WorkspaceMemoRelatedSetting {
   bool enable_double_click_edit = 5;
   // enable_link_preview enables links preview.
   bool enable_link_preview = 6;
+  // enable_comment enables comment.
+  bool enable_comment = 7;
 }

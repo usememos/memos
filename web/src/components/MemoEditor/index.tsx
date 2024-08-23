@@ -20,7 +20,7 @@ import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import Icon from "../Icon";
 import VisibilityIcon from "../VisibilityIcon";
-import AddMemoRelationButton from "./ActionButton/AddMemoRelationButton";
+import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
 import TagSelector from "./ActionButton/TagSelector";
 import UploadResourceButton from "./ActionButton/UploadResourceButton";
@@ -440,7 +440,7 @@ const MemoEditor = (props: Props) => {
             <TagSelector editorRef={editorRef} />
             <MarkdownMenu editorRef={editorRef} />
             <UploadResourceButton />
-            <AddMemoRelationButton editorRef={editorRef} />
+            <AddMemoRelationPopover editorRef={editorRef} />
           </div>
         </div>
         <Divider className="!mt-2" />
