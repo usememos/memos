@@ -53,7 +53,7 @@ interface State {
 }
 
 const MemoEditor = (props: Props) => {
-  const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm } = props;
+  const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
   const workspaceSettingStore = useWorkspaceSettingStore();
@@ -364,6 +364,14 @@ const MemoEditor = (props: Props) => {
     });
   };
 
+  const handleCancelBtnClick = () => {
+    localStorage.removeItem(contentCacheKey);
+
+    if (onCancel) {
+      onCancel();
+    }
+  };
+
   const handleEditorFocus = () => {
     editorRef.current?.focus();
   };
@@ -457,7 +465,7 @@ const MemoEditor = (props: Props) => {
           </div>
           <div className="shrink-0 flex flex-row justify-end items-center gap-2">
             {props.onCancel && (
-              <Button className="!font-normal" color="neutral" variant="plain" loading={state.isRequesting} onClick={props.onCancel}>
+              <Button className="!font-normal" color="neutral" variant="plain" loading={state.isRequesting} onClick={handleCancelBtnClick}>
                 {t("common.cancel")}
               </Button>
             )}
