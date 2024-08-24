@@ -75,6 +75,10 @@ linters-settings:
         disabled: true
       - name: if-return
         disabled: true
+      - name: unchecked-type-assertion
+        disabled: true
+      - name: max-control-nesting
+        disabled: true
   gocritic:
     disabled-checks:
       - ifElseChain
