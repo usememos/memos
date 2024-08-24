@@ -22,11 +22,7 @@ issues:
     # https://golangci-lint.run/usage/configuration/#command-line-options
   exclude:
     - Rollback
-    - logger.Sync
-    - pgInstance.Stop
     - fmt.Printf
-    - Enter(.*)_(.*)
-    - Exit(.*)_(.*)
 
 linters-settings:
   goimports:
