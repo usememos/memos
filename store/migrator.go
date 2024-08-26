@@ -18,12 +18,12 @@ import (
 )
 
 const (
-	// MIGRATE_FILE_NAME_SPLIT is the split character between the patch version and the description in the migration file name.
+	// MigrateFileNameSplit is the split character between the patch version and the description in the migration file name.
 	// For example, "1__create_table.sql".
-	MIGRATE_FILE_NAME_SPLIT = "__"
-	// LATEST_SCHEMA_FILE_NAME is the name of the latest schema file.
+	MigrateFileNameSplit = "__"
+	// LatestSchemaFileName is the name of the latest schema file.
 	// This file is used to apply the latest schema when no migration history is found.
-	LATEST_SCHEMA_FILE_NAME = "LATEST__SCHEMA.sql"
+	LatestSchemaFileName = "latest_schema.sql"
 )
 
 //go:embed migration
@@ -118,7 +118,7 @@ func (s *Store) preMigrate(ctx context.Context) error {
 		if err != nil {
 			slog.Warn("failed to find migration history in pre-migrate", slog.String("error", err.Error()))
 		}
-		filePath := s.getMigrationBasePath() + LATEST_SCHEMA_FILE_NAME
+		filePath := s.getMigrationBasePath() + LatestSchemaFileName
 		bytes, err := migrationFS.ReadFile(filePath)
 		if err != nil {
 			return errors.Errorf("failed to read latest schema file: %s", err)
@@ -206,14 +206,13 @@ func (s *Store) GetCurrentSchemaVersion() (string, error) {
 	sort.Strings(filePaths)
 	if len(filePaths) == 0 {
 		return fmt.Sprintf("%s.0", minorVersion), nil
-	} else {
-		return s.getSchemaVersionOfMigrateScript(filePaths[len(filePaths)-1])
 	}
+	return s.getSchemaVersionOfMigrateScript(filePaths[len(filePaths)-1])
 }
 
 func (s *Store) getSchemaVersionOfMigrateScript(filePath string) (string, error) {
 	// If the file is the latest schema file, return the current schema version.
-	if strings.HasSuffix(filePath, LATEST_SCHEMA_FILE_NAME) {
+	if strings.HasSuffix(filePath, LatestSchemaFileName) {
 		return s.GetCurrentSchemaVersion()
 	}
 
@@ -223,7 +222,7 @@ func (s *Store) getSchemaVersionOfMigrateScript(filePath string) (string, error)
 		return "", errors.Errorf("invalid file path: %s", filePath)
 	}
 	minorVersion := elements[len(elements)-2]
-	rawPatchVersion := strings.Split(elements[len(elements)-1], MIGRATE_FILE_NAME_SPLIT)[0]
+	rawPatchVersion := strings.Split(elements[len(elements)-1], MigrateFileNameSplit)[0]
 	patchVersion, err := strconv.Atoi(rawPatchVersion)
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to convert patch version to int: %s", rawPatchVersion)
@@ -232,7 +231,7 @@ func (s *Store) getSchemaVersionOfMigrateScript(filePath string) (string, error)
 }
 
 // execute runs a single SQL statement within a transaction.
-func (s *Store) execute(ctx context.Context, tx *sql.Tx, stmt string) error {
+func (*Store) execute(ctx context.Context, tx *sql.Tx, stmt string) error {
 	if _, err := tx.ExecContext(ctx, stmt); err != nil {
 		return errors.Wrap(err, "failed to execute statement")
 	}
