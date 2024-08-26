@@ -23,7 +23,7 @@ const (
 	MigrateFileNameSplit = "__"
 	// LatestSchemaFileName is the name of the latest schema file.
 	// This file is used to apply the latest schema when no migration history is found.
-	LatestSchemaFileName = "latest_schema.sql"
+	LatestSchemaFileName = "LATEST_SCHEMA.sql"
 )
 
 //go:embed migration
