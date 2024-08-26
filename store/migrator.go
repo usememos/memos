@@ -17,6 +17,12 @@ import (
 	"github.com/usememos/memos/server/version"
 )
 
+//go:embed migration
+var migrationFS embed.FS
+
+//go:embed seed
+var seedFS embed.FS
+
 const (
 	// MigrateFileNameSplit is the split character between the patch version and the description in the migration file name.
 	// For example, "1__create_table.sql".
@@ -25,12 +31,6 @@ const (
 	// This file is used to apply the latest schema when no migration history is found.
 	LatestSchemaFileName = "LATEST_SCHEMA.sql"
 )
-
-//go:embed migration
-var migrationFS embed.FS
-
-//go:embed seed
-var seedFS embed.FS
 
 // Migrate applies the latest schema to the database.
 func (s *Store) Migrate(ctx context.Context) error {
@@ -147,6 +147,9 @@ func (s *Store) preMigrate(ctx context.Context) error {
 			return errors.Wrap(err, "failed to upsert migration history")
 		}
 	}
+	if err := s.normalizedMigrationHistoryList(ctx); err != nil {
+		return errors.Wrap(err, "failed to normalize migration history list")
+	}
 	return nil
 }
 
@@ -236,4 +239,56 @@ func (*Store) execute(ctx context.Context, tx *sql.Tx, stmt string) error {
 		return errors.Wrap(err, "failed to execute statement")
 	}
 	return nil
+}
+
+func (s *Store) normalizedMigrationHistoryList(ctx context.Context) error {
+	migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
+	if err != nil {
+		return errors.Wrap(err, "failed to find migration history")
+	}
+	versions := []string{}
+	for _, migrationHistory := range migrationHistoryList {
+		versions = append(versions, migrationHistory.Version)
+	}
+	sort.Sort(version.SortVersion(versions))
+	latestVersion := versions[len(versions)-1]
+	latestMinorVersion := version.GetMinorVersion(latestVersion)
+	// If the latest version is greater than 0.22, return.
+	// As of 0.22, the migration history is already normalized.
+	if version.IsVersionGreaterThan(latestMinorVersion, "0.22") {
+		return nil
+	}
+
+	schemaVersionMap := map[string]string{}
+	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s/*/*.sql", s.getMigrationBasePath()))
+	if err != nil {
+		return errors.Wrap(err, "failed to read migration files")
+	}
+	sort.Strings(filePaths)
+	for _, filePath := range filePaths {
+		fileSchemaVersion, err := s.getSchemaVersionOfMigrateScript(filePath)
+		if err != nil {
+			return errors.Wrap(err, "failed to get schema version of migrate script")
+		}
+		schemaVersionMap[version.GetMinorVersion((fileSchemaVersion))] = fileSchemaVersion
+	}
+
+	latestSchemaVersion := schemaVersionMap[latestMinorVersion]
+	if latestSchemaVersion == "" {
+		return errors.Errorf("latest schema version not found")
+	}
+	if version.IsVersionGreaterOrEqualThan(latestVersion, latestSchemaVersion) {
+		return nil
+	}
+
+	// Start a transaction to insert the latest schema version to migration_history.
+	tx, err := s.driver.GetDB().Begin()
+	if err != nil {
+		return errors.Wrap(err, "failed to start transaction")
+	}
+	defer tx.Rollback()
+	if err := s.execute(ctx, tx, fmt.Sprintf("INSERT INTO migration_history (version) VALUES ('%s')", latestSchemaVersion)); err != nil {
+		return errors.Wrap(err, "failed to insert migration history")
+	}
+	return tx.Commit()
 }

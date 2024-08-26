@@ -54,6 +54,11 @@ func TestIsVersionGreaterThan(t *testing.T) {
 			want:    true,
 		},
 		{
+			version: "0.23",
+			target:  "0.22",
+			want:    true,
+		},
+		{
 			version: "0.8.0",
 			target:  "0.10.0",
 			want:    false,
@@ -61,6 +66,11 @@ func TestIsVersionGreaterThan(t *testing.T) {
 		{
 			version: "0.9.0",
 			target:  "0.9.1",
+			want:    false,
+		},
+		{
+			version: "0.22",
+			target:  "0.22",
 			want:    false,
 		},
 	}
