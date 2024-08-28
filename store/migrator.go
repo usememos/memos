@@ -72,7 +72,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 			}
 			defer tx.Rollback()
 
-			fmt.Println("start migration")
+			slog.Info("start migration", slog.String("currentSchemaVersion", latestMigrationHistoryVersion), slog.String("targetSchemaVersion", schemaVersion))
 			for _, filePath := range filePaths {
 				fileSchemaVersion, err := s.getSchemaVersionOfMigrateScript(filePath)
 				if err != nil {
@@ -93,7 +93,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 			if err := tx.Commit(); err != nil {
 				return errors.Wrap(err, "failed to commit transaction")
 			}
-			fmt.Println("end migrate")
+			slog.Info("end migrate")
 
 			// Upsert the current schema version to migration_history.
 			if _, err = s.driver.UpsertMigrationHistory(ctx, &UpsertMigrationHistory{
@@ -255,6 +255,7 @@ func (s *Store) normalizedMigrationHistoryList(ctx context.Context) error {
 	sort.Sort(version.SortVersion(versions))
 	latestVersion := versions[len(versions)-1]
 	latestMinorVersion := version.GetMinorVersion(latestVersion)
+
 	// If the latest version is greater than 0.22, return.
 	// As of 0.22, the migration history is already normalized.
 	if version.IsVersionGreaterThan(latestMinorVersion, "0.22") {

@@ -129,15 +129,15 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 	// Shutdown echo server.
 	if err := s.echoServer.Shutdown(ctx); err != nil {
-		fmt.Printf("failed to shutdown server, error: %v\n", err)
+		slog.Error("failed to shutdown server", slog.String("error", err.Error()))
 	}
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
-		fmt.Printf("failed to close database, error: %v\n", err)
+		slog.Error("failed to close database", slog.String("error", err.Error()))
 	}
 
-	fmt.Printf("memos stopped properly\n")
+	slog.Info("memos stopped properly")
 }
 
 func (s *Server) StartBackgroundRunners(ctx context.Context) {

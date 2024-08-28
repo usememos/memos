@@ -5,11 +5,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/pkg/errors"
+	"golang.org/x/exp/slog"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/profile"
@@ -115,7 +115,7 @@ func (r *Runner) Check(ctx context.Context) {
 			ActivityId: &activity.ID,
 		},
 	}); err != nil {
-		fmt.Printf("failed to create inbox: %s\n", err)
+		slog.Error("failed to create inbox", slog.String("error", err.Error()))
 	}
 }
 
