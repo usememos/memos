@@ -1,9 +1,9 @@
 import { Divider, IconButton, Input, Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
 import { includes } from "lodash-es";
+import { PaperclipIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
-import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
 import ResourceIcon from "@/components/ResourceIcon";
 import { resourceServiceClient } from "@/grpcweb";
@@ -68,14 +68,14 @@ const Resources = () => {
         <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-black dark:text-gray-300">
           <div className="relative w-full flex flex-row justify-between items-center">
             <p className="py-1 flex flex-row justify-start items-center select-none opacity-80">
-              <Icon.Paperclip className="w-6 h-auto mr-1 opacity-80" />
+              <PaperclipIcon className="w-6 h-auto mr-1 opacity-80" />
               <span className="text-lg">{t("common.resources")}</span>
             </p>
             <div>
               <Input
                 className="max-w-[8rem]"
                 placeholder={t("common.search")}
-                startDecorator={<Icon.Search className="w-4 h-auto" />}
+                startDecorator={<SearchIcon className="w-4 h-auto" />}
                 value={state.searchQuery}
                 onChange={(e) => setState({ ...state, searchQuery: e.target.value })}
               />
@@ -133,7 +133,7 @@ const Resources = () => {
                               <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedResources.length})</span>
                               <Tooltip title="Delete all" placement="top">
                                 <IconButton size="sm" onClick={handleDeleteUnusedResources}>
-                                  <Icon.Trash className="w-4 h-auto opacity-60" />
+                                  <TrashIcon className="w-4 h-auto opacity-60" />
                                 </IconButton>
                               </Tooltip>
                             </div>

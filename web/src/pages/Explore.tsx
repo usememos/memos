@@ -1,10 +1,10 @@
 import { Button } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import { ArrowDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import { ExploreSidebar, ExploreSidebarDrawer } from "@/components/ExploreSidebar";
-import Icon from "@/components/Icon";
 import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
@@ -84,7 +84,7 @@ const Explore = () => {
                   variant="plain"
                   color="neutral"
                   loading={isRequesting}
-                  endDecorator={<Icon.ArrowDown className="w-4 h-auto" />}
+                  endDecorator={<ArrowDownIcon className="w-4 h-auto" />}
                   onClick={() => fetchMemos(nextPageToken)}
                 >
                   {t("memo.load-more")}

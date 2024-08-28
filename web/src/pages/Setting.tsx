@@ -1,7 +1,6 @@
 import { Option, Select } from "@mui/joy";
-import { LucideIcon } from "lucide-react";
+import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
 import MemberSection from "@/components/Settings/MemberSection";
 import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
@@ -27,13 +26,13 @@ interface State {
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
 const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo-related", "storage", "sso"];
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
-  "my-account": Icon.User,
-  preference: Icon.Cog,
-  member: Icon.Users,
-  system: Icon.Settings2,
-  "memo-related": Icon.Library,
-  storage: Icon.Database,
-  sso: Icon.Key,
+  "my-account": UserIcon,
+  preference: CogIcon,
+  member: UsersIcon,
+  system: Settings2Icon,
+  "memo-related": LibraryIcon,
+  storage: DatabaseIcon,
+  sso: KeyIcon,
 };
 
 const Setting = () => {

@@ -1,5 +1,6 @@
 import { Select, Option, Button, Divider } from "@mui/joy";
 import { isEqual } from "lodash-es";
+import { SendIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,6 @@ import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_sett
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
-import Icon from "../Icon";
 import VisibilityIcon from "../VisibilityIcon";
 import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
@@ -473,7 +473,7 @@ const MemoEditor = (props: Props) => {
               className="!font-normal"
               disabled={!allowSave}
               loading={state.isRequesting}
-              endDecorator={<Icon.Send className="w-4 h-auto" />}
+              endDecorator={<SendIcon className="w-4 h-auto" />}
               onClick={handleSaveBtnClick}
             >
               {t("editor.save")}

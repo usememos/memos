@@ -1,11 +1,11 @@
 import { Button, IconButton, Input } from "@mui/joy";
+import { XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { webhookServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
-import Icon from "./Icon";
 
 interface Props extends DialogProps {
   webhookId?: number;
@@ -97,7 +97,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">{isCreating ? "Create webhook" : "Edit webhook"}</p>
         <IconButton size="sm" onClick={() => destroy()}>
-          <Icon.X className="w-5 h-auto" />
+          <XIcon className="w-5 h-auto" />
         </IconButton>
       </div>
       <div className="dialog-content-container !w-80">

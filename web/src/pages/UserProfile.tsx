@@ -1,11 +1,11 @@
 import { Button } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
+import { ArrowDownIcon, ExternalLinkIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import Empty from "@/components/Empty";
-import Icon from "@/components/Icon";
 import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
@@ -113,7 +113,7 @@ const UserProfile = () => {
                 <Button
                   color="neutral"
                   variant="outlined"
-                  endDecorator={<Icon.ExternalLink className="w-4 h-auto opacity-60" />}
+                  endDecorator={<ExternalLinkIcon className="w-4 h-auto opacity-60" />}
                   onClick={handleCopyProfileLink}
                 >
                   {t("common.share")}
@@ -140,7 +140,7 @@ const UserProfile = () => {
                     variant="plain"
                     color="neutral"
                     loading={isRequesting}
-                    endDecorator={<Icon.ArrowDown className="w-4 h-auto" />}
+                    endDecorator={<ArrowDownIcon className="w-4 h-auto" />}
                     onClick={() => fetchMemos(nextPageToken)}
                   >
                     {t("memo.load-more")}

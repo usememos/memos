@@ -1,8 +1,8 @@
+import { LinkIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMemoStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import Icon from "../Icon";
 
 interface Props {
   relationList: MemoRelation[];
@@ -41,9 +41,9 @@ const RelationListView = (props: Props) => {
                 className="w-auto max-w-xs overflow-hidden flex flex-row justify-start items-center bg-zinc-100 dark:bg-zinc-900 hover:opacity-80 rounded-md text-sm p-1 px-2 text-gray-500 dark:text-gray-400 cursor-pointer hover:line-through"
                 onClick={() => handleDeleteRelation(memo)}
               >
-                <Icon.Link className="w-4 h-auto shrink-0 opacity-80" />
+                <LinkIcon className="w-4 h-auto shrink-0 opacity-80" />
                 <span className="mx-1 max-w-full text-ellipsis whitespace-nowrap overflow-hidden">{memo.snippet}</span>
-                <Icon.X className="w-4 h-auto cursor-pointer shrink-0 opacity-60 hover:opacity-100" />
+                <XIcon className="w-4 h-auto cursor-pointer shrink-0 opacity-60 hover:opacity-100" />
               </div>
             );
           })}

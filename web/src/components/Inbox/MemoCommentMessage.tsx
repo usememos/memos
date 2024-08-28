@@ -1,5 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
+import { InboxIcon, MessageCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
@@ -9,7 +10,6 @@ import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import Icon from "../Icon";
 
 interface Props {
   inbox: Inbox;
@@ -81,7 +81,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
         )}
       >
         <Tooltip title={"Comment"} placement="bottom">
-          <Icon.MessageCircle className="w-4 sm:w-5 h-auto" />
+          <MessageCircleIcon className="w-4 sm:w-5 h-auto" />
         </Tooltip>
       </div>
       <div
@@ -95,10 +95,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
           <div>
             {inbox.status === Inbox_Status.UNREAD && (
               <Tooltip title={t("common.archive")} placement="top">
-                <Icon.Inbox
-                  className="w-4 h-auto cursor-pointer text-gray-400 hover:text-blue-600"
-                  onClick={() => handleArchiveMessage()}
-                />
+                <InboxIcon className="w-4 h-auto cursor-pointer text-gray-400 hover:text-blue-600" onClick={() => handleArchiveMessage()} />
               </Tooltip>
             )}
           </div>

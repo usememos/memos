@@ -1,4 +1,5 @@
 import { Button, IconButton } from "@mui/joy";
+import { ExternalLinkIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { webhookServiceClient } from "@/grpcweb";
@@ -6,7 +7,6 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { Webhook } from "@/types/proto/api/v1/webhook_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateWebhookDialog from "../CreateWebhookDialog";
-import Icon from "../Icon";
 
 const listWebhooks = async (userId: number) => {
   const { webhooks } = await webhookServiceClient.listWebhooks({
@@ -88,7 +88,7 @@ const WebhookSection = () => {
                           handleDeleteWebhook(webhook);
                         }}
                       >
-                        <Icon.Trash className="w-4 h-auto" />
+                        <TrashIcon className="w-4 h-auto" />
                       </IconButton>
                     </td>
                   </tr>
@@ -113,7 +113,7 @@ const WebhookSection = () => {
           target="_blank"
         >
           {t("common.learn-more")}
-          <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
+          <ExternalLinkIcon className="inline w-4 h-auto ml-1" />
         </Link>
       </div>
     </div>

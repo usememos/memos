@@ -1,10 +1,10 @@
 import { Button, Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
+import { ArchiveIcon, ArchiveRestoreIcon, ArrowDownIcon, TrashIcon } from "lucide-react";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Empty from "@/components/Empty";
-import Icon from "@/components/Icon";
 import MemoContent from "@/components/MemoContent";
 import MemoFilters from "@/components/MemoFilters";
 import MobileHeader from "@/components/MobileHeader";
@@ -97,7 +97,7 @@ const Archived = () => {
         <div className="w-full flex flex-col justify-start items-start">
           <div className="w-full flex flex-row justify-between items-center mb-2">
             <div className="flex flex-row justify-start items-center gap-1">
-              <Icon.Archive className="w-5 h-auto opacity-70 shrink-0" />
+              <ArchiveIcon className="w-5 h-auto opacity-70 shrink-0" />
               <span>{t("common.archived")}</span>
             </div>
             <div className="w-44">
@@ -119,12 +119,12 @@ const Archived = () => {
                 <div className="flex flex-row justify-end items-center gap-x-2">
                   <Tooltip title={t("common.restore")} placement="top">
                     <button onClick={() => handleRestoreMemoClick(memo)}>
-                      <Icon.ArchiveRestore className="w-4 h-auto cursor-pointer text-gray-500 dark:text-gray-400" />
+                      <ArchiveRestoreIcon className="w-4 h-auto cursor-pointer text-gray-500 dark:text-gray-400" />
                     </button>
                   </Tooltip>
                   <Tooltip title={t("common.delete")} placement="top">
                     <button onClick={() => handleDeleteMemoClick(memo)} className="text-gray-500 dark:text-gray-400">
-                      <Icon.Trash className="w-4 h-auto cursor-pointer" />
+                      <TrashIcon className="w-4 h-auto cursor-pointer" />
                     </button>
                   </Tooltip>
                 </div>
@@ -138,7 +138,7 @@ const Archived = () => {
                 variant="plain"
                 color="neutral"
                 loading={isRequesting}
-                endDecorator={<Icon.ArrowDown className="w-4 h-auto" />}
+                endDecorator={<ArrowDownIcon className="w-4 h-auto" />}
                 onClick={() => fetchMemos(nextPageToken)}
               >
                 {t("memo.load-more")}
