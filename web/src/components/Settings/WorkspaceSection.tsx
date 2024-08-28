@@ -1,9 +1,9 @@
 import { Button, Select, Textarea, Option, Divider } from "@mui/joy";
+import { isEqual } from "lodash-es";
 import { ExternalLinkIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { workspaceSettingServiceClient } from "@/grpcweb";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
@@ -13,9 +13,10 @@ import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog"
 const WorkspaceSection = () => {
   const t = useTranslate();
   const workspaceSettingStore = useWorkspaceSettingStore();
-  const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(
-    WorkspaceGeneralSetting.fromPartial(workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {}),
+  const originalSetting = WorkspaceGeneralSetting.fromPartial(
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {},
   );
+  const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(originalSetting);
 
   const handleUpdateCustomizedProfileButtonClick = () => {
     showUpdateCustomizedProfileDialog();
@@ -35,11 +36,9 @@ const WorkspaceSection = () => {
 
   const handleSaveGeneralSetting = async () => {
     try {
-      await workspaceSettingServiceClient.setWorkspaceSetting({
-        setting: {
-          name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
-          generalSetting: workspaceGeneralSetting,
-        },
+      await workspaceSettingStore.setWorkspaceSetting({
+        name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
+        generalSetting: workspaceGeneralSetting,
       });
     } catch (error: any) {
       toast.error(error.details);
@@ -118,8 +117,8 @@ const WorkspaceSection = () => {
           <Option value={1}>Monday</Option>
         </Select>
       </div>
-      <div>
-        <Button variant="outlined" color="neutral" onClick={handleSaveGeneralSetting}>
+      <div className="mt-2 w-full flex justify-end">
+        <Button disabled={isEqual(workspaceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
           {t("common.save")}
         </Button>
       </div>
