@@ -2,9 +2,9 @@ import clsx from "clsx";
 import copy from "copy-to-clipboard";
 import DOMPurify from "dompurify";
 import hljs from "highlight.js";
+import { CopyIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
-import Icon from "../Icon";
 import MermaidBlock from "./MermaidBlock";
 import { BaseProps } from "./types";
 
@@ -57,7 +57,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
     <div className="w-full my-1 bg-amber-100 border-l-4 border-amber-400 rounded hover:shadow dark:bg-zinc-600 dark:border-zinc-400 relative">
       <div className="w-full px-2 py-1 flex flex-row justify-between items-center text-amber-500 dark:text-zinc-400">
         <span className="text-sm font-mono">{formatedLanguage}</span>
-        <Icon.Copy className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={handleCopyButtonClick} />
+        <CopyIcon className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={handleCopyButtonClick} />
       </div>
 
       <div className="overflow-auto">

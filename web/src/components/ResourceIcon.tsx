@@ -1,8 +1,18 @@
 import clsx from "clsx";
+import {
+  BinaryIcon,
+  BookIcon,
+  FileArchiveIcon,
+  FileAudioIcon,
+  FileEditIcon,
+  FileIcon,
+  FileTextIcon,
+  FileVideo2Icon,
+  SheetIcon,
+} from "lucide-react";
 import React from "react";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
-import Icon from "./Icon";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
 
@@ -40,25 +50,25 @@ const ResourceIcon = (props: Props) => {
   const getResourceIcon = () => {
     switch (resourceType) {
       case "video/*":
-        return <Icon.FileVideo2 strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <FileVideo2Icon strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "audio/*":
-        return <Icon.FileAudio strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <FileAudioIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "text/*":
-        return <Icon.FileText strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <FileTextIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "application/epub+zip":
-        return <Icon.Book strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <BookIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "application/pdf":
-        return <Icon.Book strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <BookIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "application/msword":
-        return <Icon.FileEdit strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <FileEditIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "application/msexcel":
-        return <Icon.SheetIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <SheetIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "application/zip":
-        return <Icon.FileArchiveIcon onClick={previewResource} strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <FileArchiveIcon onClick={previewResource} strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "application/x-java-archive":
-        return <Icon.BinaryIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <BinaryIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       default:
-        return <Icon.File strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <FileIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
     }
   };
 

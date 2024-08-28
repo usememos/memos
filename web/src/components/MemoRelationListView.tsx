@@ -1,11 +1,11 @@
 import clsx from "clsx";
+import { DotIcon, LinkIcon, MilestoneIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { Link } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import { useMemoStore } from "@/store/v1";
 import { MemoRelation } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import Icon from "./Icon";
 
 interface Props {
   memo: Memo;
@@ -54,7 +54,7 @@ const MemoRelationListView = (props: Props) => {
             )}
             onClick={() => setSelectedTab("referencing")}
           >
-            <Icon.Link className="w-3 h-auto shrink-0 opacity-70" />
+            <LinkIcon className="w-3 h-auto shrink-0 opacity-70" />
             <span>Referencing</span>
             <span className="opacity-80">({referencingMemoList.length})</span>
           </button>
@@ -67,7 +67,7 @@ const MemoRelationListView = (props: Props) => {
             )}
             onClick={() => setSelectedTab("referenced")}
           >
-            <Icon.Milestone className="w-3 h-auto shrink-0 opacity-70" />
+            <MilestoneIcon className="w-3 h-auto shrink-0 opacity-70" />
             <span>Referenced by</span>
             <span className="opacity-80">({referencedMemoList.length})</span>
           </button>
@@ -83,7 +83,7 @@ const MemoRelationListView = (props: Props) => {
                 to={`/m/${memo.uid}`}
                 unstable_viewTransition
               >
-                <Icon.Dot className="shrink-0 w-4 h-auto opacity-40" />
+                <DotIcon className="shrink-0 w-4 h-auto opacity-40" />
                 <span className="truncate">{memo.snippet}</span>
               </Link>
             );
@@ -100,7 +100,7 @@ const MemoRelationListView = (props: Props) => {
                 to={`/m/${memo.uid}`}
                 unstable_viewTransition
               >
-                <Icon.Dot className="shrink-0 w-4 h-auto opacity-40" />
+                <DotIcon className="shrink-0 w-4 h-auto opacity-40" />
                 <span className="truncate">{memo.snippet}</span>
               </Link>
             );

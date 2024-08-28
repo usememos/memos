@@ -1,8 +1,8 @@
 import { last } from "lodash-es";
+import { LoaderIcon } from "lucide-react";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import Icon from "@/components/Icon";
 import { authServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -70,7 +70,7 @@ const AuthCallback = () => {
   return (
     <div className="p-4 py-24 w-full h-full flex justify-center items-center">
       {state.loading ? (
-        <Icon.Loader className="animate-spin dark:text-gray-200" />
+        <LoaderIcon className="animate-spin dark:text-gray-200" />
       ) : (
         <div className="max-w-lg font-mono whitespace-pre-wrap opacity-80">{state.errorMessage}</div>
       )}

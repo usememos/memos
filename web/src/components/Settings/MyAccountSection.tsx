@@ -1,10 +1,10 @@
 import { Button, Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { MoreVerticalIcon, PenLineIcon } from "lucide-react";
 import { memoServiceClient } from "@/grpcweb";
 import { downloadFileFromUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTranslate } from "@/utils/i18n";
 import showChangePasswordDialog from "../ChangePasswordDialog";
-import Icon from "../Icon";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
 import AccessTokenSection from "./AccessTokenSection";
@@ -35,13 +35,13 @@ const MyAccountSection = () => {
       </div>
       <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
         <Button variant="outlined" color="neutral" size="sm" onClick={showUpdateAccountDialog}>
-          <Icon.PenLine className="w-4 h-4 mx-auto mr-1" />
+          <PenLineIcon className="w-4 h-4 mx-auto mr-1" />
           {t("common.edit")}
         </Button>
         <Dropdown>
           <MenuButton slots={{ root: "div" }}>
             <Button variant="outlined" color="neutral" size="sm">
-              <Icon.MoreVertical className="w-4 h-4 mx-auto" />
+              <MoreVerticalIcon className="w-4 h-4 mx-auto" />
             </Button>
           </MenuButton>
           <Menu className="text-sm" size="sm" placement="bottom">

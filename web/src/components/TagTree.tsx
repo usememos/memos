@@ -1,7 +1,7 @@
+import { ChevronRightIcon, HashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
 import { useMemoFilterStore } from "@/store/v1";
-import Icon from "./Icon";
 
 interface Tag {
   key: string;
@@ -108,7 +108,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
           }`}
         >
           <div className="shrink-0">
-            <Icon.Hash className="w-4 h-auto shrink-0 mr-1 text-gray-400 dark:text-gray-500" />
+            <HashIcon className="w-4 h-auto shrink-0 mr-1 text-gray-400 dark:text-gray-500" />
           </div>
           <span className="truncate cursor-pointer hover:opacity-80" onClick={handleTagClick}>
             {tag.key}
@@ -120,7 +120,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
               className={`flex flex-row justify-center items-center w-6 h-6 shrink-0 transition-all rotate-0 ${showSubTags && "rotate-90"}`}
               onClick={handleToggleBtnClick}
             >
-              <Icon.ChevronRight className="w-5 h-5 cursor-pointer text-gray-400 dark:text-gray-500" />
+              <ChevronRightIcon className="w-5 h-5 cursor-pointer text-gray-400 dark:text-gray-500" />
             </span>
           ) : null}
         </div>

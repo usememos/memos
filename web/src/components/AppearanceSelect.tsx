@@ -1,7 +1,7 @@
 import { Option, Select } from "@mui/joy";
+import { SunIcon, MoonIcon, SmileIcon } from "lucide-react";
 import { FC } from "react";
 import { useTranslate } from "@/utils/i18n";
-import Icon from "./Icon";
 
 interface Props {
   value: Appearance;
@@ -18,11 +18,11 @@ const AppearanceSelect: FC<Props> = (props: Props) => {
   const getPrefixIcon = (appearance: Appearance) => {
     const className = "w-4 h-auto";
     if (appearance === "light") {
-      return <Icon.Sun className={className} />;
+      return <SunIcon className={className} />;
     } else if (appearance === "dark") {
-      return <Icon.Moon className={className} />;
+      return <MoonIcon className={className} />;
     } else {
-      return <Icon.Smile className={className} />;
+      return <SmileIcon className={className} />;
     }
   };
 

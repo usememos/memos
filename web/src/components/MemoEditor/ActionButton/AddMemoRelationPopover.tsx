@@ -1,9 +1,9 @@
 import { Autocomplete, AutocompleteOption, Button, Checkbox, Chip, IconButton } from "@mui/joy";
 import { uniqBy } from "lodash-es";
+import { LinkIcon } from "lucide-react";
 import React, { useContext, useState } from "react";
 import { toast } from "react-hot-toast";
 import useDebounce from "react-use/lib/useDebounce";
-import Icon from "@/components/Icon";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
@@ -127,7 +127,7 @@ const AddMemoRelationPopover = (props: Props) => {
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger>
         <IconButton size="sm" component="div">
-          <Icon.Link className="w-5 h-5 mx-auto" />
+          <LinkIcon className="w-5 h-5 mx-auto" />
         </IconButton>
       </PopoverTrigger>
       <PopoverContent align="center">

@@ -1,5 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
+import { ArchiveIcon, BellIcon, Globe2Icon, HomeIcon, LogInIcon, PaperclipIcon, SettingsIcon, SmileIcon, User2Icon } from "lucide-react";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -7,7 +8,6 @@ import { Routes } from "@/router";
 import { useInboxStore } from "@/store/v1";
 import { Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { useTranslate } from "@/utils/i18n";
-import Icon from "./Icon";
 import UserBanner from "./UserBanner";
 
 interface NavLinkItem {
@@ -52,25 +52,25 @@ const Navigation = (props: Props) => {
     id: "header-home",
     path: Routes.ROOT,
     title: t("common.home"),
-    icon: <Icon.Home className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <HomeIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const resourcesNavLink: NavLinkItem = {
     id: "header-resources",
     path: Routes.RESOURCES,
     title: t("common.resources"),
-    icon: <Icon.Paperclip className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <PaperclipIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",
     path: Routes.EXPLORE,
     title: t("common.explore"),
-    icon: <Icon.Globe2 className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <Globe2Icon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const profileNavLink: NavLinkItem = {
     id: "header-profile",
     path: user ? `/u/${encodeURIComponent(user.username)}` : "",
     title: t("common.profile"),
-    icon: <Icon.User2 className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <User2Icon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const inboxNavLink: NavLinkItem = {
     id: "header-inbox",
@@ -79,7 +79,7 @@ const Navigation = (props: Props) => {
     icon: (
       <>
         <div className="relative">
-          <Icon.Bell className="w-6 h-auto opacity-70 shrink-0" />
+          <BellIcon className="w-6 h-auto opacity-70 shrink-0" />
           {hasUnreadInbox && <div className="absolute top-0 left-5 w-2 h-2 rounded-full bg-blue-500"></div>}
         </div>
       </>
@@ -89,25 +89,25 @@ const Navigation = (props: Props) => {
     id: "header-archived",
     path: Routes.ARCHIVED,
     title: t("common.archived"),
-    icon: <Icon.Archive className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <ArchiveIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const settingNavLink: NavLinkItem = {
     id: "header-setting",
     path: Routes.SETTING,
     title: t("common.settings"),
-    icon: <Icon.Settings className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <SettingsIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const signInNavLink: NavLinkItem = {
     id: "header-auth",
     path: Routes.AUTH,
     title: t("common.sign-in"),
-    icon: <Icon.LogIn className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <LogInIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const aboutNavLink: NavLinkItem = {
     id: "header-about",
     path: Routes.ABOUT,
     title: t("common.about"),
-    icon: <Icon.Smile className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <SmileIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
 
   const navLinks: NavLinkItem[] = user

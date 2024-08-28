@@ -1,6 +1,6 @@
+import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { generateDialog } from "./Dialog";
-import Icon from "./Icon";
 import "@/less/preview-image-dialog.less";
 
 const MIN_SCALE = 0.5;
@@ -116,7 +116,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     <>
       <div className="btns-container">
         <button className="btn" onClick={handleCloseBtnClick}>
-          <Icon.X className="icon-img" />
+          <XIcon className="icon-img" />
         </button>
       </div>
       <div className="img-container" onClick={handleImgContainerClick}>

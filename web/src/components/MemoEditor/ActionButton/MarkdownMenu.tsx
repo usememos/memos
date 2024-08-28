@@ -1,6 +1,6 @@
 import { Dropdown, IconButton, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { Link } from "@mui/joy";
-import Icon from "@/components/Icon";
+import { CheckSquareIcon, Code2Icon, SquareSlashIcon } from "lucide-react";
 import { EditorRefActions } from "../Editor";
 
 interface Props {
@@ -67,15 +67,15 @@ const MarkdownMenu = (props: Props) => {
           },
         }}
       >
-        <Icon.SquareSlash className="w-5 h-5 mx-auto" />
+        <SquareSlashIcon className="w-5 h-5 mx-auto" />
       </MenuButton>
       <Menu className="text-sm" size="sm" placement="bottom-start">
         <MenuItem onClick={handleCodeBlockClick}>
-          <Icon.Code2 className="w-4 h-auto" />
+          <Code2Icon className="w-4 h-auto" />
           <span>Code block</span>
         </MenuItem>
         <MenuItem onClick={handleCheckboxClick}>
-          <Icon.CheckSquare className="w-4 h-auto" />
+          <CheckSquareIcon className="w-4 h-auto" />
           <span>Checkbox</span>
         </MenuItem>
         <div className="-mt-0.5 pl-2">

@@ -1,5 +1,6 @@
 import { Button, IconButton, Input } from "@mui/joy";
 import Textarea from "@mui/joy/Textarea/Textarea";
+import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
@@ -8,7 +9,6 @@ import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "./AppearanceSelect";
 import { generateDialog } from "./Dialog";
-import Icon from "./Icon";
 import LocaleSelect from "./LocaleSelect";
 
 type Props = DialogProps;
@@ -103,7 +103,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">{t("setting.system-section.customize-server.title")}</p>
         <IconButton size="sm" onClick={handleCloseButtonClick}>
-          <Icon.X className="w-5 h-auto" />
+          <XIcon className="w-5 h-auto" />
         </IconButton>
       </div>
       <div className="dialog-content-container min-w-[16rem]">

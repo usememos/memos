@@ -1,7 +1,7 @@
 import { Dropdown, IconButton, Menu, MenuButton } from "@mui/joy";
+import { HashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
-import Icon from "@/components/Icon";
 import OverflowTip from "@/components/kit/OverflowTip";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTagStore } from "@/store/v1";
@@ -58,7 +58,7 @@ const TagSelector = (props: Props) => {
           },
         }}
       >
-        <Icon.Hash className="w-5 h-5 mx-auto" />
+        <HashIcon className="w-5 h-5 mx-auto" />
       </MenuButton>
       <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">
         <div ref={containerRef}>

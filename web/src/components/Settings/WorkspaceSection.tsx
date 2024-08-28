@@ -1,4 +1,5 @@
 import { Button, Select, Textarea, Option, Divider } from "@mui/joy";
+import { ExternalLinkIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -7,7 +8,6 @@ import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
-import Icon from "../Icon";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 
 const WorkspaceSection = () => {
@@ -101,7 +101,7 @@ const WorkspaceSection = () => {
           target="_blank"
         >
           {t("common.learn-more")}
-          <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
+          <ExternalLinkIcon className="inline w-4 h-auto ml-1" />
         </Link>
       </div>
       <div className="w-full flex flex-row justify-between items-center">
