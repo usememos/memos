@@ -2045,6 +2045,12 @@ definitions:
   apiv1WorkspaceGeneralSetting:
     type: object
     properties:
+      disallowSignup:
+        type: boolean
+        description: disallow_signup disallows signup for new users.
+      disallowPasswordSignin:
+        type: boolean
+        description: disallow_password_signin disallows user to sign in with password. Except for the admins.
       additionalScript:
         type: string
         description: additional_script is the additional script.
@@ -3125,12 +3131,6 @@ definitions:
       mode:
         type: string
         description: mode is the instance mode (e.g. "prod", "dev" or "demo").
-      public:
-        type: boolean
-        description: public is a flag that the instance is open for other users.
-      passwordAuth:
-        type: boolean
-        description: password_auth is a flag whether the instance allows password authentication.
       instanceUrl:
         type: string
         description: instance_url is the URL of the instance.

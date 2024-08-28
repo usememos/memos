@@ -116,7 +116,7 @@ const SignIn = () => {
             {workspaceGeneralSetting.customProfile?.title || "Memos"}
           </p>
         </div>
-        {commonContext.profile.passwordAuth ? (
+        {!workspaceGeneralSetting.disallowPasswordSignin ? (
           <form className="w-full mt-2" onSubmit={handleFormSubmit}>
             <div className="flex flex-col justify-start items-start w-full gap-4">
               <div className="w-full flex flex-col justify-start items-start">
@@ -176,7 +176,7 @@ const SignIn = () => {
         ) : (
           <p className="w-full text-2xl mt-2 dark:text-gray-500">Password auth is not allowed.</p>
         )}
-        {commonContext.profile.public && commonContext.profile.passwordAuth && (
+        {!workspaceGeneralSetting.disallowSignup && !workspaceGeneralSetting.disallowPasswordSignin && (
           <p className="w-full mt-4 text-sm">
             <span className="dark:text-gray-500">{t("auth.sign-up-tip")}</span>
             <Link to="/auth/signup" className="cursor-pointer ml-2 text-blue-600 hover:underline" unstable_viewTransition>

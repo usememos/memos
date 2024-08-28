@@ -28,10 +28,6 @@ type Profile struct {
 	Driver string
 	// Version is the current version of server
 	Version string
-	// Pubic is the flag whether the instance is public for others.
-	Public bool
-	// PasswordAuth is the flag whether the instance uses password authentication.
-	PasswordAuth bool
 	// InstanceURL is the url of your memos instance.
 	InstanceURL string
 }

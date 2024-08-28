@@ -1,4 +1,4 @@
-import { Button, Select, Textarea, Option, Divider } from "@mui/joy";
+import { Button, Select, Textarea, Option, Divider, Switch } from "@mui/joy";
 import { isEqual } from "lodash-es";
 import { ExternalLinkIcon } from "lucide-react";
 import { useState } from "react";
@@ -22,16 +22,12 @@ const WorkspaceSection = () => {
     showUpdateCustomizedProfileDialog();
   };
 
-  const handleAdditionalStyleChanged = (value: string) => {
-    setWorkspaceGeneralSetting({ ...workspaceGeneralSetting, additionalStyle: value });
-  };
-
-  const handleAdditionalScriptChanged = (value: string) => {
-    setWorkspaceGeneralSetting({ ...workspaceGeneralSetting, additionalScript: value });
-  };
-
-  const handleWeekStartDayOffsetChanged = (value: number) => {
-    setWorkspaceGeneralSetting({ ...workspaceGeneralSetting, weekStartDayOffset: value });
+  const updatePartialSetting = (partial: Partial<WorkspaceGeneralSetting>) => {
+    const newWorkspaceGeneralSetting = WorkspaceGeneralSetting.fromPartial({
+      ...workspaceGeneralSetting,
+      ...partial,
+    });
+    setWorkspaceGeneralSetting(newWorkspaceGeneralSetting);
   };
 
   const handleSaveGeneralSetting = async () => {
@@ -75,7 +71,7 @@ const WorkspaceSection = () => {
         maxRows={4}
         placeholder={t("setting.system-section.additional-style-placeholder")}
         value={workspaceGeneralSetting.additionalStyle}
-        onChange={(event) => handleAdditionalStyleChanged(event.target.value)}
+        onChange={(event) => updatePartialSetting({ additionalStyle: event.target.value })}
       />
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.additional-script")}</span>
@@ -91,7 +87,7 @@ const WorkspaceSection = () => {
         maxRows={4}
         placeholder={t("setting.system-section.additional-script-placeholder")}
         value={workspaceGeneralSetting.additionalScript}
-        onChange={(event) => handleAdditionalScriptChanged(event.target.value)}
+        onChange={(event) => updatePartialSetting({ additionalScript: event.target.value })}
       />
       <div className="w-full">
         <Link
@@ -104,12 +100,26 @@ const WorkspaceSection = () => {
         </Link>
       </div>
       <div className="w-full flex flex-row justify-between items-center">
+        <span>Disallow signup</span>
+        <Switch
+          checked={workspaceGeneralSetting.disallowSignup}
+          onChange={(event) => updatePartialSetting({ disallowSignup: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>Disallow password signin</span>
+        <Switch
+          checked={workspaceGeneralSetting.disallowPasswordSignin}
+          onChange={(event) => updatePartialSetting({ disallowPasswordSignin: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
         <span className="truncate">Week start day</span>
         <Select
           className="!min-w-fit"
           value={workspaceGeneralSetting.weekStartDayOffset}
           onChange={(_, weekStartDayOffset) => {
-            handleWeekStartDayOffsetChanged(weekStartDayOffset || 0);
+            updatePartialSetting({ weekStartDayOffset: weekStartDayOffset || 0 });
           }}
         >
           <Option value={-1}>Saturday</Option>
