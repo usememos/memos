@@ -51,13 +51,6 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*}"};
     option (google.api.method_signature) = "name";
   }
-  // ExportMemos exports memos.
-  rpc ExportMemos(ExportMemosRequest) returns (ExportMemosResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/memos:export"
-      body: "*"
-    };
-  }
   // ListMemoProperties lists memo properties.
   rpc ListMemoProperties(ListMemoPropertiesRequest) returns (ListMemoPropertiesResponse) {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}/properties"};
@@ -258,15 +251,6 @@ message DeleteMemoRequest {
   // The name of the memo.
   // Format: memos/{id}
   string name = 1;
-}
-
-message ExportMemosRequest {
-  // Same as ListMemosRequest.filter
-  string filter = 1;
-}
-
-message ExportMemosResponse {
-  bytes content = 1;
 }
 
 message ListMemoPropertiesRequest {

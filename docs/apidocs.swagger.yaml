@@ -356,27 +356,6 @@ paths:
           type: string
       tags:
         - MemoService
-  /api/v1/memos:export:
-    post:
-      summary: ExportMemos exports memos.
-      operationId: MemoService_ExportMemos
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1ExportMemosResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1ExportMemosRequest'
-      tags:
-        - MemoService
   /api/v1/reactions/{reactionId}:
     delete:
       summary: DeleteMemoReaction deletes a reaction for a memo.
@@ -2381,18 +2360,6 @@ definitions:
     properties:
       symbol:
         type: string
-  v1ExportMemosRequest:
-    type: object
-    properties:
-      filter:
-        type: string
-        title: Same as ListMemosRequest.filter
-  v1ExportMemosResponse:
-    type: object
-    properties:
-      content:
-        type: string
-        format: byte
   v1HTMLElementNode:
     type: object
     properties:

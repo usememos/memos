@@ -1,7 +1,5 @@
 import { Button, Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { MoreVerticalIcon, PenLineIcon } from "lucide-react";
-import { memoServiceClient } from "@/grpcweb";
-import { downloadFileFromUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTranslate } from "@/utils/i18n";
 import showChangePasswordDialog from "../ChangePasswordDialog";
@@ -12,13 +10,6 @@ import AccessTokenSection from "./AccessTokenSection";
 const MyAccountSection = () => {
   const t = useTranslate();
   const user = useCurrentUser();
-
-  const downloadExportedMemos = async (user: any) => {
-    const { content } = await memoServiceClient.exportMemos({ filter: `creator == "${user.name}"` });
-    const downloadUrl = window.URL.createObjectURL(new Blob([content]));
-    downloadFileFromUrl(downloadUrl, "memos-export.zip");
-    URL.revokeObjectURL(downloadUrl);
-  };
 
   return (
     <div className="w-full gap-2 pt-2 pb-4">
@@ -46,7 +37,6 @@ const MyAccountSection = () => {
           </MenuButton>
           <Menu className="text-sm" size="sm" placement="bottom">
             <MenuItem onClick={showChangePasswordDialog}>{t("setting.account-section.change-password")}</MenuItem>
-            <MenuItem onClick={() => downloadExportedMemos(user)}>{t("setting.account-section.export-memos")}</MenuItem>
           </Menu>
         </Dropdown>
       </div>
