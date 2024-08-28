@@ -105,7 +105,7 @@ const WorkspaceSection = () => {
         </Link>
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>
+        <span className="truncate">Week start day</span>
         <Select
           className="!min-w-fit"
           value={workspaceGeneralSetting.weekStartDayOffset}
@@ -113,6 +113,7 @@ const WorkspaceSection = () => {
             handleWeekStartDayOffsetChanged(weekStartDayOffset || 0);
           }}
         >
+          <Option value={-1}>Saturday</Option>
           <Option value={0}>Sunday</Option>
           <Option value={1}>Monday</Option>
         </Select>

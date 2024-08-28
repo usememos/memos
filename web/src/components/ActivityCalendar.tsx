@@ -41,7 +41,7 @@ const ActivityCalendar = (props: Props) => {
   const year = dayjs(monthStr).toDate().getFullYear();
   const month = dayjs(monthStr).toDate().getMonth() + 1;
   const dayInMonth = new Date(year, month, 0).getDate();
-  const firstDay = new Date(year, month - 1, 1).getDay() - weekStartDayOffset;
+  const firstDay = (new Date(year, month - 1, 1).getDay() - weekStartDayOffset) % 7;
   const lastDay = new Date(year, month - 1, dayInMonth).getDay() - weekStartDayOffset;
   const weekDays = WEEK_DAYS.slice(weekStartDayOffset).concat(WEEK_DAYS.slice(0, weekStartDayOffset));
   const maxCount = Math.max(...Object.values(data));
