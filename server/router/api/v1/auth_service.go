@@ -62,8 +62,8 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace general setting, err: %s", err))
 	}
-	// Check if the password sign in is allowed.
-	if workspaceGeneralSetting.DisallowPasswordSignin && user.Role == store.RoleUser {
+	// Check if the password auth in is allowed.
+	if workspaceGeneralSetting.DisallowPasswordAuth && user.Role == store.RoleUser {
 		return nil, status.Errorf(codes.PermissionDenied, "password signin is not allowed")
 	}
 	if user.RowStatus == store.Archived {
@@ -184,7 +184,7 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace general setting, err: %s", err))
 	}
-	if workspaceGeneralSetting.DisallowSignup {
+	if workspaceGeneralSetting.DisallowUserRegistration {
 		return nil, status.Errorf(codes.PermissionDenied, "sign up is not allowed")
 	}
 

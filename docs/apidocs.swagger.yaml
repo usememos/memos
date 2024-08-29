@@ -2045,12 +2045,12 @@ definitions:
   apiv1WorkspaceGeneralSetting:
     type: object
     properties:
-      disallowSignup:
+      disallowUserRegistration:
         type: boolean
-        description: disallow_signup disallows signup for new users.
-      disallowPasswordSignin:
+        description: disallow_user_registration disallows user registration.
+      disallowPasswordAuth:
         type: boolean
-        description: disallow_password_signin disallows user to sign in with password. Except for the admins.
+        description: disallow_password_auth disallows password authentication.
       additionalScript:
         type: string
         description: additional_script is the additional script.

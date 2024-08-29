@@ -100,17 +100,17 @@ const WorkspaceSection = () => {
         </Link>
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Disallow signup</span>
+        <span>Disallow user registration</span>
         <Switch
-          checked={workspaceGeneralSetting.disallowSignup}
-          onChange={(event) => updatePartialSetting({ disallowSignup: event.target.checked })}
+          checked={workspaceGeneralSetting.disallowUserRegistration}
+          onChange={(event) => updatePartialSetting({ disallowUserRegistration: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Disallow password signin</span>
+        <span>Disallow password auth</span>
         <Switch
-          checked={workspaceGeneralSetting.disallowPasswordSignin}
-          onChange={(event) => updatePartialSetting({ disallowPasswordSignin: event.target.checked })}
+          checked={workspaceGeneralSetting.disallowPasswordAuth}
+          onChange={(event) => updatePartialSetting({ disallowPasswordAuth: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">

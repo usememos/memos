@@ -65,12 +65,12 @@ const SignIn = () => {
             {workspaceGeneralSetting.customProfile?.title || "Memos"}
           </p>
         </div>
-        {!workspaceGeneralSetting.disallowPasswordSignin ? (
+        {!workspaceGeneralSetting.disallowPasswordAuth ? (
           <PasswordSignInForm />
         ) : (
           <p className="w-full text-2xl mt-2 dark:text-gray-500">Password auth is not allowed.</p>
         )}
-        {!workspaceGeneralSetting.disallowSignup && !workspaceGeneralSetting.disallowPasswordSignin && (
+        {!workspaceGeneralSetting.disallowUserRegistration && !workspaceGeneralSetting.disallowPasswordAuth && (
           <p className="w-full mt-4 text-sm">
             <span className="dark:text-gray-500">{t("auth.sign-up-tip")}</span>
             <Link to="/auth/signup" className="cursor-pointer ml-2 text-blue-600 hover:underline" unstable_viewTransition>
