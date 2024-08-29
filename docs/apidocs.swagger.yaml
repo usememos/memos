@@ -1799,6 +1799,11 @@ paths:
           in: path
           required: true
           type: string
+        - name: thumbnail
+          description: A flag indicating if the thumbnail version of the resource should be returned
+          in: query
+          required: false
+          type: boolean
       tags:
         - ResourceService
 definitions:
