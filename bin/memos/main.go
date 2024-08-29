@@ -44,7 +44,7 @@ var (
 				DSN:         viper.GetString("dsn"),
 				InstanceURL: viper.GetString("instance-url"),
 				Version:     version.GetCurrentVersion(viper.GetString("mode")),
-				BaseURL:      viper.GetString("base-url"),
+				BaseURL:     viper.GetString("base-url"),
 			}
 			if err := instanceProfile.Validate(); err != nil {
 				panic(err)
@@ -158,9 +158,9 @@ addr: %s
 port: %d
 mode: %s
 driver: %s
-base_url: %s
+baseurl: %s
 ---
-`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver)
+`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver, profile.BaseURL)
 
 	print(greetingBanner)
 	if len(profile.Addr) == 0 {

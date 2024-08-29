@@ -3,11 +3,10 @@ package frontend
 import (
 	"context"
 	"embed"
+	"html/template"
+	"io"
 	"io/fs"
 	"net/http"
-
-	"io"
-	"html/template"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -32,7 +31,7 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 	}
 }
 
-var base_url = ""
+var baseURL = ""
 
 func indexHander(c echo.Context) error {
 	// open index.html
@@ -48,23 +47,30 @@ func indexHander(c echo.Context) error {
 	}
 
 	c.Response().WriteHeader(http.StatusOK)
-	template.Must(template.New("index.html").Parse(string(b))).Execute(c.Response().Writer, map[string]any{
-		"baseurl": base_url,
+	tmpl, err := template.New("index.html").Parse(string(b))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	err = tmpl.Execute(c.Response().Writer, map[string]any{
+		"baseurl": baseURL,
 	})
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
 
 	return nil
 }
 
 func (f *FrontendService) Serve(_ context.Context, e *echo.Echo) {
 	skipper := func(c echo.Context) bool {
-		path_ := c.Path()
-		return path_ == "/" || path_ == "/index.html" || util.HasPrefixes(path_, "/api", "/memos.api.v1")
+		pathTmp := c.Path()
+		return pathTmp == "/" || pathTmp == "/index.html" || util.HasPrefixes(pathTmp, "/api", "/memos.api.v1")
 	}
 
 	e.GET("/", indexHander)
 	e.GET("/index.html", indexHander)
-	// save base_url from profile.
-	base_url = f.Profile.BaseURL
+	// save baseUrl from profile.
+	baseURL = f.Profile.BaseURL
 
 	// Use echo static middleware to serve the built dist folder.
 	// Reference: https://github.com/labstack/echo/blob/master/middleware/static.go
@@ -72,15 +78,15 @@ func (f *FrontendService) Serve(_ context.Context, e *echo.Echo) {
 		HTML5:      false,
 		Filesystem: getFileSystem("dist"),
 		Skipper:    skipper,
-	}), func (skipper middleware.Skipper) echo.MiddlewareFunc {
+	}), func(skipper middleware.Skipper) echo.MiddlewareFunc {
 		return func(next echo.HandlerFunc) echo.HandlerFunc {
 			return func(c echo.Context) (err error) {
-				// skip 
+				// skip
 				if skipper(c) {
 					return next(c)
 				}
 				// skip assets
-				if (util.HasPrefixes(c.Path(), "/assets")){
+				if util.HasPrefixes(c.Path(), "/assets") {
 					return next(c)
 				}
 				// otherwise (NotFound), serve index.html
