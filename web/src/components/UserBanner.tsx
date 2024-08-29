@@ -18,7 +18,7 @@ const UserBanner = (props: Props) => {
   const navigateTo = useNavigateTo();
   const user = useCurrentUser();
   const title = user ? user.nickname || user.username : "Memos";
-  const avatarUrl = user ? user.avatarUrl : "/full-logo.webp";
+  const avatarUrl = user ? user.avatarUrl : (window as any).globalConfig.BaseUrl + "/full-logo.webp";
 
   const handleSignOut = async () => {
     await authServiceClient.signOut({});

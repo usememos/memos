@@ -112,6 +112,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+], { basename: (window as any).globalConfig.BaseUrl });
 
 export default router;

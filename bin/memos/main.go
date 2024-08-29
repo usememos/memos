@@ -44,6 +44,7 @@ var (
 				DSN:         viper.GetString("dsn"),
 				InstanceURL: viper.GetString("instance-url"),
 				Version:     version.GetCurrentVersion(viper.GetString("mode")),
+				BaseURL:      viper.GetString("base-url"),
 			}
 			if err := instanceProfile.Validate(); err != nil {
 				panic(err)
@@ -110,6 +111,7 @@ func init() {
 	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
+	rootCmd.PersistentFlags().String("base-url", "", "the base url of your memos instance")
 
 	if err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode")); err != nil {
 		panic(err)
@@ -132,10 +134,16 @@ func init() {
 	if err := viper.BindPFlag("instance-url", rootCmd.PersistentFlags().Lookup("instance-url")); err != nil {
 		panic(err)
 	}
+	if err := viper.BindPFlag("base-url", rootCmd.PersistentFlags().Lookup("base-url")); err != nil {
+		panic(err)
+	}
 
 	viper.SetEnvPrefix("memos")
 	viper.AutomaticEnv()
 	if err := viper.BindEnv("instance-url", "MEMOS_INSTANCE_URL"); err != nil {
+		panic(err)
+	}
+	if err := viper.BindEnv("base-url", "MEMOS_BASE_URL"); err != nil {
 		panic(err)
 	}
 }
@@ -150,6 +158,7 @@ addr: %s
 port: %d
 mode: %s
 driver: %s
+base_url: %s
 ---
 `, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver)
 
