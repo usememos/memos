@@ -29,7 +29,7 @@ const AdminSignIn = () => {
             {workspaceGeneralSetting.customProfile?.title || "Memos"}
           </p>
         </div>
-        <p className="w-full text-xl font-medium">Sign in with admin accounts</p>
+        <p className="w-full text-xl font-medium dark:text-gray-500">Sign in with admin accounts</p>
         <PasswordSignInForm />
       </div>
       <div className="mt-4 flex flex-row items-center justify-center w-full gap-2">
