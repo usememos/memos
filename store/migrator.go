@@ -59,7 +59,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 		}
 
 		if version.IsVersionGreaterThan(schemaVersion, latestMigrationHistoryVersion) {
-			filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s/*/*.sql", s.getMigrationBasePath()))
+			filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s*/*.sql", s.getMigrationBasePath()))
 			if err != nil {
 				return errors.Wrap(err, "failed to read migration files")
 			}
@@ -263,7 +263,7 @@ func (s *Store) normalizedMigrationHistoryList(ctx context.Context) error {
 	}
 
 	schemaVersionMap := map[string]string{}
-	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s/*/*.sql", s.getMigrationBasePath()))
+	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s*/*.sql", s.getMigrationBasePath()))
 	if err != nil {
 		return errors.Wrap(err, "failed to read migration files")
 	}
