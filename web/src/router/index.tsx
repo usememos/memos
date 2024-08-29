@@ -29,89 +29,94 @@ export enum Routes {
   AUTH = "/auth",
 }
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <App />,
+      children: [
+        {
+          path: Routes.AUTH,
+          element: <SuspenseWrapper />,
+          children: [
+            {
+              path: "",
+              element: <SignIn />,
+            },
+            {
+              path: "admin",
+              element: <AdminSignIn />,
+            },
+            {
+              path: "signup",
+              element: <SignUp />,
+            },
+            {
+              path: "callback",
+              element: <AuthCallback />,
+            },
+          ],
+        },
+        {
+          path: Routes.ROOT,
+          element: <RootLayout />,
+          children: [
+            {
+              path: "",
+              element: <Home />,
+            },
+            {
+              path: Routes.RESOURCES,
+              element: <Resources />,
+            },
+            {
+              path: Routes.INBOX,
+              element: <Inboxes />,
+            },
+            {
+              path: Routes.ARCHIVED,
+              element: <Archived />,
+            },
+            {
+              path: Routes.SETTING,
+              element: <Setting />,
+            },
+            {
+              path: Routes.EXPLORE,
+              element: <Explore />,
+            },
+            {
+              path: "m/:uid",
+              element: <MemoDetail />,
+            },
+            {
+              path: "u/:username",
+              element: <UserProfile />,
+            },
+            {
+              path: Routes.ABOUT,
+              element: <About />,
+            },
+            {
+              path: "403",
+              element: <PermissionDenied />,
+            },
+            {
+              path: "404",
+              element: <NotFound />,
+            },
+            {
+              path: "*",
+              element: <NotFound />,
+            },
+          ],
+        },
+      ],
+    },
+  ],
   {
-    path: "/",
-    element: <App />,
-    children: [
-      {
-        path: Routes.AUTH,
-        element: <SuspenseWrapper />,
-        children: [
-          {
-            path: "",
-            element: <SignIn />,
-          },
-          {
-            path: "admin",
-            element: <AdminSignIn />,
-          },
-          {
-            path: "signup",
-            element: <SignUp />,
-          },
-          {
-            path: "callback",
-            element: <AuthCallback />,
-          },
-        ],
-      },
-      {
-        path: Routes.ROOT,
-        element: <RootLayout />,
-        children: [
-          {
-            path: "",
-            element: <Home />,
-          },
-          {
-            path: Routes.RESOURCES,
-            element: <Resources />,
-          },
-          {
-            path: Routes.INBOX,
-            element: <Inboxes />,
-          },
-          {
-            path: Routes.ARCHIVED,
-            element: <Archived />,
-          },
-          {
-            path: Routes.SETTING,
-            element: <Setting />,
-          },
-          {
-            path: Routes.EXPLORE,
-            element: <Explore />,
-          },
-          {
-            path: "m/:uid",
-            element: <MemoDetail />,
-          },
-          {
-            path: "u/:username",
-            element: <UserProfile />,
-          },
-          {
-            path: Routes.ABOUT,
-            element: <About />,
-          },
-          {
-            path: "403",
-            element: <PermissionDenied />,
-          },
-          {
-            path: "404",
-            element: <NotFound />,
-          },
-          {
-            path: "*",
-            element: <NotFound />,
-          },
-        ],
-      },
-    ],
+    basename: (window as any).globalConfig.BaseUrl,
   },
-], { basename: (window as any).globalConfig.BaseUrl });
+);
 
 export default router;

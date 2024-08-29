@@ -24,7 +24,7 @@ const RootLayout = () => {
   useEffect(() => {
     if (!currentUser) {
       if (([Routes.ROOT, Routes.RESOURCES, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(location.pathname)) {
-        window.location.href = (window as any ).globalConfig.BaseUrl +Routes.EXPLORE;
+        window.location.href = (window as any).globalConfig.BaseUrl + Routes.EXPLORE;
         return;
       }
     }
