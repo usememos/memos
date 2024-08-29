@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import copy from "copy-to-clipboard";
+import { ArrowUpRightIcon } from "lucide-react";
 import { useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import Icon from "@/components/Icon";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import useLoading from "@/hooks/useLoading";
 import { useMemoStore } from "@/store/v1";
@@ -76,7 +76,7 @@ const EmbeddedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
             {memo.uid.slice(0, 8)}
           </span>
           <Link className="opacity-60 hover:opacity-80" to={`/m/${memo.uid}`} unstable_viewTransition>
-            <Icon.ArrowUpRight className="w-5 h-auto" />
+            <ArrowUpRightIcon className="w-5 h-auto" />
           </Link>
         </div>
       </div>

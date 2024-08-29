@@ -36,16 +36,14 @@ var (
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		Run: func(_ *cobra.Command, _ []string) {
 			instanceProfile := &profile.Profile{
-				Mode:         viper.GetString("mode"),
-				Addr:         viper.GetString("addr"),
-				Port:         viper.GetInt("port"),
-				Data:         viper.GetString("data"),
-				Driver:       viper.GetString("driver"),
-				DSN:          viper.GetString("dsn"),
-				Public:       viper.GetBool("public"),
-				PasswordAuth: viper.GetBool("password-auth"),
-				InstanceURL:  viper.GetString("instance-url"),
-				Version:      version.GetCurrentVersion(viper.GetString("mode")),
+				Mode:        viper.GetString("mode"),
+				Addr:        viper.GetString("addr"),
+				Port:        viper.GetInt("port"),
+				Data:        viper.GetString("data"),
+				Driver:      viper.GetString("driver"),
+				DSN:         viper.GetString("dsn"),
+				InstanceURL: viper.GetString("instance-url"),
+				Version:     version.GetCurrentVersion(viper.GetString("mode")),
 			}
 			if err := instanceProfile.Validate(); err != nil {
 				panic(err)
@@ -104,7 +102,6 @@ func init() {
 	viper.SetDefault("mode", "dev")
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("port", 8081)
-	viper.SetDefault("password-auth", true)
 
 	rootCmd.PersistentFlags().String("mode", "dev", `mode of server, can be "prod" or "dev" or "demo"`)
 	rootCmd.PersistentFlags().String("addr", "", "address of server")
@@ -112,8 +109,6 @@ func init() {
 	rootCmd.PersistentFlags().String("data", "", "data directory")
 	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
-	rootCmd.PersistentFlags().Bool("public", false, "")
-	rootCmd.PersistentFlags().Bool("password-auth", true, "")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
 
 	if err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode")); err != nil {
@@ -134,21 +129,12 @@ func init() {
 	if err := viper.BindPFlag("dsn", rootCmd.PersistentFlags().Lookup("dsn")); err != nil {
 		panic(err)
 	}
-	if err := viper.BindPFlag("public", rootCmd.PersistentFlags().Lookup("public")); err != nil {
-		panic(err)
-	}
-	if err := viper.BindPFlag("password-auth", rootCmd.PersistentFlags().Lookup("password-auth")); err != nil {
-		panic(err)
-	}
 	if err := viper.BindPFlag("instance-url", rootCmd.PersistentFlags().Lookup("instance-url")); err != nil {
 		panic(err)
 	}
 
 	viper.SetEnvPrefix("memos")
 	viper.AutomaticEnv()
-	if err := viper.BindEnv("password-auth", "MEMOS_PASSWORD_AUTH"); err != nil {
-		panic(err)
-	}
 	if err := viper.BindEnv("instance-url", "MEMOS_INSTANCE_URL"); err != nil {
 		panic(err)
 	}
@@ -163,11 +149,9 @@ dsn: %s
 addr: %s
 port: %d
 mode: %s
-public: %t
-password-auth: %t
 driver: %s
 ---
-`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Public, profile.PasswordAuth, profile.Driver)
+`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver)
 
 	print(greetingBanner)
 	if len(profile.Addr) == 0 {

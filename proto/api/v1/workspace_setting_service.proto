@@ -36,6 +36,10 @@ message WorkspaceSetting {
 }
 
 message WorkspaceGeneralSetting {
+  // disallow_user_registration disallows user registration.
+  bool disallow_user_registration = 1;
+  // disallow_password_auth disallows password authentication.
+  bool disallow_password_auth = 2;
   // additional_script is the additional script.
   string additional_script = 3;
   // additional_style is the additional style.

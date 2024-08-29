@@ -79,7 +79,7 @@ const SignUp = () => {
             {workspaceGeneralSetting.customProfile?.title || "Memos"}
           </p>
         </div>
-        {commonContext.profile.public ? (
+        {!workspaceGeneralSetting.disallowUserRegistration ? (
           <>
             <p className="w-full text-2xl mt-2 dark:text-gray-500">{t("auth.create-your-account")}</p>
             <form className="w-full mt-2" onSubmit={handleFormSubmit}>

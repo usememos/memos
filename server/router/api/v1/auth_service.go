@@ -24,6 +24,10 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+const (
+	unmatchedEmailAndPasswordError = "unmatched email and password"
+)
+
 func (s *APIV1Service) GetAuthStatus(ctx context.Context, _ *v1pb.GetAuthStatusRequest) (*v1pb.User, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
@@ -47,14 +51,23 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to find user by username %s", request.Username))
 	}
 	if user == nil {
-		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("user not found with username %s", request.Username))
-	} else if user.RowStatus == store.Archived {
-		return nil, status.Errorf(codes.PermissionDenied, fmt.Sprintf("user has been archived with username %s", request.Username))
+		return nil, status.Errorf(codes.InvalidArgument, unmatchedEmailAndPasswordError)
 	}
-
 	// Compare the stored hashed password, with the hashed version of the password that was received.
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(request.Password)); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "unmatched email and password")
+		return nil, status.Errorf(codes.InvalidArgument, unmatchedEmailAndPasswordError)
+	}
+
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace general setting, err: %s", err))
+	}
+	// Check if the password auth in is allowed.
+	if workspaceGeneralSetting.DisallowPasswordAuth && user.Role == store.RoleUser {
+		return nil, status.Errorf(codes.PermissionDenied, "password signin is not allowed")
+	}
+	if user.RowStatus == store.Archived {
+		return nil, status.Errorf(codes.PermissionDenied, fmt.Sprintf("user has been archived with username %s", request.Username))
 	}
 
 	expireTime := time.Now().Add(AccessTokenDuration)
@@ -167,11 +180,11 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 }
 
 func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) (*v1pb.User, error) {
-	workspaceProfile, err := s.GetWorkspaceProfile(ctx, &v1pb.GetWorkspaceProfileRequest{})
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace profile, err: %s", err))
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace general setting, err: %s", err))
 	}
-	if !workspaceProfile.Public {
+	if workspaceGeneralSetting.DisallowUserRegistration {
 		return nil, status.Errorf(codes.PermissionDenied, "sign up is not allowed")
 	}
 

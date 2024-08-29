@@ -2,6 +2,7 @@ import { Divider, Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
+import { CalendarDaysIcon, CheckCircleIcon, Code2Icon, LinkIcon, ListTodoIcon, MoreVerticalIcon, RefreshCcwIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
@@ -11,7 +12,6 @@ import i18n from "@/i18n";
 import { useMemoFilterStore, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
-import Icon from "./Icon";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
 interface UserMemoStats {
@@ -75,7 +75,7 @@ const UserStatisticsView = () => {
     <div className="group w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
       <div className="w-full mb-1 flex flex-row justify-between items-center">
         <div className="relative text-base font-medium leading-6 flex flex-row items-center dark:text-gray-400">
-          <Icon.CalendarDays className="w-5 h-auto mr-1 opacity-60" strokeWidth={1.5} />
+          <CalendarDaysIcon className="w-5 h-auto mr-1 opacity-60" strokeWidth={1.5} />
           <span>{dayjs(monthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}</span>
           <input
             className="inset-0 absolute z-1 opacity-0"
@@ -88,11 +88,11 @@ const UserStatisticsView = () => {
         <div className="invisible group-hover:visible flex justify-end items-center">
           <Popover>
             <PopoverTrigger>
-              <Icon.MoreVertical className="w-4 h-auto shrink-0 opacity-60" />
+              <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
             </PopoverTrigger>
             <PopoverContent align="end" alignOffset={-12}>
               <button className="w-auto flex flex-row justify-between items-center gap-2 hover:opacity-80" onClick={rebuildMemoTags}>
-                <Icon.RefreshCcw className="text-gray-400 w-4 h-auto cursor-pointer opacity-60" />
+                <RefreshCcwIcon className="text-gray-400 w-4 h-auto cursor-pointer opacity-60" />
                 <span className="text-sm shrink-0 text-gray-500 dark:text-gray-400">Refresh</span>
               </button>
             </PopoverContent>
@@ -114,7 +114,7 @@ const UserStatisticsView = () => {
           onClick={() => memoFilterStore.addFilter({ factor: "property.hasLink", value: "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
-            <Icon.Link className="w-4 h-auto mr-1" />
+            <LinkIcon className="w-4 h-auto mr-1" />
             <span className="block text-sm">{t("memo.links")}</span>
           </div>
           <span className="text-sm truncate">{memoStats.link}</span>
@@ -124,11 +124,7 @@ const UserStatisticsView = () => {
           onClick={() => memoFilterStore.addFilter({ factor: "property.hasTaskList", value: "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
-            {memoStats.incompleteTasks > 0 ? (
-              <Icon.ListTodo className="w-4 h-auto mr-1" />
-            ) : (
-              <Icon.CheckCircle className="w-4 h-auto mr-1" />
-            )}
+            {memoStats.incompleteTasks > 0 ? <ListTodoIcon className="w-4 h-auto mr-1" /> : <CheckCircleIcon className="w-4 h-auto mr-1" />}
             <span className="block text-sm">{t("memo.to-do")}</span>
           </div>
           {memoStats.incompleteTasks > 0 ? (
@@ -148,7 +144,7 @@ const UserStatisticsView = () => {
           onClick={() => memoFilterStore.addFilter({ factor: "property.hasCode", value: "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
-            <Icon.Code2 className="w-4 h-auto mr-1" />
+            <Code2Icon className="w-4 h-auto mr-1" />
             <span className="block text-sm">{t("memo.code")}</span>
           </div>
           <span className="text-sm truncate">{memoStats.code}</span>

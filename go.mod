@@ -27,6 +27,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/usememos/gomark v0.0.0-20240714122951-35ed01b21822
 	golang.org/x/crypto v0.25.0
+	golang.org/x/exp v0.0.0-20240409090435-93d18d7e34b8
 	golang.org/x/mod v0.19.0
 	golang.org/x/net v0.27.0
 	golang.org/x/oauth2 v0.21.0

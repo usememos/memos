@@ -1,5 +1,6 @@
 import { Button, IconButton, Input, Textarea } from "@mui/joy";
 import { isEqual } from "lodash-es";
+import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { convertFileToBase64 } from "@/helpers/utils";
@@ -8,7 +9,6 @@ import { userNamePrefix, useUserStore } from "@/store/v1";
 import { User as UserPb } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
-import Icon from "./Icon";
 import UserAvatar from "./UserAvatar";
 
 type Props = DialogProps;
@@ -143,7 +143,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
       <div className="dialog-header-container !w-64">
         <p className="title-text">{t("setting.account-section.update-information")}</p>
         <IconButton size="sm" onClick={handleCloseBtnClick}>
-          <Icon.X className="w-5 h-auto" />
+          <XIcon className="w-5 h-auto" />
         </IconButton>
       </div>
       <div className="dialog-content-container space-y-2">
@@ -154,7 +154,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
             <input type="file" accept="image/*" className="absolute invisible w-full h-full inset-0" onChange={handleAvatarChanged} />
           </label>
           {state.avatarUrl && (
-            <Icon.X
+            <XIcon
               className="w-4 h-auto ml-1 cursor-pointer opacity-60 hover:opacity-80"
               onClick={() =>
                 setPartialState({

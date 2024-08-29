@@ -1,8 +1,8 @@
 import { Dropdown, Menu, MenuButton } from "@mui/joy";
 import clsx from "clsx";
+import { SmilePlusIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
-import Icon from "@/components/Icon";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
@@ -76,7 +76,7 @@ const ReactionSelector = (props: Props) => {
         <span
           className={clsx("h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70", className)}
         >
-          <Icon.SmilePlus className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
+          <SmilePlusIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
       </MenuButton>
       <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">

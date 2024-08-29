@@ -2,6 +2,7 @@ package profile
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -27,10 +28,6 @@ type Profile struct {
 	Driver string
 	// Version is the current version of server
 	Version string
-	// Pubic is the flag whether the instance is public for others.
-	Public bool
-	// PasswordAuth is the flag whether the instance uses password authentication.
-	PasswordAuth bool
 	// InstanceURL is the url of your memos instance.
 	InstanceURL string
 }
@@ -68,7 +65,7 @@ func (p *Profile) Validate() error {
 			p.Data = filepath.Join(os.Getenv("ProgramData"), "memos")
 			if _, err := os.Stat(p.Data); os.IsNotExist(err) {
 				if err := os.MkdirAll(p.Data, 0770); err != nil {
-					fmt.Printf("Failed to create data directory: %s, err: %+v\n", p.Data, err)
+					slog.Error("failed to create data directory", slog.String("data", p.Data), slog.String("error", err.Error()))
 					return err
 				}
 			}
@@ -79,7 +76,7 @@ func (p *Profile) Validate() error {
 
 	dataDir, err := checkDataDir(p.Data)
 	if err != nil {
-		fmt.Printf("Failed to check dsn: %s, err: %+v\n", dataDir, err)
+		slog.Error("failed to check dsn", slog.String("data", dataDir), slog.String("error", err.Error()))
 		return err
 	}
 

@@ -1,5 +1,5 @@
 import { Link } from "@mui/joy";
-import Icon from "@/components/Icon";
+import { DotIcon } from "lucide-react";
 import MobileHeader from "@/components/MobileHeader";
 
 const About = () => {
@@ -16,15 +16,15 @@ const About = () => {
             <Link underline="always" href="https://www.github.com/usememos/memos" target="_blank">
               GitHub Repo
             </Link>
-            <Icon.Dot className="w-4 h-auto opacity-60" />
+            <DotIcon className="w-4 h-auto opacity-60" />
             <Link underline="always" href="https://www.usememos.com/" target="_blank">
               Official Website
             </Link>
-            <Icon.Dot className="w-4 h-auto opacity-60" />
+            <DotIcon className="w-4 h-auto opacity-60" />
             <Link underline="always" href="https://www.usememos.com/blog" target="_blank">
               Blogs
             </Link>
-            <Icon.Dot className="w-4 h-auto opacity-60" />
+            <DotIcon className="w-4 h-auto opacity-60" />
             <Link underline="always" href="https://www.usememos.com/docs" target="_blank">
               Documents
             </Link>

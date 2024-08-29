@@ -132,9 +132,11 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 		return nil
 	}
 	generalSetting := &v1pb.WorkspaceGeneralSetting{
-		AdditionalScript:   setting.AdditionalScript,
-		AdditionalStyle:    setting.AdditionalStyle,
-		WeekStartDayOffset: setting.WeekStartDayOffset,
+		DisallowUserRegistration: setting.DisallowUserRegistration,
+		DisallowPasswordAuth:     setting.DisallowPasswordAuth,
+		AdditionalScript:         setting.AdditionalScript,
+		AdditionalStyle:          setting.AdditionalStyle,
+		WeekStartDayOffset:       setting.WeekStartDayOffset,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &v1pb.WorkspaceCustomProfile{
@@ -153,9 +155,11 @@ func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting
 		return nil
 	}
 	generalSetting := &storepb.WorkspaceGeneralSetting{
-		AdditionalScript:   setting.AdditionalScript,
-		AdditionalStyle:    setting.AdditionalStyle,
-		WeekStartDayOffset: setting.WeekStartDayOffset,
+		DisallowUserRegistration: setting.DisallowUserRegistration,
+		DisallowPasswordAuth:     setting.DisallowPasswordAuth,
+		AdditionalScript:         setting.AdditionalScript,
+		AdditionalStyle:          setting.AdditionalStyle,
+		WeekStartDayOffset:       setting.WeekStartDayOffset,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.WorkspaceCustomProfile{

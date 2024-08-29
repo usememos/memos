@@ -2,7 +2,7 @@ root = "."
 tmp_dir = ".air"
 
 [build]
-bin = "./.air/memos --mode dev --public true"
+bin = "./.air/memos --mode dev"
 cmd = "go build -o ./.air/memos ./bin/memos/main.go"
 delay = 1000
 exclude_dir = [".air", "web", "build"]

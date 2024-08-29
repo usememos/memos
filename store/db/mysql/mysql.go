@@ -39,10 +39,6 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	return &driver, nil
 }
 
-func (*DB) Type() string {
-	return "mysql"
-}
-
 func (d *DB) GetDB() *sql.DB {
 	return d.db
 }

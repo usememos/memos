@@ -3,6 +3,7 @@ import App from "@/App";
 import RootLayout from "@/layouts/RootLayout";
 import SuspenseWrapper from "@/layouts/SuspenseWrapper";
 import About from "@/pages/About";
+import AdminSignIn from "@/pages/AdminSignIn";
 import Archived from "@/pages/Archived";
 import AuthCallback from "@/pages/AuthCallback";
 import Explore from "@/pages/Explore";
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
           {
             path: "",
             element: <SignIn />,
+          },
+          {
+            path: "admin",
+            element: <AdminSignIn />,
           },
           {
             path: "signup",

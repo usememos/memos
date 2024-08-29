@@ -1,5 +1,6 @@
 import { Select, Option, Button, Divider } from "@mui/joy";
 import { isEqual } from "lodash-es";
+import { SendIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,6 @@ import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_sett
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
-import Icon from "../Icon";
 import VisibilityIcon from "../VisibilityIcon";
 import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
@@ -53,7 +53,7 @@ interface State {
 }
 
 const MemoEditor = (props: Props) => {
-  const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm } = props;
+  const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
   const workspaceSettingStore = useWorkspaceSettingStore();
@@ -364,6 +364,14 @@ const MemoEditor = (props: Props) => {
     });
   };
 
+  const handleCancelBtnClick = () => {
+    localStorage.removeItem(contentCacheKey);
+
+    if (onCancel) {
+      onCancel();
+    }
+  };
+
   const handleEditorFocus = () => {
     editorRef.current?.focus();
   };
@@ -457,7 +465,7 @@ const MemoEditor = (props: Props) => {
           </div>
           <div className="shrink-0 flex flex-row justify-end items-center gap-2">
             {props.onCancel && (
-              <Button className="!font-normal" color="neutral" variant="plain" loading={state.isRequesting} onClick={props.onCancel}>
+              <Button className="!font-normal" color="neutral" variant="plain" loading={state.isRequesting} onClick={handleCancelBtnClick}>
                 {t("common.cancel")}
               </Button>
             )}
@@ -465,7 +473,7 @@ const MemoEditor = (props: Props) => {
               className="!font-normal"
               disabled={!allowSave}
               loading={state.isRequesting}
-              endDecorator={<Icon.Send className="w-4 h-auto" />}
+              endDecorator={<SendIcon className="w-4 h-auto" />}
               onClick={handleSaveBtnClick}
             >
               {t("editor.save")}

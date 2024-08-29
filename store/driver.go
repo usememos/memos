@@ -11,10 +11,6 @@ type Driver interface {
 	GetDB() *sql.DB
 	Close() error
 
-	// Type returns the type of the driver.
-	// Supported types are: sqlite, mysql, postgres.
-	Type() string
-
 	// MigrationHistory model related methods.
 	FindMigrationHistoryList(ctx context.Context, find *FindMigrationHistory) ([]*MigrationHistory, error)
 	UpsertMigrationHistory(ctx context.Context, upsert *UpsertMigrationHistory) (*MigrationHistory, error)

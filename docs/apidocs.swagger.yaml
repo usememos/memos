@@ -356,27 +356,6 @@ paths:
           type: string
       tags:
         - MemoService
-  /api/v1/memos:export:
-    post:
-      summary: ExportMemos exports memos.
-      operationId: MemoService_ExportMemos
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1ExportMemosResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1ExportMemosRequest'
-      tags:
-        - MemoService
   /api/v1/reactions/{reactionId}:
     delete:
       summary: DeleteMemoReaction deletes a reaction for a memo.
@@ -2071,6 +2050,12 @@ definitions:
   apiv1WorkspaceGeneralSetting:
     type: object
     properties:
+      disallowUserRegistration:
+        type: boolean
+        description: disallow_user_registration disallows user registration.
+      disallowPasswordAuth:
+        type: boolean
+        description: disallow_password_auth disallows password authentication.
       additionalScript:
         type: string
         description: additional_script is the additional script.
@@ -2386,18 +2371,6 @@ definitions:
     properties:
       symbol:
         type: string
-  v1ExportMemosRequest:
-    type: object
-    properties:
-      filter:
-        type: string
-        title: Same as ListMemosRequest.filter
-  v1ExportMemosResponse:
-    type: object
-    properties:
-      content:
-        type: string
-        format: byte
   v1HTMLElementNode:
     type: object
     properties:
@@ -3163,12 +3136,6 @@ definitions:
       mode:
         type: string
         description: mode is the instance mode (e.g. "prod", "dev" or "demo").
-      public:
-        type: boolean
-        description: public is a flag that the instance is open for other users.
-      passwordAuth:
-        type: boolean
-        description: password_auth is a flag whether the instance allows password authentication.
       instanceUrl:
         type: string
         description: instance_url is the URL of the instance.

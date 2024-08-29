@@ -32,7 +32,7 @@ func GetTestingProfile(t *testing.T) *profile.Profile {
 
 	// Get a temporary directory for the test data.
 	dir := t.TempDir()
-	mode := "dev"
+	mode := "prod"
 	port := getUnusedPort()
 	driver := getDriverFromEnv()
 	dsn := os.Getenv("DSN")

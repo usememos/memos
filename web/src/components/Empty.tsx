@@ -1,9 +1,9 @@
-import Icon from "./Icon";
+import { BirdIcon } from "lucide-react";
 
 const Empty = () => {
   return (
     <div className="mx-auto">
-      <Icon.Bird strokeWidth={1} className="w-24 h-auto text-gray-500 dark:text-gray-400" />
+      <BirdIcon strokeWidth={1} className="w-24 h-auto text-gray-500 dark:text-gray-400" />
     </div>
   );
 };
