@@ -438,7 +438,7 @@ func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte,
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to decode thumbnail image")
 		}
-		thumbnailImage := imaging.Resize(image, 512, 0, imaging.Lanczos)
+		thumbnailImage := imaging.Resize(image, 700, 0, imaging.Lanczos)
 		if err := imaging.Save(thumbnailImage, filePath); err != nil {
 			return nil, errors.Wrap(err, "failed to save thumbnail file")
 		}
