@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"image"
 	"io"
 	"log/slog"
 	"os"
@@ -434,11 +435,20 @@ func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte,
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to get resource blob")
 		}
-		image, err := imaging.Decode(bytes.NewReader(blob), imaging.AutoOrientation(true))
+		img, err := imaging.Decode(bytes.NewReader(blob), imaging.AutoOrientation(true))
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to decode thumbnail image")
 		}
-		thumbnailImage := imaging.Resize(image, 700, 0, imaging.Lanczos)
+
+		thumbnailMaxWidth := 700 // equal to home/explore screen image max width
+		var thumbnailImage image.Image
+
+		if img.Bounds().Max.X > thumbnailMaxWidth {
+			thumbnailImage = imaging.Resize(img, thumbnailMaxWidth, 0, imaging.Lanczos)
+		} else {
+			thumbnailImage = img
+		}
+
 		if err := imaging.Save(thumbnailImage, filePath); err != nil {
 			return nil, errors.Wrap(err, "failed to save thumbnail file")
 		}
