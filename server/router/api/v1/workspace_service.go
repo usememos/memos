@@ -17,7 +17,6 @@ func (s *APIV1Service) GetWorkspaceProfile(ctx context.Context, _ *v1pb.GetWorks
 		Mode:        s.Profile.Mode,
 		InstanceUrl: s.Profile.InstanceURL,
 	}
-	println("workspaceProfile: ", workspaceProfile.Mode)
 	owner, err := s.GetInstanceOwner(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance owner: %v", err)

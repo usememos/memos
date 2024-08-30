@@ -11,8 +11,10 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync/atomic"
 	"time"
 
+	"github.com/disintegration/imaging"
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"google.golang.org/genproto/googleapis/api/httpbody"
@@ -34,10 +36,14 @@ const (
 	// This is unrelated to maximum upload size limit, which is now set through system setting.
 	MaxUploadBufferSizeBytes = 32 << 20
 	MebiByte                 = 1024 * 1024
-
-	// thumbnailImagePath is the directory to store image thumbnails.
-	thumbnailImagePath = ".thumbnail_cache"
+	// ThumbnailCacheFolder is the folder name where the thumbnail images are stored.
+	ThumbnailCacheFolder = ".thumbnail_cache"
 )
+
+var SupportedThumbnailMimeTypes = []string{
+	"image/png",
+	"image/jpeg",
+}
 
 func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateResourceRequest) (*v1pb.Resource, error) {
 	user, err := s.GetCurrentUser(ctx)
@@ -175,74 +181,23 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 		}
 	}
 
-	thumb := thumbnail{resource}
-	returnThumbnail := false
-
-	if request.Thumbnail && util.HasPrefixes(resource.Type, thumb.supportedMimeTypes()...) {
-		returnThumbnail = true
-
-		thumbnailBlob, err := thumb.getFile(s.Profile.Data)
+	if request.Thumbnail && util.HasPrefixes(resource.Type, SupportedThumbnailMimeTypes...) {
+		thumbnailBlob, err := s.getOrGenerateThumbnail(ctx, resource)
 		if err != nil {
 			// thumbnail failures are logged as warnings and not cosidered critical failures as
-			// a resource image can be used in its place
+			// a resource image can be used in its place.
 			slog.Warn("failed to get resource thumbnail image", slog.Any("error", err))
 		} else {
-			httpBody := &httpbody.HttpBody{
+			return &httpbody.HttpBody{
 				ContentType: resource.Type,
 				Data:        thumbnailBlob,
-			}
-
-			return httpBody, nil
+			}, nil
 		}
 	}
 
-	blob := resource.Blob
-	if resource.StorageType == storepb.ResourceStorageType_LOCAL {
-		resourcePath := filepath.FromSlash(resource.Reference)
-		if !filepath.IsAbs(resourcePath) {
-			resourcePath = filepath.Join(s.Profile.Data, resourcePath)
-		}
-
-		file, err := os.Open(resourcePath)
-		if err != nil {
-			if os.IsNotExist(err) {
-				return nil, status.Errorf(codes.NotFound, "file not found for resource: %s", request.Name)
-			}
-			return nil, status.Errorf(codes.Internal, "failed to open the file: %v", err)
-		}
-		defer file.Close()
-		blob, err = io.ReadAll(file)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to read the file: %v", err)
-		}
-	}
-
-	if returnThumbnail {
-		// wrapping generation logic in a func to exit failed non critical flow using return
-		generateThumbnailBlob := func() ([]byte, error) {
-			thumbnailImage, err := thumb.generateImage(blob)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to generate resource thumbnail")
-			}
-
-			if err := thumb.saveAsFile(s.Profile.Data, thumbnailImage); err != nil {
-				return nil, errors.Wrap(err, "failed to save generated resource thumbnail")
-			}
-
-			thumbnailBlob, err := thumb.imageToBlob(thumbnailImage)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to convert generate resource thumbnail to bytes")
-			}
-
-			return thumbnailBlob, nil
-		}
-
-		thumbnailBlob, err := generateThumbnailBlob()
-		if err != nil {
-			slog.Warn("failed to generate a thumbnail blob for the resource", slog.Any("error", err))
-		} else {
-			blob = thumbnailBlob
-		}
+	blob, err := s.GetResourceBlob(ctx, resource)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get resource blob: %v", err)
 	}
 
 	contentType := resource.Type
@@ -250,11 +205,10 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 		contentType += "; charset=utf-8"
 	}
 
-	httpBody := &httpbody.HttpBody{
+	return &httpbody.HttpBody{
 		ContentType: contentType,
 		Data:        blob,
-	}
-	return httpBody, nil
+	}, nil
 }
 
 func (s *APIV1Service) UpdateResource(ctx context.Context, request *v1pb.UpdateResourceRequest) (*v1pb.Resource, error) {
@@ -319,12 +273,6 @@ func (s *APIV1Service) DeleteResource(ctx context.Context, request *v1pb.DeleteR
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete resource: %v", err)
 	}
-
-	thumb := thumbnail{resource}
-	if err := thumb.deleteFile(s.Profile.Data); err != nil {
-		slog.Warn("failed to delete resource thumbnail")
-	}
-
 	return &emptypb.Empty{}, nil
 }
 
@@ -434,6 +382,78 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 	}
 
 	return nil
+}
+
+func (s *APIV1Service) GetResourceBlob(ctx context.Context, resource *store.Resource) ([]byte, error) {
+	blob := resource.Blob
+	if resource.StorageType == storepb.ResourceStorageType_LOCAL {
+		resourcePath := filepath.FromSlash(resource.Reference)
+		if !filepath.IsAbs(resourcePath) {
+			resourcePath = filepath.Join(s.Profile.Data, resourcePath)
+		}
+
+		file, err := os.Open(resourcePath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return nil, errors.Wrap(err, "file not found")
+			}
+			return nil, errors.Wrap(err, "failed to open the file")
+		}
+		defer file.Close()
+		blob, err = io.ReadAll(file)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to read the file")
+		}
+	}
+	return blob, nil
+}
+
+// getOrGenerateThumbnail returns the thumbnail image of the resource.
+func (s *APIV1Service) getOrGenerateThumbnail(ctx context.Context, resource *store.Resource) ([]byte, error) {
+	thumbnailCacheFolder := filepath.Join(s.Profile.Data, ThumbnailCacheFolder)
+	if err := os.MkdirAll(thumbnailCacheFolder, os.ModePerm); err != nil {
+		return nil, errors.Wrap(err, "failed to create thumbnail cache folder")
+	}
+	filePath := filepath.Join(thumbnailCacheFolder, fmt.Sprintf("%d%s", resource.ID, filepath.Ext(resource.Filename)))
+	if _, err := os.Stat(filePath); err != nil {
+		if !os.IsNotExist(err) {
+			return nil, errors.Wrap(err, "failed to check thumbnail image stat")
+		}
+
+		var availableGeneratorAmount int32 = 32
+		if atomic.LoadInt32(&availableGeneratorAmount) <= 0 {
+			return nil, errors.New("not enough available generator amount")
+		}
+		atomic.AddInt32(&availableGeneratorAmount, -1)
+		defer func() {
+			atomic.AddInt32(&availableGeneratorAmount, 1)
+		}()
+
+		// Otherwise, generate and save the thumbnail image.
+		blob, err := s.GetResourceBlob(ctx, resource)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get resource blob")
+		}
+		image, err := imaging.Decode(bytes.NewReader(blob), imaging.AutoOrientation(true))
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to decode thumbnail image")
+		}
+		thumbnailImage := imaging.Resize(image, 512, 0, imaging.Lanczos)
+		if err := imaging.Save(thumbnailImage, filePath); err != nil {
+			return nil, errors.Wrap(err, "failed to save thumbnail file")
+		}
+	}
+
+	dstFile, err := os.Open(filePath)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to open thumbnail file")
+	}
+	defer dstFile.Close()
+	dstBlob, err := io.ReadAll(dstFile)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read thumbnail file")
+	}
+	return dstBlob, nil
 }
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
