@@ -442,7 +442,6 @@ func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte,
 
 		thumbnailMaxWidth := 700 // equal to home/explore screen image max width
 		var thumbnailImage image.Image
-
 		if img.Bounds().Max.X > thumbnailMaxWidth {
 			thumbnailImage = imaging.Resize(img, thumbnailMaxWidth, 0, imaging.Lanczos)
 		} else {
