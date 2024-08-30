@@ -182,7 +182,7 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 	}
 
 	if request.Thumbnail && util.HasPrefixes(resource.Type, SupportedThumbnailMimeTypes...) {
-		thumbnailBlob, err := s.getOrGenerateThumbnail(ctx, resource)
+		thumbnailBlob, err := s.getOrGenerateThumbnail(resource)
 		if err != nil {
 			// thumbnail failures are logged as warnings and not cosidered critical failures as
 			// a resource image can be used in its place.
@@ -195,7 +195,7 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 		}
 	}
 
-	blob, err := s.GetResourceBlob(ctx, resource)
+	blob, err := s.GetResourceBlob(resource)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get resource blob: %v", err)
 	}
@@ -384,7 +384,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 	return nil
 }
 
-func (s *APIV1Service) GetResourceBlob(ctx context.Context, resource *store.Resource) ([]byte, error) {
+func (s *APIV1Service) GetResourceBlob(resource *store.Resource) ([]byte, error) {
 	blob := resource.Blob
 	if resource.StorageType == storepb.ResourceStorageType_LOCAL {
 		resourcePath := filepath.FromSlash(resource.Reference)
@@ -409,7 +409,7 @@ func (s *APIV1Service) GetResourceBlob(ctx context.Context, resource *store.Reso
 }
 
 // getOrGenerateThumbnail returns the thumbnail image of the resource.
-func (s *APIV1Service) getOrGenerateThumbnail(ctx context.Context, resource *store.Resource) ([]byte, error) {
+func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte, error) {
 	thumbnailCacheFolder := filepath.Join(s.Profile.Data, ThumbnailCacheFolder)
 	if err := os.MkdirAll(thumbnailCacheFolder, os.ModePerm); err != nil {
 		return nil, errors.Wrap(err, "failed to create thumbnail cache folder")
@@ -430,7 +430,7 @@ func (s *APIV1Service) getOrGenerateThumbnail(ctx context.Context, resource *sto
 		}()
 
 		// Otherwise, generate and save the thumbnail image.
-		blob, err := s.GetResourceBlob(ctx, resource)
+		blob, err := s.GetResourceBlob(resource)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to get resource blob")
 		}
