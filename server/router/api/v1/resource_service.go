@@ -412,7 +412,6 @@ func (s *APIV1Service) GetResourceBlob(resource *store.Resource) ([]byte, error)
 
 // getOrGenerateThumbnail returns the thumbnail image of the resource.
 func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte, error) {
-	r := rand.IntN(1000)
 	thumbnailCacheFolder := filepath.Join(s.Profile.Data, ThumbnailCacheFolder)
 	if err := os.MkdirAll(thumbnailCacheFolder, os.ModePerm); err != nil {
 		return nil, errors.Wrap(err, "failed to create thumbnail cache folder")
@@ -450,7 +449,8 @@ func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte,
 			thumbnailImage = img
 		}
 
-		tempFilePath := filepath.Join(thumbnailCacheFolder, fmt.Sprintf("temp_%d_%d%s", resource.ID, r, filepath.Ext(resource.Filename)))
+		rnd := rand.IntN(1000)
+		tempFilePath := filepath.Join(thumbnailCacheFolder, fmt.Sprintf("temp_%d_%d%s", resource.ID, rnd, filepath.Ext(resource.Filename)))
 		if err := imaging.Save(thumbnailImage, tempFilePath); err != nil {
 			return nil, errors.Wrap(err, "failed to save thumbnail file")
 		}
