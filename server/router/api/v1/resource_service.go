@@ -456,7 +456,7 @@ func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte,
 		}
 
 		if err := os.Rename(tempFilePath, filePath); err != nil {
-			return nil, errors.Wrap(err, "failed to rename thumbnail file")
+			return nil, errors.Wrap(err, "failed to rename temp thumbnail file")
 		}
 	}
 
