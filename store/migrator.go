@@ -29,7 +29,7 @@ const (
 	MigrateFileNameSplit = "__"
 	// LatestSchemaFileName is the name of the latest schema file.
 	// This file is used to apply the latest schema when no migration history is found.
-	LatestSchemaFileName = "LATEST_SCHEMA.sql"
+	LatestSchemaFileName = "LATEST.sql"
 )
 
 // Migrate applies the latest schema to the database.
