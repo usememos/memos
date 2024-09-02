@@ -41,11 +41,9 @@ Contributions are what make the open-source community such an amazing place to l
 
 ## Sponsorship
 
-If you find Memos helpful, please consider sponsoring us. Your support will help us to continue developing and maintaining the project. ❤️
+If you find Memos helpful, please consider sponsoring us. Your support will help us to continue developing and maintaining the project.
 
-|                                                     |                                            |                                                       |
-| --------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------- |
-| [yourselfhosted](https://github.com/yourselfhosted) | [Burning_Wipf](https://github.com/KUKARAF) | [👉 Support us](https://github.com/sponsors/usememos) |
+❤️ Thanks to the following sponsors and backers: **[yourselfhosted](https://github.com/yourselfhosted)**, **[Burning_Wipf](https://github.com/KUKARAF)**, _[...see more](https://github.com/sponsors/usememos)_.
 
 ## Star history
 
