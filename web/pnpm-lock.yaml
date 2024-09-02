@@ -115,8 +115,8 @@ importers:
         version: 4.5.5(@types/react@18.3.4)(immer@10.1.1)(react@18.3.1)
     devDependencies:
       '@bufbuild/buf':
-        specifier: ^1.38.0
-        version: 1.38.0
+        specifier: ^1.39.0
+        version: 1.39.0
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^4.3.0
         version: 4.3.0(prettier@3.3.3)
@@ -331,44 +331,44 @@ packages:
   '@braintree/sanitize-url@6.0.4':
     resolution: {integrity: sha512-s3jaWicZd0pkP0jf5ysyHUI/RE7MHos6qlToFcGWXVp+ykHOy77OUMrfbgJ9it2C5bow7OIQwYYaHjk9XlBQ2A==}
 
-  '@bufbuild/buf-darwin-arm64@1.38.0':
-    resolution: {integrity: sha512-4qGrNMUNboPyWHtWhdo9XzCGn+1/BeNlw963hhr8tGkmmc36oDGzacyw/oj7m43533TGMiLmVTqPuOAyYao+Sw==}
+  '@bufbuild/buf-darwin-arm64@1.39.0':
+    resolution: {integrity: sha512-Ptl0uAGssLxQTzoZhGwv1FFTbzUfcstIpEwMhN+XrwiuqsSxOg9eq/n3yXoci5VJsHokjDUHnWkR3y+j5P/5KA==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [darwin]
 
-  '@bufbuild/buf-darwin-x64@1.38.0':
-    resolution: {integrity: sha512-6yADcSHJayTjviy0i/32DOik4nneDvDjsN0vb1UejHL/g1/0YM8dzo4n677uHaxUe4yKr2ivYkBvKpRnMMsgDQ==}
+  '@bufbuild/buf-darwin-x64@1.39.0':
+    resolution: {integrity: sha512-XNCuy9sjQwVJ4NIZqxaTIyzUtlyquSkp/Uuoh5W5thJ3nzZ5RSgvXKF5iXHhZmesrfRGApktwoCx5Am8runsfQ==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [darwin]
 
-  '@bufbuild/buf-linux-aarch64@1.38.0':
-    resolution: {integrity: sha512-Lo8d6QbZp8o11x4vkRV1Mm3wzrcXdORMYumd7Wd64UPz4l/0R11xu1wgv/gFRuse4djOAwWNNzXp4FEOq4oJwQ==}
+  '@bufbuild/buf-linux-aarch64@1.39.0':
+    resolution: {integrity: sha512-Am+hrw94awp/eY027ROXwRQBuwAzOpQ/4zI4dgmgsyhzeWZ8w1LWC8z2SSr8T2cqd0cm52KxtoWMW+B3b2qzbw==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [linux]
 
-  '@bufbuild/buf-linux-x64@1.38.0':
-    resolution: {integrity: sha512-YHkYkb0e72waDcLthK8C0ns7vMdecg+AcQugwLq6TLjvwJRyEet97tGfK1QUTGzKgN+874MmqOBCuKKfWc40YQ==}
+  '@bufbuild/buf-linux-x64@1.39.0':
+    resolution: {integrity: sha512-JXVkHoMrTvmpseqdoQPJJ6MRV7/vlloYtvXHHACEzVytYjljOYCNoVET/E5gLBco/edeXFMNc40cCi1KgL3rSw==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [linux]
 
-  '@bufbuild/buf-win32-arm64@1.38.0':
-    resolution: {integrity: sha512-Tgj/inG+CAhRRHK/7Ku8DufVN/iG7yJs3y2U/A+pYjzdreu/egj0/2JFq9I6wjJKaPELp4+Br659qar6tABxiQ==}
+  '@bufbuild/buf-win32-arm64@1.39.0':
+    resolution: {integrity: sha512-akdGW02mo04wbLfjNMBQqxC4mPQ/L/vTU8/o79I67GSxyFYt7bKifvYIYhAA39C2gibHyB7ZLmoeRPbaU8wbYA==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [win32]
 
-  '@bufbuild/buf-win32-x64@1.38.0':
-    resolution: {integrity: sha512-Br32Xgp/tPInxMx/qNMhrsZQuef3CLeDOTqqSiPf6e2PegrWDQCJsF9jGUQTIy1na11nCAkbShnXm0EJK9bA6g==}
+  '@bufbuild/buf-win32-x64@1.39.0':
+    resolution: {integrity: sha512-jos08UMg9iUZsGjPrNpLXP+FNk6q6GizO+bjee/GcI0kSijIzXYMg14goQr0TKlvqs/+IRAM5vZIokQBYlAENQ==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
 
-  '@bufbuild/buf@1.38.0':
-    resolution: {integrity: sha512-5I4pTI3kQl36OBBV5+ggxROt6AoukCQB4NG366wSkQN14eguthdLBGvC73LGC6hmVvwjo+nadwodIpGs2nbOvQ==}
+  '@bufbuild/buf@1.39.0':
+    resolution: {integrity: sha512-lm7xb9pc7X04rRjCQ69o9byAAZ7/dsUQGoH+iJ9uBSXQWiwQ1Ts8gneBnuUVsAH2vdW73NFBpmNQGE9XtFauVQ==}
     engines: {node: '>=12'}
     hasBin: true
 
@@ -3541,32 +3541,32 @@ snapshots:
 
   '@braintree/sanitize-url@6.0.4': {}
 
-  '@bufbuild/buf-darwin-arm64@1.38.0':
+  '@bufbuild/buf-darwin-arm64@1.39.0':
     optional: true
 
-  '@bufbuild/buf-darwin-x64@1.38.0':
+  '@bufbuild/buf-darwin-x64@1.39.0':
     optional: true
 
-  '@bufbuild/buf-linux-aarch64@1.38.0':
+  '@bufbuild/buf-linux-aarch64@1.39.0':
     optional: true
 
-  '@bufbuild/buf-linux-x64@1.38.0':
+  '@bufbuild/buf-linux-x64@1.39.0':
     optional: true
 
-  '@bufbuild/buf-win32-arm64@1.38.0':
+  '@bufbuild/buf-win32-arm64@1.39.0':
     optional: true
 
-  '@bufbuild/buf-win32-x64@1.38.0':
+  '@bufbuild/buf-win32-x64@1.39.0':
     optional: true
 
-  '@bufbuild/buf@1.38.0':
+  '@bufbuild/buf@1.39.0':
     optionalDependencies:
-      '@bufbuild/buf-darwin-arm64': 1.38.0
-      '@bufbuild/buf-darwin-x64': 1.38.0
-      '@bufbuild/buf-linux-aarch64': 1.38.0
-      '@bufbuild/buf-linux-x64': 1.38.0
-      '@bufbuild/buf-win32-arm64': 1.38.0
-      '@bufbuild/buf-win32-x64': 1.38.0
+      '@bufbuild/buf-darwin-arm64': 1.39.0
+      '@bufbuild/buf-darwin-x64': 1.39.0
+      '@bufbuild/buf-linux-aarch64': 1.39.0
+      '@bufbuild/buf-linux-x64': 1.39.0
+      '@bufbuild/buf-win32-arm64': 1.39.0
+      '@bufbuild/buf-win32-x64': 1.39.0
 
   '@dnd-kit/accessibility@3.1.0(react@18.3.1)':
     dependencies:
