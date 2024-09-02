@@ -4,6 +4,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
 import { useTranslate } from "@/utils/i18n";
+import { isSuperUser } from "@/utils/user";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
@@ -33,7 +34,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<boolean>(false);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
-  const allowEdit = !props.readonly && memo && currentUser?.name === memo.creator;
+  const allowEdit = !props.readonly && memo && (currentUser?.name === memo.creator || isSuperUser(currentUser));
 
   // Initial compact mode.
   useEffect(() => {
