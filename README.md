@@ -39,6 +39,14 @@ Learn more about [other installation methods](https://www.usememos.com/docs/inst
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. We greatly appreciate any contributions you make. Thank you for being a part of our community! 🥰
 
+## Sponsorship
+
+If you find Memos helpful, please consider sponsoring us. Your support will help us to continue developing and maintaining the project. ❤️
+
+|                                                     |                                            |                                                       |
+| --------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------- |
+| [yourselfhosted](https://github.com/yourselfhosted) | [Burning_Wipf](https://github.com/KUKARAF) | [👉 Support us](https://github.com/sponsors/usememos) |
+
 ## Star history
 
 [![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
