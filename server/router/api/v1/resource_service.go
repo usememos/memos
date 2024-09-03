@@ -5,14 +5,12 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
-	"image"
 	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
-	"sync/atomic"
 	"time"
 
 	"github.com/disintegration/imaging"
@@ -409,6 +407,11 @@ func (s *APIV1Service) GetResourceBlob(resource *store.Resource) ([]byte, error)
 	return blob, nil
 }
 
+const (
+	// thumbnailMaxWidth is the maximum width of the thumbnail image.
+	thumbnailMaxWidth = 700
+)
+
 // getOrGenerateThumbnail returns the thumbnail image of the resource.
 func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte, error) {
 	thumbnailCacheFolder := filepath.Join(s.Profile.Data, ThumbnailCacheFolder)
@@ -421,16 +424,7 @@ func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte,
 			return nil, errors.Wrap(err, "failed to check thumbnail image stat")
 		}
 
-		var availableGeneratorAmount int32 = 32
-		if atomic.LoadInt32(&availableGeneratorAmount) <= 0 {
-			return nil, errors.New("not enough available generator amount")
-		}
-		atomic.AddInt32(&availableGeneratorAmount, -1)
-		defer func() {
-			atomic.AddInt32(&availableGeneratorAmount, 1)
-		}()
-
-		// Otherwise, generate and save the thumbnail image.
+		// If thumbnail image does not exist, generate and save the thumbnail image.
 		blob, err := s.GetResourceBlob(resource)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to get resource blob")
@@ -440,29 +434,28 @@ func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte,
 			return nil, errors.Wrap(err, "failed to decode thumbnail image")
 		}
 
-		thumbnailMaxWidth := 700 // equal to home/explore screen image max width
-		var thumbnailImage image.Image
-		if img.Bounds().Max.X > thumbnailMaxWidth {
-			thumbnailImage = imaging.Resize(img, thumbnailMaxWidth, 0, imaging.Lanczos)
-		} else {
-			thumbnailImage = img
+		// If the image is smaller than the thumbnailMaxWidth, return the original image.
+		if img.Bounds().Max.X < thumbnailMaxWidth {
+			return blob, nil
 		}
 
+		// Resize the image to the thumbnailMaxWidth.
+		thumbnailImage := imaging.Resize(img, thumbnailMaxWidth, 0, imaging.Lanczos)
 		if err := imaging.Save(thumbnailImage, filePath); err != nil {
 			return nil, errors.Wrap(err, "failed to save thumbnail file")
 		}
 	}
 
-	dstFile, err := os.Open(filePath)
+	thumbnailFile, err := os.Open(filePath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open thumbnail file")
 	}
-	defer dstFile.Close()
-	dstBlob, err := io.ReadAll(dstFile)
+	defer thumbnailFile.Close()
+	blob, err := io.ReadAll(thumbnailFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read thumbnail file")
 	}
-	return dstBlob, nil
+	return blob, nil
 }
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
