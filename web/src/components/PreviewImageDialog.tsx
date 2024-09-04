@@ -31,7 +31,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   let endX = -1;
 
   const handleCloseBtnClick = () => {
-    destroy();
+    destroyAndResetViewport();
   };
 
   const handleTouchStart = (event: React.TouchEvent) => {
@@ -73,7 +73,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
       setState(defaultState);
       setCurrentIndex(currentIndex - 1);
     } else {
-      destroy();
+      destroyAndResetViewport();
     }
   };
 
@@ -82,7 +82,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
       setState(defaultState);
       setCurrentIndex(currentIndex + 1);
     } else {
-      destroy();
+      destroyAndResetViewport();
     }
   };
 
@@ -107,10 +107,33 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     });
   };
 
+  function setViewportScalable() {
+    const viewport = document.querySelector("meta[name=viewport]");
+    if (viewport) {
+      const contentAttrs = viewport.getAttribute('content');
+      if (contentAttrs) {
+        viewport.setAttribute('content', contentAttrs.replace('user-scalable=no', 'user-scalable=yes'));
+      }
+    }
+  }
+
+  function destroyAndResetViewport() {
+    const viewport = document.querySelector("meta[name=viewport]");
+    if (viewport) {
+      const contentAttrs = viewport.getAttribute('content');
+      if (contentAttrs) {
+        viewport.setAttribute('content', contentAttrs.replace('user-scalable=yes', 'user-scalable=no'));
+      }
+    }
+    destroy();
+  }
+
   const imageComputedStyle = {
     transform: `scale(${state.scale})`,
     transformOrigin: `${state.originX === -1 ? "center" : `${state.originX}px`} ${state.originY === -1 ? "center" : `${state.originY}px`}`,
   };
+
+  setViewportScalable();
 
   return (
     <>
