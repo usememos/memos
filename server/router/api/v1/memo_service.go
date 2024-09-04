@@ -25,7 +25,7 @@ import (
 	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	memoproperty "github.com/usememos/memos/server/runner/memo_property"
+	memoproperty "github.com/usememos/memos/server/runner/memoproperty"
 	"github.com/usememos/memos/store"
 )
 

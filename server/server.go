@@ -21,8 +21,8 @@ import (
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/rss"
-	memoproperty "github.com/usememos/memos/server/runner/memo_property"
-	s3presign "github.com/usememos/memos/server/runner/s3_presign"
+	memoproperty "github.com/usememos/memos/server/runner/memoproperty"
+	s3presign "github.com/usememos/memos/server/runner/s3presign"
 	"github.com/usememos/memos/server/runner/version"
 	"github.com/usememos/memos/store"
 )
