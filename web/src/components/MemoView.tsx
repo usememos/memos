@@ -183,7 +183,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 <MemoActionMenu
                   className="-ml-1"
                   memo={memo}
-                  hiddenActions={props.showPinned ? [] : ["pin"]}
+                  hiddenActions={props.showPinned ? [] : workspaceMemoRelatedSetting.enableRemoveDone ? ["pin"] : ["remove", "pin"]}
                   onEdit={() => setShowEditor(true)}
                 />
               )}
