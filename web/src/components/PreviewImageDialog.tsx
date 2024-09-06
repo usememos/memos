@@ -107,7 +107,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     });
   };
 
-  function setViewportScalable() {
+  const setViewportScalable = () => {
     const viewport = document.querySelector("meta[name=viewport]");
     if (viewport) {
       const contentAttrs = viewport.getAttribute("content");
@@ -115,9 +115,9 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
         viewport.setAttribute("content", contentAttrs.replace("user-scalable=no", "user-scalable=yes"));
       }
     }
-  }
+  };
 
-  function destroyAndResetViewport() {
+  const destroyAndResetViewport = () => {
     const viewport = document.querySelector("meta[name=viewport]");
     if (viewport) {
       const contentAttrs = viewport.getAttribute("content");
@@ -126,7 +126,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
       }
     }
     destroy();
-  }
+  };
 
   const imageComputedStyle = {
     transform: `scale(${state.scale})`,
