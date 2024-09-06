@@ -1,5 +1,5 @@
 import { XIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { generateDialog } from "./Dialog";
 import "@/less/preview-image-dialog.less";
 
@@ -133,7 +133,9 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     transformOrigin: `${state.originX === -1 ? "center" : `${state.originX}px`} ${state.originY === -1 ? "center" : `${state.originY}px`}`,
   };
 
-  setViewportScalable();
+  useEffect(() => {
+    setViewportScalable();
+  }, []);
 
   return (
     <>
