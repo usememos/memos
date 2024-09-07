@@ -118,17 +118,15 @@ const MemoActionMenu = (props: Props) => {
   const handleRemoveDoneClick = async () => {
     const confirmed = window.confirm(t("memo.remove-done-confirm"));
     if (confirmed) {
-        const newNodes = memo.nodes.filter((node) => !node.taskListNode?.complete);
-        const { markdown } = await markdownServiceClient.restoreMarkdownNodes({ nodes: newNodes });
-        await memoStore.updateMemo(
-          {
-            name: memo.name,
-            content: markdown,
-          },
-          ["content"],
-        );
-
-      await memoStore.deleteMemo(memo.name);
+      const newNodes = memo.nodes.filter((node) => !node.taskListNode?.complete);
+      const { markdown } = await markdownServiceClient.restoreMarkdownNodes({ nodes: newNodes });
+      await memoStore.updateMemo(
+        {
+          name: memo.name,
+          content: markdown,
+        },
+        ["content"],
+      );
       toast.success(t("message.remove-done-successfully"));
       if (isInMemoDetailPage) {
         navigateTo("/");

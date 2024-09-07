@@ -98,6 +98,17 @@ const MemoView: React.FC<Props> = (props: Props) => {
       <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
     );
 
+  const handleHiddenActions = () => {
+    const hiddenActions = [];
+    if (!props.showPinned) {
+      hiddenActions.push("pin");
+    }
+    if (!workspaceMemoRelatedSetting.enableRemoveDone) {
+      hiddenActions.push("remove");
+    }
+    return hiddenActions;
+  };
+
   return (
     <div
       className={clsx(
@@ -183,7 +194,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 <MemoActionMenu
                   className="-ml-1"
                   memo={memo}
-                  hiddenActions={props.showPinned ? [] : workspaceMemoRelatedSetting.enableRemoveDone ? ["pin"] : ["remove", "pin"]}
+                  hiddenActions={handleHiddenActions}
                   onEdit={() => setShowEditor(true)}
                 />
               )}
