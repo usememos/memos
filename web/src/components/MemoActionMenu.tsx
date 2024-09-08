@@ -20,6 +20,7 @@ import { RowStatus } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { markdownServiceClient } from "@/grpcweb";
+import { NodeType } from "@/types/proto/api/v1/markdown_service";
 
 interface Props {
   memo: Memo;
@@ -118,7 +119,17 @@ const MemoActionMenu = (props: Props) => {
   const handleRemoveDoneClick = async () => {
     const confirmed = window.confirm(t("memo.remove-done-confirm"));
     if (confirmed) {
-      const newNodes = memo.nodes.filter((node) => !node.taskListNode?.complete);
+      const newNodes = memo.nodes;
+      for (var i = 0; i < newNodes.length; i++) {
+        if (newNodes[i].type === NodeType.TASK_LIST && newNodes[i].taskListNode?.complete) {
+          newNodes.splice(i, 1);
+          i--;
+          if (newNodes[i]?.type === NodeType.LINE_BREAK) {
+            newNodes.splice(i, 1);
+            i--;
+          }
+        }
+      }
       const { markdown } = await markdownServiceClient.restoreMarkdownNodes({ nodes: newNodes });
       await memoStore.updateMemo(
         {

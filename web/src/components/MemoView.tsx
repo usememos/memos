@@ -99,7 +99,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     );
 
   const handleHiddenActions = () => {
-    const hiddenActions = [];
+    const hiddenActions: ("edit" | "archive" | "delete" | "share" | "pin" | "remove")[] = [];
     if (!props.showPinned) {
       hiddenActions.push("pin");
     }
@@ -194,7 +194,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 <MemoActionMenu
                   className="-ml-1"
                   memo={memo}
-                  hiddenActions={handleHiddenActions}
+                  hiddenActions={handleHiddenActions()}
                   onEdit={() => setShowEditor(true)}
                 />
               )}

@@ -94,7 +94,9 @@
       "private": "Riêng tư",
       "protected": "Bảo vệ",
       "public": "Công khai"
-    }
+    },
+    "remove-done": "Xóa đã hoàn thành",
+    "remove-done-confirm": "Bạn có chắc chắn muốn xóa tất cả các mục đã hoàn thành không? (Hành động này không thể đảo ngược)"
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",
@@ -110,7 +112,8 @@
     "restored-successfully": "Khôi phục thành công",
     "succeed-copy-link": "Liên kết đã được sao chép thành công.",
     "update-succeed": "Cập nhật thành công",
-    "user-not-found": "Không tìm thấy người dùng."
+    "user-not-found": "Không tìm thấy người dùng.",
+    "remove-done-successfully": "Xóa thành công!"
   },
   "resource": {
     "clear": "Xóa",
@@ -263,7 +266,8 @@
       "enable-password-login-warning": "Điều này sẽ cho phép đăng nhập bằng mật khẩu cho tất cả người dùng. Tiếp tục chỉ nếu bạn muốn người dùng có thể đăng nhập bằng cả SSO và mật khẩu",
       "max-upload-size": "Kích thước tải lên tối đa (MiB)",
       "max-upload-size-hint": "Giá trị khuyến nghị là 32 MiB.",
-      "server-name": "Tên máy chủ"
+      "server-name": "Tên máy chủ",
+      "enable-remove-done": "Kích hoạt xóa đã hoàn thành"
     }
   },
   "tag": {
