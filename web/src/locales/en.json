@@ -118,7 +118,9 @@
     },
     "links": "Links",
     "to-do": "To-do",
-    "code": "Code"
+    "code": "Code",
+    "remove-done": "Remove done",
+    "remove-done-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE"
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -135,7 +137,8 @@
     "restored-successfully": "Restored successfully",
     "succeed-copy-link": "Link copied successfully.",
     "update-succeed": "Update succeeded",
-    "user-not-found": "User not found"
+    "user-not-found": "User not found",
+    "remove-done-successfully": "The removal was successful"
   },
   "reference": {
     "add-references": "Add references",
@@ -296,7 +299,8 @@
       "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password",
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
-      "server-name": "Server Name"
+      "server-name": "Server Name",
+      "enable-remove-done": "Enable remove done"
     },
     "memo-related": "Memo"
   },

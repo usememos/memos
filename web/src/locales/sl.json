@@ -69,7 +69,9 @@
       "private": "Vidno samo za vas",
       "protected": "Vidno uporabnikom",
       "public": "Vidno vsem"
-    }
+    },
+    "remove-done": "Odstrani končane",
+    "remove-done-confirm": "Ste prepričani, da želite odstraniti vse končane naloge? (Ta dejanje ni obrnljivo)"
   },
   "message": {
     "change-memo-created-time": "Spremeni čas izdelave beležke",
@@ -82,7 +84,8 @@
     "restored-successfully": "Uspešno obnovljeno",
     "succeed-copy-link": "Povezava je uspešno skopirana.",
     "update-succeed": "Posodobitev je uspešna",
-    "user-not-found": "Ne najdem uporabnika"
+    "user-not-found": "Ne najdem uporabnika",
+    "remove-done-successfully": "Odstranitev uspešna!"
   },
   "resource": {
     "clear": "Počisti",
@@ -157,7 +160,8 @@
       },
       "disable-public-memos": "Onemogočite javne beležke",
       "display-with-updated-time": "Display with updated time",
-      "server-name": "Ime strežnika"
+      "server-name": "Ime strežnika",
+      "enable-remove-done": "Omogoči odstranitev končanih"
     }
   },
   "tag": {

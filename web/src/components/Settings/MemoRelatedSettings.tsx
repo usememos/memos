@@ -75,6 +75,13 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("setting.system-section.enable-remove-done")}</span>
+        <Switch
+          checked={memoRelatedSetting.enableRemoveDone}
+          onChange={(event) => updatePartialSetting({ enableRemoveDone: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
         <span>Content length limit(Byte)</span>
         <Input
           className="w-24"

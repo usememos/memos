@@ -105,7 +105,9 @@
       "private": "Видимий тільки вам",
       "protected": "Видимий тільки користувачам",
       "public": "Видимий усім"
-    }
+    },
+    "remove-done": "Видалити виконані",
+    "remove-done-confirm": "Ви впевнені, що хочете видалити всі виконані задачі? (Ця дія неодмінна)"
   },
   "message": {
     "archived-successfully": "Успішно архівовано",
@@ -122,7 +124,8 @@
     "restored-successfully": "Успішно відновлено",
     "succeed-copy-link": "Скопійовано посилання в буфер обміну.",
     "update-succeed": "Збережно",
-    "user-not-found": "Користувача не знайдено"
+    "user-not-found": "Користувача не знайдено",
+    "remove-done-successfully": "Видалення виконаних успішно!"
   },
   "reference": {
     "add-references": "Додати посилання",
@@ -185,7 +188,8 @@
       },
       "disable-public-memos": "Disable public memos",
       "display-with-updated-time": "Display with updated time",
-      "server-name": "Назва додатка"
+      "server-name": "Назва додатка",
+      "enable-remove-done": "Увімкнути видалення виконаних"
     }
   }
 }
