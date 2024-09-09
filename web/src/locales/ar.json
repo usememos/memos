@@ -89,8 +89,8 @@
       "protected": "مساحة عمل",
       "public": "عام"
     },
-    "remove-done": "إزالة المنجز",
-    "remove-done-confirm": "هل أنت متأكد أنك تريد إزالة جميع المهام المنجزة؟ (هذه العملية لا يمكن التراجع عنها)"
+    "remove-completed-checklist-items": "إزالة المنجز",
+    "remove-completed-checklist-items-confirm": "هل أنت متأكد أنك تريد إزالة جميع المهام المنجزة؟ (هذه العملية لا يمكن التراجع عنها)"
   },
   "resource": {
     "clear": "مسح",

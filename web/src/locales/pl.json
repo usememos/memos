@@ -118,8 +118,8 @@
     "links": "Linki",
     "to-do": "Lista zadań",
     "code": "Kod",
-    "remove-done": "Usuń zakończone",
-    "remove-done-confirm": "Czy jesteś pewny, że chcesz usunąć wszystkie zakończone zadania? (Ta akcja jest nieodwracalna)"
+    "remove-completed-checklist-items": "Usuń zakończone",
+    "remove-completed-checklist-items-confirm": "Czy jesteś pewny, że chcesz usunąć wszystkie zakończone zadania? (Ta akcja jest nieodwracalna)"
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",
@@ -137,7 +137,7 @@
     "succeed-copy-link": "Link skopiowany pomyślnie.",
     "update-succeed": "Aktualizacja zakończona sukcesem",
     "user-not-found": "Użytkownik nie został znaleziony",
-    "remove-done-successfully": "Pomyślnie usunięto!"
+    "remove-completed-checklist-items-successfully": "Pomyślnie usunięto!"
   },
   "reference": {
     "add-references": "Dodaj odniesienia",
@@ -299,7 +299,7 @@
       "max-upload-size": "Maksymalny rozmiar przesyłanego pliku (MiB)",
       "max-upload-size-hint": "Zalecana wartość to 32 MiB.",
       "server-name": "Nazwa serwera",
-      "enable-remove-done": "Włącz usuwanie zakończonych"
+      "removed-completed-checklist-items": "Włącz usuwanie zakończonych"
     },
     "memo-related": "Notatki"
   },

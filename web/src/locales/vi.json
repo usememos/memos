@@ -95,8 +95,8 @@
       "protected": "Bảo vệ",
       "public": "Công khai"
     },
-    "remove-done": "Xóa đã hoàn thành",
-    "remove-done-confirm": "Bạn có chắc chắn muốn xóa tất cả các mục đã hoàn thành không? (Hành động này không thể đảo ngược)"
+    "remove-completed-checklist-items": "Xóa đã hoàn thành",
+    "remove-completed-checklist-items-confirm": "Bạn có chắc chắn muốn xóa tất cả các mục đã hoàn thành không? (Hành động này không thể đảo ngược)"
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",
@@ -113,7 +113,7 @@
     "succeed-copy-link": "Liên kết đã được sao chép thành công.",
     "update-succeed": "Cập nhật thành công",
     "user-not-found": "Không tìm thấy người dùng.",
-    "remove-done-successfully": "Xóa thành công!"
+    "remove-completed-checklist-items-successfully": "Xóa thành công!"
   },
   "resource": {
     "clear": "Xóa",
@@ -267,7 +267,7 @@
       "max-upload-size": "Kích thước tải lên tối đa (MiB)",
       "max-upload-size-hint": "Giá trị khuyến nghị là 32 MiB.",
       "server-name": "Tên máy chủ",
-      "enable-remove-done": "Kích hoạt xóa đã hoàn thành"
+      "removed-completed-checklist-items": "Kích hoạt xóa đã hoàn thành"
     }
   },
   "tag": {

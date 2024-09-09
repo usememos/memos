@@ -119,8 +119,8 @@
       "protected": "Protegido (membros)",
       "public": "Público (todos)"
     },
-    "remove-done": "Remover concluídos",
-    "remove-done-confirm": "Você tem certeza de que deseja remover todos os itens concluídos? (Essa ação é irreversível)"
+    "remove-completed-checklist-items": "Remover concluídos",
+    "remove-completed-checklist-items-confirm": "Você tem certeza de que deseja remover todos os itens concluídos? (Essa ação é irreversível)"
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",
@@ -138,7 +138,7 @@
     "succeed-copy-link": "Link copiado com êxito.",
     "update-succeed": "Atualizado com êxito",
     "user-not-found": "Usuário não encontrado",
-    "remove-done-successfully": "Remoção bem-sucedida!"
+    "remove-completed-checklist-items-successfully": "Remoção bem-sucedida!"
   },
   "reference": {
     "add-references": "Adicionar referências",
@@ -301,7 +301,7 @@
       "max-upload-size": "Tamanho máximo de upload (MiB)",
       "max-upload-size-hint": "O valor recomendado é 32 MiB.",
       "server-name": "Nome do servidor",
-      "enable-remove-done": "Ativar remoção de concluídos"
+      "removed-completed-checklist-items": "Ativar remoção de concluídos"
     }
   },
   "tag": {

@@ -114,8 +114,8 @@
       "protected": "Munkatér",
       "public": "Nyilvános"
     },
-    "remove-done": "Töröld el a kész",
-    "remove-done-confirm": "Biztos, hogy törölni akarod az összes kész feladatot? (Ez az akció visszavonhatatlan)"
+    "remove-completed-checklist-items": "Töröld el a kész",
+    "remove-completed-checklist-items-confirm": "Biztos, hogy törölni akarod az összes kész feladatot? (Ez az akció visszavonhatatlan)"
   },
   "message": {
     "archived-successfully": "Sikeres archiválás",
@@ -133,7 +133,7 @@
     "succeed-copy-link": "Hivatkozás sikeresen másolva.",
     "update-succeed": "Sikeres frissítés",
     "user-not-found": "Felhasználó nem található",
-    "remove-done-successfully": "Sikeresen eltávolítva!"
+    "remove-completed-checklist-items-successfully": "Sikeresen eltávolítva!"
   },
   "reference": {
     "add-references": "Referenciák hozzáadása",
@@ -291,7 +291,7 @@
       "max-upload-size": "Maximális feltöltési méret (MiB)",
       "max-upload-size-hint": "Az ajánlott érték 32 MiB.",
       "server-name": "Szerver neve",
-      "enable-remove-done": "Kikapcsold a kész törölését"
+      "removed-completed-checklist-items": "Kikapcsold a kész törölését"
     }
   },
   "tag": {

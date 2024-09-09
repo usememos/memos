@@ -92,8 +92,8 @@
       "protected": "Visibile ai membri",
       "public": "Pubblico"
     },
-    "remove-done": "Rimuovi completato",
-    "remove-done-confirm": "Sei sicuro di voler rimuovere tutte le cose completate? (Questa azione è irreversibile)"
+    "remove-completed-checklist-items": "Rimuovi completato",
+    "remove-completed-checklist-items-confirm": "Sei sicuro di voler rimuovere tutte le cose completate? (Questa azione è irreversibile)"
   },
   "message": {
     "change-memo-created-time": "Cambia data creazione",
@@ -109,7 +109,7 @@
     "succeed-copy-link": "Link copiato.",
     "update-succeed": "Aggiornato con successo",
     "user-not-found": "Utente non trovato",
-    "remove-done-successfully": "Rimosso con successo!"
+    "remove-completed-checklist-items-successfully": "Rimosso con successo!"
   },
   "resource": {
     "clear": "Cancella",
@@ -257,7 +257,7 @@
       "max-upload-size": "Dimensione massima caricamento (MiB)",
       "max-upload-size-hint": "Valore consigliato di 32 MiB.",
       "server-name": "Nome server",
-      "enable-remove-done": "Abilita rimuovi completato"
+      "removed-completed-checklist-items": "Abilita rimuovi completato"
     }
   },
   "tag": {

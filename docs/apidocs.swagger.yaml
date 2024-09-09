@@ -2097,9 +2097,9 @@ definitions:
       enableComment:
         type: boolean
         description: enable_comment enables comment.
-      enableRemoveDone:
+      removedCompletedChecklistItems:
         type: boolean
-        description: enable_remove_done enables remove done.
+        description: removed_completed_checklist_items removed completed checklist items.
   apiv1WorkspaceSetting:
     type: object
     properties:

@@ -119,8 +119,8 @@
     "links": "Links",
     "to-do": "To-do",
     "code": "Code",
-    "remove-done": "Remove done",
-    "remove-done-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE"
+    "remove-completed-checklist-items": "Remove done",
+    "remove-completed-checklist-items-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE"
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -138,7 +138,7 @@
     "succeed-copy-link": "Link copied successfully.",
     "update-succeed": "Update succeeded",
     "user-not-found": "User not found",
-    "remove-done-successfully": "The removal was successful"
+    "remove-completed-checklist-items-successfully": "The removal was successful"
   },
   "reference": {
     "add-references": "Add references",
@@ -300,7 +300,7 @@
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
       "server-name": "Server Name",
-      "enable-remove-done": "Enable remove done"
+      "removed-completed-checklist-items": "Enable removal of completed checklist items"
     },
     "memo-related": "Memo"
   },

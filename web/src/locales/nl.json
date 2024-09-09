@@ -98,8 +98,8 @@
       "protected": "Werkruimte",
       "public": "Openbaar"
     },
-    "remove-done": "Verwijder voltooid",
-    "remove-done-confirm": "Weet u zeker dat u alle voltooide taken wilt verwijderen? (Deze actie is onomkeerbaar)"
+    "remove-completed-checklist-items": "Verwijder voltooid",
+    "remove-completed-checklist-items-confirm": "Weet u zeker dat u alle voltooide taken wilt verwijderen? (Deze actie is onomkeerbaar)"
   },
   "message": {
     "change-memo-created-time": "Tijd van aanmaken wijzigen",
@@ -114,7 +114,7 @@
     "succeed-copy-link": "Link gekopieërd naar klembord.",
     "update-succeed": "Update voltooid",
     "user-not-found": "Gebruiker niet gevonden",
-    "remove-done-successfully": "Gelukt verwijderd!"
+    "remove-completed-checklist-items-successfully": "Gelukt verwijderd!"
   },
   "resource": {
     "clear": "Opruimen",
@@ -239,7 +239,7 @@
       "max-upload-size": "Maximum uploadgrootte (MiB)",
       "max-upload-size-hint": "32 MiB wordt aangeraden.",
       "server-name": "Servernaam",
-      "enable-remove-done": "Verwijder voltooid inschakelen"
+      "removed-completed-checklist-items": "Verwijder voltooid inschakelen"
     }
   },
   "tag": {
