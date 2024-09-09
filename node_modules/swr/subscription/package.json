@@ -1,0 +1,6 @@
+{
+  "main": "../dist/subscription/index.js",
+  "module": "../dist/subscription/index.esm.js",
+  "types": "../dist/subscription/index.d.ts",
+  "private": true
+}

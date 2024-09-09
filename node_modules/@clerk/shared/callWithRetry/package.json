@@ -1,0 +1,3 @@
+{
+  "main": "../dist/callWithRetry.js"
+}

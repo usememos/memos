@@ -1,0 +1,6 @@
+{
+  "main": "../dist/infinite/index.js",
+  "module": "../dist/infinite/index.esm.js",
+  "types": "../dist/infinite/index.d.ts",
+  "private": true
+}

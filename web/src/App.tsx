@@ -9,6 +9,15 @@ import { useCommonContext } from "./layouts/CommonContextProvider";
 import { useUserStore, useWorkspaceSettingStore } from "./store/v1";
 import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "./types/proto/store/workspace_setting";
 
+// Import Clerk components
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs';
+
 const App = () => {
   const { i18n } = useTranslation();
   const navigateTo = useNavigateTo();
@@ -24,7 +33,6 @@ const App = () => {
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
 
-  // Redirect to sign up page if no instance owner.
   useEffect(() => {
     if (!workspaceProfile.owner) {
       navigateTo("/auth/signup");
@@ -68,7 +76,6 @@ const App = () => {
     }
   }, [workspaceGeneralSetting.additionalScript]);
 
-  // Dynamic update metadata with customized profile.
   useEffect(() => {
     if (!workspaceGeneralSetting.customProfile) {
       return;
@@ -118,7 +125,17 @@ const App = () => {
     commonContext.setAppearance(userSetting.appearance);
   }, [userSetting?.locale, userSetting?.appearance]);
 
-  return <Outlet />;
+  return (
+    <ClerkProvider>
+      <SignedOut>
+        <SignInButton />
+      </SignedOut>
+      <SignedIn>
+        <UserButton />
+        <Outlet />
+      </SignedIn>
+    </ClerkProvider>
+  );
 };
 
 export default App;

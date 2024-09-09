@@ -1,0 +1,6 @@
+{
+  "main": "../dist/immutable/index.js",
+  "module": "../dist/immutable/index.esm.js",
+  "types": "../dist/immutable/index.d.ts",
+  "private": true
+}
