@@ -25,7 +25,7 @@ import { NodeType } from "@/types/proto/api/v1/markdown_service";
 interface Props {
   memo: Memo;
   className?: string;
-  hiddenActions?: ("edit" | "archive" | "delete" | "share" | "pin" | "remove")[];
+  hiddenActions?: ("edit" | "archive" | "delete" | "share" | "pin" | "remove_completed_checklist")[];
   onEdit?: () => void;
 }
 
@@ -116,8 +116,8 @@ const MemoActionMenu = (props: Props) => {
     }
   };
 
-  const handleRemoveDoneClick = async () => {
-    const confirmed = window.confirm(t("memo.remove-done-confirm"));
+  const handleRemoveCompletedChecklistItemsClick = async () => {
+    const confirmed = window.confirm(t("memo.remove-completed-checklist-items-confirm"));
     if (confirmed) {
       const newNodes = memo.nodes;
       for (var i = 0; i < newNodes.length; i++) {
@@ -138,7 +138,7 @@ const MemoActionMenu = (props: Props) => {
         },
         ["content"],
       );
-      toast.success(t("message.remove-done-successfully"));
+      toast.success(t("message.remove-completed-checklist-items-successfully"));
       if (isInMemoDetailPage) {
         navigateTo("/");
       }
@@ -175,10 +175,10 @@ const MemoActionMenu = (props: Props) => {
           {memo.rowStatus === RowStatus.ARCHIVED ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
           {memo.rowStatus === RowStatus.ARCHIVED ? t("common.restore") : t("common.archive")}
         </MenuItem>
-        {!hiddenActions?.includes("remove") && (
-          <MenuItem color="danger" onClick={handleRemoveDoneClick}>
+        {!hiddenActions?.includes("remove_completed_checklist") && (
+          <MenuItem color="danger" onClick={handleRemoveCompletedChecklistItemsClick}>
             <SquareCheckIcon className="w-4 h-auto" />
-            {t("memo.remove-done")}
+            {t("memo.remove-completed-checklist-items")}
           </MenuItem>
         )}
         <MenuItem color="danger" onClick={handleDeleteMemoClick}>

@@ -119,8 +119,8 @@
       "protected": "工作区",
       "public": "公开"
     },
-    "remove-done": "移除已办",
-    "remove-done-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）"
+    "remove-completed-checklist-items": "移除已办",
+    "remove-completed-checklist-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -138,7 +138,7 @@
     "succeed-copy-link": "复制链接到剪贴板成功。",
     "update-succeed": "更新成功",
     "user-not-found": "未找到该用户",
-    "remove-done-successfully": "移除成功！"
+    "remove-completed-checklist-items-successfully": "移除成功！"
   },
   "reference": {
     "add-references": "添加引用",
@@ -301,7 +301,7 @@
       "max-upload-size": "最大上传大小 (MiB)",
       "max-upload-size-hint": "建议值为 32 MiB。",
       "server-name": "服务名称",
-      "enable-remove-done": "启用移除已办"
+      "removed-completed-checklist-items": "启用移除已办"
     }
   },
   "tag": {

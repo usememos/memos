@@ -106,8 +106,8 @@
       "protected": "Espacio de trabajo",
       "public": "Todo el mundo lo puede ver"
     },
-    "remove-done": "Eliminar completado",
-    "remove-done-confirm": "¿Estás seguro de que quieres eliminar todas las tareas completadas? (Esta acción es irreversible)"
+    "remove-completed-checklist-items": "Eliminar completado",
+    "remove-completed-checklist-items-confirm": "¿Estás seguro de que quieres eliminar todas las tareas completadas? (Esta acción es irreversible)"
   },
   "message": {
     "change-memo-created-time": "Cambiar la hora de creación del memo",
@@ -123,7 +123,7 @@
     "succeed-copy-link": "Enlace copiado correctamente.",
     "update-succeed": "Actualización exitosa",
     "user-not-found": "Usuario no encontrado",
-    "remove-done-successfully": "¡Eliminado con éxito!"
+    "remove-completed-checklist-items-successfully": "¡Eliminado con éxito!"
   },
   "resource": {
     "clear": "Limpiar",
@@ -269,7 +269,7 @@
       "max-upload-size": "Tamaño máximo de subida (MiB)",
       "max-upload-size-hint": "El valor recomendado es de 32 MiB.",
       "server-name": "Nombre del servidor",
-      "enable-remove-done": "Habilitar eliminar completado"
+      "removed-completed-checklist-items": "Habilitar eliminar completado"
     }
   },
   "tag": {

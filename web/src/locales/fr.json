@@ -119,8 +119,8 @@
       "protected": "Accès aux membres",
       "public": "Public"
     },
-    "remove-done": "Supprimer terminé",
-    "remove-done-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? (Cette action est irréversible)"
+    "remove-completed-checklist-items": "Supprimer terminé",
+    "remove-completed-checklist-items-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? (Cette action est irréversible)"
   },
   "message": {
     "archived-successfully": "Archivé avec succès",
@@ -138,7 +138,7 @@
     "succeed-copy-link": "Succeed to copy link to clipboard.",
     "update-succeed": "Mise à jour effectuée",
     "user-not-found": "Utilisateur introuvable",
-    "remove-done-successfully": "Supprimé avec succès !"
+    "remove-completed-checklist-items-successfully": "Supprimé avec succès !"
   },
   "reference": {
     "add-references": "Ajouter des références",
@@ -301,7 +301,7 @@
       "max-upload-size": "Taille maximale du téléversement (MiB)",
       "max-upload-size-hint": "La valeur recommandée est 32 MiB.",
       "server-name": "Nom du serveur",
-      "enable-remove-done": "Activer la suppression terminée"
+      "removed-completed-checklist-items": "Activer la suppression terminée"
     }
   },
   "tag": {

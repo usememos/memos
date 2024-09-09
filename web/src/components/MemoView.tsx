@@ -99,12 +99,12 @@ const MemoView: React.FC<Props> = (props: Props) => {
     );
 
   const handleHiddenActions = () => {
-    const hiddenActions: ("edit" | "archive" | "delete" | "share" | "pin" | "remove")[] = [];
+    const hiddenActions: ("edit" | "archive" | "delete" | "share" | "pin" | "remove_completed_checklist")[] = [];
     if (!props.showPinned) {
       hiddenActions.push("pin");
     }
-    if (!workspaceMemoRelatedSetting.enableRemoveDone) {
-      hiddenActions.push("remove");
+    if (!workspaceMemoRelatedSetting.removedCompletedChecklistItems) {
+      hiddenActions.push("remove_completed_checklist");
     }
     return hiddenActions;
   };

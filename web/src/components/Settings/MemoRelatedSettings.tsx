@@ -75,10 +75,10 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.system-section.enable-remove-done")}</span>
+        <span>{t("setting.system-section.removed-completed-checklist-items")}</span>
         <Switch
-          checked={memoRelatedSetting.enableRemoveDone}
-          onChange={(event) => updatePartialSetting({ enableRemoveDone: event.target.checked })}
+          checked={memoRelatedSetting.removedCompletedChecklistItems}
+          onChange={(event) => updatePartialSetting({ removedCompletedChecklistItems: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">

@@ -98,8 +98,8 @@
       "protected": "Mitglieder",
       "public": "Öffentlich"
     },
-    "remove-done": "Erledigt entfernen",
-    "remove-done-confirm": "Sind Sie sicher, dass Sie alle abgeschlossenen Aufgaben entfernen möchten? (Diese Aktion kann nicht rückgängig gemacht werden)"
+    "remove-completed-checklist-items": "Erledigt entfernen",
+    "remove-completed-checklist-items-confirm": "Sind Sie sicher, dass Sie alle abgeschlossenen Aufgaben entfernen möchten? (Diese Aktion kann nicht rückgängig gemacht werden)"
   },
   "message": {
     "change-memo-created-time": "Erstellungszeitpunkt ändern",
@@ -115,7 +115,7 @@
     "succeed-copy-link": "Link erfolgreich kopiert",
     "update-succeed": "Update erfolgreich",
     "user-not-found": "Nutzer nicht gefunden",
-    "remove-done-successfully": "Erfolgreich entfernt!"
+    "remove-completed-checklist-items-successfully": "Erfolgreich entfernt!"
   },
   "resource": {
     "clear": "Löschen",
@@ -267,7 +267,7 @@
       "max-upload-size": "Maximale Uploadgröße (MiB)",
       "max-upload-size-hint": "Empfohlene Wert ist 32 MiB.",
       "server-name": "Servername",
-      "enable-remove-done": "Entfernen abgeschlossen aktivieren"
+      "removed-completed-checklist-items": "Entfernen abgeschlossen aktivieren"
     }
   },
   "tag": {
