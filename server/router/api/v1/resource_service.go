@@ -408,8 +408,8 @@ func (s *APIV1Service) GetResourceBlob(resource *store.Resource) ([]byte, error)
 }
 
 const (
-	// thumbnailMaxWidth is the maximum width of the thumbnail image.
-	thumbnailMaxWidth = 700
+	// thumbnailRatio is the ratio of the thumbnail image.
+	thumbnailRatio = 0.8
 )
 
 // getOrGenerateThumbnail returns the thumbnail image of the resource.
@@ -434,13 +434,9 @@ func (s *APIV1Service) getOrGenerateThumbnail(resource *store.Resource) ([]byte,
 			return nil, errors.Wrap(err, "failed to decode thumbnail image")
 		}
 
-		// If the image is smaller than the thumbnailMaxWidth, return the original image.
-		if img.Bounds().Max.X < thumbnailMaxWidth {
-			return blob, nil
-		}
-
-		// Resize the image to the thumbnailMaxWidth.
-		thumbnailImage := imaging.Resize(img, thumbnailMaxWidth, 0, imaging.Lanczos)
+		thumbnailWidth := int(float64(img.Bounds().Dx()) * thumbnailRatio)
+		// Resize the image to the thumbnailWidth.
+		thumbnailImage := imaging.Resize(img, thumbnailWidth, 0, imaging.Lanczos)
 		if err := imaging.Save(thumbnailImage, filePath); err != nil {
 			return nil, errors.Wrap(err, "failed to save thumbnail file")
 		}
