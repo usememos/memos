@@ -103,7 +103,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     if (!props.showPinned) {
       hiddenActions.push("pin");
     }
-    if (!workspaceMemoRelatedSetting.enableRemoveDone) {
+    if (!workspaceMemoRelatedSetting.removedCompletedChecklistItems) {
       hiddenActions.push("remove_completed_checklist");
     }
     return hiddenActions;
