@@ -69,7 +69,9 @@
       "private": "Vidno samo za vas",
       "protected": "Vidno uporabnikom",
       "public": "Vidno vsem"
-    }
+    },
+    "remove-completed-checklist-items": "Odstrani končane",
+    "remove-completed-checklist-items-confirm": "Ste prepričani, da želite odstraniti vse končane naloge? (Ta dejanje ni obrnljivo)"
   },
   "message": {
     "change-memo-created-time": "Spremeni čas izdelave beležke",
@@ -82,7 +84,8 @@
     "restored-successfully": "Uspešno obnovljeno",
     "succeed-copy-link": "Povezava je uspešno skopirana.",
     "update-succeed": "Posodobitev je uspešna",
-    "user-not-found": "Ne najdem uporabnika"
+    "user-not-found": "Ne najdem uporabnika",
+    "remove-completed-checklist-items-successfully": "Odstranitev uspešna!"
   },
   "resource": {
     "clear": "Počisti",
@@ -157,7 +160,8 @@
       },
       "disable-public-memos": "Onemogočite javne beležke",
       "display-with-updated-time": "Display with updated time",
-      "server-name": "Ime strežnika"
+      "server-name": "Ime strežnika",
+      "removed-completed-checklist-items": "Omogoči odstranitev končanih"
     }
   },
   "tag": {

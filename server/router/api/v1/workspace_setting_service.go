@@ -220,13 +220,14 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		return nil
 	}
 	return &v1pb.WorkspaceMemoRelatedSetting{
-		DisallowPublicVisibility: setting.DisallowPublicVisibility,
-		DisplayWithUpdateTime:    setting.DisplayWithUpdateTime,
-		ContentLengthLimit:       setting.ContentLengthLimit,
-		EnableAutoCompact:        setting.EnableAutoCompact,
-		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
-		EnableLinkPreview:        setting.EnableLinkPreview,
-		EnableComment:            setting.EnableComment,
+		DisallowPublicVisibility:           setting.DisallowPublicVisibility,
+		DisplayWithUpdateTime:              setting.DisplayWithUpdateTime,
+		ContentLengthLimit:                 setting.ContentLengthLimit,
+		EnableAutoCompact:                  setting.EnableAutoCompact,
+		EnableDoubleClickEdit:              setting.EnableDoubleClickEdit,
+		EnableLinkPreview:                  setting.EnableLinkPreview,
+		EnableComment:                      setting.EnableComment,
+		RemovedCompletedChecklistItems:     setting.RemovedCompletedChecklistItems,
 	}
 }
 
@@ -235,12 +236,13 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		return nil
 	}
 	return &storepb.WorkspaceMemoRelatedSetting{
-		DisallowPublicVisibility: setting.DisallowPublicVisibility,
-		DisplayWithUpdateTime:    setting.DisplayWithUpdateTime,
-		ContentLengthLimit:       setting.ContentLengthLimit,
-		EnableAutoCompact:        setting.EnableAutoCompact,
-		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
-		EnableLinkPreview:        setting.EnableLinkPreview,
-		EnableComment:            setting.EnableComment,
+		DisallowPublicVisibility:           setting.DisallowPublicVisibility,
+		DisplayWithUpdateTime:              setting.DisplayWithUpdateTime,
+		ContentLengthLimit:                 setting.ContentLengthLimit,
+		EnableAutoCompact:                  setting.EnableAutoCompact,
+		EnableDoubleClickEdit:              setting.EnableDoubleClickEdit,
+		EnableLinkPreview:                  setting.EnableLinkPreview,
+		EnableComment:                      setting.EnableComment,
+		RemovedCompletedChecklistItems:     setting.RemovedCompletedChecklistItems,
 	}
 }

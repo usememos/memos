@@ -98,6 +98,17 @@ const MemoView: React.FC<Props> = (props: Props) => {
       <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
     );
 
+  const handleHiddenActions = () => {
+    const hiddenActions: ("edit" | "archive" | "delete" | "share" | "pin" | "remove_completed_checklist")[] = [];
+    if (!props.showPinned) {
+      hiddenActions.push("pin");
+    }
+    if (!workspaceMemoRelatedSetting.removedCompletedChecklistItems) {
+      hiddenActions.push("remove_completed_checklist");
+    }
+    return hiddenActions;
+  };
+
   return (
     <div
       className={clsx(
@@ -183,7 +194,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 <MemoActionMenu
                   className="-ml-1"
                   memo={memo}
-                  hiddenActions={props.showPinned ? [] : ["pin"]}
+                  hiddenActions={handleHiddenActions()}
                   onEdit={() => setShowEditor(true)}
                 />
               )}

@@ -104,6 +104,8 @@ message WorkspaceMemoRelatedSetting {
   bool enable_link_preview = 6;
   // enable_comment enables comment.
   bool enable_comment = 7;
+  // removed_completed_checklist_items removed completed checklist items.
+  bool removed_completed_checklist_items = 8;
 }
 
 message GetWorkspaceSettingRequest {
