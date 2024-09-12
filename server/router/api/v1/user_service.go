@@ -202,7 +202,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	for _, field := range request.UpdateMask.Paths {
 		if field == "username" {
 			if workspaceGeneralSetting.DisallowChangeUsername {
-				continue
+				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change username")
 			}
 			if !util.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
@@ -210,7 +210,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			update.Username = &request.User.Username
 		} else if field == "nickname" {
 			if workspaceGeneralSetting.DisallowChangeNickname {
-				continue
+				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change nickname")
 			}
 			update.Nickname = &request.User.Nickname
 		} else if field == "email" {
