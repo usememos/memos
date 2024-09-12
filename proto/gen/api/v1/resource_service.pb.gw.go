@@ -179,6 +179,10 @@ func local_request_ResourceService_GetResourceByUid_0(ctx context.Context, marsh
 
 }
 
+var (
+	filter_ResourceService_GetResourceBinary_0 = &utilities.DoubleArray{Encoding: map[string]int{"name": 0, "filename": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+)
+
 func request_ResourceService_GetResourceBinary_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetResourceBinaryRequest
 	var metadata runtime.ServerMetadata
@@ -208,6 +212,13 @@ func request_ResourceService_GetResourceBinary_0(ctx context.Context, marshaler 
 	protoReq.Filename, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filename", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_GetResourceBinary_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.GetResourceBinary(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -244,6 +255,13 @@ func local_request_ResourceService_GetResourceBinary_0(ctx context.Context, mars
 	protoReq.Filename, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filename", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_GetResourceBinary_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := server.GetResourceBinary(ctx, &protoReq)

@@ -137,6 +137,8 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 		AdditionalScript:         setting.AdditionalScript,
 		AdditionalStyle:          setting.AdditionalStyle,
 		WeekStartDayOffset:       setting.WeekStartDayOffset,
+		DisallowChangeUsername:   setting.DisallowChangeUsername,
+		DisallowChangeNickname:   setting.DisallowChangeNickname,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &v1pb.WorkspaceCustomProfile{
@@ -160,6 +162,8 @@ func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting
 		AdditionalScript:         setting.AdditionalScript,
 		AdditionalStyle:          setting.AdditionalStyle,
 		WeekStartDayOffset:       setting.WeekStartDayOffset,
+		DisallowChangeUsername:   setting.DisallowChangeUsername,
+		DisallowChangeNickname:   setting.DisallowChangeNickname,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.WorkspaceCustomProfile{

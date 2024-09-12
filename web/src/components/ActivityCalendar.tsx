@@ -6,8 +6,6 @@ import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
-const WEEK_DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-
 interface Props {
   // Format: 2021-1
   month: string;
@@ -41,8 +39,9 @@ const ActivityCalendar = (props: Props) => {
   const year = dayjs(monthStr).toDate().getFullYear();
   const month = dayjs(monthStr).toDate().getMonth() + 1;
   const dayInMonth = new Date(year, month, 0).getDate();
-  const firstDay = (new Date(year, month - 1, 1).getDay() - weekStartDayOffset) % 7;
+  const firstDay = (((new Date(year, month - 1, 1).getDay() - weekStartDayOffset) % 7) + 7) % 7;
   const lastDay = new Date(year, month - 1, dayInMonth).getDay() - weekStartDayOffset;
+  const WEEK_DAYS = [t("days.sun"), t("days.mon"), t("days.tue"), t("days.wed"), t("days.thu"), t("days.fri"), t("days.sat")];
   const weekDays = WEEK_DAYS.slice(weekStartDayOffset).concat(WEEK_DAYS.slice(0, weekStartDayOffset));
   const maxCount = Math.max(...Object.values(data));
   const days = [];

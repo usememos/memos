@@ -114,6 +114,20 @@ const WorkspaceSection = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
+        <span>Disallow Change Username</span>
+        <Switch
+          checked={workspaceGeneralSetting.disallowChangeUsername}
+          onChange={(event) => updatePartialSetting({ disallowChangeUsername: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>Disallow Change Nickname</span>
+        <Switch
+          checked={workspaceGeneralSetting.disallowChangeNickname}
+          onChange={(event) => updatePartialSetting({ disallowChangeNickname: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
         <span className="truncate">Week start day</span>
         <Select
           className="!min-w-fit"

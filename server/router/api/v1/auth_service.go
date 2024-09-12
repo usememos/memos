@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	unmatchedEmailAndPasswordError = "unmatched email and password"
+	unmatchedUsernameAndPasswordError = "unmatched username and password"
 )
 
 func (s *APIV1Service) GetAuthStatus(ctx context.Context, _ *v1pb.GetAuthStatusRequest) (*v1pb.User, error) {
@@ -51,11 +51,11 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to find user by username %s", request.Username))
 	}
 	if user == nil {
-		return nil, status.Errorf(codes.InvalidArgument, unmatchedEmailAndPasswordError)
+		return nil, status.Errorf(codes.InvalidArgument, unmatchedUsernameAndPasswordError)
 	}
 	// Compare the stored hashed password, with the hashed version of the password that was received.
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(request.Password)); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, unmatchedEmailAndPasswordError)
+		return nil, status.Errorf(codes.InvalidArgument, unmatchedUsernameAndPasswordError)
 	}
 
 	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)

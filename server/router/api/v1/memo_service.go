@@ -25,7 +25,7 @@ import (
 	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	memoproperty "github.com/usememos/memos/server/runner/memo_property"
+	"github.com/usememos/memos/server/runner/memoproperty"
 	"github.com/usememos/memos/store"
 )
 
@@ -225,7 +225,8 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
-	if memo.CreatorID != user.ID {
+	// Only the creator or admin can update the memo.
+	if memo.CreatorID != user.ID && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -336,7 +337,8 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
-	if memo.CreatorID != user.ID {
+	// Only the creator or admin can update the memo.
+	if memo.CreatorID != user.ID && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -1166,4 +1168,8 @@ func substring(s string, length int) string {
 	}
 
 	return s[:byteIndex]
+}
+
+func isSuperUser(user *store.User) bool {
+	return user.Role == store.RoleAdmin || user.Role == store.RoleHost
 }

@@ -5,6 +5,9 @@ import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { Routes } from "@/router";
+import { useWorkspaceSettingStore } from "@/store/v1";
+import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
 
@@ -17,8 +20,11 @@ const UserBanner = (props: Props) => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const user = useCurrentUser();
-  const title = user ? user.nickname || user.username : "Memos";
-  const avatarUrl = user ? user.avatarUrl : (window as any).globalConfig.BaseUrl + "/full-logo.webp";
+  const workspaceSettingStore = useWorkspaceSettingStore();
+  const workspaceGeneralSetting =
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
+  const title = user ? user.nickname || user.username : workspaceGeneralSetting.customProfile?.title;
+  const avatarUrl = user ? user.avatarUrl : workspaceGeneralSetting.customProfile?.logoUrl;
 
   const handleSignOut = async () => {
     await authServiceClient.signOut({});

@@ -29,7 +29,7 @@ const (
 	MigrateFileNameSplit = "__"
 	// LatestSchemaFileName is the name of the latest schema file.
 	// This file is used to apply the latest schema when no migration history is found.
-	LatestSchemaFileName = "LATEST_SCHEMA.sql"
+	LatestSchemaFileName = "LATEST.sql"
 )
 
 // Migrate applies the latest schema to the database.
@@ -59,7 +59,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 		}
 
 		if version.IsVersionGreaterThan(schemaVersion, latestMigrationHistoryVersion) {
-			filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s/*/*.sql", s.getMigrationBasePath()))
+			filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s*/*.sql", s.getMigrationBasePath()))
 			if err != nil {
 				return errors.Wrap(err, "failed to read migration files")
 			}
