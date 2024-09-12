@@ -5,8 +5,9 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { userNamePrefix, useUserStore } from "@/store/v1";
+import { userNamePrefix, useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { User as UserPb } from "@/types/proto/api/v1/user_service";
+import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import UserAvatar from "./UserAvatar";
@@ -32,6 +33,9 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     email: currentUser.email,
     description: currentUser.description,
   });
+  const workspaceSettingStore = useWorkspaceSettingStore();
+  const workspaceGeneralSetting =
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || WorkspaceGeneralSetting.fromPartial({});
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -168,12 +172,22 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
           {t("common.username")}
           <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.username-note")})</span>
         </p>
-        <Input className="w-full" value={state.username} onChange={handleUsernameChanged} />
+        <Input
+          className="w-full"
+          value={state.username}
+          onChange={handleUsernameChanged}
+          disabled={workspaceGeneralSetting.disallowChangeUsername}
+        />
         <p className="text-sm">
           {t("common.nickname")}
           <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.nickname-note")})</span>
         </p>
-        <Input className="w-full" value={state.nickname} onChange={handleNicknameChanged} />
+        <Input
+          className="w-full"
+          value={state.nickname}
+          onChange={handleNicknameChanged}
+          disabled={workspaceGeneralSetting.disallowChangeNickname}
+        />
         <p className="text-sm">
           {t("common.email")}
           <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.email-note")})</span>

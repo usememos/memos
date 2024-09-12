@@ -166,6 +166,11 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 }
 
 func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserRequest) (*v1pb.User, error) {
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace general setting, err: %s", err))
+	}
+
 	userID, err := ExtractUserIDFromName(request.User.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -196,11 +201,17 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "username" {
+			if workspaceGeneralSetting.DisallowChangeUsername {
+				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change username")
+			}
 			if !util.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 			}
 			update.Username = &request.User.Username
 		} else if field == "nickname" {
+			if workspaceGeneralSetting.DisallowChangeNickname {
+				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change nickname")
+			}
 			update.Nickname = &request.User.Nickname
 		} else if field == "email" {
 			update.Email = &request.User.Email
