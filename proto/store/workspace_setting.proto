@@ -27,7 +27,10 @@ message WorkspaceSetting {
 }
 
 message WorkspaceBasicSetting {
+  // The secret key for workspace. Mainly used for session management.
   string secret_key = 1;
+  // The current schema version of database.
+  string schema_version = 2;
 }
 
 message WorkspaceGeneralSetting {

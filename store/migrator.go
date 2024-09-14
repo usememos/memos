@@ -14,6 +14,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/version"
 )
 
@@ -96,10 +97,14 @@ func (s *Store) Migrate(ctx context.Context) error {
 			slog.Info("end migrate")
 
 			// Upsert the current schema version to migration_history.
+			// TODO: retire using migration history later.
 			if _, err = s.driver.UpsertMigrationHistory(ctx, &UpsertMigrationHistory{
 				Version: schemaVersion,
 			}); err != nil {
 				return errors.Wrapf(err, "failed to upsert migration history with version: %s", schemaVersion)
+			}
+			if err := s.updateCurrentSchemaVersion(ctx, schemaVersion); err != nil {
+				return errors.Wrap(err, "failed to update current schema version")
 			}
 		}
 	} else if s.Profile.Mode == "demo" {
@@ -112,6 +117,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 }
 
 func (s *Store) preMigrate(ctx context.Context) error {
+	// TODO: using schema version in basic setting instead of migration history.
 	migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
 	// If any error occurs or no migration history found, apply the latest schema.
 	if err != nil || len(migrationHistoryList) == 0 {
@@ -141,10 +147,14 @@ func (s *Store) preMigrate(ctx context.Context) error {
 			return errors.Wrap(err, "failed to commit transaction")
 		}
 
+		// TODO: using schema version in basic setting instead of migration history.
 		if _, err := s.driver.UpsertMigrationHistory(ctx, &UpsertMigrationHistory{
 			Version: schemaVersion,
 		}); err != nil {
 			return errors.Wrap(err, "failed to upsert migration history")
+		}
+		if err := s.updateCurrentSchemaVersion(ctx, schemaVersion); err != nil {
+			return errors.Wrap(err, "failed to update current schema version")
 		}
 	}
 	if s.Profile.Mode == "prod" {
@@ -294,4 +304,19 @@ func (s *Store) normalizedMigrationHistoryList(ctx context.Context) error {
 		return errors.Wrap(err, "failed to insert migration history")
 	}
 	return tx.Commit()
+}
+
+func (s *Store) updateCurrentSchemaVersion(ctx context.Context, schemaVersion string) error {
+	workspaceBasicSetting, err := s.GetWorkspaceBasicSetting(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to get workspace basic setting")
+	}
+	workspaceBasicSetting.SchemaVersion = schemaVersion
+	if _, err := s.UpsertWorkspaceSetting(ctx, &storepb.WorkspaceSetting{
+		Key:   storepb.WorkspaceSettingKey_BASIC,
+		Value: &storepb.WorkspaceSetting_BasicSetting{BasicSetting: workspaceBasicSetting},
+	}); err != nil {
+		return errors.Wrap(err, "failed to upsert workspace setting")
+	}
+	return nil
 }
