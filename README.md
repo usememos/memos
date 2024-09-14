@@ -35,6 +35,43 @@ docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/mem
 
 Learn more about [other installation methods](https://www.usememos.com/docs/install).
 
+## Deploy under a subdirectory of the domain
+
+1. If you want to deploy memos to a subdirectory, you need to configure base-url (via environment variables or parameters when executing memos).
+For example, if you want to deploy memos in the /memos subdirectory of the domain, run the following command(memos is installed in /usr/local/bin):
+```bash
+MEMOS_MODE="prod" MEMOS_PORT=5230 /usr/local/bin/memos --base-url /memos
+```
+or
+```bash
+MEMOS_MODE="prod" MEMOS_PORT=5230 MEMOS_BASE_URL=/memos /usr/local/bin/memos
+```
+
+2. nginx need add config item, like this:
+```
+location ^~ /memos/ {
+    # Note: The reverse proxy backend URL needs to have a path symbol at the end
+    proxy_pass http://127.0.0.1:5230/;
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header REMOTE-HOST $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr; # Set the request source address
+    proxy_set_header X-Forwarded-Proto $scheme; # Set Http protocol
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    add_header X-Cache $upstream_cache_status;
+    add_header Cache-Control no-cache;
+} 
+```
+
+Of course, there is a slight requirement when compiling the memos frontend. You need to execute the sed command to modify the index.html of the frontend after compiling the frontend (the corresponding command is already included in the Makefile).
+```bash
+sed -i "s|<script type=\"module\" crossorigin src=\"|&{{ .baseurl }}|g"   ./web/dist/index.html
+sed -i "s|<link rel=\"stylesheet\" crossorigin href=\"|&{{ .baseurl }}|g" ./web/dist/index.html
+```
+
 ## Contribution
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. We greatly appreciate any contributions you make. Thank you for being a part of our community! 🥰
