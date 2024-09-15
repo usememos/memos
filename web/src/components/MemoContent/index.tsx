@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Dotdotdot from "dotdotdot-js";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
@@ -35,6 +36,8 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const [showCompactMode, setShowCompactMode] = useState<boolean>(false);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
   const allowEdit = !props.readonly && memo && (currentUser?.name === memo.creator || isSuperUser(currentUser));
+  const [dotInstance, setDotInstance] = useState<Dotdotdot | null>(null);
+  const [isTruncated, setIsTruncated] = useState<boolean>(true);
 
   // Initial compact mode.
   useEffect(() => {
@@ -48,7 +51,15 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     if ((memoContentContainerRef.current as HTMLDivElement).getBoundingClientRect().height > MAX_DISPLAY_HEIGHT) {
       setShowCompactMode(true);
     }
-  }, []);
+
+    const dotInstance = new Dotdotdot(memoContentContainerRef.current, { watch: "window" });
+    setDotInstance(dotInstance);
+
+    return () => {
+      dotInstance?.API.destroy();
+      dotInstance?.API.unwatch();
+    };
+  }, [showCompactMode]);
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     if (onClick) {
@@ -80,8 +91,8 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           ref={memoContentContainerRef}
           className={clsx(
             "w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
-            showCompactMode && "line-clamp-6",
             contentClassName,
+            showCompactMode && isTruncated ? "max-h-[128px]" : "max-h-full",
           )}
           onClick={handleMemoContentClick}
           onDoubleClick={handleMemoContentDoubleClick}
@@ -97,13 +108,22 @@ const MemoContent: React.FC<Props> = (props: Props) => {
             return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
           })}
         </div>
-        {showCompactMode && (
+        {showCompactMode && dotInstance && (
           <div className="w-full mt-1">
             <span
-              className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
-              onClick={() => setShowCompactMode(false)}
+              className="cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
+              onClick={() => {
+                if (isTruncated) {
+                  // show full content.
+                  dotInstance?.API.restore();
+                  setIsTruncated(false);
+                } else {
+                  dotInstance?.API.truncate();
+                  setIsTruncated(true);
+                }
+              }}
             >
-              <span>{t("memo.show-more")}</span>
+              {isTruncated ? t("memo.show-more") : t("memo.show-less")}
             </span>
           </div>
         )}
