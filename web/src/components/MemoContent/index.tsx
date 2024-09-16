@@ -7,6 +7,7 @@ import { useTranslate } from "@/utils/i18n";
 import { isSuperUser } from "@/utils/user";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
+import "@/less/content-compact.less";
 
 // MAX_DISPLAY_HEIGHT is the maximum height of the memo content to display in compact mode.
 const MAX_DISPLAY_HEIGHT = 256;
@@ -80,7 +81,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           ref={memoContentContainerRef}
           className={clsx(
             "w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
-            showCompactMode && "line-clamp-6",
+            showCompactMode && "max-h-[256px] overflow-y-hidden content-compact--shadow",
             contentClassName,
           )}
           onClick={handleMemoContentClick}
