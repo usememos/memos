@@ -53,9 +53,6 @@ importers:
       dompurify:
         specifier: ^3.1.6
         version: 3.1.6
-      dotdotdot-js:
-        specifier: ^4.1.0
-        version: 4.1.0
       fuse.js:
         specifier: ^7.0.0
         version: 7.0.0
@@ -1811,9 +1808,6 @@ packages:
 
   dompurify@3.1.6:
     resolution: {integrity: sha512-cTOAhc36AalkjtBpfG6O8JimdTMWNXjiePT2xQH/ppBGi/4uIpmj8eKyIkMJErXWARyINV/sB38yf8JCLF5pbQ==}
-
-  dotdotdot-js@4.1.0:
-    resolution: {integrity: sha512-1RpT0B2wC1HtPLjiF0muyWRsHhsEm9zEozffPvzqMYSIbFsP8K3vw2vf+9suBDQBvn+gDiEhFbbnbLO9Yl/vsA==}
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -5009,8 +5003,6 @@ snapshots:
       esutils: 2.0.3
 
   dompurify@3.1.6: {}
-
-  dotdotdot-js@4.1.0: {}
 
   eastasianwidth@0.2.0: {}
 

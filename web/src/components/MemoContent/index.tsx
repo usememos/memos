@@ -1,9 +1,9 @@
 import clsx from "clsx";
-import Dotdotdot from "dotdotdot-js";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
+import Dotdotdot from "@/utils/ellipsis";
 import { useTranslate } from "@/utils/i18n";
 import { isSuperUser } from "@/utils/user";
 import Renderer from "./Renderer";
