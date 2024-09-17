@@ -14,11 +14,12 @@ import {
   ImageNode,
   ItalicNode,
   LinkNode,
+  ListNode,
   MathBlockNode,
   MathNode,
   Node,
   NodeType,
-  OrderedListNode,
+  OrderedListItemNode,
   ParagraphNode,
   ReferencedContentNode,
   SpoilerNode,
@@ -27,9 +28,9 @@ import {
   SuperscriptNode,
   TableNode,
   TagNode,
-  TaskListNode,
+  TaskListItemNode,
   TextNode,
-  UnorderedListNode,
+  UnorderedListItemNode,
 } from "@/types/proto/api/v1/markdown_service";
 import Blockquote from "./Blockquote";
 import Bold from "./Bold";
@@ -46,8 +47,9 @@ import Image from "./Image";
 import Italic from "./Italic";
 import LineBreak from "./LineBreak";
 import Link from "./Link";
+import List from "./List";
 import Math from "./Math";
-import OrderedList from "./OrderedList";
+import OrderedListItem from "./OrderedListItem";
 import Paragraph from "./Paragraph";
 import ReferencedContent from "./ReferencedContent";
 import Spoiler from "./Spoiler";
@@ -56,9 +58,9 @@ import Subscript from "./Subscript";
 import Superscript from "./Superscript";
 import Table from "./Table";
 import Tag from "./Tag";
-import TaskList from "./TaskList";
+import TaskListItem from "./TaskListItem";
 import Text from "./Text";
-import UnorderedList from "./UnorderedList";
+import UnorderedListItem from "./UnorderedListItem";
 
 interface Props {
   index: string;
@@ -79,12 +81,14 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
       return <HorizontalRule index={index} {...(node.horizontalRuleNode as HorizontalRuleNode)} />;
     case NodeType.BLOCKQUOTE:
       return <Blockquote index={index} {...(node.blockquoteNode as BlockquoteNode)} />;
-    case NodeType.ORDERED_LIST:
-      return <OrderedList index={index} {...(node.orderedListNode as OrderedListNode)} />;
-    case NodeType.UNORDERED_LIST:
-      return <UnorderedList {...(node.unorderedListNode as UnorderedListNode)} />;
-    case NodeType.TASK_LIST:
-      return <TaskList index={index} {...(node.taskListNode as TaskListNode)} />;
+    case NodeType.LIST:
+      return <List index={index} {...(node.listNode as ListNode)} />;
+    case NodeType.ORDERED_LIST_ITEM:
+      return <OrderedListItem index={index} {...(node.orderedListItemNode as OrderedListItemNode)} />;
+    case NodeType.UNORDERED_LIST_ITEM:
+      return <UnorderedListItem {...(node.unorderedListItemNode as UnorderedListItemNode)} />;
+    case NodeType.TASK_LIST_ITEM:
+      return <TaskListItem index={index} node={node} {...(node.taskListItemNode as TaskListItemNode)} />;
     case NodeType.MATH_BLOCK:
       return <Math {...(node.mathBlockNode as MathBlockNode)} block={true} />;
     case NodeType.TABLE:

@@ -300,12 +300,16 @@ paths:
           type: integer
           format: int32
         - name: pageToken
-          description: "A page token, received from a previous `ListMemos` call.\r\nProvide this to retrieve the subsequent page."
+          description: |-
+            A page token, received from a previous `ListMemos` call.
+            Provide this to retrieve the subsequent page.
           in: query
           required: false
           type: string
         - name: filter
-          description: "Filter is used to filter memos returned in the list.\r\nFormat: \"creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']\""
+          description: |-
+            Filter is used to filter memos returned in the list.
+            Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -480,7 +484,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: filter
-          description: "Filter is used to filter users returned in the list.\r\nFormat: \"username == 'frank'\""
+          description: |-
+            Filter is used to filter users returned in the list.
+            Format: "username == 'frank'"
           in: query
           required: false
           type: string
@@ -641,7 +647,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The resource name of the workspace setting.\r\nFormat: settings/{setting}"
+          description: |-
+            The resource name of the workspace setting.
+            Format: settings/{setting}
           in: path
           required: true
           type: string
@@ -663,7 +671,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: setting.name
-          description: "name is the name of the setting.\r\nFormat: settings/{setting}"
+          description: |-
+            name is the name of the setting.
+            Format: settings/{setting}
           in: path
           required: true
           type: string
@@ -699,7 +709,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: identityProvider.name
-          description: "The name of the identityProvider.\r\nFormat: identityProviders/{id}"
+          description: |-
+            The name of the identityProvider.
+            Format: identityProviders/{id}
           in: path
           required: true
           type: string
@@ -737,7 +749,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: inbox.name
-          description: "The name of the inbox.\r\nFormat: inboxes/{id}"
+          description: |-
+            The name of the inbox.
+            Format: inboxes/{id}
           in: path
           required: true
           type: string
@@ -781,7 +795,10 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: memo.name
-          description: "The name of the memo.\r\nFormat: memos/{id}\r\nid is the system generated id."
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
+            id is the system generated id.
           in: path
           required: true
           type: string
@@ -799,7 +816,9 @@ paths:
                 $ref: '#/definitions/v1RowStatus'
               creator:
                 type: string
-                title: "The name of the creator.\r\nFormat: users/{id}"
+                title: |-
+                  The name of the creator.
+                  Format: users/{id}
               createTime:
                 type: string
                 format: date-time
@@ -852,7 +871,9 @@ paths:
                 readOnly: true
               parent:
                 type: string
-                title: "The name of the parent memo.\r\nFormat: memos/{id}"
+                title: |-
+                  The name of the parent memo.
+                  Format: memos/{id}
                 readOnly: true
               snippet:
                 type: string
@@ -874,7 +895,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_1
-          description: "The name of the user.\r\nFormat: users/{id}"
+          description: |-
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -896,7 +919,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_1
-          description: "The name of the identityProvider to delete.\r\nFormat: identityProviders/{id}"
+          description: |-
+            The name of the identityProvider to delete.
+            Format: identityProviders/{id}
           in: path
           required: true
           type: string
@@ -918,7 +943,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
-          description: "The name of the identityProvider to get.\r\nFormat: identityProviders/{id}"
+          description: |-
+            The name of the identityProvider to get.
+            Format: identityProviders/{id}
           in: path
           required: true
           type: string
@@ -940,7 +967,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
-          description: "The name of the inbox to delete.\r\nFormat: inboxes/{id}"
+          description: |-
+            The name of the inbox to delete.
+            Format: inboxes/{id}
           in: path
           required: true
           type: string
@@ -962,7 +991,10 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_3
-          description: "The name of the resource.\r\nFormat: resources/{id}\r\nid is the system generated unique identifier."
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
           in: path
           required: true
           type: string
@@ -984,7 +1016,10 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_3
-          description: "The name of the resource.\r\nFormat: resources/{id}\r\nid is the system generated unique identifier."
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
           in: path
           required: true
           type: string
@@ -1006,7 +1041,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_4
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1028,7 +1065,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_4
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1050,7 +1089,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the activity.\r\nFormat: activities/{id}"
+          description: |-
+            The name of the activity.
+            Format: activities/{id}
           in: path
           required: true
           type: string
@@ -1072,7 +1113,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{id}"
+          description: |-
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1094,7 +1137,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{id}"
+          description: |-
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1115,7 +1160,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{id}"
+          description: |-
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1143,7 +1190,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{id}"
+          description: |-
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1170,7 +1219,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1191,7 +1242,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1218,7 +1271,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}. Use \"memos/-\" to list all properties."
+          description: |-
+            The name of the memo.
+            Format: memos/{id}. Use "memos/-" to list all properties.
           in: path
           required: true
           type: string
@@ -1241,7 +1296,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}. Use \"memos/-\" to rebuild all memos."
+          description: |-
+            The name of the memo.
+            Format: memos/{id}. Use "memos/-" to rebuild all memos.
           in: path
           required: true
           type: string
@@ -1268,7 +1325,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1289,7 +1348,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1316,7 +1377,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1338,7 +1401,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1365,7 +1430,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1387,7 +1454,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the memo.\r\nFormat: memos/{id}"
+          description: |-
+            The name of the memo.
+            Format: memos/{id}
           in: path
           required: true
           type: string
@@ -1414,7 +1483,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{id}"
+          description: |-
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1436,13 +1507,17 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: "The parent, who owns the tags.\r\nFormat: memos/{id}. Use \"memos/-\" to list all tags."
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to list all tags.
           in: path
           required: true
           type: string
           pattern: memos/[^/]+
         - name: filter
-          description: "Filter is used to filter memos.\r\nFormat: \"creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']\""
+          description: |-
+            Filter is used to filter memos.
+            Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -1464,7 +1539,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: "The parent, who owns the tags.\r\nFormat: memos/{id}. Use \"memos/-\" to delete all tags."
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to delete all tags.
           in: path
           required: true
           type: string
@@ -1495,7 +1572,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: "The parent, who owns the tags.\r\nFormat: memos/{id}. Use \"memos/-\" to rename all tags."
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to rename all tags.
           in: path
           required: true
           type: string
@@ -1522,7 +1601,10 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: resource.name
-          description: "The name of the resource.\r\nFormat: resources/{id}\r\nid is the system generated unique identifier."
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
           in: path
           required: true
           type: string
@@ -1554,7 +1636,9 @@ paths:
                 format: int64
               memo:
                 type: string
-                title: "The related memo.\r\nFormat: memos/{id}"
+                title: |-
+                  The related memo.
+                  Format: memos/{id}
       tags:
         - ResourceService
   /api/v1/{setting.name}:
@@ -1572,7 +1656,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: setting.name
-          description: "The name of the user.\r\nFormat: users/{id}"
+          description: |-
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1609,7 +1695,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user.name
-          description: "The name of the user.\r\nFormat: users/{id}"
+          description: |-
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1663,7 +1751,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the user.\r\nFormat: users/{id}"
+          description: |-
+            The name of the user.
+            Format: users/{id}
           in: path
           required: true
           type: string
@@ -1696,7 +1786,10 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the resource.\r\nFormat: resources/{id}\r\nid is the system generated unique identifier."
+          description: |-
+            The name of the resource.
+            Format: resources/{id}
+            id is the system generated unique identifier.
           in: path
           required: true
           type: string
@@ -1883,7 +1976,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the identityProvider.\r\nFormat: identityProviders/{id}"
+        title: |-
+          The name of the identityProvider.
+          Format: identityProviders/{id}
       type:
         $ref: '#/definitions/apiv1IdentityProviderType'
       title:
@@ -1927,7 +2022,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the user.\r\nFormat: users/{id}"
+        title: |-
+          The name of the user.
+          Format: users/{id}
       locale:
         type: string
         description: The preferred locale of the user.
@@ -1971,7 +2068,10 @@ definitions:
       weekStartDayOffset:
         type: integer
         format: int32
-        description: "week_start_day_offset is the week start day offset from Sunday.\r\n0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday\r\nDefault is Sunday."
+        description: |-
+          week_start_day_offset is the week start day offset from Sunday.
+          0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+          Default is Sunday.
       disallowChangeUsername:
         type: boolean
         description: disallow_change_username disallows changing username.
@@ -2008,7 +2108,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "name is the name of the setting.\r\nFormat: settings/{setting}"
+        title: |-
+          name is the name of the setting.
+          Format: settings/{setting}
       generalSetting:
         $ref: '#/definitions/apiv1WorkspaceGeneralSetting'
       storageSetting:
@@ -2023,7 +2125,9 @@ definitions:
         description: storage_type is the storage type.
       filepathTemplate:
         type: string
-        title: "The template of file path.\r\ne.g. assets/{timestamp}_{filename}"
+        title: |-
+          The template of file path.
+          e.g. assets/{timestamp}_{filename}
       uploadSizeLimitMb:
         type: string
         format: int64
@@ -2182,7 +2286,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the activity.\r\nFormat: activities/{id}"
+        title: |-
+          The name of the activity.
+          Format: activities/{id}
       creatorId:
         type: integer
         format: int32
@@ -2313,7 +2419,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the inbox.\r\nFormat: inboxes/{id}"
+        title: |-
+          The name of the inbox.
+          Format: inboxes/{id}
       sender:
         type: string
         title: 'Format: users/{id}'
@@ -2433,7 +2541,10 @@ definitions:
         additionalProperties:
           type: integer
           format: int32
-        description: "tag_amounts is the amount of tags.\r\nkey is the tag name. e.g. \"tag1\".\r\nvalue is the amount of the tag."
+        description: |-
+          tag_amounts is the amount of tags.
+          key is the tag name. e.g. "tag1".
+          value is the amount of the tag.
   v1ListMemosResponse:
     type: object
     properties:
@@ -2444,7 +2555,17 @@ definitions:
           $ref: '#/definitions/v1Memo'
       nextPageToken:
         type: string
-        description: "A token, which can be sent as `page_token` to retrieve the next page.\r\nIf this field is omitted, there are no subsequent pages."
+        description: |-
+          A token, which can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
+  v1ListNode:
+    type: object
+    properties:
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Node'
   v1ListResourcesResponse:
     type: object
     properties:
@@ -2492,7 +2613,10 @@ definitions:
     properties:
       name:
         type: string
-        description: "The name of the memo.\r\nFormat: memos/{id}\r\nid is the system generated id."
+        description: |-
+          The name of the memo.
+          Format: memos/{id}
+          id is the system generated id.
       uid:
         type: string
         description: The user defined id of the memo.
@@ -2500,7 +2624,9 @@ definitions:
         $ref: '#/definitions/v1RowStatus'
       creator:
         type: string
-        title: "The name of the creator.\r\nFormat: users/{id}"
+        title: |-
+          The name of the creator.
+          Format: users/{id}
       createTime:
         type: string
         format: date-time
@@ -2553,7 +2679,9 @@ definitions:
         readOnly: true
       parent:
         type: string
-        title: "The name of the parent memo.\r\nFormat: memos/{id}"
+        title: |-
+          The name of the parent memo.
+          Format: memos/{id}
         readOnly: true
       snippet:
         type: string
@@ -2578,7 +2706,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the memo property.\r\nFormat: memos/{id}/properties/{property_id}"
+        title: |-
+          The name of the memo property.
+          Format: memos/{id}/properties/{property_id}
       property:
         $ref: '#/definitions/v1MemoProperty'
         readOnly: true
@@ -2591,10 +2721,14 @@ definitions:
     properties:
       memo:
         type: string
-        title: "The name of memo.\r\nFormat: \"memos/{uid}\""
+        title: |-
+          The name of memo.
+          Format: "memos/{uid}"
       relatedMemo:
         type: string
-        title: "The name of related memo.\r\nFormat: \"memos/{uid}\""
+        title: |-
+          The name of related memo.
+          Format: "memos/{uid}"
       type:
         $ref: '#/definitions/v1MemoRelationType'
   v1MemoRelationType:
@@ -2611,6 +2745,7 @@ definitions:
         $ref: '#/definitions/v1NodeType'
       lineBreakNode:
         $ref: '#/definitions/v1LineBreakNode'
+        description: Block nodes.
       paragraphNode:
         $ref: '#/definitions/v1ParagraphNode'
       codeBlockNode:
@@ -2621,12 +2756,14 @@ definitions:
         $ref: '#/definitions/v1HorizontalRuleNode'
       blockquoteNode:
         $ref: '#/definitions/v1BlockquoteNode'
-      orderedListNode:
-        $ref: '#/definitions/v1OrderedListNode'
-      unorderedListNode:
-        $ref: '#/definitions/v1UnorderedListNode'
-      taskListNode:
-        $ref: '#/definitions/v1TaskListNode'
+      listNode:
+        $ref: '#/definitions/v1ListNode'
+      orderedListItemNode:
+        $ref: '#/definitions/v1OrderedListItemNode'
+      unorderedListItemNode:
+        $ref: '#/definitions/v1UnorderedListItemNode'
+      taskListItemNode:
+        $ref: '#/definitions/v1TaskListItemNode'
       mathBlockNode:
         $ref: '#/definitions/v1MathBlockNode'
       tableNode:
@@ -2635,6 +2772,7 @@ definitions:
         $ref: '#/definitions/v1EmbeddedContentNode'
       textNode:
         $ref: '#/definitions/v1TextNode'
+        description: Inline nodes.
       boldNode:
         $ref: '#/definitions/v1BoldNode'
       italicNode:
@@ -2679,9 +2817,10 @@ definitions:
       - HEADING
       - HORIZONTAL_RULE
       - BLOCKQUOTE
-      - ORDERED_LIST
-      - UNORDERED_LIST
-      - TASK_LIST
+      - LIST
+      - ORDERED_LIST_ITEM
+      - UNORDERED_LIST_ITEM
+      - TASK_LIST_ITEM
       - MATH_BLOCK
       - TABLE
       - EMBEDDED_CONTENT
@@ -2704,7 +2843,10 @@ definitions:
       - SPOILER
       - HTML_ELEMENT
     default: NODE_UNSPECIFIED
-  v1OrderedListNode:
+    description: |2-
+       - LINE_BREAK: Block nodes.
+       - TEXT: Inline nodes.
+  v1OrderedListItemNode:
     type: object
     properties:
       number:
@@ -2746,7 +2888,9 @@ definitions:
         format: int32
       creator:
         type: string
-        title: "The name of the creator.\r\nFormat: users/{id}"
+        title: |-
+          The name of the creator.
+          Format: users/{id}
       contentId:
         type: string
       reactionType:
@@ -2780,7 +2924,10 @@ definitions:
     properties:
       name:
         type: string
-        description: "The name of the resource.\r\nFormat: resources/{id}\r\nid is the system generated unique identifier."
+        description: |-
+          The name of the resource.
+          Format: resources/{id}
+          id is the system generated unique identifier.
       uid:
         type: string
         description: The user defined id of the resource.
@@ -2802,7 +2949,9 @@ definitions:
         format: int64
       memo:
         type: string
-        title: "The related memo.\r\nFormat: memos/{id}"
+        title: |-
+          The related memo.
+          Format: memos/{id}
   v1RestoreMarkdownNodesRequest:
     type: object
     properties:
@@ -2886,7 +3035,7 @@ definitions:
     properties:
       content:
         type: string
-  v1TaskListNode:
+  v1TaskListItemNode:
     type: object
     properties:
       symbol:
@@ -2906,7 +3055,7 @@ definitions:
     properties:
       content:
         type: string
-  v1UnorderedListNode:
+  v1UnorderedListItemNode:
     type: object
     properties:
       symbol:
@@ -2924,7 +3073,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the user.\r\nFormat: users/{id}"
+        title: |-
+          The name of the user.
+          Format: users/{id}
       id:
         type: integer
         format: int32
@@ -2998,7 +3149,9 @@ definitions:
     properties:
       owner:
         type: string
-        title: "The name of instance owner.\r\nFormat: \"users/{id}\""
+        title: |-
+          The name of instance owner.
+          Format: "users/{id}"
       version:
         type: string
         title: version is the current version of instance
