@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { last } from "lodash-es";
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { markdownServiceClient } from "@/grpcweb";
-import { NodeType, OrderedListNode, TaskListNode, UnorderedListNode } from "@/types/proto/api/v1/markdown_service";
+import { NodeType, OrderedListItemNode, TaskListItemNode, UnorderedListItemNode } from "@/types/proto/api/v1/markdown_service";
 import TagSuggestions from "./TagSuggestions";
 
 export interface EditorRefActions {
@@ -159,20 +159,20 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       const cursorPosition = editorActions.getCursorPosition();
       const prevContent = editorActions.getContent().substring(0, cursorPosition);
       const { nodes } = await markdownServiceClient.parseMarkdown({ markdown: prevContent });
-      const lastNode = last(nodes);
+      const lastNode = last(last(nodes)?.listNode?.children);
       if (!lastNode) {
         return;
       }
 
       let insertText = "";
-      if (lastNode.type === NodeType.TASK_LIST) {
-        const { complete } = lastNode.taskListNode as TaskListNode;
+      if (lastNode.type === NodeType.TASK_LIST_ITEM) {
+        const { complete } = lastNode.taskListItemNode as TaskListItemNode;
         insertText = complete ? "- [x] " : "- [ ] ";
-      } else if (lastNode.type === NodeType.UNORDERED_LIST) {
-        const { symbol } = lastNode.unorderedListNode as UnorderedListNode;
+      } else if (lastNode.type === NodeType.UNORDERED_LIST_ITEM) {
+        const { symbol } = lastNode.unorderedListItemNode as UnorderedListItemNode;
         insertText = `${symbol} `;
-      } else if (lastNode.type === NodeType.ORDERED_LIST) {
-        const { number } = lastNode.orderedListNode as OrderedListNode;
+      } else if (lastNode.type === NodeType.ORDERED_LIST_ITEM) {
+        const { number } = lastNode.orderedListItemNode as OrderedListItemNode;
         insertText = `${Number(number) + 1}. `;
       }
       if (insertText) {
