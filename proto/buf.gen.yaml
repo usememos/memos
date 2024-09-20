@@ -22,7 +22,7 @@ plugins:
     out: ../docs
     opt: output_format=yaml,allow_merge=true
   # Build the TypeScript definitions for the web.
-  - plugin: buf.build/community/stephenh-ts-proto
+  - plugin: buf.build/community/stephenh-ts-proto:v1.178.0
     out: ../web/src/types/proto
     # reference: https://github.com/deeplay-io/nice-grpc/blob/master/packages/nice-grpc-web/README.md#using-ts-proto
     opt:
