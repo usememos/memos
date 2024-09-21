@@ -49,7 +49,7 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 	}
 	accessToken, err := getTokenFromMetadata(md)
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, err.Error())
+		return nil, status.Errorf(codes.Unauthenticated, "failed to get access token: %v", err)
 	}
 
 	username, err := in.authenticate(ctx, accessToken)

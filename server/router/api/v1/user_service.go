@@ -168,7 +168,7 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserRequest) (*v1pb.User, error) {
 	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace general setting, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
 	}
 
 	userID, err := ExtractUserIDFromName(request.User.Name)
