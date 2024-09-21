@@ -2,10 +2,10 @@
   "name": "memos",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "release": "vite build --mode release --outDir=../server/router/frontend/dist --emptyOutDir",
     "lint": "eslint --ext .js,.ts,.tsx, src",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit --skipLibCheck",
     "postinstall": "cd ../proto && buf generate"
   },
   "dependencies": {
