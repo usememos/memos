@@ -23,8 +23,8 @@ const UserBanner = (props: Props) => {
   const workspaceSettingStore = useWorkspaceSettingStore();
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
-  const title = user ? user.nickname || user.username : workspaceGeneralSetting.customProfile?.title;
-  const avatarUrl = user ? user.avatarUrl : workspaceGeneralSetting.customProfile?.logoUrl;
+  const title = (user ? user.nickname || user.username : workspaceGeneralSetting.customProfile?.title) || "Memos";
+  const avatarUrl = (user ? user.avatarUrl : workspaceGeneralSetting.customProfile?.logoUrl) || "/logo.webp";
 
   const handleSignOut = async () => {
     await authServiceClient.signOut({});

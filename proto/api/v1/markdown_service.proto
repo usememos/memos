@@ -173,7 +173,15 @@ message BlockquoteNode {
 }
 
 message ListNode {
-  repeated Node children = 1;
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    ORDERED = 1;
+    UNORDERED = 2;
+    DESCRIPTION = 3;
+  }
+  Kind kind = 1;
+  int32 indent = 2;
+  repeated Node children = 3;
 }
 
 message OrderedListItemNode {
