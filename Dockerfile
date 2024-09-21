@@ -11,7 +11,7 @@ RUN corepack enable && pnpm i --frozen-lockfile
 RUN pnpm build
 
 # Build backend exec file.
-FROM golang:1.22-alpine AS backend
+FROM golang:1.23-alpine AS backend
 WORKDIR /backend-build
 
 COPY . .
