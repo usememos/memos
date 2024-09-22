@@ -825,22 +825,16 @@ paths:
                   type: string
               pinned:
                 type: boolean
-              parentId:
-                type: integer
-                format: int32
-                readOnly: true
               resources:
                 type: array
                 items:
                   type: object
                   $ref: '#/definitions/v1Resource'
-                readOnly: true
               relations:
                 type: array
                 items:
                   type: object
                   $ref: '#/definitions/v1MemoRelation'
-                readOnly: true
               reactions:
                 type: array
                 items:
@@ -2260,6 +2254,16 @@ definitions:
         type: string
       visibility:
         $ref: '#/definitions/v1Visibility'
+      resources:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Resource'
+      relations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1MemoRelation'
   v1CreateWebhookRequest:
     type: object
     properties:
@@ -2547,22 +2551,16 @@ definitions:
           type: string
       pinned:
         type: boolean
-      parentId:
-        type: integer
-        format: int32
-        readOnly: true
       resources:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1Resource'
-        readOnly: true
       relations:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1MemoRelation'
-        readOnly: true
       reactions:
         type: array
         items:

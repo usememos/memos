@@ -174,14 +174,9 @@ message Memo {
 
   bool pinned = 12;
 
-  optional int32 parent_id = 13 [
-    deprecated = true,
-    (google.api.field_behavior) = OUTPUT_ONLY
-  ];
+  repeated Resource resources = 14;
 
-  repeated Resource resources = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  repeated MemoRelation relations = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 15;
 
   repeated Reaction reactions = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 
@@ -207,6 +202,10 @@ message CreateMemoRequest {
   string content = 1;
 
   Visibility visibility = 2;
+
+  repeated Resource resources = 3;
+
+  repeated MemoRelation relations = 4;
 }
 
 message ListMemosRequest {

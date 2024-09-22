@@ -303,15 +303,15 @@ const MemoEditor = (props: Props) => {
             updateMask.push("display_time");
             memoPatch.displayTime = displayTime;
           }
+          if (!isEqual(state.resourceList, prevMemo.resources)) {
+            updateMask.push("resources");
+            memoPatch.resources = state.resourceList;
+          }
+          if (!isEqual(state.relationList, prevMemo.relations)) {
+            updateMask.push("relations");
+            memoPatch.relations = state.relationList;
+          }
           const memo = await memoStore.updateMemo(memoPatch, updateMask);
-          await memoServiceClient.setMemoResources({
-            name: memo.name,
-            resources: state.resourceList,
-          });
-          await memoServiceClient.setMemoRelations({
-            name: memo.name,
-            relations: state.relationList,
-          });
           await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
           if (onConfirm) {
             onConfirm(memo.name);
@@ -323,6 +323,8 @@ const MemoEditor = (props: Props) => {
           ? memoStore.createMemo({
               content,
               visibility: state.memoVisibility,
+              resources: state.resourceList,
+              relations: state.relationList,
             })
           : memoServiceClient
               .createMemoComment({
@@ -330,18 +332,12 @@ const MemoEditor = (props: Props) => {
                 comment: {
                   content,
                   visibility: state.memoVisibility,
+                  resources: state.resourceList,
+                  relations: state.relationList,
                 },
               })
               .then((memo) => memo);
         const memo = await request;
-        await memoServiceClient.setMemoResources({
-          name: memo.name,
-          resources: state.resourceList,
-        });
-        await memoServiceClient.setMemoRelations({
-          name: memo.name,
-          relations: state.relationList,
-        });
         await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
         if (onConfirm) {
           onConfirm(memo.name);

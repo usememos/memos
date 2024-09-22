@@ -71,6 +71,24 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if err != nil {
 		return nil, err
 	}
+	if len(request.Resources) > 0 {
+		_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{
+			Name:      fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID),
+			Resources: request.Resources,
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to set memo resources")
+		}
+	}
+	if len(request.Relations) > 0 {
+		_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
+			Name:      fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID),
+			Relations: request.Relations,
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to set memo relations")
+		}
+	}
 
 	memoMessage, err := s.convertMemoFromStore(ctx, memo)
 	if err != nil {
@@ -292,6 +310,22 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 				Pinned: request.Memo.Pinned,
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert memo organizer")
+			}
+		} else if path == "resources" {
+			_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{
+				Name:      request.Memo.Name,
+				Resources: request.Memo.Resources,
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set memo resources")
+			}
+		} else if path == "relations" {
+			_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
+				Name:      request.Memo.Name,
+				Relations: request.Memo.Relations,
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set memo relations")
 			}
 		}
 	}
@@ -1145,8 +1179,8 @@ func getMemoContentSnippet(content string) (string, error) {
 	}
 
 	plainText := renderer.NewStringRenderer().Render(nodes)
-	if len(plainText) > 100 {
-		return substring(plainText, 100) + "...", nil
+	if len(plainText) > 64 {
+		return substring(plainText, 64) + "...", nil
 	}
 	return plainText, nil
 }
