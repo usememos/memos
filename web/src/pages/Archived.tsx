@@ -91,7 +91,7 @@ const Archived = () => {
                 <div className="w-full mb-1 flex flex-row justify-between items-center">
                   <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
                     <div className="text-sm leading-6 text-gray-400 select-none">
-                      <relative-time datetime={memo.displayTime?.toISOString()} tense="past"></relative-time>
+                      <relative-time datetime={memo.displayTime?.toISOString()}></relative-time>
                     </div>
                   </div>
                   <div className="flex flex-row justify-end items-center gap-x-2">

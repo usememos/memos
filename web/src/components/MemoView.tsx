@@ -95,7 +95,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     props.displayTimeFormat === "time" ? (
       memo.displayTime?.toLocaleTimeString()
     ) : (
-      <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
+      <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat}></relative-time>
     );
 
   return (
