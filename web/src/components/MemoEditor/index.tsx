@@ -312,7 +312,6 @@ const MemoEditor = (props: Props) => {
             memoPatch.relations = state.relationList;
           }
           const memo = await memoStore.updateMemo(memoPatch, updateMask);
-          await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
           if (onConfirm) {
             onConfirm(memo.name);
           }
@@ -338,7 +337,6 @@ const MemoEditor = (props: Props) => {
               })
               .then((memo) => memo);
         const memo = await request;
-        await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
         if (onConfirm) {
           onConfirm(memo.name);
         }

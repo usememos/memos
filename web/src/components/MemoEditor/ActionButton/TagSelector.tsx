@@ -1,8 +1,9 @@
 import { Dropdown, IconButton, Menu, MenuButton } from "@mui/joy";
 import { HashIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import OverflowTip from "@/components/kit/OverflowTip";
+import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
@@ -21,15 +22,15 @@ const TagSelector = (props: Props) => {
   const tags = tagStore.sortedTags();
   const user = useCurrentUser();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        await tagStore.fetchTags({ user });
-      } catch (error) {
-        // do nothing.
-      }
-    })();
-  }, []);
+  useAsyncEffect(async () => {
+    if (!open) return;
+
+    try {
+      await tagStore.fetchTags({ user });
+    } catch (error) {
+      // do nothing.
+    }
+  }, [open]);
 
   useClickAway(containerRef, () => {
     setOpen(false);

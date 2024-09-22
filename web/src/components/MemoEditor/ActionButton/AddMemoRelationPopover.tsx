@@ -39,6 +39,8 @@ const AddMemoRelationPopover = (props: Props) => {
 
   useDebounce(
     async () => {
+      if (!popoverOpen) return;
+
       setIsFetching(true);
       try {
         const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
@@ -57,7 +59,7 @@ const AddMemoRelationPopover = (props: Props) => {
       setIsFetching(false);
     },
     300,
-    [searchText],
+    [popoverOpen, searchText],
   );
 
   const getHighlightedContent = (content: string) => {

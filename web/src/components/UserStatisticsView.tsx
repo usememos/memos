@@ -9,7 +9,7 @@ import { memoServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
-import { useMemoFilterStore, useMemoStore } from "@/store/v1";
+import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
@@ -25,6 +25,7 @@ const UserStatisticsView = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
+  const memoList = useMemoList();
   const memoFilterStore = useMemoFilterStore();
   const [memoAmount, setMemoAmount] = useState(0);
   const [memoStats, setMemoStats] = useState<UserMemoStats>({ link: 0, taskList: 0, code: 0, incompleteTasks: 0 });
@@ -34,6 +35,8 @@ const UserStatisticsView = () => {
   const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
 
   useAsyncEffect(async () => {
+    if (memoList.size() === 0) return;
+
     const { entities } = await memoServiceClient.listMemoProperties({
       name: `memos/-`,
     });

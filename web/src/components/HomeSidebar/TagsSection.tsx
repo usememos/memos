@@ -29,7 +29,14 @@ const TagsSection = (props: Props) => {
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
 
-  useDebounce(() => fetchTags(), 300, [memoList.size(), location.pathname]);
+  useDebounce(
+    () => {
+      if (memoList.size() === 0) return;
+      fetchTags();
+    },
+    300,
+    [memoList.size(), location.pathname],
+  );
 
   const fetchTags = async () => {
     await tagStore.fetchTags({ user, location });
