@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { ArrowDownIcon } from "lucide-react";
+import { ArrowDownIcon, LoaderIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { useMemoList, useMemoStore } from "@/store/v1";
@@ -24,7 +24,7 @@ const PagedMemoList = (props: Props) => {
   const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [state, setState] = useState<State>({
-    isRequesting: false,
+    isRequesting: true, // Initial request
     nextPageToken: "",
   });
   const sortedMemoList = props.listSort ? props.listSort(memoList.value) : memoList.value;
@@ -55,7 +55,12 @@ const PagedMemoList = (props: Props) => {
   return (
     <>
       {sortedMemoList.map((memo) => props.renderer(memo))}
-      {state.nextPageToken && (
+      {state.isRequesting && (
+        <div className="w-full flex flex-row justify-center items-center my-4">
+          <LoaderIcon className="animate-spin text-zinc-500" />
+        </div>
+      )}
+      {!state.isRequesting && state.nextPageToken && (
         <div className="w-full flex flex-row justify-center items-center my-4">
           <Button
             variant="plain"
@@ -68,7 +73,7 @@ const PagedMemoList = (props: Props) => {
           </Button>
         </div>
       )}
-      {!state.nextPageToken && sortedMemoList.length === 0 && (
+      {!state.isRequesting && !state.nextPageToken && sortedMemoList.length === 0 && (
         <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
           <Empty />
           <p className="mt-2 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
