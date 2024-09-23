@@ -33,12 +33,12 @@ const PagedMemoList = (props: Props) => {
     setState((state) => ({ ...state, isRequesting }));
   };
 
-  const fetchMoreMemos = async () => {
+  const fetchMoreMemos = async (nextPageToken: string) => {
     setIsRequesting(true);
     const response = await memoStore.fetchMemos({
       filter: props.filter || "",
       pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
-      pageToken: state.nextPageToken,
+      pageToken: nextPageToken,
     });
     setState(() => ({
       isRequesting: false,
@@ -49,7 +49,7 @@ const PagedMemoList = (props: Props) => {
   useEffect(() => {
     memoList.reset();
     setState((state) => ({ ...state, nextPageToken: "" }));
-    fetchMoreMemos();
+    fetchMoreMemos("");
   }, [props.filter, props.pageSize]);
 
   return (
@@ -67,7 +67,7 @@ const PagedMemoList = (props: Props) => {
             color="neutral"
             loading={state.isRequesting}
             endDecorator={<ArrowDownIcon className="w-4 h-auto" />}
-            onClick={() => fetchMoreMemos()}
+            onClick={() => fetchMoreMemos(state.nextPageToken)}
           >
             {t("memo.load-more")}
           </Button>
