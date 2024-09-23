@@ -19,8 +19,9 @@ plugins:
     opt:
       - paths=source_relative
   - plugin: buf.build/grpc-ecosystem/openapiv2
-    out: ../docs
-    opt: output_format=yaml,allow_merge=true
+    out: gen
+    opt:
+      - output_format=yaml,allow_merge=true
   # Build the TypeScript definitions for the web.
   - plugin: buf.build/community/stephenh-ts-proto
     out: ../web/src/types/proto
