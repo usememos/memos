@@ -66,6 +66,9 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	create.Payload = &storepb.MemoPayload{
 		Property: property,
 	}
+	if request.Location != nil {
+		create.Payload.Location = convertLocationToStore(request.Location)
+	}
 
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {

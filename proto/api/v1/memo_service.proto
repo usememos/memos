@@ -215,6 +215,8 @@ message CreateMemoRequest {
   repeated Resource resources = 3;
 
   repeated MemoRelation relations = 4;
+
+  optional Location location = 5;
 }
 
 message ListMemosRequest {

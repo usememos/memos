@@ -151,7 +151,7 @@ const AddMemoRelationPopover = (props: Props) => {
             getOptionLabel={(memo) => memo.content}
             isOptionEqualToValue={(memo, value) => memo.name === value.name}
             renderOption={(props, memo) => (
-              <AutocompleteOption {...props}>
+              <AutocompleteOption {...props} key={memo.name}>
                 <div className="w-full flex flex-col justify-start items-start">
                   <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
                   <p className="mt-0.5 text-sm leading-5 line-clamp-2">{searchText ? getHighlightedContent(memo.content) : memo.snippet}</p>

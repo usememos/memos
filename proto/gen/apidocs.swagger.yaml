@@ -2384,6 +2384,8 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1MemoRelation'
+      location:
+        $ref: '#/definitions/apiv1Location'
   v1CreateWebhookRequest:
     type: object
     properties:

@@ -12,7 +12,7 @@ import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore, useResourceStore, useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
+import { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
@@ -21,6 +21,7 @@ import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import VisibilityIcon from "../VisibilityIcon";
 import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
+import LocationSelector from "./ActionButton/LocationSelector";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
 import TagSelector from "./ActionButton/TagSelector";
 import UploadResourceButton from "./ActionButton/UploadResourceButton";
@@ -44,9 +45,11 @@ export interface Props {
 }
 
 interface State {
+  initialized: boolean;
   memoVisibility: Visibility;
   resourceList: Resource[];
   relationList: MemoRelation[];
+  location: Location | undefined;
   isUploadingResource: boolean;
   isRequesting: boolean;
   isComposing: boolean;
@@ -62,9 +65,11 @@ const MemoEditor = (props: Props) => {
   const resourceStore = useResourceStore();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
+    initialized: false,
     memoVisibility: Visibility.PRIVATE,
     resourceList: [],
     relationList: [],
+    location: undefined,
     isUploadingResource: false,
     isRequesting: false,
     isComposing: false,
@@ -107,6 +112,10 @@ const MemoEditor = (props: Props) => {
 
   useAsyncEffect(async () => {
     if (!memoName) {
+      setState((prevState) => ({
+        ...prevState,
+        initialized: true,
+      }));
       return;
     }
 
@@ -118,11 +127,16 @@ const MemoEditor = (props: Props) => {
         memoVisibility: memo.visibility,
         resourceList: memo.resources,
         relationList: memo.relations,
+        location: memo.location,
       }));
       setDisplayTime(memo.displayTime);
       if (!contentCache) {
         editorRef.current?.setContent(memo.content ?? "");
       }
+      setState((prevState) => ({
+        ...prevState,
+        initialized: true,
+      }));
     }
   }, [memoName]);
 
@@ -311,6 +325,10 @@ const MemoEditor = (props: Props) => {
             updateMask.push("relations");
             memoPatch.relations = state.relationList;
           }
+          if (!isEqual(state.location, prevMemo.location)) {
+            updateMask.push("location");
+            memoPatch.location = state.location;
+          }
           const memo = await memoStore.updateMemo(memoPatch, updateMask);
           if (onConfirm) {
             onConfirm(memo.name);
@@ -324,6 +342,7 @@ const MemoEditor = (props: Props) => {
               visibility: state.memoVisibility,
               resources: state.resourceList,
               relations: state.relationList,
+              location: state.location,
             })
           : memoServiceClient
               .createMemoComment({
@@ -333,6 +352,7 @@ const MemoEditor = (props: Props) => {
                   visibility: state.memoVisibility,
                   resources: state.resourceList,
                   relations: state.relationList,
+                  location: state.location,
                 },
               })
               .then((memo) => memo);
@@ -382,6 +402,10 @@ const MemoEditor = (props: Props) => {
   );
 
   const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
+
+  if (!state.initialized) {
+    return null;
+  }
 
   return (
     <MemoEditorContext.Provider
@@ -435,6 +459,15 @@ const MemoEditor = (props: Props) => {
             <MarkdownMenu editorRef={editorRef} />
             <UploadResourceButton />
             <AddMemoRelationPopover editorRef={editorRef} />
+            <LocationSelector
+              location={state.location}
+              onChange={(location) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  location,
+                }))
+              }
+            />
           </div>
         </div>
         <Divider className="!mt-2 opacity-40" />
