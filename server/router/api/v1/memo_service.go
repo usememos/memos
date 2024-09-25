@@ -331,8 +331,9 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 				return nil, errors.Wrap(err, "failed to set memo relations")
 			}
 		} else if path == "location" {
-			memo.Payload.Location = convertLocationToStore(request.Memo.Location)
-			update.Payload = memo.Payload
+			payload := memo.Payload
+			payload.Location = convertLocationToStore(request.Memo.Location)
+			update.Payload = payload
 		}
 	}
 

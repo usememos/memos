@@ -1,6 +1,6 @@
 import { Button, IconButton, Input } from "@mui/joy";
 import { LatLng } from "leaflet";
-import { MapPinIcon } from "lucide-react";
+import { MapPinIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import LeafletMap from "@/components/LeafletMap";
@@ -10,10 +10,11 @@ import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   location?: Location;
-  onChange: (location: Location) => void;
+  onChange: (location?: Location) => void;
 }
 
 interface State {
+  initilized: boolean;
   placeholder: string;
   position: LatLng;
 }
@@ -21,14 +22,24 @@ interface State {
 const LocationSelector = (props: Props) => {
   const t = useTranslate();
   const [state, setState] = useState<State>({
+    initilized: false,
     placeholder: props.location?.placeholder || "",
     position: new LatLng(props.location?.latitude || 0, props.location?.longitude || 0),
   });
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   useEffect(() => {
+    setState((state) => ({
+      ...state,
+      placeholder: props.location?.placeholder || "",
+      position: new LatLng(props.location?.latitude || 0, props.location?.longitude || 0),
+    }));
+  }, [props.location]);
+
+  useEffect(() => {
     if (popoverOpen && !props.location) {
       const handleError = (error: any, errorMessage: string) => {
+        setState({ ...state, initilized: true });
         toast.error(errorMessage);
         console.error(error);
       };
@@ -38,7 +49,7 @@ const LocationSelector = (props: Props) => {
           (position) => {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            setState({ ...state, position: new LatLng(lat, lng) });
+            setState({ ...state, position: new LatLng(lat, lng), initilized: true });
           },
           (error) => {
             handleError(error, "Error getting current position");
@@ -69,21 +80,30 @@ const LocationSelector = (props: Props) => {
     setState({ ...state, position });
   };
 
+  const removeLocation = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    props.onChange(undefined);
+  };
+
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger>
-        <IconButton size="sm" component="div">
+        <IconButton className="group" size="sm" component="div">
           <MapPinIcon className="w-5 h-5 mx-auto shrink-0" />
           {props.location && (
-            <span className="font-normal ml-0.5 text-ellipsis whitespace-nowrap overflow-hidden max-w-32">
-              {props.location.placeholder}
-            </span>
+            <>
+              <span className="font-normal ml-0.5 text-ellipsis whitespace-nowrap overflow-hidden max-w-32">
+                {props.location.placeholder}
+              </span>
+              <XIcon className="w-5 h-5 mx-auto shrink-0 hidden group-hover:block hover:opacity-80" onClick={removeLocation} />
+            </>
           )}
         </IconButton>
       </PopoverTrigger>
       <PopoverContent align="center">
         <div className="min-w-80 sm:w-128 flex flex-col justify-start items-start">
-          <LeafletMap key={JSON.stringify(state.position)} latlng={state.position} onChange={onPositionChanged} />
+          <LeafletMap key={JSON.stringify(state.initilized)} latlng={state.position} onChange={onPositionChanged} />
           <div className="mt-2 w-full flex flex-row justify-between items-center gap-2">
             <Input
               placeholder="Choose location"

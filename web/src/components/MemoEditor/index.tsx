@@ -45,7 +45,6 @@ export interface Props {
 }
 
 interface State {
-  initialized: boolean;
   memoVisibility: Visibility;
   resourceList: Resource[];
   relationList: MemoRelation[];
@@ -65,7 +64,6 @@ const MemoEditor = (props: Props) => {
   const resourceStore = useResourceStore();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
-    initialized: false,
     memoVisibility: Visibility.PRIVATE,
     resourceList: [],
     relationList: [],
@@ -112,16 +110,13 @@ const MemoEditor = (props: Props) => {
 
   useAsyncEffect(async () => {
     if (!memoName) {
-      setState((prevState) => ({
-        ...prevState,
-        initialized: true,
-      }));
       return;
     }
 
     const memo = await memoStore.getOrFetchMemoByName(memoName);
     if (memo) {
       handleEditorFocus();
+      setDisplayTime(memo.displayTime);
       setState((prevState) => ({
         ...prevState,
         memoVisibility: memo.visibility,
@@ -129,14 +124,9 @@ const MemoEditor = (props: Props) => {
         relationList: memo.relations,
         location: memo.location,
       }));
-      setDisplayTime(memo.displayTime);
       if (!contentCache) {
         editorRef.current?.setContent(memo.content ?? "");
       }
-      setState((prevState) => ({
-        ...prevState,
-        initialized: true,
-      }));
     }
   }, [memoName]);
 
@@ -402,10 +392,6 @@ const MemoEditor = (props: Props) => {
   );
 
   const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
-
-  if (!state.initialized) {
-    return null;
-  }
 
   return (
     <MemoEditorContext.Provider
