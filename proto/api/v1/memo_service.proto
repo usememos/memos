@@ -188,6 +188,9 @@ message Memo {
 
   // The snippet of the memo content. Plain text only.
   string snippet = 19;
+
+  // The location of the memo.
+  optional Location location = 20;
 }
 
 message MemoProperty {
@@ -196,6 +199,12 @@ message MemoProperty {
   bool has_task_list = 3;
   bool has_code = 4;
   bool has_incomplete_tasks = 5;
+}
+
+message Location {
+  string placeholder = 1;
+  double latitude = 2;
+  double longitude = 3;
 }
 
 message CreateMemoRequest {

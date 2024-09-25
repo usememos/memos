@@ -5,8 +5,9 @@ package memos.store;
 option go_package = "gen/store";
 
 message MemoPayload {
-  // property is the memo's property.
   Property property = 1;
+
+  Location location = 2;
 
   message Property {
     repeated string tags = 1;
@@ -14,5 +15,11 @@ message MemoPayload {
     bool has_task_list = 3;
     bool has_code = 4;
     bool has_incomplete_tasks = 5;
+  }
+
+  message Location {
+    string placeholder = 1;
+    double latitude = 2;
+    double longitude = 3;
   }
 }

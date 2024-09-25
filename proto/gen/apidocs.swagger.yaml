@@ -872,6 +872,9 @@ paths:
               snippet:
                 type: string
                 description: The snippet of the memo content. Plain text only.
+              location:
+                $ref: '#/definitions/apiv1Location'
+                description: The location of the memo.
       tags:
         - MemoService
   /api/v1/{name_1}:
@@ -2000,6 +2003,17 @@ definitions:
       - TYPE_UNSPECIFIED
       - OAUTH2
     default: TYPE_UNSPECIFIED
+  apiv1Location:
+    type: object
+    properties:
+      placeholder:
+        type: string
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
   apiv1OAuth2Config:
     type: object
     properties:
@@ -2697,6 +2711,9 @@ definitions:
       snippet:
         type: string
         description: The snippet of the memo content. Plain text only.
+      location:
+        $ref: '#/definitions/apiv1Location'
+        description: The location of the memo.
   v1MemoProperty:
     type: object
     properties:

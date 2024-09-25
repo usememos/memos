@@ -327,6 +327,9 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to set memo relations")
 			}
+		} else if path == "location" {
+			memo.Payload.Location = convertLocationToStore(request.Memo.Location)
+			update.Payload = memo.Payload
 		}
 	}
 
@@ -810,6 +813,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 	if memo.Payload != nil {
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
+		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
 	}
 	if memo.ParentID != nil {
 		parent := fmt.Sprintf("%s%d", MemoNamePrefix, *memo.ParentID)
@@ -828,6 +832,28 @@ func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.
 		HasTaskList:        property.HasTaskList,
 		HasCode:            property.HasCode,
 		HasIncompleteTasks: property.HasIncompleteTasks,
+	}
+}
+
+func convertLocationFromStore(location *storepb.MemoPayload_Location) *v1pb.Location {
+	if location == nil {
+		return nil
+	}
+	return &v1pb.Location{
+		Placeholder: location.Placeholder,
+		Latitude:    location.Latitude,
+		Longitude:   location.Longitude,
+	}
+}
+
+func convertLocationToStore(location *v1pb.Location) *storepb.MemoPayload_Location {
+	if location == nil {
+		return nil
+	}
+	return &storepb.MemoPayload_Location{
+		Placeholder: location.Placeholder,
+		Latitude:    location.Latitude,
+		Longitude:   location.Longitude,
 	}
 }
 
