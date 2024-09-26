@@ -16,7 +16,7 @@ interface Props {
 interface State {
   initilized: boolean;
   placeholder: string;
-  position: LatLng;
+  position?: LatLng;
 }
 
 const LocationSelector = (props: Props) => {
@@ -24,7 +24,7 @@ const LocationSelector = (props: Props) => {
   const [state, setState] = useState<State>({
     initilized: false,
     placeholder: props.location?.placeholder || "",
-    position: new LatLng(props.location?.latitude || 0, props.location?.longitude || 0),
+    position: props.location ? new LatLng(props.location.latitude, props.location.longitude) : undefined,
   });
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
@@ -52,7 +52,7 @@ const LocationSelector = (props: Props) => {
             setState({ ...state, position: new LatLng(lat, lng), initilized: true });
           },
           (error) => {
-            handleError(error, "Error getting current position");
+            handleError(error, "Failed to get current position");
           },
         );
       } else {
@@ -62,6 +62,11 @@ const LocationSelector = (props: Props) => {
   }, [popoverOpen]);
 
   useEffect(() => {
+    if (!state.position) {
+      setState({ ...state, placeholder: "" });
+      return;
+    }
+
     // Fetch reverse geocoding data.
     fetch(`https://nominatim.openstreetmap.org/reverse?lat=${state.position.lat}&lon=${state.position.lng}&format=json`)
       .then((response) => response.json())
@@ -96,7 +101,7 @@ const LocationSelector = (props: Props) => {
               <span className="font-normal ml-0.5 text-ellipsis whitespace-nowrap overflow-hidden max-w-32">
                 {props.location.placeholder}
               </span>
-              <XIcon className="w-5 h-5 mx-auto shrink-0 hidden group-hover:block hover:opacity-80" onClick={removeLocation} />
+              <XIcon className="w-5 h-5 mx-auto shrink-0 hidden group-hover:block opacity-60 hover:opacity-80" onClick={removeLocation} />
             </>
           )}
         </IconButton>
@@ -106,25 +111,34 @@ const LocationSelector = (props: Props) => {
           <LeafletMap key={JSON.stringify(state.initilized)} latlng={state.position} onChange={onPositionChanged} />
           <div className="mt-2 w-full flex flex-row justify-between items-center gap-2">
             <Input
-              placeholder="Choose location"
+              placeholder="Choose a position first."
               value={state.placeholder}
+              disabled={!state.position}
+              startDecorator={
+                state.position ? (
+                  <span>
+                    [{state.position.lat.toFixed(3)}, {state.position.lng.toFixed(3)}]
+                  </span>
+                ) : null
+              }
               onChange={(e) => setState((state) => ({ ...state, placeholder: e.target.value }))}
             />
             <Button
+              className="shrink-0"
               size="sm"
               onClick={() => {
                 props.onChange(
                   Location.fromPartial({
                     placeholder: state.placeholder,
-                    latitude: state.position.lat,
-                    longitude: state.position.lng,
+                    latitude: state.position?.lat,
+                    longitude: state.position?.lng,
                   }),
                 );
                 setPopoverOpen(false);
               }}
               disabled={!state.position || state.placeholder.length === 0}
             >
-              {t("common.add")}
+              {t("common.confirm")}
             </Button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
-import { BookmarkIcon, MapPinIcon, MessageCircleMoreIcon } from "lucide-react";
+import { BookmarkIcon, MessageCircleMoreIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -16,6 +16,7 @@ import { isSuperUser } from "@/utils/user";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
 import MemoEditor from "./MemoEditor";
+import MemoLocationView from "./MemoLocationView";
 import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
@@ -198,14 +199,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             onDoubleClick={handleMemoContentDoubleClick}
             compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
           />
-          {memo.location && (
-            <p className="w-full flex flex-row gap-0.5 items-center text-gray-500">
-              <MapPinIcon className="w-4 h-auto shrink-0" />
-              <span className="text-sm font-normal text-ellipsis whitespace-nowrap overflow-hidden">
-                {memo.location.placeholder ? memo.location.placeholder : `[${memo.location.latitude}, ${memo.location.longitude}]`}
-              </span>
-            </p>
-          )}
+          {memo.location && <MemoLocationView location={memo.location} />}
           <MemoResourceListView resources={memo.resources} />
           <MemoRelationListView memo={memo} relations={referencedMemos} />
           <MemoReactionistView memo={memo} reactions={memo.reactions} />
