@@ -445,15 +445,17 @@ const MemoEditor = (props: Props) => {
             <MarkdownMenu editorRef={editorRef} />
             <UploadResourceButton />
             <AddMemoRelationPopover editorRef={editorRef} />
-            <LocationSelector
-              location={state.location}
-              onChange={(location) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  location,
-                }))
-              }
-            />
+            {workspaceMemoRelatedSetting.enableLocation && (
+              <LocationSelector
+                location={state.location}
+                onChange={(location) =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    location,
+                  }))
+                }
+              />
+            )}
           </div>
         </div>
         <Divider className="!mt-2 opacity-40" />

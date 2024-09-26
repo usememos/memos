@@ -12,6 +12,7 @@ const markerIcon = new DivIcon({
 interface MarkerProps {
   position: LatLng | undefined;
   onChange: (position: LatLng) => void;
+  readonly?: boolean;
 }
 
 const LocationMarker = (props: MarkerProps) => {
@@ -19,9 +20,12 @@ const LocationMarker = (props: MarkerProps) => {
 
   const map = useMapEvents({
     click(e) {
+      if (props.readonly) {
+        return;
+      }
+
       setPosition(e.latlng);
       map.locate();
-
       // Call the parent onChange function.
       props.onChange(e.latlng);
     },
@@ -37,6 +41,7 @@ const LocationMarker = (props: MarkerProps) => {
 };
 
 interface MapProps {
+  readonly?: boolean;
   latlng?: LatLng;
   onChange?: (position: LatLng) => void;
 }
@@ -48,7 +53,7 @@ const LeafletMap = (props: MapProps) => {
   return (
     <MapContainer className="w-full h-72" center={position} zoom={13} scrollWheelZoom={false}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <LocationMarker position={position} onChange={props.onChange ? props.onChange : () => {}} />
+      <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => {}} />
     </MapContainer>
   );
 };

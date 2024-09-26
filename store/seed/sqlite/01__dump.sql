@@ -10,3 +10,4 @@ INSERT INTO resource VALUES(1,'oQ9JTLpGKisxDwnAosJcaA',1,1722096752,1722096788,'
 INSERT INTO reaction VALUES(1,1722097094,1,'memos/4','THUMBS_UP');
 INSERT INTO reaction VALUES(2,1722097100,1,'memos/4','HEART');
 INSERT INTO reaction VALUES(3,1722097101,1,'memos/4','FIRE');
+INSERT INTO system_setting VALUES ('MEMO_RELATED', '{"contentLengthLimit":8192,"enableAutoCompact":true,"enableComment":true,"enableLocation":true}', '');

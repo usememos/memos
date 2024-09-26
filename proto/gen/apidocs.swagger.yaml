@@ -2119,6 +2119,9 @@ definitions:
       enableComment:
         type: boolean
         description: enable_comment enables comment.
+      enableLocation:
+        type: boolean
+        description: enable_location enables setting location for memo.
   apiv1WorkspaceSetting:
     type: object
     properties:

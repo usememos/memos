@@ -109,6 +109,8 @@ message WorkspaceMemoRelatedSetting {
   bool enable_link_preview = 6;
   // enable_comment enables comment.
   bool enable_comment = 7;
+  // enable_location enables setting location for memo.
+  bool enable_location = 8;
 }
 
 message GetWorkspaceSettingRequest {
