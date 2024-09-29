@@ -65,7 +65,7 @@ const UserStatisticsView = () => {
     await memoServiceClient.rebuildMemoProperty({
       name: "memos/-",
     });
-    toast.success("Refresh successfully");
+    toast.success("Rebuild memo properties successfully.");
     window.location.reload();
   };
 
@@ -96,7 +96,7 @@ const UserStatisticsView = () => {
             <PopoverContent align="end" alignOffset={-12}>
               <button className="w-auto flex flex-row justify-between items-center gap-2 hover:opacity-80" onClick={rebuildMemoTags}>
                 <RefreshCcwIcon className="text-gray-400 w-4 h-auto cursor-pointer opacity-60" />
-                <span className="text-sm shrink-0 text-gray-500 dark:text-gray-400">Refresh</span>
+                <span className="text-sm shrink-0 text-gray-500 dark:text-gray-400">Rebuild properties</span>
               </button>
             </PopoverContent>
           </Popover>

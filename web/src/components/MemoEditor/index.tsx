@@ -364,6 +364,7 @@ const MemoEditor = (props: Props) => {
         isRequesting: false,
         resourceList: [],
         relationList: [],
+        location: undefined,
       };
     });
   };
