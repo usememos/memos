@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"math"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
@@ -65,7 +66,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	conn, err := grpc.NewClient(
 		fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(100*1024*1024)),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(math.MaxInt32)),
 	)
 	if err != nil {
 		return err
