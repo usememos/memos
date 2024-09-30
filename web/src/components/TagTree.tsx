@@ -6,11 +6,12 @@ import { useMemoFilterStore } from "@/store/v1";
 interface Tag {
   key: string;
   text: string;
+  amount: string;
   subTags: Tag[];
 }
 
 interface Props {
-  tags: string[];
+  tags: [string, number][];
 }
 
 const TagTree = ({ tags: rawTags }: Props) => {
@@ -21,13 +22,15 @@ const TagTree = ({ tags: rawTags }: Props) => {
     const root: Tag = {
       key: "",
       text: "",
+      amount: "",
       subTags: [],
     };
 
     for (const tag of sortedTags) {
-      const subtags = tag.split("/");
+      const subtags = tag[0].split("/");
       let tempObj = root;
       let tagText = "";
+      let tagAmountText = "";
 
       for (let i = 0; i < subtags.length; i++) {
         const key = subtags[i];
@@ -35,6 +38,9 @@ const TagTree = ({ tags: rawTags }: Props) => {
           tagText += key;
         } else {
           tagText += "/" + key;
+        }
+        if (sortedTags.some((x) => x[0] == tagText)) {
+          tagAmountText = `(${tag[1]})`;
         }
 
         let obj = null;
@@ -50,6 +56,7 @@ const TagTree = ({ tags: rawTags }: Props) => {
           obj = {
             key,
             text: tagText,
+            amount: tagAmountText,
             subTags: [],
           };
           tempObj.subTags.push(obj);
@@ -111,7 +118,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
             <HashIcon className="w-4 h-auto shrink-0 mr-1 text-gray-400 dark:text-gray-500" />
           </div>
           <span className="truncate cursor-pointer hover:opacity-80" onClick={handleTagClick}>
-            {tag.key}
+            {tag.key} {tag.amount}
           </span>
         </div>
         <div className="flex flex-row justify-end items-center">
