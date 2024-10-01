@@ -30,16 +30,17 @@ const TagTree = ({ tags: rawTags }: Props) => {
       const subtags = tag[0].split("/");
       let tempObj = root;
       let tagText = "";
-      let tagAmountText = "";
 
       for (let i = 0; i < subtags.length; i++) {
         const key = subtags[i];
+        let tagAmountText = "";
+
         if (i === 0) {
           tagText += key;
         } else {
           tagText += "/" + key;
         }
-        if (sortedTags.some((x) => x[0] == tagText)) {
+        if (sortedTags.some((x) => x[0] === tagText && x[1] > 1)) {
           tagAmountText = `(${tag[1]})`;
         }
 
