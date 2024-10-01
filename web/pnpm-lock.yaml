@@ -51,8 +51,8 @@ importers:
         specifier: ^1.11.13
         version: 1.11.13
       dompurify:
-        specifier: ^3.1.6
-        version: 3.1.6
+        specifier: ^3.1.7
+        version: 3.1.7
       fuse.js:
         specifier: ^7.0.0
         version: 7.0.0
@@ -1831,8 +1831,8 @@ packages:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
 
-  dompurify@3.1.6:
-    resolution: {integrity: sha512-cTOAhc36AalkjtBpfG6O8JimdTMWNXjiePT2xQH/ppBGi/4uIpmj8eKyIkMJErXWARyINV/sB38yf8JCLF5pbQ==}
+  dompurify@3.1.7:
+    resolution: {integrity: sha512-VaTstWtsneJY8xzy7DekmYWEOZcmzIe3Qb3zPd4STve1OBTa+e+WmS1ITQec1fZYXI3HCsOZZiSMpG6oxoWMWQ==}
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -5049,7 +5049,7 @@ snapshots:
     dependencies:
       esutils: 2.0.3
 
-  dompurify@3.1.6: {}
+  dompurify@3.1.7: {}
 
   eastasianwidth@0.2.0: {}
 
@@ -5801,7 +5801,7 @@ snapshots:
       d3-sankey: 0.12.3
       dagre-d3-es: 7.0.10
       dayjs: 1.11.13
-      dompurify: 3.1.6
+      dompurify: 3.1.7
       elkjs: 0.9.3
       katex: 0.16.11
       khroma: 2.1.0
