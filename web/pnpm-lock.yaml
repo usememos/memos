@@ -193,8 +193,8 @@ importers:
         specifier: ^5.2.3
         version: 5.2.3
       nice-grpc-web:
-        specifier: ^3.3.4
-        version: 3.3.4(ws@8.17.0)
+        specifier: ^3.3.5
+        version: 3.3.5(ws@8.17.0)
       postcss:
         specifier: ^8.4.47
         version: 8.4.47
@@ -2585,8 +2585,8 @@ packages:
   nice-grpc-common@2.0.2:
     resolution: {integrity: sha512-7RNWbls5kAL1QVUOXvBsv1uO0wPQK3lHv+cY1gwkTzirnG1Nop4cBJZubpgziNbaVc/bl9QJcyvsf/NQxa3rjQ==}
 
-  nice-grpc-web@3.3.4:
-    resolution: {integrity: sha512-L8UQC/jQ8jAXmPM76On2CDDSDPxIfV8ltXu2anEUKYUdrqMMYZwnUVw3s2fo5p6dotIR6qyVLR9qSXvDOeMmPA==}
+  nice-grpc-web@3.3.5:
+    resolution: {integrity: sha512-+G+WcHUHCXZC/GcZ8OiuT7BSlvIBsujaojcemGIHClq8Dh3z31BzsC1E8bUv++WzQAHq1/8PnBySvcmF1tb90Q==}
 
   node-releases@2.0.18:
     resolution: {integrity: sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==}
@@ -6003,7 +6003,7 @@ snapshots:
     dependencies:
       ts-error: 1.0.6
 
-  nice-grpc-web@3.3.4(ws@8.17.0):
+  nice-grpc-web@3.3.5(ws@8.17.0):
     dependencies:
       abort-controller-x: 0.4.3
       isomorphic-ws: 5.0.0(ws@8.17.0)

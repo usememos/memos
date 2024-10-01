@@ -72,7 +72,7 @@
     "eslint-plugin-react": "^7.36.1",
     "less": "^4.2.0",
     "long": "^5.2.3",
-    "nice-grpc-web": "^3.3.4",
+    "nice-grpc-web": "^3.3.5",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "protobufjs": "^7.4.0",
