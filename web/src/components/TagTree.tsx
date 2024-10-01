@@ -6,7 +6,7 @@ import { useMemoFilterStore } from "@/store/v1";
 interface Tag {
   key: string;
   text: string;
-  amount: string;
+  amountDisplay: string;
   subTags: Tag[];
 }
 
@@ -22,7 +22,7 @@ const TagTree = ({ tags: rawTags }: Props) => {
     const root: Tag = {
       key: "",
       text: "",
-      amount: "",
+      amountDisplay: "",
       subTags: [],
     };
 
@@ -57,7 +57,7 @@ const TagTree = ({ tags: rawTags }: Props) => {
           obj = {
             key,
             text: tagText,
-            amount: tagAmountText,
+            amountDisplay: tagAmountText,
             subTags: [],
           };
           tempObj.subTags.push(obj);
@@ -119,7 +119,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
             <HashIcon className="w-4 h-auto shrink-0 mr-1 text-gray-400 dark:text-gray-500" />
           </div>
           <span className="truncate cursor-pointer hover:opacity-80" onClick={handleTagClick}>
-            {tag.key} {tag.amount}
+            {tag.key} {tag.amountDisplay}
           </span>
         </div>
         <div className="flex flex-row justify-end items-center">
