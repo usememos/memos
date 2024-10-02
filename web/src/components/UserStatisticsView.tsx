@@ -2,7 +2,17 @@ import { Divider, Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
-import { CalendarDaysIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, Code2Icon, LinkIcon, ListTodoIcon, MoreVerticalIcon, RefreshCcwIcon } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  CheckCircleIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Code2Icon,
+  LinkIcon,
+  ListTodoIcon,
+  MoreVerticalIcon,
+  RefreshCcwIcon,
+} from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
@@ -89,8 +99,14 @@ const UserStatisticsView = () => {
           />
         </div>
         <div className="invisible group-hover:visible flex justify-end items-center">
-          <ChevronLeftIcon className="w-4 h-auto shrink-0 opacity-60" onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))} />
-          <ChevronRightIcon className="w-4 h-auto shrink-0 opacity-60" onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))} />
+          <ChevronLeftIcon
+            className="w-4 h-auto shrink-0 opacity-60"
+            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
+          />
+          <ChevronRightIcon
+            className="w-4 h-auto shrink-0 opacity-60"
+            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
+          />
           <Popover>
             <PopoverTrigger>
               <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
@@ -105,7 +121,12 @@ const UserStatisticsView = () => {
         </div>
       </div>
       <div className="w-full">
-        <ActivityCalendar month={visibleMonthString} selectedDate={selectedDate.toDateString()} data={activityStats} onClick={onCalendarClick} />
+        <ActivityCalendar
+          month={visibleMonthString}
+          selectedDate={selectedDate.toDateString()}
+          data={activityStats}
+          onClick={onCalendarClick}
+        />
         {memoAmount > 0 && (
           <p className="mt-1 w-full text-xs italic opacity-80">
             <span>{memoAmount}</span> memos in <span>{days}</span> {days > 1 ? "days" : "day"}
