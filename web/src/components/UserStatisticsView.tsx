@@ -2,7 +2,17 @@ import { Divider, Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
-import { CalendarDaysIcon, CheckCircleIcon, Code2Icon, LinkIcon, ListTodoIcon, MoreVerticalIcon, RefreshCcwIcon } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  CheckCircleIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Code2Icon,
+  LinkIcon,
+  ListTodoIcon,
+  MoreVerticalIcon,
+  RefreshCcwIcon,
+} from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
@@ -31,7 +41,7 @@ const UserStatisticsView = () => {
   const [memoStats, setMemoStats] = useState<UserMemoStats>({ link: 0, taskList: 0, code: 0, incompleteTasks: 0 });
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDate] = useState(new Date());
-  const [monthString, setMonthString] = useState(dayjs(selectedDate.toDateString()).format("YYYY-MM"));
+  const [visibleMonthString, setVisibleMonthString] = useState(dayjs(selectedDate.toDateString()).format("YYYY-MM"));
   const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
 
   useAsyncEffect(async () => {
@@ -79,16 +89,24 @@ const UserStatisticsView = () => {
       <div className="w-full mb-1 flex flex-row justify-between items-center">
         <div className="relative text-base font-medium leading-6 flex flex-row items-center dark:text-gray-400">
           <CalendarDaysIcon className="w-5 h-auto mr-1 opacity-60" strokeWidth={1.5} />
-          <span>{dayjs(monthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}</span>
+          <span>{dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}</span>
           <input
             className="inset-0 absolute z-1 opacity-0"
             type="month"
-            value={monthString}
+            value={visibleMonthString}
             onFocus={(e: any) => e.target.showPicker()}
-            onChange={(e) => setMonthString(e.target.value || dayjs().format("YYYY-MM"))}
+            onChange={(e) => setVisibleMonthString(e.target.value || dayjs().format("YYYY-MM"))}
           />
         </div>
         <div className="invisible group-hover:visible flex justify-end items-center">
+          <ChevronLeftIcon
+            className="w-4 h-auto shrink-0 opacity-60"
+            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
+          />
+          <ChevronRightIcon
+            className="w-4 h-auto shrink-0 opacity-60"
+            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
+          />
           <Popover>
             <PopoverTrigger>
               <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
@@ -103,7 +121,12 @@ const UserStatisticsView = () => {
         </div>
       </div>
       <div className="w-full">
-        <ActivityCalendar month={monthString} selectedDate={selectedDate.toDateString()} data={activityStats} onClick={onCalendarClick} />
+        <ActivityCalendar
+          month={visibleMonthString}
+          selectedDate={selectedDate.toDateString()}
+          data={activityStats}
+          onClick={onCalendarClick}
+        />
         {memoAmount > 0 && (
           <p className="mt-1 w-full text-xs italic opacity-80">
             <span>{memoAmount}</span> memos in <span>{days}</span> {days > 1 ? "days" : "day"}
