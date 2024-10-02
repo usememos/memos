@@ -77,6 +77,6 @@
     "prettier": "^3.3.3",
     "protobufjs": "^7.4.0",
     "typescript": "^5.6.2",
-    "vite": "^5.4.7"
+    "vite": "^5.4.8"
   }
 }
