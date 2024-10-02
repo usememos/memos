@@ -6,42 +6,42 @@ import { useMemoFilterStore } from "@/store/v1";
 interface Tag {
   key: string;
   text: string;
-  amountDisplay: string;
+  amount: number;
   subTags: Tag[];
 }
 
 interface Props {
-  tags: [string, number][];
+  tagAmounts: [tag: string, amount: number][];
 }
 
-const TagTree = ({ tags: rawTags }: Props) => {
+const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
-    const sortedTags = Array.from(rawTags).sort();
+    const sortedTagAmounts = Array.from(rawTagAmounts).sort();
     const root: Tag = {
       key: "",
       text: "",
-      amountDisplay: "",
+      amount: 0,
       subTags: [],
     };
 
-    for (const tag of sortedTags) {
-      const subtags = tag[0].split("/");
+    for (const tagAmount of sortedTagAmounts) {
+      const subtags = tagAmount[0].split("/");
       let tempObj = root;
       let tagText = "";
 
       for (let i = 0; i < subtags.length; i++) {
         const key = subtags[i];
-        let tagAmountText = "";
+        let amount: number = 0;
 
         if (i === 0) {
           tagText += key;
         } else {
           tagText += "/" + key;
         }
-        if (sortedTags.some((x) => x[0] === tagText && x[1] > 1)) {
-          tagAmountText = `(${tag[1]})`;
+        if (sortedTagAmounts.some(([tag, amount]) => tag === tagText && amount > 1)) {
+          amount = tagAmount[1];
         }
 
         let obj = null;
@@ -57,7 +57,7 @@ const TagTree = ({ tags: rawTags }: Props) => {
           obj = {
             key,
             text: tagText,
-            amountDisplay: tagAmountText,
+            amount: amount,
             subTags: [],
           };
           tempObj.subTags.push(obj);
@@ -68,7 +68,7 @@ const TagTree = ({ tags: rawTags }: Props) => {
     }
 
     setTags(root.subTags as Tag[]);
-  }, [rawTags]);
+  }, [rawTagAmounts]);
 
   return (
     <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap gap-2 mt-1">
@@ -119,7 +119,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
             <HashIcon className="w-4 h-auto shrink-0 mr-1 text-gray-400 dark:text-gray-500" />
           </div>
           <span className="truncate cursor-pointer hover:opacity-80" onClick={handleTagClick}>
-            {tag.key} {tag.amountDisplay}
+            {tag.key} {tag.amount > 1 && `(${tag.amount})`}
           </span>
         </div>
         <div className="flex flex-row justify-end items-center">
