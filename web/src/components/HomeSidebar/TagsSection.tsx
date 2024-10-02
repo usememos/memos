@@ -86,7 +86,7 @@ const TagsSection = (props: Props) => {
       </div>
       {tagAmounts.length > 0 ? (
         treeMode ? (
-          <TagTree tags={tagAmounts.map((t) => t[0])} />
+          <TagTree tagAmounts={tagAmounts} />
         ) : (
           <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
             {tagAmounts.map(([tag, amount]) => (
