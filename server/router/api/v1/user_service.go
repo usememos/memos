@@ -275,11 +275,15 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	return &emptypb.Empty{}, nil
 }
 
-func getDefaultUserSetting() *v1pb.UserSetting {
+func getDefaultUserSetting(workspaceGeneralSetting *storepb.WorkspaceGeneralSetting) *v1pb.UserSetting {
+	memoVisibility := "PRIVATE"
+	if workspaceGeneralSetting.MemoVisibility != "" {
+		memoVisibility = workspaceGeneralSetting.MemoVisibility
+	}
 	return &v1pb.UserSetting{
 		Locale:         "en",
 		Appearance:     "system",
-		MemoVisibility: "PRIVATE",
+		MemoVisibility: memoVisibility,
 	}
 }
 
@@ -289,13 +293,19 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, _ *v1pb.GetUserSettin
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
+	}
+
 	userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)
 	}
-	userSettingMessage := getDefaultUserSetting()
+	// getDefaultUserSetting By workspaceSetting
+	userSettingMessage := getDefaultUserSetting(workspaceGeneralSetting)
 	for _, setting := range userSettings {
 		if setting.Key == storepb.UserSettingKey_LOCALE {
 			userSettingMessage.Locale = setting.GetLocale()

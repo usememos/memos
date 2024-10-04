@@ -5,10 +5,13 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
+import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
+import VisibilityIcon from "../VisibilityIcon";
 
 const WorkspaceSection = () => {
   const t = useTranslate();
@@ -126,6 +129,25 @@ const WorkspaceSection = () => {
           checked={workspaceGeneralSetting.disallowChangeNickname}
           onChange={(event) => updatePartialSetting({ disallowChangeNickname: event.target.checked })}
         />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>
+        <Select
+          className="!min-w-fit"
+          value={workspaceGeneralSetting.memoVisibility}
+          startDecorator={<VisibilityIcon visibility={convertVisibilityFromString(workspaceGeneralSetting.memoVisibility)} />}
+          onChange={(_, visibility) => {
+            updatePartialSetting({ memoVisibility: visibility || Visibility.PRIVATE });
+          }}
+        >
+          {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]
+            .map((v) => convertVisibilityToString(v))
+            .map((item) => (
+              <Option key={item} value={item} className="whitespace-nowrap">
+                {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
+              </Option>
+            ))}
+        </Select>
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span className="truncate">Week start day</span>

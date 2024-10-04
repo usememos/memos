@@ -2094,6 +2094,12 @@ definitions:
       disallowChangeNickname:
         type: boolean
         description: disallow_change_nickname disallows changing nickname.
+      memoVisibility:
+        type: string
+        description: global default visibility.
+      locale:
+        type: string
+        description: global default locale.
   apiv1WorkspaceMemoRelatedSetting:
     type: object
     properties:
