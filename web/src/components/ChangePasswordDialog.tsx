@@ -1,4 +1,5 @@
 import { Button, IconButton, Input } from "@mui/joy";
+import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -6,7 +7,6 @@ import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useUserStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
-import Icon from "./Icon";
 
 type Props = DialogProps;
 
@@ -60,8 +60,8 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       toast.success(t("message.password-changed"));
       handleCloseBtnClick();
     } catch (error: any) {
+      toast.error(error.details);
       console.error(error);
-      toast.error(error.response.data.message);
     }
   };
 
@@ -70,7 +70,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       <div className="dialog-header-container !w-64">
         <p className="title-text">{t("setting.account-section.change-password")}</p>
         <IconButton size="sm" onClick={handleCloseBtnClick}>
-          <Icon.X className="w-5 h-auto" />
+          <XIcon className="w-5 h-auto" />
         </IconButton>
       </div>
       <div className="dialog-content-container">

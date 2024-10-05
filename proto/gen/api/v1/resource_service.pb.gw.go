@@ -179,6 +179,10 @@ func local_request_ResourceService_GetResourceByUid_0(ctx context.Context, marsh
 
 }
 
+var (
+	filter_ResourceService_GetResourceBinary_0 = &utilities.DoubleArray{Encoding: map[string]int{"name": 0, "filename": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+)
+
 func request_ResourceService_GetResourceBinary_0(ctx context.Context, marshaler runtime.Marshaler, client ResourceServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetResourceBinaryRequest
 	var metadata runtime.ServerMetadata
@@ -208,6 +212,13 @@ func request_ResourceService_GetResourceBinary_0(ctx context.Context, marshaler 
 	protoReq.Filename, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filename", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_GetResourceBinary_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.GetResourceBinary(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -244,6 +255,13 @@ func local_request_ResourceService_GetResourceBinary_0(ctx context.Context, mars
 	protoReq.Filename, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filename", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ResourceService_GetResourceBinary_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := server.GetResourceBinary(ctx, &protoReq)
@@ -407,6 +425,7 @@ func local_request_ResourceService_DeleteResource_0(ctx context.Context, marshal
 // UnaryRPC     :call ResourceServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterResourceServiceHandlerFromEndpoint instead.
+// GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterResourceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ResourceServiceServer) error {
 
 	mux.Handle("POST", pattern_ResourceService_CreateResource_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
@@ -622,7 +641,7 @@ func RegisterResourceServiceHandler(ctx context.Context, mux *runtime.ServeMux, 
 // to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ResourceServiceClient".
 // Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ResourceServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "ResourceServiceClient" to call the correct interceptors.
+// "ResourceServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
 func RegisterResourceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ResourceServiceClient) error {
 
 	mux.Handle("POST", pattern_ResourceService_CreateResource_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {

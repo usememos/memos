@@ -1,11 +1,11 @@
 import { Button, IconButton, Input } from "@mui/joy";
+import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useUserStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
-import Icon from "./Icon";
 
 interface Props extends DialogProps {
   user: User;
@@ -71,7 +71,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
           {t("setting.account-section.change-password")} ({user.nickname})
         </p>
         <IconButton size="sm" onClick={handleCloseBtnClick}>
-          <Icon.X className="w-5 h-auto" />
+          <XIcon className="w-5 h-auto" />
         </IconButton>
       </div>
       <div className="dialog-content-container">

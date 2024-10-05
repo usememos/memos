@@ -1,5 +1,6 @@
 import { Button, Dropdown, Input, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/joy";
 import { sortBy } from "lodash-es";
+import { MoreVerticalIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
@@ -9,7 +10,6 @@ import { RowStatus } from "@/types/proto/api/v1/common";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
-import Icon from "../Icon";
 
 interface State {
   creatingUser: User;
@@ -204,7 +204,7 @@ const MemberSection = () => {
                     ) : (
                       <Dropdown>
                         <MenuButton size="sm">
-                          <Icon.MoreVertical className="w-4 h-auto" />
+                          <MoreVerticalIcon className="w-4 h-auto" />
                         </MenuButton>
                         <Menu placement="bottom-end" size="sm">
                           <MenuItem onClick={() => handleChangePasswordClick(user)}>

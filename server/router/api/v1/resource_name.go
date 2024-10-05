@@ -17,6 +17,7 @@ const (
 	InboxNamePrefix            = "inboxes/"
 	StorageNamePrefix          = "storages/"
 	IdentityProviderNamePrefix = "identityProviders/"
+	ActivityNamePrefix         = "activities/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -120,6 +121,18 @@ func ExtractIdentityProviderIDFromName(name string) (int32, error) {
 	id, err := util.ConvertStringToInt32(tokens[0])
 	if err != nil {
 		return 0, errors.Errorf("invalid identity provider ID %q", tokens[0])
+	}
+	return id, nil
+}
+
+func ExtractActivityIDFromName(name string) (int32, error) {
+	tokens, err := GetNameParentTokens(name, ActivityNamePrefix)
+	if err != nil {
+		return 0, err
+	}
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid activity ID %q", tokens[0])
 	}
 	return id, nil
 }

@@ -1,13 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import dialogReducer from "./reducer/dialog";
-import filterReducer from "./reducer/filter";
-import resourceReducer from "./reducer/resource";
 
 const store = configureStore({
   reducer: {
-    filter: filterReducer,
-    resource: resourceReducer,
     dialog: dialogReducer,
   },
 });

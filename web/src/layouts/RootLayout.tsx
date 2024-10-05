@@ -1,19 +1,23 @@
 import { Button, IconButton, Tooltip } from "@mui/joy";
 import clsx from "clsx";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
-import Icon from "@/components/Icon";
 import Navigation from "@/components/Navigation";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
+import { useMemoFilterStore } from "@/store/v1";
+import { useTranslate } from "@/utils/i18n";
 
 const RootLayout = () => {
+  const t = useTranslate();
   const location = useLocation();
   const { sm } = useResponsiveWidth();
   const currentUser = useCurrentUser();
+  const memoFilterStore = useMemoFilterStore();
   const [collapsed, setCollapsed] = useLocalStorage<boolean>("navigation-collapsed", false);
   const [initialized, setInitialized] = useState(false);
 
@@ -26,6 +30,11 @@ const RootLayout = () => {
     }
     setInitialized(true);
   }, []);
+
+  useEffect(() => {
+    // When the route changes, remove all filters.
+    memoFilterStore.removeFilter(() => true);
+  }, [location.pathname]);
 
   return !initialized ? (
     <Loading />
@@ -46,13 +55,13 @@ const RootLayout = () => {
                 onClick={() => setCollapsed(!collapsed)}
               >
                 {!collapsed ? (
-                  <Button variant="plain" color="neutral" startDecorator={<Icon.ChevronLeft className="w-5 h-auto opacity-70" />}>
-                    Collapse
+                  <Button variant="plain" color="neutral" startDecorator={<ChevronLeftIcon className="w-5 h-auto opacity-70" />}>
+                    {t("common.collapse")}
                   </Button>
                 ) : (
-                  <Tooltip title="Expand" placement="right" arrow>
+                  <Tooltip title={t("common.expand")} placement="right" arrow>
                     <IconButton>
-                      <Icon.ChevronRight className="w-5 h-auto opacity-70" />
+                      <ChevronRightIcon className="w-5 h-auto opacity-70" />
                     </IconButton>
                   </Tooltip>
                 )}

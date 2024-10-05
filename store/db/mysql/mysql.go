@@ -1,9 +1,7 @@
 package mysql
 
 import (
-	"context"
 	"database/sql"
-	"log/slog"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
@@ -43,32 +41,6 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 
 func (d *DB) GetDB() *sql.DB {
 	return d.db
-}
-
-func (d *DB) GetCurrentDBSize(ctx context.Context) (int64, error) {
-	query := "SELECT SUM(`data_length` + `index_length`) AS `size` " +
-		" FROM information_schema.TABLES" +
-		" WHERE `table_schema` = ?" +
-		" GROUP BY `table_schema`"
-	rows, err := d.db.QueryContext(ctx, query, d.config.DBName)
-	if err != nil {
-		slog.Error("Query db size error, make sure you have enough privilege", err)
-		return 0, err
-	}
-	defer rows.Close()
-
-	var size int64
-	for rows.Next() {
-		if err := rows.Scan(&size); err != nil {
-			return 0, err
-		}
-	}
-
-	if rows.Err() != nil {
-		return 0, rows.Err()
-	}
-
-	return size, nil
 }
 
 func (d *DB) Close() error {

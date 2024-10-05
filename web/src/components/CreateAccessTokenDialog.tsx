@@ -1,4 +1,5 @@
 import { Button, IconButton, Input, Radio, RadioGroup } from "@mui/joy";
+import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
@@ -6,7 +7,6 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
-import Icon from "./Icon";
 
 interface Props extends DialogProps {
   onConfirm: () => void;
@@ -77,8 +77,8 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
       onConfirm();
       destroy();
     } catch (error: any) {
+      toast.error(error.details);
       console.error(error);
-      toast.error(error.response.data.message);
     }
   };
 
@@ -87,7 +87,7 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">Create access token</p>
         <IconButton size="sm" onClick={() => destroy()}>
-          <Icon.X className="w-5 h-auto" />
+          <XIcon className="w-5 h-auto" />
         </IconButton>
       </div>
       <div className="dialog-content-container !w-80">

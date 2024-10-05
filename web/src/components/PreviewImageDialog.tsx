@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { XIcon } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { generateDialog } from "./Dialog";
-import Icon from "./Icon";
 import "@/less/preview-image-dialog.less";
 
 const MIN_SCALE = 0.5;
@@ -31,7 +31,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   let endX = -1;
 
   const handleCloseBtnClick = () => {
-    destroy();
+    destroyAndResetViewport();
   };
 
   const handleTouchStart = (event: React.TouchEvent) => {
@@ -73,7 +73,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
       setState(defaultState);
       setCurrentIndex(currentIndex - 1);
     } else {
-      destroy();
+      destroyAndResetViewport();
     }
   };
 
@@ -82,7 +82,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
       setState(defaultState);
       setCurrentIndex(currentIndex + 1);
     } else {
-      destroy();
+      destroyAndResetViewport();
     }
   };
 
@@ -107,16 +107,41 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     });
   };
 
+  const setViewportScalable = () => {
+    const viewport = document.querySelector("meta[name=viewport]");
+    if (viewport) {
+      const contentAttrs = viewport.getAttribute("content");
+      if (contentAttrs) {
+        viewport.setAttribute("content", contentAttrs.replace("user-scalable=no", "user-scalable=yes"));
+      }
+    }
+  };
+
+  const destroyAndResetViewport = () => {
+    const viewport = document.querySelector("meta[name=viewport]");
+    if (viewport) {
+      const contentAttrs = viewport.getAttribute("content");
+      if (contentAttrs) {
+        viewport.setAttribute("content", contentAttrs.replace("user-scalable=yes", "user-scalable=no"));
+      }
+    }
+    destroy();
+  };
+
   const imageComputedStyle = {
     transform: `scale(${state.scale})`,
     transformOrigin: `${state.originX === -1 ? "center" : `${state.originX}px`} ${state.originY === -1 ? "center" : `${state.originY}px`}`,
   };
 
+  useEffect(() => {
+    setViewportScalable();
+  }, []);
+
   return (
     <>
       <div className="btns-container">
         <button className="btn" onClick={handleCloseBtnClick}>
-          <Icon.X className="icon-img" />
+          <XIcon className="icon-img" />
         </button>
       </div>
       <div className="img-container" onClick={handleImgContainerClick}>

@@ -1,6 +1,9 @@
 import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
-import { getNormalizedDateString, getDateWithOffset } from "@/helpers/datetime";
+import dayjs from "dayjs";
+import { useWorkspaceSettingStore } from "@/store/v1";
+import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -29,11 +32,17 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
 const ActivityCalendar = (props: Props) => {
   const t = useTranslate();
   const { month: monthStr, data, onClick } = props;
-  const year = new Date(monthStr).getFullYear();
-  const month = new Date(monthStr).getMonth() + 1;
+  const workspaceSettingStore = useWorkspaceSettingStore();
+  const weekStartDayOffset = (
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({})
+  ).weekStartDayOffset;
+  const year = dayjs(monthStr).toDate().getFullYear();
+  const month = dayjs(monthStr).toDate().getMonth() + 1;
   const dayInMonth = new Date(year, month, 0).getDate();
-  const firstDay = new Date(year, month - 1, 1).getDay();
-  const lastDay = new Date(year, month - 1, dayInMonth).getDay();
+  const firstDay = (((new Date(year, month - 1, 1).getDay() - weekStartDayOffset) % 7) + 7) % 7;
+  const lastDay = new Date(year, month - 1, dayInMonth).getDay() - weekStartDayOffset;
+  const WEEK_DAYS = [t("days.sun"), t("days.mon"), t("days.tue"), t("days.wed"), t("days.thu"), t("days.fri"), t("days.sat")];
+  const weekDays = WEEK_DAYS.slice(weekStartDayOffset).concat(WEEK_DAYS.slice(0, weekStartDayOffset));
   const maxCount = Math.max(...Object.values(data));
   const days = [];
 
@@ -49,14 +58,19 @@ const ActivityCalendar = (props: Props) => {
 
   return (
     <div className={clsx("w-full h-auto shrink-0 grid grid-cols-7 grid-flow-row gap-1")}>
-      {days.map((day, index) => {
-        const date = getNormalizedDateString(
-          getDateWithOffset(`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`),
+      {weekDays.map((day, index) => {
+        return (
+          <div key={index} className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>
+            {day}
+          </div>
         );
+      })}
+      {days.map((day, index) => {
+        const date = dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
         const count = data[date] || 0;
-        const isToday = new Date().toDateString() === new Date(date).toDateString();
+        const isToday = dayjs().format("YYYY-MM-DD") === date;
         const tooltipText = count ? t("memo.count-memos-in-date", { count: count, date: date }) : date;
-        const isSelected = new Date(props.selectedDate).toDateString() === new Date(date).toDateString();
+        const isSelected = dayjs(props.selectedDate).format("YYYY-MM-DD") === date;
         return day ? (
           count > 0 ? (
             <Tooltip className="shrink-0" key={`${date}-${index}`} title={tooltipText} placement="top" arrow>
@@ -68,7 +82,7 @@ const ActivityCalendar = (props: Props) => {
                   isSelected && "font-bold border-zinc-400 dark:border-zinc-300",
                   !isToday && !isSelected && "border-transparent",
                 )}
-                onClick={() => count && onClick && onClick(new Date(date).toDateString())}
+                onClick={() => count && onClick && onClick(date)}
               >
                 {day}
               </div>
@@ -87,7 +101,7 @@ const ActivityCalendar = (props: Props) => {
             </div>
           )
         ) : (
-          <div key={`${date}-${index}`} className={clsx("shrink-0 w-6 h-6 opacity-0", getCellAdditionalStyles(count, maxCount))}></div>
+          <div key={`${date}-${index}`} className="shrink-0 w-6 h-6 opacity-0"></div>
         );
       })}
     </div>

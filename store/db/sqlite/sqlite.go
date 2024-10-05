@@ -1,13 +1,9 @@
 package sqlite
 
 import (
-	"context"
 	"database/sql"
-	"os"
 
 	"github.com/pkg/errors"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	// Import the SQLite driver.
 	_ "modernc.org/sqlite"
@@ -56,15 +52,6 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 
 func (d *DB) GetDB() *sql.DB {
 	return d.db
-}
-
-func (d *DB) GetCurrentDBSize(context.Context) (int64, error) {
-	fi, err := os.Stat(d.profile.DSN)
-	if err != nil {
-		return 0, status.Errorf(codes.Internal, "failed to get file info: %v", err)
-	}
-
-	return fi.Size(), nil
 }
 
 func (d *DB) Close() error {

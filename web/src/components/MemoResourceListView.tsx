@@ -29,14 +29,14 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
 
   const MediaCard = ({ resource }: { resource: Resource }) => {
     const type = getResourceType(resource);
-    const url = getResourceUrl(resource);
+    const resourceUrl = getResourceUrl(resource);
 
     if (type === "image/*") {
       return (
         <img
           className="cursor-pointer min-h-full w-auto object-cover"
-          src={url}
-          onClick={() => handleImageClick(url)}
+          src={resource.externalLink ? resourceUrl : resourceUrl + "?thumbnail=true"}
+          onClick={() => handleImageClick(resourceUrl)}
           decoding="async"
           loading="lazy"
         />
@@ -47,7 +47,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
           className="cursor-pointer w-full h-full object-contain bg-zinc-100 dark:bg-zinc-800"
           preload="metadata"
           crossOrigin="anonymous"
-          src={url}
+          src={resourceUrl}
           controls
         />
       );

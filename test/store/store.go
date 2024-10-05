@@ -2,7 +2,7 @@ package teststore
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"testing"
 
 	// sqlite driver.
@@ -18,14 +18,14 @@ func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 	profile := test.GetTestingProfile(t)
 	dbDriver, err := db.NewDBDriver(profile)
 	if err != nil {
-		fmt.Printf("failed to create db driver, error: %+v\n", err)
+		slog.Error("failed to create db driver", slog.String("error", err.Error()))
 	}
 	resetTestingDB(ctx, profile, dbDriver)
-	if err := dbDriver.Migrate(ctx); err != nil {
-		fmt.Printf("failed to migrate db, error: %+v\n", err)
-	}
 
 	store := store.New(dbDriver, profile)
+	if err := store.Migrate(ctx); err != nil {
+		slog.Error("failed to migrate db", slog.String("error", err.Error()))
+	}
 	return store
 }
 
@@ -48,7 +48,7 @@ func resetTestingDB(ctx context.Context, profile *profile.Profile, dbDriver stor
 		DROP TABLE IF EXISTS webhook;
 		DROP TABLE IF EXISTS reaction;`)
 		if err != nil {
-			fmt.Printf("failed to reset testing db, error: %+v\n", err)
+			slog.Error("failed to reset testing db", slog.String("error", err.Error()))
 			panic(err)
 		}
 	} else if profile.Driver == "postgres" {
@@ -69,7 +69,7 @@ func resetTestingDB(ctx context.Context, profile *profile.Profile, dbDriver stor
 		DROP TABLE IF EXISTS webhook CASCADE;
 		DROP TABLE IF EXISTS reaction CASCADE;`)
 		if err != nil {
-			fmt.Printf("failed to reset testing db, error: %+v\n", err)
+			slog.Error("failed to reset testing db", slog.String("error", err.Error()))
 			panic(err)
 		}
 	}

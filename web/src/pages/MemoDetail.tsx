@@ -1,10 +1,10 @@
 import { Button } from "@mui/joy";
 import clsx from "clsx";
+import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
-import Icon from "@/components/Icon";
 import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDetailSidebar";
 import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
@@ -12,9 +12,10 @@ import MobileHeader from "@/components/MobileHeader";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { useMemoStore } from "@/store/v1";
+import { useMemoStore, useWorkspaceSettingStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
+import { WorkspaceMemoRelatedSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
@@ -22,15 +23,20 @@ const MemoDetail = () => {
   const { md } = useResponsiveWidth();
   const params = useParams();
   const navigateTo = useNavigateTo();
+  const workspaceSettingStore = useWorkspaceSettingStore();
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const uid = params.uid;
   const memo = memoStore.getMemoByUid(uid || "");
+  const workspaceMemoRelatedSetting = WorkspaceMemoRelatedSetting.fromPartial(
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
+  );
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const [showCommentEditor, setShowCommentEditor] = useState(false);
   const commentRelations =
     memo?.relations.filter((relation) => relation.relatedMemo === memo.name && relation.type === MemoRelation_Type.COMMENT) || [];
   const comments = commentRelations.map((relation) => memoStore.getMemoByName(relation.memo)).filter((memo) => memo) as any as Memo[];
+  const showCreateCommentButton = workspaceMemoRelatedSetting.enableComment && currentUser;
 
   // Prepare memo.
   useEffect(() => {
@@ -92,7 +98,7 @@ const MemoDetail = () => {
                 to={`/m/${parentMemo.uid}`}
                 unstable_viewTransition
               >
-                <Icon.ArrowUpLeftFromCircle className="w-4 h-auto shrink-0 opacity-60 mr-2" />
+                <ArrowUpLeftFromCircleIcon className="w-4 h-auto shrink-0 opacity-60 mr-2" />
                 <span className="truncate">{parentMemo.content}</span>
               </Link>
             </div>
@@ -112,12 +118,12 @@ const MemoDetail = () => {
             </h2>
             <div className="relative mx-auto flex-grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
               {comments.length === 0 ? (
-                currentUser && (
+                showCreateCommentButton && (
                   <div className="w-full flex flex-row justify-center items-center py-6">
                     <Button
                       variant="plain"
                       color="neutral"
-                      endDecorator={<Icon.MessageCircle className="w-5 h-auto text-gray-500" />}
+                      endDecorator={<MessageCircleIcon className="w-5 h-auto text-gray-500" />}
                       onClick={handleShowCommentEditor}
                     >
                       <span className="font-normal text-gray-500">{t("memo.comment.write-a-comment")}</span>
@@ -128,13 +134,15 @@ const MemoDetail = () => {
                 <>
                   <div className="w-full flex flex-row justify-between items-center px-3 mb-2">
                     <div className="flex flex-row justify-start items-center">
-                      <Icon.MessageCircle className="w-5 h-auto text-gray-400 mr-1" />
+                      <MessageCircleIcon className="w-5 h-auto text-gray-400 mr-1" />
                       <span className="text-gray-400 text-sm">{t("memo.comment.self")}</span>
                       <span className="text-gray-400 text-sm ml-1">({comments.length})</span>
                     </div>
-                    <Button variant="plain" color="neutral" onClick={handleShowCommentEditor}>
-                      <span className="font-normal text-gray-500">{t("memo.comment.write-a-comment")}</span>
-                    </Button>
+                    {showCreateCommentButton && (
+                      <Button variant="plain" color="neutral" onClick={handleShowCommentEditor}>
+                        <span className="font-normal text-gray-500">{t("memo.comment.write-a-comment")}</span>
+                      </Button>
+                    )}
                   </div>
                   {comments.map((comment) => (
                     <MemoView key={`${comment.name}-${comment.displayTime}`} memo={comment} showCreator compact />

@@ -51,13 +51,6 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*}"};
     option (google.api.method_signature) = "name";
   }
-  // ExportMemos exports memos.
-  rpc ExportMemos(ExportMemosRequest) returns (ExportMemosResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/memos:export"
-      body: "*"
-    };
-  }
   // ListMemoProperties lists memo properties.
   rpc ListMemoProperties(ListMemoPropertiesRequest) returns (ListMemoPropertiesResponse) {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}/properties"};
@@ -123,11 +116,6 @@ service MemoService {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}/comments"};
     option (google.api.method_signature) = "name";
   }
-  // GetUserMemosStats gets stats of memos for a user.
-  rpc GetUserMemosStats(GetUserMemosStatsRequest) returns (GetUserMemosStatsResponse) {
-    option (google.api.http) = {get: "/api/v1/memos/stats"};
-    option (google.api.method_signature) = "username";
-  }
   // ListMemoReactions lists reactions for a memo.
   rpc ListMemoReactions(ListMemoReactionsRequest) returns (ListMemoReactionsResponse) {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}/reactions"};
@@ -186,14 +174,9 @@ message Memo {
 
   bool pinned = 12;
 
-  optional int32 parent_id = 13 [
-    deprecated = true,
-    (google.api.field_behavior) = OUTPUT_ONLY
-  ];
+  repeated Resource resources = 14;
 
-  repeated Resource resources = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  repeated MemoRelation relations = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 15;
 
   repeated Reaction reactions = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 
@@ -205,6 +188,9 @@ message Memo {
 
   // The snippet of the memo content. Plain text only.
   string snippet = 19;
+
+  // The location of the memo.
+  optional Location location = 20;
 }
 
 message MemoProperty {
@@ -215,10 +201,22 @@ message MemoProperty {
   bool has_incomplete_tasks = 5;
 }
 
+message Location {
+  string placeholder = 1;
+  double latitude = 2;
+  double longitude = 3;
+}
+
 message CreateMemoRequest {
   string content = 1;
 
   Visibility visibility = 2;
+
+  repeated Resource resources = 3;
+
+  repeated MemoRelation relations = 4;
+
+  optional Location location = 5;
 }
 
 message ListMemosRequest {
@@ -265,15 +263,6 @@ message DeleteMemoRequest {
   string name = 1;
 }
 
-message ExportMemosRequest {
-  // Same as ListMemosRequest.filter
-  string filter = 1;
-}
-
-message ExportMemosResponse {
-  bytes content = 1;
-}
-
 message ListMemoPropertiesRequest {
   // The name of the memo.
   // Format: memos/{id}. Use "memos/-" to list all properties.
@@ -281,7 +270,17 @@ message ListMemoPropertiesRequest {
 }
 
 message ListMemoPropertiesResponse {
-  repeated MemoProperty properties = 1;
+  repeated MemoPropertyEntity entities = 1;
+}
+
+message MemoPropertyEntity {
+  // The name of the memo property.
+  // Format: memos/{id}/properties/{property_id}
+  string name = 1;
+
+  MemoProperty property = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  google.protobuf.Timestamp display_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message RebuildMemoPropertyRequest {
@@ -375,26 +374,6 @@ message ListMemoCommentsRequest {
 
 message ListMemoCommentsResponse {
   repeated Memo memos = 1;
-}
-
-message GetUserMemosStatsRequest {
-  // name is the name of the user to get stats for.
-  // Format: users/{id}
-  string name = 1;
-
-  // timezone location
-  // Format: uses tz identifier
-  // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-  string timezone = 2;
-
-  // Same as ListMemosRequest.filter
-  string filter = 3;
-}
-
-message GetUserMemosStatsResponse {
-  // stats is the stats of memo creating/updating activities.
-  // key is the year-month-day string. e.g. "2020-01-01".
-  map<string, int32> stats = 1;
 }
 
 message ListMemoReactionsRequest {

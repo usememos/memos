@@ -66,7 +66,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	if v := find.ContentSearch; len(v) != 0 {
 		for _, s := range v {
-			where, args = append(where, "memo.content LIKE "+placeholder(len(args)+1)), append(args, fmt.Sprintf("%%%s%%", s))
+			where, args = append(where, "memo.content ILIKE "+placeholder(len(args)+1)), append(args, fmt.Sprintf("%%%s%%", s))
 		}
 	}
 	if v := find.VisibilityList; len(v) != 0 {
@@ -81,8 +81,10 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if v.Raw != nil {
 			where, args = append(where, "memo.payload = "+placeholder(len(args)+1)), append(args, *v.Raw)
 		}
-		if v.Tag != nil {
-			where, args = append(where, "memo.payload->'property'->'tags' @> "+placeholder(len(args)+1)), append(args, fmt.Sprintf(`["%s"]`, *v.Tag))
+		if len(v.TagSearch) != 0 {
+			for _, tag := range v.TagSearch {
+				where, args = append(where, "EXISTS (SELECT 1 FROM jsonb_array_elements(memo.payload->'property'->'tags') AS tag WHERE tag::text = "+placeholder(len(args)+1)+" OR tag::text LIKE "+placeholder(len(args)+2)+")"), append(args, fmt.Sprintf(`"%s"`, tag), fmt.Sprintf(`"%s/%%"`, tag))
+			}
 		}
 		if v.HasLink {
 			where = append(where, "(memo.payload->'property'->>'hasLink')::BOOLEAN IS TRUE")
@@ -105,12 +107,16 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if find.OrderByPinned {
 		orders = append(orders, "pinned DESC")
 	}
-	if find.OrderByUpdatedTs {
-		orders = append(orders, "updated_ts DESC")
-	} else {
-		orders = append(orders, "created_ts DESC")
+	order := "DESC"
+	if find.OrderByTimeAsc {
+		order = "ASC"
 	}
-	orders = append(orders, "id DESC")
+	if find.OrderByUpdatedTs {
+		orders = append(orders, "updated_ts "+order)
+	} else {
+		orders = append(orders, "created_ts "+order)
+	}
+	orders = append(orders, "id "+order)
 	if find.Random {
 		orders = append(orders, "RAND()")
 	}

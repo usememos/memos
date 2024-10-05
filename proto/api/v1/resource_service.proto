@@ -110,6 +110,9 @@ message GetResourceBinaryRequest {
 
   // The filename of the resource. Mainly used for downloading.
   string filename = 2;
+
+  // A flag indicating if the thumbnail version of the resource should be returned
+  bool thumbnail = 3;
 }
 
 message UpdateResourceRequest {

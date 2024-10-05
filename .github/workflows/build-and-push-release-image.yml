@@ -3,8 +3,8 @@ name: build-and-push-release-image
 on:
   push:
     branches:
-      # Run on pushing branches like `release/1.0.0`
-      - "release/*.*.*"
+      # Run on pushing branches like 'v1.0.0', 'v0.22.2rc'
+      - "v*"
 
 jobs:
   build-and-push-release-image:
@@ -19,10 +19,10 @@ jobs:
         uses: docker/setup-qemu-action@v3
 
       - name: Extract build args
-        # Extract version from branch name
-        # Example: branch name `release/1.0.0` sets up env.VERSION=1.0.0
+        # Extract version from tag name
+        # Example: tag name `v1.0.0` sets up env.VERSION=1.0.0
         run: |
-          echo "VERSION=${GITHUB_REF_NAME#release/}" >> $GITHUB_ENV
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -52,8 +52,11 @@ jobs:
             neosmemo/memos
             ghcr.io/usememos/memos
           tags: |
-            type=semver,pattern={{version}},value=${{ env.VERSION }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
+            type=raw,value=${{ env.VERSION }}
+          flavor: |
+            latest=true
+          labels: |
+            org.opencontainers.image.version=${{ env.VERSION }}
 
       - name: Build and Push
         id: docker_build

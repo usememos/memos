@@ -1,42 +1,47 @@
+import { ChevronRightIcon, HashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
-import { useFilterStore } from "@/store/module";
-import Icon from "./Icon";
+import { useMemoFilterStore } from "@/store/v1";
 
 interface Tag {
   key: string;
   text: string;
+  amount: number;
   subTags: Tag[];
 }
 
 interface Props {
-  tags: string[];
+  tagAmounts: [tag: string, amount: number][];
 }
 
-const TagTree = ({ tags: rawTags }: Props) => {
-  const filterStore = useFilterStore();
-  const filter = filterStore.state;
+const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
-    const sortedTags = Array.from(rawTags).sort();
+    const sortedTagAmounts = Array.from(rawTagAmounts).sort();
     const root: Tag = {
       key: "",
       text: "",
+      amount: 0,
       subTags: [],
     };
 
-    for (const tag of sortedTags) {
-      const subtags = tag.split("/");
+    for (const tagAmount of sortedTagAmounts) {
+      const subtags = tagAmount[0].split("/");
       let tempObj = root;
       let tagText = "";
 
       for (let i = 0; i < subtags.length; i++) {
         const key = subtags[i];
+        let amount: number = 0;
+
         if (i === 0) {
           tagText += key;
         } else {
           tagText += "/" + key;
+        }
+        if (sortedTagAmounts.some(([tag, amount]) => tag === tagText && amount > 1)) {
+          amount = tagAmount[1];
         }
 
         let obj = null;
@@ -52,6 +57,7 @@ const TagTree = ({ tags: rawTags }: Props) => {
           obj = {
             key,
             text: tagText,
+            amount: amount,
             subTags: [],
           };
           tempObj.subTags.push(obj);
@@ -62,12 +68,12 @@ const TagTree = ({ tags: rawTags }: Props) => {
     }
 
     setTags(root.subTags as Tag[]);
-  }, [rawTags]);
+  }, [rawTagAmounts]);
 
   return (
     <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap gap-2 mt-1">
       {tags.map((t, idx) => (
-        <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
+        <TagItemContainer key={t.text + "-" + idx} tag={t} />
       ))}
     </div>
   );
@@ -75,21 +81,24 @@ const TagTree = ({ tags: rawTags }: Props) => {
 
 interface TagItemContainerProps {
   tag: Tag;
-  tagQuery?: string;
 }
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
-  const filterStore = useFilterStore();
-  const { tag, tagQuery } = props;
-  const isActive = tagQuery === tag.text;
+  const { tag } = props;
+  const memoFilterStore = useMemoFilterStore();
+  const tagFilters = memoFilterStore.getFiltersByFactor("tagSearch");
+  const isActive = tagFilters.some((f) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
   const [showSubTags, toggleSubTags] = useToggle(false);
 
   const handleTagClick = () => {
     if (isActive) {
-      filterStore.setTagFilter(undefined);
+      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === tag.text);
     } else {
-      filterStore.setTagFilter(tag.text);
+      memoFilterStore.addFilter({
+        factor: "tagSearch",
+        value: tag.text,
+      });
     }
   };
 
@@ -107,10 +116,10 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
           }`}
         >
           <div className="shrink-0">
-            <Icon.Hash className="w-4 h-auto shrink-0 mr-1 text-gray-400 dark:text-gray-500" />
+            <HashIcon className="w-4 h-auto shrink-0 mr-1 text-gray-400 dark:text-gray-500" />
           </div>
           <span className="truncate cursor-pointer hover:opacity-80" onClick={handleTagClick}>
-            {tag.key}
+            {tag.key} {tag.amount > 1 && `(${tag.amount})`}
           </span>
         </div>
         <div className="flex flex-row justify-end items-center">
@@ -119,7 +128,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
               className={`flex flex-row justify-center items-center w-6 h-6 shrink-0 transition-all rotate-0 ${showSubTags && "rotate-90"}`}
               onClick={handleToggleBtnClick}
             >
-              <Icon.ChevronRight className="w-5 h-5 cursor-pointer text-gray-400 dark:text-gray-500" />
+              <ChevronRightIcon className="w-5 h-5 cursor-pointer text-gray-400 dark:text-gray-500" />
             </span>
           ) : null}
         </div>
@@ -131,7 +140,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
           }`}
         >
           {tag.subTags.map((st, idx) => (
-            <TagItemContainer key={st.text + "-" + idx} tag={st} tagQuery={tagQuery} />
+            <TagItemContainer key={st.text + "-" + idx} tag={st} />
           ))}
         </div>
       ) : null}

@@ -9,6 +9,7 @@
   },
   "common": {
     "about": "关于",
+    "add": "增加",
     "admin": "管理",
     "archive": "归档",
     "archived": "已归档",
@@ -20,6 +21,7 @@
     "clear": "清除",
     "close": "关闭",
     "confirm": "确定",
+    "collapse": "收起",
     "create": "创建",
     "database": "数据库",
     "days": "天",
@@ -27,6 +29,7 @@
     "description": "说明",
     "edit": "编辑",
     "email": "邮箱",
+    "expand": "展开",
     "explore": "探索",
     "file": "文件",
     "filter": "过滤器",
@@ -45,7 +48,7 @@
     "or": "或者",
     "password": "密码",
     "pin": "置顶",
-    "pinned": "置顶",
+    "pinned": "已置顶",
     "preview": "预览",
     "profile": "个人资料",
     "remember-me": "保持登录",
@@ -85,7 +88,7 @@
     "wed": "三"
   },
   "editor": {
-    "add-your-comment-here": "请输入您的评论…",
+    "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",
     "save": "保存"
   },
@@ -94,41 +97,38 @@
     "version-update": "新版本 {{version}} 现已推出！"
   },
   "memo": {
-    "archived-at": "存档于",
-    "code": "代码",
+    "archived-at": "归档于",
     "comment": {
       "self": "评论",
       "write-a-comment": "写评论"
     },
     "copy-link": "复制链接",
-    "count-memos-in-date": "{{date}} 有 {{count}} 条memo",
-    "delete-confirm": "您确定要删除此 Memo 吗？（此操作不可逆）",
-    "delete-memo": "删除 Memo",
-    "embed": "嵌入",
-    "fetch-more": "点击获取更多",
-    "fetching-data": "正在获取数据…",
-    "links": "链接",
-    "no-archived-memos": "无存档的 Memo。",
-    "search-placeholder": "搜索 Memos",
+    "count-memos-in-date": "{{date}} 有 {{count}} 条备忘录",
+    "delete-confirm": "您确定要删除此条备忘录吗？（此操作不可逆）",
+    "load-more": "加载更多",
+    "no-archived-memos": "没有已归档备忘录。",
+    "search-placeholder": "搜索备忘录",
     "show-more": "查看更多",
-    "to-do": "待办",
     "view-detail": "查看详情",
     "visibility": {
-      "disabled": "公共 Memo 已禁用",
+      "disabled": "已禁用公开备忘录",
       "private": "私有",
       "protected": "工作区",
       "public": "公开"
-    }
+    },
+    "links": "链接",
+    "to-do": "待办",
+    "code": "代码"
   },
   "message": {
     "archived-successfully": "归档成功",
-    "change-memo-created-time": "更改 Memo 创建时间",
+    "change-memo-created-time": "更改备忘录创建时间",
     "copied": "已复制",
     "deleted-successfully": "成功删除！",
     "fill-all": "请填写所有栏目。",
     "maximum-upload-size-is": "允许的最大上传大小为 {{size}} MiB",
-    "memo-not-found": "找不到 Memo",
-    "new-password-not-match": "新密码不匹配。",
+    "memo-not-found": "找不到备忘录",
+    "new-password-not-match": "新密码不一致。",
     "no-data": "未找到任何数据。",
     "password-changed": "密码已修改",
     "password-not-match": "密码不一致。",
@@ -165,12 +165,12 @@
     },
     "delete-resource": "删除资源",
     "delete-selected-resources": "删除选中资源",
-    "fetching-data": "请求数据中…",
+    "fetching-data": "正在获取数据…",
     "file-drag-drop-prompt": "将您的文件拖放到此处以上传文件",
-    "linked-amount": "链接的 Memo 数量",
+    "linked-amount": "链接的备忘录数量",
     "no-files-selected": "没有文件被选中",
     "no-resources": "没有资源。",
-    "no-unused-resources": "无可删除的资源",
+    "no-unused-resources": "没有可删除的资源",
     "reset-link": "重置链接",
     "reset-link-prompt": "您确定要重置链接吗？这将导致当前使用的链接失效。（此操作不可逆）",
     "reset-resource-link": "重置资源链接"
@@ -183,7 +183,7 @@
     "account-section": {
       "change-password": "修改密码",
       "email-note": "可选",
-      "export-memos": "导出 Memos",
+      "export-memos": "导出备忘录",
       "nickname-note": "显示在横幅中",
       "openapi-reset": "重置 OpenAPI 密钥（Key）",
       "openapi-sample-post": "您好 #memos 来自 {{url}}",
@@ -207,12 +207,11 @@
       "delete-member": "删除成员",
       "delete-warning": "您确定要删除 {{username}} 吗？（此操作不可逆）"
     },
-    "memo-related": "Memo",
     "my-account": "我的账号",
     "preference": "偏好设置",
     "preference-section": {
-      "default-memo-sort-option": "Memo 显示时间",
-      "default-memo-visibility": "默认 Memo 可见性",
+      "default-memo-sort-option": "备忘录显示时间",
+      "default-memo-visibility": "默认备忘录可见性",
       "theme": "主题"
     },
     "sso": "单点登录",
@@ -228,7 +227,7 @@
       "display-name": "显示名称",
       "identifier": "标识符（Identifier）",
       "identifier-filter": "标识符过滤器（Identifier Filter）",
-      "redirect-url": "重定向 URL",
+      "redirect-url": "重定向链接",
       "scopes": "范围",
       "sso-created": "单点登录 {{name}} 已创建",
       "sso-list": "单点登录列表",
@@ -253,10 +252,10 @@
       "path": "存储路径",
       "path-description": "您可以使用本地存储中的相同动态变量，例如 {filename}",
       "path-placeholder": "自定义路径",
-      "presign-placeholder": "预签名 URL（可选）",
+      "presign-placeholder": "预签名链接（可选）",
       "region": "地区",
       "region-placeholder": "区域名称",
-      "s3-compatible-url": "S3 兼容 URL",
+      "s3-compatible-url": "S3 兼容链接",
       "secretkey": "Secret key",
       "secretkey-placeholder": "Secret key / Access Key",
       "storage-services": "存储服务列表",
@@ -266,10 +265,10 @@
       "update-local-path": "更新本地存储路径",
       "update-local-path-description": "本地存储路径是数据库文件的相对路径",
       "update-storage": "更新存储",
-      "url-prefix": "URL 前缀",
-      "url-prefix-placeholder": "自定义 URL 前缀，可选",
-      "url-suffix": "URL 后缀",
-      "url-suffix-placeholder": "自定义 URL 后缀，可选",
+      "url-prefix": "链接前缀",
+      "url-prefix-placeholder": "自定义链接前缀，可选",
+      "url-suffix": "链接后缀",
+      "url-suffix-placeholder": "自定义链接后缀，可选",
       "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）"
     },
     "system": "系统",
@@ -282,14 +281,14 @@
       "customize-server": {
         "appearance": "服务器外观",
         "description": "描述",
-        "icon-url": "图标 URL",
+        "icon-url": "图标链接",
         "locale": "服务器语言环境",
-        "title": "自定义服务"
+        "title": "自定义服务器"
       },
       "disable-password-login": "禁用密码登录",
       "disable-password-login-final-warning": "如果您知道自己在做什么，请输入 \"CONFIRM\"。",
       "disable-password-login-warning": "所有用户将无法使用密码登录。如果配置的身份提供程序失效，不在数据库中恢复此设置将无法登录。删除身份提供程序时也要格外小心",
-      "disable-public-memos": "禁用公共 Memo",
+      "disable-public-memos": "禁用公开备忘录",
       "display-with-updated-time": "根据最后修改时间顺序显示",
       "enable-auto-compact": "启用自动超长折叠显示",
       "enable-double-click-to-edit": "启用双击编辑",
@@ -297,18 +296,16 @@
       "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用单点登录和密码登录，请开启密码登录",
       "max-upload-size": "最大上传大小 (MiB)",
       "max-upload-size-hint": "建议值为 32 MiB。",
-      "server-name": "服务名称"
-    }
+      "server-name": "服务器名称"
+    },
+    "memo-related": "备忘录"
   },
   "tag": {
     "all-tags": "全部标签",
     "create-tag": "创建标签",
-    "create-tags-guide": "您可以通过输入 “#tag” 创建标签。",
-    "delete-confirm": "您确定要删除此标签吗?（此操作不可逆）",
+    "create-tags-guide": "您可以通过输入 “#标签” 创建标签。",
+    "delete-confirm": "您确定要删除此标签吗?所有相关的备忘录将会被归档。",
     "delete-tag": "删除标签",
     "no-tag-found": "没找到此标签"
-  },
-  "timeline": {
-    "title": "时间线"
   }
 }

@@ -1,4 +1,5 @@
 import { Button, Divider, Dropdown, List, ListItem, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { MoreVerticalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -6,7 +7,6 @@ import { identityProviderServiceClient } from "@/grpcweb";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
-import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 
 const SSOSection = () => {
@@ -59,7 +59,7 @@ const SSOSection = () => {
           <div className="flex flex-row items-center">
             <Dropdown>
               <MenuButton size="sm">
-                <Icon.MoreVertical className="w-4 h-auto" />
+                <MoreVerticalIcon className="w-4 h-auto" />
               </MenuButton>
               <Menu placement="bottom-end" size="sm">
                 <MenuItem onClick={() => showCreateIdentityProviderDialog(identityProvider, fetchIdentityProviderList)}>

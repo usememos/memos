@@ -4,6 +4,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
 import { useTranslate } from "@/utils/i18n";
+import { isSuperUser } from "@/utils/user";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
@@ -33,7 +34,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<boolean>(false);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
-  const allowEdit = !props.readonly && memo && currentUser?.name === memo.creator;
+  const allowEdit = !props.readonly && memo && (currentUser?.name === memo.creator || isSuperUser(currentUser));
 
   // Initial compact mode.
   useEffect(() => {
@@ -78,7 +79,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         <div
           ref={memoContentContainerRef}
           className={clsx(
-            "w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
+            "relative w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
             showCompactMode && "line-clamp-6",
             contentClassName,
           )}
@@ -95,6 +96,9 @@ const MemoContent: React.FC<Props> = (props: Props) => {
             skipNextLineBreakFlag = true;
             return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
           })}
+          {showCompactMode && (
+            <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-b from-transparent dark:to-zinc-800 to-white pointer-events-none"></div>
+          )}
         </div>
         {showCompactMode && (
           <div className="w-full mt-1">

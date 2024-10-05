@@ -1,12 +1,9 @@
 package v1
 
 import (
-	"archive/zip"
-	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
-	"slices"
 	"time"
 	"unicode/utf8"
 
@@ -28,6 +25,7 @@ import (
 	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/runner/memoproperty"
 	"github.com/usememos/memos/store"
 )
 
@@ -61,17 +59,38 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if len(create.Content) > contentLengthLimit {
 		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
 	}
-	property, err := getMemoPropertyFromContent(create.Content)
+	property, err := memoproperty.GetMemoPropertyFromContent(create.Content)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
 	}
 	create.Payload = &storepb.MemoPayload{
 		Property: property,
 	}
+	if request.Location != nil {
+		create.Payload.Location = convertLocationToStore(request.Location)
+	}
 
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
 		return nil, err
+	}
+	if len(request.Resources) > 0 {
+		_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{
+			Name:      fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID),
+			Resources: request.Resources,
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to set memo resources")
+		}
+	}
+	if len(request.Relations) > 0 {
+		_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
+			Name:      fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID),
+			Relations: request.Relations,
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to set memo relations")
+		}
 	}
 
 	memoMessage, err := s.convertMemoFromStore(ctx, memo)
@@ -227,7 +246,8 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
-	if memo.CreatorID != user.ID {
+	// Only the creator or admin can update the memo.
+	if memo.CreatorID != user.ID && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -247,7 +267,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			}
 			update.Content = &request.Memo.Content
 
-			property, err := getMemoPropertyFromContent(*update.Content)
+			property, err := memoproperty.GetMemoPropertyFromContent(*update.Content)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
 			}
@@ -294,6 +314,26 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert memo organizer")
 			}
+		} else if path == "resources" {
+			_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{
+				Name:      request.Memo.Name,
+				Resources: request.Memo.Resources,
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set memo resources")
+			}
+		} else if path == "relations" {
+			_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
+				Name:      request.Memo.Name,
+				Relations: request.Memo.Relations,
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set memo relations")
+			}
+		} else if path == "location" {
+			payload := memo.Payload
+			payload.Location = convertLocationToStore(request.Memo.Location)
+			update.Payload = payload
 		}
 	}
 
@@ -338,7 +378,8 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
-	if memo.CreatorID != user.ID {
+	// Only the creator or admin can update the memo.
+	if memo.CreatorID != user.ID && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -491,102 +532,6 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	return response, nil
 }
 
-func (s *APIV1Service) GetUserMemosStats(ctx context.Context, request *v1pb.GetUserMemosStatsRequest) (*v1pb.GetUserMemosStatsResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Name)
-	if err != nil {
-		return nil, errors.Wrap(err, "invalid user name")
-	}
-	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user")
-	}
-	if user == nil {
-		return nil, status.Errorf(codes.NotFound, "user not found")
-	}
-
-	normalRowStatus := store.Normal
-	memoFind := &store.FindMemo{
-		CreatorID:       &user.ID,
-		RowStatus:       &normalRowStatus,
-		ExcludeComments: true,
-		ExcludeContent:  true,
-	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter")
-	}
-
-	memos, err := s.Store.ListMemos(ctx, memoFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
-	}
-
-	location, err := time.LoadLocation(request.Timezone)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "invalid timezone location")
-	}
-
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
-	}
-	stats := make(map[string]int32)
-	for _, memo := range memos {
-		displayTs := memo.CreatedTs
-		if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
-			displayTs = memo.UpdatedTs
-		}
-		stats[time.Unix(displayTs, 0).In(location).Format("2006-01-02")]++
-	}
-
-	response := &v1pb.GetUserMemosStatsResponse{
-		Stats: stats,
-	}
-	return response, nil
-}
-
-func (s *APIV1Service) ExportMemos(ctx context.Context, request *v1pb.ExportMemosRequest) (*v1pb.ExportMemosResponse, error) {
-	normalRowStatus := store.Normal
-	memoFind := &store.FindMemo{
-		RowStatus: &normalRowStatus,
-		// Exclude comments by default.
-		ExcludeComments: true,
-	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
-	}
-
-	memos, err := s.Store.ListMemos(ctx, memoFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
-	}
-
-	buf := new(bytes.Buffer)
-	writer := zip.NewWriter(buf)
-	for _, memo := range memos {
-		memoMessage, err := s.convertMemoFromStore(ctx, memo)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to convert memo")
-		}
-		file, err := writer.Create(time.Unix(memo.CreatedTs, 0).Format(time.RFC3339) + "-" + memo.UID + "-" + string(memo.Visibility) + ".md")
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "Failed to create memo file")
-		}
-		_, err = file.Write([]byte(memoMessage.Content))
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "Failed to write to memo file")
-		}
-	}
-	if err := writer.Close(); err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed to close zip file writer")
-	}
-
-	return &v1pb.ExportMemosResponse{
-		Content: buf.Bytes(),
-	}, nil
-}
-
 func (s *APIV1Service) ListMemoProperties(ctx context.Context, request *v1pb.ListMemoPropertiesRequest) (*v1pb.ListMemoPropertiesResponse, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
@@ -614,14 +559,28 @@ func (s *APIV1Service) ListMemoProperties(ctx context.Context, request *v1pb.Lis
 		return nil, status.Errorf(codes.Internal, "failed to list memos")
 	}
 
-	properties := []*v1pb.MemoProperty{}
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+	}
+
+	entities := []*v1pb.MemoPropertyEntity{}
 	for _, memo := range memos {
-		if memo.Payload.Property != nil {
-			properties = append(properties, convertMemoPropertyFromStore(memo.Payload.Property))
+		displayTs := memo.CreatedTs
+		if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+			displayTs = memo.UpdatedTs
 		}
+		entity := &v1pb.MemoPropertyEntity{
+			Name:        fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID),
+			DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
+		}
+		if memo.Payload.Property != nil {
+			entity.Property = convertMemoPropertyFromStore(memo.Payload.Property)
+		}
+		entities = append(entities, entity)
 	}
 	return &v1pb.ListMemoPropertiesResponse{
-		Properties: properties,
+		Entities: entities,
 	}, nil
 }
 
@@ -651,7 +610,7 @@ func (s *APIV1Service) RebuildMemoProperty(ctx context.Context, request *v1pb.Re
 	}
 
 	for _, memo := range memos {
-		property, err := getMemoPropertyFromContent(memo.Content)
+		property, err := memoproperty.GetMemoPropertyFromContent(memo.Content)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
 		}
@@ -711,7 +670,7 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
-		PayloadFind:     &store.FindMemoPayload{Tag: &request.OldTag},
+		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.OldTag}},
 		ExcludeComments: true,
 	}
 	if (request.Parent) != "memos/-" {
@@ -732,14 +691,14 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to parse memo: %v", err)
 		}
-		TraverseASTNodes(nodes, func(node ast.Node) {
+		memoproperty.TraverseASTNodes(nodes, func(node ast.Node) {
 			if tag, ok := node.(*ast.Tag); ok && tag.Content == request.OldTag {
 				tag.Content = request.NewTag
 			}
 		})
 		content := restore.Restore(nodes)
 
-		property, err := getMemoPropertyFromContent(content)
+		property, err := memoproperty.GetMemoPropertyFromContent(content)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
 		}
@@ -765,7 +724,7 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
-		PayloadFind:     &store.FindMemoPayload{Tag: &request.Tag},
+		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.Tag}},
 		ExcludeContent:  true,
 		ExcludeComments: true,
 	}
@@ -813,11 +772,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		displayTs = memo.UpdatedTs
 	}
 
-	creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &memo.CreatorID})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get creator")
-	}
-
 	name := fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID)
 	listMemoRelationsResponse, err := s.ListMemoRelations(ctx, &v1pb.ListMemoRelationsRequest{Name: name})
 	if err != nil {
@@ -848,7 +802,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Name:        name,
 		Uid:         memo.UID,
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
-		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
+		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, memo.CreatorID),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
@@ -863,6 +817,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 	if memo.Payload != nil {
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
+		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
 	}
 	if memo.ParentID != nil {
 		parent := fmt.Sprintf("%s%d", MemoNamePrefix, *memo.ParentID)
@@ -881,6 +836,28 @@ func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.
 		HasTaskList:        property.HasTaskList,
 		HasCode:            property.HasCode,
 		HasIncompleteTasks: property.HasIncompleteTasks,
+	}
+}
+
+func convertLocationFromStore(location *storepb.MemoPayload_Location) *v1pb.Location {
+	if location == nil {
+		return nil
+	}
+	return &v1pb.Location{
+		Placeholder: location.Placeholder,
+		Latitude:    location.Latitude,
+		Longitude:   location.Longitude,
+	}
+}
+
+func convertLocationToStore(location *v1pb.Location) *storepb.MemoPayload_Location {
+	if location == nil {
+		return nil
+	}
+	return &storepb.MemoPayload_Location{
+		Placeholder: location.Placeholder,
+		Latitude:    location.Latitude,
+		Longitude:   location.Longitude,
 	}
 }
 
@@ -928,14 +905,17 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if len(filter.Visibilities) > 0 {
 			find.VisibilityList = filter.Visibilities
 		}
-		if filter.Tag != nil {
+		if filter.TagSearch != nil {
 			if find.PayloadFind == nil {
 				find.PayloadFind = &store.FindMemoPayload{}
 			}
-			find.PayloadFind.Tag = filter.Tag
+			find.PayloadFind.TagSearch = filter.TagSearch
 		}
 		if filter.OrderByPinned {
 			find.OrderByPinned = filter.OrderByPinned
+		}
+		if filter.OrderByTimeAsc {
+			find.OrderByTimeAsc = filter.OrderByTimeAsc
 		}
 		if filter.DisplayTimeAfter != nil {
 			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
@@ -1039,8 +1019,9 @@ func (s *APIV1Service) getContentLengthLimit(ctx context.Context) (int, error) {
 var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content_search", cel.ListType(cel.StringType)),
 	cel.Variable("visibilities", cel.ListType(cel.StringType)),
-	cel.Variable("tag", cel.StringType),
+	cel.Variable("tag_search", cel.ListType(cel.StringType)),
 	cel.Variable("order_by_pinned", cel.BoolType),
+	cel.Variable("order_by_time_asc", cel.BoolType),
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
@@ -1058,8 +1039,9 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 type MemoFilter struct {
 	ContentSearch      []string
 	Visibilities       []store.Visibility
-	Tag                *string
+	TagSearch          []string
 	OrderByPinned      bool
+	OrderByTimeAsc     bool
 	DisplayTimeBefore  *int64
 	DisplayTimeAfter   *int64
 	Creator            *string
@@ -1110,12 +1092,19 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 					visibilities = append(visibilities, store.Visibility(value))
 				}
 				filter.Visibilities = visibilities
-			} else if idExpr.Name == "tag" {
-				tag := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.Tag = &tag
+			} else if idExpr.Name == "tag_search" {
+				tagSearch := []string{}
+				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
+					value := expr.GetConstExpr().GetStringValue()
+					tagSearch = append(tagSearch, value)
+				}
+				filter.TagSearch = tagSearch
 			} else if idExpr.Name == "order_by_pinned" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.OrderByPinned = value
+			} else if idExpr.Name == "order_by_time_asc" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.OrderByTimeAsc = value
 			} else if idExpr.Name == "display_time_before" {
 				displayTimeBefore := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.DisplayTimeBefore = &displayTimeBefore
@@ -1157,56 +1146,6 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 		callExpr := arg.GetCallExpr()
 		if callExpr != nil {
 			findMemoField(callExpr, filter)
-		}
-	}
-}
-
-func getMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, error) {
-	nodes, err := parser.Parse(tokenizer.Tokenize(content))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse content")
-	}
-
-	property := &storepb.MemoPayload_Property{}
-	TraverseASTNodes(nodes, func(node ast.Node) {
-		switch n := node.(type) {
-		case *ast.Tag:
-			tag := n.Content
-			if !slices.Contains(property.Tags, tag) {
-				property.Tags = append(property.Tags, tag)
-			}
-		case *ast.Link, *ast.AutoLink:
-			property.HasLink = true
-		case *ast.TaskList:
-			property.HasTaskList = true
-			if !n.Complete {
-				property.HasIncompleteTasks = true
-			}
-		case *ast.Code, *ast.CodeBlock:
-			property.HasCode = true
-		}
-	})
-	return property, nil
-}
-
-func TraverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {
-	for _, node := range nodes {
-		fn(node)
-		switch n := node.(type) {
-		case *ast.Paragraph:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.Heading:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.Blockquote:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.OrderedList:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.UnorderedList:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.TaskList:
-			TraverseASTNodes(n.Children, fn)
-		case *ast.Bold:
-			TraverseASTNodes(n.Children, fn)
 		}
 	}
 }
@@ -1270,8 +1209,8 @@ func getMemoContentSnippet(content string) (string, error) {
 	}
 
 	plainText := renderer.NewStringRenderer().Render(nodes)
-	if len(plainText) > 100 {
-		return substring(plainText, 100) + "...", nil
+	if len(plainText) > 64 {
+		return substring(plainText, 64) + "...", nil
 	}
 	return plainText, nil
 }
@@ -1293,4 +1232,8 @@ func substring(s string, length int) string {
 	}
 
 	return s[:byteIndex]
+}
+
+func isSuperUser(user *store.User) bool {
+	return user.Role == store.RoleAdmin || user.Role == store.RoleHost
 }

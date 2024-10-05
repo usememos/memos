@@ -1,4 +1,5 @@
 import { Button, Divider, IconButton, Input, Option, Select, Typography } from "@mui/joy";
+import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { identityProviderServiceClient } from "@/grpcweb";
@@ -6,7 +7,6 @@ import { absolutifyLink } from "@/helpers/utils";
 import { FieldMapping, IdentityProvider, IdentityProvider_Type, OAuth2Config } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
-import Icon from "./Icon";
 
 const templateList: IdentityProvider[] = [
   {
@@ -224,8 +224,8 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         toast.success(t("setting.sso-section.sso-updated", { name: basicInfo.title }));
       }
     } catch (error: any) {
+      toast.error(error.details);
       console.error(error);
-      toast.error(error.response.data.message);
     }
     if (confirmCallback) {
       confirmCallback();
@@ -245,7 +245,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p>{t(isCreating ? "setting.sso-section.create-sso" : "setting.sso-section.update-sso")}</p>
         <IconButton size="sm" onClick={handleCloseBtnClick}>
-          <Icon.X className="w-5 h-auto" />
+          <XIcon className="w-5 h-auto" />
         </IconButton>
       </div>
       <div className="dialog-content-container min-w-[19rem]">

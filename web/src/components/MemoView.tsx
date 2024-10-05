@@ -1,5 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
+import { BookmarkIcon, MessageCircleMoreIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -11,10 +12,11 @@ import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_sett
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
-import Icon from "./Icon";
+import { isSuperUser } from "@/utils/user";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
 import MemoEditor from "./MemoEditor";
+import MemoLocationView from "./MemoLocationView";
 import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
@@ -53,7 +55,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo === memo.name,
   ).length;
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
-  const readonly = memo.creator !== user?.name;
+  const readonly = memo.creator !== user?.name && !isSuperUser(user);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
 
   // Initial related data: creator.
@@ -94,7 +96,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     props.displayTimeFormat === "time" ? (
       memo.displayTime?.toLocaleTimeString()
     ) : (
-      <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat} tense="past"></relative-time>
+      <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat}></relative-time>
     );
 
   return (
@@ -160,7 +162,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 )}
                 {currentUser && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
               </div>
-              {!isInMemoDetailPage && (
+              {!isInMemoDetailPage && (workspaceMemoRelatedSetting.enableComment || commentAmount > 0) && (
                 <Link
                   className={clsx(
                     "flex flex-row justify-start items-center hover:opacity-70",
@@ -169,13 +171,13 @@ const MemoView: React.FC<Props> = (props: Props) => {
                   to={`/m/${memo.uid}#comments`}
                   unstable_viewTransition
                 >
-                  <Icon.MessageCircleMore className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
+                  <MessageCircleMoreIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
                   {commentAmount > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{commentAmount}</span>}
                 </Link>
               )}
               {props.showPinned && memo.pinned && (
                 <Tooltip title={t("common.pinned")} placement="top">
-                  <Icon.Bookmark className="w-4 h-auto text-amber-500" />
+                  <BookmarkIcon className="w-4 h-auto text-amber-500" />
                 </Tooltip>
               )}
               {!readonly && (
@@ -197,6 +199,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             onDoubleClick={handleMemoContentDoubleClick}
             compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
           />
+          {memo.location && <MemoLocationView location={memo.location} />}
           <MemoResourceListView resources={memo.resources} />
           <MemoRelationListView memo={memo} relations={referencedMemos} />
           <MemoReactionistView memo={memo} reactions={memo.reactions} />

@@ -1,15 +1,14 @@
 import { Dropdown, Menu, MenuButton, MenuItem, Switch } from "@mui/joy";
 import clsx from "clsx";
+import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useFilterStore } from "@/store/module";
-import { useMemoList, useTagStore } from "@/store/v1";
+import { useMemoFilterStore, useMemoList, useTagStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
-import Icon from "../Icon";
 import showRenameTagDialog from "../RenameTagDialog";
 import TagTree from "../TagTree";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
@@ -22,7 +21,7 @@ const TagsSection = (props: Props) => {
   const t = useTranslate();
   const location = useLocation();
   const user = useCurrentUser();
-  const filterStore = useFilterStore();
+  const memoFilterStore = useMemoFilterStore();
   const tagStore = useTagStore();
   const memoList = useMemoList();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
@@ -30,17 +29,28 @@ const TagsSection = (props: Props) => {
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
 
-  useDebounce(() => fetchTags(), 300, [memoList.size(), location.pathname]);
+  useDebounce(
+    () => {
+      if (memoList.size() === 0) return;
+      fetchTags();
+    },
+    300,
+    [memoList.size(), location.pathname],
+  );
 
   const fetchTags = async () => {
     await tagStore.fetchTags({ user, location });
   };
 
   const handleTagClick = (tag: string) => {
-    if (filterStore.getState().tag === tag) {
-      filterStore.setTagFilter(undefined);
+    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter) => filter.value === tag);
+    if (isActive) {
+      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === tag);
     } else {
-      filterStore.setTagFilter(tag);
+      memoFilterStore.addFilter({
+        factor: "tagSearch",
+        value: tag,
+      });
     }
   };
 
@@ -63,9 +73,9 @@ const TagsSection = (props: Props) => {
         {tagAmounts.length > 0 && (
           <Popover>
             <PopoverTrigger>
-              <Icon.MoreVertical className="w-4 h-auto shrink-0 opacity-60" />
+              <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent align="end" alignOffset={-12}>
               <div className="w-auto flex flex-row justify-between items-center gap-2">
                 <span className="text-sm shrink-0">Tree mode</span>
                 <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />
@@ -76,7 +86,7 @@ const TagsSection = (props: Props) => {
       </div>
       {tagAmounts.length > 0 ? (
         treeMode ? (
-          <TagTree tags={tagAmounts.map((t) => t[0])} />
+          <TagTree tagAmounts={tagAmounts} />
         ) : (
           <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
             {tagAmounts.map(([tag, amount]) => (
@@ -87,26 +97,23 @@ const TagsSection = (props: Props) => {
                 <Dropdown>
                   <MenuButton slots={{ root: "div" }}>
                     <div className="shrink-0 group">
-                      <Icon.Hash className="group-hover:hidden w-4 h-auto shrink-0 opacity-40" />
-                      <Icon.MoreVertical className="hidden group-hover:block w-4 h-auto shrink-0 opacity-60" />
+                      <HashIcon className="group-hover:hidden w-4 h-auto shrink-0 opacity-40" />
+                      <MoreVerticalIcon className="hidden group-hover:block w-4 h-auto shrink-0 opacity-60" />
                     </div>
                   </MenuButton>
                   <Menu size="sm" placement="bottom-start">
                     <MenuItem onClick={() => showRenameTagDialog({ tag: tag })}>
-                      <Icon.Edit3 className="w-4 h-auto" />
+                      <Edit3Icon className="w-4 h-auto" />
                       {t("common.rename")}
                     </MenuItem>
                     <MenuItem color="danger" onClick={() => handleDeleteTag(tag)}>
-                      <Icon.Trash className="w-4 h-auto" />
+                      <TrashIcon className="w-4 h-auto" />
                       {t("common.delete")}
                     </MenuItem>
                   </Menu>
                 </Dropdown>
                 <div
-                  className={clsx(
-                    "inline-flex flex-nowrap ml-0.5 gap-0.5 cursor-pointer max-w-[calc(100%-16px)]",
-                    filterStore.state.tag === tag && "text-blue-600 dark:text-blue-400",
-                  )}
+                  className={clsx("inline-flex flex-nowrap ml-0.5 gap-0.5 cursor-pointer max-w-[calc(100%-16px)]")}
                   onClick={() => handleTagClick(tag)}
                 >
                   <span className="truncate dark:opacity-80">{tag}</span>
@@ -119,7 +126,7 @@ const TagsSection = (props: Props) => {
       ) : (
         !props.readonly && (
           <div className="p-2 border border-dashed dark:border-zinc-800 rounded-md flex flex-row justify-start items-start gap-1 text-gray-400 dark:text-gray-500">
-            <Icon.Tags />
+            <TagsIcon />
             <p className="mt-0.5 text-sm leading-snug italic">{t("tag.create-tags-guide")}</p>
           </div>
         )

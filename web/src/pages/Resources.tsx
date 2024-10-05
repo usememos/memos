@@ -1,8 +1,9 @@
 import { Divider, IconButton, Input, Tooltip } from "@mui/joy";
+import dayjs from "dayjs";
 import { includes } from "lodash-es";
+import { PaperclipIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
-import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
 import ResourceIcon from "@/components/ResourceIcon";
 import { resourceServiceClient } from "@/grpcweb";
@@ -13,22 +14,15 @@ import { Resource } from "@/types/proto/api/v1/resource_service";
 import { useTranslate } from "@/utils/i18n";
 
 function groupResourcesByDate(resources: Resource[]) {
-  const grouped = new Map<number, Resource[]>();
+  const grouped = new Map<string, Resource[]>();
   resources
-    .sort((a: Resource, b: Resource) => {
-      const a_date = new Date(a.createTime as any);
-      const b_date = new Date(b.createTime as any);
-      return b_date.getTime() - a_date.getTime();
-    })
+    .sort((a, b) => dayjs(b.createTime).unix() - dayjs(a.createTime).unix())
     .forEach((item) => {
-      const date = new Date(item.createTime as any);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const timestamp = Date.UTC(year, month - 1, 1);
-      if (!grouped.has(timestamp)) {
-        grouped.set(timestamp, []);
+      const monthStr = dayjs(item.createTime).format("YYYY-MM");
+      if (!grouped.has(monthStr)) {
+        grouped.set(monthStr, []);
       }
-      grouped.get(timestamp)?.push(item);
+      grouped.get(monthStr)?.push(item);
     });
   return grouped;
 }
@@ -74,14 +68,14 @@ const Resources = () => {
         <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-black dark:text-gray-300">
           <div className="relative w-full flex flex-row justify-between items-center">
             <p className="py-1 flex flex-row justify-start items-center select-none opacity-80">
-              <Icon.Paperclip className="w-6 h-auto mr-1 opacity-80" />
+              <PaperclipIcon className="w-6 h-auto mr-1 opacity-80" />
               <span className="text-lg">{t("common.resources")}</span>
             </p>
             <div>
               <Input
                 className="max-w-[8rem]"
                 placeholder={t("common.search")}
-                startDecorator={<Icon.Search className="w-4 h-auto" />}
+                startDecorator={<SearchIcon className="w-4 h-auto" />}
                 value={state.searchQuery}
                 onChange={(e) => setState({ ...state, searchQuery: e.target.value })}
               />
@@ -101,13 +95,14 @@ const Resources = () => {
                   </div>
                 ) : (
                   <div className={"w-full h-auto px-2 flex flex-col justify-start items-start gap-y-8"}>
-                    {Array.from(groupedResources.entries()).map(([timestamp, resources]) => {
-                      const date = new Date(timestamp);
+                    {Array.from(groupedResources.entries()).map(([monthStr, resources]) => {
                       return (
-                        <div key={timestamp} className="w-full flex flex-row justify-start items-start">
+                        <div key={monthStr} className="w-full flex flex-row justify-start items-start">
                           <div className="w-16 sm:w-24 pt-4 sm:pl-4 flex flex-col justify-start items-start">
-                            <span className="text-sm opacity-60">{date.getFullYear()}</span>
-                            <span className="font-medium text-xl">{date.toLocaleString(i18n.language, { month: "short" })}</span>
+                            <span className="text-sm opacity-60">{dayjs(monthStr).year()}</span>
+                            <span className="font-medium text-xl">
+                              {dayjs(monthStr).toDate().toLocaleString(i18n.language, { month: "short" })}
+                            </span>
                           </div>
                           <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                             {resources.map((resource) => {
@@ -138,7 +133,7 @@ const Resources = () => {
                               <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedResources.length})</span>
                               <Tooltip title="Delete all" placement="top">
                                 <IconButton size="sm" onClick={handleDeleteUnusedResources}>
-                                  <Icon.Trash className="w-4 h-auto opacity-60" />
+                                  <TrashIcon className="w-4 h-auto opacity-60" />
                                 </IconButton>
                               </Tooltip>
                             </div>
