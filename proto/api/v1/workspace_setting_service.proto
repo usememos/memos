@@ -55,9 +55,6 @@ message WorkspaceGeneralSetting {
   bool disallow_change_username = 7;
   // disallow_change_nickname disallows changing nickname.
   bool disallow_change_nickname = 8;
-
-  // global default visibility.
-  string memo_visibility = 9;
 }
 
 message WorkspaceCustomProfile {
@@ -114,6 +111,8 @@ message WorkspaceMemoRelatedSetting {
   bool enable_comment = 7;
   // enable_location enables setting location for memo.
   bool enable_location = 8;
+  // global default visibility.
+  string memo_visibility = 9;
 }
 
 message GetWorkspaceSettingRequest {

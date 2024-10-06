@@ -139,7 +139,6 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 		WeekStartDayOffset:       setting.WeekStartDayOffset,
 		DisallowChangeUsername:   setting.DisallowChangeUsername,
 		DisallowChangeNickname:   setting.DisallowChangeNickname,
-		MemoVisibility:           setting.MemoVisibility,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &v1pb.WorkspaceCustomProfile{
@@ -165,7 +164,6 @@ func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting
 		WeekStartDayOffset:       setting.WeekStartDayOffset,
 		DisallowChangeUsername:   setting.DisallowChangeUsername,
 		DisallowChangeNickname:   setting.DisallowChangeNickname,
-		MemoVisibility:           setting.MemoVisibility,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.WorkspaceCustomProfile{
@@ -234,6 +232,7 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		EnableLinkPreview:        setting.EnableLinkPreview,
 		EnableComment:            setting.EnableComment,
 		EnableLocation:           setting.EnableLocation,
+		MemoVisibility: 					setting.MemoVisibility,
 	}
 }
 
@@ -250,5 +249,6 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		EnableLinkPreview:        setting.EnableLinkPreview,
 		EnableComment:            setting.EnableComment,
 		EnableLocation:           setting.EnableLocation,
+		MemoVisibility: 					setting.MemoVisibility,
 	}
 }
