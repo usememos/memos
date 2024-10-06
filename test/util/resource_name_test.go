@@ -17,6 +17,7 @@ func TestUIDMatcher(t *testing.T) {
 		{"1abc-123", true},
 		{"A123B456C789", true},
 		{"a", true},
+		{"ab", true},
 		{"a*b&c", false},
 		{"a--b", true},
 		{"a-1b-2c", true},
