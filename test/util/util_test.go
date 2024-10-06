@@ -2,6 +2,7 @@ package util_test
 
 import (
 	"testing"
+
 	"github.com/usememos/memos/internal/util"
 )
 
@@ -32,4 +33,4 @@ func TestUIDMatcher(t *testing.T) {
 			}
 		})
 	}
-} 
+}
