@@ -51,20 +51,12 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*}"};
     option (google.api.method_signature) = "name";
   }
-  // ListMemoProperties lists memo properties.
-  rpc ListMemoProperties(ListMemoPropertiesRequest) returns (ListMemoPropertiesResponse) {
-    option (google.api.http) = {get: "/api/v1/{name=memos/*}/properties"};
-  }
   // RebuildMemoProperty rebuilds a memo property.
   rpc RebuildMemoProperty(RebuildMemoPropertyRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/api/v1/{name=memos/*}/properties:rebuild"
       body: "*"
     };
-  }
-  // ListMemoTags lists tags for a memo.
-  rpc ListMemoTags(ListMemoTagsRequest) returns (ListMemoTagsResponse) {
-    option (google.api.http) = {get: "/api/v1/{parent=memos/*}/tags"};
   }
   // RenameMemoTag renames a tag for a memo.
   rpc RenameMemoTag(RenameMemoTagRequest) returns (google.protobuf.Empty) {
@@ -219,6 +211,16 @@ message CreateMemoRequest {
   optional Location location = 5;
 }
 
+enum MemoView {
+  MEMO_VIEW_UNSPECIFIED = 0;
+
+  // The full view of the memo. Includes all fields.
+  MEMO_VIEW_FULL = 1;
+
+  // The metadata only view of the memo. Excludes the content/snippet fields.
+  MEMO_VIEW_METADATA_ONLY = 2;
+}
+
 message ListMemosRequest {
   // The maximum number of memos to return.
   int32 page_size = 1;
@@ -230,6 +232,9 @@ message ListMemosRequest {
   // Filter is used to filter memos returned in the list.
   // Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
   string filter = 3;
+
+  // The view of the memo.
+  MemoView view = 4;
 }
 
 message ListMemosResponse {
@@ -263,47 +268,10 @@ message DeleteMemoRequest {
   string name = 1;
 }
 
-message ListMemoPropertiesRequest {
-  // The name of the memo.
-  // Format: memos/{id}. Use "memos/-" to list all properties.
-  string name = 1;
-}
-
-message ListMemoPropertiesResponse {
-  repeated MemoPropertyEntity entities = 1;
-}
-
-message MemoPropertyEntity {
-  // The name of the memo property.
-  // Format: memos/{id}/properties/{property_id}
-  string name = 1;
-
-  MemoProperty property = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  google.protobuf.Timestamp display_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
 message RebuildMemoPropertyRequest {
   // The name of the memo.
   // Format: memos/{id}. Use "memos/-" to rebuild all memos.
   string name = 1;
-}
-
-message ListMemoTagsRequest {
-  // The parent, who owns the tags.
-  // Format: memos/{id}. Use "memos/-" to list all tags.
-  string parent = 1;
-
-  // Filter is used to filter memos.
-  // Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
-  string filter = 2;
-}
-
-message ListMemoTagsResponse {
-  // tag_amounts is the amount of tags.
-  // key is the tag name. e.g. "tag1".
-  // value is the amount of the tag.
-  map<string, int32> tag_amounts = 1;
 }
 
 message RenameMemoTagRequest {

@@ -20,9 +20,13 @@ import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
 import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
+import { MemoView } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
+
+// Set the maximum number of memos to fetch.
+const DEFAULT_MEMO_PAGE_SIZE = 1000000;
 
 interface UserMemoStats {
   link: number;
@@ -47,12 +51,13 @@ const UserStatisticsView = () => {
   useAsyncEffect(async () => {
     if (memoList.size() === 0) return;
 
-    const { entities } = await memoServiceClient.listMemoProperties({
-      name: `memos/-`,
+    const { memos } = await memoServiceClient.listMemos({
+      pageSize: DEFAULT_MEMO_PAGE_SIZE,
+      view: MemoView.MEMO_VIEW_METADATA_ONLY,
     });
     const memoStats: UserMemoStats = { link: 0, taskList: 0, code: 0, incompleteTasks: 0 };
-    entities.forEach((entity) => {
-      const { property } = entity;
+    memos.forEach((memo) => {
+      const { property } = memo;
       if (property?.hasLink) {
         memoStats.link += 1;
       }
@@ -67,11 +72,11 @@ const UserStatisticsView = () => {
       }
     });
     setMemoStats(memoStats);
-    setMemoAmount(entities.length);
-    setActivityStats(countBy(entities.map((entity) => dayjs(entity.displayTime).format("YYYY-MM-DD"))));
+    setMemoAmount(memos.length);
+    setActivityStats(countBy(memos.map((memo) => dayjs(memo.displayTime).format("YYYY-MM-DD"))));
   }, [memoStore.stateId]);
 
-  const rebuildMemoTags = async () => {
+  const rebuildMemoProperty = async () => {
     await memoServiceClient.rebuildMemoProperty({
       name: "memos/-",
     });
@@ -112,7 +117,7 @@ const UserStatisticsView = () => {
               <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
             </PopoverTrigger>
             <PopoverContent align="end" alignOffset={-12}>
-              <button className="w-auto flex flex-row justify-between items-center gap-2 hover:opacity-80" onClick={rebuildMemoTags}>
+              <button className="w-auto flex flex-row justify-between items-center gap-2 hover:opacity-80" onClick={rebuildMemoProperty}>
                 <RefreshCcwIcon className="text-gray-400 w-4 h-auto cursor-pointer opacity-60" />
                 <span className="text-sm shrink-0 text-gray-500 dark:text-gray-400">Rebuild properties</span>
               </button>

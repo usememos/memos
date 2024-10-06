@@ -3,7 +3,11 @@ import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { memoServiceClient } from "@/grpcweb";
 import { Routes } from "@/router";
+import { MemoView } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
+
+// Set the maximum number of memos to fetch.
+const DEFAULT_MEMO_PAGE_SIZE = 1000000;
 
 interface State {
   tagAmounts: Record<string, number>;
@@ -37,7 +41,21 @@ export const useTagStore = create(
       } else {
         filters.push(`visibilities == ["PUBLIC"]`);
       }
-      const { tagAmounts } = await memoServiceClient.listMemoTags({ parent: "memos/-", filter: filters.join(" && ") });
+      const { memos } = await memoServiceClient.listMemos({
+        pageSize: DEFAULT_MEMO_PAGE_SIZE,
+        filter: filters.join(" && "),
+        view: MemoView.MEMO_VIEW_METADATA_ONLY,
+      });
+      const tagAmounts: Record<string, number> = {};
+      memos.forEach((memo) => {
+        memo.property?.tags.forEach((tag) => {
+          if (tagAmounts[tag]) {
+            tagAmounts[tag] += 1;
+          } else {
+            tagAmounts[tag] = 1;
+          }
+        });
+      });
       set({ tagAmounts });
     },
   })),
