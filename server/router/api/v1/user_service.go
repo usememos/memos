@@ -276,14 +276,14 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 }
 
 func getDefaultUserSetting(workspaceMemoRelatedSetting *storepb.WorkspaceMemoRelatedSetting) *v1pb.UserSetting {
-	memoVisibility := "PRIVATE"
-	if workspaceMemoRelatedSetting.MemoVisibility != "" {
-		memoVisibility = workspaceMemoRelatedSetting.MemoVisibility
+	defaultVisibility := "PRIVATE"
+	if workspaceMemoRelatedSetting.DefaultVisibility != "" {
+		defaultVisibility = workspaceMemoRelatedSetting.DefaultVisibility
 	}
 	return &v1pb.UserSetting{
 		Locale:         "en",
 		Appearance:     "system",
-		MemoVisibility: memoVisibility,
+		MemoVisibility: defaultVisibility,
 	}
 }
 

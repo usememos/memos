@@ -110,6 +110,6 @@ message WorkspaceMemoRelatedSetting {
   bool enable_comment = 7;
   // enable_location enables setting location for memo.
   bool enable_location = 8;
-  // global default visibility.
-  string memo_visibility = 9;
+  // default_visibility set the global memos default visibility.
+  string default_visibility = 9;
 }

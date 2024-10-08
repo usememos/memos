@@ -105,10 +105,10 @@ const MemoRelatedSettings = () => {
         <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>
         <Select
           className="!min-w-fit"
-          value={memoRelatedSetting.memoVisibility}
-          startDecorator={<VisibilityIcon visibility={convertVisibilityFromString(memoRelatedSetting.memoVisibility)} />}
+          value={memoRelatedSetting.defaultVisibility}
+          startDecorator={<VisibilityIcon visibility={convertVisibilityFromString(memoRelatedSetting.defaultVisibility)} />}
           onChange={(_, visibility) => {
-            updatePartialSetting({ memoVisibility: visibility || Visibility.PRIVATE });
+            updatePartialSetting({ defaultVisibility: visibility || Visibility.PRIVATE });
           }}
         >
           {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]

@@ -2122,9 +2122,9 @@ definitions:
       enableLocation:
         type: boolean
         description: enable_location enables setting location for memo.
-      memoVisibility:
+      defaultVisibility:
         type: string
-        description: global default visibility.
+        description: default_visibility set the global memos default visibility.
   apiv1WorkspaceSetting:
     type: object
     properties:
