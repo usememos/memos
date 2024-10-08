@@ -19,14 +19,10 @@ import { memoServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
-import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
-import { MemoView } from "@/types/proto/api/v1/memo_service";
+import { useMemoFilterStore, useMemoMetadataStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
-
-// Set the maximum number of memos to fetch.
-const DEFAULT_MEMO_PAGE_SIZE = 1000000;
 
 interface UserMemoStats {
   link: number;
@@ -38,9 +34,9 @@ interface UserMemoStats {
 const UserStatisticsView = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
-  const memoList = useMemoList();
   const memoFilterStore = useMemoFilterStore();
+  const memoMetadataStore = useMemoMetadataStore();
+  const metadataList = Object.values(memoMetadataStore.getState().dataMapByName);
   const [memoAmount, setMemoAmount] = useState(0);
   const [memoStats, setMemoStats] = useState<UserMemoStats>({ link: 0, taskList: 0, code: 0, incompleteTasks: 0 });
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
@@ -49,14 +45,8 @@ const UserStatisticsView = () => {
   const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
 
   useAsyncEffect(async () => {
-    if (memoList.size() === 0) return;
-
-    const { memos } = await memoServiceClient.listMemos({
-      pageSize: DEFAULT_MEMO_PAGE_SIZE,
-      view: MemoView.MEMO_VIEW_METADATA_ONLY,
-    });
     const memoStats: UserMemoStats = { link: 0, taskList: 0, code: 0, incompleteTasks: 0 };
-    memos.forEach((memo) => {
+    metadataList.forEach((memo) => {
       const { property } = memo;
       if (property?.hasLink) {
         memoStats.link += 1;
@@ -72,9 +62,9 @@ const UserStatisticsView = () => {
       }
     });
     setMemoStats(memoStats);
-    setMemoAmount(memos.length);
-    setActivityStats(countBy(memos.map((memo) => dayjs(memo.displayTime).format("YYYY-MM-DD"))));
-  }, [memoStore.stateId]);
+    setMemoAmount(metadataList.length);
+    setActivityStats(countBy(metadataList.map((memo) => dayjs(memo.displayTime).format("YYYY-MM-DD"))));
+  }, [memoMetadataStore.stateId]);
 
   const rebuildMemoProperty = async () => {
     await memoServiceClient.rebuildMemoProperty({

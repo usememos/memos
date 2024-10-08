@@ -3,9 +3,7 @@ import { HashIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import OverflowTip from "@/components/kit/OverflowTip";
-import useAsyncEffect from "@/hooks/useAsyncEffect";
-import useCurrentUser from "@/hooks/useCurrentUser";
-import { useTagStore } from "@/store/v1";
+import { useMemoTagList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 
@@ -16,21 +14,12 @@ interface Props {
 const TagSelector = (props: Props) => {
   const t = useTranslate();
   const { editorRef } = props;
-  const tagStore = useTagStore();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const tags = tagStore.sortedTags();
-  const user = useCurrentUser();
-
-  useAsyncEffect(async () => {
-    if (!open) return;
-
-    try {
-      await tagStore.fetchTags({ user });
-    } catch (error) {
-      // do nothing.
-    }
-  }, [open]);
+  const tags = Object.entries(useMemoTagList())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .sort((a, b) => b[1] - a[1])
+    .map(([tag]) => tag);
 
   useClickAway(containerRef, () => {
     setOpen(false);
