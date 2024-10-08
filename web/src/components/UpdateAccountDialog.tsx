@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { userNamePrefix, useUserStore, useWorkspaceSettingStore } from "@/store/v1";
+import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { User as UserPb } from "@/types/proto/api/v1/user_service";
 import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
@@ -108,7 +108,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     try {
       const updateMask = [];
-      if (!isEqual(currentUser.name.replace(userNamePrefix, ""), state.username)) {
+      if (!isEqual(currentUser.username, state.username)) {
         updateMask.push("username");
       }
       if (!isEqual(currentUser.nickname, state.nickname)) {
