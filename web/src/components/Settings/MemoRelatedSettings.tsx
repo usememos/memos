@@ -1,10 +1,14 @@
-import { Button, Input, Switch } from "@mui/joy";
+import { Button, Input, Switch, Select, Option } from "@mui/joy";
 import { isEqual } from "lodash-es";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
+import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
+import VisibilityIcon from "../VisibilityIcon";
 
 const MemoRelatedSettings = () => {
   const t = useTranslate();
@@ -23,10 +27,17 @@ const MemoRelatedSettings = () => {
   };
 
   const updateSetting = async () => {
-    await workspaceSettingStore.setWorkspaceSetting({
-      name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
-      memoRelatedSetting,
-    });
+    try {
+      await workspaceSettingStore.setWorkspaceSetting({
+        name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
+        memoRelatedSetting,
+      });
+    } catch (error: any) {
+      toast.error(error.details);
+      console.error(error);
+      return;
+    }
+    toast.success(t("message.update-succeed"));
   };
 
   return (
@@ -89,6 +100,25 @@ const MemoRelatedSettings = () => {
           defaultValue={memoRelatedSetting.contentLengthLimit}
           onBlur={(event) => updatePartialSetting({ contentLengthLimit: Number(event.target.value) })}
         />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>
+        <Select
+          className="!min-w-fit"
+          value={memoRelatedSetting.defaultVisibility}
+          startDecorator={<VisibilityIcon visibility={convertVisibilityFromString(memoRelatedSetting.defaultVisibility)} />}
+          onChange={(_, visibility) => {
+            updatePartialSetting({ defaultVisibility: visibility || Visibility.PRIVATE });
+          }}
+        >
+          {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]
+            .map((v) => convertVisibilityToString(v))
+            .map((item) => (
+              <Option key={item} value={item} className="whitespace-nowrap">
+                {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
+              </Option>
+            ))}
+        </Select>
       </div>
       <div className="mt-2 w-full flex justify-end">
         <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>

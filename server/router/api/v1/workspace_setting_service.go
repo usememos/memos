@@ -232,6 +232,7 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		EnableLinkPreview:        setting.EnableLinkPreview,
 		EnableComment:            setting.EnableComment,
 		EnableLocation:           setting.EnableLocation,
+		DefaultVisibility:        setting.DefaultVisibility,
 	}
 }
 
@@ -248,5 +249,6 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		EnableLinkPreview:        setting.EnableLinkPreview,
 		EnableComment:            setting.EnableComment,
 		EnableLocation:           setting.EnableLocation,
+		DefaultVisibility:        setting.DefaultVisibility,
 	}
 }
