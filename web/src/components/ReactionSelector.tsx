@@ -68,15 +68,15 @@ const ReactionSelector = (props: Props) => {
           <SmilePlusIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
       </MenuButton>
-      <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">
+      <Menu className="relative" component="div" size="sm" placement="bottom-start">
         <div ref={containerRef}>
-          <div className="grid grid-cols-6 py-0.5 px-2 h-auto font-mono gap-1">
+          <div className="flex flex-row flex-wrap py-0.5 px-2 h-auto gap-1 max-w-56">
             {workspaceMemoRelatedSetting.reactions.map((reactionType) => {
               return (
                 <span
                   key={reactionType}
                   className={clsx(
-                    "inline-flex w-auto cursor-pointer rounded text-lg px-1 text-gray-500 dark:text-gray-400 hover:opacity-80",
+                    "inline-flex w-auto text-base cursor-pointer rounded px-1 text-gray-500 dark:text-gray-400 hover:opacity-80",
                     hasReacted(reactionType) && "bg-blue-100 dark:bg-zinc-800",
                   )}
                   onClick={() => handleReactionClick(reactionType)}

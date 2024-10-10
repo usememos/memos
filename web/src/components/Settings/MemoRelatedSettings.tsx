@@ -1,5 +1,6 @@
-import { Button, Input, Switch, Select, Option } from "@mui/joy";
-import { isEqual } from "lodash-es";
+import { Button, Input, Switch, Select, Option, Chip, ChipDelete } from "@mui/joy";
+import { isEqual, uniq } from "lodash-es";
+import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
@@ -17,6 +18,7 @@ const MemoRelatedSettings = () => {
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
   );
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
+  const [editingReaction, setEditingReaction] = useState<string>("");
 
   const updatePartialSetting = (partial: Partial<WorkspaceMemoRelatedSetting>) => {
     const newWorkspaceMemoRelatedSetting = WorkspaceMemoRelatedSetting.fromPartial({
@@ -26,7 +28,21 @@ const MemoRelatedSettings = () => {
     setMemoRelatedSetting(newWorkspaceMemoRelatedSetting);
   };
 
+  const upsertReaction = () => {
+    if (!editingReaction) {
+      return;
+    }
+
+    updatePartialSetting({ reactions: uniq([...memoRelatedSetting.reactions, editingReaction.trim()]) });
+    setEditingReaction("");
+  };
+
   const updateSetting = async () => {
+    if (memoRelatedSetting.reactions.length === 0) {
+      toast.error("Reactions must not be empty.");
+      return;
+    }
+
     try {
       await workspaceSettingStore.setWorkspaceSetting({
         name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
@@ -119,6 +135,41 @@ const MemoRelatedSettings = () => {
               </Option>
             ))}
         </Select>
+      </div>
+      <div className="w-full">
+        <span className="truncate">Reactions</span>
+        <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
+          {memoRelatedSetting.reactions.map((reactionType) => {
+            return (
+              <Chip
+                className="!h-8"
+                key={reactionType}
+                variant="outlined"
+                size="lg"
+                endDecorator={
+                  <ChipDelete
+                    onDelete={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
+                  />
+                }
+              >
+                {reactionType}
+              </Chip>
+            );
+          })}
+          <Input
+            className="w-32 !rounded-full !pl-3"
+            placeholder="Input"
+            size="sm"
+            value={editingReaction}
+            onChange={(event) => setEditingReaction(event.target.value.trim())}
+            endDecorator={
+              <CheckIcon
+                className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
+                onClick={() => upsertReaction()}
+              />
+            }
+          />
+        </div>
       </div>
       <div className="mt-2 w-full flex justify-end">
         <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
