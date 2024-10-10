@@ -166,8 +166,8 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
 
       let insertText = "";
       if (lastNode.type === NodeType.TASK_LIST_ITEM) {
-        const { complete } = lastNode.taskListItemNode as TaskListItemNode;
-        insertText = complete ? "- [x] " : "- [ ] ";
+        const { symbol } = lastNode.taskListItemNode as TaskListItemNode;
+        insertText = `${symbol} [ ] `;
       } else if (lastNode.type === NodeType.UNORDERED_LIST_ITEM) {
         const { symbol } = lastNode.unorderedListItemNode as UnorderedListItemNode;
         insertText = `${symbol} `;
