@@ -9,7 +9,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -42,7 +41,7 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 	reaction, err := s.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
 		ContentID:    request.Reaction.ContentId,
-		ReactionType: storepb.ReactionType(request.Reaction.ReactionType),
+		ReactionType: request.Reaction.ReactionType,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert reaction")
@@ -76,6 +75,6 @@ func (s *APIV1Service) convertReactionFromStore(ctx context.Context, reaction *s
 		Id:           reaction.ID,
 		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
 		ContentId:    reaction.ContentID,
-		ReactionType: v1pb.Reaction_Type(reaction.ReactionType),
+		ReactionType: reaction.ReactionType,
 	}, nil
 }

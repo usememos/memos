@@ -2084,6 +2084,11 @@ definitions:
       defaultVisibility:
         type: string
         description: default_visibility set the global memos default visibility.
+      reactions:
+        type: array
+        items:
+          type: string
+        description: reactions is the list of reactions.
   apiv1WorkspaceSetting:
     type: object
     properties:
@@ -2864,24 +2869,7 @@ definitions:
       contentId:
         type: string
       reactionType:
-        $ref: '#/definitions/v1ReactionType'
-  v1ReactionType:
-    type: string
-    enum:
-      - TYPE_UNSPECIFIED
-      - THUMBS_UP
-      - THUMBS_DOWN
-      - HEART
-      - FIRE
-      - CLAPPING_HANDS
-      - LAUGH
-      - OK_HAND
-      - ROCKET
-      - EYES
-      - THINKING_FACE
-      - CLOWN_FACE
-      - QUESTION_MARK
-    default: TYPE_UNSPECIFIED
+        type: string
   v1ReferencedContentNode:
     type: object
     properties:

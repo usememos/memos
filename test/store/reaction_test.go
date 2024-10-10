@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -21,7 +20,7 @@ func TestReactionStore(t *testing.T) {
 	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
 		ContentID:    contentID,
-		ReactionType: storepb.ReactionType_HEART,
+		ReactionType: "💗",
 	})
 	require.NoError(t, err)
 	require.NotNil(t, reaction)

@@ -4,14 +4,13 @@ import (
 	"context"
 	"strings"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store.Reaction, error) {
 	fields := []string{"`creator_id`", "`content_id`", "`reaction_type`"}
 	placeholder := []string{"?", "?", "?"}
-	args := []interface{}{upsert.CreatorID, upsert.ContentID, upsert.ReactionType.String()}
+	args := []interface{}{upsert.CreatorID, upsert.ContentID, upsert.ReactionType}
 	stmt := "INSERT INTO `reaction` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
 		&upsert.ID,
@@ -56,17 +55,15 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	list := []*store.Reaction{}
 	for rows.Next() {
 		reaction := &store.Reaction{}
-		var reactionType string
 		if err := rows.Scan(
 			&reaction.ID,
 			&reaction.CreatedTs,
 			&reaction.CreatorID,
 			&reaction.ContentID,
-			&reactionType,
+			&reaction.ReactionType,
 		); err != nil {
 			return nil, err
 		}
-		reaction.ReactionType = storepb.ReactionType(storepb.ReactionType_value[reactionType])
 		list = append(list, reaction)
 	}
 

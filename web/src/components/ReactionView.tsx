@@ -4,47 +4,15 @@ import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { Reaction_Type } from "@/types/proto/api/v1/reaction_service";
 import { User } from "@/types/proto/api/v1/user_service";
 
 interface Props {
   memo: Memo;
-  reactionType: Reaction_Type;
+  reactionType: string;
   users: User[];
 }
 
-export const stringifyReactionType = (reactionType: Reaction_Type): string => {
-  switch (reactionType) {
-    case Reaction_Type.THUMBS_UP:
-      return "👍";
-    case Reaction_Type.THUMBS_DOWN:
-      return "👎";
-    case Reaction_Type.HEART:
-      return "💛";
-    case Reaction_Type.FIRE:
-      return "🔥";
-    case Reaction_Type.CLAPPING_HANDS:
-      return "👏";
-    case Reaction_Type.LAUGH:
-      return "😂";
-    case Reaction_Type.OK_HAND:
-      return "👌";
-    case Reaction_Type.ROCKET:
-      return "🚀";
-    case Reaction_Type.EYES:
-      return "👀";
-    case Reaction_Type.THINKING_FACE:
-      return "🤔";
-    case Reaction_Type.CLOWN_FACE:
-      return "🤡";
-    case Reaction_Type.QUESTION_MARK:
-      return "❓";
-    default:
-      return "";
-  }
-};
-
-const stringifyUsers = (users: User[], reactionType: Reaction_Type): string => {
+const stringifyUsers = (users: User[], reactionType: string): string => {
   if (users.length === 0) {
     return "";
   }
@@ -104,7 +72,7 @@ const ReactionView = (props: Props) => {
         )}
         onClick={handleReactionClick}
       >
-        <span>{stringifyReactionType(reactionType)}</span>
+        <span>{reactionType}</span>
         <span className="text-sm text-gray-500 dark:text-gray-400">{users.length}</span>
       </div>
     </Tooltip>

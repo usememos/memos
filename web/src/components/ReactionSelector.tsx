@@ -5,47 +5,36 @@ import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore } from "@/store/v1";
+import { useMemoStore, useWorkspaceSettingStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { Reaction_Type } from "@/types/proto/api/v1/reaction_service";
-import { stringifyReactionType } from "./ReactionView";
+import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 
 interface Props {
   memo: Memo;
   className?: string;
 }
 
-const REACTION_TYPES = [
-  Reaction_Type.THUMBS_UP,
-  Reaction_Type.THUMBS_DOWN,
-  Reaction_Type.HEART,
-  Reaction_Type.FIRE,
-  Reaction_Type.CLAPPING_HANDS,
-  Reaction_Type.LAUGH,
-  Reaction_Type.OK_HAND,
-  Reaction_Type.ROCKET,
-  Reaction_Type.EYES,
-  Reaction_Type.THINKING_FACE,
-  Reaction_Type.CLOWN_FACE,
-  Reaction_Type.QUESTION_MARK,
-];
-
 const ReactionSelector = (props: Props) => {
   const { memo, className } = props;
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
+  const workspaceSettingStore = useWorkspaceSettingStore();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const workspaceMemoRelatedSetting =
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
+    WorkspaceMemoRelatedSetting.fromPartial({});
 
   useClickAway(containerRef, () => {
     setOpen(false);
   });
 
-  const hasReacted = (reactionType: Reaction_Type) => {
+  const hasReacted = (reactionType: string) => {
     return memo.reactions.some((r) => r.reactionType === reactionType && r.creator === currentUser?.name);
   };
 
-  const handleReactionClick = async (reactionType: Reaction_Type) => {
+  const handleReactionClick = async (reactionType: string) => {
     try {
       if (hasReacted(reactionType)) {
         const reactions = memo.reactions.filter(
@@ -82,7 +71,7 @@ const ReactionSelector = (props: Props) => {
       <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">
         <div ref={containerRef}>
           <div className="grid grid-cols-6 py-0.5 px-2 h-auto font-mono gap-1">
-            {REACTION_TYPES.map((reactionType) => {
+            {workspaceMemoRelatedSetting.reactions.map((reactionType) => {
               return (
                 <span
                   key={reactionType}
@@ -92,7 +81,7 @@ const ReactionSelector = (props: Props) => {
                   )}
                   onClick={() => handleReactionClick(reactionType)}
                 >
-                  {stringifyReactionType(reactionType)}
+                  {reactionType}
                 </span>
               );
             })}
