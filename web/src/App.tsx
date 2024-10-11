@@ -34,10 +34,8 @@ const App = () => {
   useEffect(() => {
     const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleColorSchemeChange = (e: MediaQueryListEvent) => {
-      if (commonContext.appearance === "system") {
-        const mode = e.matches ? "dark" : "light";
-        setMode(mode);
-      }
+      const mode = e.matches ? "dark" : "light";
+      setMode(mode);
     };
 
     try {
