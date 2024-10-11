@@ -26,7 +26,7 @@ type Cron struct {
 	jobWaiter sync.WaitGroup
 }
 
-// ScheduleParser is an interface for schedule spec parsers that return a Schedule
+// ScheduleParser is an interface for schedule spec parsers that return a Schedule.
 type ScheduleParser interface {
 	Parse(spec string) (Schedule, error)
 }
@@ -43,7 +43,7 @@ type Schedule interface {
 	Next(time.Time) time.Time
 }
 
-// EntryID identifies an entry within a Cron instance
+// EntryID identifies an entry within a Cron instance.
 type EntryID int
 
 // Entry consists of a schedule and the func to execute on that schedule.
@@ -97,17 +97,17 @@ func (s byTime) Less(i, j int) bool {
 //
 // Available Settings
 //
-//   Time Zone
-//     Description: The time zone in which schedules are interpreted
-//     Default:     time.Local
+//	Time Zone
+//	  Description: The time zone in which schedules are interpreted
+//	  Default:     time.Local
 //
-//   Parser
-//     Description: Parser converts cron spec strings into cron.Schedules.
-//     Default:     Accepts this spec: https://en.wikipedia.org/wiki/Cron
+//	Parser
+//	  Description: Parser converts cron spec strings into cron.Schedules.
+//	  Default:     Accepts this spec: https://en.wikipedia.org/wiki/Cron
 //
-//   Chain
-//     Description: Wrap submitted jobs to customize behavior.
-//     Default:     A chain that recovers panics and logs them to stderr.
+//	Chain
+//	  Description: Wrap submitted jobs to customize behavior.
+//	  Default:     A chain that recovers panics and logs them to stderr.
 //
 // See "cron.With*" to modify the default behavior.
 func New(opts ...Option) *Cron {
@@ -130,7 +130,7 @@ func New(opts ...Option) *Cron {
 	return c
 }
 
-// FuncJob is a wrapper that turns a func() into a cron.Job
+// FuncJob is a wrapper that turns a func() into a cron.Job.
 type FuncJob func()
 
 func (f FuncJob) Run() { f() }

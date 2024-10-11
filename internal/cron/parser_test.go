@@ -255,7 +255,7 @@ func TestNormalizeFields(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+		t.Run(test.name, func(*testing.T) {
 			actual, err := normalizeFields(test.input, test.options)
 			if err != nil {
 				t.Errorf("unexpected error: %v", err)
@@ -300,7 +300,7 @@ func TestNormalizeFields_Errors(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+		t.Run(test.name, func(*testing.T) {
 			actual, err := normalizeFields(test.input, test.options)
 			if err == nil {
 				t.Errorf("expected an error, got none. results: %v", actual)

@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"errors"
 	"fmt"
 	"runtime"
 	"sync"
@@ -48,7 +49,7 @@ func Recover(logger Logger) JobWrapper {
 					buf = buf[:runtime.Stack(buf, false)]
 					err, ok := r.(error)
 					if !ok {
-						err = fmt.Errorf("%v", r)
+						err = errors.New("panic: " + fmt.Sprint(r))
 					}
 					logger.Error(err, "panic", "stack", "...\n"+string(buf))
 				}

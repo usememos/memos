@@ -1,11 +1,12 @@
 package cron
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Configuration options for creating a parser. Most options specify which
@@ -86,7 +87,7 @@ func NewParser(options ParseOption) Parser {
 // It accepts crontab specs and features configured by NewParser.
 func (p Parser) Parse(spec string) (Schedule, error) {
 	if len(spec) == 0 {
-		return nil, fmt.Errorf("empty spec string")
+		return nil, errors.New("empty spec string")
 	}
 
 	// Extract timezone if present
@@ -96,7 +97,7 @@ func (p Parser) Parse(spec string) (Schedule, error) {
 		i := strings.Index(spec, " ")
 		eq := strings.Index(spec, "=")
 		if loc, err = time.LoadLocation(spec[eq+1 : i]); err != nil {
-			return nil, fmt.Errorf("provided bad location %s: %v", spec[eq+1:i], err)
+			return nil, errors.Wrap(err, "provided bad location")
 		}
 		spec = strings.TrimSpace(spec[i:])
 	}
@@ -104,7 +105,7 @@ func (p Parser) Parse(spec string) (Schedule, error) {
 	// Handle named schedules (descriptors), if configured
 	if strings.HasPrefix(spec, "@") {
 		if p.options&Descriptor == 0 {
-			return nil, fmt.Errorf("parser does not accept descriptors: %v", spec)
+			return nil, errors.New("descriptors not enabled")
 		}
 		return parseDescriptor(spec, loc)
 	}
@@ -168,7 +169,7 @@ func normalizeFields(fields []string, options ParseOption) ([]string, error) {
 		optionals++
 	}
 	if optionals > 1 {
-		return nil, fmt.Errorf("multiple optionals may not be configured")
+		return nil, errors.New("multiple optionals may not be configured")
 	}
 
 	// Figure out how many fields we need
@@ -183,9 +184,9 @@ func normalizeFields(fields []string, options ParseOption) ([]string, error) {
 	// Validate number of fields
 	if count := len(fields); count < min || count > max {
 		if min == max {
-			return nil, fmt.Errorf("expected exactly %d fields, found %d: %s", min, count, fields)
+			return nil, errors.New("incorrect number of fields")
 		}
-		return nil, fmt.Errorf("expected %d to %d fields, found %d: %s", min, max, count, fields)
+		return nil, errors.New("incorrect number of fields, expected " + strconv.Itoa(min) + "-" + strconv.Itoa(max))
 	}
 
 	// Populate the optional field if not provided
@@ -196,7 +197,7 @@ func normalizeFields(fields []string, options ParseOption) ([]string, error) {
 		case options&SecondOptional > 0:
 			fields = append([]string{defaults[0]}, fields...)
 		default:
-			return nil, fmt.Errorf("unknown optional field")
+			return nil, errors.New("unexpected optional field")
 		}
 	}
 
@@ -278,7 +279,7 @@ func getRange(expr string, r bounds) (uint64, error) {
 				return 0, err
 			}
 		default:
-			return 0, fmt.Errorf("too many hyphens: %s", expr)
+			return 0, errors.New("too many hyphens: " + expr)
 		}
 	}
 
@@ -299,20 +300,20 @@ func getRange(expr string, r bounds) (uint64, error) {
 			extra = 0
 		}
 	default:
-		return 0, fmt.Errorf("too many slashes: %s", expr)
+		return 0, errors.New("too many slashes: " + expr)
 	}
 
 	if start < r.min {
-		return 0, fmt.Errorf("beginning of range (%d) below minimum (%d): %s", start, r.min, expr)
+		return 0, errors.New("beginning of range below minimum: " + expr)
 	}
 	if end > r.max {
-		return 0, fmt.Errorf("end of range (%d) above maximum (%d): %s", end, r.max, expr)
+		return 0, errors.New("end of range above maximum: " + expr)
 	}
 	if start > end {
-		return 0, fmt.Errorf("beginning of range (%d) beyond end of range (%d): %s", start, end, expr)
+		return 0, errors.New("beginning of range after end: " + expr)
 	}
 	if step == 0 {
-		return 0, fmt.Errorf("step of range should be a positive number: %s", expr)
+		return 0, errors.New("step cannot be zero: " + expr)
 	}
 
 	return getBits(start, end, step) | extra, nil
@@ -332,10 +333,10 @@ func parseIntOrName(expr string, names map[string]uint) (uint, error) {
 func mustParseInt(expr string) (uint, error) {
 	num, err := strconv.Atoi(expr)
 	if err != nil {
-		return 0, fmt.Errorf("failed to parse int from %s: %s", expr, err)
+		return 0, errors.Wrap(err, "failed to parse number")
 	}
 	if num < 0 {
-		return 0, fmt.Errorf("negative number (%d) not allowed: %s", num, expr)
+		return 0, errors.New("number must be positive")
 	}
 
 	return uint(num), nil
@@ -419,17 +420,16 @@ func parseDescriptor(descriptor string, loc *time.Location) (Schedule, error) {
 			Dow:      all(dow),
 			Location: loc,
 		}, nil
-
 	}
 
 	const every = "@every "
 	if strings.HasPrefix(descriptor, every) {
 		duration, err := time.ParseDuration(descriptor[len(every):])
 		if err != nil {
-			return nil, fmt.Errorf("failed to parse duration %s: %s", descriptor, err)
+			return nil, errors.Wrap(err, "failed to parse duration")
 		}
 		return Every(duration), nil
 	}
 
-	return nil, fmt.Errorf("unrecognized descriptor: %s", descriptor)
+	return nil, errors.New("unrecognized descriptor: " + descriptor)
 }

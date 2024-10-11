@@ -59,7 +59,7 @@ func TestFuncPanicRecovery(t *testing.T) {
 
 type DummyJob struct{}
 
-func (d DummyJob) Run() {
+func (DummyJob) Run() {
 	panic("YOLO")
 }
 
@@ -556,7 +556,7 @@ func TestJobWithZeroTimeDoesNotRun(t *testing.T) {
 }
 
 func TestStopAndWait(t *testing.T) {
-	t.Run("nothing running, returns immediately", func(t *testing.T) {
+	t.Run("nothing running, returns immediately", func(*testing.T) {
 		cron := newWithSeconds()
 		cron.Start()
 		ctx := cron.Stop()
@@ -567,7 +567,7 @@ func TestStopAndWait(t *testing.T) {
 		}
 	})
 
-	t.Run("repeated calls to Stop", func(t *testing.T) {
+	t.Run("repeated calls to Stop", func(*testing.T) {
 		cron := newWithSeconds()
 		cron.Start()
 		_ = cron.Stop()
@@ -580,7 +580,7 @@ func TestStopAndWait(t *testing.T) {
 		}
 	})
 
-	t.Run("a couple fast jobs added, still returns immediately", func(t *testing.T) {
+	t.Run("a couple fast jobs added, still returns immediately", func(*testing.T) {
 		cron := newWithSeconds()
 		cron.AddFunc("* * * * * *", func() {})
 		cron.Start()
@@ -596,7 +596,7 @@ func TestStopAndWait(t *testing.T) {
 		}
 	})
 
-	t.Run("a couple fast jobs and a slow job added, waits for slow job", func(t *testing.T) {
+	t.Run("a couple fast jobs and a slow job added, waits for slow job", func(*testing.T) {
 		cron := newWithSeconds()
 		cron.AddFunc("* * * * * *", func() {})
 		cron.Start()
@@ -623,7 +623,7 @@ func TestStopAndWait(t *testing.T) {
 		}
 	})
 
-	t.Run("repeated calls to stop, waiting for completion and after", func(t *testing.T) {
+	t.Run("repeated calls to stop, waiting for completion and after", func(*testing.T) {
 		cron := newWithSeconds()
 		cron.AddFunc("* * * * * *", func() {})
 		cron.AddFunc("* * * * * *", func() { time.Sleep(2 * time.Second) })

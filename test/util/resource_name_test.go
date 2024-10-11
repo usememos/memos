@@ -27,7 +27,7 @@ func TestUIDMatcher(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Run(test.input, func(t *testing.T) {
+		t.Run(test.input, func(*testing.T) {
 			result := util.UIDMatcher.MatchString(test.input)
 			if result != test.expected {
 				t.Errorf("For input '%s', expected %v but got %v", test.input, test.expected, result)
