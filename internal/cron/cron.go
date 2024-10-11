@@ -185,7 +185,7 @@ func (c *Cron) Entries() []Entry {
 	return c.entrySnapshot()
 }
 
-// Location gets the time zone location
+// Location gets the time zone location.
 func (c *Cron) Location() *time.Location {
 	return c.location
 }
@@ -219,7 +219,7 @@ func (c *Cron) Start() {
 		return
 	}
 	c.running = true
-	go c.run()
+	go c.runScheduler()
 }
 
 // Run the cron scheduler, or no-op if already running.
@@ -231,12 +231,12 @@ func (c *Cron) Run() {
 	}
 	c.running = true
 	c.runningMu.Unlock()
-	c.run()
+	c.runScheduler()
 }
 
-// run the scheduler.. this is private just due to the need to synchronize
+// runScheduler runs the scheduler.. this is private just due to the need to synchronize
 // access to the 'running' state variable.
-func (c *Cron) run() {
+func (c *Cron) runScheduler() {
 	c.logger.Info("start")
 
 	// Figure out the next activation times for each entry.
@@ -313,7 +313,7 @@ func (c *Cron) startJob(j Job) {
 	}()
 }
 
-// now returns current time in c location
+// now returns current time in c location.
 func (c *Cron) now() time.Time {
 	return time.Now().In(c.location)
 }

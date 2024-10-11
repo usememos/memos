@@ -9,10 +9,10 @@ import (
 )
 
 // DefaultLogger is used by Cron if none is specified.
-var DefaultLogger Logger = PrintfLogger(log.New(os.Stdout, "cron: ", log.LstdFlags))
+var DefaultLogger = PrintfLogger(log.New(os.Stdout, "cron: ", log.LstdFlags))
 
 // DiscardLogger can be used by callers to discard all log messages.
-var DiscardLogger Logger = PrintfLogger(log.New(io.Discard, "", 0))
+var DiscardLogger = PrintfLogger(log.New(io.Discard, "", 0))
 
 // Logger is the interface used in this package for logging, so that any backend
 // can be plugged in. It is a subset of the github.com/go-logr/logr interface.

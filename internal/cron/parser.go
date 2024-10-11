@@ -358,7 +358,7 @@ func getBits(min, max, step uint) uint64 {
 	return bits
 }
 
-// all returns all bits within the given bounds.  (plus the star bit)
+// all returns all bits within the given bounds.
 func all(r bounds) uint64 {
 	return getBits(r.min, r.max, 1) | starBit
 }
