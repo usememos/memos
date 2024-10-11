@@ -667,7 +667,6 @@ func TestStopAndWait(t *testing.T) {
 		case <-time.After(time.Millisecond):
 			t.Error("context not done even when cron Stop is completed")
 		}
-
 	})
 }
 

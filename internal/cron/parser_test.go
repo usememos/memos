@@ -33,14 +33,14 @@ func TestRange(t *testing.T) {
 		{"*/2", 1, 3, 1<<1 | 1<<3, ""},
 
 		{"5--5", 0, 0, zero, "too many hyphens"},
-		{"jan-x", 0, 0, zero, "failed to parse int from"},
-		{"2-x", 1, 5, zero, "failed to parse int from"},
-		{"*/-12", 0, 0, zero, "negative number"},
+		{"jan-x", 0, 0, zero, `failed to parse number: strconv.Atoi: parsing "jan": invalid syntax`},
+		{"2-x", 1, 5, zero, `failed to parse number: strconv.Atoi: parsing "x": invalid syntax`},
+		{"*/-12", 0, 0, zero, "number must be positive"},
 		{"*//2", 0, 0, zero, "too many slashes"},
 		{"1", 3, 5, zero, "below minimum"},
 		{"6", 3, 5, zero, "above maximum"},
-		{"5-3", 3, 5, zero, "beyond end of range"},
-		{"*/0", 0, 0, zero, "should be a positive number"},
+		{"5-3", 3, 5, zero, "beginning of range after end: 5-3"},
+		{"*/0", 0, 0, zero, "step cannot be zero: */0"},
 	}
 
 	for _, c := range ranges {
@@ -120,10 +120,10 @@ func TestBits(t *testing.T) {
 
 func TestParseScheduleErrors(t *testing.T) {
 	var tests = []struct{ expr, err string }{
-		{"* 5 j * * *", "failed to parse int from"},
+		{"* 5 j * * *", `failed to parse number: strconv.Atoi: parsing "j": invalid syntax`},
 		{"@every Xm", "failed to parse duration"},
 		{"@unrecognized", "unrecognized descriptor"},
-		{"* * * *", "expected 5 to 6 fields"},
+		{"* * * *", "incorrect number of fields, expected 5-6"},
 		{"", "empty spec string"},
 	}
 	for _, c := range tests {
@@ -328,11 +328,11 @@ func TestStandardSpecSchedule(t *testing.T) {
 		},
 		{
 			expr: "5 j * * *",
-			err:  "failed to parse int from",
+			err:  `failed to parse number: strconv.Atoi: parsing "j": invalid syntax`,
 		},
 		{
 			expr: "* * * *",
-			err:  "expected exactly 5 fields",
+			err:  "incorrect number of fields",
 		},
 	}
 
