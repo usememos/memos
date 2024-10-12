@@ -26,7 +26,7 @@ const ExploreSidebar = (props: Props) => {
   return (
     <aside
       className={clsx(
-        "relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start",
+        "relative w-full h-auto overflow-auto hide-scrollbar flex flex-col justify-start items-start",
         props.className,
       )}
     >
