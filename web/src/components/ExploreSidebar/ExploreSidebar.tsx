@@ -24,12 +24,7 @@ const ExploreSidebar = (props: Props) => {
   );
 
   return (
-    <aside
-      className={clsx(
-        "relative w-full h-auto overflow-auto hide-scrollbar flex flex-col justify-start items-start",
-        props.className,
-      )}
-    >
+    <aside className={clsx("relative w-full h-auto overflow-auto hide-scrollbar flex flex-col justify-start items-start", props.className)}>
       <SearchBar />
       <TagsSection readonly={true} />
     </aside>

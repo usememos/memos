@@ -15,12 +15,7 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode || property.hasIncompleteTasks;
 
   return (
-    <aside
-      className={clsx(
-        "relative w-full h-auto overflow-auto hide-scrollbar flex flex-col justify-start items-start",
-        className,
-      )}
-    >
+    <aside className={clsx("relative w-full h-auto overflow-auto hide-scrollbar flex flex-col justify-start items-start", className)}>
       <div className="flex flex-col justify-start items-start w-full mt-1 px-1 gap-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
         <div className="w-full flex flex-col">
           <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
