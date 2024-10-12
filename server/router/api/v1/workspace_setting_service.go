@@ -61,10 +61,6 @@ func (s *APIV1Service) GetWorkspaceSetting(ctx context.Context, request *v1pb.Ge
 }
 
 func (s *APIV1Service) SetWorkspaceSetting(ctx context.Context, request *v1pb.SetWorkspaceSettingRequest) (*v1pb.WorkspaceSetting, error) {
-	if s.Profile.Mode == "demo" {
-		return nil, status.Errorf(codes.InvalidArgument, "setting workspace setting is not allowed in demo mode")
-	}
-
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -73,7 +69,14 @@ func (s *APIV1Service) SetWorkspaceSetting(ctx context.Context, request *v1pb.Se
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	workspaceSetting, err := s.Store.UpsertWorkspaceSetting(ctx, convertWorkspaceSettingToStore(request.Setting))
+	updateSetting := convertWorkspaceSettingToStore(request.Setting)
+	// Don't allow to update workspace general setting in demo mode.
+	// Such as disallow user registration, disallow password auth, etc.
+	if s.Profile.Mode == "demo" && updateSetting.Key == storepb.WorkspaceSettingKey_GENERAL {
+		return nil, status.Errorf(codes.InvalidArgument, "setting workspace setting is not allowed in demo mode")
+	}
+
+	workspaceSetting, err := s.Store.UpsertWorkspaceSetting(ctx, updateSetting)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert workspace setting: %v", err)
 	}
