@@ -37,6 +37,10 @@ type FindInbox struct {
 	SenderID   *int32
 	ReceiverID *int32
 	Status     *InboxStatus
+
+	// Pagination
+	Limit  *int
+	Offset *int
 }
 
 type DeleteInbox struct {

@@ -61,10 +61,20 @@ message Inbox {
 message ListInboxesRequest {
   // Format: users/{id}
   string user = 1;
+
+  // The maximum number of inbox to return.
+  int32 page_size = 2;
+
+  // Provide this to retrieve the subsequent page.
+  string page_token = 3;
 }
 
 message ListInboxesResponse {
   repeated Inbox inboxes = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
 }
 
 message UpdateInboxRequest {

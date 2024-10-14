@@ -194,6 +194,17 @@ paths:
           in: query
           required: false
           type: string
+        - name: pageSize
+          description: The maximum number of inbox to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Provide this to retrieve the subsequent page.
+          in: query
+          required: false
+          type: string
       tags:
         - InboxService
   /api/v1/markdown/link:metadata:
@@ -2491,6 +2502,11 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Inbox'
+      nextPageToken:
+        type: string
+        description: |-
+          A token, which can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
   v1ListMemoCommentsResponse:
     type: object
     properties:

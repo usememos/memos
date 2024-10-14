@@ -30,6 +30,7 @@ import (
 )
 
 const (
+	// DefaultPageSize is the default page size for listing memos.
 	DefaultPageSize = 10
 )
 
