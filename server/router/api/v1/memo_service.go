@@ -807,9 +807,6 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 }
 
 func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
-	if find == nil {
-		find = &store.FindMemo{}
-	}
 	if find.PayloadFind == nil {
 		find.PayloadFind = &store.FindMemoPayload{}
 	}
@@ -912,7 +909,8 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		}
 
 		find.VisibilityList = []store.Visibility{store.Public}
-	} else if find.CreatorID != nil && *find.CreatorID != user.ID {
+	} else if find.CreatorID == nil || *find.CreatorID != user.ID {
+		// If creator is not specified or the creator is not the current user, only public and protected memos are visible.
 		find.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
