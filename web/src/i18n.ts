@@ -14,6 +14,7 @@ export const locales = [
   "hu",
   "it",
   "ja",
+  "ka-GE",
   "ko",
   "mr",
   "nl",
