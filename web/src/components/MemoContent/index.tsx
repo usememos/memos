@@ -80,7 +80,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           ref={memoContentContainerRef}
           className={clsx(
             "relative w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
-            showCompactMode && "line-clamp-6 max-h-44",
+            showCompactMode && "line-clamp-6 max-h-60",
             contentClassName,
           )}
           onClick={handleMemoContentClick}
