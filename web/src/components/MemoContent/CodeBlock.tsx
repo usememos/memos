@@ -40,7 +40,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
     return <MermaidBlock content={content} />;
   }
 
-  const highlightedCode: string = useMemo(() => {
+  const highlightedCode = useMemo(() => {
     try {
       const lang = hljs.getLanguage(formatedLanguage);
       if (lang) {
@@ -52,7 +52,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
       // Skip error and use default highlighted code.
     }
 
-    // escape any HTML entities when rendering original content
+    // Escape any HTML entities when rendering original content.
     return Object.assign(document.createElement("span"), {
       textContent: content,
     }).innerHTML;
