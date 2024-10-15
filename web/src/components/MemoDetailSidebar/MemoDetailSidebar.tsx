@@ -3,6 +3,7 @@ import { isEqual } from "lodash-es";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
 import { Memo, MemoProperty } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
+import MemoRelationForceGraph from "../MemoRelationForceGraph";
 
 interface Props {
   memo: Memo;
@@ -21,7 +22,13 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
         className,
       )}
     >
-      <div className="flex flex-col justify-start items-start w-full mt-1 px-1 gap-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
+      <div className="flex flex-col justify-start items-start w-full px-1 gap-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
+        {memo.relations.length > 0 && (
+          <div className="relative w-full h-36 border rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
+            <MemoRelationForceGraph className="w-full h-full" memo={memo} />
+            <span className="absolute top-1 left-2 text-xs opacity-60 font-mono">Relations</span>
+          </div>
+        )}
         <div className="w-full flex flex-col">
           <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
             <span>Created at</span>

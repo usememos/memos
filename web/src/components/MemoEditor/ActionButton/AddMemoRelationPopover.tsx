@@ -27,7 +27,7 @@ const AddMemoRelationPopover = (props: Props) => {
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const [fetchedMemos, setFetchedMemos] = useState<Memo[]>([]);
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
-  const [embedded, setEmbedded] = useState<boolean>(true);
+  const [embedded, setEmbedded] = useState<boolean>(false);
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   const filteredMemos = fetchedMemos.filter(
