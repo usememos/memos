@@ -1,4 +1,4 @@
-import { Divider, Tooltip } from "@mui/joy";
+import { Divider, IconButton, Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
@@ -11,11 +11,8 @@ import {
   LinkIcon,
   ListTodoIcon,
   MoreVerticalIcon,
-  RefreshCcwIcon,
 } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
-import { memoServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
@@ -66,14 +63,6 @@ const UserStatisticsView = () => {
     setActivityStats(countBy(metadataList.map((memo) => dayjs(memo.displayTime).format("YYYY-MM-DD"))));
   }, [memoMetadataStore.stateId]);
 
-  const rebuildMemoProperty = async () => {
-    await memoServiceClient.rebuildMemoProperty({
-      name: "memos/-",
-    });
-    toast.success("Rebuild memo properties successfully.");
-    window.location.reload();
-  };
-
   const onCalendarClick = (date: string) => {
     memoFilterStore.removeFilter((f) => f.factor === "displayTime");
     memoFilterStore.addFilter({ factor: "displayTime", value: date });
@@ -94,23 +83,17 @@ const UserStatisticsView = () => {
           />
         </div>
         <div className="invisible group-hover:visible flex justify-end items-center">
-          <ChevronLeftIcon
-            className="w-4 h-auto shrink-0 opacity-60"
-            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
-          />
-          <ChevronRightIcon
-            className="w-4 h-auto shrink-0 opacity-60"
-            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
-          />
           <Popover>
             <PopoverTrigger>
               <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
             </PopoverTrigger>
-            <PopoverContent align="end" alignOffset={-12}>
-              <button className="w-auto flex flex-row justify-between items-center gap-2 hover:opacity-80" onClick={rebuildMemoProperty}>
-                <RefreshCcwIcon className="text-gray-400 w-4 h-auto cursor-pointer opacity-60" />
-                <span className="text-sm shrink-0 text-gray-500 dark:text-gray-400">Rebuild properties</span>
-              </button>
+            <PopoverContent className="flex flex-row justify-end items-center" align="end" alignOffset={-12}>
+              <IconButton size="sm" onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}>
+                <ChevronLeftIcon className="w-5 h-auto shrink-0 opacity-60" />
+              </IconButton>
+              <IconButton size="sm" onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}>
+                <ChevronRightIcon className="w-5 h-auto shrink-0 opacity-60" />
+              </IconButton>
             </PopoverContent>
           </Popover>
         </div>
