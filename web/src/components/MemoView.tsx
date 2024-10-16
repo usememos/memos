@@ -52,7 +52,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(
-    (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo === memo.name,
+    (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo?.name === memo.name,
   ).length;
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
   const readonly = memo.creator !== user?.name && !isSuperUser(user);

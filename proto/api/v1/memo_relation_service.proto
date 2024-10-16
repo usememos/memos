@@ -2,16 +2,18 @@ syntax = "proto3";
 
 package memos.api.v1;
 
+import "google/api/field_behavior.proto";
+
 option go_package = "gen/api/v1";
 
 message MemoRelation {
   // The name of memo.
   // Format: "memos/{uid}"
-  string memo = 1;
+  Memo memo = 1;
 
   // The name of related memo.
   // Format: "memos/{uid}"
-  string related_memo = 2;
+  Memo related_memo = 2;
 
   enum Type {
     TYPE_UNSPECIFIED = 0;
@@ -19,4 +21,13 @@ message MemoRelation {
     COMMENT = 2;
   }
   Type type = 3;
+
+  message Memo {
+    // The name of the memo.
+    // Format: memos/{id}
+    string name = 1;
+    string uid = 2;
+    // The snippet of the memo content. Plain text only.
+    string snippet = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
 }

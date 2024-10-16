@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
+import { MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, MemoView } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
@@ -34,7 +34,7 @@ const AddMemoRelationPopover = (props: Props) => {
     (memo) =>
       !selectedMemos.includes(memo) &&
       memo.name !== context.memoName &&
-      !context.relationList.some((relation) => relation.relatedMemo === memo.name),
+      !context.relationList.some((relation) => relation.relatedMemo?.name === memo.name),
   );
 
   useDebounce(
@@ -112,8 +112,8 @@ const AddMemoRelationPopover = (props: Props) => {
         uniqBy(
           [
             ...selectedMemos.map((memo) => ({
-              memo: context.memoName || "",
-              relatedMemo: memo.name,
+              memo: MemoRelation_Memo.fromPartial({ name: memo.name }),
+              relatedMemo: MemoRelation_Memo.fromPartial({ name: memo.name }),
               type: MemoRelation_Type.REFERENCE,
             })),
             ...context.relationList,

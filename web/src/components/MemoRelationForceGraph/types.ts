@@ -1,11 +1,9 @@
-import { ForceGraphMethods, LinkObject, NodeObject } from "react-force-graph-2d";
+import { MemoRelation_Memo } from "@/types/proto/api/v1/memo_relation_service";
 
 export interface NodeType {
-  name: string;
+  memo: MemoRelation_Memo;
 }
 
 export interface LinkType {
   // ...add more additional properties relevant to the link here.
 }
-
-export interface FGMethods extends ForceGraphMethods<NodeObject<NodeType>, LinkObject<NodeType, LinkType>> {}

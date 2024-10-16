@@ -172,7 +172,7 @@ message Memo {
   optional string parent = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The snippet of the memo content. Plain text only.
-  string snippet = 19;
+  string snippet = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The location of the memo.
   optional Location location = 20;

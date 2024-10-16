@@ -347,7 +347,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Memo'
+            $ref: '#/definitions/apiv1Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -368,7 +368,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Memo'
+            $ref: '#/definitions/apiv1Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -813,7 +813,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Memo'
+            $ref: '#/definitions/apiv1Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -897,6 +897,7 @@ paths:
               snippet:
                 type: string
                 description: The snippet of the memo content. Plain text only.
+                readOnly: true
               location:
                 $ref: '#/definitions/apiv1Location'
                 description: The location of the memo.
@@ -1056,7 +1057,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Memo'
+            $ref: '#/definitions/apiv1Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -1257,7 +1258,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Memo'
+            $ref: '#/definitions/apiv1Memo'
         default:
           description: An unexpected error response.
           schema:
@@ -1952,6 +1953,82 @@ definitions:
       longitude:
         type: number
         format: double
+  apiv1Memo:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the memo.
+          Format: memos/{id}
+          id is the system generated id.
+      uid:
+        type: string
+        description: The user defined id of the memo.
+      rowStatus:
+        $ref: '#/definitions/v1RowStatus'
+      creator:
+        type: string
+        title: |-
+          The name of the creator.
+          Format: users/{id}
+      createTime:
+        type: string
+        format: date-time
+      updateTime:
+        type: string
+        format: date-time
+      displayTime:
+        type: string
+        format: date-time
+      content:
+        type: string
+      nodes:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Node'
+        readOnly: true
+      visibility:
+        $ref: '#/definitions/v1Visibility'
+      tags:
+        type: array
+        items:
+          type: string
+      pinned:
+        type: boolean
+      resources:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Resource'
+      relations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1MemoRelation'
+      reactions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Reaction'
+        readOnly: true
+      property:
+        $ref: '#/definitions/v1MemoProperty'
+        readOnly: true
+      parent:
+        type: string
+        title: |-
+          The name of the parent memo.
+          Format: memos/{id}
+        readOnly: true
+      snippet:
+        type: string
+        description: The snippet of the memo content. Plain text only.
+        readOnly: true
+      location:
+        $ref: '#/definitions/apiv1Location'
+        description: The location of the memo.
   apiv1OAuth2Config:
     type: object
     properties:
@@ -2482,7 +2559,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1Memo'
+          $ref: '#/definitions/apiv1Memo'
   v1ListMemoReactionsResponse:
     type: object
     properties:
@@ -2514,7 +2591,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1Memo'
+          $ref: '#/definitions/apiv1Memo'
       nextPageToken:
         type: string
         description: |-
@@ -2575,81 +2652,6 @@ definitions:
     properties:
       content:
         type: string
-  v1Memo:
-    type: object
-    properties:
-      name:
-        type: string
-        description: |-
-          The name of the memo.
-          Format: memos/{id}
-          id is the system generated id.
-      uid:
-        type: string
-        description: The user defined id of the memo.
-      rowStatus:
-        $ref: '#/definitions/v1RowStatus'
-      creator:
-        type: string
-        title: |-
-          The name of the creator.
-          Format: users/{id}
-      createTime:
-        type: string
-        format: date-time
-      updateTime:
-        type: string
-        format: date-time
-      displayTime:
-        type: string
-        format: date-time
-      content:
-        type: string
-      nodes:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Node'
-        readOnly: true
-      visibility:
-        $ref: '#/definitions/v1Visibility'
-      tags:
-        type: array
-        items:
-          type: string
-      pinned:
-        type: boolean
-      resources:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Resource'
-      relations:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1MemoRelation'
-      reactions:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Reaction'
-        readOnly: true
-      property:
-        $ref: '#/definitions/v1MemoProperty'
-        readOnly: true
-      parent:
-        type: string
-        title: |-
-          The name of the parent memo.
-          Format: memos/{id}
-        readOnly: true
-      snippet:
-        type: string
-        description: The snippet of the memo content. Plain text only.
-      location:
-        $ref: '#/definitions/apiv1Location'
-        description: The location of the memo.
   v1MemoProperty:
     type: object
     properties:
@@ -2669,17 +2671,31 @@ definitions:
     type: object
     properties:
       memo:
-        type: string
+        $ref: '#/definitions/v1MemoRelationMemo'
         title: |-
           The name of memo.
           Format: "memos/{uid}"
       relatedMemo:
-        type: string
+        $ref: '#/definitions/v1MemoRelationMemo'
         title: |-
           The name of related memo.
           Format: "memos/{uid}"
       type:
         $ref: '#/definitions/v1MemoRelationType'
+  v1MemoRelationMemo:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the memo.
+          Format: memos/{id}
+      uid:
+        type: string
+      snippet:
+        type: string
+        description: The snippet of the memo content. Plain text only.
+        readOnly: true
   v1MemoRelationType:
     type: string
     enum:
