@@ -115,6 +115,8 @@ message WorkspaceMemoRelatedSetting {
   string default_visibility = 9;
   // reactions is the list of reactions.
   repeated string reactions = 10;
+  // disable_markdown_keymap disallow the registration of markdown keymap.
+  bool disable_markdown_keymap = 11;
 }
 
 message GetWorkspaceSettingRequest {
