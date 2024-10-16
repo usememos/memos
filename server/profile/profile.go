@@ -30,6 +30,8 @@ type Profile struct {
 	Version string
 	// InstanceURL is the url of your memos instance.
 	InstanceURL string
+	// BaseURL is the base url of your memos instance.
+	BaseURL string
 }
 
 func (p *Profile) IsDev() bool {
