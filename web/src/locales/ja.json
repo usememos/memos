@@ -290,6 +290,7 @@
       "disable-password-login-final-warning": "何をしているか理解している場合は、「CONFIRM」と入力してください。",
       "disable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが無効になります。設定済みのIDプロバイダーが失敗した場合、この設定をデータベースで元に戻さない限り、ログインすることはできません。IDプロバイダーを削除する際も、非常に注意が必要です",
       "disable-public-memos": "公開メモを無効化する",
+      "disable-markdown-shortcuts": "Markdownショートカットを無効にする",
       "display-with-updated-time": "更新日時を表示する",
       "enable-auto-compact": "折りたたみを有効化",
       "enable-double-click-to-edit": "ダブルクリックで編集を有効化",

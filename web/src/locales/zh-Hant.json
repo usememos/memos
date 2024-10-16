@@ -290,6 +290,7 @@
       "disable-password-login-final-warning": "如果你知道自己在做什麼，請輸入「CONFIRM」。",
       "disable-password-login-warning": "所有使用者將無法使用密碼登入。如果設定的身份識別提供者失效，不在資料庫中恢復此設定將無法登入。刪除身分識別提供者時也要特別小心❗",
       "disable-public-memos": "停用公共 Memo",
+      "disable-markdown-shortcuts": "停用 Markdown 快捷鍵",
       "display-with-updated-time": "顯示更新時間",
       "enable-auto-compact": "啟用摺疊顯示",
       "enable-double-click-to-edit": "啟用雙擊後編輯",

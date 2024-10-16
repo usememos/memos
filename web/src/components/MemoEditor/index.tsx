@@ -156,8 +156,9 @@ const MemoEditor = (props: Props) => {
         void handleSaveBtnClick();
         return;
       }
-
-      handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
+      if (!workspaceMemoRelatedSetting.disableMarkdownShortcuts) {
+        handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
+      }
     }
     if (event.key === "Tab" && !state.isComposing) {
       event.preventDefault();

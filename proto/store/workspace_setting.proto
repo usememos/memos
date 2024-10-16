@@ -114,4 +114,6 @@ message WorkspaceMemoRelatedSetting {
   string default_visibility = 9;
   // reactions is the list of reactions.
   repeated string reactions = 10;
+  // disable markdown shortcuts
+  bool disable_markdown_shortcuts = 11;
 }
