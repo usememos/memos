@@ -155,7 +155,7 @@ const MemoEditor = (props: Props) => {
         void handleSaveBtnClick();
         return;
       }
-      if (!workspaceMemoRelatedSetting.disableMarkdownKeymap) {
+      if (!workspaceMemoRelatedSetting.disableMarkdownShortcuts) {
         handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
       }
     }

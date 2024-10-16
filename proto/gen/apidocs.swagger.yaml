@@ -2100,9 +2100,9 @@ definitions:
         items:
           type: string
         description: reactions is the list of reactions.
-      disableMarkdownKeymap:
+      disableMarkdownShortcuts:
         type: boolean
-        description: disable_markdown_keymap disallow the registration of markdown keymap.
+        description: disable_markdown_shortcuts disallow the registration of markdown shortcuts.
   apiv1WorkspaceSetting:
     type: object
     properties:

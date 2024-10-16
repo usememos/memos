@@ -109,10 +109,10 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.system-section.disable-markdown-keymap")}</span>
+        <span>{t("setting.system-section.disable-markdown-shortcuts")}</span>
         <Switch
-          checked={memoRelatedSetting.disableMarkdownKeymap}
-          onChange={(event) => updatePartialSetting({ disableMarkdownKeymap: event.target.checked })}
+          checked={memoRelatedSetting.disableMarkdownShortcuts}
+          onChange={(event) => updatePartialSetting({ disableMarkdownShortcuts: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
