@@ -5,7 +5,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
+import { useUserStore, useWorkspaceSettingStore, useMemoStore } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
@@ -57,6 +57,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
   const readonly = memo.creator !== user?.name && !isSuperUser(user);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
+  const memoStore = useMemoStore();
 
   // Initial related data: creator.
   useEffect(() => {
@@ -91,6 +92,22 @@ const MemoView: React.FC<Props> = (props: Props) => {
       setShowEditor(true);
     }
   }, []);
+
+  const handlePinnedBookmarkClick = async () => {
+    try {
+      if (memo.pinned) {
+        await memoStore.updateMemo(
+          {
+            name: memo.name,
+            pinned: false,
+          },
+          ["pinned"],
+        );
+      }
+    } catch (error) {
+      // do nth
+    }
+  };
 
   const displayTime =
     props.displayTimeFormat === "time" ? (
@@ -176,8 +193,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 </Link>
               )}
               {props.showPinned && memo.pinned && (
-                <Tooltip title={t("common.pinned")} placement="top">
-                  <BookmarkIcon className="w-4 h-auto text-amber-500" />
+                <Tooltip title={t("common.unpin")} placement="top">
+                  <span className="cursor-pointer">
+                    <BookmarkIcon className="w-4 h-auto text-amber-500" onClick={handlePinnedBookmarkClick} />
+                  </span>
                 </Tooltip>
               )}
               {!readonly && (
