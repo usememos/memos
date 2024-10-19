@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import ForceGraph2D, { ForceGraphMethods, LinkObject, NodeObject } from "react-force-graph-2d";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { LinkType, NodeType } from "./types";
 import { convertMemoRelationsToGraphData } from "./utils";
@@ -44,7 +45,7 @@ const MemoRelationForceGraph = ({ className, memo }: Props) => {
         nodeRelSize={3}
         nodeLabel={(node) => node.memo.uid.slice(0, 6).toLowerCase()}
         linkColor={() => (mode === "light" ? "#e4e4e7" : "#3f3f46")}
-        graphData={convertMemoRelationsToGraphData(memo.relations)}
+        graphData={convertMemoRelationsToGraphData(memo.relations.filter((r) => r.type === MemoRelation_Type.REFERENCE))}
         onNodeClick={onNodeClick}
         linkDirectionalArrowLength={3}
         linkDirectionalArrowRelPos={1}

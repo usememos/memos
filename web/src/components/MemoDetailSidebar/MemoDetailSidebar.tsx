@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { isEqual } from "lodash-es";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
+import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, MemoProperty } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import MemoRelationForceGraph from "../MemoRelationForceGraph";
@@ -14,6 +15,7 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
   const t = useTranslate();
   const property = MemoProperty.fromPartial(memo.property || {});
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode || property.hasIncompleteTasks;
+  const shouldShowRelationGraph = memo.relations.filter((r) => r.type === MemoRelation_Type.REFERENCE).length > 0;
 
   return (
     <aside
@@ -23,7 +25,7 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
       )}
     >
       <div className="flex flex-col justify-start items-start w-full px-1 gap-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
-        {memo.relations.length > 0 && (
+        {shouldShowRelationGraph && (
           <div className="relative w-full h-36 border rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
             <MemoRelationForceGraph className="w-full h-full" memo={memo} />
             <span className="absolute top-1 left-2 text-xs opacity-60 font-mono">Relations</span>
