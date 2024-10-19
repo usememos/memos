@@ -100,10 +100,10 @@ const UserProfile = () => {
               <div className="w-full flex flex-col justify-start items-start pt-4 pb-8 px-3">
                 <UserAvatar className="!w-16 !h-16 drop-shadow rounded-3xl" avatarUrl={user?.avatarUrl} />
                 <div className="mt-2 w-auto max-w-[calc(100%-6rem)] flex flex-col justify-center items-start">
-                  <p className="w-full text-3xl text-black leading-tight opacity-80 dark:text-gray-200 truncate">
+                  <p className="w-full text-3xl text-black leading-tight font-medium opacity-80 dark:text-gray-200 truncate">
                     {user.nickname || user.username}
                   </p>
-                  <p className="w-full text-gray-500 leading-snug opacity-80 dark:text-gray-400 whitespace-pre-wrap truncate line-clamp-6">
+                  <p className="w-full text-gray-500 leading-snug dark:text-gray-400 whitespace-pre-wrap truncate line-clamp-6">
                     {user.description}
                   </p>
                 </div>
