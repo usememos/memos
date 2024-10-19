@@ -33,6 +33,7 @@
     "lucide-react": "^0.437.0",
     "mermaid": "^11.2.1",
     "react": "^18.3.1",
+    "react-datepicker": "^7.5.0",
     "react-dom": "^18.3.1",
     "react-force-graph-2d": "^1.25.6",
     "react-hot-toast": "^2.4.1",

@@ -2,6 +2,8 @@ import { Select, Option, Button, Divider } from "@mui/joy";
 import { isEqual } from "lodash-es";
 import { SendIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
@@ -428,16 +430,12 @@ const MemoEditor = (props: Props) => {
         onCompositionEnd={handleCompositionEnd}
       >
         {memoName && displayTime && (
-          <div className="relative text-sm">
-            <span className="cursor-pointer text-gray-400 dark:text-gray-500">{displayTime.toLocaleString()}</span>
-            <input
-              className="inset-0 absolute z-1 opacity-0"
-              type="datetime-local"
-              value={displayTime.toLocaleString()}
-              onFocus={(e: any) => e.target.showPicker()}
-              onChange={(e) => setDisplayTime(new Date(e.target.value))}
-            />
-          </div>
+          <DatePicker
+            selected={displayTime}
+            onChange={(date) => date && setDisplayTime(date)}
+            showTimeSelect
+            customInput={<span className="cursor-pointer text-sm text-gray-400 dark:text-gray-500">{displayTime.toLocaleString()}</span>}
+          />
         )}
         <Editor ref={editorRef} {...editorConfig} />
         <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />

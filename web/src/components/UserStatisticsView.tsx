@@ -74,13 +74,6 @@ const UserStatisticsView = () => {
         <div className="relative text-base font-medium leading-6 flex flex-row items-center dark:text-gray-400">
           <CalendarDaysIcon className="w-5 h-auto mr-1 opacity-60" strokeWidth={1.5} />
           <span>{dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}</span>
-          <input
-            className="inset-0 absolute z-1 opacity-0"
-            type="month"
-            value={visibleMonthString}
-            onFocus={(e: any) => e.target.showPicker()}
-            onChange={(e) => setVisibleMonthString(e.target.value || dayjs().format("YYYY-MM"))}
-          />
         </div>
         <div className="invisible group-hover:visible flex justify-end items-center">
           <Popover>
