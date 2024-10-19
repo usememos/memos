@@ -1,8 +1,9 @@
 import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import { BookmarkIcon, MessageCircleMoreIcon } from "lucide-react";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore, useWorkspaceSettingStore, useMemoStore } from "@/store/v1";
@@ -43,13 +44,14 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const currentUser = useCurrentUser();
   const userStore = useUserStore();
   const user = useCurrentUser();
+  const memoStore = useMemoStore();
   const workspaceSettingStore = useWorkspaceSettingStore();
-  const workspaceMemoRelatedSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
-    WorkspaceMemoRelatedSetting.fromPartial({});
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const memoContainerRef = useRef<HTMLDivElement>(null);
+  const workspaceMemoRelatedSetting =
+    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
+    WorkspaceMemoRelatedSetting.fromPartial({});
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(
     (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo?.name === memo.name,
@@ -57,19 +59,16 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
   const readonly = memo.creator !== user?.name && !isSuperUser(user);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
-  const memoStore = useMemoStore();
 
   // Initial related data: creator.
-  useEffect(() => {
-    (async () => {
-      const user = await userStore.getOrFetchUserByName(memo.creator);
-      setCreator(user);
-    })();
+  useAsyncEffect(async () => {
+    const user = await userStore.getOrFetchUserByName(memo.creator);
+    setCreator(user);
   }, []);
 
-  const handleGotoMemoDetailPage = () => {
+  const handleGotoMemoDetailPage = useCallback(() => {
     navigateTo(`/m/${memo.uid}`);
-  };
+  }, [memo.uid]);
 
   const handleMemoContentClick = useCallback(async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
@@ -93,7 +92,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
-  const handlePinnedBookmarkClick = async () => {
+  const onPinIconClick = async () => {
     try {
       if (memo.pinned) {
         await memoStore.updateMemo(
@@ -195,7 +194,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
               {props.showPinned && memo.pinned && (
                 <Tooltip title={t("common.unpin")} placement="top">
                   <span className="cursor-pointer">
-                    <BookmarkIcon className="w-4 h-auto text-amber-500" onClick={handlePinnedBookmarkClick} />
+                    <BookmarkIcon className="w-4 h-auto text-amber-500" onClick={onPinIconClick} />
                   </span>
                 </Tooltip>
               )}

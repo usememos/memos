@@ -25,10 +25,15 @@ const SignIn = () => {
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
 
+  // Redirect to root page if already signed in.
   useEffect(() => {
     if (currentUser) {
       window.location.href = Routes.ROOT;
     }
+  }, []);
+
+  // Prepare identity provider list.
+  useEffect(() => {
     const fetchIdentityProviderList = async () => {
       const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
       setIdentityProviderList(identityProviders);
