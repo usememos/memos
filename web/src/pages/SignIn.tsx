@@ -7,7 +7,9 @@ import LocaleSelect from "@/components/LocaleSelect";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
 import { identityProviderServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
+import { Routes } from "@/router";
 import { extractIdentityProviderIdFromName, useWorkspaceSettingStore } from "@/store/v1";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
@@ -16,6 +18,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const SignIn = () => {
   const t = useTranslate();
+  const currentUser = useCurrentUser();
   const commonContext = useCommonContext();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
@@ -23,6 +26,9 @@ const SignIn = () => {
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
 
   useEffect(() => {
+    if (currentUser) {
+      window.location.href = Routes.ROOT;
+    }
     const fetchIdentityProviderList = async () => {
       const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
       setIdentityProviderList(identityProviders);
