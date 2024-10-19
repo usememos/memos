@@ -109,7 +109,7 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.system-section.disable-markdown-shortcuts")}</span>
+        <span>{t("setting.system-section.disable-markdown-shortcuts-in-editor")}</span>
         <Switch
           checked={memoRelatedSetting.disableMarkdownShortcuts}
           onChange={(event) => updatePartialSetting({ disableMarkdownShortcuts: event.target.checked })}
