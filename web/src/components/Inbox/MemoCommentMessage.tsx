@@ -1,9 +1,10 @@
 import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
-import { InboxIcon, MessageCircleIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { InboxIcon, LoaderIcon, MessageCircleIcon } from "lucide-react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
+import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { activityNamePrefix, memoNamePrefix, useInboxStore, useMemoStore, useUserStore } from "@/store/v1";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
@@ -23,27 +24,27 @@ const MemoCommentMessage = ({ inbox }: Props) => {
   const userStore = useUserStore();
   const [relatedMemo, setRelatedMemo] = useState<Memo | undefined>(undefined);
   const [sender, setSender] = useState<User | undefined>(undefined);
+  const [initialized, setInitialized] = useState<boolean>(false);
 
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (!inbox.activityId) {
       return;
     }
 
-    (async () => {
-      const activity = await activityServiceClient.getActivity({
-        name: `${activityNamePrefix}${inbox.activityId}`,
+    const activity = await activityServiceClient.getActivity({
+      name: `${activityNamePrefix}${inbox.activityId}`,
+    });
+    if (activity.payload?.memoComment) {
+      const memoCommentPayload = activity.payload.memoComment;
+      const relatedMemoId = memoCommentPayload.relatedMemoId;
+      const memo = await memoStore.getOrFetchMemoByName(`${memoNamePrefix}${relatedMemoId}`, {
+        skipStore: true,
       });
-      if (activity.payload?.memoComment) {
-        const memoCommentPayload = activity.payload.memoComment;
-        const relatedMemoId = memoCommentPayload.relatedMemoId;
-        const memo = await memoStore.getOrFetchMemoByName(`${memoNamePrefix}${relatedMemoId}`, {
-          skipStore: true,
-        });
-        setRelatedMemo(memo);
-        const sender = await userStore.getOrFetchUserByName(inbox.sender);
-        setSender(sender);
-      }
-    })();
+      setRelatedMemo(memo);
+      const sender = await userStore.getOrFetchUserByName(inbox.sender);
+      setSender(sender);
+      setInitialized(true);
+    }
   }, [inbox.activityId]);
 
   const handleNavigateToMemo = async () => {
@@ -86,30 +87,41 @@ const MemoCommentMessage = ({ inbox }: Props) => {
       </div>
       <div
         className={clsx(
-          "border w-full p-3 px-4 rounded-lg flex flex-col justify-start items-start gap-2 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-700",
+          "border w-full p-2 px-3 rounded-lg flex flex-col justify-start items-start gap-1 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-700",
           inbox.status !== Inbox_Status.UNREAD && "opacity-60",
         )}
       >
-        <div className="w-full flex flex-row justify-between items-center">
-          <span className="text-xs text-gray-500">{inbox.createTime?.toLocaleString()}</span>
-          <div>
-            {inbox.status === Inbox_Status.UNREAD && (
-              <Tooltip title={t("common.archive")} placement="top">
-                <InboxIcon className="w-4 h-auto cursor-pointer text-gray-400 hover:text-blue-600" onClick={() => handleArchiveMessage()} />
-              </Tooltip>
-            )}
+        {initialized ? (
+          <>
+            <div className="w-full flex flex-row justify-between items-center">
+              <span className="text-sm text-gray-500">{inbox.createTime?.toLocaleString()}</span>
+              <div>
+                {inbox.status === Inbox_Status.UNREAD && (
+                  <Tooltip title={t("common.archive")} placement="top">
+                    <InboxIcon
+                      className="w-4 h-auto cursor-pointer text-gray-400 hover:text-blue-600"
+                      onClick={() => handleArchiveMessage()}
+                    />
+                  </Tooltip>
+                )}
+              </div>
+            </div>
+            <p
+              className="text-base leading-tight cursor-pointer text-gray-500 dark:text-gray-400 hover:underline hover:text-blue-600"
+              onClick={handleNavigateToMemo}
+            >
+              {t("inbox.memo-comment", {
+                user: sender?.nickname || sender?.username,
+                memo: `memos/${relatedMemo?.uid}`,
+                interpolation: { escapeValue: false },
+              })}
+            </p>
+          </>
+        ) : (
+          <div className="w-full flex flex-row justify-center items-center my-2">
+            <LoaderIcon className="animate-spin text-zinc-500" />
           </div>
-        </div>
-        <p
-          className="text-base leading-tight cursor-pointer text-gray-500 dark:text-gray-400 hover:underline hover:text-blue-600"
-          onClick={handleNavigateToMemo}
-        >
-          {t("inbox.memo-comment", {
-            user: sender?.nickname || sender?.username,
-            memo: `memos/${relatedMemo?.uid}`,
-            interpolation: { escapeValue: false },
-          })}
-        </p>
+        )}
       </div>
     </div>
   );
