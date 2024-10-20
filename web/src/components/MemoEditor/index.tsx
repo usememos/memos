@@ -435,6 +435,7 @@ const MemoEditor = (props: Props) => {
             onChange={(date) => date && setDisplayTime(date)}
             showTimeSelect
             customInput={<span className="cursor-pointer text-sm text-gray-400 dark:text-gray-500">{displayTime.toLocaleString()}</span>}
+            calendarClassName="ml-24 sm:ml-44"
           />
         )}
         <Editor ref={editorRef} {...editorConfig} />
