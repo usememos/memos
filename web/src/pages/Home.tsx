@@ -34,7 +34,9 @@ const Home = () => {
       } else if (filter.factor === "property.hasCode") {
         filters.push(`has_code == true`);
       } else if (filter.factor === "displayTime") {
-        const timestampAfter = new Date(filter.value).getTime() / 1000;
+        const filterDate = new Date(filter.value);
+        const filterUtcTimestamp = filterDate.getTime() + filterDate.getTimezoneOffset() * 60 * 1000;
+        const timestampAfter = filterUtcTimestamp / 1000;
         filters.push(`display_time_after == ${timestampAfter}`);
         filters.push(`display_time_before == ${timestampAfter + 60 * 60 * 24}`);
       }
