@@ -1,7 +1,7 @@
 import { Button, Select, Textarea, Option, Divider, Switch } from "@mui/joy";
 import { isEqual } from "lodash-es";
 import { ExternalLinkIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
@@ -18,16 +18,21 @@ const WorkspaceSection = () => {
   );
   const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(originalSetting);
 
+  useEffect(() => {
+    setWorkspaceGeneralSetting(originalSetting);
+  }, [workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)]);
+
   const handleUpdateCustomizedProfileButtonClick = () => {
     showUpdateCustomizedProfileDialog();
   };
 
   const updatePartialSetting = (partial: Partial<WorkspaceGeneralSetting>) => {
-    const newWorkspaceGeneralSetting = WorkspaceGeneralSetting.fromPartial({
-      ...workspaceGeneralSetting,
-      ...partial,
-    });
-    setWorkspaceGeneralSetting(newWorkspaceGeneralSetting);
+    setWorkspaceGeneralSetting(
+      WorkspaceGeneralSetting.fromPartial({
+        ...workspaceGeneralSetting,
+        ...partial,
+      }),
+    );
   };
 
   const handleSaveGeneralSetting = async () => {
