@@ -158,13 +158,19 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
 
       const cursorPosition = editorActions.getCursorPosition();
       const prevContent = editorActions.getContent().substring(0, cursorPosition);
+      const lines = prevContent.split("\n");
+      const lastLine = lines[lines.length - 1];
+
+      // Get the indentation of the previous line
+      const indentationMatch = lastLine.match(/^\s*/);
+      const indentation = indentationMatch ? indentationMatch[0] : "";
       const { nodes } = await markdownServiceClient.parseMarkdown({ markdown: prevContent });
       const lastNode = last(last(nodes)?.listNode?.children);
       if (!lastNode) {
         return;
       }
 
-      let insertText = "";
+      let insertText = indentation; // Keep the indentation of the previous line
       if (lastNode.type === NodeType.TASK_LIST_ITEM) {
         const { symbol } = lastNode.taskListItemNode as TaskListItemNode;
         insertText = `${symbol} [ ] `;
