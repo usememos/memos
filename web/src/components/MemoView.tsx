@@ -139,14 +139,14 @@ const MemoView: React.FC<Props> = (props: Props) => {
             <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
               {props.showCreator && creator ? (
                 <div className="w-full flex flex-row justify-start items-center">
-                  <Link className="w-auto hover:opacity-80" to={`/u/${encodeURIComponent(creator.username)}`} unstable_viewTransition>
+                  <Link className="w-auto hover:opacity-80" to={`/u/${encodeURIComponent(creator.username)}`} viewTransition>
                     <UserAvatar className="mr-2 shrink-0" avatarUrl={creator.avatarUrl} />
                   </Link>
                   <div className="w-full flex flex-col justify-center items-start">
                     <Link
                       className="w-full block leading-tight hover:opacity-80 truncate text-gray-600 dark:text-gray-400"
                       to={`/u/${encodeURIComponent(creator.username)}`}
-                      unstable_viewTransition
+                      viewTransition
                     >
                       {creator.nickname || creator.username}
                     </Link>
@@ -185,7 +185,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     commentAmount === 0 && "invisible group-hover:visible",
                   )}
                   to={`/m/${memo.uid}#comments`}
-                  unstable_viewTransition
+                  viewTransition
                 >
                   <MessageCircleMoreIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
                   {commentAmount > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{commentAmount}</span>}

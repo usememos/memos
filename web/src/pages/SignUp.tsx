@@ -139,7 +139,7 @@ const SignUp = () => {
         ) : (
           <p className="w-full mt-4 text-sm">
             <span className="dark:text-gray-500">{t("auth.sign-in-tip")}</span>
-            <Link to="/auth" className="cursor-pointer ml-2 text-blue-600 hover:underline" unstable_viewTransition>
+            <Link to="/auth" className="cursor-pointer ml-2 text-blue-600 hover:underline" viewTransition>
               {t("common.sign-in")}
             </Link>
           </p>

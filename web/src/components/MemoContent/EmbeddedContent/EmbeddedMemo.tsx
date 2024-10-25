@@ -75,7 +75,7 @@ const EmbeddedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
           <span className="text-xs opacity-60 leading-5 cursor-pointer hover:opacity-80" onClick={() => copyMemoUid(memo.uid)}>
             {memo.uid.slice(0, 6)}
           </span>
-          <Link className="opacity-60 hover:opacity-80" to={`/m/${memo.uid}`} unstable_viewTransition>
+          <Link className="opacity-60 hover:opacity-80" to={`/m/${memo.uid}`} viewTransition>
             <ArrowUpRightIcon className="w-5 h-auto" />
           </Link>
         </div>

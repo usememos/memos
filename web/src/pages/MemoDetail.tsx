@@ -96,7 +96,7 @@ const MemoDetail = () => {
               <Link
                 className="px-3 py-1 border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
                 to={`/m/${parentMemo.uid}`}
-                unstable_viewTransition
+                viewTransition
               >
                 <ArrowUpLeftFromCircleIcon className="w-4 h-auto shrink-0 opacity-60 mr-2" />
                 <span className="truncate">{parentMemo.content}</span>
