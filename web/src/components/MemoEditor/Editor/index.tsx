@@ -164,7 +164,11 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         return;
       }
 
-      let insertText = "";
+      // Get the indentation of the previous line
+      const lines = prevContent.split("\n");
+      const lastLine = lines[lines.length - 1];
+      const indentationMatch = lastLine.match(/^\s*/);
+      let insertText = indentationMatch ? indentationMatch[0] : ""; // Keep the indentation of the previous line
       if (lastNode.type === NodeType.TASK_LIST_ITEM) {
         const { symbol } = lastNode.taskListItemNode as TaskListItemNode;
         insertText = `${symbol} [ ] `;
