@@ -1,4 +1,5 @@
-import { Button, Divider, Dropdown, List, ListItem, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Divider, Dropdown, List, ListItem, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { MoreVerticalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -42,7 +43,9 @@ const SSOSection = () => {
           <span className="font-mono text-gray-400">{t("setting.sso-section.sso-list")}</span>
           <LearnMore url="https://usememos.com/docs/advanced-settings/keycloak" />
         </div>
-        <Button onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}>{t("common.create")}</Button>
+        <Button color="primary" onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}>
+          {t("common.create")}
+        </Button>
       </div>
       <Divider />
       {identityProviderList.map((identityProvider) => (

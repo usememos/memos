@@ -1,11 +1,11 @@
 import "@github/relative-time-element";
 import { CssVarsProvider } from "@mui/joy";
+import "@usememos/mui/dist/index.css";
 import "leaflet/dist/leaflet.css";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { RouterProvider } from "react-router-dom";
-import "./css/global.css";
 import "./css/tailwind.css";
 import "./helpers/polyfill";
 import "./i18n";

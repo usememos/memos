@@ -1,4 +1,5 @@
-import { Dropdown, IconButton, Menu, MenuButton } from "@mui/joy";
+import { Dropdown, Menu, MenuButton } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { HashIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
@@ -41,10 +42,12 @@ const TagSelector = (props: Props) => {
   return (
     <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
       <MenuButton
-        slots={{ root: IconButton }}
+        slots={{ root: Button }}
         slotProps={{
           root: {
             size: "sm",
+            variant: "plain",
+            className: "px-2",
           },
         }}
       >

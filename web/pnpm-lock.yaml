@@ -39,8 +39,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0(react-redux@9.1.2(@types/react@18.3.12)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
       '@usememos/mui':
-        specifier: 0.0.1-alpha.6
-        version: 0.0.1-alpha.6(lucide-react@0.453.0(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 0.0.1-alpha.10
+        version: 0.0.1-alpha.10(lucide-react@0.453.0(react@18.3.1))(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwind-merge@2.5.4)(tailwindcss@3.4.14)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1409,12 +1409,15 @@ packages:
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
-  '@usememos/mui@0.0.1-alpha.6':
-    resolution: {integrity: sha512-CVE3kQ/Uk+T3Zp8jcEOWR4syS6hIxVrQ9UgwpnOiR8d3OEghRFbZBQ6hs4C0sEefIPWS5xsZiEKa0E4BIZezBw==}
+  '@usememos/mui@0.0.1-alpha.10':
+    resolution: {integrity: sha512-jyEQ4sgmYCxOWEyuUat7MqQN7Gy4PohQxnLvIje0upqu2zT2AaI0GhOPs/t2HkYK09tFXLAVnhp2I+6jBBhfIg==}
     peerDependencies:
       lucide-react: ^0.453.0
+      postcss: ^8.4.47
       react: '>=17.0.0'
       react-dom: '>=17.0.0'
+      tailwind-merge: ^2.5.4
+      tailwindcss: ^3.4.14
 
   '@vitejs/plugin-react@4.3.3':
     resolution: {integrity: sha512-NooDe9GpHGqNns1i8XDERg0Vsg5SSYRhRxxyTGogUdkdNt47jal+fbuYi+Yfq6pzRCKXyoPcWisfxE6RIM3GKA==}
@@ -4639,11 +4642,14 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@usememos/mui@0.0.1-alpha.6(lucide-react@0.453.0(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@usememos/mui@0.0.1-alpha.10(lucide-react@0.453.0(react@18.3.1))(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwind-merge@2.5.4)(tailwindcss@3.4.14)':
     dependencies:
       lucide-react: 0.453.0(react@18.3.1)
+      postcss: 8.4.47
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+      tailwind-merge: 2.5.4
+      tailwindcss: 3.4.14
 
   '@vitejs/plugin-react@4.3.3(vite@5.4.10(@types/node@22.8.0)(less@4.2.0))':
     dependencies:

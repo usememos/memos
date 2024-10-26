@@ -1,4 +1,4 @@
-import { Button } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { ArrowDownIcon, LoaderIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
@@ -62,14 +62,9 @@ const PagedMemoList = (props: Props) => {
       )}
       {!state.isRequesting && state.nextPageToken && (
         <div className="w-full flex flex-row justify-center items-center my-4">
-          <Button
-            variant="plain"
-            color="neutral"
-            loading={state.isRequesting}
-            endDecorator={<ArrowDownIcon className="w-4 h-auto" />}
-            onClick={() => fetchMoreMemos(state.nextPageToken)}
-          >
+          <Button variant="plain" onClick={() => fetchMoreMemos(state.nextPageToken)}>
             {t("memo.load-more")}
+            <ArrowDownIcon className="ml-2 w-4 h-auto" />
           </Button>
         </div>
       )}

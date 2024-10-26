@@ -1,4 +1,5 @@
-import { Button, IconButton, Input, Textarea } from "@mui/joy";
+import { Input, Textarea } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
@@ -146,9 +147,9 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     <>
       <div className="dialog-header-container !w-64">
         <p className="title-text">{t("setting.account-section.update-information")}</p>
-        <IconButton size="sm" onClick={handleCloseBtnClick}>
+        <Button size="sm" variant="plain" onClick={handleCloseBtnClick}>
           <XIcon className="w-5 h-auto" />
-        </IconButton>
+        </Button>
       </div>
       <div className="dialog-content-container space-y-2">
         <div className="w-full flex flex-row justify-start items-center">
@@ -203,7 +204,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
           onChange={handleDescriptionChanged}
         />
         <div className="w-full flex flex-row justify-end items-center pt-4 space-x-2">
-          <Button color="neutral" variant="plain" onClick={handleCloseBtnClick}>
+          <Button variant="plain" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </Button>
           <Button color="primary" onClick={handleSaveBtnClick}>

@@ -1,6 +1,7 @@
-import { Select, Option, Button, Divider } from "@mui/joy";
+import { Select, Option, Divider } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { isEqual } from "lodash-es";
-import { SendIcon } from "lucide-react";
+import { LoaderIcon, SendIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -442,7 +443,7 @@ const MemoEditor = (props: Props) => {
         <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
         <div className="relative w-full flex flex-row justify-between items-center pt-2" onFocus={(e) => e.stopPropagation()}>
-          <div className="flex flex-row justify-start items-center opacity-80 dark:opacity-60">
+          <div className="flex flex-row justify-start items-center opacity-80 dark:opacity-60 -space-x-1">
             <TagSelector editorRef={editorRef} />
             <MarkdownMenu editorRef={editorRef} />
             <UploadResourceButton />
@@ -482,18 +483,13 @@ const MemoEditor = (props: Props) => {
           </div>
           <div className="shrink-0 flex flex-row justify-end items-center gap-2">
             {props.onCancel && (
-              <Button className="!font-normal" color="neutral" variant="plain" loading={state.isRequesting} onClick={handleCancelBtnClick}>
+              <Button variant="plain" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
                 {t("common.cancel")}
               </Button>
             )}
-            <Button
-              className="!font-normal"
-              disabled={!allowSave}
-              loading={state.isRequesting}
-              endDecorator={<SendIcon className="w-4 h-auto" />}
-              onClick={handleSaveBtnClick}
-            >
+            <Button color="primary" disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick}>
               {t("editor.save")}
+              {!state.isRequesting ? <SendIcon className="w-4 h-auto ml-1" /> : <LoaderIcon className="w-4 h-auto ml-1 animate-spin" />}
             </Button>
           </div>
         </div>

@@ -1,4 +1,5 @@
-import { Button, IconButton, Input } from "@mui/joy";
+import { Input } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { LatLng } from "leaflet";
 import { MapPinIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -94,7 +95,7 @@ const LocationSelector = (props: Props) => {
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger>
-        <IconButton className="group" size="sm" component="div">
+        <Button className="group px-2" variant="plain">
           <MapPinIcon className="w-5 h-5 mx-auto shrink-0" />
           {props.location && (
             <>
@@ -104,7 +105,7 @@ const LocationSelector = (props: Props) => {
               <XIcon className="w-5 h-5 mx-auto shrink-0 hidden group-hover:block opacity-60 hover:opacity-80" onClick={removeLocation} />
             </>
           )}
-        </IconButton>
+        </Button>
       </PopoverTrigger>
       <PopoverContent align="center">
         <div className="min-w-80 sm:w-128 flex flex-col justify-start items-start">
@@ -125,7 +126,7 @@ const LocationSelector = (props: Props) => {
             />
             <Button
               className="shrink-0"
-              size="sm"
+              color="primary"
               onClick={() => {
                 props.onChange(
                   Location.fromPartial({

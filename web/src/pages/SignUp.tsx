@@ -1,4 +1,6 @@
-import { Button, Input } from "@mui/joy";
+import { Input } from "@mui/joy";
+import { Button } from "@usememos/mui";
+import { LoaderIcon } from "lucide-react";
 import { ClientError } from "nice-grpc-web";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -119,14 +121,15 @@ const SignUp = () => {
               </div>
               <div className="flex flex-row justify-end items-center w-full mt-6">
                 <Button
-                  className="w-full"
-                  size="md"
                   type="submit"
+                  color="primary"
+                  size="lg"
+                  fullWidth
                   disabled={actionBtnLoadingState.isLoading}
-                  loading={actionBtnLoadingState.isLoading}
                   onClick={handleSignUpButtonClick}
                 >
                   {t("common.sign-up")}
+                  {actionBtnLoadingState.isLoading && <LoaderIcon className="w-5 h-auto ml-2 animate-spin opacity-60" />}
                 </Button>
               </div>
             </form>

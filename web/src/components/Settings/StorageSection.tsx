@@ -1,4 +1,5 @@
-import { Button, Divider, Input, List, ListItem, Radio, RadioGroup, Tooltip } from "@mui/joy";
+import { Divider, Input, List, ListItem, Radio, RadioGroup, Tooltip } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { HelpCircleIcon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -183,7 +184,7 @@ const StorageSection = () => {
         </>
       )}
       <div>
-        <Button disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>
+        <Button color="primary" disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>
           {t("common.save")}
         </Button>
       </div>

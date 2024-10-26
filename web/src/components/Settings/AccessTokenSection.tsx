@@ -1,4 +1,4 @@
-import { Button, IconButton } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import copy from "copy-to-clipboard";
 import { ClipboardIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -63,8 +63,7 @@ const AccessTokenSection = () => {
           </div>
           <div className="mt-4 sm:mt-0">
             <Button
-              variant="outlined"
-              color="neutral"
+              color="primary"
               onClick={() => {
                 showCreateAccessTokenDialog(handleCreateAccessTokenDialogConfirm);
               }}
@@ -101,9 +100,9 @@ const AccessTokenSection = () => {
                     <tr key={userAccessToken.accessToken}>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400 flex flex-row justify-start items-center gap-x-1">
                         <span className="font-mono">{getFormatedAccessToken(userAccessToken.accessToken)}</span>
-                        <IconButton color="neutral" variant="plain" size="sm" onClick={() => copyAccessToken(userAccessToken.accessToken)}>
+                        <Button variant="plain" size="sm" onClick={() => copyAccessToken(userAccessToken.accessToken)}>
                           <ClipboardIcon className="w-4 h-auto text-gray-400" />
-                        </IconButton>
+                        </Button>
                       </td>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-400">
                         {userAccessToken.description}
@@ -115,16 +114,15 @@ const AccessTokenSection = () => {
                         {userAccessToken.expiresAt?.toLocaleString() ?? "Never"}
                       </td>
                       <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm">
-                        <IconButton
-                          color="danger"
+                        <Button
                           variant="plain"
                           size="sm"
                           onClick={() => {
                             handleDeleteAccessToken(userAccessToken.accessToken);
                           }}
                         >
-                          <TrashIcon className="w-4 h-auto" />
-                        </IconButton>
+                          <TrashIcon className="text-red-600 w-4 h-auto" />
+                        </Button>
                       </td>
                     </tr>
                   ))}

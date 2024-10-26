@@ -1,8 +1,9 @@
-import { Button, Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { MoreVerticalIcon, PenLineIcon } from "lucide-react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTranslate } from "@/utils/i18n";
-import showChangePasswordDialog from "../ChangePasswordDialog";
+import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
 import AccessTokenSection from "./AccessTokenSection";
@@ -25,18 +26,18 @@ const MyAccountSection = () => {
         </div>
       </div>
       <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
-        <Button variant="outlined" color="neutral" size="sm" onClick={showUpdateAccountDialog}>
+        <Button variant="outlined" size="sm" onClick={showUpdateAccountDialog}>
           <PenLineIcon className="w-4 h-4 mx-auto mr-1" />
           {t("common.edit")}
         </Button>
         <Dropdown>
           <MenuButton slots={{ root: "div" }}>
-            <Button variant="outlined" color="neutral" size="sm">
+            <Button variant="outlined" size="sm">
               <MoreVerticalIcon className="w-4 h-4 mx-auto" />
             </Button>
           </MenuButton>
           <Menu className="text-sm" size="sm" placement="bottom">
-            <MenuItem onClick={showChangePasswordDialog}>{t("setting.account-section.change-password")}</MenuItem>
+            <MenuItem onClick={() => showChangeMemberPasswordDialog(user)}>{t("setting.account-section.change-password")}</MenuItem>
           </Menu>
         </Dropdown>
       </div>

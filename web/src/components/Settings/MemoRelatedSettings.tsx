@@ -1,4 +1,5 @@
-import { Button, Input, Switch, Select, Option, Chip, ChipDelete } from "@mui/joy";
+import { Input, Switch, Select, Option, Chip, ChipDelete } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { isEqual, uniq } from "lodash-es";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
@@ -179,7 +180,7 @@ const MemoRelatedSettings = () => {
         </div>
       </div>
       <div className="mt-2 w-full flex justify-end">
-        <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
+        <Button color="primary" disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
           {t("common.save")}
         </Button>
       </div>

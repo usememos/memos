@@ -1,5 +1,5 @@
-import { Dropdown, IconButton, Menu, MenuButton, MenuItem } from "@mui/joy";
-import { Link } from "@mui/joy";
+import { Dropdown, Menu, MenuButton, MenuItem, Link } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { CheckSquareIcon, Code2Icon, SquareSlashIcon } from "lucide-react";
 import { EditorRefActions } from "../Editor";
 
@@ -60,10 +60,12 @@ const MarkdownMenu = (props: Props) => {
   return (
     <Dropdown>
       <MenuButton
-        slots={{ root: IconButton }}
+        slots={{ root: Button }}
         slotProps={{
           root: {
             size: "sm",
+            variant: "plain",
+            className: "px-2",
           },
         }}
       >

@@ -1,4 +1,4 @@
-import { Button, IconButton } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { ExternalLinkIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -47,8 +47,7 @@ const WebhookSection = () => {
         </div>
         <div>
           <Button
-            variant="outlined"
-            color="neutral"
+            color="primary"
             onClick={() => {
               showCreateWebhookDialog(handleCreateAccessTokenDialogConfirm);
             }}
@@ -80,16 +79,15 @@ const WebhookSection = () => {
                     <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400">{webhook.name}</td>
                     <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400">{webhook.url}</td>
                     <td className="relative whitespace-nowrap px-3 py-2 text-right text-sm">
-                      <IconButton
-                        color="danger"
+                      <Button
                         variant="plain"
                         size="sm"
                         onClick={() => {
                           handleDeleteWebhook(webhook);
                         }}
                       >
-                        <TrashIcon className="w-4 h-auto" />
-                      </IconButton>
+                        <TrashIcon className="text-red-600 w-4 h-auto" />
+                      </Button>
                     </td>
                   </tr>
                 ))}

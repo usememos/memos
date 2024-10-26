@@ -1,4 +1,5 @@
-import { Divider, IconButton, Tooltip } from "@mui/joy";
+import { Divider, Tooltip } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
@@ -81,12 +82,20 @@ const UserStatisticsView = () => {
               <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
             </PopoverTrigger>
             <PopoverContent className="flex flex-row justify-end items-center" align="end" alignOffset={-12}>
-              <IconButton size="sm" onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}>
+              <Button
+                size="sm"
+                variant="plain"
+                onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
+              >
                 <ChevronLeftIcon className="w-5 h-auto shrink-0 opacity-60" />
-              </IconButton>
-              <IconButton size="sm" onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}>
+              </Button>
+              <Button
+                size="sm"
+                variant="plain"
+                onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
+              >
                 <ChevronRightIcon className="w-5 h-auto shrink-0 opacity-60" />
-              </IconButton>
+              </Button>
             </PopoverContent>
           </Popover>
         </div>

@@ -1,4 +1,4 @@
-import { Button } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import clsx from "clsx";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
 import { ClientError } from "nice-grpc-web";
@@ -36,7 +36,7 @@ const MemoDetail = () => {
   const commentRelations =
     memo?.relations.filter((relation) => relation.relatedMemo?.name === memo.name && relation.type === MemoRelation_Type.COMMENT) || [];
   const comments = commentRelations.map((relation) => memoStore.getMemoByName(relation.memo!.name)).filter((memo) => memo) as any as Memo[];
-  const showCreateCommentButton = workspaceMemoRelatedSetting.enableComment && currentUser;
+  const showCreateCommentButton = workspaceMemoRelatedSetting.enableComment && currentUser && !showCommentEditor;
 
   // Prepare memo.
   useEffect(() => {
@@ -120,27 +120,23 @@ const MemoDetail = () => {
               {comments.length === 0 ? (
                 showCreateCommentButton && (
                   <div className="w-full flex flex-row justify-center items-center py-6">
-                    <Button
-                      variant="plain"
-                      color="neutral"
-                      endDecorator={<MessageCircleIcon className="w-5 h-auto text-gray-500" />}
-                      onClick={handleShowCommentEditor}
-                    >
-                      <span className="font-normal text-gray-500">{t("memo.comment.write-a-comment")}</span>
+                    <Button variant="plain" color="primary" onClick={handleShowCommentEditor}>
+                      <span className="text-gray-500">{t("memo.comment.write-a-comment")}</span>
+                      <MessageCircleIcon className="ml-2 w-5 h-auto text-gray-500" />
                     </Button>
                   </div>
                 )
               ) : (
                 <>
-                  <div className="w-full flex flex-row justify-between items-center px-3 mb-2">
+                  <div className="w-full flex flex-row justify-between items-center h-8 pl-3 mb-2">
                     <div className="flex flex-row justify-start items-center">
                       <MessageCircleIcon className="w-5 h-auto text-gray-400 mr-1" />
                       <span className="text-gray-400 text-sm">{t("memo.comment.self")}</span>
                       <span className="text-gray-400 text-sm ml-1">({comments.length})</span>
                     </div>
                     {showCreateCommentButton && (
-                      <Button variant="plain" color="neutral" onClick={handleShowCommentEditor}>
-                        <span className="font-normal text-gray-500">{t("memo.comment.write-a-comment")}</span>
+                      <Button variant="plain" color="primary" className="text-gray-500" onClick={handleShowCommentEditor}>
+                        {t("memo.comment.write-a-comment")}
                       </Button>
                     )}
                   </div>

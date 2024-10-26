@@ -1,4 +1,4 @@
-import { Button } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { ExternalLinkIcon } from "lucide-react";
@@ -88,13 +88,9 @@ const UserProfile = () => {
           (user ? (
             <>
               <div className="my-4 w-full flex justify-end items-center gap-2">
-                <Button
-                  color="neutral"
-                  variant="outlined"
-                  endDecorator={<ExternalLinkIcon className="w-4 h-auto opacity-60" />}
-                  onClick={handleCopyProfileLink}
-                >
+                <Button variant="outlined" onClick={handleCopyProfileLink}>
                   {t("common.share")}
+                  <ExternalLinkIcon className="ml-1 w-4 h-auto opacity-60" />
                 </Button>
               </div>
               <div className="w-full flex flex-col justify-start items-start pt-4 pb-8 px-3">

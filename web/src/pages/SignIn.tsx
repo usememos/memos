@@ -1,4 +1,5 @@
-import { Button, Divider } from "@mui/joy";
+import { Divider } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -96,10 +97,9 @@ const SignIn = () => {
               {identityProviderList.map((identityProvider) => (
                 <Button
                   key={identityProvider.name}
+                  color="primary"
                   variant="outlined"
-                  color="neutral"
-                  className="w-full"
-                  size="md"
+                  fullWidth
                   onClick={() => handleSignInWithIdentityProvider(identityProvider)}
                 >
                   {t("common.sign-in-with", { provider: identityProvider.title })}

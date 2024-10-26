@@ -1,4 +1,5 @@
-import { Button, Select, Textarea, Option, Divider, Switch } from "@mui/joy";
+import { Select, Textarea, Option, Divider, Switch } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -57,7 +58,7 @@ const WorkspaceSection = () => {
           {t("setting.system-section.server-name")}:{" "}
           <span className="font-mono font-bold">{workspaceGeneralSetting.customProfile?.title || "Memos"}</span>
         </div>
-        <Button variant="outlined" color="neutral" onClick={handleUpdateCustomizedProfileButtonClick}>
+        <Button variant="outlined" onClick={handleUpdateCustomizedProfileButtonClick}>
           {t("common.edit")}
         </Button>
       </div>
@@ -147,7 +148,7 @@ const WorkspaceSection = () => {
         </Select>
       </div>
       <div className="mt-2 w-full flex justify-end">
-        <Button disabled={isEqual(workspaceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
+        <Button color="primary" disabled={isEqual(workspaceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
           {t("common.save")}
         </Button>
       </div>
