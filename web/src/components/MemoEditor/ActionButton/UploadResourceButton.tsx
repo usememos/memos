@@ -66,7 +66,7 @@ const UploadResourceButton = () => {
   };
 
   return (
-    <Button className="px-2 relative" size="sm" variant="plain" disabled={state.uploadingFlag}>
+    <Button className="relative" size="sm" variant="plain" disabled={state.uploadingFlag}>
       <PaperclipIcon className="w-5 h-5 mx-auto" />
       <input
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"

@@ -1,5 +1,5 @@
-import { Autocomplete, AutocompleteOption, Checkbox, Chip } from "@mui/joy";
-import { Button } from "@usememos/mui";
+import { Autocomplete, AutocompleteOption, Chip } from "@mui/joy";
+import { Button, Checkbox } from "@usememos/mui";
 import { uniqBy } from "lodash-es";
 import { LinkIcon } from "lucide-react";
 import React, { useContext, useState } from "react";
@@ -130,7 +130,7 @@ const AddMemoRelationPopover = (props: Props) => {
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger>
-        <Button className="px-2" variant="plain">
+        <Button size="sm" variant="plain">
           <LinkIcon className="w-5 h-5 mx-auto" />
         </Button>
       </PopoverTrigger>

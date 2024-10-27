@@ -47,7 +47,6 @@ const TagSelector = (props: Props) => {
           root: {
             size: "sm",
             variant: "plain",
-            className: "px-2",
           },
         }}
       >

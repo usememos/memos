@@ -465,7 +465,9 @@ const MemoEditor = (props: Props) => {
         <div className="w-full flex flex-row justify-between items-center py-3 dark:border-t-zinc-500">
           <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
             <Select
+              className="!text-sm"
               variant="plain"
+              size="md"
               value={state.memoVisibility}
               startDecorator={<VisibilityIcon visibility={state.memoVisibility} />}
               onChange={(_, visibility) => {
@@ -475,7 +477,7 @@ const MemoEditor = (props: Props) => {
               }}
             >
               {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC].map((item) => (
-                <Option key={item} value={item} className="whitespace-nowrap">
+                <Option key={item} value={item} className="whitespace-nowrap !text-sm">
                   {t(`memo.visibility.${convertVisibilityToString(item).toLowerCase()}` as any)}
                 </Option>
               ))}

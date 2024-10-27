@@ -97,7 +97,6 @@ const SignIn = () => {
               {identityProviderList.map((identityProvider) => (
                 <Button
                   key={identityProvider.name}
-                  color="primary"
                   variant="outlined"
                   fullWidth
                   onClick={() => handleSignInWithIdentityProvider(identityProvider)}

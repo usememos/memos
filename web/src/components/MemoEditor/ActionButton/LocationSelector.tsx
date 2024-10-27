@@ -95,7 +95,7 @@ const LocationSelector = (props: Props) => {
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger>
-        <Button className="group px-2" variant="plain">
+        <Button className="group" size="sm" variant="plain">
           <MapPinIcon className="w-5 h-5 mx-auto shrink-0" />
           {props.location && (
             <>

@@ -1,5 +1,5 @@
-import { Checkbox, Input } from "@mui/joy";
-import { Button } from "@usememos/mui";
+import { Input } from "@mui/joy";
+import { Button, Checkbox } from "@usememos/mui";
 import { LoaderIcon } from "lucide-react";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
@@ -101,12 +101,7 @@ const PasswordSignInForm = () => {
         </div>
       </div>
       <div className="flex flex-row justify-start items-center w-full mt-6">
-        <Checkbox
-          className="dark:!text-gray-400"
-          label={t("common.remember-me")}
-          checked={remember}
-          onChange={(e) => setRemember(e.target.checked)}
-        />
+        <Checkbox label={t("common.remember-me")} checked={remember} onChange={(e) => setRemember(e.target.checked)} />
       </div>
       <div className="flex flex-row justify-end items-center w-full mt-6">
         <Button
