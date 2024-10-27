@@ -286,7 +286,7 @@
         "title": "Personalizar Servidor"
       },
       "disable-password-login": "Desativar login por palavra-passe",
-      "disable-password-login-final-warning": "Escreva \"CONFIRMAR\" se tiver a certeza.",
+      "disable-password-login-final-warning": "Escreva \"CONFIRM\" se tiver a certeza.",
       "disable-password-login-warning": "Isto desativará o login para todos. Deve ter cuidado ao remover um provedor de identidade",
       "disable-public-memos": "Desativar memos públicos",
       "disable-markdown-shortcuts-in-editor": "Desativar atalhos Markdown",
