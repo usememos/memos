@@ -1,5 +1,5 @@
-import { Input, Textarea } from "@mui/joy";
-import { Button } from "@usememos/mui";
+import { Textarea } from "@mui/joy";
+import { Button, Input } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
@@ -193,7 +193,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
           {t("common.email")}
           <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.email-note")})</span>
         </p>
-        <Input className="w-full" type="email" value={state.email} onChange={handleEmailChanged} />
+        <Input fullWidth type="email" value={state.email} onChange={handleEmailChanged} />
         <p className="text-sm">{t("common.description")}</p>
         <Textarea
           className="w-full"
