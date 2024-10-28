@@ -39,8 +39,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0(react-redux@9.1.2(@types/react@18.3.12)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
       '@usememos/mui':
-        specifier: 0.0.1-alpha.20
-        version: 0.0.1-alpha.20(lucide-react@0.453.0(react@18.3.1))(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwind-merge@2.5.4)(tailwindcss@3.4.14)
+        specifier: 0.0.1-alpha.23
+        version: 0.0.1-alpha.23(lucide-react@0.453.0(react@18.3.1))(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwind-merge@2.5.4)(tailwindcss@3.4.14)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1409,8 +1409,8 @@ packages:
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
-  '@usememos/mui@0.0.1-alpha.20':
-    resolution: {integrity: sha512-O0wvI5z+ndKHLek+Be5t8e+KOSxPf0gHKJh8wu+M05bSzMldqs1dlm0kaP4bSW5rUifOybrEe0IUsesyg+eJzQ==}
+  '@usememos/mui@0.0.1-alpha.23':
+    resolution: {integrity: sha512-zrGFdl985JLdHBQED+fOFI33XMzOlV5HJghb2L3mEtth95Flatz1xj7XXLOZMS/abLpmm8+KwIXLpuWa1Tw8pw==}
     peerDependencies:
       lucide-react: ^0.453.0
       postcss: ^8.4.47
@@ -4642,7 +4642,7 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@usememos/mui@0.0.1-alpha.20(lucide-react@0.453.0(react@18.3.1))(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwind-merge@2.5.4)(tailwindcss@3.4.14)':
+  '@usememos/mui@0.0.1-alpha.23(lucide-react@0.453.0(react@18.3.1))(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwind-merge@2.5.4)(tailwindcss@3.4.14)':
     dependencies:
       lucide-react: 0.453.0(react@18.3.1)
       postcss: 8.4.47
