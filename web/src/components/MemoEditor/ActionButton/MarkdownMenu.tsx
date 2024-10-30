@@ -59,16 +59,10 @@ const MarkdownMenu = (props: Props) => {
 
   return (
     <Dropdown>
-      <MenuButton
-        slots={{ root: Button }}
-        slotProps={{
-          root: {
-            size: "sm",
-            variant: "plain",
-          },
-        }}
-      >
-        <SquareSlashIcon className="w-5 h-5 mx-auto" />
+      <MenuButton slots={{ root: "div" }}>
+        <Button size="sm" variant="plain">
+          <SquareSlashIcon className="w-5 h-5 mx-auto" />
+        </Button>
       </MenuButton>
       <Menu className="text-sm" size="sm" placement="bottom-start">
         <MenuItem onClick={handleCodeBlockClick}>

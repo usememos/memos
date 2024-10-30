@@ -19,7 +19,7 @@
     "@mui/joy": "5.0.0-beta.48",
     "@radix-ui/react-popover": "^1.1.2",
     "@reduxjs/toolkit": "^2.3.0",
-    "@usememos/mui": "0.0.1-alpha.23",
+    "@usememos/mui": "0.0.1-alpha.24",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
