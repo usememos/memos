@@ -17,6 +17,7 @@ import Setting from "@/pages/Setting";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import UserProfile from "@/pages/UserProfile";
+import Tourism from "@/pages/Tourism";
 
 export enum Routes {
   ROOT = "/",
@@ -27,6 +28,7 @@ export enum Routes {
   EXPLORE = "/explore",
   ABOUT = "/about",
   AUTH = "/auth",
+  TOURISM = "/tourism",
 }
 
 const router = createBrowserRouter([
@@ -95,6 +97,10 @@ const router = createBrowserRouter([
           {
             path: Routes.ABOUT,
             element: <About />,
+          },
+          {
+            path: Routes.TOURISM,
+            element: <Tourism />,
           },
           {
             path: "403",

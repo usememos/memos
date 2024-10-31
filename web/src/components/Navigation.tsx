@@ -109,10 +109,16 @@ const Navigation = (props: Props) => {
     title: t("common.about"),
     icon: <SmileIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
+  const tourismNavLink: NavLinkItem = {
+    id: "header-tourism",
+    path: Routes.TOURISM,
+    title: t("common.tourism"),
+    icon: <Globe2Icon className="w-6 h-auto opacity-70 shrink-0" />,
+  };
 
   const navLinks: NavLinkItem[] = user
-    ? [homeNavLink, resourcesNavLink, exploreNavLink, profileNavLink, inboxNavLink, archivedNavLink, settingNavLink]
-    : [exploreNavLink, signInNavLink, aboutNavLink];
+    ? [homeNavLink, resourcesNavLink, exploreNavLink, profileNavLink, inboxNavLink, archivedNavLink, settingNavLink, tourismNavLink]
+    : [exploreNavLink, signInNavLink, aboutNavLink, tourismNavLink];
 
   return (
     <header
