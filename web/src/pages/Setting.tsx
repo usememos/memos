@@ -114,7 +114,9 @@ const Setting = () => {
                       onClick={() => handleSectionSelectorItemClick(item)}
                     />
                   ))}
-                  <span className="px-3 mt-2 opacity-70 text-sm">Version: v{commonContext.profile.version}</span>
+                  <span className="px-3 mt-2 opacity-70 text-sm">
+                    {t("setting.version")}: v{commonContext.profile.version}
+                  </span>
                 </div>
               </>
             ) : null}

@@ -235,7 +235,9 @@
       "template": "Template",
       "token-endpoint": "Token endpoint",
       "update-sso": "Update SSO",
-      "user-endpoint": "User endpoint"
+      "user-endpoint": "User endpoint",
+      "no-sso-found": "No SSO found.",
+      "configuring-keycloak-for-authentication": "Configuring Keycloak for Authentication"
     },
     "storage": "Storage",
     "storage-section": {
@@ -299,7 +301,38 @@
       "max-upload-size-hint": "Recommended value is 32 MiB.",
       "server-name": "Server Name"
     },
-    "memo-related": "Memo"
+    "memo-related": "Memo",
+    "access-token-section":{
+      "title": "Access Tokens",
+      "description": "A list of all access tokens for your account.",
+      "created-at": "Created At",
+      "expires-at": "Expires At",
+      "token": "Token"
+    },
+    "webhook-section": {
+      "title": "Webhooks",
+      "url": "Url",
+      "no-webhooks-found": "No webhooks found."
+    },
+    "workspace-section": {
+      "disallow-user-registration": "Disallow user registration",
+      "disallow-password-auth": "Disallow password auth",
+      "disallow-change-username": "Disallow Change Username",
+      "disallow-change-nickname": "Disallow Change Nickname",
+      "week-start-day": "Week start day",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "monday": "Monday"            
+    },
+    "memo-related-settings": {
+      "title": "Memo related settings",
+      "enable-link-preview": "Enable link preview",
+      "enable-memo-comments": "Enable memo comments",
+      "enable-memo-location": "Enable memo location",
+      "content-lenght-limit": "Content length limit(Byte)",
+      "reactions": "Reactions"
+    },
+    "version": "Version"
   },
   "tag": {
     "all-tags": "All Tags",
@@ -308,5 +341,10 @@
     "delete-confirm": "Are you sure to delete this tag? All related memos will be archived.",
     "delete-tag": "Delete Tag",
     "no-tag-found": "No tag found"
+  },
+  "markdown": {
+    "code-block": "Code block",
+    "checkbox": "Checkbox",
+    "content-syntax": "Content syntax"
   }
 }

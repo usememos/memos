@@ -76,7 +76,7 @@ const SSOSection = () => {
       ))}
       {identityProviderList.length === 0 && (
         <div className="w-full mt-2 text-sm dark:border-zinc-700 opacity-60 flex flex-row items-center justify-between">
-          <p className="">No SSO found.</p>
+          <p className="">{t("setting.sso-section.no-sso-found")}</p>
         </div>
       )}
 
@@ -89,7 +89,7 @@ const SSOSection = () => {
               to="https://www.usememos.com/docs/advanced-settings/keycloak"
               target="_blank"
             >
-              Configuring Keycloak for Authentication
+              {t("setting.sso-section.configuring-keycloak-for-authentication")}
             </Link>
           </ListItem>
         </List>

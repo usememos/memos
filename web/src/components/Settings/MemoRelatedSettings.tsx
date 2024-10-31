@@ -59,7 +59,7 @@ const MemoRelatedSettings = () => {
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <p className="font-medium text-gray-700 dark:text-gray-500">Memo related settings</p>
+      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.memo-related-settings.title")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.disable-public-memos")}</span>
         <Switch
@@ -82,21 +82,21 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Enable link preview</span>
+        <span>{t("setting.memo-related-settings.enable-link-preview")}</span>
         <Switch
           checked={memoRelatedSetting.enableLinkPreview}
           onChange={(event) => updatePartialSetting({ enableLinkPreview: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Enable memo comments</span>
+        <span>{t("setting.memo-related-settings.enable-memo-comments")}</span>
         <Switch
           checked={memoRelatedSetting.enableComment}
           onChange={(event) => updatePartialSetting({ enableComment: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Enable memo location</span>
+        <span>{t("setting.memo-related-settings.enable-memo-location")}</span>
         <Switch
           checked={memoRelatedSetting.enableLocation}
           onChange={(event) => updatePartialSetting({ enableLocation: event.target.checked })}
@@ -117,7 +117,7 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Content length limit(Byte)</span>
+        <span>{t("setting.memo-related-settings.content-lenght-limit")}</span>
         <Input
           className="w-24"
           type="number"
@@ -145,7 +145,7 @@ const MemoRelatedSettings = () => {
         </Select>
       </div>
       <div className="w-full">
-        <span className="truncate">Reactions</span>
+        <span className="truncate">{t("setting.memo-related-settings.reactions")}</span>
         <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
           {memoRelatedSetting.reactions.map((reactionType) => {
             return (

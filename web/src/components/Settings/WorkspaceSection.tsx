@@ -106,35 +106,35 @@ const WorkspaceSection = () => {
         </Link>
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Disallow user registration</span>
+        <span>{t("setting.workspace-section.disallow-user-registration")}</span>
         <Switch
           checked={workspaceGeneralSetting.disallowUserRegistration}
           onChange={(event) => updatePartialSetting({ disallowUserRegistration: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Disallow password auth</span>
+        <span>{t("setting.workspace-section.disallow-password-auth")}</span>
         <Switch
           checked={workspaceGeneralSetting.disallowPasswordAuth}
           onChange={(event) => updatePartialSetting({ disallowPasswordAuth: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Disallow Change Username</span>
+        <span>{t("setting.workspace-section.disallow-change-username")}</span>
         <Switch
           checked={workspaceGeneralSetting.disallowChangeUsername}
           onChange={(event) => updatePartialSetting({ disallowChangeUsername: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Disallow Change Nickname</span>
+        <span>{t("setting.workspace-section.disallow-change-nickname")}</span>
         <Switch
           checked={workspaceGeneralSetting.disallowChangeNickname}
           onChange={(event) => updatePartialSetting({ disallowChangeNickname: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span className="truncate">Week start day</span>
+        <span className="truncate">{t("setting.workspace-section.week-start-day")}</span>
         <Select
           className="!min-w-fit"
           value={workspaceGeneralSetting.weekStartDayOffset}
@@ -142,9 +142,9 @@ const WorkspaceSection = () => {
             updatePartialSetting({ weekStartDayOffset: weekStartDayOffset || 0 });
           }}
         >
-          <Option value={-1}>Saturday</Option>
-          <Option value={0}>Sunday</Option>
-          <Option value={1}>Monday</Option>
+          <Option value={-1}>{t("setting.workspace-section.saturday")}</Option>
+          <Option value={0}>{t("setting.workspace-section.sunday")}</Option>
+          <Option value={1}>{t("setting.workspace-section.monday")}</Option>
         </Select>
       </div>
       <div className="mt-2 w-full flex justify-end">

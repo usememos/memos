@@ -235,7 +235,9 @@
       "template": "Modelo",
       "token-endpoint": "Ponto de Token",
       "update-sso": "Atualizar SSO",
-      "user-endpoint": "Ponto do Utilizador"
+      "user-endpoint": "Ponto do Utilizador",
+      "no-sso-found": "Nenhum SSO encontrado.",
+      "configuring-keycloak-for-authentication": "A configurar o Keycloak para autenticação."
     },
     "storage": "Armazenamento",
     "storage-section": {
@@ -299,7 +301,38 @@
       "max-upload-size-hint": "32 MiB é recomendado.",
       "server-name": "Nome do Servidor"
     },
-    "memo-related": "Memo"
+    "memo-related": "Memo",
+    "access-token-section": {
+      "title": "Tokens de Acesso",
+      "description": "Uma lista de todos os tokens de acesso para a sua conta.",
+      "created-at": "Criado Em",
+      "expires-at": "Expira Em",
+      "token": "Token"
+    },
+    "webhook-section": {
+      "title": "Webhooks",
+      "url": "Url",
+      "no-webhooks-found": "Nenhum webhook encontrado."
+    },
+    "workspace-section": {
+      "disallow-user-registration": "Desativar registo de utilizadores",
+      "disallow-password-auth": "Desativar autenticação por palavra-passe",
+      "disallow-change-username": "Desativar alteração de nome de utilizador",
+      "disallow-change-nickname": "Desativar alteração de nome ou apelido",
+      "week-start-day": "Dia de início da semana",
+      "saturday": "Sábado",
+      "sunday": "Domingo",
+      "monday": "Segunda-feira"            
+    },
+    "memo-related-settings": {
+      "title": "Definições relacionadas com memos",
+      "enable-link-preview": "Ativar pré-visualização de links",
+      "enable-memo-comments": "Ativar comentários em memos",
+      "enable-memo-location": "Ativar localização em memos",
+      "content-lenght-limit": "Limite de comprimento do conteúdo (Bytes)",
+      "reactions": "Reações"
+    },
+    "version": "Versão"
   },
   "tag": {
     "all-tags": "Todas as Etiquetas",
@@ -308,5 +341,10 @@
     "delete-confirm": "Tem a certeza que quer eliminar esta etiqueta? Memos associados serão arquivados.",
     "delete-tag": "Eliminar Etiqueta",
     "no-tag-found": "Nenhuma etiqueta encontrada"
+  },
+  "markdown": {
+    "code-block": "Bloco de código",
+    "checkbox": "Caixa de seleção",
+    "content-syntax": "Sintaxe de conteúdo"
   }
 }

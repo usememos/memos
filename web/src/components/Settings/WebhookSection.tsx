@@ -43,7 +43,9 @@ const WebhookSection = () => {
     <div className="w-full flex flex-col justify-start items-start">
       <div className="w-full flex justify-between items-center">
         <div className="flex-auto space-y-1">
-          <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">Webhooks</p>
+          <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">
+            {t("setting.webhook-section.title")}
+          </p>
         </div>
         <div>
           <Button
@@ -63,10 +65,10 @@ const WebhookSection = () => {
               <thead>
                 <tr>
                   <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                    Name
+                    {t("common.name")}
                   </th>
                   <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                    Url
+                    {t("setting.webhook-section.url")}
                   </th>
                   <th scope="col" className="relative px-3 py-2 pr-4">
                     <span className="sr-only">{t("common.delete")}</span>
@@ -95,7 +97,7 @@ const WebhookSection = () => {
                 {webhooks.length === 0 && (
                   <tr>
                     <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400" colSpan={3}>
-                      No webhooks found.
+                      {t("setting.webhook-section.no-webhooks-found")}
                     </td>
                   </tr>
                 )}
