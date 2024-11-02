@@ -49,22 +49,35 @@ jobs:
           install: true
           version: v0.9.1
 
-      - name: Docker meta
-        id: meta
+      # Metadata for stable versions
+      - name: Docker meta for stable
+        id: meta-stable
+        if: env.PRE_RELEASE == 'false'
         uses: docker/metadata-action@v5
         with:
           images: |
             neosmemo/memos
             ghcr.io/usememos/memos
           tags: |
-            # For stable versions, add stable and latest tags
-            ${{ env.PRE_RELEASE == 'false' && "type=semver,pattern={{version}},value=${{ env.VERSION }}" }}
-            ${{ env.PRE_RELEASE == 'false' && "type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}" }}
-            ${{ env.PRE_RELEASE == 'false' && "type=raw,value=stable" }}
-            # For rc versions, only add rc tag
-            ${{ env.PRE_RELEASE == 'true' && "type=raw,value=${{ env.VERSION }}" }}
+            type=semver,pattern={{version}},value=${{ env.VERSION }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
+            type=raw,value=stable
           flavor: |
-            latest=${{ env.PRE_RELEASE == 'false' }}
+            latest=true
+          labels: |
+            org.opencontainers.image.version=${{ env.VERSION }}
+
+      # Metadata for rc versions
+      - name: Docker meta for rc
+        id: meta-rc
+        if: env.PRE_RELEASE == 'true'
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            neosmemo/memos
+            ghcr.io/usememos/memos
+          tags: |
+            type=raw,value=${{ env.VERSION }}
           labels: |
             org.opencontainers.image.version=${{ env.VERSION }}
 
@@ -76,5 +89,5 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-stable.outputs.tags || steps.meta-rc.outputs.tags }}
+          labels: ${{ steps.meta-stable.outputs.labels || steps.meta-rc.outputs.labels }}
