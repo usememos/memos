@@ -48,7 +48,7 @@
     "tailwindcss-animate": "^1.0.7",
     "textarea-caret": "^3.1.0",
     "uuid": "^10.0.0",
-    "zustand": "^4.5.5"
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.46.0",
