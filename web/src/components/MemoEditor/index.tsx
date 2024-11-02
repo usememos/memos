@@ -462,7 +462,7 @@ const MemoEditor = (props: Props) => {
           </div>
         </div>
         <Divider className="!mt-2 opacity-40" />
-        <div className="w-full flex flex-row justify-between items-center py-3 dark:border-t-zinc-500">
+        <div className="w-full flex flex-row justify-between items-center py-3 gap-2 overflow-auto dark:border-t-zinc-500">
           <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
             <Select
               className="!text-sm"
