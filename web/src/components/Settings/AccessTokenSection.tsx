@@ -56,10 +56,10 @@ const AccessTokenSection = () => {
         <div className="sm:flex sm:items-center sm:justify-between">
           <div className="sm:flex-auto space-y-1">
             <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">
-              Access Tokens
+              {t("setting.access-token-section.title")}
               <LearnMore className="ml-2" url="https://usememos.com/docs/security/access-tokens" />
             </p>
-            <p className="text-sm text-gray-700 dark:text-gray-500">A list of all access tokens for your account.</p>
+            <p className="text-sm text-gray-700 dark:text-gray-500">{t("setting.access-token-section.description")}</p>
           </div>
           <div className="mt-4 sm:mt-0">
             <Button
@@ -79,16 +79,16 @@ const AccessTokenSection = () => {
                 <thead>
                   <tr>
                     <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                      Token
+                      {t("setting.access-token-section.token")}
                     </th>
                     <th scope="col" className="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                      Description
+                      {t("common.description")}
                     </th>
                     <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                      Created At
+                      {t("setting.access-token-section.created-at")}
                     </th>
                     <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                      Expires At
+                      {t("setting.access-token-section.expires-at")}
                     </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4">
                       <span className="sr-only">{t("common.delete")}</span>

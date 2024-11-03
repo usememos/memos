@@ -1,5 +1,5 @@
-import { Input, List, ListItem } from "@mui/joy";
-import { Button } from "@usememos/mui";
+import { List, ListItem } from "@mui/joy";
+import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -63,18 +63,11 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <div className="relative w-full mb-2 flex flex-row justify-start items-center space-x-2">
             <span className="w-20 text-sm whitespace-nowrap shrink-0 text-right">Old Name</span>
-            <Input className="w-full" readOnly disabled type="text" placeholder="A new tag name" size="md" value={tag} />
+            <Input className="w-full" readOnly disabled type="text" placeholder="A new tag name" value={tag} />
           </div>
           <div className="relative w-full mb-2 flex flex-row justify-start items-center space-x-2">
             <span className="w-20 text-sm whitespace-nowrap shrink-0 text-right">New Name</span>
-            <Input
-              className="w-full"
-              type="text"
-              placeholder="A new tag name"
-              size="md"
-              value={newName}
-              onChange={handleTagNameInputChange}
-            />
+            <Input className="w-full" type="text" placeholder="A new tag name" value={newName} onChange={handleTagNameInputChange} />
           </div>
           <List size="sm" marker="disc">
             <ListItem>

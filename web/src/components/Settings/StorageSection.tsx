@@ -1,5 +1,5 @@
-import { Divider, Input, List, ListItem, Radio, RadioGroup, Tooltip } from "@mui/joy";
-import { Button } from "@usememos/mui";
+import { Divider, List, ListItem, Radio, RadioGroup, Tooltip } from "@mui/joy";
+import { Button, Input } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { HelpCircleIcon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -136,14 +136,7 @@ const StorageSection = () => {
             <HelpCircleIcon className="w-4 h-auto" />
           </Tooltip>
         </div>
-        <Input
-          className="w-16"
-          sx={{
-            fontFamily: "monospace",
-          }}
-          value={workspaceStorageSetting.uploadSizeLimitMb}
-          onChange={handleMaxUploadSizeChanged}
-        />
+        <Input className="w-16 font-mono" value={workspaceStorageSetting.uploadSizeLimitMb} onChange={handleMaxUploadSizeChanged} />
       </div>
       {workspaceStorageSetting.storageType !== WorkspaceStorageSetting_StorageType.DATABASE && (
         <div className="w-full flex flex-row justify-between items-center">

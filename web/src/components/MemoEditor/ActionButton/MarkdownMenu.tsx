@@ -1,6 +1,7 @@
 import { Dropdown, Menu, MenuButton, MenuItem, Link } from "@mui/joy";
 import { Button } from "@usememos/mui";
 import { CheckSquareIcon, Code2Icon, SquareSlashIcon } from "lucide-react";
+import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 
 interface Props {
@@ -8,6 +9,8 @@ interface Props {
 }
 
 const MarkdownMenu = (props: Props) => {
+  const t = useTranslate();
+
   const { editorRef } = props;
 
   const handleCodeBlockClick = () => {
@@ -59,29 +62,23 @@ const MarkdownMenu = (props: Props) => {
 
   return (
     <Dropdown>
-      <MenuButton
-        slots={{ root: Button }}
-        slotProps={{
-          root: {
-            size: "sm",
-            variant: "plain",
-          },
-        }}
-      >
-        <SquareSlashIcon className="w-5 h-5 mx-auto" />
+      <MenuButton slots={{ root: "div" }}>
+        <Button size="sm" variant="plain">
+          <SquareSlashIcon className="w-5 h-5 mx-auto" />
+        </Button>
       </MenuButton>
       <Menu className="text-sm" size="sm" placement="bottom-start">
         <MenuItem onClick={handleCodeBlockClick}>
           <Code2Icon className="w-4 h-auto" />
-          <span>Code block</span>
+          <span>{t("markdown.code-block")}</span>
         </MenuItem>
         <MenuItem onClick={handleCheckboxClick}>
           <CheckSquareIcon className="w-4 h-auto" />
-          <span>Checkbox</span>
+          <span>{t("markdown.checkbox")}</span>
         </MenuItem>
         <div className="-mt-0.5 pl-2">
           <Link fontSize={12} href="https://www.usememos.com/docs/getting-started/content-syntax" target="_blank">
-            Content syntax
+            {t("markdown.content-syntax")}
           </Link>
         </div>
       </Menu>

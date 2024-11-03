@@ -3,8 +3,9 @@ name: build-and-push-stable-image
 on:
   push:
     tags:
-      # Run on pushing tags like 'v1.0.0'
+      # Match stable and rc versions, such as 'v1.0.0' or 'v0.23.0-rc.0'
       - "v*.*.*"
+      - "v*.*.*-rc.*"
 
 jobs:
   build-and-push-stable-image:
@@ -19,9 +20,13 @@ jobs:
         uses: docker/setup-qemu-action@v3
 
       - name: Extract build args
-        # Extract version from tag name
-        # Example: tag name `v1.0.0` sets up env.VERSION=1.0.0
+        # Extract version number and check if it's an rc version
         run: |
+          if [[ "${GITHUB_REF_NAME}" =~ -rc ]]; then
+            echo "PRE_RELEASE=true" >> $GITHUB_ENV
+          else
+            echo "PRE_RELEASE=false" >> $GITHUB_ENV
+          fi
           echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
@@ -44,8 +49,10 @@ jobs:
           install: true
           version: v0.9.1
 
-      - name: Docker meta
-        id: meta
+      # Metadata for stable versions
+      - name: Docker meta for stable
+        id: meta-stable
+        if: env.PRE_RELEASE == 'false'
         uses: docker/metadata-action@v5
         with:
           images: |
@@ -60,6 +67,20 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ env.VERSION }}
 
+      # Metadata for rc versions
+      - name: Docker meta for rc
+        id: meta-rc
+        if: env.PRE_RELEASE == 'true'
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            neosmemo/memos
+            ghcr.io/usememos/memos
+          tags: |
+            type=raw,value=${{ env.VERSION }}
+          labels: |
+            org.opencontainers.image.version=${{ env.VERSION }}
+
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v6
@@ -68,5 +89,5 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-stable.outputs.tags || steps.meta-rc.outputs.tags }}
+          labels: ${{ steps.meta-stable.outputs.labels || steps.meta-rc.outputs.labels }}
