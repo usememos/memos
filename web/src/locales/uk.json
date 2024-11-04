@@ -1,21 +1,21 @@
 {
     "auth": {
       "create-your-account": "Створіть обліковий запис",
-      "host-tip": "Ви реєструєтеся як Гостинець сайту.",
+      "host-tip": "Ви реєструєтеся як власник сайту.",
       "new-password": "Новий пароль",
       "repeat-new-password": "Повторіть новий пароль",
       "sign-in-tip": "Вже маєте обліковий запис?",
       "sign-up-tip": "Ще не маєте облікового запису?"
     },
     "common": {
-      "about": "Про нас",
+      "about": "Про Memos",
       "add": "Додати",
       "admin": "Адмін",
       "archive": "Архів",
       "archived": "Архівовано",
       "avatar": "Аватар",
       "basic": "Основний",
-      "beta": "Бета",
+      "beta": "Бета-версія",
       "cancel": "Скасувати",
       "change": "Змінити",
       "clear": "Очистити",
@@ -24,7 +24,7 @@
       "collapse": "Згорнути",
       "create": "Створити",
       "database": "База даних",
-      "days": "Дні",
+      "days": "Днів",
       "delete": "Видалити",
       "description": "Опис",
       "edit": "Редагувати",
@@ -79,13 +79,13 @@
       "yourself": "Ви"
     },
     "days": {
-      "fri": "Пт",
-      "mon": "Пн",
-      "sat": "Сб",
-      "sun": "Нд",
-      "thu": "Чт",
-      "tue": "Вт",
-      "wed": "Ср"
+      "fri": "П'ят.",
+      "mon": "Пон.",
+      "sat": "Суб.",
+      "sun": "Нед.",
+      "thu": "Чет.",
+      "tue": "Вів.",
+      "wed": "Сер."
     },
     "editor": {
       "add-your-comment-here": "Додайте свій коментар тут...",
@@ -186,7 +186,7 @@
         "export-memos": "Експортувати нотатки",
         "nickname-note": "Відображається в банері",
         "openapi-reset": "Скинути OpenAPI ключ",
-        "openapi-sample-post": "Привіт #мемос з {{url}}",
+        "openapi-sample-post": "Привіт #memos з {{url}}",
         "openapi-title": "OpenAPI",
         "reset-api": "Скинути API",
         "title": "Інформація про обліковий запис",
