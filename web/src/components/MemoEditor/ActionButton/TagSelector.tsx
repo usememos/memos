@@ -46,15 +46,15 @@ const TagSelector = (props: Props) => {
           <HashIcon className="w-5 h-5 mx-auto" />
         </Button>
       </MenuButton>
-      <Menu className="relative text-sm" component="div" size="sm" placement="bottom-start">
+      <Menu className="relative" component="div" size="sm" placement="bottom-start">
         <div ref={containerRef}>
           {tags.length > 0 ? (
-            <div className="flex-row justify-start items-start flex-wrap px-1 max-w-[12rem] h-auto max-h-48 overflow-y-auto font-mono">
+            <div className="flex flex-row justify-start items-start flex-wrap px-3 py-1 max-w-[12rem] h-auto max-h-48 overflow-y-auto gap-x-2 gap-y-1">
               {tags.map((tag) => {
                 return (
                   <div
                     key={tag}
-                    className="inline-flex w-auto max-w-full cursor-pointer rounded text-sm leading-5 px-1 text-gray-500 dark:text-gray-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    className="inline-flex w-auto max-w-full cursor-pointer text-base leading-6 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-dark"
                     onClick={() => handleTagClick(tag)}
                   >
                     <OverflowTip>#{tag}</OverflowTip>

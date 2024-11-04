@@ -21,11 +21,11 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
 
   const ratio = count / maxCount;
   if (ratio > 0.7) {
-    return "bg-teal-700 text-gray-100 dark:opacity-80";
+    return "bg-primary-darker text-gray-100 dark:opacity-80";
   } else if (ratio > 0.4) {
-    return "bg-teal-600 text-gray-100 dark:opacity-80";
+    return "bg-primary-dark text-gray-100 dark:opacity-80";
   } else {
-    return "bg-teal-500 text-gray-100 dark:opacity-70";
+    return "bg-primary text-gray-100 dark:opacity-70";
   }
 };
 
