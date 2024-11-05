@@ -1,48 +1,54 @@
 {
   "auth": {
     "create-your-account": "Tạo tài khoản của bạn",
-    "host-tip": "Bạn đang đăng ký với tư cách Chủ trang web.",
+    "host-tip": "Bạn đang đăng ký với tư cách Quản trị viên Trang.",
     "new-password": "Mật khẩu mới",
     "repeat-new-password": "Nhập lại mật khẩu mới",
     "sign-in-tip": "Đã có tài khoản?",
     "sign-up-tip": "Chưa có tài khoản?"
   },
   "common": {
-    "about": "Về chúng tôi",
+    "about": "Giới thiệu",
+    "add": "Thêm",
     "admin": "Quản trị",
     "archive": "Lưu trữ",
     "archived": "Đã lưu trữ",
     "avatar": "Ảnh đại diện",
     "basic": "Cơ bản",
-    "beta": "Phiên bản Beta",
+    "beta": "Beta",
     "cancel": "Hủy",
     "change": "Thay đổi",
     "clear": "Xóa",
     "close": "Đóng",
     "confirm": "Xác nhận",
+    "collapse": "Thu gọn",
     "create": "Tạo",
     "database": "Cơ sở dữ liệu",
+    "days": "Ngày",
     "delete": "Xóa",
     "description": "Mô tả",
     "edit": "Chỉnh sửa",
     "email": "Email",
+    "expand": "Mở rộng",
     "explore": "Khám phá",
     "file": "Tệp",
-    "filter": "Bộ lọc",
+    "filter": "Lọc",
     "home": "Trang chủ",
     "image": "Hình ảnh",
-    "inbox": "Hộp thư",
+    "inbox": "Hộp thư đến",
     "language": "Ngôn ngữ",
     "learn-more": "Tìm hiểu thêm",
     "link": "Liên kết",
     "mark": "Đánh dấu",
+    "memos": "Ghi chú",
     "name": "Tên",
     "new": "Mới",
     "nickname": "Biệt danh",
-    "null": "Trống rỗng",
+    "null": "Trống",
     "or": "hoặc",
     "password": "Mật khẩu",
     "pin": "Ghim",
+    "pinned": "Đã ghim",
     "preview": "Xem trước",
     "profile": "Hồ sơ",
     "remember-me": "Ghi nhớ tôi",
@@ -60,57 +66,82 @@
     "sign-in-with": "Đăng nhập bằng {{provider}}",
     "sign-out": "Đăng xuất",
     "sign-up": "Đăng ký",
+    "statistics": "Thống kê",
     "tags": "Thẻ",
     "title": "Tiêu đề",
     "type": "Loại",
     "unpin": "Bỏ ghim",
     "update": "Cập nhật",
     "upload": "Tải lên",
-    "username": "Tên đăng nhập",
+    "username": "Tên người dùng",
     "version": "Phiên bản",
-    "visibility": "Hiển thị",
-    "yourself": "Chính bạn"
+    "visibility": "Quyền xem",
+    "yourself": "Bản thân"
+  },
+  "days": {
+    "fri": "T6",
+    "mon": "T2",
+    "sat": "T7",
+    "sun": "CN",
+    "thu": "T5",
+    "tue": "T3",
+    "wed": "T4"
   },
   "editor": {
-    "any-thoughts": "Bất kỳ suy nghĩ nào...",
+    "add-your-comment-here": "Thêm bình luận của bạn tại đây...",
+    "any-thoughts": "Có suy nghĩ gì...",
     "save": "Lưu"
   },
+  "inbox": {
+    "memo-comment": "{{user}} đã bình luận về {{memo}} của bạn.",
+    "version-update": "Phiên bản mới {{version}} đã có sẵn!"
+  },
   "memo": {
-    "archived-at": "Lưu trữ vào",
+    "archived-at": "Đã lưu trữ lúc",
     "comment": {
-      "self": "Bình luận"
+      "self": "Bình luận",
+      "write-a-comment": "Viết bình luận"
     },
     "copy-link": "Sao chép liên kết",
-    "delete-confirm": "Bạn có chắc chắn muốn xóa ghi chú này?\n\nHÀNH ĐỘNG NÀY KHÔNG THỂ ĐƯỢC HOÀN TÁC",
-    "delete-memo": "Xóa ghi chú",
-    "embed": "Nhúng",
-    "fetch-more": "Nhấp để tải thêm",
-    "fetching-data": "Đang tải dữ liệu...",
-    "no-archived-memos": "Không có ghi chú đã lưu trữ.",
+    "count-memos-in-date": "{{count}} ghi chú trong {{date}}",
+    "delete-confirm": "Bạn có chắc chắn muốn xóa ghi chú này không? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
+    "load-more": "Tải thêm",
+    "no-archived-memos": "Không có ghi chú nào được lưu trữ.",
     "search-placeholder": "Tìm kiếm ghi chú",
+    "show-more": "Hiển thị thêm",
     "view-detail": "Xem chi tiết",
     "visibility": {
       "disabled": "Ghi chú công khai đã bị vô hiệu hóa",
       "private": "Riêng tư",
-      "protected": "Bảo vệ",
+      "protected": "Không gian làm việc",
       "public": "Công khai"
-    }
+    },
+    "links": "Liên kết",
+    "to-do": "Việc cần làm",
+    "code": "Mã"
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",
     "change-memo-created-time": "Thay đổi thời gian tạo ghi chú",
     "copied": "Đã sao chép",
-    "fill-all": "Vui lòng điền đầy đủ thông tin.",
+    "deleted-successfully": "Xóa thành công",
+    "fill-all": "Vui lòng điền vào tất cả các trường.",
     "maximum-upload-size-is": "Kích thước tải lên tối đa là {{size}} MiB",
     "memo-not-found": "Không tìm thấy ghi chú.",
     "new-password-not-match": "Mật khẩu mới không khớp.",
-    "no-data": "Không có dữ liệu.",
-    "password-changed": "Mật khẩu đã được thay đổi.",
+    "no-data": "Không tìm thấy dữ liệu.",
+    "password-changed": "Đã thay đổi mật khẩu",
     "password-not-match": "Mật khẩu không khớp.",
     "restored-successfully": "Khôi phục thành công",
-    "succeed-copy-link": "Liên kết đã được sao chép thành công.",
+    "succeed-copy-link": "Sao chép liên kết thành công.",
     "update-succeed": "Cập nhật thành công",
-    "user-not-found": "Không tìm thấy người dùng."
+    "user-not-found": "Không tìm thấy người dùng"
+  },
+  "reference": {
+    "add-references": "Thêm tham chiếu",
+    "embedded-usage": "Sử dụng như nội dung nhúng",
+    "no-memos-found": "Không tìm thấy ghi chú",
+    "search-placeholder": "Tìm kiếm nội dung"
   },
   "resource": {
     "clear": "Xóa",
@@ -120,13 +151,13 @@
         "file-name": "Tên tệp",
         "file-name-placeholder": "Tên tệp",
         "link": "Liên kết",
-        "link-placeholder": "https://the.link.to/your/resource",
-        "option": "Liên kết bên ngoài",
+        "link-placeholder": "https://duong-dan.den/tai-nguyen/cua-ban",
+        "option": "Liên kết ngoài",
         "type": "Loại",
         "type-placeholder": "Loại tệp"
       },
       "local-file": {
-        "choose": "Chọn một tệp...",
+        "choose": "Chọn một tệp…",
         "option": "Tệp cục bộ"
       },
       "title": "Tạo tài nguyên",
@@ -134,25 +165,25 @@
     },
     "delete-resource": "Xóa tài nguyên",
     "delete-selected-resources": "Xóa các tài nguyên đã chọn",
-    "fetching-data": "Đang tải dữ liệu...",
+    "fetching-data": "Đang tải dữ liệu…",
     "file-drag-drop-prompt": "Kéo và thả tệp của bạn vào đây để tải lên",
-    "linked-amount": "Số lượng đã liên kết",
-    "no-files-selected": "Không có tệp nào được chọn",
+    "linked-amount": "Số lượng liên kết",
+    "no-files-selected": "Chưa chọn tệp nào",
     "no-resources": "Không có tài nguyên.",
     "no-unused-resources": "Không có tài nguyên không sử dụng",
     "reset-link": "Đặt lại liên kết",
-    "reset-link-prompt": "Bạn có chắc chắn muốn đặt lại liên kết?\nĐiều này sẽ làm hỏng tất cả các liên kết hiện tại.\n\nHÀNH ĐỘNG NÀY KHÔNG THỂ ĐƯỢC HOÀN TÁC",
+    "reset-link-prompt": "Bạn có chắc chắn muốn đặt lại liên kết? Điều này sẽ làm hỏng tất cả các liên kết hiện tại. HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
     "reset-resource-link": "Đặt lại liên kết tài nguyên"
   },
   "router": {
-    "back-to-top": "Quay lại đầu trang",
-    "go-to-home": "Đi đến Trang chủ"
+    "back-to-top": "Lên đầu trang",
+    "go-to-home": "Về trang chủ"
   },
   "setting": {
     "account-section": {
-      "change-password": "Thay đổi mật khẩu",
+      "change-password": "Đổi mật khẩu",
       "email-note": "Tùy chọn",
-      "export-memos": "Xuất bản ghi chú",
+      "export-memos": "Xuất ghi chú",
       "nickname-note": "Hiển thị trên banner",
       "openapi-reset": "Đặt lại khóa OpenAPI",
       "openapi-sample-post": "Xin chào #memos từ {{url}}",
@@ -160,7 +191,7 @@
       "reset-api": "Đặt lại API",
       "title": "Thông tin tài khoản",
       "update-information": "Cập nhật thông tin",
-      "username-note": "Được sử dụng để đăng nhập"
+      "username-note": "Dùng để đăng nhập"
     },
     "appearance-option": {
       "dark": "Luôn tối",
@@ -172,39 +203,41 @@
     "member-section": {
       "archive-member": "Lưu trữ thành viên",
       "archive-warning": "Bạn có chắc chắn muốn lưu trữ {{username}}?",
-      "create-a-member": "Tạo thành viên",
+      "create-a-member": "Tạo thành viên mới",
       "delete-member": "Xóa thành viên",
-      "delete-warning": "Bạn có chắc chắn muốn xóa {{username}}?\n\nHÀNH ĐỘNG NÀY KHÔNG THỂ ĐƯỢC HOÀN TÁC"
+      "delete-warning": "Bạn có chắc chắn muốn xóa {{username}}? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC"
     },
     "my-account": "Tài khoản của tôi",
-    "preference": "Tùy chọn",
+    "preference": "Tùy chỉnh",
     "preference-section": {
       "default-memo-sort-option": "Thời gian hiển thị ghi chú",
-      "default-memo-visibility": "Hiển thị ghi chú mặc định",
+      "default-memo-visibility": "Quyền xem ghi chú mặc định",
       "theme": "Giao diện"
     },
     "sso": "SSO",
     "sso-section": {
-      "authorization-endpoint": "Điểm cuối ủy quyền",
+      "authorization-endpoint": "Điểm cuối xác thực",
       "client-id": "ID khách hàng",
-      "client-secret": "Khóa bí mật khách hàng",
-      "confirm-delete": "Bạn có chắc chắn muốn xóa cấu hình SSO \"{{name}}\"?\n\nHÀNH ĐỘNG NÀY KHÔNG THỂ ĐƯỢC HOÀN TÁC",
+      "client-secret": "Khóa bí mật",
+      "confirm-delete": "Bạn có chắc chắn muốn xóa cấu hình SSO \"{{name}}\"? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
       "create-sso": "Tạo SSO",
       "custom": "Tùy chỉnh",
       "delete-sso": "Xác nhận xóa",
-      "disabled-password-login-warning": "Đăng nhập bằng mật khẩu bị vô hiệu hóa, hãy cẩn thận khi xóa nhà cung cấp danh tính",
+      "disabled-password-login-warning": "Đăng nhập bằng mật khẩu đã bị vô hiệu hóa, hãy thật cẩn thận khi xóa nhà cung cấp danh tính",
       "display-name": "Tên hiển thị",
-      "identifier": "Nhận dạng",
-      "identifier-filter": "Bộ lọc nhận dạng",
+      "identifier": "Định danh",
+      "identifier-filter": "Bộ lọc định danh",
       "redirect-url": "URL chuyển hướng",
       "scopes": "Phạm vi",
       "sso-created": "SSO {{name}} đã được tạo",
       "sso-list": "Danh sách SSO",
       "sso-updated": "SSO {{name}} đã được cập nhật",
       "template": "Mẫu",
-      "token-endpoint": "Điểm cuối mã thông báo",
+      "token-endpoint": "Điểm cuối token",
       "update-sso": "Cập nhật SSO",
-      "user-endpoint": "Điểm cuối người dùng"
+      "user-endpoint": "Điểm cuối người dùng",
+      "no-sso-found": "Không tìm thấy SSO nào.",
+      "configuring-keycloak-for-authentication": "Cấu hình Keycloak cho xác thực"
     },
     "storage": "Lưu trữ",
     "storage-section": {
@@ -213,17 +246,17 @@
       "bucket": "Bucket",
       "bucket-placeholder": "Tên bucket",
       "create-a-service": "Tạo dịch vụ",
-      "create-storage": "Tạo lưu trữ",
-      "current-storage": "Lưu trữ hiện tại",
-      "delete-storage": "Xóa lưu trữ",
+      "create-storage": "Tạo kho lưu trữ",
+      "current-storage": "Kho lưu trữ đối tượng hiện tại",
+      "delete-storage": "Xóa kho lưu trữ",
       "endpoint": "Điểm cuối",
       "local-storage-path": "Đường dẫn lưu trữ cục bộ",
       "path": "Đường dẫn lưu trữ",
-      "path-description": "Bạn có thể sử dụng các biến động từ lưu trữ cục bộ, như {filename}",
-      "path-placeholder": "custom/path",
-      "presign-placeholder": "URL được ký trước, tùy chọn",
-      "region": "Vùng",
-      "region-placeholder": "Tên vùng",
+      "path-description": "Bạn có thể sử dụng các biến động như trong lưu trữ cục bộ, ví dụ {filename}",
+      "path-placeholder": "đường/dẫn/tùy-chỉnh",
+      "presign-placeholder": "URL ký trước, tùy chọn",
+      "region": "Khu vực",
+      "region-placeholder": "Tên khu vực",
       "s3-compatible-url": "URL tương thích S3",
       "secretkey": "Khóa bí mật",
       "secretkey-placeholder": "Khóa bí mật / Khóa truy cập",
@@ -233,16 +266,16 @@
       "update-a-service": "Cập nhật dịch vụ",
       "update-local-path": "Cập nhật đường dẫn lưu trữ cục bộ",
       "update-local-path-description": "Đường dẫn lưu trữ cục bộ là đường dẫn tương đối đến tệp cơ sở dữ liệu của bạn",
-      "update-storage": "Cập nhật lưu trữ",
+      "update-storage": "Cập nhật kho lưu trữ",
       "url-prefix": "Tiền tố URL",
       "url-prefix-placeholder": "Tiền tố URL tùy chỉnh, tùy chọn",
       "url-suffix": "Hậu tố URL",
       "url-suffix-placeholder": "Hậu tố URL tùy chỉnh, tùy chọn",
-      "warning-text": "Bạn có chắc chắn muốn xóa dịch vụ lưu trữ \"{{name}}\"?\n\nHÀNH ĐỘNG NÀY KHÔNG THỂ ĐƯỢC HOÀN TÁC"
+      "warning-text": "Bạn có chắc chắn muốn xóa dịch vụ lưu trữ \"{{name}}\"? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC"
     },
     "system": "Hệ thống",
     "system-section": {
-      "additional-script": "Kịch bản bổ sung",
+      "additional-script": "Script bổ sung",
       "additional-script-placeholder": "Mã JavaScript bổ sung",
       "additional-style": "Kiểu bổ sung",
       "additional-style-placeholder": "Mã CSS bổ sung",
@@ -256,21 +289,62 @@
       },
       "disable-password-login": "Vô hiệu hóa đăng nhập bằng mật khẩu",
       "disable-password-login-final-warning": "Vui lòng nhập \"CONFIRM\" nếu bạn biết mình đang làm gì.",
-      "disable-password-login-warning": "Điều này sẽ vô hiệu hóa đăng nhập bằng mật khẩu cho tất cả người dùng. Không thể đăng nhập nếu không đảo ngược cài đặt này trong cơ sở dữ liệu nếu nhà cung cấp danh tính đã cấu hình của bạn gặp sự cố. Bạn cũng phải cẩn thận hơn khi xóa một nhà cung cấp danh tính",
+      "disable-password-login-warning": "Điều này sẽ vô hiệu hóa đăng nhập bằng mật khẩu cho tất cả người dùng. Không thể đăng nhập nếu không hoàn tác cài đặt này trong cơ sở dữ liệu khi nhà cung cấp danh tính đã cấu hình gặp sự cố. Bạn cũng cần phải thật cẩn thận khi xóa nhà cung cấp danh tính",
       "disable-public-memos": "Vô hiệu hóa ghi chú công khai",
+      "disable-markdown-shortcuts-in-editor": "Vô hiệu hóa phím tắt Markdown trong trình soạn thảo",
       "display-with-updated-time": "Hiển thị với thời gian cập nhật",
-      "enable-password-login": "Cho phép đăng nhập bằng mật khẩu",
-      "enable-password-login-warning": "Điều này sẽ cho phép đăng nhập bằng mật khẩu cho tất cả người dùng. Tiếp tục chỉ nếu bạn muốn người dùng có thể đăng nhập bằng cả SSO và mật khẩu",
+      "enable-auto-compact": "Bật tự động nén",
+      "enable-double-click-to-edit": "Bật nhấp đúp để chỉnh sửa",
+      "enable-password-login": "Bật đăng nhập bằng mật khẩu",
+      "enable-password-login-warning": "Điều này sẽ bật đăng nhập bằng mật khẩu cho tất cả người dùng. Chỉ tiếp tục nếu bạn muốn người dùng có thể đăng nhập bằng cả SSO và mật khẩu",
       "max-upload-size": "Kích thước tải lên tối đa (MiB)",
-      "max-upload-size-hint": "Giá trị khuyến nghị là 32 MiB.",
+      "max-upload-size-hint": "Giá trị đề xuất là 32 MiB.",
       "server-name": "Tên máy chủ"
-    }
+    },
+    "memo-related": "Ghi chú",
+    "access-token-section": {
+      "title": "Token truy cập",
+      "description": "Danh sách tất cả token truy cập cho tài khoản của bạn.",
+      "created-at": "Được tạo lúc",
+      "expires-at": "Hết hạn lúc",
+      "token": "Token"
+    },
+    "webhook-section": {
+      "title": "Webhook",
+      "url": "Url",
+      "no-webhooks-found": "Không tìm thấy webhook nào."
+    },
+    "workspace-section": {
+      "disallow-user-registration": "Không cho phép đăng ký người dùng",
+      "disallow-password-auth": "Không cho phép xác thực bằng mật khẩu",
+      "disallow-change-username": "Không cho phép đổi tên người dùng",
+      "disallow-change-nickname": "Không cho phép đổi biệt danh",
+      "week-start-day": "Ngày bắt đầu tuần",
+      "saturday": "Thứ bảy",
+      "sunday": "Chủ nhật",
+      "monday": "Thứ hai"
+    },
+    "memo-related-settings": {
+      "title": "Cài đặt liên quan đến ghi chú",
+      "enable-link-preview": "Bật xem trước liên kết",
+      "enable-memo-comments": "Bật bình luận ghi chú",
+      "enable-memo-location": "Bật vị trí ghi chú",
+      "content-lenght-limit": "Giới hạn độ dài nội dung (Byte)",
+      "reactions": "Phản ứng"
+    },
+    "version": "Phiên bản"
   },
   "tag": {
     "all-tags": "Tất cả thẻ",
-    "create-tag": "Tạo thẻ"
+    "create-tag": "Tạo thẻ",
+    "create-tags-guide": "Bạn có thể tạo thẻ bằng cách nhập `#thẻ`.",
+    "delete-confirm": "Bạn có chắc chắn muốn xóa thẻ này không? Tất cả các ghi chú liên quan sẽ được lưu trữ.",
+    "delete-tag": "Xóa thẻ",
+    "no-tag-found": "Không tìm thấy thẻ"
   },
-  "timeline": {
-    "title": "Dòng thời gian"
+  "markdown": {
+    "code-block": "Khối mã",
+    "checkbox": "Hộp kiểm",
+    "content-syntax": "Cú pháp nội dung"
   }
 }
