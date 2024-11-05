@@ -14,7 +14,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-//go:embed dist
+//go:embed dist/*
 var embeddedFiles embed.FS
 
 type FrontendService struct {
@@ -34,16 +34,8 @@ func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 		return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1")
 	}
 
-	// Use echo static middleware to serve the built dist folder.
-	// Reference: https://github.com/labstack/echo/blob/master/middleware/static.go
-	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		HTML5:      true,
-		Filesystem: getFileSystem("dist"),
-		Skipper:    skipper,
-	}))
-	// Use echo gzip middleware to compress the response.
-	// Reference: https://echo.labstack.com/docs/middleware/gzip
-	e.Group("assets").Use(middleware.GzipWithConfig(middleware.GzipConfig{
+	// Route to serve the assets folder without HTML5 fallback.
+	e.Group("/assets").Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Level: 5,
 	}), func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -52,6 +44,14 @@ func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 		}
 	}, middleware.StaticWithConfig(middleware.StaticConfig{
 		Filesystem: getFileSystem("dist/assets"),
+		HTML5:      false, // Disable fallback to index.html
+	}))
+
+	// Route to serve the main app with HTML5 fallback for SPA behavior.
+	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		Filesystem: getFileSystem("dist"),
+		HTML5:      true, // Enable fallback to index.html
+		Skipper:    skipper,
 	}))
 }
 
