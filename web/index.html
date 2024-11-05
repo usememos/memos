@@ -1,15 +1,19 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <base href="{{ .baseurl }}">
     <meta charset="UTF-8" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/webp" href="/logo.webp" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ .baseurl }}/apple-touch-icon.png" />
+    <link rel="icon" type="image/webp" href="{{ .baseurl }}/logo.webp" />
+    <link rel="manifest" href="{{ .baseurl }}/site.webmanifest" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f4f5" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#18181b" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <!-- memos.metadata.head -->
     <title>Memos</title>
+    <script>
+      window.globalConfig = { BaseUrl: "{{ .baseurl }}"};
+    </script>
     <script>
       // Prevent flash of light mode.
       const appearance = localStorage.getItem("appearance");

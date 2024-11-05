@@ -98,7 +98,7 @@ const MemoActionMenu = (props: Props) => {
   };
 
   const handleCopyLink = () => {
-    copy(`${window.location.origin}/m/${memo.uid}`);
+    copy(`${window.location.origin}` + (window as any).globalConfig.BaseUrl + `/m/${memo.uid}`);
     toast.success(t("message.succeed-copy-link"));
   };
 
