@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import copy from "copy-to-clipboard";
-import DOMPurify from "dompurify";
 import hljs from "highlight.js";
 import { CopyIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -24,15 +23,11 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
 
   // Users can set Markdown code blocks as `__html` to render HTML directly.
   if (formatedLanguage === SpecialLanguage.HTML) {
-    const purify = DOMPurify(window);
     return (
       <div
         className="w-full overflow-auto !my-2"
         dangerouslySetInnerHTML={{
-          __html: purify.sanitize(content, {
-            ALLOWED_TAGS: ["iframe"],
-            ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
-          }),
+          __html: content,
         }}
       />
     );
