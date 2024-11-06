@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/usememos/memos/server/version"
 )
 
 func TestGetCurrentSchemaVersion(t *testing.T) {
@@ -13,5 +14,5 @@ func TestGetCurrentSchemaVersion(t *testing.T) {
 
 	currentSchemaVersion, err := ts.GetCurrentSchemaVersion()
 	require.NoError(t, err)
-	require.Equal(t, "0.23.0", currentSchemaVersion)
+	require.Equal(t, version.Version, currentSchemaVersion)
 }
