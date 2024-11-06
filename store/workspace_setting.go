@@ -140,7 +140,7 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 const (
 	// DefaultContentLengthLimit is the default limit of content length in bytes. 8KB.
 	DefaultContentLengthLimit = 8 * 1024
-	// DefaultReaction = thumbs up
+	// DefaultReaction = thumbs up.
 	DefaultReaction = "\U0001f44d"
 )
 
