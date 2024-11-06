@@ -1,18 +1,8 @@
 import { Divider, Tooltip } from "@mui/joy";
-import { Button } from "@usememos/mui";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
-import {
-  CalendarDaysIcon,
-  CheckCircleIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  Code2Icon,
-  LinkIcon,
-  ListTodoIcon,
-  MoreVerticalIcon,
-} from "lucide-react";
+import { CalendarDaysIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
 import { useState } from "react";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -20,7 +10,6 @@ import i18n from "@/i18n";
 import { useMemoFilterStore, useMemoMetadataStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
 interface UserMemoStats {
   link: number;
@@ -71,33 +60,26 @@ const UserStatisticsView = () => {
 
   return (
     <div className="group w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
-      <div className="w-full mb-1 flex flex-row justify-between items-center">
-        <div className="relative text-base font-medium leading-6 flex flex-row items-center dark:text-gray-400">
-          <CalendarDaysIcon className="w-5 h-auto mr-1 opacity-60" strokeWidth={1.5} />
-          <span>{dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}</span>
+      <div className="w-full mb-1 flex flex-row justify-between items-center gap-1">
+        <div className="relative text-sm font-medium inline-flex flex-row items-center w-auto dark:text-gray-400 truncate">
+          <CalendarDaysIcon className="w-4 h-auto mr-1 opacity-60 shrink-0" strokeWidth={1.5} />
+          <span className="truncate">
+            {dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}
+          </span>
         </div>
-        <div className="invisible group-hover:visible flex justify-end items-center">
-          <Popover>
-            <PopoverTrigger>
-              <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
-            </PopoverTrigger>
-            <PopoverContent className="flex flex-row justify-end items-center" align="end" alignOffset={-12}>
-              <Button
-                size="sm"
-                variant="plain"
-                onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
-              >
-                <ChevronLeftIcon className="w-5 h-auto shrink-0 opacity-60" />
-              </Button>
-              <Button
-                size="sm"
-                variant="plain"
-                onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
-              >
-                <ChevronRightIcon className="w-5 h-auto shrink-0 opacity-60" />
-              </Button>
-            </PopoverContent>
-          </Popover>
+        <div className="flex justify-end items-center shrink-0">
+          <span
+            className="cursor-pointer hover:opacity-80"
+            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
+          >
+            <ChevronLeftIcon className="w-4 h-auto shrink-0 opacity-60" />
+          </span>
+          <span
+            className="cursor-pointer hover:opacity-80"
+            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
+          >
+            <ChevronRightIcon className="w-4 h-auto shrink-0 opacity-60" />
+          </span>
         </div>
       </div>
       <div className="w-full">
