@@ -1,0 +1,13 @@
+enabled: true
+
+# Only check PR title
+titleOnly: true
+
+types:
+  - feat
+  - fix
+  - refactor
+  - chore
+  - docs
+  - style
+  - test
