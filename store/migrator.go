@@ -242,7 +242,7 @@ func (s *Store) getSchemaVersionOfMigrateScript(filePath string) (string, error)
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to convert patch version to int: %s", rawPatchVersion)
 	}
-	return fmt.Sprintf("%s.%d", minorVersion, patchVersion), nil
+	return fmt.Sprintf("%s.%d", minorVersion, patchVersion+1), nil
 }
 
 // execute runs a single SQL statement within a transaction.
