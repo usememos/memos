@@ -140,6 +140,7 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 const (
 	// DefaultContentLengthLimit is the default limit of content length in bytes. 8KB.
 	DefaultContentLengthLimit = 8 * 1024
+	DefaultReaction           = "👍"
 )
 
 func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.WorkspaceMemoRelatedSetting, error) {
@@ -156,6 +157,9 @@ func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.Wo
 	}
 	if workspaceMemoRelatedSetting.ContentLengthLimit < DefaultContentLengthLimit {
 		workspaceMemoRelatedSetting.ContentLengthLimit = DefaultContentLengthLimit
+	}
+	if len(workspaceMemoRelatedSetting.Reactions) == 0 {
+		workspaceMemoRelatedSetting.Reactions = append(workspaceMemoRelatedSetting.Reactions, DefaultReaction)
 	}
 	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_MEMO_RELATED.String(), &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_MEMO_RELATED,
