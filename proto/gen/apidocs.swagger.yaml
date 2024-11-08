@@ -901,6 +901,10 @@ paths:
               location:
                 $ref: '#/definitions/apiv1Location'
                 description: The location of the memo.
+              nest:
+                type: integer
+                format: int32
+                description: The nest of the memo.
       tags:
         - MemoService
   /api/v1/{name_1}:
@@ -2033,6 +2037,10 @@ definitions:
       location:
         $ref: '#/definitions/apiv1Location'
         description: The location of the memo.
+      nest:
+        type: integer
+        format: int32
+        description: The nest of the memo.
   apiv1OAuth2Config:
     type: object
     properties:
@@ -2419,6 +2427,9 @@ definitions:
           $ref: '#/definitions/v1MemoRelation'
       location:
         $ref: '#/definitions/apiv1Location'
+      nest:
+        type: integer
+        format: int32
   v1CreateWebhookRequest:
     type: object
     properties:
