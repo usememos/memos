@@ -9,29 +9,35 @@ interface Context {
   locale: string;
   appearance: string;
   profile: WorkspaceProfile;
+  nest: number;
   setLocale: (locale: string) => void;
   setAppearance: (appearance: string) => void;
+  setNest: (nest: number) => void;
 }
 
 const CommonContext = createContext<Context>({
   locale: "en",
   appearance: "system",
   profile: WorkspaceProfile.fromPartial({}),
+  nest: 0,
   setLocale: () => {},
   setAppearance: () => {},
+  setNest: () => {},
 });
 
 const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
   const [initialized, setInitialized] = useState(false);
-  const [commonContext, setCommonContext] = useState<Pick<Context, "locale" | "appearance" | "profile">>({
+  const [commonContext, setCommonContext] = useState<Pick<Context, "locale" | "appearance" | "profile" | "nest">>({
     locale: "en",
     appearance: "system",
+    nest: 0,
     profile: WorkspaceProfile.fromPartial({}),
   });
   const [locale] = useLocalStorage("locale", "en");
   const [appearance] = useLocalStorage("appearance", "system");
+  const [nest] = useLocalStorage("nest", 0);
 
   useEffect(() => {
     const initialWorkspace = async () => {
@@ -49,6 +55,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
       setCommonContext({
         locale: locale || workspaceGeneralSetting.customProfile?.locale || "en",
         appearance: appearance || workspaceGeneralSetting.customProfile?.appearance || "system",
+        nest: nest || 0,
         profile: workspaceProfile,
       });
     };
@@ -70,6 +77,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
         ...commonContext,
         setLocale: (locale: string) => setCommonContext({ ...commonContext, locale }),
         setAppearance: (appearance: string) => setCommonContext({ ...commonContext, appearance }),
+        setNest: (nest: number) => setCommonContext({ ...commonContext, nest }),
       }}
     >
       {!initialized ? null : <>{children}</>}
