@@ -9,6 +9,7 @@ import { useInboxStore } from "@/store/v1";
 import { Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 import UserBanner from "./UserBanner";
+import NestBanner from "./NestBanner";
 
 interface NavLinkItem {
   id: string;
@@ -119,6 +120,7 @@ const Navigation = (props: Props) => {
       className={clsx("w-full h-full overflow-auto flex flex-col justify-start items-start py-4 md:pt-6 z-30 hide-scrollbar", className)}
     >
       <UserBanner collapsed={collapsed} />
+      <NestBanner collapsed={collapsed} />
       <div className="w-full px-1 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
         {navLinks.map((navLink) => (
           <NavLink
