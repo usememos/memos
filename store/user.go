@@ -100,6 +100,15 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 		return nil, err
 	}
 
+	nestCreate := &Nest{
+		UID:       "Personal",
+		CreatorID: user.ID,
+	}
+	_, err = s.driver.CreateNest(ctx, nestCreate)
+	if err != nil {
+		return nil, err
+	}
+
 	s.userCache.Store(user.ID, user)
 	return user, nil
 }

@@ -31,6 +31,12 @@ type Driver interface {
 	UpdateMemo(ctx context.Context, update *UpdateMemo) error
 	DeleteMemo(ctx context.Context, delete *DeleteMemo) error
 
+	// Nest model related methods.
+	CreateNest(ctx context.Context, create *Nest) (*Nest, error)
+	ListNests(ctx context.Context, find *FindNest) ([]*Nest, error)
+	UpdateNest(ctx context.Context, update *UpdateNest) error
+	DeleteNest(ctx context.Context, delete *DeleteNest) error
+
 	// MemoRelation model related methods.
 	UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error)
 	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)

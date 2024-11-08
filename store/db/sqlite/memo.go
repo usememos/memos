@@ -13,8 +13,8 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`payload`"}
-	placeholder := []string{"?", "?", "?", "?", "?"}
+	fields := []string{"`uid`", "`creator_id`", "`nest`", "`content`", "`visibility`", "`payload`"}
+	placeholder := []string{"?", "?", "?", "?", "?", "?"}
 	payload := "{}"
 	if create.Payload != nil {
 		payloadBytes, err := protojson.Marshal(create.Payload)
@@ -23,7 +23,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		}
 		payload = string(payloadBytes)
 	}
-	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, payload}
+	args := []any{create.UID, create.CreatorID, create.Nest, create.Content, create.Visibility, payload}
 
 	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`, `updated_ts`, `row_status`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
@@ -49,6 +49,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "`memo`.`creator_id` = ?"), append(args, *v)
+	}
+	if v := find.Nest; v != nil {
+		where, args = append(where, "`memo`.`nest` = ?"), append(args, *v)
 	}
 	if v := find.RowStatus; v != nil {
 		where, args = append(where, "`memo`.`row_status` = ?"), append(args, *v)
@@ -206,6 +209,9 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	}
 	if v := update.RowStatus; v != nil {
 		set, args = append(set, "`row_status` = ?"), append(args, *v)
+	}
+	if v := update.Nest; v != nil {
+		set, args = append(set, "`nest` = ?"), append(args, *v)
 	}
 	if v := update.Content; v != nil {
 		set, args = append(set, "`content` = ?"), append(args, *v)
