@@ -14,6 +14,7 @@ import { Memo, MemoView } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 import { MemoEditorContext } from "../types";
+import useCurrentNest from "@/hooks/useCurrentNest";
 
 interface Props {
   editorRef: React.RefObject<EditorRefActions>;
@@ -30,6 +31,7 @@ const AddMemoRelationPopover = (props: Props) => {
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
   const [embedded, setEmbedded] = useState<boolean>(false);
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
+  const nest = useCurrentNest();
 
   const filteredMemos = fetchedMemos.filter(
     (memo) =>
@@ -45,6 +47,7 @@ const AddMemoRelationPopover = (props: Props) => {
       setIsFetching(true);
       try {
         const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
+        filters.push(`nest == ${nest}`);
         if (searchText) {
           filters.push(`content_search == [${JSON.stringify(searchText)}]`);
         }

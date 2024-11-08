@@ -9,6 +9,7 @@ import useLoading from "@/hooks/useLoading";
 import { useMemoMetadataStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
+import useCurrentNest from "@/hooks/useCurrentNest";
 
 interface Props extends DialogProps {
   tag: string;
@@ -21,6 +22,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
   const [newName, setNewName] = useState(tag);
   const requestState = useLoading(false);
   const user = useCurrentUser();
+  const nest = useCurrentNest();
 
   const handleTagNameInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value.trim());
@@ -43,7 +45,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
         newTag: newName,
       });
       toast.success("Rename tag successfully");
-      memoMetadataStore.fetchMemoMetadata({ user });
+      memoMetadataStore.fetchMemoMetadata({ user , nest });
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);

@@ -33,6 +33,7 @@ import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
+import useCurrentNest from "@/hooks/useCurrentNest";
 
 export interface Props {
   className?: string;
@@ -90,6 +91,7 @@ const MemoEditor = (props: Props) => {
   const workspaceMemoRelatedSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
     WorkspaceMemoRelatedSetting.fromPartial({});
+  const nest = useCurrentNest();
 
   useEffect(() => {
     editorRef.current?.setContent(contentCache || "");
@@ -338,6 +340,7 @@ const MemoEditor = (props: Props) => {
               resources: state.resourceList,
               relations: state.relationList,
               location: state.location,
+              nest,
             })
           : memoServiceClient
               .createMemoComment({

@@ -11,6 +11,7 @@ import { useTranslate } from "@/utils/i18n";
 import showRenameTagDialog from "../RenameTagDialog";
 import TagTree from "../TagTree";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
+import useCurrentNest from "@/hooks/useCurrentNest";
 
 interface Props {
   readonly?: boolean;
@@ -26,6 +27,7 @@ const TagsSection = (props: Props) => {
   const tags = Object.entries(useMemoTagList())
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
+  const nest = useCurrentNest();
 
   const handleTagClick = (tag: string) => {
     const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter) => filter.value === tag);
@@ -46,7 +48,7 @@ const TagsSection = (props: Props) => {
         parent: "memos/-",
         tag: tag,
       });
-      await memoMetadataStore.fetchMemoMetadata({ user, location });
+      await memoMetadataStore.fetchMemoMetadata({ user, location, nest });
       toast.success(t("message.deleted-successfully"));
     }
   };

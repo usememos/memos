@@ -12,14 +12,17 @@ import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoFilterStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
+import useCurrentNest from "@/hooks/useCurrentNest";
 
 const Home = () => {
   const { md } = useResponsiveWidth();
   const user = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
+  const nest = useCurrentNest();
 
   const memoListFilter = useMemo(() => {
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
+    filters.push(`nest == ${nest}`);
     const contentSearch: string[] = [];
     const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
@@ -51,7 +54,7 @@ const Home = () => {
       filters.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
     return filters.join(" && ");
-  }, [user, memoFilterStore.filters, memoFilterStore.orderByTimeAsc]);
+  }, [user, memoFilterStore.filters, memoFilterStore.orderByTimeAsc, nest]);
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">

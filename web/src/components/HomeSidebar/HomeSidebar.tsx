@@ -6,6 +6,7 @@ import UserStatisticsView from "@/components/UserStatisticsView";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoList, useMemoMetadataStore } from "@/store/v1";
 import TagsSection from "./TagsSection";
+import useCurrentNest from "@/hooks/useCurrentNest";
 
 interface Props {
   className?: string;
@@ -16,13 +17,14 @@ const HomeSidebar = (props: Props) => {
   const user = useCurrentUser();
   const memoList = useMemoList();
   const memoMetadataStore = useMemoMetadataStore();
+  const nest = useCurrentNest();
 
   useDebounce(
     async () => {
-      await memoMetadataStore.fetchMemoMetadata({ user, location });
+      await memoMetadataStore.fetchMemoMetadata({ user, location, nest });
     },
     300,
-    [memoList.size(), user, location.pathname],
+    [memoList.size(), user, location.pathname, nest],
   );
 
   return (
