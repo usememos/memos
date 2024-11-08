@@ -5,13 +5,13 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore, useMemoMetadataStore, useMemoTagList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showRenameTagDialog from "../RenameTagDialog";
 import TagTree from "../TagTree";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
-import useCurrentNest from "@/hooks/useCurrentNest";
 
 interface Props {
   readonly?: boolean;

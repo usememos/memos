@@ -8,13 +8,13 @@ import useDebounce from "react-use/lib/useDebounce";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, MemoView } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 import { MemoEditorContext } from "../types";
-import useCurrentNest from "@/hooks/useCurrentNest";
 
 interface Props {
   editorRef: React.RefObject<EditorRefActions>;

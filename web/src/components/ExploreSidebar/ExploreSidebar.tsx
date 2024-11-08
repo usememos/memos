@@ -2,9 +2,9 @@ import clsx from "clsx";
 import { useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import { useMemoList, useMemoMetadataStore } from "@/store/v1";
 import TagsSection from "../HomeSidebar/TagsSection";
-import useCurrentNest from "@/hooks/useCurrentNest";
 
 interface Props {
   className?: string;

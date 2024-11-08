@@ -8,8 +8,8 @@ import { Routes } from "@/router";
 import { useInboxStore } from "@/store/v1";
 import { Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { useTranslate } from "@/utils/i18n";
-import UserBanner from "./UserBanner";
 import NestBanner from "./NestBanner";
+import UserBanner from "./UserBanner";
 
 interface NavLinkItem {
   id: string;

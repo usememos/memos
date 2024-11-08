@@ -7,12 +7,12 @@ import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoFilterStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import useCurrentNest from "@/hooks/useCurrentNest";
 
 const Home = () => {
   const { md } = useResponsiveWidth();

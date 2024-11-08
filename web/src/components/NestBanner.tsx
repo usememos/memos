@@ -1,8 +1,8 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import clsx from "clsx";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import NestIcon from "./NestIcon";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
+import NestIcon from "./NestIcon";
 
 interface Props {
   collapsed?: boolean;
@@ -14,8 +14,8 @@ const NestBanner = (props: Props) => {
   const commonContext = useCommonContext();
 
   const handleNestChange = (nest: number) => {
-    commonContext.setNest(nest)
-  }
+    commonContext.setNest(nest);
+  };
 
   return (
     <div className="relative w-full h-auto px-1 shrink-0">
@@ -28,15 +28,17 @@ const NestBanner = (props: Props) => {
             )}
           >
             <NestIcon />
-            {!collapsed && <span className="ml-2 text-lg font-medium text-slate-800 dark:text-gray-300 shrink truncate">Nest{commonContext.nest}</span>}
+            {!collapsed && (
+              <span className="ml-2 text-lg font-medium text-slate-800 dark:text-gray-300 shrink truncate">Nest{commonContext.nest}</span>
+            )}
           </div>
         </MenuButton>
         <Menu placement="bottom-start" style={{ zIndex: "9999" }}>
-            {[0, 1].map((item) => (
-              <MenuItem onClick={() => handleNestChange(item)} key={item}>
-                <span className="truncate">Nest{item}</span>
-              </MenuItem>
-            ))}
+          {[0, 1].map((item) => (
+            <MenuItem onClick={() => handleNestChange(item)} key={item}>
+              <span className="truncate">Nest{item}</span>
+            </MenuItem>
+          ))}
         </Menu>
       </Dropdown>
     </div>

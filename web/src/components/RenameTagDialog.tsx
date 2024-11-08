@@ -4,12 +4,12 @@ import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useMemoMetadataStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
-import useCurrentNest from "@/hooks/useCurrentNest";
 
 interface Props extends DialogProps {
   tag: string;
@@ -45,7 +45,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
         newTag: newName,
       });
       toast.success("Rename tag successfully");
-      memoMetadataStore.fetchMemoMetadata({ user , nest });
+      memoMetadataStore.fetchMemoMetadata({ user, nest });
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);

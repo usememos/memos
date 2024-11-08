@@ -26,7 +26,7 @@ export const useMemoMetadataStore = create(
   combine(getDefaultState(), (set, get) => ({
     setState: (state: State) => set(state),
     getState: () => get(),
-    fetchMemoMetadata: async (params: { user?: User; location?: Location<any>; nest?: number}) => {
+    fetchMemoMetadata: async (params: { user?: User; location?: Location<any>; nest?: number }) => {
       const filters = [`row_status == "NORMAL"`];
       filters.push(`nest == ${params.nest}`);
       if (params.user) {

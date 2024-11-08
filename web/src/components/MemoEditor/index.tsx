@@ -12,6 +12,7 @@ import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore, useResourceStore, useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
@@ -33,7 +34,6 @@ import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
-import useCurrentNest from "@/hooks/useCurrentNest";
 
 export interface Props {
   className?: string;

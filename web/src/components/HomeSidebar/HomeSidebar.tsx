@@ -3,10 +3,10 @@ import { useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
 import UserStatisticsView from "@/components/UserStatisticsView";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoList, useMemoMetadataStore } from "@/store/v1";
 import TagsSection from "./TagsSection";
-import useCurrentNest from "@/hooks/useCurrentNest";
 
 interface Props {
   className?: string;
