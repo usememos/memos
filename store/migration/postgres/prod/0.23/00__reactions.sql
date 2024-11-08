@@ -18,9 +18,30 @@ VALUES (
   ''
 )
 ON CONFLICT("name") DO UPDATE
-SET "value" = 
+SET "value" =
   jsonb_set(
-    "system_setting"."value"::jsonb, 
-    '{reactions}', 
+    "system_setting"."value"::jsonb,
+    '{reactions}',
     '["👍","👎","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓"]'::jsonb
   );
+
+ALTER TABLE
+  memo
+ADD
+  COLUMN nest INTEGER NOT NULL DEFAULT 0;
+
+CREATE TABLE nest (
+  id SERIAL PRIMARY KEY,
+  uid TEXT NOT NULL,
+  creator_id INTEGER NOT NULL,
+  created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  row_status TEXT NOT NULL DEFAULT 'NORMAL'
+);
+
+INSERT INTO
+  nest (uid, creator_id)
+SELECT
+  'Personal', id
+FROM
+  "user";
