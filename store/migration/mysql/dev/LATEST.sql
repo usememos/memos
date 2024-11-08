@@ -41,11 +41,22 @@ CREATE TABLE `memo` (
   `creator_id` INT NOT NULL,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `nest` INT NOT NULL DEFAULT 0,
   `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
   `content` TEXT NOT NULL,
   `visibility` VARCHAR(256) NOT NULL DEFAULT 'PRIVATE',
   `tags` JSON NOT NULL,
   `payload` JSON NOT NULL
+);
+
+-- nest
+CREATE TABLE nest (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL,
+  `creator_id` INT NOT NULL,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL'
 );
 
 -- memo_organizer
@@ -128,5 +139,5 @@ CREATE TABLE `reaction` (
   `creator_id` INT NOT NULL,
   `content_id` VARCHAR(256) NOT NULL,
   `reaction_type` VARCHAR(256) NOT NULL,
-  UNIQUE(`creator_id`,`content_id`,`reaction_type`)  
+  UNIQUE(`creator_id`,`content_id`,`reaction_type`)
 );
