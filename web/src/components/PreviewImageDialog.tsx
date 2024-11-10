@@ -97,8 +97,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   const handleImageContainerKeyDown = (event: KeyboardEvent) => {
     if (event.key == "ArrowLeft") {
       showPrevImg();
-    }
-    else if (event.key == "ArrowRight") {
+    } else if (event.key == "ArrowRight") {
       showNextImg();
     }
   };
@@ -150,7 +149,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     document.addEventListener("keydown", handleImageContainerKeyDown);
     return () => {
       document.removeEventListener("keydown", handleImageContainerKeyDown);
-    }
+    };
   }, [currentIndex]);
 
   return (
