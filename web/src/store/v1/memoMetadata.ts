@@ -14,11 +14,13 @@ interface State {
   // stateId is used to identify the store instance state.
   // It should be update when any state change.
   stateId: string;
+  nest: number;
   dataMapByName: Record<string, Memo>;
 }
 
 const getDefaultState = (): State => ({
   stateId: uniqueId(),
+  nest: 0,
   dataMapByName: {},
 });
 
@@ -29,6 +31,11 @@ export const useMemoMetadataStore = create(
     fetchMemoMetadata: async (params: { user?: User; location?: Location<any>; nest?: number }) => {
       const filters = [`row_status == "NORMAL"`];
       filters.push(`nest == ${params.nest}`);
+
+      if (get().nest != params.nest) {
+        set({ nest: params.nest, dataMapByName: {} });
+      }
+
       if (params.user) {
         if (params.location?.pathname === Routes.EXPLORE) {
           filters.push(`visibilities == ["PUBLIC", "PROTECTED"]`);
