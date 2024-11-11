@@ -13,6 +13,7 @@ const (
 	WorkspaceSettingNamePrefix = "settings/"
 	UserNamePrefix             = "users/"
 	MemoNamePrefix             = "memos/"
+	NestNamePrefix             = "nests/"
 	ResourceNamePrefix         = "resources/"
 	InboxNamePrefix            = "inboxes/"
 	StorageNamePrefix          = "storages/"
@@ -70,6 +71,19 @@ func ExtractMemoIDFromName(name string) (int32, error) {
 	id, err := util.ConvertStringToInt32(tokens[0])
 	if err != nil {
 		return 0, errors.Errorf("invalid memo ID %q", tokens[0])
+	}
+	return id, nil
+}
+
+// ExtractNestIDFromName returns the nest ID from a resource name.
+func ExtractNestIDFromName(name string) (int32, error) {
+	tokens, err := GetNameParentTokens(name, NestNamePrefix)
+	if err != nil {
+		return 0, err
+	}
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid nest ID %q", tokens[0])
 	}
 	return id, nil
 }

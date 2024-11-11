@@ -48,7 +48,7 @@ type Memo struct {
 	// Domain specific fields
 	Content    string
 	Visibility Visibility
-	Nest       int32
+	NestID     int32
 	Payload    *storepb.MemoPayload
 
 	// Composed fields
@@ -71,7 +71,7 @@ type FindMemo struct {
 	// Domain specific fields
 	ContentSearch   []string
 	VisibilityList  []Visibility
-	Nest            *int32
+	NestID          *int32
 	PayloadFind     *FindMemoPayload
 	ExcludeContent  bool
 	ExcludeComments bool

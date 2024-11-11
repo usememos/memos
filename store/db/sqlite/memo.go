@@ -23,7 +23,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		}
 		payload = string(payloadBytes)
 	}
-	args := []any{create.UID, create.CreatorID, create.Nest, create.Content, create.Visibility, payload}
+	args := []any{create.UID, create.CreatorID, create.NestID, create.Content, create.Visibility, payload}
 
 	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`, `updated_ts`, `row_status`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
@@ -50,7 +50,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "`memo`.`creator_id` = ?"), append(args, *v)
 	}
-	if v := find.Nest; v != nil {
+	if v := find.NestID; v != nil {
 		where, args = append(where, "`memo`.`nest` = ?"), append(args, *v)
 	}
 	if v := find.RowStatus; v != nil {

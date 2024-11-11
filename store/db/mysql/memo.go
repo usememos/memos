@@ -58,7 +58,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "`memo`.`creator_id` = ?"), append(args, *v)
 	}
-	if v := find.Nest; v != nil {
+	if v := find.NestID; v != nil {
 		where, args = append(where, "`memo`.`nest` = ?"), append(args, *v)
 	}
 	if v := find.RowStatus; v != nil {
