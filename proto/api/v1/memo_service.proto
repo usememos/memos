@@ -178,7 +178,7 @@ message Memo {
   optional Location location = 20;
 
   // The nest of the memo.
-  int32 nest = 21;
+  string nest = 21;
 }
 
 message MemoProperty {
@@ -206,7 +206,7 @@ message CreateMemoRequest {
 
   optional Location location = 5;
 
-  int32 nest = 6;
+  string nest = 6;
 }
 
 enum MemoView {

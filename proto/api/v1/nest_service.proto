@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/httpbody.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service NestService {
+  // CreateNest creates a new nest.
+  rpc CreateNest(CreateNestRequest) returns (Nest) {
+    option (google.api.http) = {
+      post: "/api/v1/nests"
+      body: "nest"
+    };
+  }
+  // ListNests lists all nests.
+  rpc ListNests(ListNestsRequest) returns (ListNestsResponse) {
+    option (google.api.http) = {get: "/api/v1/nests"};
+  }
+  // GetNest returns a nest by name.
+  rpc GetNest(GetNestRequest) returns (Nest) {
+    option (google.api.http) = {get: "/api/v1/{name=nests/*}"};
+    option (google.api.method_signature) = "name";
+  }
+  // GetNestByUid returns a nest by uid.
+  rpc GetNestByUid(GetNestByUidRequest) returns (Nest) {
+    option (google.api.http) = {get: "/api/v1/nests:by-uid/{uid}"};
+    option (google.api.method_signature) = "uid";
+  }
+  // UpdateNest updates a nest.
+  rpc UpdateNest(UpdateNestRequest) returns (Nest) {
+    option (google.api.http) = {
+      patch: "/api/v1/{nest.name=nests/*}"
+      body: "nest"
+    };
+    option (google.api.method_signature) = "nest,update_mask";
+  }
+  // DeleteNest deletes a nest by name.
+  rpc DeleteNest(DeleteNestRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=nests/*}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+message Nest {
+  // The name of the nest.
+  // Format: nests/{id}
+  // id is the system generated unique identifier.
+  string name = 1;
+
+  // The user defined id of the nest.
+  string uid = 2;
+
+  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+message CreateNestRequest {
+  Nest nest = 1;
+}
+
+message ListNestsRequest {
+  // The maximum number of nests to return.
+  int32 page_size = 1;
+
+  // A page token, received from a previous `ListNests` call.
+  // Provide this to retrieve the subsequent page.
+  string page_token = 2;
+}
+
+message ListNestsResponse {
+  repeated Nest nests = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+}
+
+message GetNestRequest {
+  // The name of the nest.
+  // Format: nest/{id}
+  // id is the system generated unique identifier.
+  string name = 1;
+}
+
+message GetNestByUidRequest {
+  // The uid of the nest.
+  string uid = 1;
+}
+
+message UpdateNestRequest {
+  Nest nest = 1;
+
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message DeleteNestRequest {
+  // The name of the nest.
+  // Format: nests/{id}
+  // id is the system generated unique identifier.
+  string name = 1;
+}
