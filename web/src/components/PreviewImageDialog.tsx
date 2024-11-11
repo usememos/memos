@@ -94,6 +94,14 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     }
   };
 
+  const handleImageContainerKeyDown = (event: KeyboardEvent) => {
+    if (event.key == "ArrowLeft") {
+      showPrevImg();
+    } else if (event.key == "ArrowRight") {
+      showNextImg();
+    }
+  };
+
   const handleImgContainerScroll = (event: React.WheelEvent) => {
     const offsetX = event.nativeEvent.offsetX;
     const offsetY = event.nativeEvent.offsetY;
@@ -136,6 +144,13 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   useEffect(() => {
     setViewportScalable();
   }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleImageContainerKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleImageContainerKeyDown);
+    };
+  }, [currentIndex]);
 
   return (
     <>
