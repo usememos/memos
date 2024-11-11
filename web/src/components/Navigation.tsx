@@ -132,7 +132,7 @@ const Navigation = (props: Props) => {
             key={navLink.id}
             to={navLink.path}
             id={navLink.id}
-            unstable_viewTransition
+            viewTransition
           >
             {props.collapsed ? (
               <Tooltip title={navLink.title} placement="right" arrow>

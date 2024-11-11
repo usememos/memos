@@ -1,4 +1,5 @@
 import react from "@vitejs/plugin-react";
+import { codeInspectorPlugin } from "code-inspector-plugin";
 import { resolve } from "path";
 import { defineConfig } from "vite";
 
@@ -10,7 +11,12 @@ if (process.env.DEV_PROXY_SERVER && process.env.DEV_PROXY_SERVER.length > 0) {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    codeInspectorPlugin({
+      bundler: "vite",
+    }),
+  ],
   server: {
     host: "0.0.0.0",
     port: 3001,
@@ -32,6 +38,15 @@ export default defineConfig({
   resolve: {
     alias: {
       "@/": `${resolve(__dirname, "src")}/`,
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: "app.[hash].js",
+        chunkFileNames: "assets/chunk-vendors.[hash].js",
+        assetFileNames: "assets/[name].[hash][extname]",
+      },
     },
   },
 });

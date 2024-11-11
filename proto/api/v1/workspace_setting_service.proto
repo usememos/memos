@@ -50,6 +50,11 @@ message WorkspaceGeneralSetting {
   // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
   // Default is Sunday.
   int32 week_start_day_offset = 6;
+
+  // disallow_change_username disallows changing username.
+  bool disallow_change_username = 7;
+  // disallow_change_nickname disallows changing nickname.
+  bool disallow_change_nickname = 8;
 }
 
 message WorkspaceCustomProfile {
@@ -104,6 +109,14 @@ message WorkspaceMemoRelatedSetting {
   bool enable_link_preview = 6;
   // enable_comment enables comment.
   bool enable_comment = 7;
+  // enable_location enables setting location for memo.
+  bool enable_location = 8;
+  // default_visibility set the global memos default visibility.
+  string default_visibility = 9;
+  // reactions is the list of reactions.
+  repeated string reactions = 10;
+  // disable_markdown_shortcuts disallow the registration of markdown shortcuts.
+  bool disable_markdown_shortcuts = 11;
   // removed_completed_checklist_items removed completed checklist items.
   bool removed_completed_checklist_items = 8;
 }

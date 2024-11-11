@@ -86,7 +86,7 @@ func GetMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, 
 			}
 		case *ast.Link, *ast.AutoLink:
 			property.HasLink = true
-		case *ast.TaskList:
+		case *ast.TaskListItem:
 			property.HasTaskList = true
 			if !n.Complete {
 				property.HasIncompleteTasks = true
@@ -108,11 +108,13 @@ func TraverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {
 			TraverseASTNodes(n.Children, fn)
 		case *ast.Blockquote:
 			TraverseASTNodes(n.Children, fn)
-		case *ast.OrderedList:
+		case *ast.List:
 			TraverseASTNodes(n.Children, fn)
-		case *ast.UnorderedList:
+		case *ast.OrderedListItem:
 			TraverseASTNodes(n.Children, fn)
-		case *ast.TaskList:
+		case *ast.UnorderedListItem:
+			TraverseASTNodes(n.Children, fn)
+		case *ast.TaskListItem:
 			TraverseASTNodes(n.Children, fn)
 		case *ast.Bold:
 			TraverseASTNodes(n.Children, fn)

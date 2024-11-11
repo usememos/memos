@@ -2,17 +2,14 @@ import { Divider, Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
-import { CalendarDaysIcon, CheckCircleIcon, Code2Icon, LinkIcon, ListTodoIcon, MoreVerticalIcon, RefreshCcwIcon } from "lucide-react";
+import { CalendarDaysIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
-import { memoServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
-import { useMemoFilterStore, useMemoStore } from "@/store/v1";
+import { useMemoFilterStore, useMemoMetadataStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
 interface UserMemoStats {
   link: number;
@@ -24,22 +21,20 @@ interface UserMemoStats {
 const UserStatisticsView = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
   const memoFilterStore = useMemoFilterStore();
+  const memoMetadataStore = useMemoMetadataStore();
+  const metadataList = Object.values(memoMetadataStore.getState().dataMapByName);
   const [memoAmount, setMemoAmount] = useState(0);
   const [memoStats, setMemoStats] = useState<UserMemoStats>({ link: 0, taskList: 0, code: 0, incompleteTasks: 0 });
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDate] = useState(new Date());
-  const [monthString, setMonthString] = useState(dayjs(selectedDate.toDateString()).format("YYYY-MM"));
+  const [visibleMonthString, setVisibleMonthString] = useState(dayjs(selectedDate.toDateString()).format("YYYY-MM"));
   const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
 
   useAsyncEffect(async () => {
-    const { entities } = await memoServiceClient.listMemoProperties({
-      name: `memos/-`,
-    });
     const memoStats: UserMemoStats = { link: 0, taskList: 0, code: 0, incompleteTasks: 0 };
-    entities.forEach((entity) => {
-      const { property } = entity;
+    metadataList.forEach((memo) => {
+      const { property } = memo;
       if (property?.hasLink) {
         memoStats.link += 1;
       }
@@ -54,17 +49,9 @@ const UserStatisticsView = () => {
       }
     });
     setMemoStats(memoStats);
-    setMemoAmount(entities.length);
-    setActivityStats(countBy(entities.map((entity) => dayjs(entity.displayTime).format("YYYY-MM-DD"))));
-  }, [memoStore.stateId]);
-
-  const rebuildMemoTags = async () => {
-    await memoServiceClient.rebuildMemoProperty({
-      name: "memos/-",
-    });
-    toast.success("Refresh successfully");
-    window.location.reload();
-  };
+    setMemoAmount(metadataList.length);
+    setActivityStats(countBy(metadataList.map((memo) => dayjs(memo.displayTime).format("YYYY-MM-DD"))));
+  }, [memoMetadataStore.stateId]);
 
   const onCalendarClick = (date: string) => {
     memoFilterStore.removeFilter((f) => f.factor === "displayTime");
@@ -73,34 +60,35 @@ const UserStatisticsView = () => {
 
   return (
     <div className="group w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
-      <div className="w-full mb-1 flex flex-row justify-between items-center">
-        <div className="relative text-base font-medium leading-6 flex flex-row items-center dark:text-gray-400">
-          <CalendarDaysIcon className="w-5 h-auto mr-1 opacity-60" strokeWidth={1.5} />
-          <span>{dayjs(monthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}</span>
-          <input
-            className="inset-0 absolute z-1 opacity-0"
-            type="month"
-            value={monthString}
-            onFocus={(e: any) => e.target.showPicker()}
-            onChange={(e) => setMonthString(e.target.value || dayjs().format("YYYY-MM"))}
-          />
+      <div className="w-full mb-1 flex flex-row justify-between items-center gap-1">
+        <div className="relative text-sm font-medium inline-flex flex-row items-center w-auto dark:text-gray-400 truncate">
+          <CalendarDaysIcon className="w-4 h-auto mr-1 opacity-60 shrink-0" strokeWidth={1.5} />
+          <span className="truncate">
+            {dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}
+          </span>
         </div>
-        <div className="invisible group-hover:visible flex justify-end items-center">
-          <Popover>
-            <PopoverTrigger>
-              <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
-            </PopoverTrigger>
-            <PopoverContent align="end" alignOffset={-12}>
-              <button className="w-auto flex flex-row justify-between items-center gap-2 hover:opacity-80" onClick={rebuildMemoTags}>
-                <RefreshCcwIcon className="text-gray-400 w-4 h-auto cursor-pointer opacity-60" />
-                <span className="text-sm shrink-0 text-gray-500 dark:text-gray-400">Refresh</span>
-              </button>
-            </PopoverContent>
-          </Popover>
+        <div className="flex justify-end items-center shrink-0">
+          <span
+            className="cursor-pointer hover:opacity-80"
+            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
+          >
+            <ChevronLeftIcon className="w-4 h-auto shrink-0 opacity-60" />
+          </span>
+          <span
+            className="cursor-pointer hover:opacity-80"
+            onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
+          >
+            <ChevronRightIcon className="w-4 h-auto shrink-0 opacity-60" />
+          </span>
         </div>
       </div>
       <div className="w-full">
-        <ActivityCalendar month={monthString} selectedDate={selectedDate.toDateString()} data={activityStats} onClick={onCalendarClick} />
+        <ActivityCalendar
+          month={visibleMonthString}
+          selectedDate={selectedDate.toDateString()}
+          data={activityStats}
+          onClick={onCalendarClick}
+        />
         {memoAmount > 0 && (
           <p className="mt-1 w-full text-xs italic opacity-80">
             <span>{memoAmount}</span> memos in <span>{days}</span> {days > 1 ? "days" : "day"}

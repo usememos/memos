@@ -19,7 +19,7 @@ const RelationListView = (props: Props) => {
       const requests = relationList
         .filter((relation) => relation.type === MemoRelation_Type.REFERENCE)
         .map(async (relation) => {
-          return await memoStore.getOrFetchMemoByName(relation.relatedMemo, { skipStore: true });
+          return await memoStore.getOrFetchMemoByName(relation.relatedMemo!.name, { skipStore: true });
         });
       const list = await Promise.all(requests);
       setReferencingMemoList(list);
@@ -27,7 +27,7 @@ const RelationListView = (props: Props) => {
   }, [relationList]);
 
   const handleDeleteRelation = async (memo: Memo) => {
-    setRelationList(relationList.filter((relation) => relation.relatedMemo !== memo.name));
+    setRelationList(relationList.filter((relation) => relation.relatedMemo?.name !== memo.name));
   };
 
   return (

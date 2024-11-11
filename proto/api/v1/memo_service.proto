@@ -51,21 +51,6 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*}"};
     option (google.api.method_signature) = "name";
   }
-  // ListMemoProperties lists memo properties.
-  rpc ListMemoProperties(ListMemoPropertiesRequest) returns (ListMemoPropertiesResponse) {
-    option (google.api.http) = {get: "/api/v1/{name=memos/*}/properties"};
-  }
-  // RebuildMemoProperty rebuilds a memo property.
-  rpc RebuildMemoProperty(RebuildMemoPropertyRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/api/v1/{name=memos/*}/properties:rebuild"
-      body: "*"
-    };
-  }
-  // ListMemoTags lists tags for a memo.
-  rpc ListMemoTags(ListMemoTagsRequest) returns (ListMemoTagsResponse) {
-    option (google.api.http) = {get: "/api/v1/{parent=memos/*}/tags"};
-  }
   // RenameMemoTag renames a tag for a memo.
   rpc RenameMemoTag(RenameMemoTagRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
@@ -174,14 +159,9 @@ message Memo {
 
   bool pinned = 12;
 
-  optional int32 parent_id = 13 [
-    deprecated = true,
-    (google.api.field_behavior) = OUTPUT_ONLY
-  ];
+  repeated Resource resources = 14;
 
-  repeated Resource resources = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  repeated MemoRelation relations = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated MemoRelation relations = 15;
 
   repeated Reaction reactions = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 
@@ -192,7 +172,10 @@ message Memo {
   optional string parent = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The snippet of the memo content. Plain text only.
-  string snippet = 19;
+  string snippet = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The location of the memo.
+  optional Location location = 20;
 }
 
 message MemoProperty {
@@ -203,10 +186,32 @@ message MemoProperty {
   bool has_incomplete_tasks = 5;
 }
 
+message Location {
+  string placeholder = 1;
+  double latitude = 2;
+  double longitude = 3;
+}
+
 message CreateMemoRequest {
   string content = 1;
 
   Visibility visibility = 2;
+
+  repeated Resource resources = 3;
+
+  repeated MemoRelation relations = 4;
+
+  optional Location location = 5;
+}
+
+enum MemoView {
+  MEMO_VIEW_UNSPECIFIED = 0;
+
+  // The full view of the memo. Includes all fields.
+  MEMO_VIEW_FULL = 1;
+
+  // The metadata only view of the memo. Excludes the content/snippet fields.
+  MEMO_VIEW_METADATA_ONLY = 2;
 }
 
 message ListMemosRequest {
@@ -220,6 +225,9 @@ message ListMemosRequest {
   // Filter is used to filter memos returned in the list.
   // Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
   string filter = 3;
+
+  // The view of the memo.
+  MemoView view = 4;
 }
 
 message ListMemosResponse {
@@ -251,49 +259,6 @@ message DeleteMemoRequest {
   // The name of the memo.
   // Format: memos/{id}
   string name = 1;
-}
-
-message ListMemoPropertiesRequest {
-  // The name of the memo.
-  // Format: memos/{id}. Use "memos/-" to list all properties.
-  string name = 1;
-}
-
-message ListMemoPropertiesResponse {
-  repeated MemoPropertyEntity entities = 1;
-}
-
-message MemoPropertyEntity {
-  // The name of the memo property.
-  // Format: memos/{id}/properties/{property_id}
-  string name = 1;
-
-  MemoProperty property = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  google.protobuf.Timestamp display_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
-message RebuildMemoPropertyRequest {
-  // The name of the memo.
-  // Format: memos/{id}. Use "memos/-" to rebuild all memos.
-  string name = 1;
-}
-
-message ListMemoTagsRequest {
-  // The parent, who owns the tags.
-  // Format: memos/{id}. Use "memos/-" to list all tags.
-  string parent = 1;
-
-  // Filter is used to filter memos.
-  // Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
-  string filter = 2;
-}
-
-message ListMemoTagsResponse {
-  // tag_amounts is the amount of tags.
-  // key is the tag name. e.g. "tag1".
-  // value is the amount of the tag.
-  map<string, int32> tag_amounts = 1;
 }
 
 message RenameMemoTagRequest {

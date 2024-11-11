@@ -1,5 +1,5 @@
-import { Button, IconButton, Input } from "@mui/joy";
 import Textarea from "@mui/joy/Textarea/Textarea";
+import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -102,9 +102,9 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">{t("setting.system-section.customize-server.title")}</p>
-        <IconButton size="sm" onClick={handleCloseButtonClick}>
+        <Button size="sm" variant="plain" onClick={handleCloseButtonClick}>
           <XIcon className="w-5 h-auto" />
-        </IconButton>
+        </Button>
       </div>
       <div className="dialog-content-container min-w-[16rem]">
         <p className="text-sm mb-1">{t("setting.system-section.server-name")}</p>
@@ -123,11 +123,13 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
               {t("common.restore")}
             </Button>
           </div>
-          <div className="flex flex-row justify-end items-center">
+          <div className="flex flex-row justify-end items-center gap-2">
             <Button variant="plain" onClick={handleCloseButtonClick}>
               {t("common.cancel")}
             </Button>
-            <Button onClick={handleSaveButtonClick}>{t("common.save")}</Button>
+            <Button color="primary" onClick={handleSaveButtonClick}>
+              {t("common.save")}
+            </Button>
           </div>
         </div>
       </div>

@@ -1,7 +1,8 @@
-import { Button, Select, Textarea, Option, Divider, Switch } from "@mui/joy";
+import { Select, Textarea, Option, Divider, Switch } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { ExternalLinkIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
@@ -18,16 +19,21 @@ const WorkspaceSection = () => {
   );
   const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(originalSetting);
 
+  useEffect(() => {
+    setWorkspaceGeneralSetting(originalSetting);
+  }, [workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)]);
+
   const handleUpdateCustomizedProfileButtonClick = () => {
     showUpdateCustomizedProfileDialog();
   };
 
   const updatePartialSetting = (partial: Partial<WorkspaceGeneralSetting>) => {
-    const newWorkspaceGeneralSetting = WorkspaceGeneralSetting.fromPartial({
-      ...workspaceGeneralSetting,
-      ...partial,
-    });
-    setWorkspaceGeneralSetting(newWorkspaceGeneralSetting);
+    setWorkspaceGeneralSetting(
+      WorkspaceGeneralSetting.fromPartial({
+        ...workspaceGeneralSetting,
+        ...partial,
+      }),
+    );
   };
 
   const handleSaveGeneralSetting = async () => {
@@ -52,7 +58,7 @@ const WorkspaceSection = () => {
           {t("setting.system-section.server-name")}:{" "}
           <span className="font-mono font-bold">{workspaceGeneralSetting.customProfile?.title || "Memos"}</span>
         </div>
-        <Button variant="outlined" color="neutral" onClick={handleUpdateCustomizedProfileButtonClick}>
+        <Button variant="outlined" onClick={handleUpdateCustomizedProfileButtonClick}>
           {t("common.edit")}
         </Button>
       </div>
@@ -100,21 +106,35 @@ const WorkspaceSection = () => {
         </Link>
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Disallow user registration</span>
+        <span>{t("setting.workspace-section.disallow-user-registration")}</span>
         <Switch
           checked={workspaceGeneralSetting.disallowUserRegistration}
           onChange={(event) => updatePartialSetting({ disallowUserRegistration: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Disallow password auth</span>
+        <span>{t("setting.workspace-section.disallow-password-auth")}</span>
         <Switch
           checked={workspaceGeneralSetting.disallowPasswordAuth}
           onChange={(event) => updatePartialSetting({ disallowPasswordAuth: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span className="truncate">Week start day</span>
+        <span>{t("setting.workspace-section.disallow-change-username")}</span>
+        <Switch
+          checked={workspaceGeneralSetting.disallowChangeUsername}
+          onChange={(event) => updatePartialSetting({ disallowChangeUsername: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("setting.workspace-section.disallow-change-nickname")}</span>
+        <Switch
+          checked={workspaceGeneralSetting.disallowChangeNickname}
+          onChange={(event) => updatePartialSetting({ disallowChangeNickname: event.target.checked })}
+        />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="truncate">{t("setting.workspace-section.week-start-day")}</span>
         <Select
           className="!min-w-fit"
           value={workspaceGeneralSetting.weekStartDayOffset}
@@ -122,13 +142,13 @@ const WorkspaceSection = () => {
             updatePartialSetting({ weekStartDayOffset: weekStartDayOffset || 0 });
           }}
         >
-          <Option value={-1}>Saturday</Option>
-          <Option value={0}>Sunday</Option>
-          <Option value={1}>Monday</Option>
+          <Option value={-1}>{t("setting.workspace-section.saturday")}</Option>
+          <Option value={0}>{t("setting.workspace-section.sunday")}</Option>
+          <Option value={1}>{t("setting.workspace-section.monday")}</Option>
         </Select>
       </div>
       <div className="mt-2 w-full flex justify-end">
-        <Button disabled={isEqual(workspaceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
+        <Button color="primary" disabled={isEqual(workspaceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
           {t("common.save")}
         </Button>
       </div>

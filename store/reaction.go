@@ -2,8 +2,6 @@ package store
 
 import (
 	"context"
-
-	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 type Reaction struct {
@@ -13,7 +11,7 @@ type Reaction struct {
 	// ContentID is the id of the content that the reaction is for.
 	// This can be a memo. e.g. memos/101
 	ContentID    string
-	ReactionType storepb.ReactionType
+	ReactionType string
 }
 
 type FindReaction struct {

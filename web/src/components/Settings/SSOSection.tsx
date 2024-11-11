@@ -1,4 +1,5 @@
-import { Button, Divider, Dropdown, List, ListItem, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Divider, Dropdown, List, ListItem, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Button } from "@usememos/mui";
 import { MoreVerticalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -42,7 +43,9 @@ const SSOSection = () => {
           <span className="font-mono text-gray-400">{t("setting.sso-section.sso-list")}</span>
           <LearnMore url="https://usememos.com/docs/advanced-settings/keycloak" />
         </div>
-        <Button onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}>{t("common.create")}</Button>
+        <Button color="primary" onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}>
+          {t("common.create")}
+        </Button>
       </div>
       <Divider />
       {identityProviderList.map((identityProvider) => (
@@ -73,7 +76,7 @@ const SSOSection = () => {
       ))}
       {identityProviderList.length === 0 && (
         <div className="w-full mt-2 text-sm dark:border-zinc-700 opacity-60 flex flex-row items-center justify-between">
-          <p className="">No SSO found.</p>
+          <p className="">{t("setting.sso-section.no-sso-found")}</p>
         </div>
       )}
 
@@ -86,7 +89,7 @@ const SSOSection = () => {
               to="https://www.usememos.com/docs/advanced-settings/keycloak"
               target="_blank"
             >
-              Configuring Keycloak for Authentication
+              {t("setting.sso-section.configuring-keycloak-for-authentication")}
             </Link>
           </ListItem>
         </List>

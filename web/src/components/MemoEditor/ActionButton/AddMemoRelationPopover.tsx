@@ -1,4 +1,5 @@
-import { Autocomplete, AutocompleteOption, Button, Checkbox, Chip, IconButton } from "@mui/joy";
+import { Autocomplete, AutocompleteOption, Chip } from "@mui/joy";
+import { Button, Checkbox } from "@usememos/mui";
 import { uniqBy } from "lodash-es";
 import { LinkIcon } from "lucide-react";
 import React, { useContext, useState } from "react";
@@ -8,8 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo } from "@/types/proto/api/v1/memo_service";
+import { MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
+import { Memo, MemoView } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 import { MemoEditorContext } from "../types";
@@ -27,18 +28,20 @@ const AddMemoRelationPopover = (props: Props) => {
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const [fetchedMemos, setFetchedMemos] = useState<Memo[]>([]);
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
-  const [embedded, setEmbedded] = useState<boolean>(true);
+  const [embedded, setEmbedded] = useState<boolean>(false);
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   const filteredMemos = fetchedMemos.filter(
     (memo) =>
       !selectedMemos.includes(memo) &&
       memo.name !== context.memoName &&
-      !context.relationList.some((relation) => relation.relatedMemo === memo.name),
+      !context.relationList.some((relation) => relation.relatedMemo?.name === memo.name),
   );
 
   useDebounce(
     async () => {
+      if (!popoverOpen) return;
+
       setIsFetching(true);
       try {
         const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
@@ -48,6 +51,7 @@ const AddMemoRelationPopover = (props: Props) => {
         const { memos } = await memoServiceClient.listMemos({
           pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
           filter: filters.length > 0 ? filters.join(" && ") : undefined,
+          view: MemoView.MEMO_VIEW_FULL,
         });
         setFetchedMemos(memos);
       } catch (error: any) {
@@ -57,7 +61,7 @@ const AddMemoRelationPopover = (props: Props) => {
       setIsFetching(false);
     },
     300,
-    [searchText],
+    [popoverOpen, searchText],
   );
 
   const getHighlightedContent = (content: string) => {
@@ -109,8 +113,8 @@ const AddMemoRelationPopover = (props: Props) => {
         uniqBy(
           [
             ...selectedMemos.map((memo) => ({
-              memo: context.memoName || "",
-              relatedMemo: memo.name,
+              memo: MemoRelation_Memo.fromPartial({ name: memo.name }),
+              relatedMemo: MemoRelation_Memo.fromPartial({ name: memo.name }),
               type: MemoRelation_Type.REFERENCE,
             })),
             ...context.relationList,
@@ -125,10 +129,10 @@ const AddMemoRelationPopover = (props: Props) => {
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger>
-        <IconButton size="sm" component="div">
-          <LinkIcon className="w-5 h-5 mx-auto" />
-        </IconButton>
+      <PopoverTrigger className="w-9">
+        <Button className="flex items-center justify-center" size="sm" variant="plain" asChild>
+          <LinkIcon className="w-5 h-5 mx-auto p-0" />
+        </Button>
       </PopoverTrigger>
       <PopoverContent align="center">
         <div className="w-[16rem] flex flex-col justify-start items-start">
@@ -149,7 +153,7 @@ const AddMemoRelationPopover = (props: Props) => {
             getOptionLabel={(memo) => memo.content}
             isOptionEqualToValue={(memo, value) => memo.name === value.name}
             renderOption={(props, memo) => (
-              <AutocompleteOption {...props}>
+              <AutocompleteOption {...props} key={memo.name}>
                 <div className="w-full flex flex-col justify-start items-start">
                   <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
                   <p className="mt-0.5 text-sm leading-5 line-clamp-2">{searchText ? getHighlightedContent(memo.content) : memo.snippet}</p>
@@ -170,7 +174,7 @@ const AddMemoRelationPopover = (props: Props) => {
           />
           <div className="mt-2 w-full flex flex-row justify-end items-center gap-2">
             <Checkbox size="sm" label={"Embed"} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
-            <Button size="sm" onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
+            <Button size="sm" color="primary" onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
               {t("common.add")}
             </Button>
           </div>

@@ -14,30 +14,58 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV1Service) ListInboxes(ctx context.Context, _ *v1pb.ListInboxesRequest) (*v1pb.ListInboxesResponse, error) {
+func (s *APIV1Service) ListInboxes(ctx context.Context, request *v1pb.ListInboxesRequest) (*v1pb.ListInboxesResponse, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
 	}
 
+	var limit, offset int
+	if request.PageToken != "" {
+		var pageToken v1pb.PageToken
+		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
+		}
+		limit = int(pageToken.Limit)
+		offset = int(pageToken.Offset)
+	} else {
+		limit = int(request.PageSize)
+	}
+	if limit <= 0 {
+		limit = DefaultPageSize
+	}
+	limitPlusOne := limit + 1
+
 	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
 		ReceiverID: &user.ID,
+		Limit:      &limitPlusOne,
+		Offset:     &offset,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list inbox: %v", err)
 	}
 
-	response := &v1pb.ListInboxesResponse{
-		Inboxes: []*v1pb.Inbox{},
+	inboxMessages := []*v1pb.Inbox{}
+	nextPageToken := ""
+	if len(inboxes) == limitPlusOne {
+		inboxes = inboxes[:limit]
+		nextPageToken, err = getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
+		}
 	}
 	for _, inbox := range inboxes {
 		inboxMessage := convertInboxFromStore(inbox)
 		if inboxMessage.Type == v1pb.Inbox_TYPE_UNSPECIFIED {
 			continue
 		}
-		response.Inboxes = append(response.Inboxes, inboxMessage)
+		inboxMessages = append(inboxMessages, inboxMessage)
 	}
 
+	response := &v1pb.ListInboxesResponse{
+		Inboxes:       inboxMessages,
+		NextPageToken: nextPageToken,
+	}
 	return response, nil
 }
 

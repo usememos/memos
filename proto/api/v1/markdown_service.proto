@@ -70,71 +70,81 @@ message LinkMetadata {
 
 enum NodeType {
   NODE_UNSPECIFIED = 0;
+
+  // Block nodes.
   LINE_BREAK = 1;
   PARAGRAPH = 2;
   CODE_BLOCK = 3;
   HEADING = 4;
   HORIZONTAL_RULE = 5;
   BLOCKQUOTE = 6;
-  ORDERED_LIST = 7;
-  UNORDERED_LIST = 8;
-  TASK_LIST = 9;
-  MATH_BLOCK = 10;
-  TABLE = 11;
-  EMBEDDED_CONTENT = 12;
-  TEXT = 13;
-  BOLD = 14;
-  ITALIC = 15;
-  BOLD_ITALIC = 16;
-  CODE = 17;
-  IMAGE = 18;
-  LINK = 19;
-  AUTO_LINK = 20;
-  TAG = 21;
-  STRIKETHROUGH = 22;
-  ESCAPING_CHARACTER = 23;
-  MATH = 24;
-  HIGHLIGHT = 25;
-  SUBSCRIPT = 26;
-  SUPERSCRIPT = 27;
-  REFERENCED_CONTENT = 28;
-  SPOILER = 29;
-  HTML_ELEMENT = 30;
+  LIST = 7;
+  ORDERED_LIST_ITEM = 8;
+  UNORDERED_LIST_ITEM = 9;
+  TASK_LIST_ITEM = 10;
+  MATH_BLOCK = 11;
+  TABLE = 12;
+  EMBEDDED_CONTENT = 13;
+
+  // Inline nodes.
+  TEXT = 51;
+  BOLD = 52;
+  ITALIC = 53;
+  BOLD_ITALIC = 54;
+  CODE = 55;
+  IMAGE = 56;
+  LINK = 57;
+  AUTO_LINK = 58;
+  TAG = 59;
+  STRIKETHROUGH = 60;
+  ESCAPING_CHARACTER = 61;
+  MATH = 62;
+  HIGHLIGHT = 63;
+  SUBSCRIPT = 64;
+  SUPERSCRIPT = 65;
+  REFERENCED_CONTENT = 66;
+  SPOILER = 67;
+  HTML_ELEMENT = 68;
 }
 
 message Node {
   NodeType type = 1;
+
   oneof node {
-    LineBreakNode line_break_node = 2;
-    ParagraphNode paragraph_node = 3;
-    CodeBlockNode code_block_node = 4;
-    HeadingNode heading_node = 5;
-    HorizontalRuleNode horizontal_rule_node = 6;
-    BlockquoteNode blockquote_node = 7;
-    OrderedListNode ordered_list_node = 8;
-    UnorderedListNode unordered_list_node = 9;
-    TaskListNode task_list_node = 10;
-    MathBlockNode math_block_node = 11;
-    TableNode table_node = 12;
-    EmbeddedContentNode embedded_content_node = 13;
-    TextNode text_node = 14;
-    BoldNode bold_node = 15;
-    ItalicNode italic_node = 16;
-    BoldItalicNode bold_italic_node = 17;
-    CodeNode code_node = 18;
-    ImageNode image_node = 19;
-    LinkNode link_node = 20;
-    AutoLinkNode auto_link_node = 21;
-    TagNode tag_node = 22;
-    StrikethroughNode strikethrough_node = 23;
-    EscapingCharacterNode escaping_character_node = 24;
-    MathNode math_node = 25;
-    HighlightNode highlight_node = 26;
-    SubscriptNode subscript_node = 27;
-    SuperscriptNode superscript_node = 28;
-    ReferencedContentNode referenced_content_node = 29;
-    SpoilerNode spoiler_node = 30;
-    HTMLElementNode html_element_node = 31;
+    // Block nodes.
+    LineBreakNode line_break_node = 11;
+    ParagraphNode paragraph_node = 12;
+    CodeBlockNode code_block_node = 13;
+    HeadingNode heading_node = 14;
+    HorizontalRuleNode horizontal_rule_node = 15;
+    BlockquoteNode blockquote_node = 16;
+    ListNode list_node = 17;
+    OrderedListItemNode ordered_list_item_node = 18;
+    UnorderedListItemNode unordered_list_item_node = 19;
+    TaskListItemNode task_list_item_node = 20;
+    MathBlockNode math_block_node = 21;
+    TableNode table_node = 22;
+    EmbeddedContentNode embedded_content_node = 23;
+
+    // Inline nodes.
+    TextNode text_node = 51;
+    BoldNode bold_node = 52;
+    ItalicNode italic_node = 53;
+    BoldItalicNode bold_italic_node = 54;
+    CodeNode code_node = 55;
+    ImageNode image_node = 56;
+    LinkNode link_node = 57;
+    AutoLinkNode auto_link_node = 58;
+    TagNode tag_node = 59;
+    StrikethroughNode strikethrough_node = 60;
+    EscapingCharacterNode escaping_character_node = 61;
+    MathNode math_node = 62;
+    HighlightNode highlight_node = 63;
+    SubscriptNode subscript_node = 64;
+    SuperscriptNode superscript_node = 65;
+    ReferencedContentNode referenced_content_node = 66;
+    SpoilerNode spoiler_node = 67;
+    HTMLElementNode html_element_node = 68;
   }
 }
 
@@ -162,19 +172,31 @@ message BlockquoteNode {
   repeated Node children = 1;
 }
 
-message OrderedListNode {
+message ListNode {
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    ORDERED = 1;
+    UNORDERED = 2;
+    DESCRIPTION = 3;
+  }
+  Kind kind = 1;
+  int32 indent = 2;
+  repeated Node children = 3;
+}
+
+message OrderedListItemNode {
   string number = 1;
   int32 indent = 2;
   repeated Node children = 3;
 }
 
-message UnorderedListNode {
+message UnorderedListItemNode {
   string symbol = 1;
   int32 indent = 2;
   repeated Node children = 3;
 }
 
-message TaskListNode {
+message TaskListItemNode {
   string symbol = 1;
   int32 indent = 2;
   bool complete = 3;

@@ -30,6 +30,7 @@ import (
 )
 
 const (
+	// DefaultPageSize is the default page size for listing memos.
 	DefaultPageSize = 10
 )
 
@@ -66,13 +67,34 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	create.Payload = &storepb.MemoPayload{
 		Property: property,
 	}
+	if request.Location != nil {
+		create.Payload.Location = convertLocationToStore(request.Location)
+	}
 
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
 		return nil, err
 	}
+	if len(request.Resources) > 0 {
+		_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{
+			Name:      fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID),
+			Resources: request.Resources,
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to set memo resources")
+		}
+	}
+	if len(request.Relations) > 0 {
+		_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
+			Name:      fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID),
+			Relations: request.Relations,
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to set memo relations")
+		}
+	}
 
-	memoMessage, err := s.convertMemoFromStore(ctx, memo)
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, v1pb.MemoView_MEMO_VIEW_FULL)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -110,6 +132,9 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	limitPlusOne := limit + 1
 	memoFind.Limit = &limitPlusOne
 	memoFind.Offset = &offset
+	if request.View == v1pb.MemoView_MEMO_VIEW_METADATA_ONLY {
+		memoFind.ExcludeContent = true
+	}
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
@@ -125,7 +150,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		}
 	}
 	for _, memo := range memos {
-		memoMessage, err := s.convertMemoFromStore(ctx, memo)
+		memoMessage, err := s.convertMemoFromStore(ctx, memo, request.View)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
@@ -166,7 +191,7 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 		}
 	}
 
-	memoMessage, err := s.convertMemoFromStore(ctx, memo)
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, v1pb.MemoView_MEMO_VIEW_FULL)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -197,7 +222,7 @@ func (s *APIV1Service) GetMemoByUid(ctx context.Context, request *v1pb.GetMemoBy
 		}
 	}
 
-	memoMessage, err := s.convertMemoFromStore(ctx, memo)
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, v1pb.MemoView_MEMO_VIEW_FULL)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -293,6 +318,26 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert memo organizer")
 			}
+		} else if path == "resources" {
+			_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{
+				Name:      request.Memo.Name,
+				Resources: request.Memo.Resources,
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set memo resources")
+			}
+		} else if path == "relations" {
+			_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
+				Name:      request.Memo.Name,
+				Relations: request.Memo.Relations,
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set memo relations")
+			}
+		} else if path == "location" {
+			payload := memo.Payload
+			payload.Location = convertLocationToStore(request.Memo.Location)
+			update.Payload = payload
 		}
 	}
 
@@ -306,7 +351,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get memo")
 	}
-	memoMessage, err := s.convertMemoFromStore(ctx, memo)
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, v1pb.MemoView_MEMO_VIEW_FULL)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -342,7 +387,7 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	if memoMessage, err := s.convertMemoFromStore(ctx, memo); err == nil {
+	if memoMessage, err := s.convertMemoFromStore(ctx, memo, v1pb.MemoView_MEMO_VIEW_METADATA_ONLY); err == nil {
 		// Try to dispatch webhook when memo is deleted.
 		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
 			slog.Warn("Failed to dispatch memo deleted webhook", slog.Any("err", err))
@@ -477,7 +522,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 			return nil, status.Errorf(codes.Internal, "failed to get memo")
 		}
 		if memo != nil {
-			memoMessage, err := s.convertMemoFromStore(ctx, memo)
+			memoMessage, err := s.convertMemoFromStore(ctx, memo, v1pb.MemoView_MEMO_VIEW_FULL)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to convert memo")
 			}
@@ -489,136 +534,6 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		Memos: memos,
 	}
 	return response, nil
-}
-
-func (s *APIV1Service) ListMemoProperties(ctx context.Context, request *v1pb.ListMemoPropertiesRequest) (*v1pb.ListMemoPropertiesResponse, error) {
-	user, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user")
-	}
-
-	normalRowStatus := store.Normal
-	memoFind := &store.FindMemo{
-		CreatorID:       &user.ID,
-		RowStatus:       &normalRowStatus,
-		ExcludeComments: true,
-		// Default exclude content for performance.
-		ExcludeContent: true,
-	}
-	if request.Name != "memos/-" {
-		memoID, err := ExtractMemoIDFromName(request.Name)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
-		}
-		memoFind.ID = &memoID
-	}
-
-	memos, err := s.Store.ListMemos(ctx, memoFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos")
-	}
-
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
-	}
-
-	entities := []*v1pb.MemoPropertyEntity{}
-	for _, memo := range memos {
-		displayTs := memo.CreatedTs
-		if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
-			displayTs = memo.UpdatedTs
-		}
-		entity := &v1pb.MemoPropertyEntity{
-			Name:        fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID),
-			DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
-		}
-		if memo.Payload.Property != nil {
-			entity.Property = convertMemoPropertyFromStore(memo.Payload.Property)
-		}
-		entities = append(entities, entity)
-	}
-	return &v1pb.ListMemoPropertiesResponse{
-		Entities: entities,
-	}, nil
-}
-
-func (s *APIV1Service) RebuildMemoProperty(ctx context.Context, request *v1pb.RebuildMemoPropertyRequest) (*emptypb.Empty, error) {
-	user, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user")
-	}
-
-	normalRowStatus := store.Normal
-	memoFind := &store.FindMemo{
-		CreatorID:       &user.ID,
-		RowStatus:       &normalRowStatus,
-		ExcludeComments: true,
-	}
-	if (request.Name) != "memos/-" {
-		memoID, err := ExtractMemoIDFromName(request.Name)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
-		}
-		memoFind.ID = &memoID
-	}
-
-	memos, err := s.Store.ListMemos(ctx, memoFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos")
-	}
-
-	for _, memo := range memos {
-		property, err := memoproperty.GetMemoPropertyFromContent(memo.Content)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
-		}
-		memo.Payload.Property = property
-		if err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{
-			ID:      memo.ID,
-			Payload: memo.Payload,
-		}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to update memo")
-		}
-	}
-
-	return &emptypb.Empty{}, nil
-}
-
-func (s *APIV1Service) ListMemoTags(ctx context.Context, request *v1pb.ListMemoTagsRequest) (*v1pb.ListMemoTagsResponse, error) {
-	normalRowStatus := store.Normal
-	memoFind := &store.FindMemo{
-		RowStatus:       &normalRowStatus,
-		ExcludeComments: true,
-		// Default exclude content for performance.
-		ExcludeContent: true,
-	}
-	if (request.Parent) != "memos/-" {
-		memoID, err := ExtractMemoIDFromName(request.Parent)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
-		}
-		memoFind.ID = &memoID
-	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
-	}
-
-	memos, err := s.Store.ListMemos(ctx, memoFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos")
-	}
-	tagAmounts := map[string]int32{}
-	for _, memo := range memos {
-		if memo.Payload.Property != nil {
-			for _, tag := range memo.Payload.Property.Tags {
-				tagAmounts[tag]++
-			}
-		}
-	}
-	return &v1pb.ListMemoTagsResponse{
-		TagAmounts: tagAmounts,
-	}, nil
 }
 
 func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMemoTagRequest) (*emptypb.Empty, error) {
@@ -721,7 +636,7 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*v1pb.Memo, error) {
+func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, view v1pb.MemoView) (*v1pb.Memo, error) {
 	displayTs := memo.CreatedTs
 	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
@@ -732,31 +647,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 
 	name := fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID)
-	listMemoRelationsResponse, err := s.ListMemoRelations(ctx, &v1pb.ListMemoRelationsRequest{Name: name})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to list memo relations")
-	}
-
-	listMemoResourcesResponse, err := s.ListMemoResources(ctx, &v1pb.ListMemoResourcesRequest{Name: name})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to list memo resources")
-	}
-
-	listMemoReactionsResponse, err := s.ListMemoReactions(ctx, &v1pb.ListMemoReactionsRequest{Name: name})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to list memo reactions")
-	}
-
-	nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse content")
-	}
-
-	snippet, err := getMemoContentSnippet(memo.Content)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get memo content snippet")
-	}
-
 	memoMessage := &v1pb.Memo{
 		Name:        name,
 		Uid:         memo.UID,
@@ -766,21 +656,51 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
 		Content:     memo.Content,
-		Snippet:     snippet,
-		Nodes:       convertFromASTNodes(nodes),
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
-		Relations:   listMemoRelationsResponse.Relations,
-		Resources:   listMemoResourcesResponse.Resources,
-		Reactions:   listMemoReactionsResponse.Reactions,
 	}
 	if memo.Payload != nil {
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
+		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
 	}
 	if memo.ParentID != nil {
 		parent := fmt.Sprintf("%s%d", MemoNamePrefix, *memo.ParentID)
 		memoMessage.Parent = &parent
 	}
+
+	// Fill content when view is MEMO_VIEW_FULL.
+	if view == v1pb.MemoView_MEMO_VIEW_FULL {
+		listMemoRelationsResponse, err := s.ListMemoRelations(ctx, &v1pb.ListMemoRelationsRequest{Name: name})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to list memo relations")
+		}
+		memoMessage.Relations = listMemoRelationsResponse.Relations
+
+		listMemoResourcesResponse, err := s.ListMemoResources(ctx, &v1pb.ListMemoResourcesRequest{Name: name})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to list memo resources")
+		}
+		memoMessage.Resources = listMemoResourcesResponse.Resources
+
+		listMemoReactionsResponse, err := s.ListMemoReactions(ctx, &v1pb.ListMemoReactionsRequest{Name: name})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to list memo reactions")
+		}
+		memoMessage.Reactions = listMemoReactionsResponse.Reactions
+
+		nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to parse content")
+		}
+		memoMessage.Nodes = convertFromASTNodes(nodes)
+
+		snippet, err := getMemoContentSnippet(memo.Content)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get memo content snippet")
+		}
+		memoMessage.Snippet = snippet
+	}
+
 	return memoMessage, nil
 }
 
@@ -794,6 +714,28 @@ func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.
 		HasTaskList:        property.HasTaskList,
 		HasCode:            property.HasCode,
 		HasIncompleteTasks: property.HasIncompleteTasks,
+	}
+}
+
+func convertLocationFromStore(location *storepb.MemoPayload_Location) *v1pb.Location {
+	if location == nil {
+		return nil
+	}
+	return &v1pb.Location{
+		Placeholder: location.Placeholder,
+		Latitude:    location.Latitude,
+		Longitude:   location.Longitude,
+	}
+}
+
+func convertLocationToStore(location *v1pb.Location) *storepb.MemoPayload_Location {
+	if location == nil {
+		return nil
+	}
+	return &storepb.MemoPayload_Location{
+		Placeholder: location.Placeholder,
+		Latitude:    location.Latitude,
+		Longitude:   location.Longitude,
 	}
 }
 
@@ -824,9 +766,6 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 }
 
 func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
-	if find == nil {
-		find = &store.FindMemo{}
-	}
 	if find.PayloadFind == nil {
 		find.PayloadFind = &store.FindMemoPayload{}
 	}
@@ -929,7 +868,8 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		}
 
 		find.VisibilityList = []store.Visibility{store.Public}
-	} else if find.CreatorID != nil && *find.CreatorID != user.ID {
+	} else if find.CreatorID == nil || *find.CreatorID != user.ID {
+		// If creator is not specified or the creator is not the current user, only public and protected memos are visible.
 		find.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
@@ -1145,8 +1085,8 @@ func getMemoContentSnippet(content string) (string, error) {
 	}
 
 	plainText := renderer.NewStringRenderer().Render(nodes)
-	if len(plainText) > 100 {
-		return substring(plainText, 100) + "...", nil
+	if len(plainText) > 64 {
+		return substring(plainText, 64) + "...", nil
 	}
 	return plainText, nil
 }

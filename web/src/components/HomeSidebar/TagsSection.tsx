@@ -3,11 +3,10 @@ import clsx from "clsx";
 import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
-import useDebounce from "react-use/lib/useDebounce";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoFilterStore, useMemoList, useTagStore } from "@/store/v1";
+import { useMemoFilterStore, useMemoMetadataStore, useMemoTagList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showRenameTagDialog from "../RenameTagDialog";
 import TagTree from "../TagTree";
@@ -22,18 +21,11 @@ const TagsSection = (props: Props) => {
   const location = useLocation();
   const user = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
-  const tagStore = useTagStore();
-  const memoList = useMemoList();
+  const memoMetadataStore = useMemoMetadataStore();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
-  const tagAmounts = Object.entries(tagStore.getState().tagAmounts)
+  const tags = Object.entries(useMemoTagList())
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
-
-  useDebounce(() => fetchTags(), 300, [memoList.size(), location.pathname]);
-
-  const fetchTags = async () => {
-    await tagStore.fetchTags({ user, location });
-  };
 
   const handleTagClick = (tag: string) => {
     const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter) => filter.value === tag);
@@ -54,7 +46,7 @@ const TagsSection = (props: Props) => {
         parent: "memos/-",
         tag: tag,
       });
-      await tagStore.fetchTags({ location, user }, { skipCache: true });
+      await memoMetadataStore.fetchMemoMetadata({ user, location });
       toast.success(t("message.deleted-successfully"));
     }
   };
@@ -63,7 +55,7 @@ const TagsSection = (props: Props) => {
     <div className="flex flex-col justify-start items-start w-full mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 select-none">
         <span>{t("common.tags")}</span>
-        {tagAmounts.length > 0 && (
+        {tags.length > 0 && (
           <Popover>
             <PopoverTrigger>
               <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
@@ -77,12 +69,12 @@ const TagsSection = (props: Props) => {
           </Popover>
         )}
       </div>
-      {tagAmounts.length > 0 ? (
+      {tags.length > 0 ? (
         treeMode ? (
-          <TagTree tags={tagAmounts.map((t) => t[0])} />
+          <TagTree tagAmounts={tags} />
         ) : (
           <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
-            {tagAmounts.map(([tag, amount]) => (
+            {tags.map(([tag, amount]) => (
               <div
                 key={tag}
                 className="shrink-0 w-auto max-w-full text-sm rounded-md leading-6 flex flex-row justify-start items-center select-none hover:opacity-80 text-gray-600 dark:text-gray-400 dark:border-zinc-800"

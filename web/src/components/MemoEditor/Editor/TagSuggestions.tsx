@@ -3,7 +3,7 @@ import Fuse from "fuse.js";
 import { useEffect, useRef, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import OverflowTip from "@/components/kit/OverflowTip";
-import { useTagStore } from "@/store/v1";
+import { useMemoTagList } from "@/store/v1";
 import { EditorRefActions } from ".";
 
 type Props = {
@@ -15,12 +15,13 @@ type Position = { left: number; top: number; height: number };
 
 const TagSuggestions = ({ editorRef, editorActions }: Props) => {
   const [position, setPosition] = useState<Position | null>(null);
-  const tagStore = useTagStore();
-  const tags = tagStore.sortedTags();
-
   const [selected, select] = useState(0);
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
+  const tags = Object.entries(useMemoTagList())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .sort((a, b) => b[1] - a[1])
+    .map(([tag]) => tag);
 
   const hide = () => setPosition(null);
 

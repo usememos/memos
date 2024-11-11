@@ -1,8 +1,10 @@
 import clsx from "clsx";
 import { isEqual } from "lodash-es";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
+import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, MemoProperty } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
+import MemoRelationForceGraph from "../MemoRelationForceGraph";
 
 interface Props {
   memo: Memo;
@@ -13,6 +15,7 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
   const t = useTranslate();
   const property = MemoProperty.fromPartial(memo.property || {});
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode || property.hasIncompleteTasks;
+  const shouldShowRelationGraph = memo.relations.filter((r) => r.type === MemoRelation_Type.REFERENCE).length > 0;
 
   return (
     <aside
@@ -21,7 +24,16 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
         className,
       )}
     >
-      <div className="flex flex-col justify-start items-start w-full mt-1 px-1 gap-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
+      <div className="flex flex-col justify-start items-start w-full px-1 gap-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
+        {shouldShowRelationGraph && (
+          <div className="relative w-full h-36 border rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
+            <MemoRelationForceGraph className="w-full h-full" memo={memo} />
+            <div className="absolute top-1 left-2 text-xs opacity-60 font-mono gap-1 flex flex-row items-center">
+              <span>Relations</span>
+              <span className="text-xs opacity-60">(Beta)</span>
+            </div>
+          </div>
+        )}
         <div className="w-full flex flex-col">
           <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
             <span>Created at</span>

@@ -1,4 +1,4 @@
-import { Button, IconButton, Input } from "@mui/joy";
+import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -96,9 +96,9 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">{isCreating ? "Create webhook" : "Edit webhook"}</p>
-        <IconButton size="sm" onClick={() => destroy()}>
+        <Button size="sm" variant="plain" onClick={() => destroy()}>
           <XIcon className="w-5 h-auto" />
-        </IconButton>
+        </Button>
       </div>
       <div className="dialog-content-container !w-80">
         <div className="w-full flex flex-col justify-start items-start mb-3">
@@ -130,10 +130,10 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
           </div>
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-2 space-x-2">
-          <Button color="neutral" variant="plain" disabled={requestState.isLoading} loading={requestState.isLoading} onClick={destroy}>
+          <Button variant="plain" disabled={requestState.isLoading} onClick={destroy}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" disabled={requestState.isLoading} loading={requestState.isLoading} onClick={handleSaveBtnClick}>
+          <Button color="primary" disabled={requestState.isLoading} onClick={handleSaveBtnClick}>
             {t("common.create")}
           </Button>
         </div>

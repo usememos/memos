@@ -11,5 +11,6 @@ exclude_file = []
 exclude_regex = []
 exclude_unchanged = true
 follow_symlink = false
+send_interrupt = true
 kill_delay = 2000
 stop_on_error = true

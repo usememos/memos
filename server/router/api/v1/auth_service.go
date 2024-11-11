@@ -48,7 +48,7 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		Username: &request.Username,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to find user by username %s", request.Username))
+		return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.InvalidArgument, unmatchedUsernameAndPasswordError)
@@ -60,14 +60,14 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 
 	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace general setting, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting, error: %v", err)
 	}
 	// Check if the password auth in is allowed.
 	if workspaceGeneralSetting.DisallowPasswordAuth && user.Role == store.RoleUser {
 		return nil, status.Errorf(codes.PermissionDenied, "password signin is not allowed")
 	}
 	if user.RowStatus == store.Archived {
-		return nil, status.Errorf(codes.PermissionDenied, fmt.Sprintf("user has been archived with username %s", request.Username))
+		return nil, status.Errorf(codes.PermissionDenied, "user has been archived with username %s", request.Username)
 	}
 
 	expireTime := time.Now().Add(AccessTokenDuration)
@@ -76,7 +76,7 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		expireTime = time.Now().Add(100 * 365 * 24 * time.Hour)
 	}
 	if err := s.doSignIn(ctx, user, expireTime); err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to sign in, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to sign in, error: %v", err)
 	}
 	return convertUserFromStore(user), nil
 }
@@ -86,25 +86,25 @@ func (s *APIV1Service) SignInWithSSO(ctx context.Context, request *v1pb.SignInWi
 		ID: &request.IdpId,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get identity provider, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to get identity provider, error: %v", err)
 	}
 	if identityProvider == nil {
-		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("identity provider not found with id %d", request.IdpId))
+		return nil, status.Errorf(codes.InvalidArgument, "identity provider not found")
 	}
 
 	var userInfo *idp.IdentityProviderUserInfo
 	if identityProvider.Type == storepb.IdentityProvider_OAUTH2 {
 		oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.GetOauth2Config())
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to create oauth2 identity provider, err: %s", err))
+			return nil, status.Errorf(codes.Internal, "failed to create oauth2 identity provider, error: %v", err)
 		}
 		token, err := oauth2IdentityProvider.ExchangeToken(ctx, request.RedirectUri, request.Code)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to exchange token, err: %s", err))
+			return nil, status.Errorf(codes.Internal, "failed to exchange token, error: %v", err)
 		}
 		userInfo, err = oauth2IdentityProvider.UserInfo(token)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get user info, err: %s", err))
+			return nil, status.Errorf(codes.Internal, "failed to get user info, error: %v", err)
 		}
 	}
 
@@ -112,10 +112,10 @@ func (s *APIV1Service) SignInWithSSO(ctx context.Context, request *v1pb.SignInWi
 	if identifierFilter != "" {
 		identifierFilterRegex, err := regexp.Compile(identifierFilter)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to compile identifier filter regex, err: %s", err))
+			return nil, status.Errorf(codes.Internal, "failed to compile identifier filter regex, error: %v", err)
 		}
 		if !identifierFilterRegex.MatchString(userInfo.Identifier) {
-			return nil, status.Errorf(codes.PermissionDenied, fmt.Sprintf("identifier %s is not allowed", userInfo.Identifier))
+			return nil, status.Errorf(codes.PermissionDenied, "identifier %s does not match the filter %s", userInfo.Identifier, identifierFilter)
 		}
 	}
 
@@ -123,7 +123,7 @@ func (s *APIV1Service) SignInWithSSO(ctx context.Context, request *v1pb.SignInWi
 		Username: &userInfo.Identifier,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to find user by username %s", userInfo.Identifier))
+		return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
 	}
 	if user == nil {
 		userCreate := &store.User{
@@ -135,24 +135,24 @@ func (s *APIV1Service) SignInWithSSO(ctx context.Context, request *v1pb.SignInWi
 		}
 		password, err := util.RandomString(20)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to generate random password, err: %s", err))
+			return nil, status.Errorf(codes.Internal, "failed to generate random password, error: %v", err)
 		}
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to generate password hash, err: %s", err))
+			return nil, status.Errorf(codes.Internal, "failed to generate password hash, error: %v", err)
 		}
 		userCreate.PasswordHash = string(passwordHash)
 		user, err = s.Store.CreateUser(ctx, userCreate)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to create user, err: %s", err))
+			return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
 		}
 	}
 	if user.RowStatus == store.Archived {
-		return nil, status.Errorf(codes.PermissionDenied, fmt.Sprintf("user has been archived with username %s", userInfo.Identifier))
+		return nil, status.Errorf(codes.PermissionDenied, "user has been archived with username %s", userInfo.Identifier)
 	}
 
 	if err := s.doSignIn(ctx, user, time.Now().Add(AccessTokenDuration)); err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to sign in, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to sign in, error: %v", err)
 	}
 	return convertUserFromStore(user), nil
 }
@@ -160,15 +160,15 @@ func (s *APIV1Service) SignInWithSSO(ctx context.Context, request *v1pb.SignInWi
 func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) error {
 	accessToken, err := GenerateAccessToken(user.Email, user.ID, expireTime, []byte(s.Secret))
 	if err != nil {
-		return status.Errorf(codes.Internal, fmt.Sprintf("failed to generate tokens, err: %s", err))
+		return status.Errorf(codes.Internal, "failed to generate access token, error: %v", err)
 	}
 	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken, "user login"); err != nil {
-		return status.Errorf(codes.Internal, fmt.Sprintf("failed to upsert access token to store, err: %s", err))
+		return status.Errorf(codes.Internal, "failed to upsert access token to store, error: %v", err)
 	}
 
 	cookie, err := s.buildAccessTokenCookie(ctx, accessToken, expireTime)
 	if err != nil {
-		return status.Errorf(codes.Internal, fmt.Sprintf("failed to build access token cookie, err: %s", err))
+		return status.Errorf(codes.Internal, "failed to build access token cookie, error: %v", err)
 	}
 	if err := grpc.SetHeader(ctx, metadata.New(map[string]string{
 		"Set-Cookie": cookie,
@@ -182,7 +182,7 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) (*v1pb.User, error) {
 	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to get workspace general setting, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting, error: %v", err)
 	}
 	if workspaceGeneralSetting.DisallowUserRegistration {
 		return nil, status.Errorf(codes.PermissionDenied, "sign up is not allowed")
@@ -190,7 +190,7 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to generate password hash, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to generate password hash, error: %v", err)
 	}
 
 	create := &store.User{
@@ -207,7 +207,7 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 		Role: &hostUserType,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to list users, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to list host users, error: %v", err)
 	}
 	if len(existedHostUsers) == 0 {
 		// Change the default role to host if there is no host user.
@@ -218,11 +218,11 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 
 	user, err := s.Store.CreateUser(ctx, create)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to create user, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
 	}
 
 	if err := s.doSignIn(ctx, user, time.Now().Add(AccessTokenDuration)); err != nil {
-		return nil, status.Errorf(codes.Internal, fmt.Sprintf("failed to sign in, err: %s", err))
+		return nil, status.Errorf(codes.Internal, "failed to sign in, error: %v", err)
 	}
 	return convertUserFromStore(user), nil
 }

@@ -61,10 +61,6 @@ func (s *APIV1Service) GetWorkspaceSetting(ctx context.Context, request *v1pb.Ge
 }
 
 func (s *APIV1Service) SetWorkspaceSetting(ctx context.Context, request *v1pb.SetWorkspaceSettingRequest) (*v1pb.WorkspaceSetting, error) {
-	if s.Profile.Mode == "demo" {
-		return nil, status.Errorf(codes.InvalidArgument, "setting workspace setting is not allowed in demo mode")
-	}
-
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -73,7 +69,14 @@ func (s *APIV1Service) SetWorkspaceSetting(ctx context.Context, request *v1pb.Se
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	workspaceSetting, err := s.Store.UpsertWorkspaceSetting(ctx, convertWorkspaceSettingToStore(request.Setting))
+	updateSetting := convertWorkspaceSettingToStore(request.Setting)
+	// Don't allow to update workspace general setting in demo mode.
+	// Such as disallow user registration, disallow password auth, etc.
+	if s.Profile.Mode == "demo" && updateSetting.Key == storepb.WorkspaceSettingKey_GENERAL {
+		return nil, status.Errorf(codes.InvalidArgument, "setting workspace setting is not allowed in demo mode")
+	}
+
+	workspaceSetting, err := s.Store.UpsertWorkspaceSetting(ctx, updateSetting)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert workspace setting: %v", err)
 	}
@@ -137,6 +140,8 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 		AdditionalScript:         setting.AdditionalScript,
 		AdditionalStyle:          setting.AdditionalStyle,
 		WeekStartDayOffset:       setting.WeekStartDayOffset,
+		DisallowChangeUsername:   setting.DisallowChangeUsername,
+		DisallowChangeNickname:   setting.DisallowChangeNickname,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &v1pb.WorkspaceCustomProfile{
@@ -160,6 +165,8 @@ func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting
 		AdditionalScript:         setting.AdditionalScript,
 		AdditionalStyle:          setting.AdditionalStyle,
 		WeekStartDayOffset:       setting.WeekStartDayOffset,
+		DisallowChangeUsername:   setting.DisallowChangeUsername,
+		DisallowChangeNickname:   setting.DisallowChangeNickname,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.WorkspaceCustomProfile{
@@ -220,13 +227,17 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		return nil
 	}
 	return &v1pb.WorkspaceMemoRelatedSetting{
-		DisallowPublicVisibility:           setting.DisallowPublicVisibility,
-		DisplayWithUpdateTime:              setting.DisplayWithUpdateTime,
-		ContentLengthLimit:                 setting.ContentLengthLimit,
-		EnableAutoCompact:                  setting.EnableAutoCompact,
-		EnableDoubleClickEdit:              setting.EnableDoubleClickEdit,
-		EnableLinkPreview:                  setting.EnableLinkPreview,
-		EnableComment:                      setting.EnableComment,
+		DisallowPublicVisibility: setting.DisallowPublicVisibility,
+		DisplayWithUpdateTime:    setting.DisplayWithUpdateTime,
+		ContentLengthLimit:       setting.ContentLengthLimit,
+		EnableAutoCompact:        setting.EnableAutoCompact,
+		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
+		EnableLinkPreview:        setting.EnableLinkPreview,
+		EnableComment:            setting.EnableComment,
+		EnableLocation:           setting.EnableLocation,
+		DefaultVisibility:        setting.DefaultVisibility,
+		Reactions:                setting.Reactions,
+		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
 		RemovedCompletedChecklistItems:     setting.RemovedCompletedChecklistItems,
 	}
 }
@@ -236,13 +247,17 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		return nil
 	}
 	return &storepb.WorkspaceMemoRelatedSetting{
-		DisallowPublicVisibility:           setting.DisallowPublicVisibility,
-		DisplayWithUpdateTime:              setting.DisplayWithUpdateTime,
-		ContentLengthLimit:                 setting.ContentLengthLimit,
-		EnableAutoCompact:                  setting.EnableAutoCompact,
-		EnableDoubleClickEdit:              setting.EnableDoubleClickEdit,
-		EnableLinkPreview:                  setting.EnableLinkPreview,
-		EnableComment:                      setting.EnableComment,
+		DisallowPublicVisibility: setting.DisallowPublicVisibility,
+		DisplayWithUpdateTime:    setting.DisplayWithUpdateTime,
+		ContentLengthLimit:       setting.ContentLengthLimit,
+		EnableAutoCompact:        setting.EnableAutoCompact,
+		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
+		EnableLinkPreview:        setting.EnableLinkPreview,
+		EnableComment:            setting.EnableComment,
+		EnableLocation:           setting.EnableLocation,
+		DefaultVisibility:        setting.DefaultVisibility,
+		Reactions:                setting.Reactions,
+		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
 		RemovedCompletedChecklistItems:     setting.RemovedCompletedChecklistItems,
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"math"
 	"net"
 	"net/http"
 	"time"
@@ -74,8 +75,8 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
 	grpcServer := grpc.NewServer(
-		// Override the maximum receiving message size to 100M for uploading large resources.
-		grpc.MaxRecvMsgSize(100*1024*1024),
+		// Override the maximum receiving message size to math.MaxInt32 for uploading large resources.
+		grpc.MaxRecvMsgSize(math.MaxInt32),
 		grpc.ChainUnaryInterceptor(
 			apiv1.NewLoggerInterceptor().LoggerInterceptor,
 			grpcrecovery.UnaryServerInterceptor(),

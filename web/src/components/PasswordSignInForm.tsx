@@ -1,4 +1,5 @@
-import { Button, Checkbox, Input } from "@mui/joy";
+import { Button, Checkbox, Input } from "@usememos/mui";
+import { LoaderIcon } from "lucide-react";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -99,23 +100,19 @@ const PasswordSignInForm = () => {
         </div>
       </div>
       <div className="flex flex-row justify-start items-center w-full mt-6">
-        <Checkbox
-          className="dark:!text-gray-400"
-          label={t("common.remember-me")}
-          checked={remember}
-          onChange={(e) => setRemember(e.target.checked)}
-        />
+        <Checkbox label={t("common.remember-me")} checked={remember} onChange={(e) => setRemember(e.target.checked)} />
       </div>
       <div className="flex flex-row justify-end items-center w-full mt-6">
         <Button
-          className="w-full"
-          size="md"
           type="submit"
+          color="primary"
+          size="lg"
+          fullWidth
           disabled={actionBtnLoadingState.isLoading}
-          loading={actionBtnLoadingState.isLoading}
           onClick={handleSignInButtonClick}
         >
           {t("common.sign-in")}
+          {actionBtnLoadingState.isLoading && <LoaderIcon className="w-5 h-auto ml-2 animate-spin opacity-60" />}
         </Button>
       </div>
     </form>

@@ -6,7 +6,6 @@ on:
   pull_request:
     branches:
       - main
-      - "release/*.*.*"
     paths:
       - "web/**"
 

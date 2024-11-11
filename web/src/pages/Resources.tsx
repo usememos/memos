@@ -1,4 +1,5 @@
-import { Divider, IconButton, Input, Tooltip } from "@mui/joy";
+import { Divider, Tooltip } from "@mui/joy";
+import { Button, Input } from "@usememos/mui";
 import dayjs from "dayjs";
 import { includes } from "lodash-es";
 import { PaperclipIcon, SearchIcon, TrashIcon } from "lucide-react";
@@ -132,9 +133,9 @@ const Resources = () => {
                               <span className="text-gray-600 dark:text-gray-400">Unused resources</span>
                               <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedResources.length})</span>
                               <Tooltip title="Delete all" placement="top">
-                                <IconButton size="sm" onClick={handleDeleteUnusedResources}>
+                                <Button size="sm" variant="plain" onClick={handleDeleteUnusedResources}>
                                   <TrashIcon className="w-4 h-auto opacity-60" />
-                                </IconButton>
+                                </Button>
                               </Tooltip>
                             </div>
                             {unusedResources.map((resource) => {

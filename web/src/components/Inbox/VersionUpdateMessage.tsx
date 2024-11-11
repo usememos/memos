@@ -71,12 +71,12 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
       </div>
       <div
         className={clsx(
-          "border w-full p-3 px-4 rounded-lg flex flex-col justify-start items-start gap-2 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-700",
+          "border w-full p-2 px-3 rounded-lg flex flex-col justify-start items-start gap-1 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-700",
           inbox.status !== Inbox_Status.UNREAD && "opacity-60",
         )}
       >
         <div className="w-full flex flex-row justify-between items-center">
-          <span className="text-xs text-gray-500">{inbox.createTime?.toLocaleString()}</span>
+          <span className="text-sm text-gray-500">{inbox.createTime?.toLocaleString()}</span>
           <div>
             {inbox.status === Inbox_Status.UNREAD && (
               <Tooltip title={t("common.archive")} placement="top">

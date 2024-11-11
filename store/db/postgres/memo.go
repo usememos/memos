@@ -66,7 +66,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	if v := find.ContentSearch; len(v) != 0 {
 		for _, s := range v {
-			where, args = append(where, "memo.content LIKE "+placeholder(len(args)+1)), append(args, fmt.Sprintf("%%%s%%", s))
+			where, args = append(where, "memo.content ILIKE "+placeholder(len(args)+1)), append(args, fmt.Sprintf("%%%s%%", s))
 		}
 	}
 	if v := find.VisibilityList; len(v) != 0 {
@@ -83,7 +83,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		if len(v.TagSearch) != 0 {
 			for _, tag := range v.TagSearch {
-				where, args = append(where, "memo.payload->'property'->'tags' @> "+placeholder(len(args)+1)), append(args, fmt.Sprintf(`["%s"]`, tag))
+				where, args = append(where, "EXISTS (SELECT 1 FROM jsonb_array_elements(memo.payload->'property'->'tags') AS tag WHERE tag::text = "+placeholder(len(args)+1)+" OR tag::text LIKE "+placeholder(len(args)+2)+")"), append(args, fmt.Sprintf(`"%s"`, tag), fmt.Sprintf(`"%s/%%"`, tag))
 			}
 		}
 		if v.HasLink {

@@ -1,30 +1,27 @@
-version: v1
+version: v2
 managed:
   enabled: true
-  go_package_prefix:
-    default: github.com/usememos/memos/proto/gen
-    except:
-      - buf.build/googleapis/googleapis
+  disable:
+    - file_option: go_package
+      module: buf.build/googleapis/googleapis
+  override:
+    - file_option: go_package_prefix
+      value: github.com/usememos/memos/proto/gen
 plugins:
-  - plugin: buf.build/protocolbuffers/go
+  - remote: buf.build/protocolbuffers/go
     out: gen
-    opt:
-      - paths=source_relative
-  - plugin: buf.build/grpc/go
+    opt: paths=source_relative
+  - remote: buf.build/grpc/go
     out: gen
-    opt:
-      - paths=source_relative
-  - plugin: buf.build/grpc-ecosystem/gateway
+    opt: paths=source_relative
+  - remote: buf.build/grpc-ecosystem/gateway
     out: gen
-    opt:
-      - paths=source_relative
-  - plugin: buf.build/grpc-ecosystem/openapiv2
-    out: ../docs
+    opt: paths=source_relative
+  - remote: buf.build/grpc-ecosystem/openapiv2
+    out: gen
     opt: output_format=yaml,allow_merge=true
-  # Build the TypeScript definitions for the web.
-  - plugin: buf.build/community/stephenh-ts-proto
+  - remote: buf.build/community/stephenh-ts-proto
     out: ../web/src/types/proto
-    # reference: https://github.com/deeplay-io/nice-grpc/blob/master/packages/nice-grpc-web/README.md#using-ts-proto
     opt:
       - env=browser
       - useOptionals=messages

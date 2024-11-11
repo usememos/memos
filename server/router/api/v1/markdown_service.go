@@ -75,15 +75,18 @@ func convertFromASTNode(rawNode ast.Node) *v1pb.Node {
 	case *ast.Blockquote:
 		children := convertFromASTNodes(n.Children)
 		node.Node = &v1pb.Node_BlockquoteNode{BlockquoteNode: &v1pb.BlockquoteNode{Children: children}}
-	case *ast.OrderedList:
+	case *ast.List:
 		children := convertFromASTNodes(n.Children)
-		node.Node = &v1pb.Node_OrderedListNode{OrderedListNode: &v1pb.OrderedListNode{Number: n.Number, Indent: int32(n.Indent), Children: children}}
-	case *ast.UnorderedList:
+		node.Node = &v1pb.Node_ListNode{ListNode: &v1pb.ListNode{Kind: convertListKindFromASTNode(n.Kind), Indent: int32(n.Indent), Children: children}}
+	case *ast.OrderedListItem:
 		children := convertFromASTNodes(n.Children)
-		node.Node = &v1pb.Node_UnorderedListNode{UnorderedListNode: &v1pb.UnorderedListNode{Symbol: n.Symbol, Indent: int32(n.Indent), Children: children}}
-	case *ast.TaskList:
+		node.Node = &v1pb.Node_OrderedListItemNode{OrderedListItemNode: &v1pb.OrderedListItemNode{Number: n.Number, Indent: int32(n.Indent), Children: children}}
+	case *ast.UnorderedListItem:
 		children := convertFromASTNodes(n.Children)
-		node.Node = &v1pb.Node_TaskListNode{TaskListNode: &v1pb.TaskListNode{Symbol: n.Symbol, Indent: int32(n.Indent), Complete: n.Complete, Children: children}}
+		node.Node = &v1pb.Node_UnorderedListItemNode{UnorderedListItemNode: &v1pb.UnorderedListItemNode{Symbol: n.Symbol, Indent: int32(n.Indent), Children: children}}
+	case *ast.TaskListItem:
+		children := convertFromASTNodes(n.Children)
+		node.Node = &v1pb.Node_TaskListItemNode{TaskListItemNode: &v1pb.TaskListItemNode{Symbol: n.Symbol, Indent: int32(n.Indent), Complete: n.Complete, Children: children}}
 	case *ast.MathBlock:
 		node.Node = &v1pb.Node_MathBlockNode{MathBlockNode: &v1pb.MathBlockNode{Content: n.Content}}
 	case *ast.Table:
@@ -153,6 +156,19 @@ func convertTableFromASTNode(node *ast.Table) *v1pb.TableNode {
 	return table
 }
 
+func convertListKindFromASTNode(node ast.ListKind) v1pb.ListNode_Kind {
+	switch node {
+	case ast.OrderedList:
+		return v1pb.ListNode_ORDERED
+	case ast.UnorderedList:
+		return v1pb.ListNode_UNORDERED
+	case ast.DescrpitionList:
+		return v1pb.ListNode_DESCRIPTION
+	default:
+		return v1pb.ListNode_KIND_UNSPECIFIED
+	}
+}
+
 func convertToASTNode(node *v1pb.Node) ast.Node {
 	switch n := node.Node.(type) {
 	case *v1pb.Node_LineBreakNode:
@@ -170,15 +186,18 @@ func convertToASTNode(node *v1pb.Node) ast.Node {
 	case *v1pb.Node_BlockquoteNode:
 		children := convertToASTNodes(n.BlockquoteNode.Children)
 		return &ast.Blockquote{Children: children}
-	case *v1pb.Node_OrderedListNode:
-		children := convertToASTNodes(n.OrderedListNode.Children)
-		return &ast.OrderedList{Number: n.OrderedListNode.Number, Indent: int(n.OrderedListNode.Indent), Children: children}
-	case *v1pb.Node_UnorderedListNode:
-		children := convertToASTNodes(n.UnorderedListNode.Children)
-		return &ast.UnorderedList{Symbol: n.UnorderedListNode.Symbol, Indent: int(n.UnorderedListNode.Indent), Children: children}
-	case *v1pb.Node_TaskListNode:
-		children := convertToASTNodes(n.TaskListNode.Children)
-		return &ast.TaskList{Symbol: n.TaskListNode.Symbol, Indent: int(n.TaskListNode.Indent), Complete: n.TaskListNode.Complete, Children: children}
+	case *v1pb.Node_ListNode:
+		children := convertToASTNodes(n.ListNode.Children)
+		return &ast.List{Kind: convertListKindToASTNode(n.ListNode.Kind), Indent: int(n.ListNode.Indent), Children: children}
+	case *v1pb.Node_OrderedListItemNode:
+		children := convertToASTNodes(n.OrderedListItemNode.Children)
+		return &ast.OrderedListItem{Number: n.OrderedListItemNode.Number, Indent: int(n.OrderedListItemNode.Indent), Children: children}
+	case *v1pb.Node_UnorderedListItemNode:
+		children := convertToASTNodes(n.UnorderedListItemNode.Children)
+		return &ast.UnorderedListItem{Symbol: n.UnorderedListItemNode.Symbol, Indent: int(n.UnorderedListItemNode.Indent), Children: children}
+	case *v1pb.Node_TaskListItemNode:
+		children := convertToASTNodes(n.TaskListItemNode.Children)
+		return &ast.TaskListItem{Symbol: n.TaskListItemNode.Symbol, Indent: int(n.TaskListItemNode.Indent), Complete: n.TaskListItemNode.Complete, Children: children}
 	case *v1pb.Node_MathBlockNode:
 		return &ast.MathBlock{Content: n.MathBlockNode.Content}
 	case *v1pb.Node_TableNode:
@@ -245,4 +264,18 @@ func convertTableToASTNode(node *v1pb.TableNode) *ast.Table {
 		table.Rows = append(table.Rows, convertToASTNodes(row.Cells))
 	}
 	return table
+}
+
+func convertListKindToASTNode(kind v1pb.ListNode_Kind) ast.ListKind {
+	switch kind {
+	case v1pb.ListNode_ORDERED:
+		return ast.OrderedList
+	case v1pb.ListNode_UNORDERED:
+		return ast.UnorderedList
+	case v1pb.ListNode_DESCRIPTION:
+		return ast.DescrpitionList
+	default:
+		// Default to description list.
+		return ast.DescrpitionList
+	}
 }

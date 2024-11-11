@@ -1,4 +1,5 @@
-import { Button, Dropdown, Input, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/joy";
+import { Dropdown, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/joy";
+import { Button, Input } from "@usememos/mui";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -158,7 +159,9 @@ const MemberSection = () => {
           </RadioGroup>
         </div>
         <div className="mt-2">
-          <Button onClick={handleCreateUserBtnClick}>{t("common.create")}</Button>
+          <Button color="primary" onClick={handleCreateUserBtnClick}>
+            {t("common.create")}
+          </Button>
         </div>
       </div>
       <div className="w-full flex flex-row justify-between items-center mt-6">

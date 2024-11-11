@@ -1,4 +1,4 @@
-import { Button, IconButton, Input } from "@mui/joy";
+import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -70,9 +70,9 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
         <p className="title-text">
           {t("setting.account-section.change-password")} ({user.nickname})
         </p>
-        <IconButton size="sm" onClick={handleCloseBtnClick}>
+        <Button size="sm" variant="plain" onClick={handleCloseBtnClick}>
           <XIcon className="w-5 h-auto" />
-        </IconButton>
+        </Button>
       </div>
       <div className="dialog-content-container">
         <p className="text-sm mb-1">{t("auth.new-password")}</p>
@@ -92,7 +92,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
           onChange={handleNewPasswordAgainChanged}
         />
         <div className="flex flex-row justify-end items-center mt-4 w-full gap-x-2">
-          <Button color="neutral" variant="plain" onClick={handleCloseBtnClick}>
+          <Button variant="plain" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </Button>
           <Button color="primary" onClick={handleSaveBtnClick}>

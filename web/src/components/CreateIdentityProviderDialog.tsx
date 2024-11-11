@@ -1,4 +1,5 @@
-import { Button, Divider, IconButton, Input, Option, Select, Typography } from "@mui/joy";
+import { Divider, Option, Select, Typography } from "@mui/joy";
+import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -244,9 +245,9 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p>{t(isCreating ? "setting.sso-section.create-sso" : "setting.sso-section.update-sso")}</p>
-        <IconButton size="sm" onClick={handleCloseBtnClick}>
+        <Button size="sm" variant="plain" onClick={handleCloseBtnClick}>
           <XIcon className="w-5 h-auto" />
-        </IconButton>
+        </Button>
       </div>
       <div className="dialog-content-container min-w-[19rem]">
         {isCreating && (
@@ -420,10 +421,10 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
           </>
         )}
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
-          <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
+          <Button variant="plain" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
+          <Button color="primary" onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
             {t(isCreating ? "common.create" : "common.update")}
           </Button>
         </div>
