@@ -6,6 +6,7 @@ import { memoServiceClient } from "@/grpcweb";
 import { Routes } from "@/router";
 import { Memo, MemoView } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
+import { Nest } from "@/types/proto/api/v1/nest_service";
 
 // Set the maximum number of memos to fetch.
 const DEFAULT_MEMO_PAGE_SIZE = 1000000;
@@ -14,13 +15,13 @@ interface State {
   // stateId is used to identify the store instance state.
   // It should be update when any state change.
   stateId: string;
-  nest: number;
+  nest: string;
   dataMapByName: Record<string, Memo>;
 }
 
 const getDefaultState = (): State => ({
   stateId: uniqueId(),
-  nest: 0,
+  nest: "",
   dataMapByName: {},
 });
 
@@ -28,12 +29,12 @@ export const useMemoMetadataStore = create(
   combine(getDefaultState(), (set, get) => ({
     setState: (state: State) => set(state),
     getState: () => get(),
-    fetchMemoMetadata: async (params: { user?: User; location?: Location<any>; nest?: number }) => {
+    fetchMemoMetadata: async (params: { user?: User; location?: Location<any>; nest: Nest }) => {
       const filters = [`row_status == "NORMAL"`];
-      filters.push(`nest == ${params.nest}`);
+      filters.push(`nest == "${params.nest.name}"`);
 
-      if (get().nest != params.nest) {
-        set({ nest: params.nest, dataMapByName: {} });
+      if (get().nest != params.nest.name) {
+        set({ nest: params.nest.name, dataMapByName: {} });
       }
 
       if (params.user) {

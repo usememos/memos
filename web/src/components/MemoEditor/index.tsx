@@ -340,7 +340,7 @@ const MemoEditor = (props: Props) => {
               resources: state.resourceList,
               relations: state.relationList,
               location: state.location,
-              nest,
+              nest: nest.name,
             })
           : memoServiceClient
               .createMemoComment({

@@ -47,7 +47,7 @@ const AddMemoRelationPopover = (props: Props) => {
       setIsFetching(true);
       try {
         const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
-        filters.push(`nest == ${nest}`);
+        filters.push(`nest == "${nest.name}"`);
         if (searchText) {
           filters.push(`content_search == [${JSON.stringify(searchText)}]`);
         }

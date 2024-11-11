@@ -10,6 +10,7 @@ import { UserServiceDefinition } from "./types/proto/api/v1/user_service";
 import { WebhookServiceDefinition } from "./types/proto/api/v1/webhook_service";
 import { WorkspaceServiceDefinition } from "./types/proto/api/v1/workspace_service";
 import { WorkspaceSettingServiceDefinition } from "./types/proto/api/v1/workspace_setting_service";
+import { NestServiceDefinition } from "./types/proto/api/v1/nest_service";
 
 const channel = createChannel(
   window.location.origin,
@@ -41,3 +42,5 @@ export const webhookServiceClient = clientFactory.create(WebhookServiceDefinitio
 export const markdownServiceClient = clientFactory.create(MarkdownServiceDefinition, channel);
 
 export const identityProviderServiceClient = clientFactory.create(IdentityProviderServiceDefinition, channel);
+
+export const nestServiceClient = clientFactory.create(NestServiceDefinition, channel);
