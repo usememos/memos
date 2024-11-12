@@ -9,12 +9,16 @@ import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
+import NestIcon from "../NestIcon";
+import { useNestList, useNestStore } from "@/store/v1/nest";
 
 const PreferencesSection = () => {
   const t = useTranslate();
   const commonContext = useCommonContext();
   const userStore = useUserStore();
   const setting = userStore.userSetting as UserSetting;
+  const nests = useNestList();
+  const nestStore = useNestStore();
 
   const handleLocaleSelectChange = async (locale: Locale) => {
     commonContext.setLocale(locale);
@@ -42,6 +46,15 @@ const PreferencesSection = () => {
         memoVisibility: value,
       },
       ["memo_visibility"],
+    );
+  };
+
+  const handleDefaultNestChanged = async (value: string) => {
+    await userStore.updateUserSetting(
+      {
+        nest: value,
+      },
+      ["nest"],
     );
   };
 
@@ -74,6 +87,26 @@ const PreferencesSection = () => {
             .map((item) => (
               <Option key={item} value={item} className="whitespace-nowrap">
                 {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
+              </Option>
+            ))}
+        </Select>
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="truncate">{t("setting.preference-section.default-nest")}</span>
+        <Select
+          className="!min-w-fit"
+          value={setting.nest}
+          startDecorator={<NestIcon />}
+          onChange={(_, nest) => {
+            if (nest) {
+              handleDefaultNestChanged(nest);
+            }
+          }}
+        >
+          {nests
+            .map((v) => (
+              <Option key={v.name} value={v.name} className="whitespace-nowrap">
+                {v.uid}
               </Option>
             ))}
         </Select>

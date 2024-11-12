@@ -29,12 +29,12 @@ export const useMemoMetadataStore = create(
   combine(getDefaultState(), (set, get) => ({
     setState: (state: State) => set(state),
     getState: () => get(),
-    fetchMemoMetadata: async (params: { user?: User; location?: Location<any>; nest: Nest }) => {
+    fetchMemoMetadata: async (params: { user?: User; location?: Location<any>; nest: string }) => {
       const filters = [`row_status == "NORMAL"`];
-      filters.push(`nest == "${params.nest.name}"`);
+      filters.push(`nest == "${params.nest}"`);
 
-      if (get().nest != params.nest.name) {
-        set({ nest: params.nest.name, dataMapByName: {} });
+      if (get().nest != params.nest) {
+        set({ nest: params.nest, dataMapByName: {} });
       }
 
       if (params.user) {

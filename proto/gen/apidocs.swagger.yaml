@@ -1778,6 +1778,9 @@ paths:
               memoVisibility:
                 type: string
                 description: The default visibility of the memo.
+              nest:
+                type: string
+                description: The default nest of the user.
             required:
               - setting
       tags:
@@ -2234,6 +2237,9 @@ definitions:
       memoVisibility:
         type: string
         description: The default visibility of the memo.
+      nest:
+        type: string
+        description: The default nest of the user.
   apiv1WorkspaceCustomProfile:
     type: object
     properties:

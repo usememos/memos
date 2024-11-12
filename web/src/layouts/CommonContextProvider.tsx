@@ -6,22 +6,23 @@ import { useNestStore } from "@/store/v1/nest";
 import { Nest } from "@/types/proto/api/v1/nest_service";
 import { WorkspaceProfile } from "@/types/proto/api/v1/workspace_service";
 import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { UserSetting } from "@/types/proto/api/v1/user_service";
 
 interface Context {
   locale: string;
   appearance: string;
   profile: WorkspaceProfile;
-  nest: Nest;
+  nest: string;
   setLocale: (locale: string) => void;
   setAppearance: (appearance: string) => void;
-  setNest: (nest: Nest) => void;
+  setNest: (nest: string) => void;
 }
 
 const CommonContext = createContext<Context>({
   locale: "en",
   appearance: "system",
   profile: WorkspaceProfile.fromPartial({}),
-  nest: Nest.fromPartial({}),
+  nest: "none",
   setLocale: () => {},
   setAppearance: () => {},
   setNest: () => {},
@@ -35,18 +36,15 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [commonContext, setCommonContext] = useState<Pick<Context, "locale" | "appearance" | "profile" | "nest">>({
     locale: "en",
     appearance: "system",
-    nest: Nest.fromPartial({}),
+    nest: "none",
     profile: WorkspaceProfile.fromPartial({}),
   });
   const [locale] = useLocalStorage("locale", "en");
   const [appearance] = useLocalStorage("appearance", "system");
-  const [nest] = useLocalStorage("nest", "");
 
   useEffect(() => {
     const initialWorkspace = async () => {
       const workspaceProfile = await workspaceServiceClient.getWorkspaceProfile({});
-      const nests = await nestStore.fetchNests();
-      // Initial fetch for workspace settings.
       (async () => {
         [WorkspaceSettingKey.GENERAL, WorkspaceSettingKey.MEMO_RELATED].forEach(async (key) => {
           await workspaceSettingStore.fetchWorkspaceSetting(key);
@@ -59,7 +57,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
       setCommonContext({
         locale: locale || workspaceGeneralSetting.customProfile?.locale || "en",
         appearance: appearance || workspaceGeneralSetting.customProfile?.appearance || "system",
-        nest: Object.entries(nests)[0][1] || nest || "",
+        nest: "none",
         profile: workspaceProfile,
       });
     };
@@ -67,6 +65,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
     const initialUser = async () => {
       try {
         await userStore.fetchCurrentUser();
+        await nestStore.fetchNests();
       } catch (error) {
         // Do nothing.
       }
@@ -81,7 +80,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
         ...commonContext,
         setLocale: (locale: string) => setCommonContext({ ...commonContext, locale }),
         setAppearance: (appearance: string) => setCommonContext({ ...commonContext, appearance }),
-        setNest: (nest: Nest) => setCommonContext({ ...commonContext, nest }),
+        setNest: (nest: string) => setCommonContext({ ...commonContext, nest }),
       }}
     >
       {!initialized ? null : <>{children}</>}

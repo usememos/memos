@@ -22,7 +22,7 @@ const Home = () => {
 
   const memoListFilter = useMemo(() => {
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
-    filters.push(`nest == "${nest.name}"`);
+    filters.push(`nest == "${nest}"`);
     const contentSearch: string[] = [];
     const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {

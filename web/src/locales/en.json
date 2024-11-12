@@ -212,6 +212,7 @@
     "preference-section": {
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
+      "default-nest": "Default nest",
       "theme": "Theme"
     },
     "sso": "SSO",

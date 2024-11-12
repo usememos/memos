@@ -10,7 +10,7 @@ import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
-import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
+import { useNestStore, useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
@@ -21,6 +21,7 @@ const SignUp = () => {
   const commonContext = useCommonContext();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const userStore = useUserStore();
+  const nestStore = useNestStore();
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -63,6 +64,7 @@ const SignUp = () => {
       actionBtnLoadingState.setLoading();
       await authServiceClient.signUp({ username, password });
       await userStore.fetchCurrentUser();
+      await nestStore.fetchNests();
       navigateTo("/");
     } catch (error: any) {
       console.error(error);

@@ -221,6 +221,25 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 		return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
 	}
 
+	nest, err := s.Store.CreateNest(ctx, &store.Nest{
+		UID:       "Personal",
+		CreatorID: user.ID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create default nest: %v", err)
+	}
+
+	_, err = s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: user.ID,
+		Key:    storepb.UserSettingKey_NEST,
+		Value: &storepb.UserSetting_Nest{
+			Nest: fmt.Sprintf("%d", nest.ID),
+		},
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
+	}
+
 	if err := s.doSignIn(ctx, user, time.Now().Add(AccessTokenDuration)); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to sign in, error: %v", err)
 	}

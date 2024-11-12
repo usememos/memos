@@ -3,7 +3,7 @@ import clsx from "clsx";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
 import NestIcon from "./NestIcon";
-import { useNestList } from "@/store/v1/nest";
+import { useNestList, useNestStore } from "@/store/v1";
 import { Nest } from "@/types/proto/api/v1/nest_service";
 
 interface Props {
@@ -14,9 +14,10 @@ const NestBanner = (props: Props) => {
   const { collapsed } = props;
   const user = useCurrentUser();
   const nests = useNestList();
+  const nestStore = useNestStore();
   const commonContext = useCommonContext();
 
-  const handleNestChange = (nest: Nest) => {
+  const handleNestChange = (nest: string) => {
     commonContext.setNest(nest);
   };
 
@@ -32,13 +33,13 @@ const NestBanner = (props: Props) => {
           >
             <NestIcon />
             {!collapsed && (
-              <span className="ml-2 text-lg font-medium text-slate-800 dark:text-gray-300 shrink truncate">{commonContext.nest.uid}</span>
+              <span className="ml-2 text-lg font-medium text-slate-800 dark:text-gray-300 shrink truncate">{nestStore.getNestByName(commonContext.nest)?.uid}</span>
             )}
           </div>
         </MenuButton>
         <Menu placement="bottom-start" style={{ zIndex: "9999" }}>
           {nests.map((nest) => (
-            <MenuItem onClick={() => handleNestChange(nest)} key={nest.uid}>
+            <MenuItem onClick={() => handleNestChange(nest.name)} key={nest.uid}>
               <span className="truncate">{nest.uid}</span>
             </MenuItem>
           ))}

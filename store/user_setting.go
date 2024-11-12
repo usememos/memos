@@ -151,6 +151,8 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 		userSetting.Value = &storepb.UserSetting_Appearance{Appearance: raw.Value}
 	case storepb.UserSettingKey_MEMO_VISIBILITY:
 		userSetting.Value = &storepb.UserSetting_MemoVisibility{MemoVisibility: raw.Value}
+	case storepb.UserSettingKey_NEST:
+		userSetting.Value = &storepb.UserSetting_Nest{Nest: raw.Value}
 	default:
 		return nil, nil
 	}
@@ -177,6 +179,8 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 		raw.Value = userSetting.GetAppearance()
 	case storepb.UserSettingKey_MEMO_VISIBILITY:
 		raw.Value = userSetting.GetMemoVisibility()
+	case storepb.UserSettingKey_NEST:
+		raw.Value = userSetting.GetNest()
 	default:
 		return nil, errors.Errorf("unsupported user setting key: %v", userSetting.Key)
 	}

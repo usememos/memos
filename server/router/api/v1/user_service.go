@@ -162,6 +162,25 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
 
+	nest, err := s.Store.CreateNest(ctx, &store.Nest{
+		UID:       "Personal",
+		CreatorID: user.ID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create default nest: %v", err)
+	}
+
+	_, err = s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: user.ID,
+		Key:    storepb.UserSettingKey_NEST,
+		Value: &storepb.UserSetting_Nest{
+			Nest: fmt.Sprintf("%d", nest.ID),
+		},
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
+	}
+
 	return convertUserFromStore(user), nil
 }
 
@@ -284,6 +303,7 @@ func getDefaultUserSetting(workspaceMemoRelatedSetting *storepb.WorkspaceMemoRel
 		Locale:         "en",
 		Appearance:     "system",
 		MemoVisibility: defaultVisibility,
+		Nest:           "nests/0",
 	}
 }
 
@@ -313,6 +333,8 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, _ *v1pb.GetUserSettin
 			userSettingMessage.Appearance = setting.GetAppearance()
 		} else if setting.Key == storepb.UserSettingKey_MEMO_VISIBILITY {
 			userSettingMessage.MemoVisibility = setting.GetMemoVisibility()
+		} else if setting.Key == storepb.UserSettingKey_NEST {
+			userSettingMessage.Nest = fmt.Sprintf("%s%s", NestNamePrefix, setting.GetNest())
 		}
 	}
 	return userSettingMessage, nil
@@ -355,6 +377,20 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 				Key:    storepb.UserSettingKey_MEMO_VISIBILITY,
 				Value: &storepb.UserSetting_MemoVisibility{
 					MemoVisibility: request.Setting.MemoVisibility,
+				},
+			}); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
+			}
+		} else if field == "nest" {
+			nest, err := ExtractNestIDFromName(request.Setting.Nest)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid nest: %s", request.Setting.Nest)
+			}
+			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
+				UserId: user.ID,
+				Key:    storepb.UserSettingKey_NEST,
+				Value: &storepb.UserSetting_Nest{
+					Nest: fmt.Sprintf("%d", nest),
 				},
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)

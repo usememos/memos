@@ -178,6 +178,8 @@ message UserSetting {
   string appearance = 3;
   // The default visibility of the memo.
   string memo_visibility = 4;
+  // The default nest of the user.
+  string nest = 5;
 }
 
 message GetUserSettingRequest {
