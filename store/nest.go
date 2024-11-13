@@ -17,11 +17,6 @@ type Nest struct {
 	RowStatus RowStatus
 	CreatorID int32
 	CreatedTs int64
-	UpdatedTs int64
-
-	// Domain specific fields
-
-	// Composed fields
 }
 
 type FindNest struct {
@@ -29,30 +24,13 @@ type FindNest struct {
 	Name *string
 
 	// Standard fields
-	RowStatus       *RowStatus
-	CreatorID       *int32
-	CreatedTsAfter  *int64
-	CreatedTsBefore *int64
-	UpdatedTsAfter  *int64
-	UpdatedTsBefore *int64
-
-	// Domain specific fields
-
-	// Pagination
-	Limit  *int
-	Offset *int
-
-	// Ordering
-	OrderByUpdatedTs bool
-	OrderByPinned    bool
-	OrderByTimeAsc   bool
+	RowStatus *RowStatus
+	CreatorID *int32
 }
 
 type UpdateNest struct {
 	ID        int32
 	Name      *string
-	CreatedTs *int64
-	UpdatedTs *int64
 	RowStatus *RowStatus
 }
 

@@ -172,10 +172,8 @@ func (s *APIV1Service) UpdateNest(ctx context.Context, request *v1pb.UpdateNestR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	currentTs := time.Now().Unix()
 	update := &store.UpdateNest{
-		ID:        id,
-		UpdatedTs: &currentTs,
+		ID: id,
 	}
 	for _, path := range request.UpdateMask.Paths {
 		if path == "name" {
