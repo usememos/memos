@@ -137,11 +137,11 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 	return workspaceGeneralSetting, nil
 }
 
-const (
-	// DefaultContentLengthLimit is the default limit of content length in bytes. 8KB.
-	DefaultContentLengthLimit = 8 * 1024
-	DefaultReaction           = "👍"
-)
+// DefaultContentLengthLimit is the default limit of content length in bytes. 8KB.
+const DefaultContentLengthLimit = 8 * 1024
+
+// DefaultReactions is the default reactions for memo related setting.
+var DefaultReactions = []string{"👍", "👎", "❤️", "🎉", "😄", "😕", "😢", "😡"}
 
 func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.WorkspaceMemoRelatedSetting, error) {
 	workspaceSetting, err := s.GetWorkspaceSetting(ctx, &FindWorkspaceSetting{
@@ -159,7 +159,7 @@ func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.Wo
 		workspaceMemoRelatedSetting.ContentLengthLimit = DefaultContentLengthLimit
 	}
 	if len(workspaceMemoRelatedSetting.Reactions) == 0 {
-		workspaceMemoRelatedSetting.Reactions = append(workspaceMemoRelatedSetting.Reactions, DefaultReaction)
+		workspaceMemoRelatedSetting.Reactions = append(workspaceMemoRelatedSetting.Reactions, DefaultReactions...)
 	}
 	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_MEMO_RELATED.String(), &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_MEMO_RELATED,

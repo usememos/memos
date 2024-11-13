@@ -96,6 +96,7 @@ const SignIn = () => {
             <div className="w-full flex flex-col space-y-2">
               {identityProviderList.map((identityProvider) => (
                 <Button
+                  className="bg-white dark:bg-black"
                   key={identityProvider.name}
                   variant="outlined"
                   fullWidth
