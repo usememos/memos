@@ -119,8 +119,8 @@
       "protected": "メンバーに表示",
       "public": "公開メモ"
     },
-    "remove-completed-checklist-items": "完了を削除",
-    "remove-completed-checklist-items-confirm": "すべての完了したタスクを削除してもよろしいですか？（このアクションは取り消せません）"
+    "remove-completed-task-list-items": "完了を削除",
+    "remove-completed-task-list-items-confirm": "すべての完了したタスクを削除してもよろしいですか？（このアクションは取り消せません）"
   },
   "message": {
     "archived-successfully": "アーカイブが完了しました",
@@ -138,7 +138,7 @@
     "succeed-copy-link": "リンクのコピーに成功しました。",
     "update-succeed": "変更は保存されました",
     "user-not-found": "ユーザーが見つかりませんでした",
-    "remove-completed-checklist-items-successfully": "削除が成功しました！"
+    "remove-completed-task-list-items-successfully": "削除が成功しました！"
   },
   "reference": {
     "add-references": "変更は保存されました",
@@ -301,7 +301,7 @@
       "max-upload-size": "最大ファイルサイズ(MiB)",
       "max-upload-size-hint": "推奨サイズは32 MiBです。",
       "server-name": "サーバーの名前",
-      "removed-completed-checklist-items": "完了削除を有効にする"
+      "removed-completed-task-list-items": "完了削除を有効にする"
     }
   },
   "tag": {

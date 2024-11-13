@@ -113,8 +113,8 @@
       "protected": "Видно только пользователям",
       "public": "Видно всем"
     },
-    "remove-completed-checklist-items": "Удалить выполненные",
-    "remove-completed-checklist-items-confirm": "Вы уверены, что хотите удалить все выполненные задачи? (Данное действие необратимо)"
+    "remove-completed-task-list-items": "Удалить выполненные",
+    "remove-completed-task-list-items-confirm": "Вы уверены, что хотите удалить все выполненные задачи? (Данное действие необратимо)"
   },
   "message": {
     "archived-successfully": "Успешная архивация",
@@ -132,7 +132,7 @@
     "succeed-copy-link": "Ссылка скопирована в буфер обмена.",
     "update-succeed": "Успешно обновлено",
     "user-not-found": "Пользователь не найден",
-    "remove-completed-checklist-items-successfully": "Удалено успешно!"
+    "remove-completed-task-list-items-successfully": "Удалено успешно!"
   },
   "reference": {
     "add-references": "Добавить ссылку",
@@ -284,7 +284,7 @@
       "max-upload-size": "Максимальный размер загрузки (МБ)",
       "max-upload-size-hint": "Рекомендуемое значение 32 MБ.",
       "server-name": "Имя сервера",
-      "removed-completed-checklist-items": "Включить удаление выполненных"
+      "removed-completed-task-list-items": "Включить удаление выполненных"
     }
   },
   "tag": {

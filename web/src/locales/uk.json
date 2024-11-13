@@ -119,8 +119,8 @@
       "links": "Посилання",
       "to-do": "Список справ",
       "code": "Код",
-      "remove-completed-checklist-items": "Видалити виконані",
-      "remove-completed-checklist-items-confirm": "Ви впевнені, що хочете видалити всі виконані задачі? (Ця дія неодмінна)"
+      "remove-completed-task-list-items": "Видалити виконані",
+      "remove-completed-task-list-items-confirm": "Ви впевнені, що хочете видалити всі виконані задачі? (Ця дія неодмінна)"
     },
     "message": {
       "archived-successfully": "Архівовано успішно",
@@ -138,7 +138,7 @@
       "succeed-copy-link": "Посилання успішно скопійовано.",
       "update-succeed": "Оновлення успішне",
       "user-not-found": "Користувача не знайдено",
-      "remove-completed-checklist-items-successfully": "Видалення виконаних успішно!"
+      "remove-completed-task-list-items-successfully": "Видалення виконаних успішно!"
     },
     "reference": {
       "add-references": "Додати посилання",
@@ -349,6 +349,6 @@
       "code-block": "Блок коду",
       "checkbox": "Чекбокс",
       "content-syntax": "Синтаксис вмісту",
-      "removed-completed-checklist-items": "Увімкнути видалення виконаних"
+      "removed-completed-task-list-items": "Увімкнути видалення виконаних"
     }
   }

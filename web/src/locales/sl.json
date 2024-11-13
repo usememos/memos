@@ -119,8 +119,8 @@
     "links": "Povezave",
     "to-do": "Opravila",
     "code": "Koda",
-    "remove-completed-checklist-items": "Odstrani končane",
-    "remove-completed-checklist-items-confirm": "Ste prepričani, da želite odstraniti vse končane naloge? (Ta dejanje ni obrnljivo)"
+    "remove-completed-task-list-items": "Odstrani končane",
+    "remove-completed-task-list-items-confirm": "Ste prepričani, da želite odstraniti vse končane naloge? (Ta dejanje ni obrnljivo)"
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -138,7 +138,7 @@
     "succeed-copy-link": "Povezava je uspešno skopirana.",
     "update-succeed": "Posodobitev je uspešna",
     "user-not-found": "Ne najdem uporabnika",
-    "remove-completed-checklist-items-successfully": "Odstranitev uspešna!"
+    "remove-completed-task-list-items-successfully": "Odstranitev uspešna!"
   },
   "reference": {
     "add-references": "Dodaj referenco",
@@ -300,7 +300,7 @@
       "max-upload-size": "Največja velikost nalaganja (MiB)",
       "max-upload-size-hint": "Priporočena velikost je 32 MiB.",
       "server-name": "Ime strežnika",
-      "removed-completed-checklist-items": "Omogoči odstranitev končanih"
+      "removed-completed-task-list-items": "Omogoči odstranitev končanih"
     },
     "memo-related": "Beležka"
   },

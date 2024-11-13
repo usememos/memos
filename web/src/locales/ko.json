@@ -103,8 +103,8 @@
       "protected": "멤버 전용",
       "public": "공개"
     },
-    "remove-completed-checklist-items": "완료 제거",
-    "remove-completed-checklist-items-confirm": "모든 완료된 작업을 삭제하겠습니까? (이 작업은 되돌릴 수 없습니다)"
+    "remove-completed-task-list-items": "완료 제거",
+    "remove-completed-task-list-items-confirm": "모든 완료된 작업을 삭제하겠습니까? (이 작업은 되돌릴 수 없습니다)"
   },
   "message": {
     "change-memo-created-time": "메모 생성 시각 변경",
@@ -120,7 +120,7 @@
     "succeed-copy-link": "링크를 클립보드에 복사했습니다.",
     "update-succeed": "업데이트 성공",
     "user-not-found": "회원을 찾을 수 없습니다",
-    "remove-completed-checklist-items-successfully": "성공적으로 제거되었습니다!"
+    "remove-completed-task-list-items-successfully": "성공적으로 제거되었습니다!"
   },
   "resource": {
     "clear": "클리어",
@@ -272,7 +272,7 @@
       "max-upload-size": "최대 업로드 크기 (MiB)",
       "max-upload-size-hint": "권장값은 32 MiB입니다.",
       "server-name": "서버 이름",
-      "removed-completed-checklist-items": "완료 제거 활성화"
+      "removed-completed-task-list-items": "완료 제거 활성화"
     }
   },
   "tag": {

@@ -116,8 +116,8 @@
       "protected": "कार्यक्षेत्र",
       "public": "सार्वजनिक"
     },
-    "remove-completed-checklist-items": "हटवा केलेले",
-    "remove-completed-checklist-items-confirm": "तुम्ही सगळ्या पूर्ण केलेल्या कामांचे हटवणार आहात का? (या क्रियेचे उलट घेणे शक्य नाही)"
+    "remove-completed-task-list-items": "हटवा केलेले",
+    "remove-completed-task-list-items-confirm": "तुम्ही सगळ्या पूर्ण केलेल्या कामांचे हटवणार आहात का? (या क्रियेचे उलट घेणे शक्य नाही)"
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",
@@ -135,7 +135,7 @@
     "succeed-copy-link": "लिंक यशस्वीरित्या कॉपी केली.",
     "update-succeed": "अपडेट यशस्वी झाले",
     "user-not-found": "वापरकर्ता सापडला नाही",
-    "remove-completed-checklist-items-successfully": "सफळताने हटवा झाले!"
+    "remove-completed-task-list-items-successfully": "सफळताने हटवा झाले!"
   },
   "reference": {
     "add-references": "संदर्भ जोडा",
@@ -295,7 +295,7 @@
       "max-upload-size": "कमाल अपलोड आकार (MiB)",
       "max-upload-size-hint": "शिफारस केलेले मूल्य 32 MiB आहे.",
       "server-name": "सर्व्हरचे नाव",
-      "removed-completed-checklist-items": "हटवा केलेले सक्षम करा"
+      "removed-completed-task-list-items": "हटवा केलेले सक्षम करा"
     }
   },
   "tag": {

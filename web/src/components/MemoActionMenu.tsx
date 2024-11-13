@@ -25,7 +25,7 @@ import { NodeType } from "@/types/proto/api/v1/markdown_service";
 interface Props {
   memo: Memo;
   className?: string;
-  hiddenActions?: ("edit" | "archive" | "delete" | "share" | "pin" | "remove_completed_checklist")[];
+  hiddenActions?: ("edit" | "archive" | "delete" | "share" | "pin" | "remove_completed_task_list")[];
   onEdit?: () => void;
 }
 
@@ -116,17 +116,25 @@ const MemoActionMenu = (props: Props) => {
     }
   };
 
-  const handleRemoveCompletedChecklistItemsClick = async () => {
-    const confirmed = window.confirm(t("memo.remove-completed-checklist-items-confirm"));
+  const handleRemoveCompletedTaskListItemsClick = async () => {
+    const confirmed = window.confirm(t("memo.remove-completed-task-list-items-confirm"));
     if (confirmed) {
       const newNodes = memo.nodes;
       for (var i = 0; i < newNodes.length; i++) {
-        if (newNodes[i].type === NodeType.TASK_LIST && newNodes[i].taskListNode?.complete) {
-          newNodes.splice(i, 1);
-          i--;
-          if (newNodes[i]?.type === NodeType.LINE_BREAK) {
-            newNodes.splice(i, 1);
-            i--;
+        if (newNodes[i].type === NodeType.LIST && newNodes[i].listNode?.children?.length > 0) {
+          let childrenLength = newNodes[i].listNode.children.length;
+          for (var j = 0; j < childrenLength; j++) {
+            if (newNodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM
+             && newNodes[i].listNode.children[j].taskListItemNode?.complete) {
+              // Remove completed taskList item and next line breaks
+              newNodes[i].listNode.children.splice(j, 1);
+              if (newNodes[i].listNode.children[j]?.type === NodeType.LINE_BREAK) {
+                newNodes[i].listNode.children.splice(j, 1);
+                childrenLength--;
+              }
+              childrenLength--;
+              j--;
+            }
           }
         }
       }
@@ -138,7 +146,7 @@ const MemoActionMenu = (props: Props) => {
         },
         ["content"],
       );
-      toast.success(t("message.remove-completed-checklist-items-successfully"));
+      toast.success(t("message.remove-completed-task-list-items-successfully"));
       if (isInMemoDetailPage) {
         navigateTo("/");
       }
@@ -175,10 +183,10 @@ const MemoActionMenu = (props: Props) => {
           {memo.rowStatus === RowStatus.ARCHIVED ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
           {memo.rowStatus === RowStatus.ARCHIVED ? t("common.restore") : t("common.archive")}
         </MenuItem>
-        {!hiddenActions?.includes("remove_completed_checklist") && (
-          <MenuItem color="danger" onClick={handleRemoveCompletedChecklistItemsClick}>
+        {!hiddenActions?.includes("remove_completed_task_list") && (
+          <MenuItem color="danger" onClick={handleRemoveCompletedTaskListItemsClick}>
             <SquareCheckIcon className="w-4 h-auto" />
-            {t("memo.remove-completed-checklist-items")}
+            {t("memo.remove-completed-task-list-items")}
           </MenuItem>
         )}
         <MenuItem color="danger" onClick={handleDeleteMemoClick}>

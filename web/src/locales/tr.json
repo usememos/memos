@@ -119,8 +119,8 @@
       "protected": "Çalışma Alanı",
       "public": "Herkese açık"
     },
-    "remove-completed-checklist-items": "Tamamlananları Kaldır",
-    "remove-completed-checklist-items-confirm": "Tüm tamamlanan görevleri kaldırmak istediğinize emin misiniz? (Bu işlem geri alınamaz)"
+    "remove-completed-task-list-items": "Tamamlananları Kaldır",
+    "remove-completed-task-list-items-confirm": "Tüm tamamlanan görevleri kaldırmak istediğinize emin misiniz? (Bu işlem geri alınamaz)"
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",
@@ -138,7 +138,7 @@
     "succeed-copy-link": "Bağlantı panosuna bağlantı kopyalandı.",
     "update-succeed": "Başarıyla güncellendi",
     "user-not-found": "Kullanıcı bulunamadı",
-    "remove-completed-checklist-items-successfully": "Başarıyla kaldırıldı!"
+    "remove-completed-task-list-items-successfully": "Başarıyla kaldırıldı!"
   },
   "reference": {
     "add-references": "Referans ekle",
@@ -301,7 +301,7 @@
       "max-upload-size": "Maksimum yükleme boyutu (MiB)",
       "max-upload-size-hint": "Önerilen değer 32 MiB'dir.",
       "server-name": "Uygulama Adı",
-      "removed-completed-checklist-items": "Tamamlananları Kaldırma'yı Etkinleştir"
+      "removed-completed-task-list-items": "Tamamlananları Kaldırma'yı Etkinleştir"
     }
   },
   "tag": {

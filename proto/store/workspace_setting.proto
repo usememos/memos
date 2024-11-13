@@ -116,6 +116,6 @@ message WorkspaceMemoRelatedSetting {
   repeated string reactions = 10;
   // disable markdown shortcuts
   bool disable_markdown_shortcuts = 11;
-  // removed_completed_checklist_items removed completed checklist items.
-  bool removed_completed_checklist_items = 8;
+  // remove_done_check_items removed completed task list items.
+  bool remove_done_check_items = 12;
 }
