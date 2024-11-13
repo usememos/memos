@@ -3,21 +3,21 @@ import { Button } from "@usememos/mui";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
-import { useTranslate } from "@/utils/i18n";
-import { useNestStore } from "@/store/v1";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
+import { useNestStore } from "@/store/v1";
+import { useTranslate } from "@/utils/i18n";
 
 const AddNestPopover = () => {
   const t = useTranslate();
   const nestStore = useNestStore();
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
   const [nestUID, setNestUID] = useState<string>("");
-  const commonContext =  useCommonContext();
+  const commonContext = useCommonContext();
 
   const addNest = async () => {
     const nest = await nestStore.createNest({
-      uid: nestUID
-    })
+      uid: nestUID,
+    });
     if (nest) {
       await nestStore.fetchNests();
       commonContext.setNest(nest.name);
@@ -53,4 +53,4 @@ const AddNestPopover = () => {
   );
 };
 
-export default AddNestPopover
+export default AddNestPopover;

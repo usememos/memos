@@ -2,9 +2,9 @@ import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import clsx from "clsx";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
-import NestIcon from "./NestIcon";
 import { useNestList, useNestStore } from "@/store/v1";
 import AddNestPopover from "./AddNestPopover";
+import NestIcon from "./NestIcon";
 
 interface Props {
   collapsed?: boolean;
@@ -33,7 +33,9 @@ const NestBanner = (props: Props) => {
           >
             <NestIcon />
             {!collapsed && (
-              <span className="ml-2 text-lg font-medium text-slate-800 dark:text-gray-300 shrink truncate">{nestStore.getNestByName(commonContext.nest)?.uid}</span>
+              <span className="ml-2 text-lg font-medium text-slate-800 dark:text-gray-300 shrink truncate">
+                {nestStore.getNestByName(commonContext.nest)?.uid}
+              </span>
             )}
           </div>
         </MenuButton>
@@ -45,7 +47,7 @@ const NestBanner = (props: Props) => {
           ))}
         </Menu>
       </Dropdown>
-      <AddNestPopover/>
+      <AddNestPopover />
     </div>
   );
 };

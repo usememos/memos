@@ -3,10 +3,8 @@ import useLocalStorage from "react-use/lib/useLocalStorage";
 import { workspaceServiceClient } from "@/grpcweb";
 import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { useNestStore } from "@/store/v1/nest";
-import { Nest } from "@/types/proto/api/v1/nest_service";
 import { WorkspaceProfile } from "@/types/proto/api/v1/workspace_service";
 import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
-import { UserSetting } from "@/types/proto/api/v1/user_service";
 
 interface Context {
   locale: string;

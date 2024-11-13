@@ -1,16 +1,16 @@
 import { Divider, Option, Select } from "@mui/joy";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useUserStore } from "@/store/v1";
+import { useNestList } from "@/store/v1/nest";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
+import NestIcon from "../NestIcon";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
-import NestIcon from "../NestIcon";
-import { useNestList, useNestStore } from "@/store/v1/nest";
 
 const PreferencesSection = () => {
   const t = useTranslate();
@@ -18,7 +18,6 @@ const PreferencesSection = () => {
   const userStore = useUserStore();
   const setting = userStore.userSetting as UserSetting;
   const nests = useNestList();
-  const nestStore = useNestStore();
 
   const handleLocaleSelectChange = async (locale: Locale) => {
     commonContext.setLocale(locale);
@@ -103,12 +102,11 @@ const PreferencesSection = () => {
             }
           }}
         >
-          {nests
-            .map((v) => (
-              <Option key={v.name} value={v.name} className="whitespace-nowrap">
-                {v.uid}
-              </Option>
-            ))}
+          {nests.map((v) => (
+            <Option key={v.name} value={v.name} className="whitespace-nowrap">
+              {v.uid}
+            </Option>
+          ))}
         </Select>
       </div>
 

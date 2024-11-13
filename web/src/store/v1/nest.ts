@@ -22,7 +22,7 @@ export const useNestStore = create(
         nestMap[nest.name] = nest;
       }
       set({ nestMapByName: nestMap });
-      return nestMap
+      return nestMap;
     },
     getNestByName: (name: string) => {
       const nestMap = get().nestMapByName;
@@ -47,5 +47,5 @@ export const useNestList = () => {
   const nestStore = useNestStore();
   const nests = Object.values(nestStore.getState().nestMapByName);
 
-  return nests
+  return nests;
 };
