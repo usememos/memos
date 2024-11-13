@@ -395,20 +395,6 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: pageSize
-          description: The maximum number of nests to return.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: |-
-            A page token, received from a previous `ListNests` call.
-            Provide this to retrieve the subsequent page.
-          in: query
-          required: false
-          type: string
       tags:
         - NestService
     post:
@@ -2785,11 +2771,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Nest'
-      nextPageToken:
-        type: string
-        description: |-
-          A token, which can be sent as `page_token` to retrieve the next page.
-          If this field is omitted, there are no subsequent pages.
   v1ListNode:
     type: object
     properties:

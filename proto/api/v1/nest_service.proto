@@ -64,21 +64,10 @@ message CreateNestRequest {
   string name = 1;
 }
 
-message ListNestsRequest {
-  // The maximum number of nests to return.
-  int32 page_size = 1;
-
-  // A page token, received from a previous `ListNests` call.
-  // Provide this to retrieve the subsequent page.
-  string page_token = 2;
-}
+message ListNestsRequest {}
 
 message ListNestsResponse {
   repeated Nest nests = 1;
-
-  // A token, which can be sent as `page_token` to retrieve the next page.
-  // If this field is omitted, there are no subsequent pages.
-  string next_page_token = 2;
 }
 
 message GetNestRequest {

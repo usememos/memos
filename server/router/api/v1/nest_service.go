@@ -58,38 +58,12 @@ func (s *APIV1Service) ListNests(ctx context.Context, request *v1pb.ListNestsReq
 		CreatorID: &user.ID,
 	}
 
-	var limit, offset int
-	if request.PageToken != "" {
-		var pageToken v1pb.PageToken
-		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
-		}
-		limit = int(pageToken.Limit)
-		offset = int(pageToken.Offset)
-	} else {
-		limit = int(request.PageSize)
-	}
-	if limit <= 0 {
-		limit = DefaultPageSize
-	}
-	limitPlusOne := limit + 1
-	nestFind.Limit = &limitPlusOne
-	nestFind.Offset = &offset
-
 	nests, err := s.Store.ListNests(ctx, nestFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list nests: %v", err)
 	}
 
 	nestMessages := []*v1pb.Nest{}
-	nextPageToken := ""
-	if len(nests) == limitPlusOne {
-		nests = nests[:limit]
-		nextPageToken, err = getPageToken(limit, offset+limit)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
-		}
-	}
 	for _, nest := range nests {
 		nestMessage, err := convertNestFromStore(nest)
 		if err != nil {
@@ -99,8 +73,7 @@ func (s *APIV1Service) ListNests(ctx context.Context, request *v1pb.ListNestsReq
 	}
 
 	response := &v1pb.ListNestsResponse{
-		Nests:         nestMessages,
-		NextPageToken: nextPageToken,
+		Nests: nestMessages,
 	}
 	return response, nil
 }
