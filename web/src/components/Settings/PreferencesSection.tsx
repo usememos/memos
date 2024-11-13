@@ -48,10 +48,11 @@ const PreferencesSection = () => {
     );
   };
 
-  const handleDefaultNestChanged = async (value: string) => {
+  const handleDefaultNestChanged = async (nest: string) => {
+    commonContext.setNest(nest);
     await userStore.updateUserSetting(
       {
-        nest: value,
+        nest,
       },
       ["nest"],
     );

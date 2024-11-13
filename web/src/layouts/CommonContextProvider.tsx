@@ -39,6 +39,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
   });
   const [locale] = useLocalStorage("locale", "en");
   const [appearance] = useLocalStorage("appearance", "system");
+  const [nest] = useLocalStorage("nest", "none");
 
   useEffect(() => {
     const initialWorkspace = async () => {
@@ -55,7 +56,7 @@ const CommonContextProvider = ({ children }: { children: React.ReactNode }) => {
       setCommonContext({
         locale: locale || workspaceGeneralSetting.customProfile?.locale || "en",
         appearance: appearance || workspaceGeneralSetting.customProfile?.appearance || "system",
-        nest: "none",
+        nest: nest || "none",
         profile: workspaceProfile,
       });
     };
