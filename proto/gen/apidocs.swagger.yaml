@@ -424,11 +424,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: nest
+        - name: uid
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1Nest'
+            type: string
       tags:
         - NestService
   /api/v1/nests:by-uid/{uid}:

@@ -28,7 +28,7 @@ func (s *APIV1Service) CreateNest(ctx context.Context, request *v1pb.CreateNestR
 
 	create := &store.Nest{
 		CreatorID: user.ID,
-		UID:       request.Nest.Name,
+		UID:       request.Uid,
 	}
 
 	nest, err := s.Store.CreateNest(ctx, create)

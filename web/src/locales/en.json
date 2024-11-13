@@ -143,6 +143,9 @@
     "no-memos-found": "No memos found",
     "search-placeholder": "Search content"
   },
+  "nest": {
+    "add-nest": "Add nest"
+  },
   "resource": {
     "clear": "Clear",
     "copy-link": "Copy Link",

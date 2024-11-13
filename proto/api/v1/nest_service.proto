@@ -16,7 +16,7 @@ service NestService {
   rpc CreateNest(CreateNestRequest) returns (Nest) {
     option (google.api.http) = {
       post: "/api/v1/nests"
-      body: "nest"
+      body: "uid"
     };
   }
   // ListNests lists all nests.
@@ -61,7 +61,7 @@ message Nest {
 }
 
 message CreateNestRequest {
-  Nest nest = 1;
+  string uid = 1;
 }
 
 message ListNestsRequest {
