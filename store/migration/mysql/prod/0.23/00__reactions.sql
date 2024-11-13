@@ -18,30 +18,9 @@ VALUES (
   ''
 )
 ON DUPLICATE KEY UPDATE
-value =
+value = 
   JSON_SET(
-    value,
-    '$.reactions',
+    value, 
+    '$.reactions', 
     JSON_ARRAY('👍', '👎', '💛', '🔥', '👏', '😂', '👌', '🚀', '👀', '🤔', '🤡', '❓')
   );
-
-ALTER TABLE
-    memo
-ADD
-    COLUMN nest INT NOT NULL DEFAULT 0;
-
-CREATE TABLE nest (
-  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `uid` VARCHAR(256) NOT NULL,
-  `creator_id` INT NOT NULL,
-  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL'
-);
-
-INSERT INTO
-    nest (uid, creator_id)
-SELECT
-    'Personal', id
-FROM
-    user;
