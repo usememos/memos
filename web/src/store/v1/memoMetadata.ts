@@ -30,7 +30,6 @@ export const useMemoMetadataStore = create(
     getState: () => get(),
     fetchMemoMetadata: async (params: { user?: User; location?: Location<any>; nest: string }) => {
       const filters = [`row_status == "NORMAL"`];
-      filters.push(`nest == "${params.nest}"`);
 
       if (get().nest != params.nest) {
         set({ nest: params.nest, dataMapByName: {} });
@@ -39,6 +38,8 @@ export const useMemoMetadataStore = create(
       if (params.user) {
         if (params.location?.pathname === Routes.EXPLORE) {
           filters.push(`visibilities == ["PUBLIC", "PROTECTED"]`);
+        } else {
+          filters.push(`nest == "${params.nest}"`);
         }
         filters.push(`creator == "${params.user.name}"`);
       } else {
