@@ -4,7 +4,7 @@ ADD
   COLUMN nest INTEGER NOT NULL DEFAULT 0;
 
 INSERT INTO
-  nest (uid, creator_id)
+  nest (name, creator_id)
 SELECT
   'Personal', id
 FROM

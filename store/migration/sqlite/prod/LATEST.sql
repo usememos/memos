@@ -55,7 +55,7 @@ CREATE TABLE memo (
 -- nest
 CREATE TABLE nest (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  uid TEXT NOT NULL,
+  name TEXT NOT NULL,
   creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),

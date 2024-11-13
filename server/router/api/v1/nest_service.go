@@ -28,7 +28,7 @@ func (s *APIV1Service) CreateNest(ctx context.Context, request *v1pb.CreateNestR
 
 	create := &store.Nest{
 		CreatorID: user.ID,
-		UID:       request.Uid,
+		Name:      request.Name,
 	}
 
 	nest, err := s.Store.CreateNest(ctx, create)
@@ -115,7 +115,7 @@ func (s *APIV1Service) GetNest(ctx context.Context, request *v1pb.GetNestRequest
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	id, err := ExtractNestIDFromName(request.Name)
+	id, err := ExtractNestIDFromName(request.Id)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid nest name: %v", err)
 	}
@@ -138,7 +138,7 @@ func (s *APIV1Service) GetNest(ctx context.Context, request *v1pb.GetNestRequest
 }
 
 //nolint:all
-func (s *APIV1Service) GetNestByUid(ctx context.Context, request *v1pb.GetNestByUidRequest) (*v1pb.Nest, error) {
+func (s *APIV1Service) GetNestByName(ctx context.Context, request *v1pb.GetNestByNameRequest) (*v1pb.Nest, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
@@ -149,7 +149,7 @@ func (s *APIV1Service) GetNestByUid(ctx context.Context, request *v1pb.GetNestBy
 	}
 
 	nest, err := s.Store.GetNest(ctx, &store.FindNest{
-		UID:       &request.Uid,
+		Name:      &request.Name,
 		CreatorID: &user.ID,
 	})
 	if err != nil {
@@ -176,7 +176,7 @@ func (s *APIV1Service) UpdateNest(ctx context.Context, request *v1pb.UpdateNestR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	id, err := ExtractNestIDFromName(request.Nest.Name)
+	id, err := ExtractNestIDFromName(request.Nest.Id)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid nest name: %v", err)
 	}
@@ -205,9 +205,9 @@ func (s *APIV1Service) UpdateNest(ctx context.Context, request *v1pb.UpdateNestR
 		UpdatedTs: &currentTs,
 	}
 	for _, path := range request.UpdateMask.Paths {
-		if path == "uid" {
-			update.UID = &request.Nest.Uid
-			if !util.UIDMatcher.MatchString(*update.UID) {
+		if path == "name" {
+			update.Name = &request.Nest.Name
+			if !util.UIDMatcher.MatchString(*update.Name) {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name")
 			}
 		}
@@ -241,7 +241,7 @@ func (s *APIV1Service) DeleteNest(ctx context.Context, request *v1pb.DeleteNestR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	id, err := ExtractNestIDFromName(request.Name)
+	id, err := ExtractNestIDFromName(request.Id)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid nest name: %v", err)
 	}
@@ -268,10 +268,10 @@ func (s *APIV1Service) DeleteNest(ctx context.Context, request *v1pb.DeleteNestR
 }
 
 func convertNestFromStore(nest *store.Nest) (*v1pb.Nest, error) {
-	name := fmt.Sprintf("%s%d", NestNamePrefix, nest.ID)
+	id := fmt.Sprintf("%s%d", NestNamePrefix, nest.ID)
 	nestMessage := &v1pb.Nest{
-		Name:       name,
-		Uid:        nest.UID,
+		Id:         id,
+		Name:       nest.Name,
 		CreateTime: timestamppb.New(time.Unix(nest.CreatedTs, 0)),
 	}
 

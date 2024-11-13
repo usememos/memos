@@ -103,8 +103,8 @@ const PreferencesSection = () => {
           }}
         >
           {nests.map((v) => (
-            <Option key={v.name} value={v.name} className="whitespace-nowrap">
-              {v.uid}
+            <Option key={v.id} value={v.id} className="whitespace-nowrap">
+              {v.name}
             </Option>
           ))}
         </Select>

@@ -10,8 +10,8 @@ import (
 type Nest struct {
 	// ID is the system generated unique identifier for the memo.
 	ID int32
-	// UID is the user defined unique identifier for the memo.
-	UID string
+	// Name is the user defined name for this nest.
+	Name string
 
 	// Standard fields
 	RowStatus RowStatus
@@ -25,8 +25,8 @@ type Nest struct {
 }
 
 type FindNest struct {
-	ID  *int32
-	UID *string
+	ID   *int32
+	Name *string
 
 	// Standard fields
 	RowStatus       *RowStatus
@@ -50,7 +50,7 @@ type FindNest struct {
 
 type UpdateNest struct {
 	ID        int32
-	UID       *string
+	Name      *string
 	CreatedTs *int64
 	UpdatedTs *int64
 	RowStatus *RowStatus
@@ -61,8 +61,8 @@ type DeleteNest struct {
 }
 
 func (s *Store) CreateNest(ctx context.Context, create *Nest) (*Nest, error) {
-	if !util.UIDMatcher.MatchString(create.UID) {
-		return nil, errors.New("invalid uid")
+	if !util.UIDMatcher.MatchString(create.Name) {
+		return nil, errors.New("invalid name")
 	}
 	return s.driver.CreateNest(ctx, create)
 }
@@ -85,7 +85,7 @@ func (s *Store) GetNest(ctx context.Context, find *FindNest) (*Nest, error) {
 }
 
 func (s *Store) UpdateNest(ctx context.Context, update *UpdateNest) error {
-	if update.UID != nil && !util.UIDMatcher.MatchString(*update.UID) {
+	if update.Name != nil && !util.UIDMatcher.MatchString(*update.Name) {
 		return errors.New("invalid uid")
 	}
 	return s.driver.UpdateNest(ctx, update)

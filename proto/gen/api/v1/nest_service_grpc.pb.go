@@ -20,12 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	NestService_CreateNest_FullMethodName   = "/memos.api.v1.NestService/CreateNest"
-	NestService_ListNests_FullMethodName    = "/memos.api.v1.NestService/ListNests"
-	NestService_GetNest_FullMethodName      = "/memos.api.v1.NestService/GetNest"
-	NestService_GetNestByUid_FullMethodName = "/memos.api.v1.NestService/GetNestByUid"
-	NestService_UpdateNest_FullMethodName   = "/memos.api.v1.NestService/UpdateNest"
-	NestService_DeleteNest_FullMethodName   = "/memos.api.v1.NestService/DeleteNest"
+	NestService_CreateNest_FullMethodName    = "/memos.api.v1.NestService/CreateNest"
+	NestService_ListNests_FullMethodName     = "/memos.api.v1.NestService/ListNests"
+	NestService_GetNest_FullMethodName       = "/memos.api.v1.NestService/GetNest"
+	NestService_GetNestByName_FullMethodName = "/memos.api.v1.NestService/GetNestByName"
+	NestService_UpdateNest_FullMethodName    = "/memos.api.v1.NestService/UpdateNest"
+	NestService_DeleteNest_FullMethodName    = "/memos.api.v1.NestService/DeleteNest"
 )
 
 // NestServiceClient is the client API for NestService service.
@@ -36,13 +36,13 @@ type NestServiceClient interface {
 	CreateNest(ctx context.Context, in *CreateNestRequest, opts ...grpc.CallOption) (*Nest, error)
 	// ListNests lists all nests.
 	ListNests(ctx context.Context, in *ListNestsRequest, opts ...grpc.CallOption) (*ListNestsResponse, error)
-	// GetNest returns a nest by name.
+	// GetNest returns a nest by id.
 	GetNest(ctx context.Context, in *GetNestRequest, opts ...grpc.CallOption) (*Nest, error)
-	// GetNestByUid returns a nest by uid.
-	GetNestByUid(ctx context.Context, in *GetNestByUidRequest, opts ...grpc.CallOption) (*Nest, error)
+	// GetNestByName returns a nest by name.
+	GetNestByName(ctx context.Context, in *GetNestByNameRequest, opts ...grpc.CallOption) (*Nest, error)
 	// UpdateNest updates a nest.
 	UpdateNest(ctx context.Context, in *UpdateNestRequest, opts ...grpc.CallOption) (*Nest, error)
-	// DeleteNest deletes a nest by name.
+	// DeleteNest deletes a nest by id.
 	DeleteNest(ctx context.Context, in *DeleteNestRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -84,10 +84,10 @@ func (c *nestServiceClient) GetNest(ctx context.Context, in *GetNestRequest, opt
 	return out, nil
 }
 
-func (c *nestServiceClient) GetNestByUid(ctx context.Context, in *GetNestByUidRequest, opts ...grpc.CallOption) (*Nest, error) {
+func (c *nestServiceClient) GetNestByName(ctx context.Context, in *GetNestByNameRequest, opts ...grpc.CallOption) (*Nest, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Nest)
-	err := c.cc.Invoke(ctx, NestService_GetNestByUid_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, NestService_GetNestByName_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -122,13 +122,13 @@ type NestServiceServer interface {
 	CreateNest(context.Context, *CreateNestRequest) (*Nest, error)
 	// ListNests lists all nests.
 	ListNests(context.Context, *ListNestsRequest) (*ListNestsResponse, error)
-	// GetNest returns a nest by name.
+	// GetNest returns a nest by id.
 	GetNest(context.Context, *GetNestRequest) (*Nest, error)
-	// GetNestByUid returns a nest by uid.
-	GetNestByUid(context.Context, *GetNestByUidRequest) (*Nest, error)
+	// GetNestByName returns a nest by name.
+	GetNestByName(context.Context, *GetNestByNameRequest) (*Nest, error)
 	// UpdateNest updates a nest.
 	UpdateNest(context.Context, *UpdateNestRequest) (*Nest, error)
-	// DeleteNest deletes a nest by name.
+	// DeleteNest deletes a nest by id.
 	DeleteNest(context.Context, *DeleteNestRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedNestServiceServer()
 }
@@ -149,8 +149,8 @@ func (UnimplementedNestServiceServer) ListNests(context.Context, *ListNestsReque
 func (UnimplementedNestServiceServer) GetNest(context.Context, *GetNestRequest) (*Nest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNest not implemented")
 }
-func (UnimplementedNestServiceServer) GetNestByUid(context.Context, *GetNestByUidRequest) (*Nest, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetNestByUid not implemented")
+func (UnimplementedNestServiceServer) GetNestByName(context.Context, *GetNestByNameRequest) (*Nest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNestByName not implemented")
 }
 func (UnimplementedNestServiceServer) UpdateNest(context.Context, *UpdateNestRequest) (*Nest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateNest not implemented")
@@ -233,20 +233,20 @@ func _NestService_GetNest_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _NestService_GetNestByUid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetNestByUidRequest)
+func _NestService_GetNestByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNestByNameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NestServiceServer).GetNestByUid(ctx, in)
+		return srv.(NestServiceServer).GetNestByName(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: NestService_GetNestByUid_FullMethodName,
+		FullMethod: NestService_GetNestByName_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NestServiceServer).GetNestByUid(ctx, req.(*GetNestByUidRequest))
+		return srv.(NestServiceServer).GetNestByName(ctx, req.(*GetNestByNameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -307,8 +307,8 @@ var NestService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _NestService_GetNest_Handler,
 		},
 		{
-			MethodName: "GetNestByUid",
-			Handler:    _NestService_GetNestByUid_Handler,
+			MethodName: "GetNestByName",
+			Handler:    _NestService_GetNestByName_Handler,
 		},
 		{
 			MethodName: "UpdateNest",

@@ -34,15 +34,15 @@ const NestBanner = (props: Props) => {
             <NestIcon />
             {!collapsed && (
               <span className="ml-2 text-lg font-medium text-slate-800 dark:text-gray-300 shrink truncate">
-                {nestStore.getNestByName(commonContext.nest)?.uid}
+                {nestStore.getNestById(commonContext.nest)?.name}
               </span>
             )}
           </div>
         </MenuButton>
         <Menu placement="bottom-start" style={{ zIndex: "9999" }}>
           {nests.map((nest) => (
-            <MenuItem onClick={() => handleNestChange(nest.name)} key={nest.uid}>
-              <span className="truncate">{nest.uid}</span>
+            <MenuItem onClick={() => handleNestChange(nest.id)} key={nest.id}>
+              <span className="truncate">{nest.name}</span>
             </MenuItem>
           ))}
         </Menu>

@@ -11,19 +11,19 @@ const AddNestPopover = () => {
   const t = useTranslate();
   const nestStore = useNestStore();
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
-  const [nestUID, setNestUID] = useState<string>("");
+  const [nestName, setNestName] = useState<string>("");
   const commonContext = useCommonContext();
 
   const addNest = async () => {
     const nest = await nestStore.createNest({
-      uid: nestUID,
+      name: nestName,
     });
     if (nest) {
       await nestStore.fetchNests();
-      commonContext.setNest(nest.name);
+      commonContext.setNest(nest.id);
     }
     setPopoverOpen(false);
-    setNestUID("");
+    setNestName("");
   };
 
   return (
@@ -39,11 +39,11 @@ const AddNestPopover = () => {
             className="w-full"
             size="md"
             placeholder={t("nest.add-nest")}
-            value={nestUID}
-            onChange={(e) => setNestUID(e.target.value.trim())}
+            value={nestName}
+            onChange={(e) => setNestName(e.target.value.trim())}
           />
           <div className="mt-2 w-full flex flex-row justify-end items-center gap-2">
-            <Button size="sm" color="primary" onClick={addNest} disabled={nestUID.length === 0}>
+            <Button size="sm" color="primary" onClick={addNest} disabled={nestName.length === 0}>
               {t("common.add")}
             </Button>
           </div>

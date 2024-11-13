@@ -19,25 +19,25 @@ export const useNestStore = create(
       const { nests } = await nestServiceClient.listNests({});
       const nestMap = get().nestMapByName;
       for (const nest of nests) {
-        nestMap[nest.name] = nest;
+        nestMap[nest.id] = nest;
       }
       set({ nestMapByName: nestMap });
       return nestMap;
     },
-    getNestByName: (name: string) => {
+    getNestById: (id: string) => {
       const nestMap = get().nestMapByName;
-      return Object.values(nestMap).find((r) => r.name === name);
+      return Object.values(nestMap).find((r) => r.id === id);
     },
     async createNest(create: CreateNestRequest): Promise<Nest> {
       const nest = await nestServiceClient.createNest(create);
       const nestMap = get().nestMapByName;
-      nestMap[nest.name] = nest;
+      nestMap[nest.id] = nest;
       return nest;
     },
     async updateNest(update: UpdateNestRequest): Promise<Nest> {
       const nest = await nestServiceClient.updateNest(update);
       const nestMap = get().nestMapByName;
-      nestMap[nest.name] = nest;
+      nestMap[nest.id] = nest;
       return nest;
     },
   })),

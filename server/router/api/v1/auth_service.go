@@ -222,7 +222,7 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 	}
 
 	nest, err := s.Store.CreateNest(ctx, &store.Nest{
-		UID:       "Personal",
+		Name:      "Personal",
 		CreatorID: user.ID,
 	})
 	if err != nil {
