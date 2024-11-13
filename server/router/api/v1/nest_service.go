@@ -36,7 +36,7 @@ func (s *APIV1Service) CreateNest(ctx context.Context, request *v1pb.CreateNestR
 		return nil, err
 	}
 
-	nestMessage, err := s.convertNestFromStore(nest)
+	nestMessage, err := convertNestFromStore(nest)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert nest")
 	}
@@ -91,7 +91,7 @@ func (s *APIV1Service) ListNests(ctx context.Context, request *v1pb.ListNestsReq
 		}
 	}
 	for _, nest := range nests {
-		nestMessage, err := s.convertNestFromStore(nest)
+		nestMessage, err := convertNestFromStore(nest)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to convert nest")
 		}
@@ -130,7 +130,7 @@ func (s *APIV1Service) GetNest(ctx context.Context, request *v1pb.GetNestRequest
 		return nil, status.Errorf(codes.NotFound, "nest not found")
 	}
 
-	nestMessage, err := s.convertNestFromStore(nest)
+	nestMessage, err := convertNestFromStore(nest)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert nest")
 	}
@@ -159,7 +159,7 @@ func (s *APIV1Service) GetNestByUid(ctx context.Context, request *v1pb.GetNestBy
 		return nil, status.Errorf(codes.NotFound, "nest not found")
 	}
 
-	nestMessage, err := s.convertNestFromStore(nest)
+	nestMessage, err := convertNestFromStore(nest)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert nest")
 	}
@@ -223,7 +223,7 @@ func (s *APIV1Service) UpdateNest(ctx context.Context, request *v1pb.UpdateNestR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get nest")
 	}
-	nestMessage, err := s.convertNestFromStore(nest)
+	nestMessage, err := convertNestFromStore(nest)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert nest")
 	}
@@ -267,7 +267,7 @@ func (s *APIV1Service) DeleteNest(ctx context.Context, request *v1pb.DeleteNestR
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) convertNestFromStore(nest *store.Nest) (*v1pb.Nest, error) {
+func convertNestFromStore(nest *store.Nest) (*v1pb.Nest, error) {
 	name := fmt.Sprintf("%s%d", NestNamePrefix, nest.ID)
 	nestMessage := &v1pb.Nest{
 		Name:       name,
