@@ -13,8 +13,8 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`tags`", "`payload`"}
-	placeholder := []string{"?", "?", "?", "?", "?", "?"}
+	fields := []string{"`uid`", "`creator_id`", "`nest`", "`content`", "`visibility`", "`tags`", "`payload`"}
+	placeholder := []string{"?", "?", "?", "?", "?", "?", "?"}
 	payload := "{}"
 	if create.Payload != nil {
 		payloadBytes, err := protojson.Marshal(create.Payload)
@@ -23,7 +23,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		}
 		payload = string(payloadBytes)
 	}
-	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, "[]", payload}
+	args := []any{create.UID, create.CreatorID, create.NestID, create.Content, create.Visibility, "[]", payload}
 
 	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
@@ -237,6 +237,9 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	}
 	if v := update.Visibility; v != nil {
 		set, args = append(set, "`visibility` = ?"), append(args, *v)
+	}
+	if v := update.Nest; v != nil {
+		set, args = append(set, "`nest` = ?"), append(args, *v)
 	}
 	if v := update.Payload; v != nil {
 		payloadBytes, err := protojson.Marshal(v)
