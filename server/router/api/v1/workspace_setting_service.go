@@ -238,7 +238,6 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		DefaultVisibility:        setting.DefaultVisibility,
 		Reactions:                setting.Reactions,
 		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
-		RemoveDoneCheckItems:     setting.RemoveDoneCheckItems,
 	}
 }
 
@@ -258,6 +257,5 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		DefaultVisibility:        setting.DefaultVisibility,
 		Reactions:                setting.Reactions,
 		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
-		RemoveDoneCheckItems:     setting.RemoveDoneCheckItems,
 	}
 }

@@ -2152,9 +2152,6 @@ definitions:
       disableMarkdownShortcuts:
         type: boolean
         description: disable_markdown_shortcuts disallow the registration of markdown shortcuts.
-      removeDoneCheckItems:
-        type: boolean
-        description: remove_done_check_items removed completed task list items.
   apiv1WorkspaceSetting:
     type: object
     properties:

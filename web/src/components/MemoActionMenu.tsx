@@ -119,7 +119,7 @@ const MemoActionMenu = (props: Props) => {
   const handleRemoveCompletedTaskListItemsClick = async () => {
     const confirmed = window.confirm(t("memo.remove-completed-task-list-items-confirm"));
     if (confirmed) {
-      const newNodes = memo.nodes;
+      const newNodes = JSON.parse(JSON.stringify(memo.nodes));
       for (var i = 0; i < newNodes.length; i++) {
         if (newNodes[i].type === NodeType.LIST && newNodes[i].listNode?.children?.length > 0) {
           let childrenLength = newNodes[i].listNode.children.length;
@@ -147,9 +147,6 @@ const MemoActionMenu = (props: Props) => {
         ["content"],
       );
       toast.success(t("message.remove-completed-task-list-items-successfully"));
-      if (isInMemoDetailPage) {
-        navigateTo("/");
-      }
     }
   };
 

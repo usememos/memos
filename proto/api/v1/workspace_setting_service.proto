@@ -117,8 +117,6 @@ message WorkspaceMemoRelatedSetting {
   repeated string reactions = 10;
   // disable_markdown_shortcuts disallow the registration of markdown shortcuts.
   bool disable_markdown_shortcuts = 11;
-  // remove_done_check_items removed completed task list items.
-  bool remove_done_check_items = 12;
 }
 
 message GetWorkspaceSettingRequest {

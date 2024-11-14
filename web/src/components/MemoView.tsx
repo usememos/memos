@@ -25,6 +25,7 @@ import showPreviewImageDialog from "./PreviewImageDialog";
 import ReactionSelector from "./ReactionSelector";
 import UserAvatar from "./UserAvatar";
 import VisibilityIcon from "./VisibilityIcon";
+import { NodeType } from "@/types/proto/api/v1/markdown_service";
 
 interface Props {
   memo: Memo;
@@ -120,7 +121,23 @@ const MemoView: React.FC<Props> = (props: Props) => {
     if (!props.showPinned) {
       hiddenActions.push("pin");
     }
-    if (!workspaceMemoRelatedSetting.removeDoneCheckItems) {
+    // check if the content has done tasks
+    let hasCompletedTaskList = false;
+    for (var i = 0; i < memo.nodes.length; i++) {
+      if (hasCompletedTaskList) {
+        break;
+      }
+      if (memo.nodes[i].type === NodeType.LIST && memo.nodes[i].listNode?.children?.length > 0) {
+        for (var j = 0; j < memo.nodes[i].listNode.children.length; j++) {
+          if (memo.nodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM
+           && memo.nodes[i].listNode.children[j].taskListItemNode?.complete) {
+            hasCompletedTaskList = true;
+            break;
+          }
+        }
+      }
+    }
+    if (!hasCompletedTaskList) {
       hiddenActions.push("remove_completed_task_list");
     }
     return hiddenActions;
