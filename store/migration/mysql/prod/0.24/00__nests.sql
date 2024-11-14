@@ -29,3 +29,12 @@ SET
     )
 WHERE
     nest = 0;
+
+INSERT INTO
+    user_setting (user_id, key, value)
+SELECT
+    creator_id AS user_id,
+    'NEST' AS key,
+    id AS value
+FROM
+    nest;
