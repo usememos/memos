@@ -44,7 +44,7 @@ func (s *APIV1Service) CreateNest(ctx context.Context, request *v1pb.CreateNestR
 	return nestMessage, nil
 }
 
-func (s *APIV1Service) ListNests(ctx context.Context, request *v1pb.ListNestsRequest) (*v1pb.ListNestsResponse, error) {
+func (s *APIV1Service) ListNests(ctx context.Context, _ *v1pb.ListNestsRequest) (*v1pb.ListNestsResponse, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
