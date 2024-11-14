@@ -120,7 +120,7 @@ const Navigation = (props: Props) => {
       className={clsx("w-full h-full overflow-auto flex flex-col justify-start items-start py-4 md:pt-6 z-30 hide-scrollbar", className)}
     >
       <UserBanner collapsed={collapsed} />
-      <NestBanner collapsed={collapsed} />
+      {user?(<NestBanner collapsed={collapsed} />):(null)}
       <div className="w-full px-1 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
         {navLinks.map((navLink) => (
           <NavLink
