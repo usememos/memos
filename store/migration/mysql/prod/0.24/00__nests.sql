@@ -9,3 +9,15 @@ SELECT
     'Personal', id
 FROM
     user;
+
+UPDATE
+    memo
+SET
+    nest = (
+        SELECT id
+        FROM nest
+        WHERE creator_id = memo.creator_id
+        LIMIT 1
+    )
+WHERE
+    nest = 0;
