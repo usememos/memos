@@ -10,17 +10,3 @@ UPDATE "reaction" SET "reaction_type" = '👀' WHERE "reaction_type" = 'EYES';
 UPDATE "reaction" SET "reaction_type" = '🤔' WHERE "reaction_type" = 'THINKING_FACE';
 UPDATE "reaction" SET "reaction_type" = '🤡' WHERE "reaction_type" = 'CLOWN_FACE';
 UPDATE "reaction" SET "reaction_type" = '❓' WHERE "reaction_type" = 'QUESTION_MARK';
-
-INSERT INTO "system_setting" ("name", "value", "description")
-VALUES (
-  'MEMO_RELATED',
-  '{"contentLengthLimit":8192,"reactions":["👍","👎","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓"]}',
-  ''
-)
-ON CONFLICT("name") DO UPDATE
-SET "value" = 
-  jsonb_set(
-    "system_setting"."value"::jsonb, 
-    '{reactions}', 
-    '["👍","👎","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓"]'::jsonb
-  );
