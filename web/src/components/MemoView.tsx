@@ -7,6 +7,7 @@ import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore, useWorkspaceSettingStore, useMemoStore } from "@/store/v1";
+import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
@@ -25,7 +26,6 @@ import showPreviewImageDialog from "./PreviewImageDialog";
 import ReactionSelector from "./ReactionSelector";
 import UserAvatar from "./UserAvatar";
 import VisibilityIcon from "./VisibilityIcon";
-import { NodeType } from "@/types/proto/api/v1/markdown_service";
 
 interface Props {
   memo: Memo;
@@ -123,14 +123,16 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
     // check if the content has done tasks
     let hasCompletedTaskList = false;
-    for (var i = 0; i < memo.nodes.length; i++) {
+    for (let i = 0; i < memo.nodes.length; i++) {
       if (hasCompletedTaskList) {
         break;
       }
       if (memo.nodes[i].type === NodeType.LIST && memo.nodes[i].listNode?.children?.length > 0) {
-        for (var j = 0; j < memo.nodes[i].listNode.children.length; j++) {
-          if (memo.nodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM
-           && memo.nodes[i].listNode.children[j].taskListItemNode?.complete) {
+        for (let j = 0; j < memo.nodes[i].listNode.children.length; j++) {
+          if (
+            memo.nodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM &&
+            memo.nodes[i].listNode.children[j].taskListItemNode?.complete
+          ) {
             hasCompletedTaskList = true;
             break;
           }
@@ -227,12 +229,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 </Tooltip>
               )}
               {!readonly && (
-                <MemoActionMenu
-                  className="-ml-1"
-                  memo={memo}
-                  hiddenActions={handleHiddenActions()}
-                  onEdit={() => setShowEditor(true)}
-                />
+                <MemoActionMenu className="-ml-1" memo={memo} hiddenActions={handleHiddenActions()} onEdit={() => setShowEditor(true)} />
               )}
             </div>
           </div>

@@ -14,13 +14,13 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
+import { markdownServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v1/common";
+import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
-import { markdownServiceClient } from "@/grpcweb";
-import { NodeType } from "@/types/proto/api/v1/markdown_service";
 
 interface Props {
   memo: Memo;
@@ -120,12 +120,14 @@ const MemoActionMenu = (props: Props) => {
     const confirmed = window.confirm(t("memo.remove-completed-task-list-items-confirm"));
     if (confirmed) {
       const newNodes = JSON.parse(JSON.stringify(memo.nodes));
-      for (var i = 0; i < newNodes.length; i++) {
+      for (let i = 0; i < newNodes.length; i++) {
         if (newNodes[i].type === NodeType.LIST && newNodes[i].listNode?.children?.length > 0) {
           let childrenLength = newNodes[i].listNode.children.length;
-          for (var j = 0; j < childrenLength; j++) {
-            if (newNodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM
-             && newNodes[i].listNode.children[j].taskListItemNode?.complete) {
+          for (let j = 0; j < childrenLength; j++) {
+            if (
+              newNodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM &&
+              newNodes[i].listNode.children[j].taskListItemNode?.complete
+            ) {
               // Remove completed taskList item and next line breaks
               newNodes[i].listNode.children.splice(j, 1);
               if (newNodes[i].listNode.children[j]?.type === NodeType.LINE_BREAK) {
