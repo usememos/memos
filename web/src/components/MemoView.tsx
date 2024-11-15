@@ -123,15 +123,16 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
     // check if the content has done tasks
     let hasCompletedTaskList = false;
-    for (let i = 0; i < memo.nodes.length; i++) {
+    const newNodes = JSON.parse(JSON.stringify(memo.nodes));
+    for (let i = 0; i < newNodes.length; i++) {
       if (hasCompletedTaskList) {
         break;
       }
-      if (memo.nodes[i].type === NodeType.LIST && memo.nodes[i].listNode?.children?.length > 0) {
-        for (let j = 0; j < memo.nodes[i].listNode.children.length; j++) {
+      if (newNodes[i].type === NodeType.LIST && newNodes[i].listNode?.children?.length > 0) {
+        for (let j = 0; j < newNodes[i].listNode.children.length; j++) {
           if (
-            memo.nodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM &&
-            memo.nodes[i].listNode.children[j].taskListItemNode?.complete
+            newNodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM &&
+            newNodes[i].listNode.children[j].taskListItemNode?.complete
           ) {
             hasCompletedTaskList = true;
             break;
