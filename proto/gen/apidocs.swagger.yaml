@@ -841,6 +841,7 @@ paths:
           pattern: nests/[^/]+
       tags:
         - NestService
+  /api/v1/{id}/moveto/{moveTo}:
     delete:
       summary: DeleteNest deletes a nest by id.
       operationId: NestService_DeleteNest
@@ -860,6 +861,12 @@ paths:
             The id of the nest.
             Format: nests/{id}
             id is the system generated unique identifier.
+          in: path
+          required: true
+          type: string
+          pattern: nests/[^/]+
+        - name: moveTo
+          description: The nest id where to move the memos of the nest being deleted.
           in: path
           required: true
           type: string

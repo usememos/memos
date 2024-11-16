@@ -144,7 +144,8 @@
     "search-placeholder": "Search content"
   },
   "nest": {
-    "add-nest": "Add nest"
+    "add-nest": "Add nest",
+    "delete-nest-move-to-nest": "Move to nest"
   },
   "resource": {
     "clear": "Clear",

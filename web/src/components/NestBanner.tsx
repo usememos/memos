@@ -4,6 +4,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useNestList, useNestStore } from "@/store/v1";
 import AddNestPopover from "./AddNestPopover";
+import DeleteNestPopover from "./DeleteNestPopover";
 import NestIcon from "./NestIcon";
 
 interface Props {
@@ -22,7 +23,7 @@ const NestBanner = (props: Props) => {
   };
 
   return (
-    <div className="flex flex-row justify-between items-center">
+    <div className="w-full flex flex-row justify-between items-center">
       <Dropdown>
         <MenuButton disabled={!user} slots={{ root: "div" }}>
           <div
@@ -48,6 +49,7 @@ const NestBanner = (props: Props) => {
         </Menu>
       </Dropdown>
       <AddNestPopover />
+      {nests.length > 1 && <DeleteNestPopover nest={commonContext.nest} />}
     </div>
   );
 };

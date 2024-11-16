@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { nestServiceClient } from "@/grpcweb";
-import { CreateNestRequest, Nest, UpdateNestRequest } from "@/types/proto/api/v1/nest_service";
+import { CreateNestRequest, DeleteNestRequest, Nest, UpdateNestRequest } from "@/types/proto/api/v1/nest_service";
+import { Empty } from "@/types/proto/google/protobuf/empty";
 
 interface State {
   nestMapByName: Record<string, Nest>;
@@ -39,6 +40,9 @@ export const useNestStore = create(
       const nestMap = get().nestMapByName;
       nestMap[nest.id] = nest;
       return nest;
+    },
+    async deleteNest(delreq: DeleteNestRequest): Promise<Empty> {
+      return await nestServiceClient.deleteNest(delreq);
     },
   })),
 );

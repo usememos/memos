@@ -300,6 +300,16 @@ func request_NestService_DeleteNest_0(ctx context.Context, marshaler runtime.Mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
+	val, ok = pathParams["move_to"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "move_to")
+	}
+
+	protoReq.MoveTo, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "move_to", err)
+	}
+
 	msg, err := client.DeleteNest(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -324,6 +334,16 @@ func local_request_NestService_DeleteNest_0(ctx context.Context, marshaler runti
 	protoReq.Id, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	val, ok = pathParams["move_to"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "move_to")
+	}
+
+	protoReq.MoveTo, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "move_to", err)
 	}
 
 	msg, err := server.DeleteNest(ctx, &protoReq)
@@ -471,7 +491,7 @@ func RegisterNestServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.NestService/DeleteNest", runtime.WithHTTPPathPattern("/api/v1/{id=nests/*}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.NestService/DeleteNest", runtime.WithHTTPPathPattern("/api/v1/{id=nests/*}/moveto/{move_to=nests/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -645,7 +665,7 @@ func RegisterNestServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.NestService/DeleteNest", runtime.WithHTTPPathPattern("/api/v1/{id=nests/*}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.NestService/DeleteNest", runtime.WithHTTPPathPattern("/api/v1/{id=nests/*}/moveto/{move_to=nests/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -675,7 +695,7 @@ var (
 
 	pattern_NestService_UpdateNest_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "nests", "nest.id"}, ""))
 
-	pattern_NestService_DeleteNest_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "nests", "id"}, ""))
+	pattern_NestService_DeleteNest_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4, 2, 2, 1, 0, 4, 2, 5, 5}, []string{"api", "v1", "nests", "id", "moveto", "move_to"}, ""))
 )
 
 var (

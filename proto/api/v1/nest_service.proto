@@ -43,8 +43,8 @@ service NestService {
   }
   // DeleteNest deletes a nest by id.
   rpc DeleteNest(DeleteNestRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/{id=nests/*}"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {delete: "/api/v1/{id=nests/*}/moveto/{move_to=nests/*}"};
+    option (google.api.method_signature) = "id,moveto";
   }
 }
 
@@ -93,4 +93,7 @@ message DeleteNestRequest {
   // Format: nests/{id}
   // id is the system generated unique identifier.
   string id = 1;
+
+  // The nest id where to move the memos of the nest being deleted.
+  string move_to = 2;
 }

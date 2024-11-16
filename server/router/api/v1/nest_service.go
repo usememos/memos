@@ -212,12 +212,12 @@ func (s *APIV1Service) DeleteNest(ctx context.Context, request *v1pb.DeleteNestR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	id, err := ExtractNestIDFromName(request.Id)
+	nestID, err := ExtractNestIDFromName(request.Id)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid nest name: %v", err)
 	}
 	nest, err := s.Store.GetNest(ctx, &store.FindNest{
-		ID: &id,
+		ID: &nestID,
 	})
 	if err != nil {
 		return nil, err
@@ -226,12 +226,42 @@ func (s *APIV1Service) DeleteNest(ctx context.Context, request *v1pb.DeleteNestR
 		return nil, status.Errorf(codes.NotFound, "nest not found")
 	}
 
+	newNestID, err := ExtractNestIDFromName(request.MoveTo)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid target nest name: %v", err)
+	}
+	newNest, err := s.Store.GetNest(ctx, &store.FindNest{
+		ID: &newNestID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if newNest == nil {
+		return nil, status.Errorf(codes.NotFound, "target nest not found")
+	}
+
 	// Only the creator or admin can update the nest.
-	if nest.CreatorID != user.ID && !isSuperUser(user) {
+	if (nest.CreatorID != user.ID || newNest.CreatorID != user.ID) && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	if err = s.Store.DeleteNest(ctx, &store.DeleteNest{ID: id}); err != nil {
+	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
+		CreatorID: &user.ID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get nest memos")
+	}
+	for _, memo := range memos {
+		err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{
+			ID:   memo.ID,
+			Nest: &newNestID,
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to move memo")
+		}
+	}
+
+	if err = s.Store.DeleteNest(ctx, &store.DeleteNest{ID: nestID}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete nest")
 	}
 
