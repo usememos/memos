@@ -7,7 +7,7 @@ CREATE TABLE `migration_history` (
 -- system_setting
 CREATE TABLE `system_setting` (
   `name` VARCHAR(256) NOT NULL PRIMARY KEY,
-  `value` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` LONGTEXT NOT NULL,
   `description` TEXT NOT NULL
 );
 
@@ -127,6 +127,6 @@ CREATE TABLE `reaction` (
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `creator_id` INT NOT NULL,
   `content_id` VARCHAR(256) NOT NULL,
-  `reaction_type` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reaction_type` VARCHAR(256) NOT NULL,
   UNIQUE(`creator_id`,`content_id`,`reaction_type`)  
 );
