@@ -105,7 +105,9 @@
       "private": "Solo visible para ti",
       "protected": "Espacio de trabajo",
       "public": "Todo el mundo lo puede ver"
-    }
+    },
+    "remove-completed-task-list-items": "Eliminar completado",
+    "remove-completed-task-list-items-confirm": "¿Estás seguro de que quieres eliminar todas las tareas completadas? (Esta acción es irreversible)"
   },
   "message": {
     "change-memo-created-time": "Cambiar la hora de creación del memo",
@@ -120,7 +122,8 @@
     "restored-successfully": "Restaurado con éxito",
     "succeed-copy-link": "Enlace copiado correctamente.",
     "update-succeed": "Actualización exitosa",
-    "user-not-found": "Usuario no encontrado"
+    "user-not-found": "Usuario no encontrado",
+    "remove-completed-task-list-items-successfully": "¡Eliminado con éxito!"
   },
   "resource": {
     "clear": "Limpiar",
@@ -265,7 +268,8 @@
       "enable-password-login-warning": "Esto habilitará el inicio de sesión con contraseña para todos los usuarios. Continúa sólo si deseas que los usuarios puedan iniciar sesión mediante SSO y contraseña",
       "max-upload-size": "Tamaño máximo de subida (MiB)",
       "max-upload-size-hint": "El valor recomendado es de 32 MiB.",
-      "server-name": "Nombre del servidor"
+      "server-name": "Nombre del servidor",
+      "removed-completed-task-list-items": "Habilitar eliminar completado"
     }
   },
   "tag": {

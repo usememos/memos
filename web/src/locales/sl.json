@@ -20,8 +20,8 @@
     "change": "Spremeni",
     "clear": "Počisti",
     "close": "Zapri",
-    "confirm": "Potrdi",    
-    "collapse": "Strni",    
+    "confirm": "Potrdi",
+    "collapse": "Strni",
     "create": "Dodaj",
     "database": "Baza",
     "days": "Dni",
@@ -118,7 +118,9 @@
     },
     "links": "Povezave",
     "to-do": "Opravila",
-    "code": "Koda"
+    "code": "Koda",
+    "remove-completed-task-list-items": "Odstrani končane",
+    "remove-completed-task-list-items-confirm": "Ste prepričani, da želite odstraniti vse končane naloge? (Ta dejanje ni obrnljivo)"
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -135,7 +137,8 @@
     "restored-successfully": "Uspešno obnovljeno",
     "succeed-copy-link": "Povezava je uspešno skopirana.",
     "update-succeed": "Posodobitev je uspešna",
-    "user-not-found": "Ne najdem uporabnika"
+    "user-not-found": "Ne najdem uporabnika",
+    "remove-completed-task-list-items-successfully": "Odstranitev uspešna!"
   },
   "reference": {
     "add-references": "Dodaj referenco",
@@ -295,8 +298,9 @@
       "enable-password-login": "Omogoči prijavo z geslom",
       "enable-password-login-warning": "To bo omogočilo prijavo z geslom za vse uporabnike. Nadaljujte samo, če želite, da se uporabniki lahko prijavijo z uporabo enotne prijave in gesla",
       "max-upload-size": "Največja velikost nalaganja (MiB)",
-      "max-upload-size-hint": "Priporočena velikost je 32 MiB.",     
-      "server-name": "Ime strežnika"
+      "max-upload-size-hint": "Priporočena velikost je 32 MiB.",
+      "server-name": "Ime strežnika",
+      "removed-completed-task-list-items": "Omogoči odstranitev končanih"
     },
     "memo-related": "Beležka"
   },

@@ -118,7 +118,9 @@
       "private": "ส่วนตัว",
       "protected": "พื้นที่ทำงาน",
       "public": "สาธารณะ"
-    }
+    },
+    "remove-completed-task-list-items": "ลบที่ทำแล้ว",
+    "remove-completed-task-list-items-confirm": "คุณแน่ใจว่าจะลบรายการที่ทำแล้วทั้งหมดหรือไม่? (การกระทำนี้ไม่สามารถย้อนกลับได้)"
   },
   "message": {
     "archived-successfully": "เก็บถาวรเรียบร้อยแล้ว",
@@ -135,7 +137,8 @@
     "restored-successfully": "กู้คืนเรียบร้อยแล้ว",
     "succeed-copy-link": "คัดลอกลิงก์เรียบร้อยแล้ว",
     "update-succeed": "อัปเดตเรียบร้อยแล้ว",
-    "user-not-found": "ไม่พบผู้ใช้งาน"
+    "user-not-found": "ไม่พบผู้ใช้งาน",
+    "remove-completed-task-list-items-successfully": "ลบเรียบร้อย!"
   },
   "reference": {
     "add-references": "เพิ่มข้อมูลอ้างอิง",
@@ -297,7 +300,8 @@
       "enable-password-login-warning": "สิ่งนี้จะเปิดใช้งานการเข้าสู่ระบบด้วยรหัสผ่านสำหรับผู้ใช้ทุกคน ดำเนินการต่อหากคุณต้องการให้ผู้ใช้สามารถเข้าสู่ระบบโดยใช้ทั้ง SSO และรหัสผ่าน",
       "max-upload-size": "ขนาดการอัปโหลดสูงสุด (MiB)",
       "max-upload-size-hint": "ค่าที่แนะนำคือ 32 MiB",
-      "server-name": "ชื่อเซิร์ฟเวอร์"
+      "server-name": "ชื่อเซิร์ฟเวอร์",
+      "removed-completed-task-list-items": "เปิดใช้งานการลบรายการที่ทำแล้ว"
     }
   },
   "tag": {

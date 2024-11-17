@@ -112,7 +112,9 @@
       "private": "Видно только вам",
       "protected": "Видно только пользователям",
       "public": "Видно всем"
-    }
+    },
+    "remove-completed-task-list-items": "Удалить выполненные",
+    "remove-completed-task-list-items-confirm": "Вы уверены, что хотите удалить все выполненные задачи? (Данное действие необратимо)"
   },
   "message": {
     "archived-successfully": "Успешная архивация",
@@ -129,7 +131,8 @@
     "restored-successfully": "Успешно восстановлено.",
     "succeed-copy-link": "Ссылка скопирована в буфер обмена.",
     "update-succeed": "Успешно обновлено",
-    "user-not-found": "Пользователь не найден"
+    "user-not-found": "Пользователь не найден",
+    "remove-completed-task-list-items-successfully": "Удалено успешно!"
   },
   "reference": {
     "add-references": "Добавить ссылку",
@@ -280,7 +283,8 @@
       "display-with-updated-time": "Отображать время обновления записи",
       "max-upload-size": "Максимальный размер загрузки (МБ)",
       "max-upload-size-hint": "Рекомендуемое значение 32 MБ.",
-      "server-name": "Имя сервера"
+      "server-name": "Имя сервера",
+      "removed-completed-task-list-items": "Включить удаление выполненных"
     }
   },
   "tag": {

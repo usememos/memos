@@ -118,7 +118,9 @@
       "private": "Privé",
       "protected": "Accès aux membres",
       "public": "Public"
-    }
+    },
+    "remove-completed-task-list-items": "Supprimer terminé",
+    "remove-completed-task-list-items-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? (Cette action est irréversible)"
   },
   "message": {
     "archived-successfully": "Archivé avec succès",
@@ -135,7 +137,8 @@
     "restored-successfully": "Restauré avec succès",
     "succeed-copy-link": "Succeed to copy link to clipboard.",
     "update-succeed": "Mise à jour effectuée",
-    "user-not-found": "Utilisateur introuvable"
+    "user-not-found": "Utilisateur introuvable",
+    "remove-completed-task-list-items-successfully": "Supprimé avec succès !"
   },
   "reference": {
     "add-references": "Ajouter des références",
@@ -297,7 +300,8 @@
       "enable-password-login-warning": "Ceci activera la connexion par mot de passe pour tous les utilisateurs. Ne continuez que si vous souhaitez que les utilisateurs puissent se connecter à la fois par SSO et par mot de passe",
       "max-upload-size": "Taille maximale du téléversement (MiB)",
       "max-upload-size-hint": "La valeur recommandée est 32 MiB.",
-      "server-name": "Nom du serveur"
+      "server-name": "Nom du serveur",
+      "removed-completed-task-list-items": "Activer la suppression terminée"
     }
   },
   "tag": {

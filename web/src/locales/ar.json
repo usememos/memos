@@ -88,7 +88,9 @@
       "private": "خاص",
       "protected": "مساحة عمل",
       "public": "عام"
-    }
+    },
+    "remove-completed-task-list-items": "إزالة المنجز",
+    "remove-completed-task-list-items-confirm": "هل أنت متأكد أنك تريد إزالة جميع المهام المنجزة؟ (هذه العملية لا يمكن التراجع عنها)"
   },
   "resource": {
     "clear": "مسح",

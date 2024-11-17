@@ -118,7 +118,9 @@
     },
     "links": "Links",
     "to-do": "To-do",
-    "code": "Code"
+    "code": "Code",
+    "remove-completed-task-list-items": "Remove done",
+    "remove-completed-task-list-items-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE"
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -135,7 +137,8 @@
     "restored-successfully": "Restored successfully",
     "succeed-copy-link": "Link copied successfully.",
     "update-succeed": "Update succeeded",
-    "user-not-found": "User not found"
+    "user-not-found": "User not found",
+    "remove-completed-task-list-items-successfully": "The removal was successful"
   },
   "reference": {
     "add-references": "Add references",
@@ -299,7 +302,8 @@
       "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password",
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
-      "server-name": "Server Name"
+      "server-name": "Server Name",
+      "removed-completed-task-list-items": "Enable removal of completed task list items"
     },
     "memo-related": "Memo",
     "access-token-section":{

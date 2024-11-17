@@ -118,7 +118,9 @@
     },
     "links": "Liên kết",
     "to-do": "Việc cần làm",
-    "code": "Mã"
+    "code": "Mã",
+    "remove-completed-task-list-items": "Xóa đã hoàn thành",
+    "remove-completed-task-list-items-confirm": "Bạn có chắc chắn muốn xóa tất cả các mục đã hoàn thành không? (Hành động này không thể đảo ngược)"
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",
@@ -141,7 +143,8 @@
     "add-references": "Thêm tham chiếu",
     "embedded-usage": "Sử dụng như nội dung nhúng",
     "no-memos-found": "Không tìm thấy ghi chú",
-    "search-placeholder": "Tìm kiếm nội dung"
+    "search-placeholder": "Tìm kiếm nội dung",
+    "remove-completed-task-list-items-successfully": "Xóa thành công!"
   },
   "resource": {
     "clear": "Xóa",
@@ -299,7 +302,8 @@
       "enable-password-login-warning": "Điều này sẽ bật đăng nhập bằng mật khẩu cho tất cả người dùng. Chỉ tiếp tục nếu bạn muốn người dùng có thể đăng nhập bằng cả SSO và mật khẩu",
       "max-upload-size": "Kích thước tải lên tối đa (MiB)",
       "max-upload-size-hint": "Giá trị đề xuất là 32 MiB.",
-      "server-name": "Tên máy chủ"
+      "server-name": "Tên máy chủ",
+      "removed-completed-task-list-items": "Kích hoạt xóa đã hoàn thành"
     },
     "memo-related": "Ghi chú",
     "access-token-section": {

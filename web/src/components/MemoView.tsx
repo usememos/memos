@@ -7,6 +7,7 @@ import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore, useWorkspaceSettingStore, useMemoStore } from "@/store/v1";
+import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
@@ -115,6 +116,36 @@ const MemoView: React.FC<Props> = (props: Props) => {
       <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat}></relative-time>
     );
 
+  const handleHiddenActions = () => {
+    const hiddenActions: ("edit" | "archive" | "delete" | "share" | "pin" | "remove_completed_task_list")[] = [];
+    if (!props.showPinned) {
+      hiddenActions.push("pin");
+    }
+    // check if the content has done tasks
+    let hasCompletedTaskList = false;
+    const newNodes = JSON.parse(JSON.stringify(memo.nodes));
+    for (let i = 0; i < newNodes.length; i++) {
+      if (hasCompletedTaskList) {
+        break;
+      }
+      if (newNodes[i].type === NodeType.LIST && newNodes[i].listNode?.children?.length > 0) {
+        for (let j = 0; j < newNodes[i].listNode.children.length; j++) {
+          if (
+            newNodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM &&
+            newNodes[i].listNode.children[j].taskListItemNode?.complete
+          ) {
+            hasCompletedTaskList = true;
+            break;
+          }
+        }
+      }
+    }
+    if (!hasCompletedTaskList) {
+      hiddenActions.push("remove_completed_task_list");
+    }
+    return hiddenActions;
+  };
+
   return (
     <div
       className={clsx(
@@ -199,12 +230,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 </Tooltip>
               )}
               {!readonly && (
-                <MemoActionMenu
-                  className="-ml-1"
-                  memo={memo}
-                  hiddenActions={props.showPinned ? [] : ["pin"]}
-                  onEdit={() => setShowEditor(true)}
-                />
+                <MemoActionMenu className="-ml-1" memo={memo} hiddenActions={handleHiddenActions()} onEdit={() => setShowEditor(true)} />
               )}
             </div>
           </div>

@@ -118,7 +118,9 @@
       "private": "Privado (eu)",
       "protected": "Protegido (membros)",
       "public": "Público (todos)"
-    }
+    },
+    "remove-completed-task-list-items": "Remover concluídos",
+    "remove-completed-task-list-items-confirm": "Você tem certeza de que deseja remover todos os itens concluídos? (Essa ação é irreversível)"
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",
@@ -135,7 +137,8 @@
     "restored-successfully": "Restaurado com êxito",
     "succeed-copy-link": "Link copiado com êxito.",
     "update-succeed": "Atualizado com êxito",
-    "user-not-found": "Usuário não encontrado"
+    "user-not-found": "Usuário não encontrado",
+    "remove-completed-task-list-items-successfully": "Remoção bem-sucedida!"
   },
   "reference": {
     "add-references": "Adicionar referências",
@@ -297,7 +300,8 @@
       "enable-password-login-warning": "Isso permitirá o login com senha para todos os usuários. Continue apenas se desejar que os usuários possam fazer login usando SSO e senha local❗",
       "max-upload-size": "Tamanho máximo de upload (MiB)",
       "max-upload-size-hint": "O valor recomendado é 32 MiB.",
-      "server-name": "Nome do servidor"
+      "server-name": "Nome do servidor",
+      "removed-completed-task-list-items": "Ativar remoção de concluídos"
     }
   },
   "tag": {

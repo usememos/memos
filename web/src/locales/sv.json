@@ -64,7 +64,9 @@
       "private": "Endast synlig för dig",
       "protected": "Synlig för medlemmar",
       "public": "Synlig för alla"
-    }
+    },
+    "remove-completed-task-list-items": "Ta bort avklarade",
+    "remove-completed-task-list-items-confirm": "Är du säker på att du vill ta bort alla avklarade todo? (Detta är oåterkalleligt)"
   },
   "message": {
     "change-memo-created-time": "Ändra anteckning skapade tid",
@@ -77,7 +79,8 @@
     "restored-successfully": "Återställdes framgångsrikt",
     "succeed-copy-link": "Länk kopierades framgångsrikt.",
     "update-succeed": "Uppdateras framgångsrikt",
-    "user-not-found": "Användaren hittades inte"
+    "user-not-found": "Användaren hittades inte",
+    "remove-completed-task-list-items-successfully": "Borttagning avklarade todo lyckades!"
   },
   "resource": {
     "clear": "Rensa",
@@ -133,7 +136,8 @@
       },
       "disable-public-memos": "Inaktivera offentliga anteckningar",
       "display-with-updated-time": "Display with updated time",
-      "server-name": "Server Name"
+      "server-name": "Server Name",
+      "removed-completed-task-list-items": "Aktivera ta bort avklarade"
     }
   }
 }

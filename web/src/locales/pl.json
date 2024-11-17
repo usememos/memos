@@ -117,7 +117,9 @@
     },
     "links": "Linki",
     "to-do": "Lista zadań",
-    "code": "Kod"
+    "code": "Kod",
+    "remove-completed-task-list-items": "Usuń zakończone",
+    "remove-completed-task-list-items-confirm": "Czy jesteś pewny, że chcesz usunąć wszystkie zakończone zadania? (Ta akcja jest nieodwracalna)"
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",
@@ -134,7 +136,8 @@
     "restored-successfully": "Przywrócono pomyślnie",
     "succeed-copy-link": "Link skopiowany pomyślnie.",
     "update-succeed": "Aktualizacja zakończona sukcesem",
-    "user-not-found": "Użytkownik nie został znaleziony"
+    "user-not-found": "Użytkownik nie został znaleziony",
+    "remove-completed-task-list-items-successfully": "Pomyślnie usunięto!"
   },
   "reference": {
     "add-references": "Dodaj odniesienia",
@@ -295,7 +298,8 @@
       "enable-password-login-warning": "To włączy logowanie hasłem dla wszystkich użytkowników. Kontynuuj tylko wtedy, gdy chcesz, aby użytkownicy mogli logować się za pomocą zarówno SSO, jak i hasła",
       "max-upload-size": "Maksymalny rozmiar przesyłanego pliku (MiB)",
       "max-upload-size-hint": "Zalecana wartość to 32 MiB.",
-      "server-name": "Nazwa serwera"
+      "server-name": "Nazwa serwera",
+      "removed-completed-task-list-items": "Włącz usuwanie zakończonych"
     },
     "memo-related": "Notatki"
   },

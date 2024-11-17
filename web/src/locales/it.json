@@ -91,7 +91,9 @@
       "private": "Privato",
       "protected": "Visibile ai membri",
       "public": "Pubblico"
-    }
+    },
+    "remove-completed-task-list-items": "Rimuovi completato",
+    "remove-completed-task-list-items-confirm": "Sei sicuro di voler rimuovere tutte le cose completate? (Questa azione è irreversibile)"
   },
   "message": {
     "change-memo-created-time": "Cambia data creazione",
@@ -106,7 +108,8 @@
     "restored-successfully": "Ripristinato con successo",
     "succeed-copy-link": "Link copiato.",
     "update-succeed": "Aggiornato con successo",
-    "user-not-found": "Utente non trovato"
+    "user-not-found": "Utente non trovato",
+    "remove-completed-task-list-items-successfully": "Rimosso con successo!"
   },
   "resource": {
     "clear": "Cancella",
@@ -253,7 +256,8 @@
       "enable-password-login-warning": "Ciò consentirà l'accesso tramite password per tutti gli utenti. Continua solo se desideri che gli utenti possano accedere utilizzando sia SSO che password❗",
       "max-upload-size": "Dimensione massima caricamento (MiB)",
       "max-upload-size-hint": "Valore consigliato di 32 MiB.",
-      "server-name": "Nome server"
+      "server-name": "Nome server",
+      "removed-completed-task-list-items": "Abilita rimuovi completato"
     }
   },
   "tag": {

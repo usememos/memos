@@ -97,7 +97,9 @@
       "private": "Nur für dich sichtbar",
       "protected": "Mitglieder",
       "public": "Öffentlich"
-    }
+    },
+    "remove-completed-task-list-items": "Erledigt entfernen",
+    "remove-completed-task-list-items-confirm": "Sind Sie sicher, dass Sie alle abgeschlossenen Aufgaben entfernen möchten? (Diese Aktion kann nicht rückgängig gemacht werden)"
   },
   "message": {
     "change-memo-created-time": "Erstellungszeitpunkt ändern",
@@ -112,7 +114,8 @@
     "restored-successfully": "Erfolgreich wiederhergestellt",
     "succeed-copy-link": "Link erfolgreich kopiert",
     "update-succeed": "Update erfolgreich",
-    "user-not-found": "Nutzer nicht gefunden"
+    "user-not-found": "Nutzer nicht gefunden",
+    "remove-completed-task-list-items-successfully": "Erfolgreich entfernt!"
   },
   "resource": {
     "clear": "Löschen",
@@ -263,7 +266,8 @@
       "enable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer aktiviert. Fahre nur fort, wenn du möchtest, dass sich Benutzer sowohl mit SSO als auch mit einem Passwort anmelden können",
       "max-upload-size": "Maximale Uploadgröße (MiB)",
       "max-upload-size-hint": "Empfohlene Wert ist 32 MiB.",
-      "server-name": "Servername"
+      "server-name": "Servername",
+      "removed-completed-task-list-items": "Entfernen abgeschlossen aktivieren"
     }
   },
   "tag": {

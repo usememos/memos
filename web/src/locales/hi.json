@@ -90,7 +90,9 @@
       "private": "निजी",
       "protected": "सदस्यों को दिखाई देता है",
       "public": "सभी के लिए सार्वजनिक"
-    }
+    },
+    "remove-completed-task-list-items": "हटाएँ किया गया",
+    "remove-completed-task-list-items-confirm": "क्या आप सुनिश्चित हैं कि आप सभी पूरे कामों को हटाना चाहते हैं? (यह क्रिया वापस ले जाने योग्य नहीं है)"
   },
   "message": {
     "change-memo-created-time": "मेमो बनाने का समय बदलें",
@@ -105,7 +107,8 @@
     "restored-successfully": "सफलतापूर्वक पुनर्स्थापित किया गया",
     "succeed-copy-link": "लिंक सफलतापूर्वक कॉपी किया गया।",
     "update-succeed": "अपडेट सफल हुआ",
-    "user-not-found": "उपयोगकर्ता नहीं मिला"
+    "user-not-found": "उपयोगकर्ता नहीं मिला",
+    "remove-completed-task-list-items-successfully": "सफलतापूर्वक हटा दिया!"
   },
   "resource": {
     "clear": "साफ़ करें",

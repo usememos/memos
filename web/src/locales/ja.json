@@ -118,7 +118,9 @@
       "private": "非公開",
       "protected": "メンバーに表示",
       "public": "公開メモ"
-    }
+    },
+    "remove-completed-task-list-items": "完了を削除",
+    "remove-completed-task-list-items-confirm": "すべての完了したタスクを削除してもよろしいですか？（このアクションは取り消せません）"
   },
   "message": {
     "archived-successfully": "アーカイブが完了しました",
@@ -135,7 +137,8 @@
     "restored-successfully": "リストア成功",
     "succeed-copy-link": "リンクのコピーに成功しました。",
     "update-succeed": "変更は保存されました",
-    "user-not-found": "ユーザーが見つかりませんでした"
+    "user-not-found": "ユーザーが見つかりませんでした",
+    "remove-completed-task-list-items-successfully": "削除が成功しました！"
   },
   "reference": {
     "add-references": "変更は保存されました",
@@ -297,7 +300,8 @@
       "enable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが有効になります。SSOとパスワードの両方を使用してログインできるようにしたい場合のみ、続行してください",
       "max-upload-size": "最大ファイルサイズ(MiB)",
       "max-upload-size-hint": "推奨サイズは32 MiBです。",
-      "server-name": "サーバーの名前"
+      "server-name": "サーバーの名前",
+      "removed-completed-task-list-items": "完了削除を有効にする"
     }
   },
   "tag": {

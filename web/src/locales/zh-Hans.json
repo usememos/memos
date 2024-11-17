@@ -118,7 +118,9 @@
     },
     "links": "链接",
     "to-do": "待办",
-    "code": "代码"
+    "code": "代码",
+    "remove-completed-task-list-items": "移除已办",
+    "remove-completed-task-list-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -135,7 +137,8 @@
     "restored-successfully": "恢复成功",
     "succeed-copy-link": "复制链接到剪贴板成功。",
     "update-succeed": "更新成功",
-    "user-not-found": "未找到该用户"
+    "user-not-found": "未找到该用户",
+    "remove-completed-task-list-items-successfully": "移除成功！"
   },
   "reference": {
     "add-references": "添加引用",
@@ -297,7 +300,8 @@
       "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用单点登录和密码登录，请开启密码登录",
       "max-upload-size": "最大上传大小 (MiB)",
       "max-upload-size-hint": "建议值为 32 MiB。",
-      "server-name": "服务器名称"
+      "server-name": "服务器名称",
+      "removed-completed-task-list-items": "启用移除已办"
     },
     "memo-related": "备忘录"
   },

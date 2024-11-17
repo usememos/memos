@@ -113,7 +113,9 @@
       "private": "Privát",
       "protected": "Munkatér",
       "public": "Nyilvános"
-    }
+    },
+    "remove-completed-task-list-items": "Töröld el a kész",
+    "remove-completed-task-list-items-confirm": "Biztos, hogy törölni akarod az összes kész feladatot? (Ez az akció visszavonhatatlan)"
   },
   "message": {
     "archived-successfully": "Sikeres archiválás",
@@ -130,7 +132,8 @@
     "restored-successfully": "Sikeres visszaállítás",
     "succeed-copy-link": "Hivatkozás sikeresen másolva.",
     "update-succeed": "Sikeres frissítés",
-    "user-not-found": "Felhasználó nem található"
+    "user-not-found": "Felhasználó nem található",
+    "remove-completed-task-list-items-successfully": "Sikeresen eltávolítva!"
   },
   "reference": {
     "add-references": "Referenciák hozzáadása",
@@ -287,7 +290,8 @@
       "enable-password-login-warning": "Ez engedélyezi a jelszavas bejelentkezést minden felhasználó számára. Csak akkor folytasd, ha szeretnéd, ha a felhasználók SSO és jelszó használatával is be tudjanak jelentkezni",
       "max-upload-size": "Maximális feltöltési méret (MiB)",
       "max-upload-size-hint": "Az ajánlott érték 32 MiB.",
-      "server-name": "Szerver neve"
+      "server-name": "Szerver neve",
+      "removed-completed-task-list-items": "Kikapcsold a kész törölését"
     }
   },
   "tag": {

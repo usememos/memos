@@ -97,7 +97,9 @@
       "private": "Privé",
       "protected": "Werkruimte",
       "public": "Openbaar"
-    }
+    },
+    "remove-completed-task-list-items": "Verwijder voltooid",
+    "remove-completed-task-list-items-confirm": "Weet u zeker dat u alle voltooide taken wilt verwijderen? (Deze actie is onomkeerbaar)"
   },
   "message": {
     "change-memo-created-time": "Tijd van aanmaken wijzigen",
@@ -111,7 +113,8 @@
     "restored-successfully": "Succesvol teruggezet",
     "succeed-copy-link": "Link gekopieërd naar klembord.",
     "update-succeed": "Update voltooid",
-    "user-not-found": "Gebruiker niet gevonden"
+    "user-not-found": "Gebruiker niet gevonden",
+    "remove-completed-task-list-items-successfully": "Gelukt verwijderd!"
   },
   "resource": {
     "clear": "Opruimen",
@@ -235,7 +238,8 @@
       "enable-password-login-warning": "Als je dit aanzet kan er met zowel SSO als een wachtwoord ingelogd worden",
       "max-upload-size": "Maximum uploadgrootte (MiB)",
       "max-upload-size-hint": "32 MiB wordt aangeraden.",
-      "server-name": "Servernaam"
+      "server-name": "Servernaam",
+      "removed-completed-task-list-items": "Verwijder voltooid inschakelen"
     }
   },
   "tag": {

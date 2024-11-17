@@ -118,7 +118,9 @@
       "private": "私人",
       "protected": "成員可見",
       "public": "公開給所有人"
-    }
+    },
+    "remove-completed-task-list-items": "移除已完成",
+    "remove-completed-task-list-items-confirm": "您確定要移除所有完成的待辦嗎？（此操作不可逆）"
   },
   "message": {
     "archived-successfully": "封存成功",
@@ -135,7 +137,8 @@
     "restored-successfully": "還原成功",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
     "update-succeed": "更新成功",
-    "user-not-found": "查無該使用者"
+    "user-not-found": "查無該使用者",
+    "remove-completed-task-list-items-successfully": "移除成功！"
   },
   "reference": {
     "add-references": "添加參考資料",
@@ -298,7 +301,8 @@
       "enable-password-login-warning": "啟用所有使用者的密碼登入。如果希望使用者同時使用 SSO 和密碼登入，請開啟密碼登入",
       "max-upload-size": "最大上傳檔案大小 (MiB)",
       "max-upload-size-hint": "建議值為 32 MiB。",
-      "server-name": "伺服器名稱"
+      "server-name": "伺服器名稱",
+      "removed-completed-task-list-items": "啟用移除已完成"
     }
   },
   "tag": {
