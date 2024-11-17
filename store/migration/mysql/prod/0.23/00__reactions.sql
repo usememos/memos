@@ -1,3 +1,8 @@
+-- Set character set and collation to MySQL recommended default
+ALTER DATABASE `memos_prod`
+DEFAULT CHARACTER SET utf8mb4
+DEFAULT COLLATE utf8mb4_0900_ai_ci;
+
 UPDATE `reaction` SET `reaction_type` = '👍' WHERE `reaction_type` = 'THUMBS_UP';
 UPDATE `reaction` SET `reaction_type` = '👎' WHERE `reaction_type` = 'THUMBS_DOWN';
 UPDATE `reaction` SET `reaction_type` = '💛' WHERE `reaction_type` = 'HEART';

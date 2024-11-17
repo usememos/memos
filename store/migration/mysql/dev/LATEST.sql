@@ -1,3 +1,8 @@
+-- Set character set and collation to MySQL recommended default
+ALTER DATABASE `memos_prod`
+DEFAULT CHARACTER SET utf8mb4
+DEFAULT COLLATE utf8mb4_0900_ai_ci;
+
 -- migration_history
 CREATE TABLE `migration_history` (
   `version` VARCHAR(256) NOT NULL PRIMARY KEY,
