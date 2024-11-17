@@ -120,22 +120,17 @@ const MemoActionMenu = (props: Props) => {
     const confirmed = window.confirm(t("memo.remove-completed-task-list-items-confirm"));
     if (confirmed) {
       const newNodes = JSON.parse(JSON.stringify(memo.nodes));
-      for (let i = 0; i < newNodes.length; i++) {
-        if (newNodes[i].type === NodeType.LIST && newNodes[i].listNode?.children?.length > 0) {
-          let childrenLength = newNodes[i].listNode.children.length;
-          for (let j = 0; j < childrenLength; j++) {
-            if (
-              newNodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM &&
-              newNodes[i].listNode.children[j].taskListItemNode?.complete
-            ) {
+      for (const node of newNodes) {
+        if (node.type === NodeType.LIST && node.listNode?.children?.length > 0) {
+          const children = node.listNode.children;
+          for (let i = 0; i < children.length; i++) {
+            if (children[i].type === NodeType.TASK_LIST_ITEM && children[i].taskListItemNode?.complete) {
               // Remove completed taskList item and next line breaks
-              newNodes[i].listNode.children.splice(j, 1);
-              if (newNodes[i].listNode.children[j]?.type === NodeType.LINE_BREAK) {
-                newNodes[i].listNode.children.splice(j, 1);
-                childrenLength--;
+              children.splice(i, 1);
+              if (children[i]?.type === NodeType.LINE_BREAK) {
+                children.splice(i, 1);
               }
-              childrenLength--;
-              j--;
+              i--;
             }
           }
         }
