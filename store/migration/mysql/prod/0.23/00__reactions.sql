@@ -1,5 +1,5 @@
 -- Set character set and collation to MySQL recommended default
-ALTER DATABASE `memos_prod`
+ALTER DATABASE
 DEFAULT CHARACTER SET utf8mb4
 DEFAULT COLLATE utf8mb4_0900_ai_ci;
 
