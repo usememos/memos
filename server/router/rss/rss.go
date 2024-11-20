@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/gomark"
-	"github.com/usememos/gomark/ast"
 	"github.com/usememos/gomark/renderer"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -20,8 +18,7 @@ import (
 )
 
 const (
-	maxRSSItemCount       = 100
-	maxRSSItemTitleLength = 128
+	maxRSSItemCount = 100
 )
 
 type RSSService struct {
@@ -112,7 +109,6 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 			return "", err
 		}
 		feed.Items[i] = &feeds.Item{
-			Title:       getRSSItemTitle(memo.Content),
 			Link:        &feeds.Link{Href: baseURL + "/m/" + memo.UID},
 			Description: description,
 			Created:     time.Unix(memo.CreatedTs, 0),
@@ -142,22 +138,6 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 		return "", err
 	}
 	return rss, nil
-}
-
-func getRSSItemTitle(content string) string {
-	nodes, _ := gomark.Parse(content)
-	if len(nodes) > 0 {
-		firstNode := nodes[0]
-		title := renderer.NewStringRenderer().Render([]ast.Node{firstNode})
-		return title
-	}
-
-	title := strings.Split(content, "\n")[0]
-	var titleLengthLimit = min(len(title), maxRSSItemTitleLength)
-	if titleLengthLimit < len(title) {
-		title = title[:titleLengthLimit] + "..."
-	}
-	return title
 }
 
 func getRSSItemDescription(content string) (string, error) {
