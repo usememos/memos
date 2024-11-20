@@ -1,3 +1,7 @@
+-- modify reaction_type to be a TINYTEXT instead of varchar(256).
+ALTER TABLE `reaction` MODIFY `reaction_type` TINYTEXT NOT NULL;
+
+-- update reaction_type to emoji.
 UPDATE `reaction` SET `reaction_type` = '👍' WHERE `reaction_type` = 'THUMBS_UP';
 UPDATE `reaction` SET `reaction_type` = '👎' WHERE `reaction_type` = 'THUMBS_DOWN';
 UPDATE `reaction` SET `reaction_type` = '💛' WHERE `reaction_type` = 'HEART';
