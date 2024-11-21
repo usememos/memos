@@ -1,5 +1,0 @@
-syntax = "proto3";
-
-package memos.store;
-
-option go_package = "gen/store";
