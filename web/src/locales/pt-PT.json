@@ -109,6 +109,7 @@
     "no-archived-memos": "Não existem memos arquivados.",
     "search-placeholder": "Pesquisar memos",
     "show-more": "Mostrar mais",
+    "show-less": "Mostrar menos",
     "view-detail": "Ver detalhes",
     "visibility": {
       "disabled": "Memos públicos estão desativados",

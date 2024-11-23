@@ -109,6 +109,7 @@
     "no-archived-memos": "没有已归档备忘录。",
     "search-placeholder": "搜索备忘录",
     "show-more": "查看更多",
+    "show-less": "显示较少",
     "view-detail": "查看详情",
     "visibility": {
       "disabled": "已禁用公开备忘录",

@@ -109,6 +109,7 @@
     "no-archived-memos": "დაარქივებული მემოები არ არის.",
     "search-placeholder": "მემოების ძიება",
     "show-more": "მეტის ჩვენება",
+    "show-less": "ნაკლების ჩვენება",
     "view-detail": "დეტალების ნახვა",
     "visibility": {
       "disabled": "საჯარო მემოები გამორთულია",

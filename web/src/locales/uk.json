@@ -109,6 +109,7 @@
       "no-archived-memos": "Немає архівованих нотаток.",
       "search-placeholder": "Пошук нотаток",
       "show-more": "Показати більше",
+      "show-less": "Показувати менше",
       "view-detail": "Переглянути деталі",
       "visibility": {
         "disabled": "Публічні нотатки вимкнені",
