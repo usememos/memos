@@ -109,6 +109,7 @@
     "no-archived-memos": "No archived memos.",
     "search-placeholder": "Search memos",
     "show-more": "Show more",
+    "show-less": "Show less",
     "view-detail": "View Detail",
     "visibility": {
       "disabled": "Public memos are disabled",
