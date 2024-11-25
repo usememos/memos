@@ -79,7 +79,9 @@ const WebhookSection = () => {
                 {webhooks.map((webhook) => (
                   <tr key={webhook.id}>
                     <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400">{webhook.name}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400">{webhook.url}</td>
+                    <td className="max-w-[200px] px-3 py-2 text-sm text-gray-900 dark:text-gray-400 truncate" title={webhook.url}>
+                      {webhook.url}
+                    </td>
                     <td className="relative whitespace-nowrap px-3 py-2 text-right text-sm">
                       <Button
                         variant="plain"
