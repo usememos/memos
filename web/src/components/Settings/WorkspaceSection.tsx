@@ -12,6 +12,8 @@ import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
+import { identityProviderServiceClient } from "@/grpcweb";
+import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 
 const WorkspaceSection = () => {
   const t = useTranslate();
