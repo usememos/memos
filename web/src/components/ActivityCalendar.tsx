@@ -85,7 +85,7 @@ const ActivityCalendar = (props: Props) => {
                 "text-gray-400",
                 item.isCurrentMonth ? getCellAdditionalStyles(count, maxCount) : "opacity-60",
                 item.isCurrentMonth && isToday && "border-zinc-400",
-                item.isCurrentMonth && isSelected && "bg-success font-bold",
+                item.isCurrentMonth && isSelected && "font-bold border-zinc-400",
                 item.isCurrentMonth && !isToday && !isSelected && "border-transparent",
                 !item.isCurrentMonth && "border-transparent",
               )}
