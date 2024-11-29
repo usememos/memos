@@ -49,7 +49,7 @@ const PagedMemoList = (props: Props) => {
     memoList.reset();
     setState((state) => ({ ...state, nextPageToken: "" }));
     fetchMoreMemos("");
-  }, []);
+  }, [props.filter, props.pageSize]);
 
   useEffect(() => {
     refreshList();
