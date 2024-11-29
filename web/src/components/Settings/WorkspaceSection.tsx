@@ -5,7 +5,9 @@ import { ExternalLinkIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { identityProviderServiceClient } from "@/grpcweb";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
@@ -18,6 +20,7 @@ const WorkspaceSection = () => {
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {},
   );
   const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(originalSetting);
+  const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
     setWorkspaceGeneralSetting(originalSetting);
@@ -48,6 +51,15 @@ const WorkspaceSection = () => {
       return;
     }
     toast.success(t("message.update-succeed"));
+  };
+
+  useEffect(() => {
+    fetchIdentityProviderList();
+  }, []);
+
+  const fetchIdentityProviderList = async () => {
+    const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
+    setIdentityProviderList(identityProviders);
   };
 
   return (
@@ -115,6 +127,7 @@ const WorkspaceSection = () => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.workspace-section.disallow-password-auth")}</span>
         <Switch
+          disabled={identityProviderList.length === 0 ? true : false}
           checked={workspaceGeneralSetting.disallowPasswordAuth}
           onChange={(event) => updatePartialSetting({ disallowPasswordAuth: event.target.checked })}
         />
