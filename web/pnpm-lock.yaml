@@ -176,7 +176,7 @@ importers:
         version: 7.18.0(eslint@8.57.1)(typescript@5.6.3)
       '@vitejs/plugin-react':
         specifier: ^4.3.3
-        version: 4.3.3(vite@5.4.10(@types/node@22.8.6)(less@4.2.0))
+        version: 4.3.3(vite@5.4.10(@types/node@22.8.6)(less@4.2.1))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.47)
@@ -196,8 +196,8 @@ importers:
         specifier: ^7.37.2
         version: 7.37.2(eslint@8.57.1)
       less:
-        specifier: ^4.2.0
-        version: 4.2.0
+        specifier: ^4.2.1
+        version: 4.2.1
       long:
         specifier: ^5.2.3
         version: 5.2.3
@@ -218,7 +218,7 @@ importers:
         version: 5.6.3
       vite:
         specifier: ^5.4.10
-        version: 5.4.10(@types/node@22.8.6)(less@4.2.0)
+        version: 5.4.10(@types/node@22.8.6)(less@4.2.1)
 
 packages:
 
@@ -2519,8 +2519,8 @@ packages:
   leaflet@1.9.4:
     resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
 
-  less@4.2.0:
-    resolution: {integrity: sha512-P3b3HJDBtSzsXUl0im2L7gTO5Ubg8mEN6G8qoTS77iXxXX4Hvu4Qj540PZDvQ8V6DmX6iXo98k7Md0Cm1PrLaA==}
+  less@4.2.1:
+    resolution: {integrity: sha512-CasaJidTIhWmjcqv0Uj5vccMI7pJgfD9lMkKtlnTHAdJdYK/7l8pM9tumLyJ0zhbD4KJLo/YvTj+xznQd5NBhg==}
     engines: {node: '>=6'}
     hasBin: true
 
@@ -4702,14 +4702,14 @@ snapshots:
       tailwind-merge: 2.5.4
       tailwindcss: 3.4.14
 
-  '@vitejs/plugin-react@4.3.3(vite@5.4.10(@types/node@22.8.6)(less@4.2.0))':
+  '@vitejs/plugin-react@4.3.3(vite@5.4.10(@types/node@22.8.6)(less@4.2.1))':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.26.0)
       '@babel/plugin-transform-react-jsx-source': 7.25.9(@babel/core@7.26.0)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.4.10(@types/node@22.8.6)(less@4.2.0)
+      vite: 5.4.10(@types/node@22.8.6)(less@4.2.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -5989,7 +5989,7 @@ snapshots:
 
   leaflet@1.9.4: {}
 
-  less@4.2.0:
+  less@4.2.1:
     dependencies:
       copy-anything: 2.0.6
       parse-node-version: 1.0.1
@@ -6942,7 +6942,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite@5.4.10(@types/node@22.8.6)(less@4.2.0):
+  vite@5.4.10(@types/node@22.8.6)(less@4.2.1):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.47
@@ -6950,7 +6950,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.8.6
       fsevents: 2.3.3
-      less: 4.2.0
+      less: 4.2.1
 
   void-elements@3.1.0: {}
 
