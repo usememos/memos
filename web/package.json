@@ -73,7 +73,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.2",
-    "less": "^4.2.0",
+    "less": "^4.2.1",
     "long": "^5.2.3",
     "nice-grpc-web": "^3.3.5",
     "postcss": "^8.4.47",
