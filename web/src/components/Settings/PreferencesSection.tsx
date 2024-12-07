@@ -1,12 +1,14 @@
 import { Divider, Option, Select } from "@mui/joy";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useUserStore } from "@/store/v1";
+import { useNestList } from "@/store/v1/nest";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
+import NestIcon from "../NestIcon";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
 
@@ -15,6 +17,7 @@ const PreferencesSection = () => {
   const commonContext = useCommonContext();
   const userStore = useUserStore();
   const setting = userStore.userSetting as UserSetting;
+  const nests = useNestList();
 
   const handleLocaleSelectChange = async (locale: Locale) => {
     commonContext.setLocale(locale);
@@ -42,6 +45,16 @@ const PreferencesSection = () => {
         memoVisibility: value,
       },
       ["memo_visibility"],
+    );
+  };
+
+  const handleDefaultNestChanged = async (nest: string) => {
+    commonContext.setNest(nest);
+    await userStore.updateUserSetting(
+      {
+        nest,
+      },
+      ["nest"],
     );
   };
 
@@ -76,6 +89,25 @@ const PreferencesSection = () => {
                 {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
               </Option>
             ))}
+        </Select>
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="truncate">{t("setting.preference-section.default-nest")}</span>
+        <Select
+          className="!min-w-fit"
+          value={setting.nest}
+          startDecorator={<NestIcon />}
+          onChange={(_, nest) => {
+            if (nest) {
+              handleDefaultNestChanged(nest);
+            }
+          }}
+        >
+          {nests.map((v) => (
+            <Option key={v.id} value={v.id} className="whitespace-nowrap">
+              {v.name}
+            </Option>
+          ))}
         </Select>
       </div>
 

@@ -176,6 +176,9 @@ message Memo {
 
   // The location of the memo.
   optional Location location = 20;
+
+  // The nest of the memo.
+  string nest = 21;
 }
 
 message MemoProperty {
@@ -202,6 +205,8 @@ message CreateMemoRequest {
   repeated MemoRelation relations = 4;
 
   optional Location location = 5;
+
+  string nest = 6;
 }
 
 enum MemoView {

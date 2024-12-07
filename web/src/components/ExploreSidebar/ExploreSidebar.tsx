@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import { useMemoList, useMemoMetadataStore } from "@/store/v1";
 import TagsSection from "../HomeSidebar/TagsSection";
 
@@ -13,14 +14,15 @@ const ExploreSidebar = (props: Props) => {
   const location = useLocation();
   const memoList = useMemoList();
   const memoMetadataStore = useMemoMetadataStore();
+  const nest = useCurrentNest();
 
   useDebounce(
     async () => {
       if (memoList.size() === 0) return;
-      await memoMetadataStore.fetchMemoMetadata({ location });
+      await memoMetadataStore.fetchMemoMetadata({ location, nest });
     },
     300,
-    [memoList.size(), location.pathname],
+    [memoList.size(), location.pathname, nest],
   );
 
   return (

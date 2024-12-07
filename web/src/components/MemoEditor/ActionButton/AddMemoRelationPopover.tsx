@@ -8,6 +8,7 @@ import useDebounce from "react-use/lib/useDebounce";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, MemoView } from "@/types/proto/api/v1/memo_service";
@@ -30,6 +31,7 @@ const AddMemoRelationPopover = (props: Props) => {
   const [selectedMemos, setSelectedMemos] = useState<Memo[]>([]);
   const [embedded, setEmbedded] = useState<boolean>(false);
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
+  const nest = useCurrentNest();
 
   const filteredMemos = fetchedMemos.filter(
     (memo) =>
@@ -45,6 +47,7 @@ const AddMemoRelationPopover = (props: Props) => {
       setIsFetching(true);
       try {
         const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
+        filters.push(`nest == "${nest}"`);
         if (searchText) {
           filters.push(`content_search == [${JSON.stringify(searchText)}]`);
         }

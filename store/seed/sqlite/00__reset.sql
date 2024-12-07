@@ -2,6 +2,7 @@ DELETE FROM system_setting;
 DELETE FROM user;
 DELETE FROM user_setting;
 DELETE FROM memo;
+DELETE FROM nest;
 DELETE FROM memo_organizer;
 DELETE FROM memo_relation;
 DELETE FROM resource;

@@ -147,6 +147,10 @@
     "no-memos-found": "No memos found",
     "search-placeholder": "Search content"
   },
+  "nest": {
+    "add-nest": "Add nest",
+    "delete-nest-move-to-nest": "Move to nest"
+  },
   "resource": {
     "clear": "Clear",
     "copy-link": "Copy Link",
@@ -216,6 +220,7 @@
     "preference-section": {
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
+      "default-nest": "Default nest",
       "theme": "Theme"
     },
     "sso": "SSO",

@@ -12,6 +12,7 @@ import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore, useResourceStore, useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
@@ -90,6 +91,7 @@ const MemoEditor = (props: Props) => {
   const workspaceMemoRelatedSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
     WorkspaceMemoRelatedSetting.fromPartial({});
+  const nest = useCurrentNest();
 
   useEffect(() => {
     editorRef.current?.setContent(contentCache || "");
@@ -338,6 +340,7 @@ const MemoEditor = (props: Props) => {
               resources: state.resourceList,
               relations: state.relationList,
               location: state.location,
+              nest: nest,
             })
           : memoServiceClient
               .createMemoComment({

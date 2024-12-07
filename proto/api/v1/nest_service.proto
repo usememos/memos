@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service NestService {
+  // CreateNest creates a new nest.
+  rpc CreateNest(CreateNestRequest) returns (Nest) {
+    option (google.api.http) = {
+      post: "/api/v1/nests"
+      body: "name"
+    };
+  }
+  // ListNests lists all nests.
+  rpc ListNests(ListNestsRequest) returns (ListNestsResponse) {
+    option (google.api.http) = {get: "/api/v1/nests"};
+  }
+  // GetNest returns a nest by id.
+  rpc GetNest(GetNestRequest) returns (Nest) {
+    option (google.api.http) = {get: "/api/v1/{id=nests/*}"};
+    option (google.api.method_signature) = "id";
+  }
+  // GetNestByName returns a nest by name.
+  rpc GetNestByName(GetNestByNameRequest) returns (Nest) {
+    option (google.api.http) = {get: "/api/v1/nests:by-name/{name}"};
+    option (google.api.method_signature) = "name";
+  }
+  // UpdateNest updates a nest.
+  rpc UpdateNest(UpdateNestRequest) returns (Nest) {
+    option (google.api.http) = {
+      patch: "/api/v1/{nest.id=nests/*}"
+      body: "nest"
+    };
+    option (google.api.method_signature) = "nest,update_mask";
+  }
+  // DeleteNest deletes a nest by id.
+  rpc DeleteNest(DeleteNestRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{id=nests/*}/moveto/{move_to=nests/*}"};
+    option (google.api.method_signature) = "id,moveto";
+  }
+}
+
+message Nest {
+  // The id of the nest.
+  // Format: nests/{id}
+  // id is the system generated unique identifier.
+  string id = 1;
+
+  // The user defined name of the nest.
+  string name = 2;
+
+  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+message CreateNestRequest {
+  string name = 1;
+}
+
+message ListNestsRequest {}
+
+message ListNestsResponse {
+  repeated Nest nests = 1;
+}
+
+message GetNestRequest {
+  // The id of the nest.
+  // Format: nest/{id}
+  // id is the system generated unique identifier.
+  string id = 1;
+}
+
+message GetNestByNameRequest {
+  // The name of the nest.
+  string name = 1;
+}
+
+message UpdateNestRequest {
+  Nest nest = 1;
+
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message DeleteNestRequest {
+  // The id of the nest.
+  // Format: nests/{id}
+  // id is the system generated unique identifier.
+  string id = 1;
+
+  // The nest id where to move the memos of the nest being deleted.
+  string move_to = 2;
+}

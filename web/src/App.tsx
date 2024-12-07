@@ -114,6 +114,7 @@ const App = () => {
 
     commonContext.setLocale(userSetting.locale);
     commonContext.setAppearance(userSetting.appearance);
+    commonContext.setNest(userSetting.nest);
   }, [userSetting?.locale, userSetting?.appearance]);
 
   return <Outlet />;

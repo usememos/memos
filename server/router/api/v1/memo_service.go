@@ -40,9 +40,15 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		return nil, status.Errorf(codes.Internal, "failed to get user")
 	}
 
+	nestID, err := ExtractNestIDFromName(request.Nest)
+	if err != nil {
+		return nil, errors.Wrap(err, "invalid nest")
+	}
+
 	create := &store.Memo{
 		UID:        shortuuid.New(),
 		CreatorID:  user.ID,
+		NestID:     nestID,
 		Content:    request.Content,
 		Visibility: convertVisibilityToStore(request.Visibility),
 	}
@@ -830,6 +836,13 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 			}
 			find.CreatorID = &user.ID
 		}
+		if filter.Nest != nil {
+			nestID, err := ExtractNestIDFromName(*filter.Nest)
+			if err != nil {
+				return errors.Wrap(err, "invalid nest")
+			}
+			find.NestID = &nestID
+		}
 		if filter.RowStatus != nil {
 			find.RowStatus = filter.RowStatus
 		}
@@ -901,6 +914,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
+	cel.Variable("nest", cel.StringType),
 	cel.Variable("uid", cel.StringType),
 	cel.Variable("row_status", cel.StringType),
 	cel.Variable("random", cel.BoolType),
@@ -921,6 +935,7 @@ type MemoFilter struct {
 	DisplayTimeBefore  *int64
 	DisplayTimeAfter   *int64
 	Creator            *string
+	Nest               *string
 	RowStatus          *store.RowStatus
 	Random             bool
 	Limit              *int
@@ -990,6 +1005,9 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 			} else if idExpr.Name == "creator" {
 				creator := callExpr.Args[1].GetConstExpr().GetStringValue()
 				filter.Creator = &creator
+			} else if idExpr.Name == "nest" {
+				nest := callExpr.Args[1].GetConstExpr().GetStringValue()
+				filter.Nest = &nest
 			} else if idExpr.Name == "row_status" {
 				rowStatus := store.RowStatus(callExpr.Args[1].GetConstExpr().GetStringValue())
 				filter.RowStatus = &rowStatus

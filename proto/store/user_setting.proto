@@ -14,6 +14,8 @@ enum UserSettingKey {
   APPEARANCE = 3;
   // The visibility of the memo.
   MEMO_VISIBILITY = 4;
+  // The default nest of the user.
+  NEST = 5;
 }
 
 message UserSetting {
@@ -24,6 +26,7 @@ message UserSetting {
     string locale = 4;
     string appearance = 5;
     string memo_visibility = 6;
+    string nest = 7;
   }
 }
 

@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
 import UserStatisticsView from "@/components/UserStatisticsView";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoList, useMemoMetadataStore } from "@/store/v1";
 import TagsSection from "./TagsSection";
@@ -16,13 +17,14 @@ const HomeSidebar = (props: Props) => {
   const user = useCurrentUser();
   const memoList = useMemoList();
   const memoMetadataStore = useMemoMetadataStore();
+  const nest = useCurrentNest();
 
   useDebounce(
     async () => {
-      await memoMetadataStore.fetchMemoMetadata({ user, location });
+      await memoMetadataStore.fetchMemoMetadata({ user, location, nest });
     },
     300,
-    [memoList.size(), user, location.pathname],
+    [memoList.size(), user, location.pathname, nest],
   );
 
   return (

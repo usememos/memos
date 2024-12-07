@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
+import useCurrentNest from "@/hooks/useCurrentNest";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore, useMemoMetadataStore, useMemoTagList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
@@ -26,6 +27,7 @@ const TagsSection = (props: Props) => {
   const tags = Object.entries(useMemoTagList())
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
+  const nest = useCurrentNest();
 
   const handleTagClick = (tag: string) => {
     const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter) => filter.value === tag);
@@ -46,7 +48,7 @@ const TagsSection = (props: Props) => {
         parent: "memos/-",
         tag: tag,
       });
-      await memoMetadataStore.fetchMemoMetadata({ user, location });
+      await memoMetadataStore.fetchMemoMetadata({ user, location, nest });
       toast.success(t("message.deleted-successfully"));
     }
   };

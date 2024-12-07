@@ -21,6 +21,7 @@ const getDefaultUserSetting = () => {
     locale: "en",
     appearance: "auto",
     memoVisibility: "PRIVATE",
+    nest: "none",
   });
 };
 

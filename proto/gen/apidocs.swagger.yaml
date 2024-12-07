@@ -11,6 +11,7 @@ tags:
   - name: MarkdownService
   - name: ResourceService
   - name: MemoService
+  - name: NestService
   - name: WebhookService
   - name: WorkspaceService
   - name: WorkspaceSettingService
@@ -381,6 +382,62 @@ paths:
           type: string
       tags:
         - MemoService
+  /api/v1/nests:
+    get:
+      summary: ListNests lists all nests.
+      operationId: NestService_ListNests
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListNestsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - NestService
+    post:
+      summary: CreateNest creates a new nest.
+      operationId: NestService_CreateNest
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Nest'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          in: body
+          required: true
+          schema:
+            type: string
+      tags:
+        - NestService
+  /api/v1/nests:by-name/{name}:
+    get:
+      summary: GetNestByName returns a nest by name.
+      operationId: NestService_GetNestByName
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Nest'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: The name of the nest.
+          in: path
+          required: true
+          type: string
+      tags:
+        - NestService
   /api/v1/reactions/{reactionId}:
     delete:
       summary: DeleteMemoReaction deletes a reaction for a memo.
@@ -759,6 +816,63 @@ paths:
             title: The identityProvider to update.
       tags:
         - IdentityProviderService
+  /api/v1/{id}:
+    get:
+      summary: GetNest returns a nest by id.
+      operationId: NestService_GetNest
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Nest'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          description: |-
+            The id of the nest.
+            Format: nest/{id}
+            id is the system generated unique identifier.
+          in: path
+          required: true
+          type: string
+          pattern: nests/[^/]+
+      tags:
+        - NestService
+  /api/v1/{id}/moveto/{moveTo}:
+    delete:
+      summary: DeleteNest deletes a nest by id.
+      operationId: NestService_DeleteNest
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: id
+          description: |-
+            The id of the nest.
+            Format: nests/{id}
+            id is the system generated unique identifier.
+          in: path
+          required: true
+          type: string
+          pattern: nests/[^/]+
+        - name: moveTo
+          description: The nest id where to move the memos of the nest being deleted.
+          in: path
+          required: true
+          type: string
+          pattern: nests/[^/]+
+      tags:
+        - NestService
   /api/v1/{inbox.name}:
     patch:
       summary: UpdateInbox updates an inbox.
@@ -901,6 +1015,9 @@ paths:
               location:
                 $ref: '#/definitions/apiv1Location'
                 description: The location of the memo.
+              nest:
+                type: string
+                description: The nest of the memo.
       tags:
         - MemoService
   /api/v1/{name_1}:
@@ -1461,6 +1578,44 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
+  /api/v1/{nest.id}:
+    patch:
+      summary: UpdateNest updates a nest.
+      operationId: NestService_UpdateNest
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Nest'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: nest.id
+          description: |-
+            The id of the nest.
+            Format: nests/{id}
+            id is the system generated unique identifier.
+          in: path
+          required: true
+          type: string
+          pattern: nests/[^/]+
+        - name: nest
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The user defined name of the nest.
+              createTime:
+                type: string
+                format: date-time
+                readOnly: true
+      tags:
+        - NestService
   /api/v1/{parent}/tags/{tag}:
     delete:
       summary: DeleteMemoTag deletes a tag for a memo.
@@ -1616,6 +1771,9 @@ paths:
               memoVisibility:
                 type: string
                 description: The default visibility of the memo.
+              nest:
+                type: string
+                description: The default nest of the user.
             required:
               - setting
       tags:
@@ -2033,6 +2191,9 @@ definitions:
       location:
         $ref: '#/definitions/apiv1Location'
         description: The location of the memo.
+      nest:
+        type: string
+        description: The nest of the memo.
   apiv1OAuth2Config:
     type: object
     properties:
@@ -2069,6 +2230,9 @@ definitions:
       memoVisibility:
         type: string
         description: The default visibility of the memo.
+      nest:
+        type: string
+        description: The default nest of the user.
   apiv1WorkspaceCustomProfile:
     type: object
     properties:
@@ -2419,6 +2583,8 @@ definitions:
           $ref: '#/definitions/v1MemoRelation'
       location:
         $ref: '#/definitions/apiv1Location'
+      nest:
+        type: string
   v1CreateWebhookRequest:
     type: object
     properties:
@@ -2604,6 +2770,14 @@ definitions:
         description: |-
           A token, which can be sent as `page_token` to retrieve the next page.
           If this field is omitted, there are no subsequent pages.
+  v1ListNestsResponse:
+    type: object
+    properties:
+      nests:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Nest'
   v1ListNode:
     type: object
     properties:
@@ -2720,6 +2894,22 @@ definitions:
     description: |2-
        - MEMO_VIEW_FULL: The full view of the memo. Includes all fields.
        - MEMO_VIEW_METADATA_ONLY: The metadata only view of the memo. Excludes the content/snippet fields.
+  v1Nest:
+    type: object
+    properties:
+      id:
+        type: string
+        description: |-
+          The id of the nest.
+          Format: nests/{id}
+          id is the system generated unique identifier.
+      name:
+        type: string
+        description: The user defined name of the nest.
+      createTime:
+        type: string
+        format: date-time
+        readOnly: true
   v1Node:
     type: object
     properties:

@@ -7,7 +7,7 @@ import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useCommonContext } from "@/layouts/CommonContextProvider";
-import { useUserStore } from "@/store/v1";
+import { useNestStore, useUserStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const PasswordSignInForm = () => {
@@ -15,6 +15,7 @@ const PasswordSignInForm = () => {
   const navigateTo = useNavigateTo();
   const commonContext = useCommonContext();
   const userStore = useUserStore();
+  const nestStore = useNestStore();
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -55,6 +56,7 @@ const PasswordSignInForm = () => {
       actionBtnLoadingState.setLoading();
       await authServiceClient.signIn({ username, password, neverExpire: remember });
       await userStore.fetchCurrentUser();
+      await nestStore.fetchNests();
       navigateTo("/");
     } catch (error: any) {
       console.error(error);
