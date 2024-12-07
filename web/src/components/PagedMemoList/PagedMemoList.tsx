@@ -1,6 +1,6 @@
 import { Button } from "@usememos/mui";
 import { ArrowDownIcon, LoaderIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
@@ -45,11 +45,11 @@ const PagedMemoList = (props: Props) => {
     }));
   };
 
-  const refreshList = useCallback(async () => {
+  const refreshList = async () => {
     memoList.reset();
     setState((state) => ({ ...state, nextPageToken: "" }));
     fetchMoreMemos("");
-  }, [props.filter, props.pageSize]);
+  };
 
   useEffect(() => {
     refreshList();
