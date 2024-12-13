@@ -111,8 +111,15 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		// Exclude comments by default.
 		ExcludeComments: true,
 	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+
+	if request.View == v1pb.MemoView_MEMO_VIEW_TAGS {
+		if err := s.buildMemoTagsFindWithFilter(ctx, memoFind, request.Filter); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+		}
+	} else {
+		if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+		}
 	}
 
 	var limit, offset int
@@ -763,6 +770,22 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 	default:
 		return store.Private
 	}
+}
+
+func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
+	user, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get current user")
+	}
+
+	find.CreatorID = &user.ID
+	find.ExcludeComments = true
+	find.ExcludeContent = true
+	find.SharedTags = true
+	rowStatus := store.Normal
+	find.RowStatus = &rowStatus
+
+	return nil
 }
 
 func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {

@@ -117,6 +117,10 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("setting.system-section.share-tags")}</span>
+        <Switch checked={memoRelatedSetting.shareTags} onChange={(event) => updatePartialSetting({ shareTags: event.target.checked })} />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.memo-related-settings.content-lenght-limit")}</span>
         <Input
           className="w-24"
