@@ -18,6 +18,7 @@ const MobileHeader = (props: Props) => {
   const workspaceSettingStore = useWorkspaceSettingStore();
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
+
   return (
     <div
       className={clsx(
