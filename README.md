@@ -7,7 +7,8 @@ An open-source, self-hosted note-taking solution designed for seamless deploymen
 <a href="https://www.usememos.com">Home Page</a> •
 <a href="https://www.usememos.com/blog">Blogs</a> •
 <a href="https://www.usememos.com/docs">Docs</a> •
-<a href="https://demo.usememos.com/">Live Demo</a>
+<a href="https://demo.usememos.com/">Live Demo</a> •
+<a href="/tourism">Tourism</a>
 
 <p>
   <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg"/></a>
