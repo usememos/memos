@@ -12,10 +12,6 @@ interface Props {
 }
 
 const MobileHeader = (props: Props) => {
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
-
   const { className, children } = props;
   const { sm } = useResponsiveWidth();
   const { y: offsetTop } = useWindowScroll();
