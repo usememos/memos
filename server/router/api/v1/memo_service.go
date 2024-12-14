@@ -551,10 +551,16 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
 
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+	}
+
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
 		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.OldTag}},
 		ExcludeComments: true,
+		ShareTags:       workspaceMemoRelatedSetting.ShareTags,
 	}
 	if (request.Parent) != "memos/-" {
 		memoID, err := ExtractMemoIDFromName(request.Parent)
@@ -605,11 +611,17 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
 
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+	}
+
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
 		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.Tag}},
 		ExcludeContent:  true,
 		ExcludeComments: true,
+		ShareTags:       workspaceMemoRelatedSetting.ShareTags,
 	}
 	if (request.Parent) != "memos/-" {
 		memoID, err := ExtractMemoIDFromName(request.Parent)
@@ -775,6 +787,15 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 }
 
 func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *store.FindMemo, request *v1pb.ListMemosRequest) error {
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+	}
+
+	if !workspaceMemoRelatedSetting.ShareTags {
+		return status.Errorf(codes.Internal, "Sharing tags is not enabled")
+	}
+
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to get current user")
@@ -783,7 +804,7 @@ func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *st
 	find.CreatorID = &user.ID
 	find.ExcludeComments = true
 	find.ExcludeContent = true
-	find.SharedTags = true
+	find.ShareTags = true
 	find.RowStatus = varPtr(store.Normal)
 
 	request.PageSize = DefaultTagPageSize
