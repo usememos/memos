@@ -32,6 +32,8 @@ import (
 const (
 	// DefaultPageSize is the default page size for listing memos.
 	DefaultPageSize = 10
+	// DefaultTagPageSize is the default number of memos to loads tags for
+	DefaultTagPageSize = 1_000_000
 )
 
 func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoRequest) (*v1pb.Memo, error) {
@@ -773,6 +775,8 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 }
 
 func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
+	const MemoFindLimit = 1000000
+
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to get current user")
@@ -782,8 +786,8 @@ func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *st
 	find.ExcludeComments = true
 	find.ExcludeContent = true
 	find.SharedTags = true
-	rowStatus := store.Normal
-	find.RowStatus = &rowStatus
+	find.RowStatus = varPtr(store.Normal)
+	find.Limit = varPtr(DefaultTagPageSize)
 
 	return nil
 }
