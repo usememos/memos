@@ -115,7 +115,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	}
 
 	if request.View == v1pb.MemoView_MEMO_VIEW_TAGS {
-		if err := s.buildMemoTagsFindWithFilter(ctx, memoFind, request.Filter); err != nil {
+		if err := s.buildMemoTagsFindWithFilter(ctx, memoFind, request); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
 		}
 	} else {
@@ -774,9 +774,7 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 	}
 }
 
-func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
-	const MemoFindLimit = 1000000
-
+func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *store.FindMemo, request *v1pb.ListMemosRequest) error {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to get current user")
@@ -787,7 +785,8 @@ func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *st
 	find.ExcludeContent = true
 	find.SharedTags = true
 	find.RowStatus = varPtr(store.Normal)
-	find.Limit = varPtr(DefaultTagPageSize)
+
+	request.PageSize = DefaultTagPageSize
 
 	return nil
 }
