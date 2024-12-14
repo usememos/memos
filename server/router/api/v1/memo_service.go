@@ -801,7 +801,12 @@ func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *st
 		return status.Errorf(codes.Internal, "failed to get current user")
 	}
 
-	find.CreatorID = &user.ID
+	if user != nil {
+		find.CreatorID = &user.ID
+	} else {
+		find.CreatorID = varPtr(int32(0))
+	}
+
 	find.ExcludeComments = true
 	find.ExcludeContent = true
 	find.ShareTags = true
