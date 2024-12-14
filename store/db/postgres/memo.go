@@ -48,7 +48,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	if v := find.CreatorID; v != nil {
 		if find.ShareTags {
-			where, args = append(where, "(memo.creator_id = "+placeholder(len(args)+1)+" OR memo.visibility IN ('PUBLiC, PROTECTED'))"), append(args, *v)
+			where, args = append(where, "(memo.creator_id = "+placeholder(len(args)+1)+" OR memo.visibility IN ('PUBLIC', 'PROTECTED'))"), append(args, *v)
 		} else {
 			where, args = append(where, "memo.creator_id = "+placeholder(len(args)+1)), append(args, *v)
 		}
