@@ -32,7 +32,7 @@ import (
 const (
 	// DefaultPageSize is the default page size for listing memos.
 	DefaultPageSize = 10
-	// DefaultTagPageSize is the default number of memos to loads tags for
+	// DefaultTagPageSize is the default number of memos to loads tags for.
 	DefaultTagPageSize = 1_000_000
 )
 
