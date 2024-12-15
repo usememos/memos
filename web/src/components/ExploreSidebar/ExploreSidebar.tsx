@@ -2,8 +2,7 @@ import clsx from "clsx";
 import { useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
-import { useMemoList, useMemoMetadataStore, useMemoTagStore, useWorkspaceSettingStore } from "@/store/v1";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { useMemoList, useMemoMetadataStore } from "@/store/v1";
 import TagsSection from "../HomeSidebar/TagsSection";
 
 interface Props {
@@ -14,17 +13,11 @@ const ExploreSidebar = (props: Props) => {
   const location = useLocation();
   const memoList = useMemoList();
   const memoMetadataStore = useMemoMetadataStore();
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const memoTagtore = useMemoTagStore();
 
   useDebounce(
     async () => {
       if (memoList.size() === 0) return;
       await memoMetadataStore.fetchMemoMetadata({ location });
-
-      if (workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting?.shareTags) {
-        await memoTagtore.fetchMemoTags();
-      }
     },
     300,
     [memoList.size(), location.pathname],

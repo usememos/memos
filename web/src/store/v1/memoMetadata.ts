@@ -1,5 +1,5 @@
 import { uniqueId } from "lodash-es";
-import { Location } from "react-router-dom";
+import { Location, useLocation } from "react-router-dom";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { memoServiceClient } from "@/grpcweb";
@@ -72,11 +72,12 @@ export const useMemoTagStore = create(
 );
 
 export const useMemoTagList = () => {
+  const location = useLocation();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const shareTags: boolean =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting?.shareTags || false;
 
-  const memoStore = shareTags ? useMemoTagStore() : useMemoMetadataStore();
+  const memoStore = location?.pathname !== Routes.EXPLORE && shareTags ? useMemoTagStore() : useMemoMetadataStore();
   const data = Object.values(memoStore.getState().dataMapByName);
   const tagAmounts: Record<string, number> = {};
   data.forEach((memo) => {
