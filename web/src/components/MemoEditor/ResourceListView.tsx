@@ -33,7 +33,7 @@ const ResourceListView = (props: Props) => {
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={resourceList.map((resource) => resource.name)} strategy={verticalListSortingStrategy}>
         {resourceList.length > 0 && (
-          <div className="w-full flex flex-row justify-start flex-wrap gap-2 mt-2">
+          <div className="w-full flex flex-row justify-start flex-wrap gap-2 mt-2 max-h-[50vh] overflow-y-auto">
             {resourceList.map((resource) => {
               return (
                 <div
