@@ -212,6 +212,9 @@ enum MemoView {
 
   // The metadata only view of the memo. Excludes the content/snippet fields.
   MEMO_VIEW_METADATA_ONLY = 2;
+
+  // The tag centered view of memos. Excludes the content/snippet fields. Allows for shared tags.
+  MEMO_VIEW_TAGS = 3;
 }
 
 message ListMemosRequest {

@@ -56,7 +56,11 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		where, args = append(where, "`memo`.`uid` = ?"), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
-		where, args = append(where, "`memo`.`creator_id` = ?"), append(args, *v)
+		if find.ShareTags {
+			where, args = append(where, "(`memo`.`creator_id` = ? OR `memo`.`visibility` IN ('PUBLIC', 'PROTECTED'))"), append(args, *v)
+		} else {
+			where, args = append(where, "`memo`.`creator_id` = ?"), append(args, *v)
+		}
 	}
 	if v := find.RowStatus; v != nil {
 		where, args = append(where, "`memo`.`row_status` = ?"), append(args, *v)
@@ -78,7 +82,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			where, args = append(where, "`memo`.`content` LIKE ?"), append(args, "%"+s+"%")
 		}
 	}
-	if v := find.VisibilityList; len(v) != 0 {
+	if v := find.VisibilityList; !find.ShareTags && len(v) != 0 {
 		placeholder := []string{}
 		for _, visibility := range v {
 			placeholder = append(placeholder, "?")

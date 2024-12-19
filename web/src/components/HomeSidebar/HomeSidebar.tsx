@@ -4,7 +4,8 @@ import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
 import UserStatisticsView from "@/components/UserStatisticsView";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoList, useMemoMetadataStore } from "@/store/v1";
+import { useMemoList, useMemoMetadataStore, useMemoTagStore, useWorkspaceSettingStore } from "@/store/v1";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import TagsSection from "./TagsSection";
 
 interface Props {
@@ -16,10 +17,16 @@ const HomeSidebar = (props: Props) => {
   const user = useCurrentUser();
   const memoList = useMemoList();
   const memoMetadataStore = useMemoMetadataStore();
+  const workspaceSettingStore = useWorkspaceSettingStore();
+  const memoTagtore = useMemoTagStore();
 
   useDebounce(
     async () => {
       await memoMetadataStore.fetchMemoMetadata({ user, location });
+
+      if (workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting?.shareTags) {
+        await memoTagtore.fetchMemoTags();
+      }
     },
     300,
     [memoList.size(), user, location.pathname],

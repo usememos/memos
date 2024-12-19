@@ -74,6 +74,7 @@ type FindMemo struct {
 	ExcludeContent  bool
 	ExcludeComments bool
 	Random          bool
+	ShareTags       bool
 
 	// Pagination
 	Limit  *int

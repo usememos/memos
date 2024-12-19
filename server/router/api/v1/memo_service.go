@@ -32,6 +32,8 @@ import (
 const (
 	// DefaultPageSize is the default page size for listing memos.
 	DefaultPageSize = 10
+	// DefaultTagPageSize is the default number of memos to loads tags for.
+	DefaultTagPageSize = 1_000_000
 )
 
 func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoRequest) (*v1pb.Memo, error) {
@@ -111,8 +113,15 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		// Exclude comments by default.
 		ExcludeComments: true,
 	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+
+	if request.View == v1pb.MemoView_MEMO_VIEW_TAGS {
+		if err := s.buildMemoTagsFindWithFilter(ctx, memoFind, request); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+		}
+	} else {
+		if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+		}
 	}
 
 	var limit, offset int
@@ -542,10 +551,16 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
 
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+	}
+
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
 		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.OldTag}},
 		ExcludeComments: true,
+		ShareTags:       workspaceMemoRelatedSetting.ShareTags,
 	}
 	if (request.Parent) != "memos/-" {
 		memoID, err := ExtractMemoIDFromName(request.Parent)
@@ -596,11 +611,17 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
 
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+	}
+
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
 		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.Tag}},
 		ExcludeContent:  true,
 		ExcludeComments: true,
+		ShareTags:       workspaceMemoRelatedSetting.ShareTags,
 	}
 	if (request.Parent) != "memos/-" {
 		memoID, err := ExtractMemoIDFromName(request.Parent)
@@ -763,6 +784,36 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 	default:
 		return store.Private
 	}
+}
+
+func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *store.FindMemo, request *v1pb.ListMemosRequest) error {
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+	}
+
+	if !workspaceMemoRelatedSetting.ShareTags {
+		return status.Errorf(codes.Internal, "Sharing tags is not enabled")
+	}
+
+	user, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get current user")
+	}
+
+	if user == nil {
+		return status.Errorf(codes.Internal, "User need to be set to share tags")
+	}
+
+	find.CreatorID = &user.ID
+	find.ExcludeComments = true
+	find.ExcludeContent = true
+	find.ShareTags = true
+	find.RowStatus = varPtr(store.Normal)
+
+	request.PageSize = DefaultTagPageSize
+
+	return nil
 }
 
 func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
