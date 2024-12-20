@@ -57,3 +57,7 @@ func unmarshalPageToken(s string, pageToken *v1pb.PageToken) error {
 	}
 	return nil
 }
+
+func varPtr[T any](i T) *T {
+	return &i
+}

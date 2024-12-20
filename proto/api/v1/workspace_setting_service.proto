@@ -117,6 +117,8 @@ message WorkspaceMemoRelatedSetting {
   repeated string reactions = 10;
   // disable_markdown_shortcuts disallow the registration of markdown shortcuts.
   bool disable_markdown_shortcuts = 11;
+  // share PUBLIC and PROTECTED tags between users.
+  bool share_tags = 12;
 }
 
 message GetWorkspaceSettingRequest {
