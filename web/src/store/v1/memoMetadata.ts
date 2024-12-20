@@ -41,10 +41,13 @@ export const useMemoMetadataStore = create(
         view: MemoView.MEMO_VIEW_METADATA_ONLY,
         pageSize: DEFAULT_MEMO_PAGE_SIZE,
       });
-      const memoMap = { ...get().dataMapByName };
-      for (const memo of memos) {
-        memoMap[memo.name] = memo;
-      }
+      const memoMap = memos.reduce<Record<string, Memo>>(
+        (acc, memo) => ({
+          ...acc,
+          [memo.name]: memo,
+        }),
+        {},
+      );
       set({ stateId: uniqueId(), dataMapByName: memoMap });
       return { memos, nextPageToken };
     },
