@@ -72,13 +72,14 @@ func RebuildMemoPayload(memo *store.Memo) error {
 	if memo.Payload == nil {
 		memo.Payload = &storepb.MemoPayload{}
 	}
+	tags := []string{}
 	property := &storepb.MemoPayload_Property{}
 	TraverseASTNodes(nodes, func(node ast.Node) {
 		switch n := node.(type) {
 		case *ast.Tag:
 			tag := n.Content
-			if !slices.Contains(memo.Payload.Tags, tag) {
-				memo.Payload.Tags = append(memo.Payload.Tags, tag)
+			if !slices.Contains(tags, tag) {
+				tags = append(tags, tag)
 			}
 		case *ast.Link, *ast.AutoLink:
 			property.HasLink = true
@@ -91,6 +92,7 @@ func RebuildMemoPayload(memo *store.Memo) error {
 			property.HasCode = true
 		}
 	})
+	memo.Payload.Tags = tags
 	memo.Payload.Property = property
 	return nil
 }
