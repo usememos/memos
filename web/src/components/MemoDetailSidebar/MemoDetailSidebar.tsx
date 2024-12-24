@@ -81,14 +81,14 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
             </div>
           </div>
         )}
-        {property.tags.length > 0 && (
+        {memo.tags.length > 0 && (
           <>
             <div className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
               <span>{t("common.tags")}</span>
-              <span className="shrink-0">({property.tags.length})</span>
+              <span className="shrink-0">({memo.tags.length})</span>
             </div>
             <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
-              {property.tags.map((tag) => (
+              {memo.tags.map((tag) => (
                 <div
                   key={tag}
                   className="shrink-0 w-auto max-w-full text-sm rounded-md leading-6 flex flex-row justify-start items-center select-none hover:opacity-80 text-gray-600 dark:text-gray-400 dark:border-zinc-800"

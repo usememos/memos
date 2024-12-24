@@ -179,11 +179,10 @@ message Memo {
 }
 
 message MemoProperty {
-  repeated string tags = 1;
-  bool has_link = 2;
-  bool has_task_list = 3;
-  bool has_code = 4;
-  bool has_incomplete_tasks = 5;
+  bool has_link = 1;
+  bool has_task_list = 2;
+  bool has_code = 3;
+  bool has_incomplete_tasks = 4;
 }
 
 message Location {
