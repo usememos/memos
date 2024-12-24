@@ -21,11 +21,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/runner/memoproperty"
+	"github.com/usememos/memos/server/runner/memopayload"
 	"github.com/usememos/memos/store"
 )
 
@@ -60,12 +59,8 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if len(create.Content) > contentLengthLimit {
 		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
 	}
-	property, err := memoproperty.GetMemoPropertyFromContent(create.Content)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
-	}
-	create.Payload = &storepb.MemoPayload{
-		Property: property,
+	if err := memopayload.RebuildMemoPayload(create); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 	}
 	if request.Location != nil {
 		create.Payload.Location = convertLocationToStore(request.Location)
@@ -269,20 +264,12 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			if len(request.Memo.Content) > contentLengthLimit {
 				return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
 			}
-			update.Content = &request.Memo.Content
-
-			property, err := memoproperty.GetMemoPropertyFromContent(*update.Content)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
+			memo.Content = request.Memo.Content
+			if err := memopayload.RebuildMemoPayload(memo); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 			}
-			payload := memo.Payload
-			payload.Property = property
-			update.Payload = payload
-		} else if path == "uid" {
-			update.UID = &request.Memo.Uid
-			if !util.UIDMatcher.MatchString(*update.UID) {
-				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name")
-			}
+			update.Content = &memo.Content
+			update.Payload = memo.Payload
 		} else if path == "visibility" {
 			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
@@ -565,23 +552,19 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to parse memo: %v", err)
 		}
-		memoproperty.TraverseASTNodes(nodes, func(node ast.Node) {
+		memopayload.TraverseASTNodes(nodes, func(node ast.Node) {
 			if tag, ok := node.(*ast.Tag); ok && tag.Content == request.OldTag {
 				tag.Content = request.NewTag
 			}
 		})
-		content := restore.Restore(nodes)
-
-		property, err := memoproperty.GetMemoPropertyFromContent(content)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get memo property: %v", err)
+		memo.Content = restore.Restore(nodes)
+		if err := memopayload.RebuildMemoPayload(memo); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 		}
-		payload := memo.Payload
-		payload.Property = property
 		if err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{
 			ID:      memo.ID,
-			Content: &content,
-			Payload: payload,
+			Content: &memo.Content,
+			Payload: memo.Payload,
 		}); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to update memo: %v", err)
 		}
@@ -658,6 +641,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Content:     memo.Content,
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
+		Tags:        memo.Payload.Tags,
 	}
 	if memo.Payload != nil {
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
@@ -709,7 +693,6 @@ func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.
 		return nil
 	}
 	return &v1pb.MemoProperty{
-		Tags:               property.Tags,
 		HasLink:            property.HasLink,
 		HasTaskList:        property.HasTaskList,
 		HasCode:            property.HasCode,

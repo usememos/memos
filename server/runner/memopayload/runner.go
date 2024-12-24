@@ -1,4 +1,4 @@
-package memoproperty
+package memopayload
 
 import (
 	"context"
@@ -43,24 +43,17 @@ func (r *Runner) Run(ctx context.Context) {
 }
 
 func (r *Runner) RunOnce(ctx context.Context) {
-	emptyPayload := "{}"
-	memos, err := r.Store.ListMemos(ctx, &store.FindMemo{
-		PayloadFind: &store.FindMemoPayload{
-			Raw: &emptyPayload,
-		},
-	})
+	memos, err := r.Store.ListMemos(ctx, &store.FindMemo{})
 	if err != nil {
 		slog.Error("failed to list memos", "err", err)
 		return
 	}
 
 	for _, memo := range memos {
-		property, err := GetMemoPropertyFromContent(memo.Content)
-		if err != nil {
-			slog.Error("failed to get memo property", "err", err)
+		if err := RebuildMemoPayload(memo); err != nil {
+			slog.Error("failed to rebuild memo payload", "err", err)
 			continue
 		}
-		memo.Payload.Property = property
 		if err := r.Store.UpdateMemo(ctx, &store.UpdateMemo{
 			ID:      memo.ID,
 			Payload: memo.Payload,
@@ -70,19 +63,22 @@ func (r *Runner) RunOnce(ctx context.Context) {
 	}
 }
 
-func GetMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, error) {
-	nodes, err := parser.Parse(tokenizer.Tokenize(content))
+func RebuildMemoPayload(memo *store.Memo) error {
+	nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse content")
+		return errors.Wrap(err, "failed to parse content")
 	}
 
+	if memo.Payload == nil {
+		memo.Payload = &storepb.MemoPayload{}
+	}
 	property := &storepb.MemoPayload_Property{}
 	TraverseASTNodes(nodes, func(node ast.Node) {
 		switch n := node.(type) {
 		case *ast.Tag:
 			tag := n.Content
-			if !slices.Contains(property.Tags, tag) {
-				property.Tags = append(property.Tags, tag)
+			if !slices.Contains(memo.Payload.Tags, tag) {
+				memo.Payload.Tags = append(memo.Payload.Tags, tag)
 			}
 		case *ast.Link, *ast.AutoLink:
 			property.HasLink = true
@@ -95,7 +91,8 @@ func GetMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, 
 			property.HasCode = true
 		}
 	})
-	return property, nil
+	memo.Payload.Property = property
+	return nil
 }
 
 func TraverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {

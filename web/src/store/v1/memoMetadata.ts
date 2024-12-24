@@ -56,10 +56,10 @@ export const useMemoMetadataStore = create(
 
 export const useMemoTagList = () => {
   const memoStore = useMemoMetadataStore();
-  const data = Object.values(memoStore.getState().dataMapByName);
+  const memos = Object.values(memoStore.getState().dataMapByName);
   const tagAmounts: Record<string, number> = {};
-  data.forEach((memo) => {
-    memo.property?.tags.forEach((tag) => {
+  memos.forEach((memo) => {
+    memo.tags.forEach((tag) => {
       if (tagAmounts[tag]) {
         tagAmounts[tag] += 1;
       } else {
