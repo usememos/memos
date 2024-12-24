@@ -47,14 +47,12 @@ CREATE TABLE memo (
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   content TEXT NOT NULL DEFAULT '',
   visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE',
-  tags TEXT NOT NULL DEFAULT '[]',
   payload TEXT NOT NULL DEFAULT '{}'
 );
 
 CREATE INDEX idx_memo_creator_id ON memo (creator_id);
 CREATE INDEX idx_memo_content ON memo (content);
 CREATE INDEX idx_memo_visibility ON memo (visibility);
-CREATE INDEX idx_memo_tags ON memo (tags);
 
 -- memo_organizer
 CREATE TABLE memo_organizer (

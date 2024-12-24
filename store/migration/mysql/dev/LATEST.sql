@@ -44,7 +44,6 @@ CREATE TABLE `memo` (
   `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
   `content` TEXT NOT NULL,
   `visibility` VARCHAR(256) NOT NULL DEFAULT 'PRIVATE',
-  `tags` JSON NOT NULL,
   `payload` JSON NOT NULL
 );
 
