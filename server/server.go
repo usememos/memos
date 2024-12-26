@@ -147,11 +147,11 @@ func (s *Server) StartBackgroundRunners(ctx context.Context) {
 	versionRunner := version.NewRunner(s.Store, s.Profile)
 	versionRunner.RunOnce(ctx)
 	memopayloadRunner := memopayload.NewRunner(s.Store)
+	// Rebuild all memos' payload after server starts.
 	memopayloadRunner.RunOnce(ctx)
 
 	go s3presignRunner.Run(ctx)
 	go versionRunner.Run(ctx)
-	go memopayloadRunner.Run(ctx)
 }
 
 func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb.WorkspaceBasicSetting, error) {
