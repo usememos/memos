@@ -13,8 +13,6 @@ body:
         A clear and concise description of what you want to happen.
       placeholder: |
         It would be great if [...]
-    validations:
-      required: true
   - type: dropdown
     attributes:
       label: Type of feature
