@@ -10,6 +10,11 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+const (
+	// DefaultPageSize is the default page size for requests.
+	DefaultPageSize = 10
+)
+
 func convertRowStatusFromStore(rowStatus store.RowStatus) v1pb.RowStatus {
 	switch rowStatus {
 	case store.Normal:
@@ -56,4 +61,8 @@ func unmarshalPageToken(s string, pageToken *v1pb.PageToken) error {
 		return errors.Wrapf(err, "failed to unmarshal page token")
 	}
 	return nil
+}
+
+func isSuperUser(user *store.User) bool {
+	return user.Role == store.RoleAdmin || user.Role == store.RoleHost
 }
