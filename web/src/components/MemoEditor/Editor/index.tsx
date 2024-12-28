@@ -65,17 +65,17 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         return;
       }
 
-      const cursorPosition = editorRef.current.selectionStart;
-      const endPosition = editorRef.current.selectionEnd;
-      const prevValue = editorRef.current.value;
-      const value =
-        prevValue.slice(0, cursorPosition) +
-        prefix +
-        (content || prevValue.slice(cursorPosition, endPosition)) +
-        suffix +
-        prevValue.slice(endPosition);
+      const textarea = editorRef.current;
+      const cursorPosition = textarea.selectionStart;
+      const endPosition = textarea.selectionEnd;
+      const prevValue = textarea.value;
+      const textToInsert = prefix + (content || textarea.value.slice(cursorPosition, endPosition)) + suffix;
 
-      editorRef.current.value = value;
+      const result = document.execCommand("insertText", false, textToInsert);
+      if (!result) {
+        editorRef.current.value = prevValue.slice(0, cursorPosition) + textToInsert + prevValue.slice(endPosition);
+      }
+
       editorRef.current.focus();
       editorRef.current.selectionEnd = endPosition + prefix.length + content.length;
       handleContentChangeCallback(editorRef.current.value);
