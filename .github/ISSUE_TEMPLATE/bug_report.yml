@@ -30,8 +30,6 @@ body:
         The version of Memos you're using
       description: |
         Provide the version of Memos you're using. Please use the following format: `v0.22.0` instead of `stable` or `latest`.
-    validations:
-      required: true
   - type: textarea
     attributes:
       label: Screenshots or additional context
