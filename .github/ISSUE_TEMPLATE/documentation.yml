@@ -1,0 +1,9 @@
+name: Documentation
+description: Documentation
+labels: [documentation]
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      placeholder: |
+        Add your description here...
