@@ -43,7 +43,7 @@ import HTMLElement from "./HTMLElement";
 import Heading from "./Heading";
 import Highlight from "./Highlight";
 import HorizontalRule from "./HorizontalRule";
-import Image from "./Image";
+import Image, { ImageConfig } from "./Image";
 import Italic from "./Italic";
 import LineBreak from "./LineBreak";
 import Link from "./Link";
@@ -65,9 +65,10 @@ import UnorderedListItem from "./UnorderedListItem";
 interface Props {
   index: string;
   node: Node;
+  imageConfig?: ImageConfig;
 }
 
-const Renderer: React.FC<Props> = ({ index, node }: Props) => {
+const Renderer: React.FC<Props> = ({ index, node, imageConfig }: Props) => {
   switch (node.type) {
     case NodeType.LINE_BREAK:
       return <LineBreak index={index} />;
@@ -106,7 +107,7 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
     case NodeType.CODE:
       return <Code {...(node.codeNode as CodeNode)} />;
     case NodeType.IMAGE:
-      return <Image {...(node.imageNode as ImageNode)} />;
+      return <Image {...(node.imageNode as ImageNode)} {...imageConfig} />;
     case NodeType.LINK:
       return <Link {...(node.linkNode as LinkNode)} />;
     case NodeType.AUTO_LINK:
