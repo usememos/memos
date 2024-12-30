@@ -19,13 +19,22 @@ export const hyperlinkHighlightedText = (editor: EditorRefActions, url?: string)
   const cursorPosition = editor.getCursorPosition();
   const selectedContent = editor.getSelectedContent();
   const blankURL = "url";
-  url = url ?? blankURL;
 
-  editor.insertText(`[${selectedContent}](${url})`);
+  // If the selected content looks like a URL and no URL is provided,
+  // create a link with empty text and the URL
+  const urlRegex = /^(https?:\/\/[^\s]+)$/;
+  if (!url && urlRegex.test(selectedContent.trim())) {
+    editor.insertText(`[](${selectedContent})`);
+    editor.setCursorPosition(cursorPosition + 1, cursorPosition + 1);
+  } else {
+    url = url ?? blankURL;
 
-  if (url === blankURL) {
-    const newCursorStart = cursorPosition + selectedContent.length + 3;
-    editor.setCursorPosition(newCursorStart, newCursorStart + url.length);
+    editor.insertText(`[${selectedContent}](${url})`);
+
+    if (url === blankURL) {
+      const newCursorStart = cursorPosition + selectedContent.length + 3;
+      editor.setCursorPosition(newCursorStart, newCursorStart + url.length);
+    }
   }
 };
 
