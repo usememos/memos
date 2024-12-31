@@ -32,7 +32,7 @@ const Paragraph: React.FC<Props> = ({ children }: Props) => {
   }, [children, isChildrenAllImage]);
 
   return (
-    <p ref={paragraphRef} className={clsx("relative", isChildrenAllImage && ["flex gap-3 overflow-x-auto", "scrollbar-hide"])}>
+    <p ref={paragraphRef} className={clsx("relative", isChildrenAllImage && ["flex gap-1 overflow-x-auto", "scrollbar-hide"])}>
       {isChildrenAllImage && <ScrollMask />}
       {renderChildren()}
     </p>

@@ -18,7 +18,7 @@ const Image: React.FC<Props> = ({ altText, url, enablePhotoView = false }: Props
         alt={altText}
         decoding="async"
         loading="lazy"
-        className="max-w-[14rem] w-[-webkit-fill-available]"
+        className="max-h-[15rem] w-fit"
         onClick={(e) => {
           // Disable opening the default preview image dialog.
           if (enablePhotoView) {
