@@ -2,7 +2,7 @@ import { isEqual } from "lodash-es";
 import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, FilterIcon, LinkIcon, SearchIcon, TagIcon, XIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { usePrevious } from "react-use";
+import usePrevious from "react-use/lib/usePrevious";
 import { FilterFactor, getMemoFilterKey, MemoFilter, parseFilterQuery, stringifyFilters, useMemoFilterStore } from "@/store/v1";
 
 const MemoFilters = () => {
