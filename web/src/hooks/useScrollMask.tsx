@@ -58,7 +58,7 @@ export const useScrollMask = (containerRef: React.RefObject<HTMLElement>) => {
     ScrollMask: ({ className = "" }: { className?: string }) => (
       <>
         <span
-          className={`fixed w-4 bg-gradient-to-r from-white/80 to-transparent z-10 pointer-events-none opacity-0 transition-opacity duration-300 ease-in-out ${className}`}
+          className={`fixed w-4 bg-gradient-to-r from-white/80 to-transparent pointer-events-none opacity-0 transition-opacity duration-300 ease-in-out ${className}`}
           style={{
             left: maskState.maskPositions.left,
             top: maskState.maskPositions.top,
@@ -67,7 +67,7 @@ export const useScrollMask = (containerRef: React.RefObject<HTMLElement>) => {
           }}
         />
         <span
-          className={`fixed w-4 bg-gradient-to-l from-white/80 to-transparent z-10 pointer-events-none opacity-0 transition-opacity duration-300 ease-in-out ${className}`}
+          className={`fixed w-4 bg-gradient-to-l from-white/80 to-transparent pointer-events-none opacity-0 transition-opacity duration-300 ease-in-out ${className}`}
           style={{
             left: maskState.maskPositions.right,
             top: maskState.maskPositions.top,
