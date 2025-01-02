@@ -53,7 +53,7 @@
   "devDependencies": {
     "@bufbuild/buf": "^1.48.0",
     "@bufbuild/protobuf": "^2.2.3",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.0",
     "@types/d3": "^7.4.3",
     "@types/katex": "^0.16.7",
     "@types/leaflet": "^1.9.15",
