@@ -41,7 +41,7 @@ const PagedMemoList = (props: Props) => {
     });
     setState(() => ({
       isRequesting: false,
-      nextPageToken: response.nextPageToken,
+      nextPageToken: response?.nextPageToken || "",
     }));
   };
 

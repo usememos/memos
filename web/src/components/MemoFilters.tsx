@@ -1,10 +1,47 @@
 import { isEqual } from "lodash-es";
 import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, FilterIcon, LinkIcon, SearchIcon, TagIcon, XIcon } from "lucide-react";
-import { FilterFactor, getMemoFilterKey, MemoFilter, useMemoFilterStore } from "@/store/v1";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import usePrevious from "react-use/lib/usePrevious";
+import { FilterFactor, getMemoFilterKey, MemoFilter, parseFilterQuery, stringifyFilters, useMemoFilterStore } from "@/store/v1";
 
 const MemoFilters = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const memoFilterStore = useMemoFilterStore();
   const filters = memoFilterStore.filters;
+  const prevFilters = usePrevious(filters);
+  const orderByTimeAsc = memoFilterStore.orderByTimeAsc;
+  const prevOrderByTimeAsc = usePrevious(orderByTimeAsc);
+
+  // Sync the filters and orderByTimeAsc to the search params.
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    if (prevOrderByTimeAsc !== orderByTimeAsc) {
+      if (orderByTimeAsc) {
+        newSearchParams.set("orderBy", "asc");
+      } else {
+        newSearchParams.delete("orderBy");
+      }
+    }
+
+    if (prevFilters && stringifyFilters(prevFilters) !== stringifyFilters(filters)) {
+      if (filters.length > 0) {
+        newSearchParams.set("filter", stringifyFilters(filters));
+      } else {
+        newSearchParams.delete("filter");
+      }
+    }
+
+    setSearchParams(newSearchParams);
+  }, [prevOrderByTimeAsc, orderByTimeAsc, prevFilters, filters, searchParams]);
+
+  // Sync the search params to the filters and orderByTimeAsc when the component is mounted.
+  useEffect(() => {
+    const newFilters = parseFilterQuery(searchParams.get("filter"));
+    const newOrderByTimeAsc = searchParams.get("orderBy") === "asc";
+    memoFilterStore.setState({ filters: newFilters, orderByTimeAsc: newOrderByTimeAsc });
+  }, []);
 
   const getFilterDisplayText = (filter: MemoFilter) => {
     if (filter.value) {

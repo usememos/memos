@@ -9,28 +9,56 @@ interface State {
   // It should be update when any state change.
   stateId: string;
   memoMapByName: Record<string, Memo>;
+  currentRequest: AbortController | null;
 }
 
 const getDefaultState = (): State => ({
   stateId: uniqueId(),
   memoMapByName: {},
+  currentRequest: null,
 });
 
 export const useMemoStore = create(
   combine(getDefaultState(), (set, get) => ({
     setState: (state: State) => set(state),
     getState: () => get(),
+    updateStateId: () => set({ stateId: uniqueId() }),
     fetchMemos: async (request: Partial<ListMemosRequest>) => {
-      const { memos, nextPageToken } = await memoServiceClient.listMemos({
-        ...request,
-        view: MemoView.MEMO_VIEW_FULL,
-      });
-      const memoMap = { ...get().memoMapByName };
-      for (const memo of memos) {
-        memoMap[memo.name] = memo;
+      const currentRequest = get().currentRequest;
+      if (currentRequest) {
+        currentRequest.abort();
       }
-      set({ stateId: uniqueId(), memoMapByName: memoMap });
-      return { memos, nextPageToken };
+
+      const controller = new AbortController();
+      set({ currentRequest: controller });
+
+      try {
+        const { memos, nextPageToken } = await memoServiceClient.listMemos(
+          {
+            ...request,
+            view: MemoView.MEMO_VIEW_FULL,
+          },
+          { signal: controller.signal },
+        );
+
+        if (!controller.signal.aborted) {
+          const memoMap = request.pageToken ? { ...get().memoMapByName } : {};
+          for (const memo of memos) {
+            memoMap[memo.name] = memo;
+          }
+          set({ stateId: uniqueId(), memoMapByName: memoMap });
+          return { memos, nextPageToken };
+        }
+      } catch (error: any) {
+        if (error.name === "AbortError") {
+          return;
+        }
+        throw error;
+      } finally {
+        if (get().currentRequest === controller) {
+          set({ currentRequest: null });
+        }
+      }
     },
     getOrFetchMemoByName: async (name: string, options?: { skipCache?: boolean; skipStore?: boolean }) => {
       const memoMap = get().memoMapByName;
@@ -99,7 +127,7 @@ export const useMemoList = () => {
   const memos = Object.values(memoStore.getState().memoMapByName);
 
   const reset = () => {
-    memoStore.setState({ stateId: uniqueId(), memoMapByName: {} });
+    memoStore.updateStateId();
   };
 
   const size = () => {
