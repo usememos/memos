@@ -24,6 +24,7 @@ interface Props {
   contentClassName?: string;
   onClick?: (e: React.MouseEvent) => void;
   onDoubleClick?: (e: React.MouseEvent) => void;
+  parentPage?: string;
 }
 
 type ContentCompactView = "ALL" | "SNIPPET";
@@ -79,6 +80,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         readonly: !allowEdit,
         disableFilter: props.disableFilter,
         embeddedMemos: embeddedMemos || new Set(),
+        parentPage: props.parentPage,
       }}
     >
       <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-400 ${className || ""}`}>
