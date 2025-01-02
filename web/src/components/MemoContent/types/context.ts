@@ -9,6 +9,7 @@ interface Context {
   memoName?: string;
   readonly?: boolean;
   disableFilter?: boolean;
+  parentPage?: string;
 }
 
 export const RendererContext = createContext<Context>({

@@ -35,6 +35,7 @@ interface Props {
   showVisibility?: boolean;
   showPinned?: boolean;
   className?: string;
+  parentPage?: string;
 }
 
 const MemoView: React.FC<Props> = (props: Props) => {
@@ -60,6 +61,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
   const readonly = memo.creator !== user?.name && !isSuperUser(user);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
+  const parentPage = props.parentPage || location.pathname;
 
   // Initial related data: creator.
   useAsyncEffect(async () => {
@@ -68,8 +70,12 @@ const MemoView: React.FC<Props> = (props: Props) => {
   }, []);
 
   const handleGotoMemoDetailPage = useCallback(() => {
-    navigateTo(`/m/${memo.uid}`);
-  }, [memo.uid]);
+    navigateTo(`/m/${memo.uid}`, {
+      state: {
+        from: parentPage,
+      },
+    });
+  }, [memo.uid, parentPage]);
 
   const handleMemoContentClick = useCallback(async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
@@ -217,6 +223,9 @@ const MemoView: React.FC<Props> = (props: Props) => {
                   )}
                   to={`/m/${memo.uid}#comments`}
                   viewTransition
+                  state={{
+                    from: parentPage,
+                  }}
                 >
                   <MessageCircleMoreIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
                   {commentAmount > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{commentAmount}</span>}
@@ -242,10 +251,11 @@ const MemoView: React.FC<Props> = (props: Props) => {
             onClick={handleMemoContentClick}
             onDoubleClick={handleMemoContentDoubleClick}
             compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
+            parentPage={parentPage}
           />
           {memo.location && <MemoLocationView location={memo.location} />}
           <MemoResourceListView resources={memo.resources} />
-          <MemoRelationListView memo={memo} relations={referencedMemos} />
+          <MemoRelationListView memo={memo} relations={referencedMemos} parentPage={parentPage} />
           <MemoReactionistView memo={memo} reactions={memo.reactions} />
         </>
       )}

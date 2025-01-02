@@ -11,12 +11,13 @@ import { convertMemoRelationsToGraphData } from "./utils";
 interface Props {
   memo: Memo;
   className?: string;
+  parentPage?: string;
 }
 
 const MAIN_NODE_COLOR = "#14b8a6";
 const DEFAULT_NODE_COLOR = "#a1a1aa";
 
-const MemoRelationForceGraph = ({ className, memo }: Props) => {
+const MemoRelationForceGraph = ({ className, memo, parentPage }: Props) => {
   const navigateTo = useNavigateTo();
   const { mode } = useColorScheme();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,7 +31,11 @@ const MemoRelationForceGraph = ({ className, memo }: Props) => {
 
   const onNodeClick = (node: NodeObject<NodeType>) => {
     if (node.memo.uid === memo.uid) return;
-    navigateTo(`/m/${node.memo.uid}`);
+    navigateTo(`/m/${node.memo.uid}`, {
+      state: {
+        from: parentPage,
+      },
+    });
   };
 
   return (
