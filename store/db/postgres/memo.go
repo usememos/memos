@@ -83,7 +83,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		if len(v.TagSearch) != 0 {
 			for _, tag := range v.TagSearch {
-				where, args = append(where, "EXISTS (SELECT 1 FROM jsonb_array_elements(memo.payload->'property'->'tags') AS tag WHERE tag::text = "+placeholder(len(args)+1)+" OR tag::text LIKE "+placeholder(len(args)+2)+")"), append(args, fmt.Sprintf(`"%s"`, tag), fmt.Sprintf(`"%s/%%"`, tag))
+				where, args = append(where, "EXISTS (SELECT 1 FROM jsonb_array_elements(memo.payload->'tags') AS tag WHERE tag::text = "+placeholder(len(args)+1)+" OR tag::text LIKE "+placeholder(len(args)+2)+")"), append(args, fmt.Sprintf(`"%s"`, tag), fmt.Sprintf(`"%s/%%"`, tag))
 			}
 		}
 		if v.HasLink {

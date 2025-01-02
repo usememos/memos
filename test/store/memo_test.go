@@ -75,9 +75,7 @@ func TestMemoListByTags(t *testing.T) {
 		Content:    "test_content",
 		Visibility: store.Public,
 		Payload: &storepb.MemoPayload{
-			Property: &storepb.MemoPayload_Property{
-				Tags: []string{"test_tag"},
-			},
+			Tags: []string{"test_tag"},
 		},
 	}
 	memo, err := ts.CreateMemo(ctx, memoCreate)

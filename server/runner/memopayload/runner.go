@@ -1,10 +1,9 @@
-package memoproperty
+package memopayload
 
 import (
 	"context"
 	"log/slog"
 	"slices"
-	"time"
 
 	"github.com/pkg/errors"
 	"github.com/usememos/gomark/ast"
@@ -25,42 +24,19 @@ func NewRunner(store *store.Store) *Runner {
 	}
 }
 
-// Schedule runner every 12 hours.
-const runnerInterval = time.Hour * 12
-
-func (r *Runner) Run(ctx context.Context) {
-	ticker := time.NewTicker(runnerInterval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			r.RunOnce(ctx)
-		case <-ctx.Done():
-			return
-		}
-	}
-}
-
+// RunOnce rebuilds the payload of all memos.
 func (r *Runner) RunOnce(ctx context.Context) {
-	emptyPayload := "{}"
-	memos, err := r.Store.ListMemos(ctx, &store.FindMemo{
-		PayloadFind: &store.FindMemoPayload{
-			Raw: &emptyPayload,
-		},
-	})
+	memos, err := r.Store.ListMemos(ctx, &store.FindMemo{})
 	if err != nil {
 		slog.Error("failed to list memos", "err", err)
 		return
 	}
 
 	for _, memo := range memos {
-		property, err := GetMemoPropertyFromContent(memo.Content)
-		if err != nil {
-			slog.Error("failed to get memo property", "err", err)
+		if err := RebuildMemoPayload(memo); err != nil {
+			slog.Error("failed to rebuild memo payload", "err", err)
 			continue
 		}
-		memo.Payload.Property = property
 		if err := r.Store.UpdateMemo(ctx, &store.UpdateMemo{
 			ID:      memo.ID,
 			Payload: memo.Payload,
@@ -70,19 +46,24 @@ func (r *Runner) RunOnce(ctx context.Context) {
 	}
 }
 
-func GetMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, error) {
-	nodes, err := parser.Parse(tokenizer.Tokenize(content))
+func RebuildMemoPayload(memo *store.Memo) error {
+	nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse content")
+		return errors.Wrap(err, "failed to parse content")
 	}
 
+	if memo.Payload == nil {
+		memo.Payload = &storepb.MemoPayload{}
+	}
+	tags := []string{}
+	references := []string{}
 	property := &storepb.MemoPayload_Property{}
 	TraverseASTNodes(nodes, func(node ast.Node) {
 		switch n := node.(type) {
 		case *ast.Tag:
 			tag := n.Content
-			if !slices.Contains(property.Tags, tag) {
-				property.Tags = append(property.Tags, tag)
+			if !slices.Contains(tags, tag) {
+				tags = append(tags, tag)
 			}
 		case *ast.Link, *ast.AutoLink:
 			property.HasLink = true
@@ -93,9 +74,15 @@ func GetMemoPropertyFromContent(content string) (*storepb.MemoPayload_Property, 
 			}
 		case *ast.Code, *ast.CodeBlock:
 			property.HasCode = true
+		case *ast.EmbeddedContent:
+			// TODO: validate references.
+			references = append(references, n.ResourceName)
 		}
 	})
-	return property, nil
+	memo.Payload.Tags = tags
+	memo.Payload.References = references
+	memo.Payload.Property = property
+	return nil
 }
 
 func TraverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {
