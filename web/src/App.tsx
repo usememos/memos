@@ -34,7 +34,7 @@ const App = () => {
   useEffect(() => {
     const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleColorSchemeChange = (e: MediaQueryListEvent) => {
-      const mode = e.matches ? "dark" : "light";
+      const mode = "dark"; // e.matches ? "dark" : "light";
       setMode(mode);
     };
 
@@ -101,7 +101,8 @@ const App = () => {
   useEffect(() => {
     const root = document.documentElement;
     if (mode === "light") {
-      root.classList.remove("dark");
+      // root.classList.remove("dark");
+      root.classList.add("dark");
     } else if (mode === "dark") {
       root.classList.add("dark");
     }
