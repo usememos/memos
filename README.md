@@ -1,20 +1,23 @@
-# Memos - Open Source, Self-hosted, Your Notes, Your Way
+# Memos Dark - Open Source, Self-hosted, Your Notes, Your Way
 
-<img align="right" height="96px" src="https://www.usememos.com/logo-rounded.png" alt="Memos" />
+<img align="right" height="96px" src="https://memos.654.ee/file/users/101/avatar" alt="Memos" />
+
+*只保留深色模式的memos*    
+*Keep only the dark mode memos*    
 
 An open-source, self-hosted note-taking solution designed for seamless deployment and multi-platform access. Experience effortless plain text writing with pain-free, complemented by robust Markdown syntax support for enhanced formatting.
 
 <a href="https://www.usememos.com">Home Page</a> •
 <a href="https://www.usememos.com/blog">Blogs</a> •
 <a href="https://www.usememos.com/docs">Docs</a> •
-<a href="https://demo.usememos.com/">Live Demo</a>
+<a href="https://memos.654.ee/">Live Demo</a>
 
-<p>
+<!-- <p>
   <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg"/></a>
   <a href="https://discord.gg/tfPJa4UmAv"><img alt="Discord" src="https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5" /></a>
-</p>
+</p> -->
 
-![demo](https://www.usememos.com/demo.png)
+<!-- ![demo](https://www.usememos.com/demo.png) -->
 
 ## Main Features
 
@@ -27,8 +30,25 @@ An open-source, self-hosted note-taking solution designed for seamless deploymen
 
 ## Deploy with Docker in seconds
 
+```
+# docker-compose.yml
+version: '3.8'
+
+services:
+  memos:
+    # image: neosmemo/memos:latest
+    image: ctkghost/memos-dark:latest
+    container_name: memos
+    restart: always
+    ports:
+      - "5230:5230"
+    volumes:
+      - ~/memos/:/var/opt/memos
+    command: --mode prod --port 5230
+```
+
 ```bash
-docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:stable
+docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos ctkghost/memos-dark:stable
 ```
 
 > [!NOTE]
@@ -50,7 +70,8 @@ If you find Memos helpful, please consider sponsoring us. Your support will help
 
 ## Star history
 
-[![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=CtkGHoSt/memos-dark&type=Date)](https://star-history.com/#CtkGHoSt/memos-dark&Date)
+
 
 ## Other Projects
 
