@@ -9,6 +9,7 @@
   },
   "common": {
     "about": "Über",
+    "add": "Hinzufügen",
     "admin": "Administration",
     "archive": "Archivieren",
     "archived": "Archiviert",
@@ -20,19 +21,26 @@
     "clear": "Leeren",
     "close": "Schließen",
     "confirm": "Bestätigen",
+    "collapse": "Einklappen",
     "create": "Erstellen",
     "database": "Datenbank",
+    "days": "Tage",
     "delete": "Löschen",
+    "description": "Beschreibung",
     "edit": "Bearbeiten",
     "email": "E-Mail",
+    "expand": "Erweitern",
     "explore": "Erkunden",
+    "file": "Datei",
     "filter": "Filter",
     "home": "Startseite",
     "image": "Bild",
+    "inbox": "Eingang",
     "language": "Sprache",
     "learn-more": "Mehr erfahren",
     "link": "Link",
     "mark": "Mark",
+    "memos": "Notizen",
     "name": "Name",
     "new": "Neu",
     "nickname": "Nickname",
@@ -40,13 +48,17 @@
     "or": "oder",
     "password": "Passwort",
     "pin": "Anpinnen",
+    "pinned": "Angehefted",
     "preview": "Vorschau",
     "profile": "Profil",
+    "remember-me": "Erinnern Dich an mich",
     "rename": "Umbenennen",
     "reset": "Zurücksetzen",
     "resources": "Ressourcen",
     "restore": "Wiederherstellen",
+    "role": "Rolle",
     "save": "Speichern",
+    "search": "Suche",
     "select": "Auswählen",
     "settings": "Einstellungen",
     "share": "Teilen",
@@ -54,6 +66,7 @@
     "sign-in-with": "Anmelden mit {{provider}}",
     "sign-out": "Abmelden",
     "sign-up": "Registrieren",
+    "statistics": "Statistik",
     "tags": "Tags",
     "title": "Titel",
     "type": "Typ",
@@ -74,36 +87,48 @@
     "tue": "Di",
     "wed": "Mi"
   },
-  "editor": {
+  "editor": { 
+    "add-your-comment-here": "Füge deinen Kommentar hinzu...",
     "any-thoughts": "Ein Gedanke...",
     "save": "Speichern"
+  },
+  "inbox": {
+    "memo-comment": "{{user}} hat einen Kommentar zu {{memo}} hinterlassen.",
+    "version-update": "Die neue Version {{version}} ist jetzt verfügbar!"
+ 
   },
   "memo": {
     "archived-at": "Archiviert am",
     "comment": {
-      "self": "Kommentare"
+      "self": "Kommentare",
+      "write-a-comment": "Schreibe einen Kommentar"
     },
     "copy-link": "Link kopieren",
+    "count-memos-in-date": "{{count}} Notizen in {{date}}",
     "delete-confirm": "Bist du sicher, dass du diese Notiz löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
-    "delete-memo": "Memo löschen",
-    "embed": "Einbinden",
-    "fetch-more": "Klicke hier, um mehr zu laden",
-    "fetching-data": "Lade Daten…",
-    "no-archived-memos": "Keine archivierten Memos",
-    "search-placeholder": "Suche memos",
+    "load-more": "Load more",
+    "no-archived-memos": "Keine archivierten Notizen",
+    "search-placeholder": "Suche Notizen",
+    "show-more": "Show more",
+    "show-less": "Show less",
     "view-detail": "Details anzeigen",
     "visibility": {
-      "disabled": "Öffentliche memos sind deaktiviert",
+      "disabled": "Öffentliche Notizen sind deaktiviert",
       "private": "Nur für dich sichtbar",
       "protected": "Mitglieder",
       "public": "Öffentlich"
     },
+    "links": "Links",
+    "to-do": "To-do",
+    "code": "Code",
     "remove-completed-task-list-items": "Erledigt entfernen",
     "remove-completed-task-list-items-confirm": "Sind Sie sicher, dass Sie alle abgeschlossenen Aufgaben entfernen möchten? (Diese Aktion kann nicht rückgängig gemacht werden)"
   },
   "message": {
+    "archived-successfully": "Erfolgreich archiviert",
     "change-memo-created-time": "Erstellungszeitpunkt ändern",
     "copied": "Kopiert",
+    "deleted-successfully": "Erfolgreich gelöscht",
     "fill-all": "Bitte alle Felder ausfüllen.",
     "maximum-upload-size-is": "Die maximal zulässige Upload-Größe beträgt {{size}} MiB",
     "memo-not-found": "Memo nicht gefunden.",
@@ -116,6 +141,12 @@
     "update-succeed": "Update erfolgreich",
     "user-not-found": "Nutzer nicht gefunden",
     "remove-completed-task-list-items-successfully": "Erfolgreich entfernt!"
+  },
+  "reference": {
+    "add-references": "Referenz hinzufügen",
+    "embedded-usage": "Als eingebetteten Inhalt verwenden",
+    "no-memos-found": "Keine Notiz gefunden",
+    "search-placeholder": "Suche Notizen"
   },
   "resource": {
     "clear": "Löschen",
@@ -157,6 +188,7 @@
     "account-section": {
       "change-password": "Passwort ändern",
       "email-note": "Optional",
+      "export-memos": "Notizen exportieren",
       "nickname-note": "Wird im Banner angezeigt",
       "openapi-reset": "OpenAPI Key zurücksetzen",
       "openapi-sample-post": "Hallo #memos von {{url}}",
@@ -208,7 +240,9 @@
       "template": "Vorlage",
       "token-endpoint": "Tokenendpunkt",
       "update-sso": "SSO aktualisieren",
-      "user-endpoint": "Benutzerendpunkt"
+      "user-endpoint": "Benutzerendpunkt",
+      "no-sso-found": "Kein SSO found.",
+      "configuring-keycloak-for-authentication": "Konfiguriere Keycloak für die Authentifizierung"
     },
     "storage": "Speicher",
     "storage-section": {
@@ -225,6 +259,7 @@
       "path": "Speicherpfad",
       "path-description": "Du kannst dieselben dynamischen Variablen aus dem lokalen Speicher verwenden, wie {filename}",
       "path-placeholder": "dein/pfad",
+      "presign-placeholder": "Pre-sign URL, optional",
       "region": "Region",
       "region-placeholder": "Name der Region",
       "s3-compatible-url": "S3 kompatible URL",
@@ -249,7 +284,7 @@
       "additional-script-placeholder": "Zusätzliches JavaScript",
       "additional-style": "Zusätzlicher Stil",
       "additional-style-placeholder": "Zusätzliches CSS",
-      "allow-user-signup": "Erlaube Registrierung neuer Mitglieder",
+      "allow-user-signup": "Erlaube die Registrierung neuer Mitglieder",
       "customize-server": {
         "appearance": "Erscheinungsbild",
         "description": "Beschreibung",
@@ -261,17 +296,61 @@
       "disable-password-login-final-warning": "Bitte gebe \"CONFIRM\" ein, wenn du weißt, was du tust.",
       "disable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer deaktiviert. Es ist nicht möglich sich anzumelden, ohne diese Einstellung in der Datenbank rückgängig zu machen, wenn deine konfigurierten Provider ausfallen. Du musst auch besonders vorsichtig sein, wenn du einen Identitätsanbieter entfernst",
       "disable-public-memos": "Öffentliche memos deaktivieren",
+      "disable-markdown-shortcuts-in-editor": "Deaktiviere Markdown-Shortcuts im Editor",
       "display-with-updated-time": "Anzeige mit aktualisierter Zeit",
+      "enable-auto-compact": "Aktivieren der automatischen Komprimierung",
+      "enable-double-click-to-edit": "Doppelklick zum Bearbeiten aktivieren",
       "enable-password-login": "Anmeldung mit Passwort aktivieren",
       "enable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer aktiviert. Fahre nur fort, wenn du möchtest, dass sich Benutzer sowohl mit SSO als auch mit einem Passwort anmelden können",
       "max-upload-size": "Maximale Uploadgröße (MiB)",
       "max-upload-size-hint": "Empfohlene Wert ist 32 MiB.",
       "server-name": "Servername",
       "removed-completed-task-list-items": "Entfernen abgeschlossen aktivieren"
-    }
+    },
+    "memo-related": "Memo",
+    "access-token-section":{
+      "title": "Zugangstoken",
+      "description": "Liste aller Zugangstoken für deinen Benutzer.",
+      "created-at": "Erzeugt am",
+      "expires-at": "Läuft ab am",
+      "token": "Token"
+    },
+    "webhook-section": {
+      "title": "Webhooks",
+      "url": "Url",
+      "no-webhooks-found": "Keine Webhooks gefunden."
+    },
+    "workspace-section": {
+      "disallow-user-registration": "Benutzerregistrierung verbieten",
+      "disallow-password-auth": "Benutzer/Passwort-Anmeldung verbieten",
+      "disallow-change-username": "Wechsel des Benutzernamen verbieten",
+      "disallow-change-nickname": "Wechsel des Nickname verbieten",
+      "week-start-day": "Woche beginnt am",
+      "saturday": "Samstag",
+      "sunday": "Sonntag",
+      "monday": "Montag"            
+    },
+    "memo-related-settings": {
+      "title": "Einstellungen für Notizen",
+      "enable-link-preview": "Aktivierung der Link-Vorschau",
+      "enable-memo-comments": "Aktivierung der Kommentarfunktion für Notizen",
+      "enable-memo-location": "Aktivierung Notiz-Standort",
+      "content-lenght-limit": "Limitierung der Inhaltslänge in Byte auf",
+      "reactions": "Vordefinierte Reaktionen"
+    },
+    "version": "Version"
   },
   "tag": {
     "all-tags": "Alle Tags",
-    "create-tag": "Tag erstellen"
+    "create-tag": "Tag erstellen",
+    "create-tags-guide": "Du kannst einen Tag erzeugen, indem Du `#yourtag` einfügst.",
+    "delete-confirm": "Bist Du sicher, dass Du diesen Tag löschen möchtest? Alle verknüpften Notizen werden archiviert.",
+    "delete-tag": "Tag löschen",
+    "no-tag-found": "Keine Tags gefunden"
+  },
+  "markdown": {
+    "code-block": "Quellcode-Block",
+    "checkbox": "Checkbox",
+    "content-syntax": "Inhaltssyntax"
   }
 }
