@@ -6,6 +6,8 @@ on:
       # Match stable and rc versions, such as 'v1.0.0' or 'v0.23.0-rc.0'
       - "v*.*.*"
       - "v*.*.*-rc.*"
+      # 匹配深色版本
+      - "v*.*.*-dark.*"
 
 jobs:
   build-and-push-stable-image:
@@ -32,15 +34,8 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: stevenlgtm
+          username: ctkghost
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
 
       - name: Set up Docker Buildx
         id: buildx
@@ -55,9 +50,7 @@ jobs:
         if: env.PRE_RELEASE == 'false'
         uses: docker/metadata-action@v5
         with:
-          images: |
-            neosmemo/memos
-            ghcr.io/usememos/memos
+          images: ctkghost/memos-dark
           tags: |
             type=semver,pattern={{version}},value=${{ env.VERSION }}
             type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
@@ -73,9 +66,7 @@ jobs:
         if: env.PRE_RELEASE == 'true'
         uses: docker/metadata-action@v5
         with:
-          images: |
-            neosmemo/memos
-            ghcr.io/usememos/memos
+          images: ctkghost/memos-dark
           tags: |
             type=raw,value=${{ env.VERSION }}
           labels: |
