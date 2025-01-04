@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useMemoStore } from "@/store/v1";
+import { RendererContext } from "../types";
 import Error from "./Error";
 
 interface Props {
@@ -15,6 +16,7 @@ const ReferencedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
   const memoStore = useMemoStore();
   const memo = memoStore.getMemoByUid(uid);
   const params = new URLSearchParams(paramsStr);
+  const context = useContext(RendererContext);
 
   useEffect(() => {
     memoStore.fetchMemoByUid(uid).finally(() => loadingState.setFinish());
@@ -31,7 +33,11 @@ const ReferencedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
   const displayContent = paramsText || (memo.snippet.length > 12 ? `${memo.snippet.slice(0, 12)}...` : memo.snippet);
 
   const handleGotoMemoDetailPage = () => {
-    navigateTo(`/m/${memo.uid}`);
+    navigateTo(`/m/${memo.uid}`, {
+      state: {
+        from: context.parentPage,
+      },
+    });
   };
 
   return (
