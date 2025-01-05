@@ -9,9 +9,10 @@ import MemoRelationForceGraph from "../MemoRelationForceGraph";
 interface Props {
   memo: Memo;
   className?: string;
+  parentPage?: string;
 }
 
-const MemoDetailSidebar = ({ memo, className }: Props) => {
+const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
   const t = useTranslate();
   const property = MemoProperty.fromPartial(memo.property || {});
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode || property.hasIncompleteTasks;
@@ -27,7 +28,7 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
       <div className="flex flex-col justify-start items-start w-full px-1 gap-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
         {shouldShowRelationGraph && (
           <div className="relative w-full h-36 border rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
-            <MemoRelationForceGraph className="w-full h-full" memo={memo} />
+            <MemoRelationForceGraph className="w-full h-full" memo={memo} parentPage={parentPage} />
             <div className="absolute top-1 left-2 text-xs opacity-60 font-mono gap-1 flex flex-row items-center">
               <span>Relations</span>
               <span className="text-xs opacity-60">(Beta)</span>

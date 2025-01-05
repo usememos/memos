@@ -4,7 +4,7 @@ import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDetailSidebar";
 import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
@@ -23,6 +23,7 @@ const MemoDetail = () => {
   const { md } = useResponsiveWidth();
   const params = useParams();
   const navigateTo = useNavigateTo();
+  const { state: locationState } = useLocation();
   const workspaceSettingStore = useWorkspaceSettingStore();
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
@@ -86,7 +87,7 @@ const MemoDetail = () => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && (
         <MobileHeader>
-          <MemoDetailSidebarDrawer memo={memo} />
+          <MemoDetailSidebarDrawer memo={memo} parentPage={locationState?.from} />
         </MobileHeader>
       )}
       <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
@@ -96,6 +97,7 @@ const MemoDetail = () => {
               <Link
                 className="px-3 py-1 border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
                 to={`/m/${parentMemo.uid}`}
+                state={locationState}
                 viewTransition
               >
                 <ArrowUpLeftFromCircleIcon className="w-4 h-auto shrink-0 opacity-60 mr-2" />
@@ -108,6 +110,7 @@ const MemoDetail = () => {
             className="shadow hover:shadow-md transition-all"
             memo={memo}
             compact={false}
+            parentPage={locationState?.from}
             showCreator
             showVisibility
             showPinned
@@ -141,7 +144,13 @@ const MemoDetail = () => {
                     )}
                   </div>
                   {comments.map((comment) => (
-                    <MemoView key={`${comment.name}-${comment.displayTime}`} memo={comment} showCreator compact />
+                    <MemoView
+                      key={`${comment.name}-${comment.displayTime}`}
+                      memo={comment}
+                      parentPage={locationState?.from}
+                      showCreator
+                      compact
+                    />
                   ))}
                 </>
               )}
@@ -162,7 +171,7 @@ const MemoDetail = () => {
         </div>
         {md && (
           <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">
-            <MemoDetailSidebar className="py-6" memo={memo} />
+            <MemoDetailSidebar className="py-6" memo={memo} parentPage={locationState?.from} />
           </div>
         )}
       </div>
