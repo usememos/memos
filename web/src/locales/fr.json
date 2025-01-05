@@ -24,6 +24,7 @@
     "collapse": "Réduire",
     "create": "Créer",
     "database": "Base de données",
+    "day": "Jour",
     "days": "Jours",
     "delete": "Supprimer",
     "description": "Description",
@@ -34,12 +35,14 @@
     "file": "Fichier",
     "filter": "Filtre",
     "home": "Accueil",
+    "in": "En",
     "image": "Image",
     "inbox": "Notifications",
     "language": "Langue",
     "learn-more": "En savoir plus",
     "link": "Lien",
     "mark": "Lier",
+    "memo": "Memo",
     "memos": "Memos",
     "name": "Nom",
     "new": "Nouveau",
@@ -121,7 +124,14 @@
     "to-do": "À faire",
     "code": "Code",
     "remove-completed-task-list-items": "Supprimer terminées",
-    "remove-completed-task-list-items-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? (Cette action est irréversible)"
+    "remove-completed-task-list-items-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? CETTE ACTION EST IRRÉVERSIBLE",
+    "filters": "Filtres",
+    "order-by": "Ordonner par",
+    "display-time": "Date d'Affichage",
+    "direction": "Ordre",
+    "direction-desc": "Descendant",
+    "direction-asc": "Ascendant",
+    "no-memos": "Pas de memos."
   },
   "message": {
     "archived-successfully": "Archivé avec succès",
@@ -139,7 +149,8 @@
     "succeed-copy-link": "Succeed to copy link to clipboard.",
     "update-succeed": "Mise à jour effectuée",
     "user-not-found": "Utilisateur introuvable",
-    "remove-completed-task-list-items-successfully": "Supprimé avec succès !"
+    "remove-completed-task-list-items-successfully": "Supprimé avec succès !",
+    "failed-to-embed-memo": "Échec de l'intégration du memo."
   },
   "reference": {
     "add-references": "Ajouter des références",
@@ -155,7 +166,7 @@
         "file-name": "Nom du fichier",
         "file-name-placeholder": "Nom du fichier",
         "link": "Lien",
-        "link-placeholder": "https://the.link.to/your/resource",
+        "link-placeholder": "https://le.lien.vers/votre/ressource",
         "option": "Lien externe",
         "type": "Type",
         "type-placeholder": "Type de fichier"
@@ -351,5 +362,12 @@
     "code-block": "Bloc de code",
     "checkbox": "Case à cocher",
     "content-syntax": "Syntaxe du contenu"
+  },
+  "about": {
+    "description": "Un service de prise de notes léger et respectueux de la vie privée. Capturez et partagez facilement vos meilleures idées.",
+    "github-repository": "Dépôt GitHub",
+    "official-website": "Site web officiel",
+    "blogs": "Blogs",
+    "documents": "Documents"
   }
 }

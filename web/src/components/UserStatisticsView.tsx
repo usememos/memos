@@ -90,14 +90,14 @@ const UserStatisticsView = () => {
           onClick={onCalendarClick}
         />
         {memoAmount === 0 ? (
-          <p className="mt-1 w-full text-xs italic opacity-80">No memos</p>
+          <p className="mt-1 w-full text-xs italic opacity-80">{t('memo.no-memos')}</p>
         ) : memoAmount === 1 ? (
           <p className="mt-1 w-full text-xs italic opacity-80">
-            <span>{memoAmount}</span> memo in <span>{days}</span> {days > 1 ? "days" : "day"}
+            <span>{memoAmount}</span> {t("common.memo").toLocaleLowerCase()} {t("common.in").toLowerCase()} <span>{days}</span> {days > 1 ? t("common.days").toLocaleLowerCase() : t("common.day").toLocaleLowerCase()}
           </p>
         ) : (
           <p className="mt-1 w-full text-xs italic opacity-80">
-            <span>{memoAmount}</span> memos in <span>{days}</span> {days > 1 ? "days" : "day"}
+            <span>{memoAmount}</span> {t("common.memos").toLocaleLowerCase()} {t("common.in").toLowerCase()} <span>{days}</span> {days > 1 ? t("common.days").toLocaleLowerCase() : t("common.day").toLocaleLowerCase()}
           </p>
         )}
       </div>

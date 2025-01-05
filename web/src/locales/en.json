@@ -24,6 +24,7 @@
     "collapse": "Collapse",
     "create": "Create",
     "database": "Database",
+    "day": "Day",
     "days": "Days",
     "delete": "Delete",
     "description": "Description",
@@ -34,12 +35,14 @@
     "file": "File",
     "filter": "Filter",
     "home": "Home",
+    "in": "In",
     "image": "Image",
     "inbox": "Inbox",
     "language": "Language",
     "learn-more": "Learn more",
     "link": "Link",
     "mark": "Mark",
+    "memo": "Memo",
     "memos": "Memos",
     "name": "Name",
     "new": "New",
@@ -121,7 +124,14 @@
     "to-do": "To-do",
     "code": "Code",
     "remove-completed-task-list-items": "Remove done",
-    "remove-completed-task-list-items-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE"
+    "remove-completed-task-list-items-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE",
+    "filters": "Filters",
+    "order-by": "Order By",
+    "display-time": "Display Time",
+    "direction": "Direction",
+    "direction-desc": "Descending",
+    "direction-asc": "Ascending",
+    "no-memos": "No memos."
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -139,7 +149,8 @@
     "succeed-copy-link": "Link copied successfully.",
     "update-succeed": "Update succeeded",
     "user-not-found": "User not found",
-    "remove-completed-task-list-items-successfully": "The removal was successful"
+    "remove-completed-task-list-items-successfully": "The removal was successful",
+    "failed-to-embed-memo": "Failed to embed memo"
   },
   "reference": {
     "add-references": "Add references",
@@ -351,5 +362,12 @@
     "code-block": "Code block",
     "checkbox": "Checkbox",
     "content-syntax": "Content syntax"
+  },
+  "about": {
+    "description": "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
+    "github-repository": "GitHub Repo",
+    "official-website": "Official Website",
+    "blogs": "Blogs",
+    "documents": "Documents"
   }
 }
