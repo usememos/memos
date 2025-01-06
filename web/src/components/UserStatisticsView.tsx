@@ -93,9 +93,7 @@ const UserStatisticsView = () => {
           onClick={onCalendarClick}
         />
         {memoAmount === 0 ? (
-          <p className="mt-1 w-full text-xs italic opacity-80">
-            {t("memo.no-memos")}
-          </p>
+          <p className="mt-1 w-full text-xs italic opacity-80">{t("memo.no-memos")}</p>
         ) : (
           <p className="mt-1 w-full text-xs italic opacity-80">
             <span>{memoAmount}</span> {singularOrPluralMemo} {t("common.in").toLowerCase()} <span>{days}</span> {singularOrPluralDay}
