@@ -2,8 +2,8 @@ import { Option, Select } from "@mui/joy";
 import clsx from "clsx";
 import { Settings2Icon } from "lucide-react";
 import { useMemoFilterStore } from "@/store/v1";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 import { useTranslate } from "@/utils/i18n";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
 interface Props {
   className?: string;

@@ -29,7 +29,7 @@ const About = () => {
             </Link>
             <DotIcon className="w-4 h-auto opacity-60" />
             <Link underline="always" href="https://www.usememos.com/docs" target="_blank">
-              {t("about.documents")} 
+              {t("about.documents")}
             </Link>
           </div>
         </div>
