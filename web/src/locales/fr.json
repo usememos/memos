@@ -106,7 +106,7 @@
       "write-a-comment": "Écrire un commentaire"
     },
     "copy-link": "Copier le lien",
-    "count-memos-in-date": "{{count}} memos le {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} le {{date}}",
     "delete-confirm": "Êtes-vous sûr de vouloir supprimer ce memos ? CETTE ACTION EST IRRÉVERSIBLE",
     "load-more": "Charger plus",
     "no-archived-memos": "Pas de memos archivés.",
@@ -319,11 +319,20 @@
     },
     "memo-related": "Memo",
     "access-token-section":{
-      "title": "Jetons d'Accès",
+      "create-access-token": "Créer un jeton d'accès",
+      "description-label": "Description",
+      "some-description": "Une description…",
+      "title": "Jetons d'accès",
       "description": "Une liste de tous les jetons d'accès pour votre compte.",
+      "expiration-label": "Expiration",
       "created-at": "Créé le",
       "expires-at": "Expire le",
-      "token": "Jeton"
+      "token": "Jeton",
+      "duration-never": "Jamais",
+      "duration-8h": "8 Heures",
+      "duration-1m": "1 Mois",
+      "access-token-deletion": "Êtes-vous sûr de vouloir supprimer le jeton d'accès {{accessToken}}? CETTE ACTION EST IRRÉVERSIBLE.",
+      "access-token-copied-to-clipboard": "Jeton d'accès copié dans le presse-papier"
     },
     "webhook-section": {
       "title": "Webhooks",

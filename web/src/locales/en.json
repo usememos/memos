@@ -106,7 +106,7 @@
       "write-a-comment": "Write a comment"
     },
     "copy-link": "Copy Link",
-    "count-memos-in-date": "{{count}} memos in {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} in {{date}}",
     "delete-confirm": "Are you sure you want to delete this memo? THIS ACTION IS IRREVERSIBLE",
     "load-more": "Load more",
     "no-archived-memos": "No archived memos.",
@@ -150,7 +150,8 @@
     "update-succeed": "Update succeeded",
     "user-not-found": "User not found",
     "remove-completed-task-list-items-successfully": "The removal was successful",
-    "failed-to-embed-memo": "Failed to embed memo"
+    "failed-to-embed-memo": "Failed to embed memo",
+    "description-is-required": "Description is required"
   },
   "reference": {
     "add-references": "Add references",
@@ -319,11 +320,20 @@
     },
     "memo-related": "Memo",
     "access-token-section":{
+      "create-access-token": "Create Access Token",
       "title": "Access Tokens",
+      "description-label": "Description",
+      "some-description": "Some description...",
       "description": "A list of all access tokens for your account.",
+      "expiration-label": "Expiration",
       "created-at": "Created At",
       "expires-at": "Expires At",
-      "token": "Token"
+      "token": "Token",
+      "duration-never": "Never",
+      "duration-8h": "8 Hours",
+      "duration-1m": "1 Month",
+      "access-token-deletion": "Are you sure to delete access token {{accessToken}}? THIS ACTION IS IRREVERSIBLE.",
+      "access-token-copied-to-clipboard": "Access token copied to clipboard"
     },
     "webhook-section": {
       "title": "Webhooks",
