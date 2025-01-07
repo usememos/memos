@@ -30,15 +30,15 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
 
   const expirationOptions = [
     {
-      label: t("setting.access-token-section.duration-8h"),
+      label: t("setting.access-token-section.create-dialog.duration-8h"),
       value: 3600 * 8,
     },
     {
-      label: t("setting.access-token-section.duration-1m"),
+      label: t("setting.access-token-section.create-dialog.duration-1m"),
       value: 3600 * 24 * 30,
     },
     {
-      label: t("setting.access-token-section.duration-never"),
+      label: t("setting.access-token-section.create-dialog.duration-never"),
       value: 0,
     },
   ];
@@ -86,7 +86,7 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">{t("setting.access-token-section.create-access-token")}</p>
+        <p className="title-text">{t("setting.access-token-section.create-dialog.create-access-token")}</p>
         <Button size="sm" variant="plain" onClick={() => destroy()}>
           <XIcon className="w-5 h-auto" />
         </Button>
@@ -94,13 +94,13 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container !w-80">
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <span className="mb-2">
-            {t("setting.access-token-section.description-label")} <span className="text-red-600">*</span>
+            {t("setting.access-token-section.create-dialog.description")} <span className="text-red-600">*</span>
           </span>
           <div className="relative w-full">
             <Input
               className="w-full"
               type="text"
-              placeholder={t("setting.access-token-section.some-description")}
+              placeholder={t("setting.access-token-section.create-dialog.some-description")}
               value={state.description}
               onChange={handleDescriptionInputChange}
             />
@@ -108,7 +108,7 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
         </div>
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <span className="mb-2">
-            {t("setting.access-token-section.expiration-label")} <span className="text-red-600">*</span>
+            {t("setting.access-token-section.create-dialog.expiration")} <span className="text-red-600">*</span>
           </span>
           <div className="w-full flex flex-row justify-start items-center text-base">
             <RadioGroup orientation="horizontal" value={state.expiration} onChange={handleRoleInputChange}>

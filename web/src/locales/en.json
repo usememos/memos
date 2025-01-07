@@ -151,7 +151,8 @@
     "user-not-found": "User not found",
     "remove-completed-task-list-items-successfully": "The removal was successful",
     "failed-to-embed-memo": "Failed to embed memo",
-    "description-is-required": "Description is required"
+    "description-is-required": "Description is required",
+    "fill-all-required-fields": "Please fill all required fields"
   },
   "reference": {
     "add-references": "Add references",
@@ -319,26 +320,36 @@
       "removed-completed-task-list-items": "Enable removal of completed task list items"
     },
     "memo-related": "Memo",
-    "access-token-section":{
-      "create-access-token": "Create Access Token",
+    "access-token-section": {
       "title": "Access Tokens",
-      "description-label": "Description",
-      "some-description": "Some description...",
       "description": "A list of all access tokens for your account.",
-      "expiration-label": "Expiration",
-      "created-at": "Created At",
-      "expires-at": "Expires At",
       "token": "Token",
-      "duration-never": "Never",
-      "duration-8h": "8 Hours",
-      "duration-1m": "1 Month",
       "access-token-deletion": "Are you sure to delete access token {{accessToken}}? THIS ACTION IS IRREVERSIBLE.",
-      "access-token-copied-to-clipboard": "Access token copied to clipboard"
+      "access-token-copied-to-clipboard": "Access token copied to clipboard",
+      "create-dialog": {
+        "create-access-token": "Create Access Token",
+        "description": "Description",
+        "some-description": "Some description...",      
+        "expiration": "Expiration",
+        "created-at": "Created At",
+        "expires-at": "Expires At",
+        "duration-never": "Never",
+        "duration-8h": "8 Hours",
+        "duration-1m": "1 Month"
+      }
     },
     "webhook-section": {
       "title": "Webhooks",
-      "url": "Url",
-      "no-webhooks-found": "No webhooks found."
+      "url": "URL",
+      "no-webhooks-found": "No webhooks found.",
+      "create-dialog": {
+        "create-webhook": "Create webhook",
+        "edit-webhook": "Edit webhook",
+        "an-easy-to-remember-name": "An easy-to-remember name",
+        "title": "Title",
+        "payload-url": "Payload URL",
+        "url-example-post-receive": "https://example.com/postreceive"
+      }
     },
     "workspace-section": {
       "disallow-user-registration": "Disallow user registration",
@@ -355,7 +366,7 @@
       "enable-link-preview": "Enable link preview",
       "enable-memo-comments": "Enable memo comments",
       "enable-memo-location": "Enable memo location",
-      "content-lenght-limit": "Content length limit(Byte)",
+      "content-lenght-limit": "Content length limit (Byte)",
       "reactions": "Reactions"
     },
     "version": "Version"

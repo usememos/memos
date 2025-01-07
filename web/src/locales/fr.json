@@ -150,7 +150,9 @@
     "update-succeed": "Mise à jour effectuée",
     "user-not-found": "Utilisateur introuvable",
     "remove-completed-task-list-items-successfully": "Supprimé avec succès !",
-    "failed-to-embed-memo": "Échec de l'intégration du memo."
+    "failed-to-embed-memo": "Échec de l'intégration du memo.",
+    "message.description-is-required": "Une description est requise",
+    "fill-all-required-fields": "Merci de remplir tous les champs requis"
   },
   "reference": {
     "add-references": "Ajouter des références",
@@ -318,26 +320,36 @@
       "removed-completed-task-list-items": "Activer la suppression terminée"
     },
     "memo-related": "Memo",
-    "access-token-section":{
-      "create-access-token": "Créer un jeton d'accès",
-      "description-label": "Description",
-      "some-description": "Une description…",
+    "access-token-section": {
       "title": "Jetons d'accès",
       "description": "Une liste de tous les jetons d'accès pour votre compte.",
-      "expiration-label": "Expiration",
-      "created-at": "Créé le",
-      "expires-at": "Expire le",
       "token": "Jeton",
-      "duration-never": "Jamais",
-      "duration-8h": "8 Heures",
-      "duration-1m": "1 Mois",
       "access-token-deletion": "Êtes-vous sûr de vouloir supprimer le jeton d'accès {{accessToken}}? CETTE ACTION EST IRRÉVERSIBLE.",
-      "access-token-copied-to-clipboard": "Jeton d'accès copié dans le presse-papier"
+      "access-token-copied-to-clipboard": "Jeton d'accès copié dans le presse-papier",
+      "create-dialog": {
+        "create-access-token": "Créer un jeton d'accès",
+        "description-label": "Description",
+        "some-description": "Une description…",
+        "expiration-label": "Expiration",
+        "created-at": "Créé le",
+        "expires-at": "Expire le",
+        "duration-never": "Jamais",
+        "duration-8h": "8 Heures",
+        "duration-1m": "1 Mois"
+      }
     },
     "webhook-section": {
       "title": "Webhooks",
-      "url": "Url",
-      "no-webhooks-found": "Aucun webhook trouvé."
+      "url": "URL",
+      "no-webhooks-found": "Aucun webhook trouvé.",
+      "create-dialog": {
+        "create-webhook": "Créer un webhook",
+        "edit-webhook": "Éditer le webhook",
+        "an-easy-to-remember-name": "Un nom facile à retenir",
+        "title": "Titre",
+        "payload-url": "URL de payload",
+        "url-example-post-receive": "https://exemple.com/postreceive"
+      }
     },
     "workspace-section": {
       "disallow-user-registration": "Interdire l'inscription de nouveaux utilisateurs",
@@ -354,7 +366,7 @@
       "enable-link-preview": "Activer la prévisualisation de liens",
       "enable-memo-comments": "Activer les commentaires des memos",
       "enable-memo-location": "Activer la géolocalisation des memos",
-      "content-lenght-limit": "Taille maximum de contenu(Octet)",
+      "content-lenght-limit": "Taille maximum de contenu (Octet)",
       "reactions": "Réactions"
     },
     "version": "Version"
