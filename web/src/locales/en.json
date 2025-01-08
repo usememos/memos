@@ -329,7 +329,7 @@
       "create-dialog": {
         "create-access-token": "Create Access Token",
         "description": "Description",
-        "some-description": "Some description...",      
+        "some-description": "Some description...",
         "expiration": "Expiration",
         "created-at": "Created At",
         "expires-at": "Expires At",
@@ -359,7 +359,7 @@
       "week-start-day": "Week start day",
       "saturday": "Saturday",
       "sunday": "Sunday",
-      "monday": "Monday"            
+      "monday": "Monday"
     },
     "memo-related-settings": {
       "title": "Memo related settings",
