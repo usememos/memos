@@ -38,9 +38,9 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Content:     memo.Content,
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
-		Tags:        memo.Payload.Tags,
 	}
 	if memo.Payload != nil {
+		memoMessage.Tags = memo.Payload.Tags
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
 		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
 	}
