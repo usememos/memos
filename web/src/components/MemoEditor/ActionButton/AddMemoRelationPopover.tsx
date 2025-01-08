@@ -92,7 +92,7 @@ const AddMemoRelationPopover = (props: Props) => {
     // If embedded mode is enabled, embed the memo instead of creating a relation.
     if (embedded) {
       if (!editorRef.current) {
-        toast.error("Failed to embed memo");
+        toast.error(t("message.failed-to-embed-memo"));
         return;
       }
 

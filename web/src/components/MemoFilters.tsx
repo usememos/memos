@@ -3,8 +3,10 @@ import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, FilterIcon, LinkIcon,
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FilterFactor, getMemoFilterKey, MemoFilter, parseFilterQuery, stringifyFilters, useMemoFilterStore } from "@/store/v1";
+import { useTranslate } from "@/utils/i18n";
 
 const MemoFilters = () => {
+  const t = useTranslate();
   const [searchParams, setSearchParams] = useSearchParams();
   const memoFilterStore = useMemoFilterStore();
   const filters = memoFilterStore.filters;
@@ -75,7 +77,7 @@ const MemoFilters = () => {
     <div className="w-full mb-2 flex flex-row justify-start items-start gap-2">
       <span className="flex flex-row items-center gap-0.5 text-gray-500 text-sm leading-6 border border-transparent">
         <FilterIcon className="w-4 h-auto opacity-60 inline" />
-        Filters
+        {t("memo.filters")}
       </span>
       <div className="flex flex-row justify-start items-center flex-wrap gap-2 leading-6 h-6">
         {filters.map((filter) => (

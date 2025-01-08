@@ -24,6 +24,7 @@
     "collapse": "Réduire",
     "create": "Créer",
     "database": "Base de données",
+    "day": "Jour",
     "days": "Jours",
     "delete": "Supprimer",
     "description": "Description",
@@ -34,12 +35,14 @@
     "file": "Fichier",
     "filter": "Filtre",
     "home": "Accueil",
+    "in": "En",
     "image": "Image",
     "inbox": "Notifications",
     "language": "Langue",
     "learn-more": "En savoir plus",
     "link": "Lien",
     "mark": "Lier",
+    "memo": "Memo",
     "memos": "Memos",
     "name": "Nom",
     "new": "Nouveau",
@@ -103,7 +106,7 @@
       "write-a-comment": "Écrire un commentaire"
     },
     "copy-link": "Copier le lien",
-    "count-memos-in-date": "{{count}} memos le {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} le {{date}}",
     "delete-confirm": "Êtes-vous sûr de vouloir supprimer ce memos ? CETTE ACTION EST IRRÉVERSIBLE",
     "load-more": "Charger plus",
     "no-archived-memos": "Pas de memos archivés.",
@@ -121,7 +124,14 @@
     "to-do": "À faire",
     "code": "Code",
     "remove-completed-task-list-items": "Supprimer terminées",
-    "remove-completed-task-list-items-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? (Cette action est irréversible)"
+    "remove-completed-task-list-items-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? CETTE ACTION EST IRRÉVERSIBLE",
+    "filters": "Filtres",
+    "order-by": "Ordonner par",
+    "display-time": "Date d'Affichage",
+    "direction": "Ordre",
+    "direction-desc": "Descendant",
+    "direction-asc": "Ascendant",
+    "no-memos": "Pas de memos."
   },
   "message": {
     "archived-successfully": "Archivé avec succès",
@@ -139,7 +149,10 @@
     "succeed-copy-link": "Succeed to copy link to clipboard.",
     "update-succeed": "Mise à jour effectuée",
     "user-not-found": "Utilisateur introuvable",
-    "remove-completed-task-list-items-successfully": "Supprimé avec succès !"
+    "remove-completed-task-list-items-successfully": "Supprimé avec succès !",
+    "failed-to-embed-memo": "Échec de l'intégration du memo.",
+    "message.description-is-required": "Une description est requise",
+    "fill-all-required-fields": "Merci de remplir tous les champs requis"
   },
   "reference": {
     "add-references": "Ajouter des références",
@@ -155,7 +168,7 @@
         "file-name": "Nom du fichier",
         "file-name-placeholder": "Nom du fichier",
         "link": "Lien",
-        "link-placeholder": "https://the.link.to/your/resource",
+        "link-placeholder": "https://le.lien.vers/votre/ressource",
         "option": "Lien externe",
         "type": "Type",
         "type-placeholder": "Type de fichier"
@@ -307,17 +320,36 @@
       "removed-completed-task-list-items": "Activer la suppression terminée"
     },
     "memo-related": "Memo",
-    "access-token-section":{
-      "title": "Jetons d'Accès",
+    "access-token-section": {
+      "title": "Jetons d'accès",
       "description": "Une liste de tous les jetons d'accès pour votre compte.",
-      "created-at": "Créé le",
-      "expires-at": "Expire le",
-      "token": "Jeton"
+      "token": "Jeton",
+      "access-token-deletion": "Êtes-vous sûr de vouloir supprimer le jeton d'accès {{accessToken}}? CETTE ACTION EST IRRÉVERSIBLE.",
+      "access-token-copied-to-clipboard": "Jeton d'accès copié dans le presse-papier",
+      "create-dialog": {
+        "create-access-token": "Créer un jeton d'accès",
+        "description-label": "Description",
+        "some-description": "Une description…",
+        "expiration-label": "Expiration",
+        "created-at": "Créé le",
+        "expires-at": "Expire le",
+        "duration-never": "Jamais",
+        "duration-8h": "8 Heures",
+        "duration-1m": "1 Mois"
+      }
     },
     "webhook-section": {
       "title": "Webhooks",
-      "url": "Url",
-      "no-webhooks-found": "Aucun webhook trouvé."
+      "url": "URL",
+      "no-webhooks-found": "Aucun webhook trouvé.",
+      "create-dialog": {
+        "create-webhook": "Créer un webhook",
+        "edit-webhook": "Éditer le webhook",
+        "an-easy-to-remember-name": "Un nom facile à retenir",
+        "title": "Titre",
+        "payload-url": "URL de payload",
+        "url-example-post-receive": "https://exemple.com/postreceive"
+      }
     },
     "workspace-section": {
       "disallow-user-registration": "Interdire l'inscription de nouveaux utilisateurs",
@@ -334,7 +366,7 @@
       "enable-link-preview": "Activer la prévisualisation de liens",
       "enable-memo-comments": "Activer les commentaires des memos",
       "enable-memo-location": "Activer la géolocalisation des memos",
-      "content-lenght-limit": "Taille maximum de contenu(Octet)",
+      "content-lenght-limit": "Taille maximum de contenu (Octet)",
       "reactions": "Réactions"
     },
     "version": "Version"
@@ -351,5 +383,12 @@
     "code-block": "Bloc de code",
     "checkbox": "Case à cocher",
     "content-syntax": "Syntaxe du contenu"
+  },
+  "about": {
+    "description": "Un service de prise de notes léger et respectueux de la vie privée. Capturez et partagez facilement vos meilleures idées.",
+    "github-repository": "Dépôt GitHub",
+    "official-website": "Site web officiel",
+    "blogs": "Blogs",
+    "documents": "Documents"
   }
 }
