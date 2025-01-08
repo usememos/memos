@@ -59,12 +59,17 @@ export const useMemoTagList = () => {
   const memos = Object.values(memoStore.getState().dataMapByName);
   const tagAmounts: Record<string, number> = {};
   memos.forEach((memo) => {
-    memo.tags.forEach((tag) => {
-      if (tagAmounts[tag]) {
-        tagAmounts[tag] += 1;
-      } else {
-        tagAmounts[tag] = 1;
+    const tagSet = new Set<string>();
+    for (const tag of memo.tags) {
+      const parts = tag.split("/");
+      let currentTag = "";
+      for (const part of parts) {
+        currentTag = currentTag ? `${currentTag}/${part}` : part;
+        tagSet.add(currentTag);
       }
+    }
+    Array.from(tagSet).forEach((tag) => {
+      tagAmounts[tag] = tagAmounts[tag] ? tagAmounts[tag] + 1 : 1;
     });
   });
   return tagAmounts;
