@@ -31,6 +31,9 @@ const UserStatisticsView = () => {
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs(selectedDate.toDateString()).format("YYYY-MM"));
   const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
 
+  const singularOrPluralMemo = (memoAmount > 0 ? t("common.memos") : t("common.memo")).toLowerCase();
+  const singularOrPluralDay = (days > 0 ? t("common.days") : t("common.day")).toLowerCase();
+
   useAsyncEffect(async () => {
     const memoStats: UserMemoStats = { link: 0, taskList: 0, code: 0, incompleteTasks: 0 };
     metadataList.forEach((memo) => {
@@ -90,14 +93,10 @@ const UserStatisticsView = () => {
           onClick={onCalendarClick}
         />
         {memoAmount === 0 ? (
-          <p className="mt-1 w-full text-xs italic opacity-80">No memos</p>
-        ) : memoAmount === 1 ? (
-          <p className="mt-1 w-full text-xs italic opacity-80">
-            <span>{memoAmount}</span> memo in <span>{days}</span> {days > 1 ? "days" : "day"}
-          </p>
+          <p className="mt-1 w-full text-xs italic opacity-80">{t("memo.no-memos")}</p>
         ) : (
           <p className="mt-1 w-full text-xs italic opacity-80">
-            <span>{memoAmount}</span> memos in <span>{days}</span> {days > 1 ? "days" : "day"}
+            <span>{memoAmount}</span> {singularOrPluralMemo} {t("common.in").toLowerCase()} <span>{days}</span> {singularOrPluralDay}
           </p>
         )}
       </div>

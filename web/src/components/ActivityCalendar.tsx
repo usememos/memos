@@ -74,7 +74,14 @@ const ActivityCalendar = (props: Props) => {
         const date = dayjs(`${year}-${month + 1}-${item.day}`).format("YYYY-MM-DD");
         const count = item.isCurrentMonth ? data[date] || 0 : 0;
         const isToday = dayjs().format("YYYY-MM-DD") === date;
-        const tooltipText = count ? t("memo.count-memos-in-date", { count: count, date: date }) : date;
+        const tooltipText =
+          count === 0
+            ? t("memo.no-memos")
+            : t("memo.count-memos-in-date", {
+                count: count,
+                memos: count === 1 ? t("common.memo") : t("common.memos"),
+                date: date,
+              }).toLowerCase();
         const isSelected = dayjs(props.selectedDate).format("YYYY-MM-DD") === date;
 
         return (

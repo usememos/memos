@@ -2,9 +2,10 @@ import { Tooltip } from "@mui/joy";
 import { Button } from "@usememos/mui";
 import clsx from "clsx";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
+import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
@@ -16,11 +17,14 @@ import { useTranslate } from "@/utils/i18n";
 const RootLayout = () => {
   const t = useTranslate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { sm } = useResponsiveWidth();
   const currentUser = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
   const [collapsed, setCollapsed] = useLocalStorage<boolean>("navigation-collapsed", false);
   const [initialized, setInitialized] = useState(false);
+  const pathname = useMemo(() => location.pathname, [location.pathname]);
+  const prevPathname = usePrevious(pathname);
 
   useEffect(() => {
     if (!currentUser) {
@@ -33,9 +37,11 @@ const RootLayout = () => {
   }, []);
 
   useEffect(() => {
-    // When the route changes, remove all filters.
-    memoFilterStore.removeFilter(() => true);
-  }, [location.pathname]);
+    // When the route changes and there is no filter in the search params, remove all filters.
+    if (prevPathname !== pathname && !searchParams.has("filter")) {
+      memoFilterStore.removeFilter(() => true);
+    }
+  }, [prevPathname, pathname, searchParams]);
 
   return !initialized ? (
     <Loading />

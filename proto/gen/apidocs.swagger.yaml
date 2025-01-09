@@ -514,6 +514,9 @@ paths:
           description: |-
             Filter is used to filter users returned in the list.
             Format: "username == 'frank'"
+          description: |-
+            Filter is used to filter users returned in the list.
+            Format: "username == 'frank'"
           in: query
           required: false
           type: string
@@ -869,6 +872,7 @@ paths:
                 type: array
                 items:
                   type: string
+                readOnly: true
               pinned:
                 type: boolean
               resources:
@@ -1968,6 +1972,7 @@ definitions:
           The name of the memo.
           Format: memos/{id}
           id is the system generated id.
+        readOnly: true
       uid:
         type: string
         description: The user defined id of the memo.
@@ -2001,6 +2006,7 @@ definitions:
         type: array
         items:
           type: string
+        readOnly: true
       pinned:
         type: boolean
       resources:
@@ -2667,10 +2673,6 @@ definitions:
   v1MemoProperty:
     type: object
     properties:
-      tags:
-        type: array
-        items:
-          type: string
       hasLink:
         type: boolean
       hasTaskList:

@@ -5,10 +5,11 @@
     "new-password": "Nouveau mot de passe",
     "repeat-new-password": "Répéter le nouveau mot de passe",
     "sign-in-tip": "Vous avez déjà un compte ?",
-    "sign-up-tip": "Vous n'avez pas encore de compte ?"
+    "sign-up-tip": "Vous n'avez pas encore de compte ?"
   },
   "common": {
     "about": "À propos",
+    "add": "Ajouter",
     "admin": "Admin",
     "archive": "Archiver",
     "archived": "Archivés",
@@ -20,23 +21,28 @@
     "clear": "Nettoyer",
     "close": "Fermer",
     "confirm": "Confirmer",
+    "collapse": "Réduire",
     "create": "Créer",
     "database": "Base de données",
+    "day": "Jour",
     "days": "Jours",
     "delete": "Supprimer",
     "description": "Description",
     "edit": "Modifier",
     "email": "Email",
+    "expand": "Étendre",
     "explore": "Explorer",
     "file": "Fichier",
     "filter": "Filtre",
     "home": "Accueil",
+    "in": "En",
     "image": "Image",
     "inbox": "Notifications",
     "language": "Langue",
     "learn-more": "En savoir plus",
     "link": "Lien",
     "mark": "Lier",
+    "memo": "Memo",
     "memos": "Memos",
     "name": "Nom",
     "new": "Nouveau",
@@ -85,34 +91,28 @@
     "wed": "Me"
   },
   "editor": {
-    "add-your-comment-here": "Ajoutez votre commentaire ici...",
-    "any-thoughts": "Une idée...",
+    "add-your-comment-here": "Ajoutez votre commentaire ici …",
+    "any-thoughts": "Une idée …",
     "save": "Enregistrer"
   },
   "inbox": {
     "memo-comment": "{{user}} a fait un commentaire sur votre {{memo}}.",
-    "version-update": "Une nouvelle version {{version}} est disponible dès maintenant !"
+    "version-update": "Une nouvelle version {{version}} est disponible dès maintenant !"
   },
   "memo": {
     "archived-at": "Archivé le",
-    "code": "Code",
     "comment": {
       "self": "Commentaires",
       "write-a-comment": "Écrire un commentaire"
     },
     "copy-link": "Copier le lien",
-    "count-memos-in-date": "{{count}} memos le {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} le {{date}}",
     "delete-confirm": "Êtes-vous sûr de vouloir supprimer ce memos ? CETTE ACTION EST IRRÉVERSIBLE",
-    "delete-memo": "Supprimer Memos",
-    "embed": "Intégrer",
-    "fetch-more": "Cliquez pour en savoir plus",
-    "fetching-data": "Récupération des données…",
-    "links": "Liens",
+    "load-more": "Charger plus",
     "no-archived-memos": "Pas de memos archivés.",
     "search-placeholder": "Recherche de memos",
     "show-more": "Afficher plus",
     "show-less": "Afficher moins",
-    "to-do": "À faire",
     "view-detail": "Voir le détail",
     "visibility": {
       "disabled": "Les memos publics sont désactivés",
@@ -120,8 +120,18 @@
       "protected": "Accès aux membres",
       "public": "Public"
     },
-    "remove-completed-task-list-items": "Supprimer terminé",
-    "remove-completed-task-list-items-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? (Cette action est irréversible)"
+    "links": "Liens",
+    "to-do": "À faire",
+    "code": "Code",
+    "remove-completed-task-list-items": "Supprimer terminées",
+    "remove-completed-task-list-items-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? CETTE ACTION EST IRRÉVERSIBLE",
+    "filters": "Filtres",
+    "order-by": "Ordonner par",
+    "display-time": "Date d'Affichage",
+    "direction": "Ordre",
+    "direction-desc": "Descendant",
+    "direction-asc": "Ascendant",
+    "no-memos": "Pas de memos."
   },
   "message": {
     "archived-successfully": "Archivé avec succès",
@@ -139,7 +149,10 @@
     "succeed-copy-link": "Succeed to copy link to clipboard.",
     "update-succeed": "Mise à jour effectuée",
     "user-not-found": "Utilisateur introuvable",
-    "remove-completed-task-list-items-successfully": "Supprimé avec succès !"
+    "remove-completed-task-list-items-successfully": "Supprimé avec succès !",
+    "failed-to-embed-memo": "Échec de l'intégration du memo.",
+    "message.description-is-required": "Une description est requise",
+    "fill-all-required-fields": "Merci de remplir tous les champs requis"
   },
   "reference": {
     "add-references": "Ajouter des références",
@@ -155,13 +168,13 @@
         "file-name": "Nom du fichier",
         "file-name-placeholder": "Nom du fichier",
         "link": "Lien",
-        "link-placeholder": "https://the.link.to/your/resource",
+        "link-placeholder": "https://le.lien.vers/votre/ressource",
         "option": "Lien externe",
         "type": "Type",
         "type-placeholder": "Type de fichier"
       },
       "local-file": {
-        "choose": "Choisir un fichier…",
+        "choose": "Choisir un fichier …",
         "option": "Fichier local"
       },
       "title": "Créer une ressource",
@@ -169,9 +182,9 @@
     },
     "delete-resource": "Supprimer la ressource",
     "delete-selected-resources": "Supprimer les ressources sélectionnées",
-    "fetching-data": "Récupération des données…",
+    "fetching-data": "Récupération des données …",
     "file-drag-drop-prompt": "Glissez-déposez votre fichier ici pour le téléverser",
-    "linked-amount": "Quantité lié",
+    "linked-amount": "Quantité liée",
     "no-files-selected": "Aucun fichier sélectionné",
     "no-resources": "Aucune ressource.",
     "no-unused-resources": "Aucune ressource inutilisée",
@@ -206,12 +219,11 @@
     "member-list": "Liste des membres",
     "member-section": {
       "archive-member": "Membre archivé",
-      "archive-warning": "Êtes-vous sûr d'archiver {{username}} ?",
+      "archive-warning": "Êtes-vous sûr d'archiver {{username}} ?",
       "create-a-member": "Créer un membre",
       "delete-member": "Supprimer un membre",
       "delete-warning": "Êtes-vous sûr de vouloir supprimer {{username}} ? CETTE ACTION EST IRRÉVERSIBLE"
     },
-    "memo-related": "Memo",
     "my-account": "Mon compte",
     "preference": "Préférences",
     "preference-section": {
@@ -240,7 +252,9 @@
       "template": "Modèle",
       "token-endpoint": "Jeton endpoint",
       "update-sso": "Mise à jour du SSO",
-      "user-endpoint": "Utilisateur endpoint"
+      "user-endpoint": "Utilisateur endpoint",
+      "no-sso-found": "Pas de SSO trouvé.",
+      "configuring-keycloak-for-authentication": "Configuration du Keycloak pour l'Authentification"
     },
     "storage": "Stockage",
     "storage-section": {
@@ -278,10 +292,10 @@
     },
     "system": "Système",
     "system-section": {
-      "additional-script": "Script supplémentaire",
-      "additional-script-placeholder": "Codes JavaScript supplémentaires",
-      "additional-style": "Style supplémentaire",
-      "additional-style-placeholder": "Codes CSS supplémentaires",
+      "additional-script": "Scripts supplémentaires",
+      "additional-script-placeholder": "Code JavaScript supplémentaire",
+      "additional-style": "Styles supplémentaires",
+      "additional-style-placeholder": "Code CSS supplémentaire",
       "allow-user-signup": "Autoriser l'inscription des utilisateurs",
       "customize-server": {
         "appearance": "Apparence du Serveur",
@@ -294,6 +308,7 @@
       "disable-password-login-final-warning": "Veuillez taper \"CONFIRM\" si vous savez ce que vous faites.",
       "disable-password-login-warning": "Cela désactivera la connexion par mot de passe pour tous les utilisateurs. Il n'est pas possible de se connecter sans revenir sur ce paramètre dans la base de données si les fournisseurs d'identité configurés échouent. Vous devrez également être très prudent lorsque vous supprimez un fournisseur d'identité",
       "disable-public-memos": "Désactiver les memos publics",
+      "disable-markdown-shortcuts-in-editor": "Désactiver les raccourcis Markdown dans l'éditeur",
       "display-with-updated-time": "Mettre à jour l'heure des memos lorsqu'ils sont modifiés",
       "enable-auto-compact": "Activer l'auto compact",
       "enable-double-click-to-edit": "Activer le double-clic pour modifier",
@@ -303,17 +318,77 @@
       "max-upload-size-hint": "La valeur recommandée est 32 MiB.",
       "server-name": "Nom du serveur",
       "removed-completed-task-list-items": "Activer la suppression terminée"
-    }
+    },
+    "memo-related": "Memo",
+    "access-token-section": {
+      "title": "Jetons d'accès",
+      "description": "Une liste de tous les jetons d'accès pour votre compte.",
+      "token": "Jeton",
+      "access-token-deletion": "Êtes-vous sûr de vouloir supprimer le jeton d'accès {{accessToken}}? CETTE ACTION EST IRRÉVERSIBLE.",
+      "access-token-copied-to-clipboard": "Jeton d'accès copié dans le presse-papier",
+      "create-dialog": {
+        "create-access-token": "Créer un jeton d'accès",
+        "description-label": "Description",
+        "some-description": "Une description…",
+        "expiration-label": "Expiration",
+        "created-at": "Créé le",
+        "expires-at": "Expire le",
+        "duration-never": "Jamais",
+        "duration-8h": "8 Heures",
+        "duration-1m": "1 Mois"
+      }
+    },
+    "webhook-section": {
+      "title": "Webhooks",
+      "url": "URL",
+      "no-webhooks-found": "Aucun webhook trouvé.",
+      "create-dialog": {
+        "create-webhook": "Créer un webhook",
+        "edit-webhook": "Éditer le webhook",
+        "an-easy-to-remember-name": "Un nom facile à retenir",
+        "title": "Titre",
+        "payload-url": "URL de payload",
+        "url-example-post-receive": "https://exemple.com/postreceive"
+      }
+    },
+    "workspace-section": {
+      "disallow-user-registration": "Interdire l'inscription de nouveaux utilisateurs",
+      "disallow-password-auth": "Interdire l'authentification par mot de passe",
+      "disallow-change-username": "Interdire le changement de nom d'utilisateur",
+      "disallow-change-nickname": "Interdire le changement de surnom",
+      "week-start-day": "Premier jour de la semaine",
+      "saturday": "Samedi",
+      "sunday": "Dimanche",
+      "monday": "Lundi"            
+    },
+    "memo-related-settings": {
+      "title": "Paramètres liés à Memo",
+      "enable-link-preview": "Activer la prévisualisation de liens",
+      "enable-memo-comments": "Activer les commentaires des memos",
+      "enable-memo-location": "Activer la géolocalisation des memos",
+      "content-lenght-limit": "Taille maximum de contenu (Octet)",
+      "reactions": "Réactions"
+    },
+    "version": "Version"
   },
   "tag": {
     "all-tags": "Toutes les Étiquettes",
     "create-tag": "Créer une Étiquette",
-    "create-tags-guide": "Vous pouvez ajouter des tags en écrivant `#tag`.",
-    "delete-confirm": "Voulez-vous vraiment supprimer ce tag ? Tous les memos y afférents seront archivés.",
-    "delete-tag": "Supprimer le tag",
-    "no-tag-found": "Aucun tag trouvé"
+    "create-tags-guide": "Vous pouvez ajouter des étiquettes en écrivant `#etiquette`.",
+    "delete-confirm": "Voulez-vous vraiment supprimer cette étiquette? Tous les memos liés seront archivés.",
+    "delete-tag": "Supprimer l'étiquette",
+    "no-tag-found": "Aucune étiquette trouvée"
   },
-  "timeline": {
-    "title": "Timeline"
+  "markdown": {
+    "code-block": "Bloc de code",
+    "checkbox": "Case à cocher",
+    "content-syntax": "Syntaxe du contenu"
+  },
+  "about": {
+    "description": "Un service de prise de notes léger et respectueux de la vie privée. Capturez et partagez facilement vos meilleures idées.",
+    "github-repository": "Dépôt GitHub",
+    "official-website": "Site web officiel",
+    "blogs": "Blogs",
+    "documents": "Documents"
   }
 }

@@ -44,7 +44,6 @@ CREATE TABLE memo (
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   content TEXT NOT NULL,
   visibility TEXT NOT NULL DEFAULT 'PRIVATE',
-  tags JSONB NOT NULL DEFAULT '[]',
   payload JSONB NOT NULL DEFAULT '{}'
 );
 

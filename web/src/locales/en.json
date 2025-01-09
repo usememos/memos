@@ -24,6 +24,7 @@
     "collapse": "Collapse",
     "create": "Create",
     "database": "Database",
+    "day": "Day",
     "days": "Days",
     "delete": "Delete",
     "description": "Description",
@@ -34,12 +35,14 @@
     "file": "File",
     "filter": "Filter",
     "home": "Home",
+    "in": "In",
     "image": "Image",
     "inbox": "Inbox",
     "language": "Language",
     "learn-more": "Learn more",
     "link": "Link",
     "mark": "Mark",
+    "memo": "Memo",
     "memos": "Memos",
     "name": "Name",
     "new": "New",
@@ -103,7 +106,7 @@
       "write-a-comment": "Write a comment"
     },
     "copy-link": "Copy Link",
-    "count-memos-in-date": "{{count}} memos in {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} in {{date}}",
     "delete-confirm": "Are you sure you want to delete this memo? THIS ACTION IS IRREVERSIBLE",
     "load-more": "Load more",
     "no-archived-memos": "No archived memos.",
@@ -121,7 +124,14 @@
     "to-do": "To-do",
     "code": "Code",
     "remove-completed-task-list-items": "Remove done",
-    "remove-completed-task-list-items-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE"
+    "remove-completed-task-list-items-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE",
+    "filters": "Filters",
+    "order-by": "Order By",
+    "display-time": "Display Time",
+    "direction": "Direction",
+    "direction-desc": "Descending",
+    "direction-asc": "Ascending",
+    "no-memos": "No memos."
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -139,7 +149,10 @@
     "succeed-copy-link": "Link copied successfully.",
     "update-succeed": "Update succeeded",
     "user-not-found": "User not found",
-    "remove-completed-task-list-items-successfully": "The removal was successful"
+    "remove-completed-task-list-items-successfully": "The removal was successful",
+    "failed-to-embed-memo": "Failed to embed memo",
+    "description-is-required": "Description is required",
+    "fill-all-required-fields": "Please fill all required fields"
   },
   "reference": {
     "add-references": "Add references",
@@ -308,17 +321,36 @@
       "removed-completed-task-list-items": "Enable removal of completed task list items"
     },
     "memo-related": "Memo",
-    "access-token-section":{
+    "access-token-section": {
       "title": "Access Tokens",
       "description": "A list of all access tokens for your account.",
-      "created-at": "Created At",
-      "expires-at": "Expires At",
-      "token": "Token"
+      "token": "Token",
+      "access-token-deletion": "Are you sure to delete access token {{accessToken}}? THIS ACTION IS IRREVERSIBLE.",
+      "access-token-copied-to-clipboard": "Access token copied to clipboard",
+      "create-dialog": {
+        "create-access-token": "Create Access Token",
+        "description": "Description",
+        "some-description": "Some description...",
+        "expiration": "Expiration",
+        "created-at": "Created At",
+        "expires-at": "Expires At",
+        "duration-never": "Never",
+        "duration-8h": "8 Hours",
+        "duration-1m": "1 Month"
+      }
     },
     "webhook-section": {
       "title": "Webhooks",
-      "url": "Url",
-      "no-webhooks-found": "No webhooks found."
+      "url": "URL",
+      "no-webhooks-found": "No webhooks found.",
+      "create-dialog": {
+        "create-webhook": "Create webhook",
+        "edit-webhook": "Edit webhook",
+        "an-easy-to-remember-name": "An easy-to-remember name",
+        "title": "Title",
+        "payload-url": "Payload URL",
+        "url-example-post-receive": "https://example.com/postreceive"
+      }
     },
     "workspace-section": {
       "disallow-user-registration": "Disallow user registration",
@@ -328,14 +360,14 @@
       "week-start-day": "Week start day",
       "saturday": "Saturday",
       "sunday": "Sunday",
-      "monday": "Monday"            
+      "monday": "Monday"
     },
     "memo-related-settings": {
       "title": "Memo related settings",
       "enable-link-preview": "Enable link preview",
       "enable-memo-comments": "Enable memo comments",
       "enable-memo-location": "Enable memo location",
-      "content-lenght-limit": "Content length limit(Byte)",
+      "content-lenght-limit": "Content length limit (Byte)",
       "reactions": "Reactions"
     },
     "version": "Version"
@@ -352,5 +384,12 @@
     "code-block": "Code block",
     "checkbox": "Checkbox",
     "content-syntax": "Content syntax"
+  },
+  "about": {
+    "description": "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
+    "github-repository": "GitHub Repo",
+    "official-website": "Official Website",
+    "blogs": "Blogs",
+    "documents": "Documents"
   }
 }

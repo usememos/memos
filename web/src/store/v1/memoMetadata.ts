@@ -43,12 +43,33 @@ export const useMemoMetadataStore = create(
         view: MemoView.MEMO_VIEW_METADATA_ONLY,
         pageSize: DEFAULT_MEMO_PAGE_SIZE,
       });
+      const memoMap = memos.reduce<Record<string, Memo>>(
+        (acc, memo) => ({
+          ...acc,
+          [memo.name]: memo,
+        }),
+        {},
+      );
+      set({ stateId: uniqueId(), dataMapByName: memoMap });
+      return { memos, nextPageToken };
+    },
+  })),
+);
+
+export const useMemoTagStore = create(
+  combine(getDefaultState(), (set, get) => ({
+    setState: (state: State) => set(state),
+    getState: () => get(),
+    fetchMemoTags: async () => {
+      const { memos } = await memoServiceClient.listMemos({
+        view: MemoView.MEMO_VIEW_TAGS,
+      });
       const memoMap = { ...get().dataMapByName };
       for (const memo of memos) {
         memoMap[memo.name] = memo;
       }
       set({ stateId: uniqueId(), dataMapByName: memoMap });
-      return { memos, nextPageToken };
+      return { memos };
     },
   })),
 );
@@ -78,15 +99,20 @@ export const useMemoTagList = () => {
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting?.shareTags || false;
 
   const memoStore = location?.pathname !== Routes.EXPLORE && shareTags ? useMemoTagStore() : useMemoMetadataStore();
-  const data = Object.values(memoStore.getState().dataMapByName);
+  const memos = Object.values(memoStore.getState().dataMapByName);
   const tagAmounts: Record<string, number> = {};
-  data.forEach((memo) => {
-    memo.property?.tags.forEach((tag) => {
-      if (tagAmounts[tag]) {
-        tagAmounts[tag] += 1;
-      } else {
-        tagAmounts[tag] = 1;
+  memos.forEach((memo) => {
+    const tagSet = new Set<string>();
+    for (const tag of memo.tags) {
+      const parts = tag.split("/");
+      let currentTag = "";
+      for (const part of parts) {
+        currentTag = currentTag ? `${currentTag}/${part}` : part;
+        tagSet.add(currentTag);
       }
+    }
+    Array.from(tagSet).forEach((tag) => {
+      tagAmounts[tag] = tagAmounts[tag] ? tagAmounts[tag] + 1 : 1;
     });
   });
   return tagAmounts;

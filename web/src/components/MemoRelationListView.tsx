@@ -8,10 +8,11 @@ import { Memo } from "@/types/proto/api/v1/memo_service";
 interface Props {
   memo: Memo;
   relations: MemoRelation[];
+  parentPage?: string;
 }
 
 const MemoRelationListView = (props: Props) => {
-  const { memo, relations: relationList } = props;
+  const { memo, relations: relationList, parentPage } = props;
   const referencingMemoList = relationList
     .filter((relation) => relation.memo?.name === memo.name && relation.relatedMemo?.name !== memo.name)
     .map((relation) => relation.relatedMemo!);
@@ -65,6 +66,9 @@ const MemoRelationListView = (props: Props) => {
                 className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-gray-600 dark:text-gray-400 dark:border-zinc-700 dark:bg-zinc-900 hover:underline"
                 to={`/m/${memo.uid}`}
                 viewTransition
+                state={{
+                  from: parentPage,
+                }}
               >
                 <span className="text-xs opacity-60 leading-4 border font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
                   {memo.uid.slice(0, 6)}
@@ -84,6 +88,9 @@ const MemoRelationListView = (props: Props) => {
                 className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-gray-600 dark:text-gray-400 dark:border-zinc-700 dark:bg-zinc-900 hover:underline"
                 to={`/m/${memo.uid}`}
                 viewTransition
+                state={{
+                  from: parentPage,
+                }}
               >
                 <span className="text-xs opacity-60 leading-4 border font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
                   {memo.uid.slice(0, 6)}

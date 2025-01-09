@@ -132,7 +132,7 @@ message Memo {
   // The name of the memo.
   // Format: memos/{id}
   // id is the system generated id.
-  string name = 1;
+  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The user defined id of the memo.
   string uid = 2;
@@ -155,7 +155,7 @@ message Memo {
 
   Visibility visibility = 10;
 
-  repeated string tags = 11;
+  repeated string tags = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   bool pinned = 12;
 
@@ -179,11 +179,10 @@ message Memo {
 }
 
 message MemoProperty {
-  repeated string tags = 1;
-  bool has_link = 2;
-  bool has_task_list = 3;
-  bool has_code = 4;
-  bool has_incomplete_tasks = 5;
+  bool has_link = 1;
+  bool has_task_list = 2;
+  bool has_code = 3;
+  bool has_incomplete_tasks = 4;
 }
 
 message Location {
