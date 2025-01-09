@@ -514,9 +514,6 @@ paths:
           description: |-
             Filter is used to filter users returned in the list.
             Format: "username == 'frank'"
-          description: |-
-            Filter is used to filter users returned in the list.
-            Format: "username == 'frank'"
           in: query
           required: false
           type: string

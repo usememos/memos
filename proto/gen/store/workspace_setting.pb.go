@@ -671,9 +671,9 @@ type WorkspaceMemoRelatedSetting struct {
 	// disable markdown shortcuts
 	DisableMarkdownShortcuts bool `protobuf:"varint,11,opt,name=disable_markdown_shortcuts,json=disableMarkdownShortcuts,proto3" json:"disable_markdown_shortcuts,omitempty"`
 	// share PUBLIC and PROTECTED tags between users.
-	ShareTags bool `protobuf:"varint,12,opt,name=share_tags,json=shareTags,proto3" json:"share_tags,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	ShareTags     bool `protobuf:"varint,12,opt,name=share_tags,json=shareTags,proto3" json:"share_tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *WorkspaceMemoRelatedSetting) Reset() {
