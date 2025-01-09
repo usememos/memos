@@ -73,10 +73,10 @@ func (MemoRelation_Type) EnumDescriptor() ([]byte, []int) {
 type MemoRelation struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of memo.
-	// Format: "memos/{uid}"
+	// Format: "memos/{id}"
 	Memo *MemoRelation_Memo `protobuf:"bytes,1,opt,name=memo,proto3" json:"memo,omitempty"`
 	// The name of related memo.
-	// Format: "memos/{uid}"
+	// Format: "memos/{id}"
 	RelatedMemo   *MemoRelation_Memo `protobuf:"bytes,2,opt,name=related_memo,json=relatedMemo,proto3" json:"related_memo,omitempty"`
 	Type          MemoRelation_Type  `protobuf:"varint,3,opt,name=type,proto3,enum=memos.api.v1.MemoRelation_Type" json:"type,omitempty"`
 	unknownFields protoimpl.UnknownFields
