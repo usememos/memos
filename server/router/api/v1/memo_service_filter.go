@@ -9,8 +9,44 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
+
+const (
+	// DefaultTagPageSize is the default number of memos to loads tags for.
+	DefaultTagPageSize = 1_000_000
+)
+
+func (s *APIV1Service) buildMemoTagsFindWithFilter(ctx context.Context, find *store.FindMemo, request *v1pb.ListMemosRequest) error {
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+	}
+
+	if !workspaceMemoRelatedSetting.ShareTags {
+		return status.Errorf(codes.Internal, "Sharing tags is not enabled")
+	}
+
+	user, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get current user")
+	}
+
+	if user == nil {
+		return status.Errorf(codes.Internal, "User need to be set to share tags")
+	}
+
+	find.CreatorID = &user.ID
+	find.ExcludeComments = true
+	find.ExcludeContent = true
+	find.ShareTags = true
+	find.RowStatus = varPtr(store.Normal)
+
+	request.PageSize = DefaultTagPageSize
+
+	return nil
+}
 
 func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.FindMemo, filter string) error {
 	if find.PayloadFind == nil {
