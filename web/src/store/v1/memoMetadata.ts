@@ -64,28 +64,13 @@ export const useMemoTagStore = create(
       const { memos } = await memoServiceClient.listMemos({
         view: MemoView.MEMO_VIEW_TAGS,
       });
-      const memoMap = { ...get().dataMapByName };
-      for (const memo of memos) {
-        memoMap[memo.name] = memo;
-      }
-      set({ stateId: uniqueId(), dataMapByName: memoMap });
-      return { memos };
-    },
-  })),
-);
-
-export const useMemoTagStore = create(
-  combine(getDefaultState(), (set, get) => ({
-    setState: (state: State) => set(state),
-    getState: () => get(),
-    fetchMemoTags: async () => {
-      const { memos } = await memoServiceClient.listMemos({
-        view: MemoView.MEMO_VIEW_TAGS,
-      });
-      const memoMap = { ...get().dataMapByName };
-      for (const memo of memos) {
-        memoMap[memo.name] = memo;
-      }
+      const memoMap = memos.reduce<Record<string, Memo>>(
+        (acc, memo) => ({
+          ...acc,
+          [memo.name]: memo,
+        }),
+        {},
+      );
       set({ stateId: uniqueId(), dataMapByName: memoMap });
       return { memos };
     },
