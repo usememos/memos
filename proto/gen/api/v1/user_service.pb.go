@@ -80,10 +80,8 @@ func (User_Role) EnumDescriptor() ([]byte, []int) {
 type User struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user.
-	// Format: users/{id}
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The system generated uid of the user.
-	Id            int32                  `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	// Format: users/{user}. {user} is a system-generated auto-increment id.
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Role          User_Role              `protobuf:"varint,3,opt,name=role,proto3,enum=memos.api.v1.User_Role" json:"role,omitempty"`
 	Username      string                 `protobuf:"bytes,4,opt,name=username,proto3" json:"username,omitempty"`
 	Email         string                 `protobuf:"bytes,5,opt,name=email,proto3" json:"email,omitempty"`
@@ -133,13 +131,6 @@ func (x *User) GetName() string {
 		return x.Name
 	}
 	return ""
-}
-
-func (x *User) GetId() int32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
 }
 
 func (x *User) GetRole() User_Role {
@@ -385,7 +376,7 @@ func (x *SearchUsersResponse) GetUsers() []*User {
 type GetUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user.
-	// Format: users/{id}
+	// Format: users/{user}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -431,7 +422,7 @@ func (x *GetUserRequest) GetName() string {
 type GetUserAvatarBinaryRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user.
-	// Format: users/{id}
+	// Format: users/{user}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The raw HTTP body is bound to this field.
 	HttpBody      *httpbody.HttpBody `protobuf:"bytes,2,opt,name=http_body,json=httpBody,proto3" json:"http_body,omitempty"`
@@ -582,7 +573,7 @@ func (x *UpdateUserRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 type DeleteUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user.
-	// Format: users/{id}
+	// Format: users/{user}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -628,7 +619,7 @@ func (x *DeleteUserRequest) GetName() string {
 type UserSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user.
-	// Format: users/{id}
+	// Format: users/{user}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The preferred locale of the user.
 	Locale string `protobuf:"bytes,2,opt,name=locale,proto3" json:"locale,omitempty"`
@@ -701,7 +692,7 @@ func (x *UserSetting) GetMemoVisibility() string {
 type GetUserSettingRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user.
-	// Format: users/{id}
+	// Format: users/{user}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -867,7 +858,7 @@ func (x *UserAccessToken) GetExpiresAt() *timestamppb.Timestamp {
 type ListUserAccessTokensRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user.
-	// Format: users/{id}
+	// Format: users/{user}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -957,7 +948,7 @@ func (x *ListUserAccessTokensResponse) GetAccessTokens() []*UserAccessToken {
 type CreateUserAccessTokenRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user.
-	// Format: users/{id}
+	// Format: users/{user}
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=expires_at,json=expiresAt,proto3,oneof" json:"expires_at,omitempty"`
@@ -1019,7 +1010,7 @@ func (x *CreateUserAccessTokenRequest) GetExpiresAt() *timestamppb.Timestamp {
 type DeleteUserAccessTokenRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user.
-	// Format: users/{id}
+	// Format: users/{user}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// access_token is the access token to delete.
 	AccessToken   string `protobuf:"bytes,2,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
@@ -1091,9 +1082,8 @@ var file_api_v1_user_service_proto_rawDesc = []byte{
 	0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x6d, 0x61, 0x73, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
 	0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x22, 0xea, 0x03, 0x0a, 0x04, 0x55, 0x73, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61,
-	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x0e,
-	0x0a, 0x02, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x2b,
+	0x6f, 0x22, 0xda, 0x03, 0x0a, 0x04, 0x55, 0x73, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x2b,
 	0x0a, 0x04, 0x72, 0x6f, 0x6c, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x17, 0x2e, 0x6d,
 	0x65, 0x6d, 0x6f, 0x73, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73, 0x65, 0x72,
 	0x2e, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x04, 0x72, 0x6f, 0x6c, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x75,

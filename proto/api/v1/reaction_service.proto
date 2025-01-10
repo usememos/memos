@@ -8,7 +8,7 @@ message Reaction {
   int32 id = 1;
 
   // The name of the creator.
-  // Format: users/{id}
+  // Format: users/{user}
   string creator = 2;
 
   string content_id = 3;

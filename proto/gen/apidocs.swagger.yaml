@@ -190,7 +190,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user
-          description: 'Format: users/{id}'
+          description: 'Format: users/{user}'
           in: query
           required: false
           type: string
@@ -320,7 +320,7 @@ paths:
         - name: filter
           description: |-
             Filter is used to filter memos returned in the list.
-            Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
+            Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -787,10 +787,10 @@ paths:
             properties:
               sender:
                 type: string
-                title: 'Format: users/{id}'
+                title: 'Format: users/{user}'
               receiver:
                 type: string
-                title: 'Format: users/{id}'
+                title: 'Format: users/{user}'
               status:
                 $ref: '#/definitions/v1InboxStatus'
               createTime:
@@ -841,7 +841,7 @@ paths:
                 type: string
                 title: |-
                   The name of the creator.
-                  Format: users/{id}
+                  Format: users/{user}
               createTime:
                 type: string
                 format: date-time
@@ -919,7 +919,7 @@ paths:
         - name: name_1
           description: |-
             The name of the user.
-            Format: users/{id}
+            Format: users/{user}
           in: path
           required: true
           type: string
@@ -1137,7 +1137,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{id}
+            Format: users/{user}
           in: path
           required: true
           type: string
@@ -1161,7 +1161,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{id}
+            Format: users/{user}
           in: path
           required: true
           type: string
@@ -1184,7 +1184,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{id}
+            Format: users/{user}
           in: path
           required: true
           type: string
@@ -1214,7 +1214,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{id}
+            Format: users/{user}
           in: path
           required: true
           type: string
@@ -1453,7 +1453,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{id}
+            Format: users/{user}
           in: path
           required: true
           type: string
@@ -1595,7 +1595,7 @@ paths:
         - name: setting.name
           description: |-
             The name of the user.
-            Format: users/{id}
+            Format: users/{user}
           in: path
           required: true
           type: string
@@ -1636,7 +1636,7 @@ paths:
         - name: user.name
           description: |-
             The name of the user.
-            Format: users/{id}
+            Format: users/{user}. {user} is a system-generated auto-increment id.
           in: path
           required: true
           type: string
@@ -1647,10 +1647,6 @@ paths:
           schema:
             type: object
             properties:
-              id:
-                type: integer
-                format: int32
-                description: The system generated uid of the user.
               role:
                 $ref: '#/definitions/UserRole'
               username:
@@ -1694,7 +1690,7 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{id}
+            Format: users/{user}
           in: path
           required: true
           type: string
@@ -1975,7 +1971,7 @@ definitions:
         type: string
         title: |-
           The name of the creator.
-          Format: users/{id}
+          Format: users/{user}
       createTime:
         type: string
         format: date-time
@@ -2060,7 +2056,7 @@ definitions:
         type: string
         title: |-
           The name of the user.
-          Format: users/{id}
+          Format: users/{user}
       locale:
         type: string
         description: The preferred locale of the user.
@@ -2486,10 +2482,10 @@ definitions:
           Format: inboxes/{id}
       sender:
         type: string
-        title: 'Format: users/{id}'
+        title: 'Format: users/{user}'
       receiver:
         type: string
-        title: 'Format: users/{id}'
+        title: 'Format: users/{user}'
       status:
         $ref: '#/definitions/v1InboxStatus'
       createTime:
@@ -2869,7 +2865,7 @@ definitions:
         type: string
         title: |-
           The name of the creator.
-          Format: users/{id}
+          Format: users/{user}
       contentId:
         type: string
       reactionType:
@@ -3035,13 +3031,9 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
+        description: |-
           The name of the user.
-          Format: users/{id}
-      id:
-        type: integer
-        format: int32
-        description: The system generated uid of the user.
+          Format: users/{user}. {user} is a system-generated auto-increment id.
       role:
         $ref: '#/definitions/UserRole'
       username:
@@ -3111,7 +3103,7 @@ definitions:
         type: string
         title: |-
           The name of instance owner.
-          Format: "users/{id}"
+          Format: users/{user}
       version:
         type: string
         title: version is the current version of instance

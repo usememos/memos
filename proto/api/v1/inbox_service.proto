@@ -34,9 +34,9 @@ message Inbox {
   // The name of the inbox.
   // Format: inboxes/{id}
   string name = 1;
-  // Format: users/{id}
+  // Format: users/{user}
   string sender = 2;
-  // Format: users/{id}
+  // Format: users/{user}
   string receiver = 3;
 
   enum Status {
@@ -59,7 +59,7 @@ message Inbox {
 }
 
 message ListInboxesRequest {
-  // Format: users/{id}
+  // Format: users/{user}
   string user = 1;
 
   // The maximum number of inbox to return.

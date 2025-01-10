@@ -140,7 +140,7 @@ message Memo {
   State state = 3;
 
   // The name of the creator.
-  // Format: users/{id}
+  // Format: users/{user}
   string creator = 4;
 
   google.protobuf.Timestamp create_time = 5;
@@ -222,7 +222,7 @@ message ListMemosRequest {
   string page_token = 2;
 
   // Filter is used to filter memos returned in the list.
-  // Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
+  // Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
   string filter = 3;
 
   // The view of the memo.

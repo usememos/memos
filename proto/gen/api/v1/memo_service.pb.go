@@ -137,7 +137,7 @@ type Memo struct {
 	Uid   string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
 	State State  `protobuf:"varint,3,opt,name=state,proto3,enum=memos.api.v1.State" json:"state,omitempty"`
 	// The name of the creator.
-	// Format: users/{id}
+	// Format: users/{user}
 	Creator     string                 `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 	CreateTime  *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	UpdateTime  *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
@@ -537,7 +537,7 @@ type ListMemosRequest struct {
 	// Provide this to retrieve the subsequent page.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Filter is used to filter memos returned in the list.
-	// Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
+	// Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The view of the memo.
 	View          MemoView `protobuf:"varint,4,opt,name=view,proto3,enum=memos.api.v1.MemoView" json:"view,omitempty"`

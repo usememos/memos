@@ -173,13 +173,10 @@ const MemberSection = () => {
             <thead>
               <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-400">
                 <th scope="col" className="px-3 py-2">
-                  ID
+                  {t("common.username")}
                 </th>
                 <th scope="col" className="px-3 py-2">
                   {t("common.role")}
-                </th>
-                <th scope="col" className="px-3 py-2">
-                  {t("common.username")}
                 </th>
                 <th scope="col" className="px-3 py-2">
                   {t("common.nickname")}
@@ -192,17 +189,16 @@ const MemberSection = () => {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
               {sortedUsers.map((user) => (
-                <tr key={user.id}>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400">{user.id}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{stringifyUserRole(user.role)}</td>
+                <tr key={user.name}>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
                     {user.username}
                     <span className="ml-1 italic">{user.state === State.ARCHIVED && "(Archived)"}</span>
                   </td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{stringifyUserRole(user.role)}</td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{user.nickname}</td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{user.email}</td>
                   <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium flex justify-end">
-                    {currentUser?.id === user.id ? (
+                    {currentUser?.name === user.name ? (
                       <span>{t("common.yourself")}</span>
                     ) : (
                       <Dropdown>

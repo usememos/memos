@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { webhookServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { extractUserIdFromName } from "@/store/v1";
 import { Webhook } from "@/types/proto/api/v1/webhook_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateWebhookDialog from "../CreateWebhookDialog";
@@ -21,13 +22,13 @@ const WebhookSection = () => {
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
 
   useEffect(() => {
-    listWebhooks(currentUser.id).then((webhooks) => {
+    listWebhooks(extractUserIdFromName(currentUser.name)).then((webhooks) => {
       setWebhooks(webhooks);
     });
   }, []);
 
   const handleCreateAccessTokenDialogConfirm = async () => {
-    const webhooks = await listWebhooks(currentUser.id);
+    const webhooks = await listWebhooks(extractUserIdFromName(currentUser.name));
     setWebhooks(webhooks);
   };
 

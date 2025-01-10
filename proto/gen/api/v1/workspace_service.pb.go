@@ -24,7 +24,7 @@ const (
 type WorkspaceProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of instance owner.
-	// Format: "users/{id}"
+	// Format: users/{user}
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// version is the current version of instance
 	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`

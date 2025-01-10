@@ -556,7 +556,6 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 func convertUserFromStore(user *store.User) *v1pb.User {
 	userpb := &v1pb.User{
 		Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
-		Id:          user.ID,
 		State:       convertStateFromStore(user.RowStatus),
 		CreateTime:  timestamppb.New(time.Unix(user.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(user.UpdatedTs, 0)),
