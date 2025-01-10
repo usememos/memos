@@ -30,7 +30,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	memoMessage := &v1pb.Memo{
 		Name:        name,
 		Uid:         memo.UID,
-		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
+		State:       convertStateFromStore(memo.RowStatus),
 		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, memo.CreatorID),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),

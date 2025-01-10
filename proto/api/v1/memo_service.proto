@@ -137,7 +137,7 @@ message Memo {
   // The user defined id of the memo.
   string uid = 2;
 
-  RowStatus row_status = 3;
+  State state = 3;
 
   // The name of the creator.
   // Format: users/{id}

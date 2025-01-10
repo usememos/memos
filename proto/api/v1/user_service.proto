@@ -114,7 +114,7 @@ message User {
 
   string password = 9 [(google.api.field_behavior) = INPUT_ONLY];
 
-  RowStatus row_status = 10;
+  State state = 10;
 
   google.protobuf.Timestamp create_time = 11;
 

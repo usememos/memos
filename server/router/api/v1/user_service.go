@@ -229,8 +229,8 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			}
 			passwordHashStr := string(passwordHash)
 			update.PasswordHash = &passwordHashStr
-		} else if field == "row_status" {
-			rowStatus := convertRowStatusToStore(request.User.RowStatus)
+		} else if field == "state" {
+			rowStatus := convertStateToStore(request.User.State)
 			update.RowStatus = &rowStatus
 		} else {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", field)
@@ -557,7 +557,7 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 	userpb := &v1pb.User{
 		Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
 		Id:          user.ID,
-		RowStatus:   convertRowStatusFromStore(user.RowStatus),
+		State:       convertStateFromStore(user.RowStatus),
 		CreateTime:  timestamppb.New(time.Unix(user.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(user.UpdatedTs, 0)),
 		Role:        convertUserRoleFromStore(user.Role),

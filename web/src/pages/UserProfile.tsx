@@ -12,7 +12,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
 import { useMemoFilterStore, useUserStore } from "@/store/v1";
-import { RowStatus } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -52,7 +52,7 @@ const UserProfile = () => {
       return "";
     }
 
-    const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
+    const filters = [`creator == "${user.name}"`, `state == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
     const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
@@ -111,7 +111,7 @@ const UserProfile = () => {
                 )}
                 listSort={(memos: Memo[]) =>
                   memos
-                    .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
+                    .filter((memo) => memo.state === State.NORMAL)
                     .sort((a, b) =>
                       memoFilterStore.orderByTimeAsc
                         ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()

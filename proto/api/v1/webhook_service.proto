@@ -53,7 +53,7 @@ message Webhook {
 
   google.protobuf.Timestamp update_time = 4;
 
-  RowStatus row_status = 5;
+  State state = 5;
 
   string name = 6;
 

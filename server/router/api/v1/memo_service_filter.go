@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
 
@@ -141,7 +142,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("display_time_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
 	cel.Variable("uid", cel.StringType),
-	cel.Variable("row_status", cel.StringType),
+	cel.Variable("state", cel.StringType),
 	cel.Variable("random", cel.BoolType),
 	cel.Variable("limit", cel.IntType),
 	cel.Variable("include_comments", cel.BoolType),
@@ -229,9 +230,9 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 			} else if idExpr.Name == "creator" {
 				creator := callExpr.Args[1].GetConstExpr().GetStringValue()
 				filter.Creator = &creator
-			} else if idExpr.Name == "row_status" {
-				rowStatus := store.RowStatus(callExpr.Args[1].GetConstExpr().GetStringValue())
-				filter.RowStatus = &rowStatus
+			} else if idExpr.Name == "state" {
+				state := convertStateToStore(apiv1.State(apiv1.State_value[callExpr.Args[1].GetConstExpr().GetStringValue()]))
+				filter.RowStatus = &state
 			} else if idExpr.Name == "random" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.Random = value

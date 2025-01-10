@@ -271,8 +271,8 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 				return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
 			}
 			update.Visibility = &visibility
-		} else if path == "row_status" {
-			rowStatus := convertRowStatusToStore(request.Memo.RowStatus)
+		} else if path == "state" {
+			rowStatus := convertStateToStore(request.Memo.State)
 			update.RowStatus = &rowStatus
 		} else if path == "create_time" {
 			createdTs := request.Memo.CreateTime.AsTime().Unix()

@@ -2,7 +2,7 @@ import { uniq } from "lodash-es";
 import { memo, useEffect, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUserStore } from "@/store/v1";
-import { RowStatus } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { Reaction } from "@/types/proto/api/v1/reaction_service";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -19,7 +19,7 @@ const MemoReactionListView = (props: Props) => {
   const currentUser = useCurrentUser();
   const userStore = useUserStore();
   const [reactionGroup, setReactionGroup] = useState<Map<string, User[]>>(new Map());
-  const readonly = memo.rowStatus === RowStatus.ARCHIVED;
+  const readonly = memo.state === State.ARCHIVED;
 
   useEffect(() => {
     (async () => {

@@ -27,7 +27,7 @@ export const useMemoMetadataStore = create(
     setState: (state: State) => set(state),
     getState: () => get(),
     fetchMemoMetadata: async (params: { user?: User; location?: Location<any> }) => {
-      const filters = [`row_status == "NORMAL"`];
+      const filters = [`state == "NORMAL"`];
       if (params.user) {
         if (params.location?.pathname === Routes.EXPLORE) {
           filters.push(`visibilities == ["PUBLIC", "PROTECTED"]`);

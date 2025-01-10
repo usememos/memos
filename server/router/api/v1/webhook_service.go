@@ -74,9 +74,6 @@ func (s *APIV1Service) UpdateWebhook(ctx context.Context, request *v1pb.UpdateWe
 	update := &store.UpdateWebhook{}
 	for _, field := range request.UpdateMask.Paths {
 		switch field {
-		case "row_status":
-			rowStatus := store.RowStatus(request.Webhook.RowStatus.String())
-			update.RowStatus = &rowStatus
 		case "name":
 			update.Name = &request.Webhook.Name
 		case "url":
@@ -106,7 +103,7 @@ func convertWebhookFromStore(webhook *store.Webhook) *v1pb.Webhook {
 		Id:         webhook.ID,
 		CreateTime: timestamppb.New(time.Unix(webhook.CreatedTs, 0)),
 		UpdateTime: timestamppb.New(time.Unix(webhook.UpdatedTs, 0)),
-		RowStatus:  convertRowStatusFromStore(webhook.RowStatus),
+		State:      convertStateFromStore(webhook.RowStatus),
 		CreatorId:  webhook.CreatorID,
 		Name:       webhook.Name,
 		Url:        webhook.URL,

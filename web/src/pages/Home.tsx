@@ -10,7 +10,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoFilterStore } from "@/store/v1";
-import { RowStatus } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 
 const Home = () => {
@@ -19,7 +19,7 @@ const Home = () => {
   const memoFilterStore = useMemoFilterStore();
 
   const memoListFilter = useMemo(() => {
-    const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
+    const filters = [`creator == "${user.name}"`, `state == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
     const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
@@ -69,7 +69,7 @@ const Home = () => {
               renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
               listSort={(memos: Memo[]) =>
                 memos
-                  .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
+                  .filter((memo) => memo.state === State.NORMAL)
                   .sort((a, b) =>
                     memoFilterStore.orderByTimeAsc
                       ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()

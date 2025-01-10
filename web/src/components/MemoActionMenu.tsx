@@ -17,7 +17,7 @@ import { useLocation } from "react-router-dom";
 import { markdownServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useMemoStore } from "@/store/v1";
-import { RowStatus } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common";
 import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -48,7 +48,7 @@ const MemoActionMenu = (props: Props) => {
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const memoStore = useMemoStore();
-  const isArchived = memo.rowStatus === RowStatus.ARCHIVED;
+  const isArchived = memo.state === State.ARCHIVED;
   const hasCompletedTaskList = checkHasCompletedTaskList(memo);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
 
@@ -84,15 +84,15 @@ const MemoActionMenu = (props: Props) => {
   };
 
   const handleToggleMemoStatusClick = async () => {
-    const status = memo.rowStatus === RowStatus.ARCHIVED ? RowStatus.ACTIVE : RowStatus.ARCHIVED;
-    const message = memo.rowStatus === RowStatus.ARCHIVED ? t("message.restored-successfully") : t("message.archived-successfully");
+    const state = memo.state === State.ARCHIVED ? State.NORMAL : State.ARCHIVED;
+    const message = memo.state === State.ARCHIVED ? t("message.restored-successfully") : t("message.archived-successfully");
     try {
       await memoStore.updateMemo(
         {
           name: memo.name,
-          rowStatus: status,
+          state,
         },
-        ["row_status"],
+        ["state"],
       );
       toast(message);
     } catch (error: any) {
@@ -102,7 +102,7 @@ const MemoActionMenu = (props: Props) => {
     }
 
     if (isInMemoDetailPage) {
-      memo.rowStatus === RowStatus.ARCHIVED ? navigateTo("/") : navigateTo("/archived");
+      memo.state === State.ARCHIVED ? navigateTo("/") : navigateTo("/archived");
     }
   };
 
@@ -186,12 +186,8 @@ const MemoActionMenu = (props: Props) => {
               </MenuItem>
             )}
             <MenuItem color="warning" onClick={handleToggleMemoStatusClick}>
-              {memo.rowStatus === RowStatus.ARCHIVED ? (
-                <ArchiveRestoreIcon className="w-4 h-auto" />
-              ) : (
-                <ArchiveIcon className="w-4 h-auto" />
-              )}
-              {memo.rowStatus === RowStatus.ARCHIVED ? t("common.restore") : t("common.archive")}
+              {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
+              {isArchived ? t("common.restore") : t("common.archive")}
             </MenuItem>
             <MenuItem color="danger" onClick={handleDeleteMemoClick}>
               <TrashIcon className="w-4 h-auto" />

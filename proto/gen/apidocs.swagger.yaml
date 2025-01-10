@@ -630,8 +630,8 @@ paths:
               updateTime:
                 type: string
                 format: date-time
-              rowStatus:
-                $ref: '#/definitions/v1RowStatus'
+              state:
+                $ref: '#/definitions/v1State'
               name:
                 type: string
               url:
@@ -830,8 +830,8 @@ paths:
               uid:
                 type: string
                 description: The user defined id of the memo.
-              rowStatus:
-                $ref: '#/definitions/v1RowStatus'
+              state:
+                $ref: '#/definitions/v1State'
               creator:
                 type: string
                 title: "The name of the creator.\r\nFormat: users/{id}"
@@ -1632,8 +1632,8 @@ paths:
                 type: string
               password:
                 type: string
-              rowStatus:
-                $ref: '#/definitions/v1RowStatus'
+              state:
+                $ref: '#/definitions/v1State'
               createTime:
                 type: string
                 format: date-time
@@ -1933,8 +1933,8 @@ definitions:
       uid:
         type: string
         description: The user defined id of the memo.
-      rowStatus:
-        $ref: '#/definitions/v1RowStatus'
+      state:
+        $ref: '#/definitions/v1State'
       creator:
         type: string
         title: "The name of the creator.\r\nFormat: users/{id}"
@@ -2883,13 +2883,6 @@ definitions:
     properties:
       markdown:
         type: string
-  v1RowStatus:
-    type: string
-    enum:
-      - ROW_STATUS_UNSPECIFIED
-      - ACTIVE
-      - ARCHIVED
-    default: ROW_STATUS_UNSPECIFIED
   v1SearchUsersResponse:
     type: object
     properties:
@@ -2903,6 +2896,13 @@ definitions:
     properties:
       content:
         type: string
+  v1State:
+    type: string
+    enum:
+      - STATE_UNSPECIFIED
+      - NORMAL
+      - ARCHIVED
+    default: STATE_UNSPECIFIED
   v1StrikethroughNode:
     type: object
     properties:
@@ -3012,8 +3012,8 @@ definitions:
         type: string
       password:
         type: string
-      rowStatus:
-        $ref: '#/definitions/v1RowStatus'
+      state:
+        $ref: '#/definitions/v1State'
       createTime:
         type: string
         format: date-time
@@ -3056,8 +3056,8 @@ definitions:
       updateTime:
         type: string
         format: date-time
-      rowStatus:
-        $ref: '#/definitions/v1RowStatus'
+      state:
+        $ref: '#/definitions/v1State'
       name:
         type: string
       url:

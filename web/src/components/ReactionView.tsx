@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
-import { RowStatus } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 
@@ -33,7 +33,7 @@ const ReactionView = (props: Props) => {
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const hasReaction = users.some((user) => currentUser && user.username === currentUser.username);
-  const readonly = memo.rowStatus === RowStatus.ARCHIVED;
+  const readonly = memo.state === State.ARCHIVED;
 
   const handleReactionClick = async () => {
     if (!currentUser || readonly) {

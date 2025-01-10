@@ -8,7 +8,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import SearchBar from "@/components/SearchBar";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore } from "@/store/v1";
-import { RowStatus } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 
@@ -18,7 +18,7 @@ const Archived = () => {
   const memoFilterStore = useMemoFilterStore();
 
   const memoListFilter = useMemo(() => {
-    const filters = [`creator == "${user.name}"`, `row_status == "ARCHIVED"`];
+    const filters = [`creator == "${user.name}"`, `state == "ARCHIVED"`];
     const contentSearch: string[] = [];
     const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
@@ -59,7 +59,7 @@ const Archived = () => {
             renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility compact />}
             listSort={(memos: Memo[]) =>
               memos
-                .filter((memo) => memo.rowStatus === RowStatus.ARCHIVED)
+                .filter((memo) => memo.state === State.ARCHIVED)
                 .sort((a, b) =>
                   memoFilterStore.orderByTimeAsc
                     ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
