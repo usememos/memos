@@ -72,6 +72,10 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     SNIPPET: { text: t("memo.show-less"), nextState: "ALL" },
   };
 
+  useEffect(() => {
+    sessionStorage.getItem(`${memoName}`) && setShowCompactMode(sessionStorage.getItem(`${memoName}`) as ContentCompactView);
+  }, []);
+
   return (
     <RendererContext.Provider
       value={{
@@ -113,6 +117,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
               className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
               onClick={() => {
                 setShowCompactMode(compactStates[showCompactMode].nextState as ContentCompactView);
+                sessionStorage.setItem(`${memoName}`, compactStates[showCompactMode].nextState);
               }}
             >
               {compactStates[showCompactMode].text}
