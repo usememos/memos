@@ -2636,12 +2636,12 @@ definitions:
         $ref: '#/definitions/v1MemoRelationMemo'
         title: |-
           The name of memo.
-          Format: "memos/{uid}"
+          Format: "memos/{id}"
       relatedMemo:
         $ref: '#/definitions/v1MemoRelationMemo'
         title: |-
           The name of related memo.
-          Format: "memos/{uid}"
+          Format: "memos/{id}"
       type:
         $ref: '#/definitions/v1MemoRelationType'
   v1MemoRelationMemo:

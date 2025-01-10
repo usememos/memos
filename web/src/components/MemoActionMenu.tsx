@@ -24,17 +24,32 @@ import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   memo: Memo;
+  readonly?: boolean;
   className?: string;
-  hiddenActions?: ("edit" | "archive" | "delete" | "share" | "pin" | "remove_completed_task_list")[];
   onEdit?: () => void;
 }
 
+const checkHasCompletedTaskList = (memo: Memo) => {
+  for (const node of memo.nodes) {
+    if (node.type === NodeType.LIST && node.listNode?.children && node.listNode?.children?.length > 0) {
+      for (let j = 0; j < node.listNode.children.length; j++) {
+        if (node.listNode.children[j].type === NodeType.TASK_LIST_ITEM && node.listNode.children[j].taskListItemNode?.complete) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+};
+
 const MemoActionMenu = (props: Props) => {
-  const { memo, hiddenActions } = props;
+  const { memo, readonly } = props;
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const memoStore = useMemoStore();
+  const isArchived = memo.rowStatus === RowStatus.ARCHIVED;
+  const hasCompletedTaskList = checkHasCompletedTaskList(memo);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
 
   const handleTogglePinMemoBtnClick = async () => {
@@ -69,26 +84,17 @@ const MemoActionMenu = (props: Props) => {
   };
 
   const handleToggleMemoStatusClick = async () => {
+    const status = memo.rowStatus === RowStatus.ARCHIVED ? RowStatus.ACTIVE : RowStatus.ARCHIVED;
+    const message = memo.rowStatus === RowStatus.ARCHIVED ? t("message.restored-successfully") : t("message.archived-successfully");
     try {
-      if (memo.rowStatus === RowStatus.ARCHIVED) {
-        await memoStore.updateMemo(
-          {
-            name: memo.name,
-            rowStatus: RowStatus.ACTIVE,
-          },
-          ["row_status"],
-        );
-        toast(t("message.restored-successfully"));
-      } else {
-        await memoStore.updateMemo(
-          {
-            name: memo.name,
-            rowStatus: RowStatus.ARCHIVED,
-          },
-          ["row_status"],
-        );
-        toast.success(t("message.archived-successfully"));
-      }
+      await memoStore.updateMemo(
+        {
+          name: memo.name,
+          rowStatus: status,
+        },
+        ["row_status"],
+      );
+      toast(message);
     } catch (error: any) {
       toast.error(error.details);
       console.error(error);
@@ -155,38 +161,44 @@ const MemoActionMenu = (props: Props) => {
         </span>
       </MenuButton>
       <Menu className="text-sm" size="sm" placement="bottom-end">
-        {!hiddenActions?.includes("pin") && (
-          <MenuItem onClick={handleTogglePinMemoBtnClick}>
-            {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
-            {memo.pinned ? t("common.unpin") : t("common.pin")}
-          </MenuItem>
+        {!readonly && !isArchived && (
+          <>
+            <MenuItem onClick={handleTogglePinMemoBtnClick}>
+              {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
+              {memo.pinned ? t("common.unpin") : t("common.pin")}
+            </MenuItem>
+            <MenuItem onClick={handleEditMemoClick}>
+              <Edit3Icon className="w-4 h-auto" />
+              {t("common.edit")}
+            </MenuItem>
+          </>
         )}
-        {!hiddenActions?.includes("edit") && props.onEdit && (
-          <MenuItem onClick={handleEditMemoClick}>
-            <Edit3Icon className="w-4 h-auto" />
-            {t("common.edit")}
-          </MenuItem>
-        )}
-        {!hiddenActions?.includes("share") && (
-          <MenuItem onClick={handleCopyLink}>
-            <CopyIcon className="w-4 h-auto" />
-            {t("memo.copy-link")}
-          </MenuItem>
-        )}
-        <MenuItem color="warning" onClick={handleToggleMemoStatusClick}>
-          {memo.rowStatus === RowStatus.ARCHIVED ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
-          {memo.rowStatus === RowStatus.ARCHIVED ? t("common.restore") : t("common.archive")}
+        <MenuItem onClick={handleCopyLink}>
+          <CopyIcon className="w-4 h-auto" />
+          {t("memo.copy-link")}
         </MenuItem>
-        {!hiddenActions?.includes("remove_completed_task_list") && (
-          <MenuItem color="danger" onClick={handleRemoveCompletedTaskListItemsClick}>
-            <SquareCheckIcon className="w-4 h-auto" />
-            {t("memo.remove-completed-task-list-items")}
-          </MenuItem>
+        {!readonly && (
+          <>
+            {!isArchived && hasCompletedTaskList && (
+              <MenuItem color="danger" onClick={handleRemoveCompletedTaskListItemsClick}>
+                <SquareCheckIcon className="w-4 h-auto" />
+                {t("memo.remove-completed-task-list-items")}
+              </MenuItem>
+            )}
+            <MenuItem color="warning" onClick={handleToggleMemoStatusClick}>
+              {memo.rowStatus === RowStatus.ARCHIVED ? (
+                <ArchiveRestoreIcon className="w-4 h-auto" />
+              ) : (
+                <ArchiveIcon className="w-4 h-auto" />
+              )}
+              {memo.rowStatus === RowStatus.ARCHIVED ? t("common.restore") : t("common.archive")}
+            </MenuItem>
+            <MenuItem color="danger" onClick={handleDeleteMemoClick}>
+              <TrashIcon className="w-4 h-auto" />
+              {t("common.delete")}
+            </MenuItem>
+          </>
         )}
-        <MenuItem color="danger" onClick={handleDeleteMemoClick}>
-          <TrashIcon className="w-4 h-auto" />
-          {t("common.delete")}
-        </MenuItem>
       </Menu>
     </Dropdown>
   );
