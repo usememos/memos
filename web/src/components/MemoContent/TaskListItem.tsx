@@ -19,7 +19,7 @@ interface Props {
 const TaskListItem: React.FC<Props> = ({ node, complete, children }: Props) => {
   const context = useContext(RendererContext);
   const memoStore = useMemoStore();
-  const [checked] = useState(complete);
+  const [checked, setChecked] = useState(complete);
 
   const handleCheckboxChange = async (on: boolean) => {
     if (context.readonly || !context.memoName) {
@@ -35,6 +35,7 @@ const TaskListItem: React.FC<Props> = ({ node, complete, children }: Props) => {
       },
       ["content"],
     );
+    setChecked(on);
   };
 
   return (

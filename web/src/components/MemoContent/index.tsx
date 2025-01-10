@@ -53,13 +53,13 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
-  const handleMemoContentClick = async (e: React.MouseEvent) => {
+  const onMemoContentClick = async (e: React.MouseEvent) => {
     if (onClick) {
       onClick(e);
     }
   };
 
-  const handleMemoContentDoubleClick = async (e: React.MouseEvent) => {
+  const onMemoContentDoubleClick = async (e: React.MouseEvent) => {
     if (onDoubleClick) {
       onDoubleClick(e);
     }
@@ -71,10 +71,6 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     ALL: { text: t("memo.show-more"), nextState: "SNIPPET" },
     SNIPPET: { text: t("memo.show-less"), nextState: "ALL" },
   };
-
-  useEffect(() => {
-    sessionStorage.getItem(`${memoName}`) && setShowCompactMode(sessionStorage.getItem(`${memoName}`) as ContentCompactView);
-  }, []);
 
   return (
     <RendererContext.Provider
@@ -95,8 +91,8 @@ const MemoContent: React.FC<Props> = (props: Props) => {
             showCompactMode == "ALL" && "line-clamp-6 max-h-60",
             contentClassName,
           )}
-          onClick={handleMemoContentClick}
-          onDoubleClick={handleMemoContentDoubleClick}
+          onClick={onMemoContentClick}
+          onDoubleClick={onMemoContentDoubleClick}
         >
           {nodes.map((node, index) => {
             if (prevNode?.type !== NodeType.LINE_BREAK && node.type === NodeType.LINE_BREAK && skipNextLineBreakFlag) {
@@ -117,7 +113,6 @@ const MemoContent: React.FC<Props> = (props: Props) => {
               className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
               onClick={() => {
                 setShowCompactMode(compactStates[showCompactMode].nextState as ContentCompactView);
-                sessionStorage.setItem(`${memoName}`, compactStates[showCompactMode].nextState);
               }}
             >
               {compactStates[showCompactMode].text}
