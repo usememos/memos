@@ -445,6 +445,10 @@ const MemoEditor = (props: Props) => {
             selected={displayTime}
             onChange={(date) => date && setDisplayTime(date)}
             showTimeSelect
+            showMonthDropdown
+            showYearDropdown
+            yearDropdownItemNumber={5}
+            dateFormatCalendar=" "
             customInput={<span className="cursor-pointer text-sm text-gray-400 dark:text-gray-500">{displayTime.toLocaleString()}</span>}
             calendarClassName="ml-24 sm:ml-44"
           />
