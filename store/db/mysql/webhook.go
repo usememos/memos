@@ -36,7 +36,7 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 		where, args = append(where, "`creator_id` = ?"), append(args, *find.CreatorID)
 	}
 
-	rows, err := d.db.QueryContext(ctx, "SELECT `id`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status`, `creator_id`, `name`, `url` FROM `webhook` WHERE "+strings.Join(where, " AND ")+" ORDER BY `id` DESC",
+	rows, err := d.db.QueryContext(ctx, "SELECT `id`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`),  `creator_id`, `name`, `url` FROM `webhook` WHERE "+strings.Join(where, " AND ")+" ORDER BY `id` DESC",
 		args...,
 	)
 	if err != nil {
@@ -47,19 +47,16 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 	list := []*store.Webhook{}
 	for rows.Next() {
 		webhook := &store.Webhook{}
-		var rowStatus string
 		if err := rows.Scan(
 			&webhook.ID,
 			&webhook.CreatedTs,
 			&webhook.UpdatedTs,
-			&rowStatus,
 			&webhook.CreatorID,
 			&webhook.Name,
 			&webhook.URL,
 		); err != nil {
 			return nil, err
 		}
-		webhook.RowStatus = store.RowStatus(rowStatus)
 		list = append(list, webhook)
 	}
 
@@ -83,9 +80,6 @@ func (d *DB) GetWebhook(ctx context.Context, find *store.FindWebhook) (*store.We
 
 func (d *DB) UpdateWebhook(ctx context.Context, update *store.UpdateWebhook) (*store.Webhook, error) {
 	set, args := []string{}, []any{}
-	if update.RowStatus != nil {
-		set, args = append(set, "`row_status` = ?"), append(args, update.RowStatus.String())
-	}
 	if update.Name != nil {
 		set, args = append(set, "`name` = ?"), append(args, *update.Name)
 	}

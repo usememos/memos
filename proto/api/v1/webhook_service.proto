@@ -53,11 +53,9 @@ message Webhook {
 
   google.protobuf.Timestamp update_time = 4;
 
-  State state = 5;
+  string name = 5;
 
-  string name = 6;
-
-  string url = 7;
+  string url = 6;
 }
 
 message CreateWebhookRequest {

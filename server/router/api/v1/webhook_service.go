@@ -103,7 +103,6 @@ func convertWebhookFromStore(webhook *store.Webhook) *v1pb.Webhook {
 		Id:         webhook.ID,
 		CreateTime: timestamppb.New(time.Unix(webhook.CreatedTs, 0)),
 		UpdateTime: timestamppb.New(time.Unix(webhook.UpdatedTs, 0)),
-		State:      convertStateFromStore(webhook.RowStatus),
 		CreatorId:  webhook.CreatorID,
 		Name:       webhook.Name,
 		Url:        webhook.URL,

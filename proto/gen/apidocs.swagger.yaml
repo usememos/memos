@@ -630,8 +630,6 @@ paths:
               updateTime:
                 type: string
                 format: date-time
-              state:
-                $ref: '#/definitions/v1State'
               name:
                 type: string
               url:
@@ -3056,8 +3054,6 @@ definitions:
       updateTime:
         type: string
         format: date-time
-      state:
-        $ref: '#/definitions/v1State'
       name:
         type: string
       url:
