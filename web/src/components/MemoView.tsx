@@ -7,7 +7,7 @@ import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore, useWorkspaceSettingStore, useMemoStore } from "@/store/v1";
-import { NodeType } from "@/types/proto/api/v1/markdown_service";
+import { RowStatus } from "@/types/proto/api/v1/common";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
@@ -29,7 +29,6 @@ import VisibilityIcon from "./VisibilityIcon";
 
 interface Props {
   memo: Memo;
-  displayTimeFormat?: "auto" | "time";
   compact?: boolean;
   showCreator?: boolean;
   showVisibility?: boolean;
@@ -59,6 +58,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo?.name === memo.name,
   ).length;
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
+  const isArchived = memo.rowStatus === RowStatus.ARCHIVED;
   const readonly = memo.creator !== user?.name && !isSuperUser(user);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
   const parentPage = props.parentPage || location.pathname;
@@ -115,42 +115,11 @@ const MemoView: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const displayTime =
-    props.displayTimeFormat === "time" ? (
-      memo.displayTime?.toLocaleTimeString()
-    ) : (
-      <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat}></relative-time>
-    );
-
-  const handleHiddenActions = () => {
-    const hiddenActions: ("edit" | "archive" | "delete" | "share" | "pin" | "remove_completed_task_list")[] = [];
-    if (!props.showPinned) {
-      hiddenActions.push("pin");
-    }
-    // check if the content has done tasks
-    let hasCompletedTaskList = false;
-    const newNodes = JSON.parse(JSON.stringify(memo.nodes));
-    for (let i = 0; i < newNodes.length; i++) {
-      if (hasCompletedTaskList) {
-        break;
-      }
-      if (newNodes[i].type === NodeType.LIST && newNodes[i].listNode?.children?.length > 0) {
-        for (let j = 0; j < newNodes[i].listNode.children.length; j++) {
-          if (
-            newNodes[i].listNode.children[j].type === NodeType.TASK_LIST_ITEM &&
-            newNodes[i].listNode.children[j].taskListItemNode?.complete
-          ) {
-            hasCompletedTaskList = true;
-            break;
-          }
-        }
-      }
-    }
-    if (!hasCompletedTaskList) {
-      hiddenActions.push("remove_completed_task_list");
-    }
-    return hiddenActions;
-  };
+  const displayTime = isArchived ? (
+    memo.displayTime?.toLocaleString()
+  ) : (
+    <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat}></relative-time>
+  );
 
   return (
     <div
@@ -213,7 +182,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     </span>
                   </Tooltip>
                 )}
-                {currentUser && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
+                {currentUser && !isArchived && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
               </div>
               {!isInMemoDetailPage && (workspaceMemoRelatedSetting.enableComment || commentAmount > 0) && (
                 <Link
@@ -238,9 +207,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                   </span>
                 </Tooltip>
               )}
-              {!readonly && (
-                <MemoActionMenu className="-ml-1" memo={memo} hiddenActions={handleHiddenActions()} onEdit={() => setShowEditor(true)} />
-              )}
+              <MemoActionMenu className="-ml-1" memo={memo} readonly={readonly} onEdit={() => setShowEditor(true)} />
             </div>
           </div>
           <MemoContent
