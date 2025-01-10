@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -31,8 +32,13 @@ func (s *APIV1Service) CreateWebhook(ctx context.Context, request *v1pb.CreateWe
 }
 
 func (s *APIV1Service) ListWebhooks(ctx context.Context, request *v1pb.ListWebhooksRequest) (*v1pb.ListWebhooksResponse, error) {
+	creatorID, err := ExtractUserIDFromName(request.Creator)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid creator name: %v", err)
+	}
+
 	webhooks, err := s.Store.ListWebhooks(ctx, &store.FindWebhook{
-		CreatorID: &request.CreatorId,
+		CreatorID: &creatorID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list webhooks, error: %+v", err)
@@ -103,7 +109,7 @@ func convertWebhookFromStore(webhook *store.Webhook) *v1pb.Webhook {
 		Id:         webhook.ID,
 		CreateTime: timestamppb.New(time.Unix(webhook.CreatedTs, 0)),
 		UpdateTime: timestamppb.New(time.Unix(webhook.UpdatedTs, 0)),
-		CreatorId:  webhook.CreatorID,
+		Creator:    fmt.Sprintf("%s%d", UserNamePrefix, webhook.CreatorID),
 		Name:       webhook.Name,
 		Url:        webhook.URL,
 	}

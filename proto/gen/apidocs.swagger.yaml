@@ -531,11 +531,13 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: creatorId
+        - name: creator
+          description: |-
+            The name of the creator.
+            Format: users/{user}
           in: query
           required: false
-          type: integer
-          format: int32
+          type: string
       tags:
         - WebhookService
     post:
@@ -625,9 +627,11 @@ paths:
           schema:
             type: object
             properties:
-              creatorId:
-                type: integer
-                format: int32
+              creator:
+                type: string
+                title: |-
+                  The name of the creator.
+                  Format: users/{user}
               createTime:
                 type: string
                 format: date-time
@@ -2335,10 +2339,11 @@ definitions:
         title: |-
           The name of the activity.
           Format: activities/{id}
-      creatorId:
-        type: integer
-        format: int32
-        description: The uid of the user who created the activity.
+      creator:
+        type: string
+        title: |-
+          The name of the creator.
+          Format: users/{user}
       type:
         type: string
         description: The type of the activity.
@@ -3083,9 +3088,11 @@ definitions:
       id:
         type: integer
         format: int32
-      creatorId:
-        type: integer
-        format: int32
+      creator:
+        type: string
+        title: |-
+          The name of the creator.
+          Format: users/{user}
       createTime:
         type: string
         format: date-time

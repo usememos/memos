@@ -21,8 +21,9 @@ message Activity {
   // The name of the activity.
   // Format: activities/{id}
   string name = 1;
-  // The uid of the user who created the activity.
-  int32 creator_id = 2;
+  // The name of the creator.
+  // Format: users/{user}
+  string creator = 2;
   // The type of the activity.
   string type = 3;
   // The level of the activity.

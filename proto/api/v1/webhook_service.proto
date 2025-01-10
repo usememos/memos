@@ -46,7 +46,9 @@ service WebhookService {
 message Webhook {
   int32 id = 1;
 
-  int32 creator_id = 2;
+  // The name of the creator.
+  // Format: users/{user}
+  string creator = 2;
 
   google.protobuf.Timestamp create_time = 3;
 
@@ -68,7 +70,9 @@ message GetWebhookRequest {
 }
 
 message ListWebhooksRequest {
-  int32 creator_id = 1;
+  // The name of the creator.
+  // Format: users/{user}
+  string creator = 2;
 }
 
 message ListWebhooksResponse {
@@ -90,7 +94,9 @@ message WebhookRequestPayload {
 
   string activity_type = 2;
 
-  int32 creator_id = 3;
+  // The name of the creator.
+  // Format: users/{user}
+  string creator = 3;
 
   google.protobuf.Timestamp create_time = 4;
 

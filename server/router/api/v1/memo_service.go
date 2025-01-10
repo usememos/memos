@@ -670,7 +670,7 @@ func convertMemoToWebhookPayload(memo *v1pb.Memo) (*v1pb.WebhookRequestPayload, 
 		return nil, errors.Wrap(err, "invalid memo creator")
 	}
 	return &v1pb.WebhookRequestPayload{
-		CreatorId:  creatorID,
+		Creator:    fmt.Sprintf("%s%d", UserNamePrefix, creatorID),
 		CreateTime: timestamppb.New(time.Now()),
 		Memo:       memo,
 	}, nil
