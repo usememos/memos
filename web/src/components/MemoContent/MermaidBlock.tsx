@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useCommonContext } from "@/layouts/CommonContextProvider";
 
 interface Props {
   content: string;
@@ -6,12 +7,12 @@ interface Props {
 
 const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
   const mermaidDockBlock = useRef<null>(null);
-
+  const commonContext = useCommonContext();
   useEffect(() => {
     // Dynamically import mermaid to ensure compatibility with Vite
     const initializeMermaid = async () => {
       const mermaid = (await import("mermaid")).default;
-      mermaid.initialize({ startOnLoad: false, theme: "dark", darkMode: true });
+      mermaid.initialize({ startOnLoad: false, theme: commonContext.appearance === "dark" ? "dark" : "default" });
       if (mermaidDockBlock.current) {
         mermaid.run({
           nodes: [mermaidDockBlock.current],
