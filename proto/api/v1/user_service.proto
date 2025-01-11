@@ -53,6 +53,12 @@ service UserService {
     option (google.api.http) = {delete: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
+  // ListUserStats returns the stats of a user.
+  // Use `users/-` to list all users.
+  rpc ListUserStats(ListUserStatsRequest) returns (ListUserStatsResponse) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*}/stats"};
+    option (google.api.method_signature) = "name";
+  }
   // GetUserSetting gets the setting of a user.
   rpc GetUserSetting(GetUserSettingRequest) returns (UserSetting) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}/setting"};
@@ -163,6 +169,39 @@ message DeleteUserRequest {
   // The name of the user.
   // Format: users/{user}
   string name = 1;
+}
+
+message UserStats {
+  // The name of the user.
+  // Format: users/{user}
+  string name = 1;
+
+  // The timestamps when the memos were displayed.
+  // We should return raw data to the client, and let the client format the data with the user's timezone.
+  repeated google.protobuf.Timestamp memo_display_timestamps = 2;
+
+  // The stats of memo types.
+  MemoTypeStats memo_type_stats = 3;
+
+  // The count of tags.
+  // Format: "tag1": 1, "tag2": 2
+  map<string, int32> tag_count = 4;
+
+  message MemoTypeStats {
+    int32 link_count = 1;
+    int32 task_count = 2;
+    int32 code_count = 3;
+  }
+}
+
+message ListUserStatsRequest {
+  // The name of the user.
+  // Format: users/{user}. Use "-" to list all users.
+  string name = 1;
+}
+
+message ListUserStatsResponse {
+  repeated UserStats user_stats = 1;
 }
 
 message UserSetting {

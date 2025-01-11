@@ -28,6 +28,7 @@ const (
 	UserService_CreateUser_FullMethodName            = "/memos.api.v1.UserService/CreateUser"
 	UserService_UpdateUser_FullMethodName            = "/memos.api.v1.UserService/UpdateUser"
 	UserService_DeleteUser_FullMethodName            = "/memos.api.v1.UserService/DeleteUser"
+	UserService_ListUserStats_FullMethodName         = "/memos.api.v1.UserService/ListUserStats"
 	UserService_GetUserSetting_FullMethodName        = "/memos.api.v1.UserService/GetUserSetting"
 	UserService_UpdateUserSetting_FullMethodName     = "/memos.api.v1.UserService/UpdateUserSetting"
 	UserService_ListUserAccessTokens_FullMethodName  = "/memos.api.v1.UserService/ListUserAccessTokens"
@@ -53,6 +54,7 @@ type UserServiceClient interface {
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error)
 	// DeleteUser deletes a user.
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ListUserStats(ctx context.Context, in *ListUserStatsRequest, opts ...grpc.CallOption) (*ListUserStatsResponse, error)
 	// GetUserSetting gets the setting of a user.
 	GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
 	// UpdateUserSetting updates the setting of a user.
@@ -143,6 +145,16 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 	return out, nil
 }
 
+func (c *userServiceClient) ListUserStats(ctx context.Context, in *ListUserStatsRequest, opts ...grpc.CallOption) (*ListUserStatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserStatsResponse)
+	err := c.cc.Invoke(ctx, UserService_ListUserStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserSetting)
@@ -211,6 +223,7 @@ type UserServiceServer interface {
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
 	// DeleteUser deletes a user.
 	DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
+	ListUserStats(context.Context, *ListUserStatsRequest) (*ListUserStatsResponse, error)
 	// GetUserSetting gets the setting of a user.
 	GetUserSetting(context.Context, *GetUserSettingRequest) (*UserSetting, error)
 	// UpdateUserSetting updates the setting of a user.
@@ -251,6 +264,9 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 }
 func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedUserServiceServer) ListUserStats(context.Context, *ListUserStatsRequest) (*ListUserStatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserStats not implemented")
 }
 func (UnimplementedUserServiceServer) GetUserSetting(context.Context, *GetUserSettingRequest) (*UserSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserSetting not implemented")
@@ -414,6 +430,24 @@ func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ListUserStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListUserStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListUserStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListUserStats(ctx, req.(*ListUserStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_GetUserSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserSettingRequest)
 	if err := dec(in); err != nil {
@@ -538,6 +572,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUser",
 			Handler:    _UserService_DeleteUser_Handler,
+		},
+		{
+			MethodName: "ListUserStats",
+			Handler:    _UserService_ListUserStats_Handler,
 		},
 		{
 			MethodName: "GetUserSetting",

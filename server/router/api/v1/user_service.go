@@ -275,6 +275,99 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	return &emptypb.Empty{}, nil
 }
 
+func (s *APIV1Service) ListUserStats(ctx context.Context, request *v1pb.ListUserStatsRequest) (*v1pb.ListUserStatsResponse, error) {
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+
+	// For unauthenticated users, only public memos are visible.
+	defaultVisibilities := []store.Visibility{store.Public}
+	if currentUser != nil {
+		// For authenticated users, protected memos are also visible.
+		defaultVisibilities = append(defaultVisibilities, store.Protected)
+	}
+
+	users := []*store.User{}
+	if request.Name == "users/-" {
+		users, err = s.Store.ListUsers(ctx, &store.FindUser{})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
+		}
+	} else {
+		userID, err := ExtractUserIDFromName(request.Name)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+		}
+		if userID == currentUser.ID {
+			users = append(users, currentUser)
+		} else {
+			user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+			}
+			if user == nil {
+				return nil, status.Errorf(codes.NotFound, "user not found")
+			}
+			users = append(users, user)
+		}
+	}
+
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+	}
+	userStatsList := []*v1pb.UserStats{}
+	for _, user := range users {
+		userStats := &v1pb.UserStats{
+			Name:                  fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
+			MemoDisplayTimestamps: []*timestamppb.Timestamp{},
+			MemoTypeStats:         &v1pb.UserStats_MemoTypeStats{},
+			TagCount:              map[string]int32{},
+		}
+		var visibilities []store.Visibility = defaultVisibilities
+		// For the current user, show all memos including private ones.
+		if user.ID == currentUser.ID {
+			visibilities = []store.Visibility{store.Public, store.Protected, store.Private}
+		}
+		memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
+			// Exclude comments by default.
+			ExcludeComments: true,
+			ExcludeContent:  true,
+			CreatorID:       &user.ID,
+			VisibilityList:  visibilities,
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
+		}
+		for _, memo := range memos {
+			displayTs := memo.CreatedTs
+			if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+				displayTs = memo.UpdatedTs
+			}
+			userStats.MemoDisplayTimestamps = append(userStats.MemoDisplayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))
+			// Handle duplicated tags.
+			for _, tag := range memo.Payload.Tags {
+				userStats.TagCount[tag]++
+			}
+			if memo.Payload.Property.GetHasLink() {
+				userStats.MemoTypeStats.LinkCount++
+			}
+			if memo.Payload.Property.GetHasTaskList() {
+				userStats.MemoTypeStats.TaskCount++
+			}
+			if memo.Payload.Property.GetHasCode() {
+				userStats.MemoTypeStats.CodeCount++
+			}
+		}
+		userStatsList = append(userStatsList, userStats)
+	}
+
+	return &v1pb.ListUserStatsResponse{
+		UserStats: userStatsList,
+	}, nil
+}
+
 func getDefaultUserSetting(workspaceMemoRelatedSetting *storepb.WorkspaceMemoRelatedSetting) *v1pb.UserSetting {
 	defaultVisibility := "PRIVATE"
 	if workspaceMemoRelatedSetting.DefaultVisibility != "" {

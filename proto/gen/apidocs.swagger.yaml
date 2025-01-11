@@ -1464,6 +1464,29 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
+  /api/v1/{name}/stats:
+    get:
+      operationId: UserService_ListUserStats
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListUserStatsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the user.
+            Format: users/{user}. Use "-" to list all users.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - UserService
   /api/v1/{parent}/tags/{tag}:
     delete:
       summary: DeleteMemoTag deletes a tag for a memo.
@@ -1808,6 +1831,18 @@ definitions:
       expiresAt:
         type: string
         format: date-time
+  UserStatsMemoTypeStats:
+    type: object
+    properties:
+      linkCount:
+        type: integer
+        format: int32
+      taskCount:
+        type: integer
+        format: int32
+      codeCount:
+        type: integer
+        format: int32
   WorkspaceStorageSettingS3Config:
     type: object
     properties:
@@ -2635,6 +2670,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1UserAccessToken'
+  v1ListUserStatsResponse:
+    type: object
+    properties:
+      userStats:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1UserStats'
   v1ListUsersResponse:
     type: object
     properties:
@@ -3074,6 +3117,33 @@ definitions:
       expiresAt:
         type: string
         format: date-time
+  v1UserStats:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the user.
+          Format: users/{user}
+      memoDisplayTimestamps:
+        type: array
+        items:
+          type: string
+          format: date-time
+        description: |-
+          The timestamps when the memos were displayed.
+          We should return raw data to the client, and let the client format the data with the user's timezone.
+      memoTypeStats:
+        $ref: '#/definitions/UserStatsMemoTypeStats'
+        description: The stats of memo types.
+      tagCount:
+        type: object
+        additionalProperties:
+          type: integer
+          format: int32
+        title: |-
+          The count of tags.
+          Format: "tag1": 1, "tag2": 2
   v1Visibility:
     type: string
     enum:
