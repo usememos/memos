@@ -11,7 +11,8 @@ const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
     // Dynamically import mermaid to ensure compatibility with Vite
     const initializeMermaid = async () => {
       const mermaid = (await import("mermaid")).default;
-      mermaid.initialize({ startOnLoad: false, theme: "default" });
+      mermaid.initialize({ startOnLoad: false, theme: 'dark', darkMode: true
+      });
       if (mermaidDockBlock.current) {
         mermaid.run({
           nodes: [mermaidDockBlock.current],
