@@ -34,10 +34,12 @@ func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 		return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1")
 	}
 
-	// Route to serve the assets folder without HTML5 fallback.
-	e.Group("/assets").Use(middleware.GzipWithConfig(middleware.GzipConfig{
+	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Level: 5,
-	}), func(next echo.HandlerFunc) echo.HandlerFunc {
+	}))
+
+	// Route to serve the assets folder without HTML5 fallback.
+	e.Group("/assets").Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Response().Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 			return next(c)
