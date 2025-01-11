@@ -494,6 +494,29 @@ paths:
             $ref: '#/definitions/v1User'
       tags:
         - UserService
+  /api/v1/users/-/stats:
+    post:
+      summary: ListAllUserStats returns all user stats.
+      operationId: UserService_ListAllUserStats
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListAllUserStatsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: filter
+          description: |-
+            Filter is used to filter memos to calculate stats.
+            Same as `ListMemosRequest.filter`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - UserService
   /api/v1/users:search:
     get:
       summary: SearchUsers searches users by filter.
@@ -1466,12 +1489,13 @@ paths:
         - UserService
   /api/v1/{name}/stats:
     get:
-      operationId: UserService_ListUserStats
+      summary: GetUserStats returns the stats of a user.
+      operationId: UserService_GetUserStats
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1ListUserStatsResponse'
+            $ref: '#/definitions/v1UserStats'
         default:
           description: An unexpected error response.
           schema:
@@ -1480,11 +1504,18 @@ paths:
         - name: name
           description: |-
             The name of the user.
-            Format: users/{user}. Use "-" to list all users.
+            Format: users/{user}.
           in: path
           required: true
           type: string
           pattern: users/[^/]+
+        - name: filter
+          description: |-
+            Filter is used to filter memos to calculate stats.
+            Same as `ListMemosRequest.filter`.
+          in: query
+          required: false
+          type: string
       tags:
         - UserService
   /api/v1/{parent}/tags/{tag}:
@@ -2575,6 +2606,14 @@ definitions:
         type: string
       url:
         type: string
+  v1ListAllUserStatsResponse:
+    type: object
+    properties:
+      userStats:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1UserStats'
   v1ListIdentityProvidersResponse:
     type: object
     properties:
@@ -2670,14 +2709,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1UserAccessToken'
-  v1ListUserStatsResponse:
-    type: object
-    properties:
-      userStats:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1UserStats'
   v1ListUsersResponse:
     type: object
     properties:

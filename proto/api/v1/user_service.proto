@@ -53,9 +53,12 @@ service UserService {
     option (google.api.http) = {delete: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
-  // ListUserStats returns the stats of a user.
-  // Use `users/-` to list all users.
-  rpc ListUserStats(ListUserStatsRequest) returns (ListUserStatsResponse) {
+  // ListAllUserStats returns all user stats.
+  rpc ListAllUserStats(ListAllUserStatsRequest) returns (ListAllUserStatsResponse) {
+    option (google.api.http) = {post: "/api/v1/users/-/stats"};
+  }
+  // GetUserStats returns the stats of a user.
+  rpc GetUserStats(GetUserStatsRequest) returns (UserStats) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}/stats"};
     option (google.api.method_signature) = "name";
   }
@@ -194,14 +197,24 @@ message UserStats {
   }
 }
 
-message ListUserStatsRequest {
-  // The name of the user.
-  // Format: users/{user}. Use "-" to list all users.
-  string name = 1;
+message ListAllUserStatsRequest {
+  // Filter is used to filter memos to calculate stats.
+  // Same as `ListMemosRequest.filter`.
+  string filter = 1;
 }
 
-message ListUserStatsResponse {
+message ListAllUserStatsResponse {
   repeated UserStats user_stats = 1;
+}
+
+message GetUserStatsRequest {
+  // The name of the user.
+  // Format: users/{user}.
+  string name = 1;
+
+  // Filter is used to filter memos to calculate stats.
+  // Same as `ListMemosRequest.filter`.
+  string filter = 2;
 }
 
 message UserSetting {
