@@ -1,6 +1,5 @@
+import { useColorScheme } from "@mui/joy";
 import { useEffect, useRef } from "react";
-import { getSystemColorScheme } from "@/helpers/utils";
-import { useCommonContext } from "@/layouts/CommonContextProvider";
 
 interface Props {
   content: string;
@@ -8,23 +7,12 @@ interface Props {
 
 const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
   const mermaidDockBlock = useRef<null>(null);
-  const commonContext = useCommonContext();
+  const { mode } = useColorScheme();
 
   const handleMermaidTheme = () => {
-    if (commonContext.appearance === "dark") {
-      return "dark";
-    } else if (commonContext.appearance === "light") {
-      return "neutral";
-    } else {
-      if (getSystemColorScheme() === "dark") {
-        return "dark";
-      } else if (getSystemColorScheme() === "light") {
-        return "neutral";
-      } else {
-        return "default";
-      }
-    }
+    return mode == "dark" ? "dark" : "default";
   };
+
   useEffect(() => {
     // Dynamically import mermaid to ensure compatibility with Vite
     const initializeMermaid = async () => {
