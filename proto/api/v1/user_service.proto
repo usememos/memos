@@ -192,8 +192,9 @@ message UserStats {
 
   message MemoTypeStats {
     int32 link_count = 1;
-    int32 task_count = 2;
-    int32 code_count = 3;
+    int32 code_count = 2;
+    int32 todo_count = 3;
+    int32 undo_count = 4;
   }
 }
 

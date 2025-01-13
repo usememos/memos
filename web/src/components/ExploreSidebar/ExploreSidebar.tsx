@@ -1,26 +1,26 @@
 import clsx from "clsx";
-import { useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
-import { useMemoList, useMemoMetadataStore } from "@/store/v1";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useUserStatsStore } from "@/store/v1";
 import TagsSection from "../HomeSidebar/TagsSection";
+import StatisticsView from "../StatisticsView";
 
 interface Props {
   className?: string;
 }
 
 const ExploreSidebar = (props: Props) => {
-  const location = useLocation();
-  const memoList = useMemoList();
-  const memoMetadataStore = useMemoMetadataStore();
+  const currentUser = useCurrentUser();
+  const userStatsStore = useUserStatsStore();
 
   useDebounce(
     async () => {
-      if (memoList.size() === 0) return;
-      await memoMetadataStore.fetchMemoMetadata({ location });
+      const filters = [`state == "NORMAL"`, `visibilities == [${currentUser ? "'PUBLIC', 'PROTECTED'" : "'PUBLIC'"}]`];
+      userStatsStore.listUserStats(undefined, filters.join(" && "));
     },
     300,
-    [memoList.size(), location.pathname],
+    [],
   );
 
   return (
@@ -31,6 +31,7 @@ const ExploreSidebar = (props: Props) => {
       )}
     >
       <SearchBar />
+      <StatisticsView />
       <TagsSection readonly={true} />
     </aside>
   );

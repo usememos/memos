@@ -1868,10 +1868,13 @@ definitions:
       linkCount:
         type: integer
         format: int32
-      taskCount:
+      codeCount:
         type: integer
         format: int32
-      codeCount:
+      todoCount:
+        type: integer
+        format: int32
+      undoCount:
         type: integer
         format: int32
   WorkspaceStorageSettingS3Config:
