@@ -1,11 +1,10 @@
-import { Divider, Tooltip } from "@mui/joy";
+import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
 import { CalendarDaysIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
 import { useState } from "react";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
 import { useMemoFilterStore, useUserStatsStore } from "@/store/v1";
 import { UserStats_MemoTypeStats } from "@/types/proto/api/v1/user_service";
@@ -14,18 +13,12 @@ import ActivityCalendar from "./ActivityCalendar";
 
 const StatisticsView = () => {
   const t = useTranslate();
-  const currentUser = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
   const userStatsStore = useUserStatsStore();
-  const [memoAmount, setMemoAmount] = useState(0);
   const [memoTypeStats, setMemoTypeStats] = useState<UserStats_MemoTypeStats>(UserStats_MemoTypeStats.fromPartial({}));
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDate] = useState(new Date());
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs(selectedDate.toDateString()).format("YYYY-MM"));
-  const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
-
-  const singularOrPluralMemo = (memoAmount > 0 ? t("common.memos") : t("common.memo")).toLowerCase();
-  const singularOrPluralDay = (days > 0 ? t("common.days") : t("common.day")).toLowerCase();
 
   useAsyncEffect(async () => {
     const memoTypeStats = UserStats_MemoTypeStats.fromPartial({});
@@ -40,7 +33,6 @@ const StatisticsView = () => {
       }
     }
     setMemoTypeStats(memoTypeStats);
-    setMemoAmount(displayTimeList.length);
     setActivityStats(countBy(displayTimeList.map((date) => dayjs(date).format("YYYY-MM-DD"))));
   }, [userStatsStore.stateId]);
 
@@ -80,16 +72,8 @@ const StatisticsView = () => {
           data={activityStats}
           onClick={onCalendarClick}
         />
-        {memoAmount === 0 ? (
-          <p className="mt-1 w-full text-xs italic opacity-80">{t("memo.no-memos")}</p>
-        ) : (
-          <p className="mt-1 w-full text-xs italic opacity-80">
-            <span>{memoAmount}</span> {singularOrPluralMemo} {t("common.in").toLowerCase()} <span>{days}</span> {singularOrPluralDay}
-          </p>
-        )}
       </div>
-      <Divider className="!my-2 opacity-50" />
-      <div className="w-full flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
+      <div className="pt-1 w-full flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
         <div
           className={clsx("w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center")}
           onClick={() => memoFilterStore.addFilter({ factor: "property.hasLink", value: "" })}
