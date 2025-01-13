@@ -6,16 +6,14 @@ interface Props {
 }
 
 const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
+  const { mode: colorMode } = useColorScheme();
   const mermaidDockBlock = useRef<null>(null);
-  const { mode } = useColorScheme();
-
-  const mermaidTheme = mode == "dark" ? "dark" : "default";
 
   useEffect(() => {
     // Dynamically import mermaid to ensure compatibility with Vite
     const initializeMermaid = async () => {
       const mermaid = (await import("mermaid")).default;
-      mermaid.initialize({ startOnLoad: false, theme: mermaidTheme });
+      mermaid.initialize({ startOnLoad: false, theme: colorMode == "dark" ? "dark" : "default" });
       if (mermaidDockBlock.current) {
         mermaid.run({
           nodes: [mermaidDockBlock.current],
