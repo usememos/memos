@@ -108,7 +108,7 @@ const Resources = () => {
                           <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                             {resources.map((resource) => {
                               return (
-                                <div key={resource.name} className="resource w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
+                                <div key={resource.name} className="resource-used w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
                                   <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
                                     <ResourceIcon resource={resource} strokeWidth={0.5} />
                                   </div>
