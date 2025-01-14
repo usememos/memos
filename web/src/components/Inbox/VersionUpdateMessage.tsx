@@ -56,7 +56,7 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
   };
 
   return (
-    <div className="w-full flex flex-row justify-start items-start gap-3">
+    <div className="inbox-version w-full flex flex-row justify-start items-start gap-3">
       <div
         className={clsx(
           "shrink-0 mt-2 p-2 rounded-full border",
