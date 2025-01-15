@@ -198,11 +198,7 @@ message UserStats {
   }
 }
 
-message ListAllUserStatsRequest {
-  // Filter is used to filter memos to calculate stats.
-  // Same as `ListMemosRequest.filter`.
-  string filter = 1;
-}
+message ListAllUserStatsRequest {}
 
 message ListAllUserStatsResponse {
   repeated UserStats user_stats = 1;
@@ -212,10 +208,6 @@ message GetUserStatsRequest {
   // The name of the user.
   // Format: users/{user}.
   string name = 1;
-
-  // Filter is used to filter memos to calculate stats.
-  // Same as `ListMemosRequest.filter`.
-  string filter = 2;
 }
 
 message UserSetting {

@@ -3,7 +3,6 @@ package v1
 import (
 	"context"
 	"fmt"
-	"slices"
 	"time"
 
 	"github.com/pkg/errors"
@@ -16,19 +15,66 @@ import (
 )
 
 func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListAllUserStatsRequest) (*v1pb.ListAllUserStatsResponse, error) {
-	users, err := s.Store.ListUsers(ctx, &store.FindUser{})
+	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	visibilities := []store.Visibility{store.Public}
+	if currentUser != nil {
+		visibilities = append(visibilities, store.Protected)
+	}
+
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+	}
+
+	memoFind := &store.FindMemo{
+		// Exclude comments by default.
+		ExcludeComments: true,
+		ExcludeContent:  true,
+		VisibilityList:  visibilities,
+	}
+	memos, err := s.Store.ListMemos(ctx, memoFind)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
+	}
+	userStatsMap := map[string]*v1pb.UserStats{}
+	for _, memo := range memos {
+		creator := fmt.Sprintf("%s%d", UserNamePrefix, memo.CreatorID)
+		if _, ok := userStatsMap[creator]; !ok {
+			userStatsMap[creator] = &v1pb.UserStats{
+				Name:                  creator,
+				MemoDisplayTimestamps: []*timestamppb.Timestamp{},
+				MemoTypeStats:         &v1pb.UserStats_MemoTypeStats{},
+				TagCount:              map[string]int32{},
+			}
+		}
+		displayTs := memo.CreatedTs
+		if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+			displayTs = memo.UpdatedTs
+		}
+		userStats := userStatsMap[creator]
+		userStats.MemoDisplayTimestamps = append(userStats.MemoDisplayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))
+		// Handle duplicated tags.
+		for _, tag := range memo.Payload.Tags {
+			userStats.TagCount[tag]++
+		}
+		if memo.Payload.Property.GetHasLink() {
+			userStats.MemoTypeStats.LinkCount++
+		}
+		if memo.Payload.Property.GetHasCode() {
+			userStats.MemoTypeStats.CodeCount++
+		}
+		if memo.Payload.Property.GetHasTaskList() {
+			userStats.MemoTypeStats.TodoCount++
+		}
+		if memo.Payload.Property.GetHasIncompleteTasks() {
+			userStats.MemoTypeStats.UndoCount++
+		}
 	}
 	userStatsList := []*v1pb.UserStats{}
-	for _, user := range users {
-		userStats, err := s.GetUserStats(ctx, &v1pb.GetUserStatsRequest{
-			Name:   fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
-			Filter: request.Filter,
-		})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get user stats: %v", err)
-		}
+	for _, userStats := range userStatsMap {
 		userStatsList = append(userStatsList, userStats)
 	}
 	return &v1pb.ListAllUserStatsResponse{
@@ -60,39 +106,21 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		// Exclude comments by default.
 		ExcludeComments: true,
 		ExcludeContent:  true,
-	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+		CreatorID:       &userID,
 	}
 
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
-	if len(memoFind.VisibilityList) == 0 {
-		visibilities := []store.Visibility{store.Public}
-		if currentUser != nil {
-			visibilities = append(visibilities, store.Protected)
-			if currentUser.ID == user.ID {
-				visibilities = append(visibilities, store.Private)
-			}
-		}
-		memoFind.VisibilityList = visibilities
-	} else {
-		if slices.Contains(memoFind.VisibilityList, store.Private) {
-			if currentUser == nil || currentUser.ID != user.ID {
-				return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-			}
-		}
-		if slices.Contains(memoFind.VisibilityList, store.Protected) {
-			if currentUser == nil {
-				return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-			}
+	visibilities := []store.Visibility{store.Public}
+	if currentUser != nil {
+		visibilities = append(visibilities, store.Protected)
+		if currentUser.ID == user.ID {
+			visibilities = append(visibilities, store.Private)
 		}
 	}
-
-	// Override the creator ID.
-	memoFind.CreatorID = &user.ID
+	memoFind.VisibilityList = visibilities
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)

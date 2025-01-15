@@ -17,8 +17,7 @@ const HomeSidebar = (props: Props) => {
 
   useDebounce(
     async () => {
-      const filters = [`state == "NORMAL"`, `creator == "${currentUser.name}"`];
-      await userStatsStore.listUserStats(currentUser.name, filters.join(" && "));
+      await userStatsStore.listUserStats(currentUser.name);
     },
     300,
     [memoList.size(), currentUser],

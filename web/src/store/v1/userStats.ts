@@ -20,15 +20,15 @@ export const useUserStatsStore = create(
   combine(getDefaultState(), (set, get) => ({
     setState: (state: State) => set(state),
     getState: () => get(),
-    listUserStats: async (user?: string, filter?: string) => {
+    listUserStats: async (user?: string) => {
       const userStatsByName: Record<string, UserStats> = {};
       if (!user) {
-        const { userStats } = await userServiceClient.listAllUserStats({ filter });
+        const { userStats } = await userServiceClient.listAllUserStats({});
         for (const stats of userStats) {
           userStatsByName[stats.name] = stats;
         }
       } else {
-        const userStats = await userServiceClient.getUserStats({ name: user, filter });
+        const userStats = await userServiceClient.getUserStats({ name: user });
         userStatsByName[user] = userStats;
       }
       set({ stateId: uniqueId(), userStatsByName });

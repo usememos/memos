@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUserStatsStore } from "@/store/v1";
 import TagsSection from "../HomeSidebar/TagsSection";
 import StatisticsView from "../StatisticsView";
@@ -11,13 +10,11 @@ interface Props {
 }
 
 const ExploreSidebar = (props: Props) => {
-  const currentUser = useCurrentUser();
   const userStatsStore = useUserStatsStore();
 
   useDebounce(
     async () => {
-      const filters = [`state == "NORMAL"`, `visibilities == [${currentUser ? "'PUBLIC', 'PROTECTED'" : "'PUBLIC'"}]`];
-      userStatsStore.listUserStats(undefined, filters.join(" && "));
+      userStatsStore.listUserStats();
     },
     300,
     [],
