@@ -14,7 +14,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListAllUserStatsRequest) (*v1pb.ListAllUserStatsResponse, error) {
+func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUserStatsRequest) (*v1pb.ListAllUserStatsResponse, error) {
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
