@@ -324,20 +324,6 @@ paths:
           in: query
           required: false
           type: string
-        - name: view
-          description: |-
-            The view of the memo.
-
-             - MEMO_VIEW_FULL: The full view of the memo. Includes all fields.
-             - MEMO_VIEW_METADATA_ONLY: The metadata only view of the memo. Excludes the content/snippet fields.
-          in: query
-          required: false
-          type: string
-          enum:
-            - MEMO_VIEW_UNSPECIFIED
-            - MEMO_VIEW_FULL
-            - MEMO_VIEW_METADATA_ONLY
-          default: MEMO_VIEW_UNSPECIFIED
       tags:
         - MemoService
     post:
@@ -507,14 +493,6 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: filter
-          description: |-
-            Filter is used to filter memos to calculate stats.
-            Same as `ListMemosRequest.filter`.
-          in: query
-          required: false
-          type: string
       tags:
         - UserService
   /api/v1/users:search:
@@ -1509,13 +1487,6 @@ paths:
           required: true
           type: string
           pattern: users/[^/]+
-        - name: filter
-          description: |-
-            Filter is used to filter memos to calculate stats.
-            Same as `ListMemosRequest.filter`.
-          in: query
-          required: false
-          type: string
       tags:
         - UserService
   /api/v1/{parent}/tags/{tag}:
@@ -2785,16 +2756,6 @@ definitions:
       - REFERENCE
       - COMMENT
     default: TYPE_UNSPECIFIED
-  v1MemoView:
-    type: string
-    enum:
-      - MEMO_VIEW_UNSPECIFIED
-      - MEMO_VIEW_FULL
-      - MEMO_VIEW_METADATA_ONLY
-    default: MEMO_VIEW_UNSPECIFIED
-    description: |2-
-       - MEMO_VIEW_FULL: The full view of the memo. Includes all fields.
-       - MEMO_VIEW_METADATA_ONLY: The metadata only view of the memo. Excludes the content/snippet fields.
   v1Node:
     type: object
     properties:

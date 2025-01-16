@@ -203,16 +203,6 @@ message CreateMemoRequest {
   optional Location location = 5;
 }
 
-enum MemoView {
-  MEMO_VIEW_UNSPECIFIED = 0;
-
-  // The full view of the memo. Includes all fields.
-  MEMO_VIEW_FULL = 1;
-
-  // The metadata only view of the memo. Excludes the content/snippet fields.
-  MEMO_VIEW_METADATA_ONLY = 2;
-}
-
 message ListMemosRequest {
   // The maximum number of memos to return.
   int32 page_size = 1;
@@ -224,9 +214,6 @@ message ListMemosRequest {
   // Filter is used to filter memos returned in the list.
   // Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
   string filter = 3;
-
-  // The view of the memo.
-  MemoView view = 4;
 }
 
 message ListMemosResponse {

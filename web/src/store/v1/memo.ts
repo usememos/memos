@@ -2,7 +2,7 @@ import { uniqueId } from "lodash-es";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { memoServiceClient } from "@/grpcweb";
-import { CreateMemoRequest, ListMemosRequest, Memo, MemoView } from "@/types/proto/api/v1/memo_service";
+import { CreateMemoRequest, ListMemosRequest, Memo } from "@/types/proto/api/v1/memo_service";
 
 interface State {
   // stateId is used to identify the store instance state.
@@ -36,7 +36,6 @@ export const useMemoStore = create(
         const { memos, nextPageToken } = await memoServiceClient.listMemos(
           {
             ...request,
-            view: MemoView.MEMO_VIEW_FULL,
           },
           { signal: controller.signal },
         );
