@@ -29,11 +29,13 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
 	}
 
+	normalStatus := store.Normal
 	memoFind := &store.FindMemo{
 		// Exclude comments by default.
 		ExcludeComments: true,
 		ExcludeContent:  true,
 		VisibilityList:  visibilities,
+		RowStatus:       &normalStatus,
 	}
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
@@ -92,21 +94,13 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
 
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
-	}
-	userStats := &v1pb.UserStats{
-		Name:                  fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
-		MemoDisplayTimestamps: []*timestamppb.Timestamp{},
-		MemoTypeStats:         &v1pb.UserStats_MemoTypeStats{},
-		TagCount:              map[string]int32{},
-	}
+	normalStatus := store.Normal
 	memoFind := &store.FindMemo{
 		// Exclude comments by default.
 		ExcludeComments: true,
 		ExcludeContent:  true,
 		CreatorID:       &userID,
+		RowStatus:       &normalStatus,
 	}
 
 	currentUser, err := s.GetCurrentUser(ctx)
@@ -124,6 +118,17 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
+	}
+
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+	}
+	userStats := &v1pb.UserStats{
+		Name:                  fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
+		MemoDisplayTimestamps: []*timestamppb.Timestamp{},
+		MemoTypeStats:         &v1pb.UserStats_MemoTypeStats{},
+		TagCount:              map[string]int32{},
 	}
 	for _, memo := range memos {
 		displayTs := memo.CreatedTs

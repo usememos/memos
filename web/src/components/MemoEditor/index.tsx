@@ -334,6 +334,10 @@ const MemoEditor = (props: Props) => {
             updateMask.add("display_time");
             memoPatch.displayTime = displayTime;
           }
+          if (updateMask.size === 0) {
+            toast.error("No changes detected");
+            return;
+          }
           const memo = await memoStore.updateMemo(memoPatch, Array.from(updateMask));
           if (onConfirm) {
             onConfirm(memo.name);

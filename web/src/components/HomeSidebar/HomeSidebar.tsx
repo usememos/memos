@@ -20,7 +20,7 @@ const HomeSidebar = (props: Props) => {
       await userStatsStore.listUserStats(currentUser.name);
     },
     300,
-    [memoList.size(), currentUser],
+    [memoList.size(), userStatsStore.stateId, currentUser],
   );
 
   return (

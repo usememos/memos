@@ -34,7 +34,7 @@ const StatisticsView = () => {
     }
     setMemoTypeStats(memoTypeStats);
     setActivityStats(countBy(displayTimeList.map((date) => dayjs(date).format("YYYY-MM-DD"))));
-  }, [userStatsStore.stateId]);
+  }, [userStatsStore.userStatsByName, userStatsStore.stateId]);
 
   const onCalendarClick = (date: string) => {
     memoFilterStore.removeFilter((f) => f.factor === "displayTime");

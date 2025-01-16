@@ -16,7 +16,7 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { markdownServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useMemoStore } from "@/store/v1";
+import { useMemoStore, useUserStatsStore } from "@/store/v1";
 import { State } from "@/types/proto/api/v1/common";
 import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
@@ -48,9 +48,15 @@ const MemoActionMenu = (props: Props) => {
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const memoStore = useMemoStore();
+  const userStatsStore = useUserStatsStore();
   const isArchived = memo.state === State.ARCHIVED;
   const hasCompletedTaskList = checkHasCompletedTaskList(memo);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
+
+  const memoUpdatedCallback = () => {
+    // Refresh user stats.
+    userStatsStore.setStateId();
+  };
 
   const handleTogglePinMemoBtnClick = async () => {
     try {
@@ -104,6 +110,7 @@ const MemoActionMenu = (props: Props) => {
     if (isInMemoDetailPage) {
       memo.state === State.ARCHIVED ? navigateTo("/") : navigateTo("/archived");
     }
+    memoUpdatedCallback();
   };
 
   const handleCopyLink = () => {
@@ -119,6 +126,7 @@ const MemoActionMenu = (props: Props) => {
       if (isInMemoDetailPage) {
         navigateTo("/");
       }
+      memoUpdatedCallback();
     }
   };
 
@@ -150,6 +158,7 @@ const MemoActionMenu = (props: Props) => {
         ["content"],
       );
       toast.success(t("message.remove-completed-task-list-items-successfully"));
+      memoUpdatedCallback();
     }
   };
 
@@ -180,7 +189,7 @@ const MemoActionMenu = (props: Props) => {
         {!readonly && (
           <>
             {!isArchived && hasCompletedTaskList && (
-              <MenuItem color="danger" onClick={handleRemoveCompletedTaskListItemsClick}>
+              <MenuItem color="warning" onClick={handleRemoveCompletedTaskListItemsClick}>
                 <SquareCheckIcon className="w-4 h-auto" />
                 {t("memo.remove-completed-task-list-items")}
               </MenuItem>

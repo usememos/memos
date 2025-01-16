@@ -4,7 +4,6 @@ import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "luci
 import toast from "react-hot-toast";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore, useUserStatsStore, useUserStatsTags } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showRenameTagDialog from "../RenameTagDialog";
@@ -17,7 +16,6 @@ interface Props {
 
 const TagsSection = (props: Props) => {
   const t = useTranslate();
-  const currentUser = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
   const userStatsStore = useUserStatsStore();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
@@ -44,7 +42,7 @@ const TagsSection = (props: Props) => {
         parent: "memos/-",
         tag: tag,
       });
-      await userStatsStore.listUserStats(currentUser.name);
+      userStatsStore.setStateId();
       toast.success(t("message.deleted-successfully"));
     }
   };

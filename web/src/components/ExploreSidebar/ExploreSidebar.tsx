@@ -14,10 +14,10 @@ const ExploreSidebar = (props: Props) => {
 
   useDebounce(
     async () => {
-      userStatsStore.listUserStats();
+      await userStatsStore.listUserStats();
     },
     300,
-    [],
+    [userStatsStore.stateId],
   );
 
   return (

@@ -4,7 +4,6 @@ import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useUserStatsStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
@@ -20,7 +19,6 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
   const userStatsStore = useUserStatsStore();
   const [newName, setNewName] = useState(tag);
   const requestState = useLoading(false);
-  const user = useCurrentUser();
 
   const handleTagNameInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value.trim());
@@ -43,7 +41,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
         newTag: newName,
       });
       toast.success("Rename tag successfully");
-      userStatsStore.listUserStats(user.name);
+      userStatsStore.setStateId();
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);

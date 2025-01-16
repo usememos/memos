@@ -31,7 +31,10 @@ export const useUserStatsStore = create(
         const userStats = await userServiceClient.getUserStats({ name: user });
         userStatsByName[user] = userStats;
       }
-      set({ stateId: uniqueId(), userStatsByName });
+      set({ ...get(), userStatsByName });
+    },
+    setStateId: (id = uniqueId()) => {
+      set({ ...get(), stateId: id });
     },
   })),
 );
