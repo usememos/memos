@@ -81,7 +81,7 @@ const UserProfile = () => {
   };
 
   return (
-    <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
+    <section id="user-profile" className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
       <div className="w-full px-4 sm:px-6 flex flex-col justify-start items-center">
         {!loadingState.isLoading &&
