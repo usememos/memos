@@ -9,7 +9,6 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 ## Prerequisites
 
 - [Go](https://golang.org/doc/install)
-- [Air](https://github.com/cosmtrek/air#installation) for backend live reload
 - [Node.js](https://nodejs.org/)
 - [pnpm](https://pnpm.io/installation)
 
@@ -21,11 +20,13 @@ Memos is built with a curated tech stack. It is optimized for developer experien
    git clone https://github.com/usememos/memos
    ```
 
-2. Start backend server with [`air`](https://github.com/cosmtrek/air) (with live reload)
+2. Build and run backend server
 
    ```bash
-   air -c scripts/.air.toml
+   sh scripts/build.sh
    ```
+
+   Then you can run the server following building outputs.
 
 3. Install frontend dependencies and generate TypeScript code from protobuf
 
