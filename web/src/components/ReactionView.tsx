@@ -55,7 +55,7 @@ const ReactionView = (props: Props) => {
           (reaction) => reaction.reactionType === reactionType && reaction.creator === currentUser.name,
         );
         for (const reaction of reactions) {
-          await memoServiceClient.deleteMemoReaction({ reactionId: reaction.id });
+          await memoServiceClient.deleteMemoReaction({ id: reaction.id });
         }
       }
     } catch (error) {

@@ -367,7 +367,7 @@ paths:
           type: string
       tags:
         - MemoService
-  /api/v1/reactions/{reactionId}:
+  /api/v1/reactions/{id}:
     delete:
       summary: DeleteMemoReaction deletes a reaction for a memo.
       operationId: MemoService_DeleteMemoReaction
@@ -382,7 +382,10 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: reactionId
+        - name: id
+          description: |-
+            The id of the reaction.
+            Refer to the `Reaction.id`.
           in: path
           required: true
           type: integer
@@ -2911,6 +2914,9 @@ definitions:
           Format: users/{user}
       contentId:
         type: string
+        description: |-
+          The content identifier.
+          For memo, it should be the `Memo.name`.
       reactionType:
         type: string
   v1ReferencedContentNode:

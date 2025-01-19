@@ -25,7 +25,9 @@ type Reaction struct {
 	Id    int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// The name of the creator.
 	// Format: users/{user}
-	Creator       string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
+	Creator string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
+	// The content identifier.
+	// For memo, it should be the `Memo.name`.
 	ContentId     string `protobuf:"bytes,3,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`
 	ReactionType  string `protobuf:"bytes,4,opt,name=reaction_type,json=reactionType,proto3" json:"reaction_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
