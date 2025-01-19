@@ -1,11 +1,11 @@
 root = "."
-tmp_dir = ".air"
+tmp_dir = "build"
 
 [build]
-bin = "./.air/memos --mode dev"
-cmd = "go build -o ./.air/memos ./bin/memos/main.go"
+bin = "./build/memos --mode dev"
+cmd = "go build -o ./build/memos ./bin/memos/main.go"
 delay = 1000
-exclude_dir = [".air", "web", "build"]
+exclude_dir = ["web", "build"]
 include_ext = ["go", "mod", "sum"]
 exclude_file = []
 exclude_regex = []
