@@ -115,7 +115,7 @@ func (s *APIV1Service) SignInWithSSO(ctx context.Context, request *v1pb.SignInWi
 			return nil, status.Errorf(codes.Internal, "failed to compile identifier filter regex, error: %v", err)
 		}
 		if !identifierFilterRegex.MatchString(userInfo.Identifier) {
-			return nil, status.Errorf(codes.PermissionDenied, "identifier %s does not match the filter %s", userInfo.Identifier, identifierFilter)
+			return nil, status.Errorf(codes.PermissionDenied, "identifier %s is not allowed", userInfo.Identifier)
 		}
 	}
 
