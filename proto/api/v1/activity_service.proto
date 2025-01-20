@@ -41,10 +41,11 @@ message ActivityPayload {
 
 // ActivityMemoCommentPayload represents the payload of a memo comment activity.
 message ActivityMemoCommentPayload {
-  // The memo id of comment.
-  int32 memo_id = 1;
-  // The memo id of related memo.
-  int32 related_memo_id = 2;
+  // The memo name of comment.
+  // Refer to `Memo.name`.
+  string memo = 1;
+  // The name of related memo.
+  string related_memo = 2;
 }
 
 message ActivityVersionUpdatePayload {

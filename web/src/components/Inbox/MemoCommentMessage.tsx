@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { activityNamePrefix, memoNamePrefix, useInboxStore, useMemoStore, useUserStore } from "@/store/v1";
+import { activityNamePrefix, useInboxStore, useMemoStore, useUserStore } from "@/store/v1";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -36,8 +36,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
     });
     if (activity.payload?.memoComment) {
       const memoCommentPayload = activity.payload.memoComment;
-      const relatedMemoId = memoCommentPayload.relatedMemoId;
-      const memo = await memoStore.getOrFetchMemoByName(`${memoNamePrefix}${relatedMemoId}`, {
+      const memo = await memoStore.getOrFetchMemoByName(memoCommentPayload.relatedMemo, {
         skipStore: true,
       });
       setRelatedMemo(memo);

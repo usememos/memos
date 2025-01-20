@@ -1930,14 +1930,14 @@ definitions:
   apiv1ActivityMemoCommentPayload:
     type: object
     properties:
-      memoId:
-        type: integer
-        format: int32
-        description: The memo id of comment.
-      relatedMemoId:
-        type: integer
-        format: int32
-        description: The memo id of related memo.
+      memo:
+        type: string
+        description: |-
+          The memo name of comment.
+          Refer to `Memo.name`.
+      relatedMemo:
+        type: string
+        description: The name of related memo.
     description: ActivityMemoCommentPayload represents the payload of a memo comment activity.
   apiv1ActivityPayload:
     type: object

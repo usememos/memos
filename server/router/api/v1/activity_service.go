@@ -48,8 +48,8 @@ func convertActivityPayloadFromStore(payload *storepb.ActivityPayload) *v1pb.Act
 	v2Payload := &v1pb.ActivityPayload{}
 	if payload.MemoComment != nil {
 		v2Payload.MemoComment = &v1pb.ActivityMemoCommentPayload{
-			MemoId:        payload.MemoComment.MemoId,
-			RelatedMemoId: payload.MemoComment.RelatedMemoId,
+			Memo:        fmt.Sprintf("%s%d", MemoNamePrefix, payload.MemoComment.MemoId),
+			RelatedMemo: fmt.Sprintf("%s%d", MemoNamePrefix, payload.MemoComment.RelatedMemoId),
 		}
 	}
 	if payload.VersionUpdate != nil {
