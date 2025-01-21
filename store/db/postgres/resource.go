@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -29,8 +30,20 @@ func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store
 	}
 	args := []any{create.UID, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID, create.MemoID, storageType, create.Reference, payloadString}
 
-	stmt := "INSERT INTO resource (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
+	query := "INSERT INTO resource (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts"
+	stmt, err := d.db.PrepareContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		err := stmt.Close()
+		if err != nil {
+			slog.Error("failed to close statement",
+				slog.String("message", err.Error()),
+			)
+		}
+	}()
+	if err = stmt.QueryRowContext(ctx, args...).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
 		return nil, err
 	}
 	return create, nil
@@ -82,12 +95,29 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 			query = fmt.Sprintf("%s OFFSET %d", query, *find.Offset)
 		}
 	}
-
-	rows, err := d.db.QueryContext(ctx, query, args...)
+	stmt, err := d.db.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+
+	rows, err := stmt.QueryContext(ctx, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		err := stmt.Close()
+		if err != nil {
+			slog.Error("error closing statement",
+				slog.String("message", err.Error()),
+			)
+		}
+		err = rows.Close()
+		if err != nil {
+			slog.Error("error closing rows",
+				slog.String("message", err.Error()),
+			)
+		}
+	}()
 
 	list := make([]*store.Resource, 0)
 	for rows.Next() {
@@ -161,9 +191,21 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) e
 		set, args = append(set, "payload = "+placeholder(len(args)+1)), append(args, string(bytes))
 	}
 
-	stmt := `UPDATE resource SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1)
+	query := `UPDATE resource SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1)
+	stmt, err := d.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err := stmt.Close()
+		if err != nil {
+			slog.Error("error closing statement",
+				slog.String("message", err.Error()),
+			)
+		}
+	}()
 	args = append(args, update.ID)
-	result, err := d.db.ExecContext(ctx, stmt, args...)
+	result, err := stmt.ExecContext(ctx, args...)
 	if err != nil {
 		return err
 	}
@@ -174,8 +216,21 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) e
 }
 
 func (d *DB) DeleteResource(ctx context.Context, delete *store.DeleteResource) error {
-	stmt := `DELETE FROM resource WHERE id = $1`
-	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
+	query := `DELETE FROM resource WHERE id = $1`
+	stmt, err := d.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err := stmt.Close()
+		if err != nil {
+			slog.Error("error closing statement",
+				slog.String("message", err.Error()),
+			)
+		}
+	}()
+
+	result, err := stmt.ExecContext(ctx, delete.ID)
 	if err != nil {
 		return err
 	}

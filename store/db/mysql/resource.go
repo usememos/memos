@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -30,8 +31,13 @@ func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store
 	}
 	args := []any{create.UID, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID, create.MemoID, storageType, create.Reference, payloadString}
 
-	stmt := "INSERT INTO `resource` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
-	result, err := d.db.ExecContext(ctx, stmt, args...)
+	query := "INSERT INTO `resource` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
+	stmt, err := d.db.PrepareContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	result, err := stmt.ExecContext(ctx, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,11 +92,21 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		}
 	}
 
-	rows, err := d.db.QueryContext(ctx, query, args...)
+	stmt, err := d.db.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+
+	rows, err := stmt.QueryContext(ctx, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		err := stmt.Close()
+		if err != nil {
+			slog.Error("error closing statement", slog.String("message", err.Error()))
+		}
+	}()
 
 	list := make([]*store.Resource, 0)
 	for rows.Next() {
@@ -138,6 +154,7 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	return list, nil
 }
 
+// TODO! write a function that doesn't query everything, and instead, just one
 func (d *DB) GetResource(ctx context.Context, find *store.FindResource) (*store.Resource, error) {
 	list, err := d.ListResources(ctx, find)
 	if err != nil {
@@ -177,8 +194,20 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) e
 	}
 
 	args = append(args, update.ID)
-	stmt := "UPDATE `resource` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
-	result, err := d.db.ExecContext(ctx, stmt, args...)
+	query := "UPDATE `resource` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
+	stmt, err := d.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := stmt.Close(); err != nil {
+			slog.Error("error closing statement",
+				slog.String("message", err.Error()),
+			)
+		}
+	}()
+	result, err := stmt.ExecContext(ctx, args...)
 	if err != nil {
 		return err
 	}
@@ -189,8 +218,13 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) e
 }
 
 func (d *DB) DeleteResource(ctx context.Context, delete *store.DeleteResource) error {
-	stmt := "DELETE FROM `resource` WHERE `id` = ?"
-	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
+	query := "DELETE FROM `resource` WHERE `id` = ?"
+	stmt, err := d.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	result, err := stmt.ExecContext(ctx, delete.ID)
 	if err != nil {
 		return err
 	}
