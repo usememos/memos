@@ -2,7 +2,7 @@ import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
-import { CalendarDaysIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
+import { CheckCircleIcon, ChevronDownIcon, ChevronUpIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
 import { useState } from "react";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import i18n from "@/i18n";
@@ -42,26 +42,25 @@ const StatisticsView = () => {
   };
 
   return (
-    <div className="group w-full border mt-2 py-2 px-3 rounded-lg space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
+    <div className="group w-full mt-2 py-2 space-y-1 text-gray-500 dark:text-gray-400">
       <div className="w-full mb-1 flex flex-row justify-between items-center gap-1">
         <div className="relative text-sm font-medium inline-flex flex-row items-center w-auto dark:text-gray-400 truncate">
-          <CalendarDaysIcon className="w-4 h-auto mr-1 opacity-60 shrink-0" strokeWidth={1.5} />
           <span className="truncate">
             {dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}
           </span>
         </div>
-        <div className="flex justify-end items-center shrink-0">
+        <div className="flex justify-end items-center shrink-0 gap-1">
           <span
             className="cursor-pointer hover:opacity-80"
             onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
           >
-            <ChevronLeftIcon className="w-4 h-auto shrink-0 opacity-60" />
+            <ChevronUpIcon className="w-5 h-auto shrink-0 opacity-40" />
           </span>
           <span
             className="cursor-pointer hover:opacity-80"
             onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
           >
-            <ChevronRightIcon className="w-4 h-auto shrink-0 opacity-60" />
+            <ChevronDownIcon className="w-5 h-auto shrink-0 opacity-40" />
           </span>
         </div>
       </div>
