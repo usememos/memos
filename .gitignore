@@ -26,3 +26,6 @@ dist
 
 # VSCode settings
 /.vscode
+
+memo.md
+memo.http
