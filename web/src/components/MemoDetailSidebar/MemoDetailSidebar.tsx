@@ -83,7 +83,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
           </div>
         )}
         {memo.tags.length > 0 && (
-          <>
+          <div className="w-full">
             <div className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
               <span>{t("common.tags")}</span>
               <span className="shrink-0">({memo.tags.length})</span>
@@ -101,7 +101,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
                 </div>
               ))}
             </div>
-          </>
+          </div>
         )}
       </div>
     </aside>
