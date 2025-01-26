@@ -238,7 +238,7 @@
       "update-sso": "Perbarui SSO",
       "user-endpoint": "Akhir Pengguna",
       "no-sso-found": "Tidak ada SSO ditemukan.",
-      "configuring-keycloak-for-authentication": "Mengonfigurasi Keycloak untuk Autentikasi"
+      "single-sign-on": "Mengonfigurasi Single Sign-On (SSO) untuk Autentikasi"
     },
     "storage": "Penyimpanan",
     "storage-section": {
