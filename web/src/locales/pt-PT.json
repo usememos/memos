@@ -238,7 +238,7 @@
       "update-sso": "Atualizar SSO",
       "user-endpoint": "Ponto do Utilizador",
       "no-sso-found": "Nenhum SSO encontrado.",
-      "configuring-keycloak-for-authentication": "A configurar o Keycloak para autenticação."
+      "single-sign-on": "A configurar o Single Sign-On (SSO) para autenticação."
     },
     "storage": "Armazenamento",
     "storage-section": {

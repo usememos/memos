@@ -241,7 +241,7 @@
         "update-sso": "Оновити SSO",
         "user-endpoint": "Кінцева точка користувача",
         "no-sso-found": "SSO не знайдено.",
-        "configuring-keycloak-for-authentication": "Конфігурація Keycloak для автентифікації"
+        "single-sign-on": "Конфігурація Single Sign-On (SSO) для автентифікації"
       },
       "storage": "Сховище",
       "storage-section": {

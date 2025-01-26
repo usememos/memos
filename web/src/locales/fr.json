@@ -254,7 +254,7 @@
       "update-sso": "Mise à jour du SSO",
       "user-endpoint": "Utilisateur endpoint",
       "no-sso-found": "Pas de SSO trouvé.",
-      "configuring-keycloak-for-authentication": "Configuration du Keycloak pour l'Authentification"
+      "single-sign-on": "Configuration du Single Sign-On (SSO) pour l'Authentification"
     },
     "storage": "Stockage",
     "storage-section": {
