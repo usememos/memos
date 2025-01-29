@@ -9,6 +9,7 @@
   },
   "common": {
     "about": "關於",
+    "add": "新增",
     "admin": "管理",
     "archive": "封存",
     "archived": "封存",
@@ -20,23 +21,28 @@
     "clear": "清除",
     "close": "關閉",
     "confirm": "確認",
+    "collapse": "摺疊",
     "create": "建立",
     "database": "資料庫",
+    "day": "日",
     "days": "日子",
     "delete": "刪除",
     "description": "說明",
     "edit": "編輯",
     "email": "信箱",
+    "expand": "展開",
     "explore": "探索",
     "file": "檔案",
     "filter": "過濾器",
     "home": "首頁",
+    "in": "在",
     "image": "圖片",
     "inbox": "通知",
     "language": "語言",
     "learn-more": "了解",
     "link": "連結",
     "mark": "Mark",
+    "memo": "Memo",
     "memos": "備忘錄",
     "name": "名稱",
     "new": "新增",
@@ -95,7 +101,6 @@
   },
   "memo": {
     "archived-at": "封存於",
-    "code": "代碼",
     "comment": {
       "self": "評論",
       "write-a-comment": "寫下留言"
@@ -103,16 +108,11 @@
     "copy-link": "複製連結",
     "count-memos-in-date": "{{date}}的{{count}}個備忘錄",
     "delete-confirm": "您確定要刪除此 Memo？\n\n此操作無法逆轉",
-    "delete-memo": "刪除 Memo",
-    "embed": "內嵌",
-    "fetch-more": "點此以載入更多",
-    "fetching-data": "抓取資料中…",
-    "links": "連結",
+    "load-more":"載入更多",
     "no-archived-memos": "無封存的 Memos",
     "search-placeholder": "搜尋 Memos",
     "show-more": "查看更多",
     "show-less": "顯示較少",
-    "to-do": "待辦",
     "view-detail": "查看詳情",
     "visibility": {
       "disabled": "公共 Memo 已停用",
@@ -120,8 +120,18 @@
       "protected": "成員可見",
       "public": "公開給所有人"
     },
+    "links": "連結",
+    "to-do": "待辦",
+    "code": "程式碼",
     "remove-completed-task-list-items": "移除已完成",
-    "remove-completed-task-list-items-confirm": "您確定要移除所有完成的待辦嗎？（此操作不可逆）"
+    "remove-completed-task-list-items-confirm": "您確定要移除所有完成的待辦嗎？（此操作不可逆）",
+    "filters": "篩選",
+    "order-by": "按照排序",
+    "display-time": "顯示時間",
+    "direction": "方向",
+    "direction-desc": "降序",
+    "direction-asc": "升序",
+    "no-memos": "沒有備忘錄"
   },
   "message": {
     "archived-successfully": "封存成功",
@@ -139,7 +149,10 @@
     "succeed-copy-link": "複製連結到剪貼簿成功。",
     "update-succeed": "更新成功",
     "user-not-found": "查無該使用者",
-    "remove-completed-task-list-items-successfully": "移除成功！"
+    "remove-completed-task-list-items-successfully": "移除成功！",
+    "failed-to-embed-memo": "嵌入備忘錄失敗",
+    "description-is-required": "需要描述",
+    "fill-all-required-fields": "請填寫所有必填欄位"
   },
   "reference": {
     "add-references": "添加參考資料",
@@ -211,7 +224,6 @@
       "delete-member": "刪除使用者",
       "delete-warning": "您確定要刪除 {{username}}?\n\n此操作無法逆轉"
     },
-    "memo-related": "Memo",
     "my-account": "我的帳號",
     "preference": "偏好設定",
     "preference-section": {
@@ -240,7 +252,9 @@
       "template": "範本",
       "token-endpoint": "權杖端點（Token Endpoint）",
       "update-sso": "更新 SSO",
-      "user-endpoint": "使用者端點（User Endpoint）"
+      "user-endpoint": "使用者端點（User Endpoint）",
+      "no-sso-found": "沒有設定 SSO",
+      "single-sign-on": "設定單一登入 SSO 進行身份驗證"
     },
     "storage": "儲存空間",
     "storage-section": {
@@ -304,7 +318,58 @@
       "max-upload-size-hint": "建議值為 32 MiB。",
       "server-name": "伺服器名稱",
       "removed-completed-task-list-items": "啟用移除已完成"
-    }
+    },
+    "memo-related": "Memo",
+    "access-token-section": {
+      "title": "存取令牌",
+      "description": "此處列出您帳號的所有存取令牌。",
+      "token": "令牌",
+      "access-token-deletion": "您確定要刪除存取令牌 {{accessToken}} 嗎？此操作無法恢復。",
+      "access-token-copied-to-clipboard": "存取令牌已複製到剪貼簿",
+      "create-dialog": {
+        "create-access-token": "建立存取令牌",
+        "description": "描述",
+        "some-description": "請輸入描述...",
+        "expiration": "過期時間",
+        "created-at": "建立時間",
+        "expires-at": "過期時間",
+        "duration-never": "永不過期",
+        "duration-8h": "8 小時",
+        "duration-1m": "1 個月"
+      }
+    },
+    "webhook-section": {
+      "title": "Webhook",
+      "url": "網址",
+      "no-webhooks-found": "尚未建立任何 Webhook。",
+      "create-dialog": {
+        "create-webhook": "建立 Webhook",
+        "edit-webhook": "編輯 Webhook",
+        "an-easy-to-remember-name": "一個容易記住的名稱",
+        "title": "標題",
+        "payload-url": "負載網址",
+        "url-example-post-receive": "https://example.com/postreceive"
+      }
+    },
+    "workspace-section": {
+      "disallow-user-registration": "禁止用戶註冊",
+      "disallow-password-auth": "禁止使用密碼驗證",
+      "disallow-change-username": "禁止更改用戶名稱",
+      "disallow-change-nickname": "禁止更改暱稱",
+      "week-start-day": "每週起始日",
+      "saturday": "星期六",
+      "sunday": "星期日",
+      "monday": "星期一"
+    },
+    "memo-related-settings": {
+      "title": "備忘相關設定",
+      "enable-link-preview": "啟用連結預覽",
+      "enable-memo-comments": "啟用備忘評論",
+      "enable-memo-location": "啟用備忘位置",
+      "content-lenght-limit": "內容長度限制（位元組）",
+      "reactions": "表情回應"
+    },
+    "version": "版本"
   },
   "tag": {
     "all-tags": "所有標籤",
@@ -314,7 +379,16 @@
     "delete-tag": "刪除標籤",
     "no-tag-found": "找不到標籤"
   },
-  "timeline": {
-    "title": "時間軸"
+  "markdown": {
+    "code-block": "程式碼區塊",
+    "checkbox": "核取方塊",
+    "content-syntax": "內容語法"
+  },
+  "about": {
+    "description": "以隱私為核心的輕量化筆記服務，輕鬆記錄並分享您的好點子。",
+    "github-repository": "GitHub 儲存庫",
+    "official-website": "官方網站",
+    "blogs": "部落格",
+    "documents": "文件"
   }
 }
