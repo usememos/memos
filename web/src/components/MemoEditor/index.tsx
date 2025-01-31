@@ -336,6 +336,9 @@ const MemoEditor = (props: Props) => {
           }
           if (updateMask.size === 0) {
             toast.error("No changes detected");
+            if (onCancel) {
+              onCancel();
+            }
             return;
           }
           const memo = await memoStore.updateMemo(memoPatch, Array.from(updateMask));
