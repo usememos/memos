@@ -1,5 +1,5 @@
 -- migration_history
-CREATE TABLE  migration_history (
+CREATE TABLE migration_history (
   version TEXT NOT NULL PRIMARY KEY,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
 );
@@ -52,6 +52,14 @@ CREATE TABLE memo (
 );
 
 CREATE INDEX idx_memo_creator_id ON memo (creator_id);
+
+-- memo_organizer
+CREATE TABLE memo_organizer (
+  memo_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,
+  UNIQUE(memo_id, user_id)
+);
 
 -- memo_relation
 CREATE TABLE memo_relation (

@@ -166,11 +166,7 @@ func (s *Store) preMigrate(ctx context.Context) error {
 }
 
 func (s *Store) getMigrationBasePath() string {
-	mode := "dev"
-	if s.Profile.Mode == "prod" {
-		mode = "prod"
-	}
-	return fmt.Sprintf("migration/%s/%s/", s.Profile.Driver, mode)
+	return fmt.Sprintf("migration/%s/", s.Profile.Driver)
 }
 
 func (s *Store) getSeedBasePath() string {
