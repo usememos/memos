@@ -242,7 +242,7 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 		}
 		set, args = append(set, "`payload` = ?"), append(args, string(payloadBytes))
 	}
-	if len(args) == 0 {
+	if len(set) == 0 {
 		return nil
 	}
 	args = append(args, update.ID)

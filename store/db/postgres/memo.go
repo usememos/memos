@@ -233,7 +233,7 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 		}
 		set, args = append(set, "payload = "+placeholder(len(args)+1)), append(args, string(payloadBytes))
 	}
-	if len(args) == 0 {
+	if len(set) == 0 {
 		return nil
 	}
 

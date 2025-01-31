@@ -56,7 +56,6 @@ func RebuildMemoPayload(memo *store.Memo) error {
 		memo.Payload = &storepb.MemoPayload{}
 	}
 	tags := []string{}
-	references := []string{}
 	property := &storepb.MemoPayload_Property{}
 	TraverseASTNodes(nodes, func(node ast.Node) {
 		switch n := node.(type) {
@@ -76,11 +75,10 @@ func RebuildMemoPayload(memo *store.Memo) error {
 			property.HasCode = true
 		case *ast.EmbeddedContent:
 			// TODO: validate references.
-			references = append(references, n.ResourceName)
+			property.References = append(property.References, n.ResourceName)
 		}
 	})
 	memo.Payload.Tags = tags
-	memo.Payload.References = references
 	memo.Payload.Property = property
 	return nil
 }
