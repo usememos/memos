@@ -233,6 +233,9 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 		}
 		set, args = append(set, "payload = "+placeholder(len(args)+1)), append(args, string(payloadBytes))
 	}
+	if len(args) == 0 {
+		return nil
+	}
 
 	stmt := `UPDATE memo SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1)
 	args = append(args, update.ID)
