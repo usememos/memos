@@ -11,8 +11,6 @@ message MemoPayload {
 
   repeated string tags = 3;
 
-  bool pinned = 4;
-
   // The calculated properties from the memo content.
   message Property {
     bool has_link = 1;

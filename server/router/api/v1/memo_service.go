@@ -268,6 +268,8 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 				return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
 			}
 			update.Visibility = &visibility
+		} else if path == "pinned" {
+			update.Pinned = &request.Memo.Pinned
 		} else if path == "state" {
 			rowStatus := convertStateToStore(request.Memo.State)
 			update.RowStatus = &rowStatus
@@ -290,14 +292,6 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 				update.UpdatedTs = &displayTs
 			} else {
 				update.CreatedTs = &displayTs
-			}
-		} else if path == "pinned" {
-			if _, err := s.Store.UpsertMemoOrganizer(ctx, &store.MemoOrganizer{
-				MemoID: id,
-				UserID: user.ID,
-				Pinned: request.Memo.Pinned,
-			}); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to upsert memo organizer")
 			}
 		} else if path == "resources" {
 			_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{

@@ -36,11 +36,6 @@ type Driver interface {
 	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)
 	DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error
 
-	// MemoOrganizer model related methods.
-	UpsertMemoOrganizer(ctx context.Context, upsert *MemoOrganizer) (*MemoOrganizer, error)
-	ListMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) ([]*MemoOrganizer, error)
-	DeleteMemoOrganizer(ctx context.Context, delete *DeleteMemoOrganizer) error
-
 	// WorkspaceSetting model related methods.
 	UpsertWorkspaceSetting(ctx context.Context, upsert *WorkspaceSetting) (*WorkspaceSetting, error)
 	ListWorkspaceSettings(ctx context.Context, find *FindWorkspaceSetting) ([]*WorkspaceSetting, error)

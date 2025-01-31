@@ -130,8 +130,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"`memo`.`updated_ts` AS `updated_ts`",
 		"`memo`.`row_status` AS `row_status`",
 		"`memo`.`visibility` AS `visibility`",
+		"`memo`.`pinned` AS `pinned`",
 		"`memo`.`payload` AS `payload`",
-		"IFNULL(`memo_organizer`.`pinned`, 0) AS `pinned`",
 		"`memo_relation`.`related_memo_id` AS `parent_id`",
 	}
 	if !find.ExcludeContent {
@@ -139,7 +139,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 
 	query := "SELECT " + strings.Join(fields, ", ") + "FROM `memo` " +
-		"LEFT JOIN `memo_organizer` ON `memo`.`id` = `memo_organizer`.`memo_id` AND `memo`.`creator_id` = `memo_organizer`.`user_id` " +
 		"LEFT JOIN `memo_relation` ON `memo`.`id` = `memo_relation`.`memo_id` AND `memo_relation`.`type` = \"COMMENT\" " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
 		"ORDER BY " + strings.Join(orderBy, ", ")
@@ -168,8 +167,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.UpdatedTs,
 			&memo.RowStatus,
 			&memo.Visibility,
-			&payloadBytes,
 			&memo.Pinned,
+			&payloadBytes,
 			&memo.ParentID,
 		}
 		if !find.ExcludeContent {
@@ -212,6 +211,9 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	}
 	if v := update.Visibility; v != nil {
 		set, args = append(set, "`visibility` = ?"), append(args, *v)
+	}
+	if v := update.Pinned; v != nil {
+		set, args = append(set, "`pinned` = ?"), append(args, *v)
 	}
 	if v := update.Payload; v != nil {
 		payloadBytes, err := protojson.Marshal(v)

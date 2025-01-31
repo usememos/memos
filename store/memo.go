@@ -48,10 +48,10 @@ type Memo struct {
 	// Domain specific fields
 	Content    string
 	Visibility Visibility
+	Pinned     bool
 	Payload    *storepb.MemoPayload
 
 	// Composed fields
-	Pinned   bool
 	ParentID *int32
 }
 
@@ -102,6 +102,7 @@ type UpdateMemo struct {
 	RowStatus  *RowStatus
 	Content    *string
 	Visibility *Visibility
+	Pinned     *bool
 	Payload    *storepb.MemoPayload
 }
 
