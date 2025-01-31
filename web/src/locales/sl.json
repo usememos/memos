@@ -24,6 +24,7 @@
     "collapse": "Strni",
     "create": "Dodaj",
     "database": "Baza",
+    "day": "Dan",	
     "days": "Dni",
     "delete": "Izbriši",
     "description": "Opis",
@@ -34,12 +35,14 @@
     "file": "Datoteka",
     "filter": "Filtriraj",
     "home": "Domov",
+    "in": "v",
     "image": "Slika",
     "inbox": "Prejeto",
     "language": "Jezik",
     "learn-more": "Spoznaj več",
     "link": "Povezava",
     "mark": "Označi",
+    "memo": "Beležka",	
     "memos": "Beležke",
     "name": "Ime",
     "new": "Novo",
@@ -121,7 +124,14 @@
     "to-do": "Opravila",
     "code": "Koda",
     "remove-completed-task-list-items": "Odstrani končane",
-    "remove-completed-task-list-items-confirm": "Ste prepričani, da želite odstraniti vse končane naloge? (Ta dejanje ni obrnljivo)"
+    "remove-completed-task-list-items-confirm": "Ste prepričani, da želite odstraniti vse končane naloge? (Ta dejanje ni obrnljivo)",
+    "filters": "Filtri",
+    "order-by": "Razvrsti po",
+    "display-time": "Prikaži čas",
+    "direction": "Smer",
+    "direction-desc": "Padajoče",
+    "direction-asc": "Naraščajoče",
+    "no-memos": "Ni beležk."
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -139,7 +149,10 @@
     "succeed-copy-link": "Povezava je uspešno skopirana.",
     "update-succeed": "Posodobitev je uspešna",
     "user-not-found": "Ne najdem uporabnika",
-    "remove-completed-task-list-items-successfully": "Odstranitev uspešna!"
+    "remove-completed-task-list-items-successfully": "Odstranitev uspešna!",
+    "failed-to-embed-memo": "Beležke ni bilo mogoče vdelati",
+    "description-is-required": "Potreben je opis.",
+    "fill-all-required-fields": "Prosim izpolnite vsa zahtevana polja."
   },
   "reference": {
     "add-references": "Dodaj referenco",
@@ -239,7 +252,9 @@
       "template": "Predloga",
       "token-endpoint": "Končna točka žetona",
       "update-sso": "Posodobi SSO",
-      "user-endpoint": "Končna točka uporabnika"
+      "user-endpoint": "Končna točka uporabnika",
+      "no-sso-found": "Ne najdem nobenega SSO.",
+      "single-sign-on": "Nastavitve enotne prijave (SSO) za preverjanje pristnosti"
     },
     "storage": "Shramba",
     "storage-section": {
@@ -293,6 +308,7 @@
       "disable-password-login-final-warning": "Prosim vnesite \"POTRDI\", če veste kaj počnete.",
       "disable-password-login-warning": "To bo onemogočilo prijavo z geslom za vse uporabnike. Brez ponovnega vklopa te nastavitve v bazi, prijava ne bo več možna. Enako tudi če identiteta enotne prijave zataji. Bodite tudi zelo previdni pri odstranjevalju identitete enotne prijave",
       "disable-public-memos": "Onemogočite javne beležke",
+      "disable-markdown-shortcuts-in-editor": "Onemogoči bližnjice Markdown v urejevalniku",
       "display-with-updated-time": "Prikaži s časom posodobitve",
       "enable-auto-compact": "Omogoči samodejno zgoščevanje",
       "enable-double-click-to-edit": "Omogoči dvojni klik za urejanje",
@@ -303,7 +319,57 @@
       "server-name": "Ime strežnika",
       "removed-completed-task-list-items": "Omogoči odstranitev končanih"
     },
-    "memo-related": "Beležka"
+    "memo-related": "Beležka",
+    "access-token-section": {
+      "title": "Dostopni žeton",
+      "description": "Seznam vseh dostopnih žetonov za vaš račun.",
+      "token": "Žeton",
+      "access-token-deletion": "Ali ste prepričani, da želite izbrisati dostopni žeton {{accessToken}}? TO DEJANJE JE NEPOVRATNO.",
+      "access-token-copied-to-clipboard": "Žeton za dostop je kopiran v odložišče",
+      "create-dialog": {
+        "create-access-token": "Ustvari žeton za dostop",
+        "description": "Opis",
+        "some-description": "Nek opis...",
+        "expiration": "Potek",
+        "created-at": "Ustvrajen",
+        "expires-at": "Poteče",
+        "duration-never": "Nikoli",
+        "duration-8h": "8 ur",
+        "duration-1m": "1 mesec"
+      }
+    },
+    "webhook-section": {
+      "title": "Webhooks",
+      "url": "URL",
+      "no-webhooks-found": "Ne najdem nobenega webhooka.",
+      "create-dialog": {
+        "create-webhook": "Ustvari webhook",
+        "edit-webhook": "Uredi webhook",
+        "an-easy-to-remember-name": "Ime, ki si ga lahko zapomniš",
+        "title": "Naslov",
+        "payload-url": "Payload URL",
+        "url-example-post-receive": "https://primer.com/postreceive"
+      }
+    },
+    "workspace-section": {
+      "disallow-user-registration": "Onemogoči registracije uporabnikov",
+      "disallow-password-auth": "Onemogoči preverjanje gesla",
+      "disallow-change-username": "Onemogoči spremembo uporabniškega imena",
+      "disallow-change-nickname": "Onemogoči spremembo vzdevka",
+      "week-start-day": "Dan začetka tedna",
+      "saturday": "Sobota",
+      "sunday": "Nedelja",
+      "monday": "Ponedeljek"
+    },
+    "memo-related-settings": {
+      "title": "Nastavitve povezane z beležko",
+      "enable-link-preview": "Omogoči predogled povezave",
+      "enable-memo-comments": "Omogoči komentarje na beležkah",
+      "enable-memo-location": "Omogoči lokacijo beležk",
+      "content-lenght-limit": "Omejitev dolžine vsebin (bajt)",
+      "reactions": "Odzivi"
+    },
+    "version": "Verzija"
   },
   "tag": {
     "all-tags": "Vse oznke",
@@ -312,5 +378,17 @@
     "delete-confirm": "Ste prepričani, da želite odstraniti to oznako? Vse povezane beležke bodo arhivirane.",
     "delete-tag": "Izbriši oznako",
     "no-tag-found": "Ne najdem oznak"
+  },
+  "markdown": {
+    "code-block": "Kodni blok",
+    "checkbox": "Potrditveno polje",
+    "content-syntax": "Sintaksa vsebine"
+  },
+  "about": {
+    "description": "Lahka storitev za zapiske, kjer je na prvem mestu zasebnost. Preprosto zajemite in delite svoje odlične misli.",
+    "github-repository": "GitHub Repo",
+    "official-website": "Uradna stran",
+    "blogs": "Blogi",
+    "documents": "Dokumenti"
   }
 }
