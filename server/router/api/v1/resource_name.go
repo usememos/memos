@@ -62,7 +62,7 @@ func ExtractUserIDFromName(name string) (int32, error) {
 }
 
 // ExtractMemoUIDFromName returns the memo UID from a resource name.
-// e.g., "memos/uuid" -> "uuid"
+// e.g., "memos/uuid" -> "uuid".
 func ExtractMemoUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, MemoNamePrefix)
 	if err != nil {
