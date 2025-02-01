@@ -145,8 +145,8 @@ importers:
         specifier: ^0.16.7
         version: 0.16.7
       '@types/leaflet':
-        specifier: ^1.9.15
-        version: 1.9.15
+        specifier: ^1.9.16
+        version: 1.9.16
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -737,6 +737,7 @@ packages:
   '@mui/base@5.0.0-beta.40-0':
     resolution: {integrity: sha512-hG3atoDUxlvEy+0mqdMpWd04wca8HKr2IHjW/fAjlkCHQolSLazhZM46vnHjOf15M4ESu25mV/3PgjczyjVM4w==}
     engines: {node: '>=12.0.0'}
+    deprecated: This package has been replaced by @base-ui-components/react
     peerDependencies:
       '@types/react': ^17.0.0 || ^18.0.0 || ^19.0.0
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -1320,8 +1321,8 @@ packages:
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
-  '@types/geojson@7946.0.15':
-    resolution: {integrity: sha512-9oSxFzDCT2Rj6DfcHF8G++jxBKS7mBqXl5xrRW+Kbvjry6Uduya2iiwqHPhVXpasAVMBYKkEPGgKhd3+/HZ6xA==}
+  '@types/geojson@7946.0.16':
+    resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
   '@types/js-cookie@2.2.7':
     resolution: {integrity: sha512-aLkWa0C0vO5b4Sr798E26QgOkss68Un0bLjs7u9qxzPT5CG+8DuNTffWES58YzJs3hrVAOs1wonycqEBqNJubA==}
@@ -1329,8 +1330,8 @@ packages:
   '@types/katex@0.16.7':
     resolution: {integrity: sha512-HMwFiRujE5PjrgwHQ25+bsLJgowjGjm5Z8FVSf0N6PwgJrwxH0QxzHYDcKsTfV3wva0vzrpqMTJS2jXPr5BMEQ==}
 
-  '@types/leaflet@1.9.15':
-    resolution: {integrity: sha512-7UuggAuAs+mva66gtf2OTB1nEhzU/9JED93TIaOEgvFMvG/dIGQaukHE7izHo1Zd+Ko1L4ETUw7TBc8yUxevpg==}
+  '@types/leaflet@1.9.16':
+    resolution: {integrity: sha512-wzZoyySUxkgMZ0ihJ7IaUIblG8Rdc8AbbZKLneyn+QjYsj5q1QU7TEKYqwTr10BGSzY5LI7tJk9Ifo+mEjdFRw==}
 
   '@types/lodash-es@4.17.12':
     resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
@@ -4575,7 +4576,7 @@ snapshots:
   '@types/d3-contour@3.0.6':
     dependencies:
       '@types/d3-array': 3.2.1
-      '@types/geojson': 7946.0.15
+      '@types/geojson': 7946.0.16
 
   '@types/d3-delaunay@6.0.4': {}
 
@@ -4599,7 +4600,7 @@ snapshots:
 
   '@types/d3-geo@3.1.0':
     dependencies:
-      '@types/geojson': 7946.0.15
+      '@types/geojson': 7946.0.16
 
   '@types/d3-hierarchy@3.1.7': {}
 
@@ -4677,15 +4678,15 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
-  '@types/geojson@7946.0.15': {}
+  '@types/geojson@7946.0.16': {}
 
   '@types/js-cookie@2.2.7': {}
 
   '@types/katex@0.16.7': {}
 
-  '@types/leaflet@1.9.15':
+  '@types/leaflet@1.9.16':
     dependencies:
-      '@types/geojson': 7946.0.15
+      '@types/geojson': 7946.0.16
 
   '@types/lodash-es@4.17.12':
     dependencies:
