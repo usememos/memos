@@ -47,7 +47,6 @@ message Webhook {
   int32 id = 1;
 
   // The name of the creator.
-  // Format: users/{user}
   string creator = 2;
 
   google.protobuf.Timestamp create_time = 3;
@@ -71,7 +70,6 @@ message GetWebhookRequest {
 
 message ListWebhooksRequest {
   // The name of the creator.
-  // Format: users/{user}
   string creator = 2;
 }
 

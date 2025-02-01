@@ -97,7 +97,7 @@ service UserService {
 
 message User {
   // The name of the user.
-  // Format: users/{user}. {user} is a system-generated auto-increment id.
+  // Format: users/{id}, id is the system generated auto-incremented id.
   string name = 1;
 
   enum Role {
@@ -122,9 +122,9 @@ message User {
 
   State state = 10;
 
-  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp create_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  google.protobuf.Timestamp update_time = 12;
+  google.protobuf.Timestamp update_time = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message ListUsersRequest {}
@@ -145,13 +145,11 @@ message SearchUsersResponse {
 
 message GetUserRequest {
   // The name of the user.
-  // Format: users/{user}
   string name = 1;
 }
 
 message GetUserAvatarBinaryRequest {
   // The name of the user.
-  // Format: users/{user}
   string name = 1;
 
   // The raw HTTP body is bound to this field.
@@ -170,13 +168,11 @@ message UpdateUserRequest {
 
 message DeleteUserRequest {
   // The name of the user.
-  // Format: users/{user}
   string name = 1;
 }
 
 message UserStats {
   // The name of the user.
-  // Format: users/{user}
   string name = 1;
 
   // The timestamps when the memos were displayed.
@@ -206,13 +202,11 @@ message ListAllUserStatsResponse {
 
 message GetUserStatsRequest {
   // The name of the user.
-  // Format: users/{user}.
   string name = 1;
 }
 
 message UserSetting {
   // The name of the user.
-  // Format: users/{user}
   string name = 1;
   // The preferred locale of the user.
   string locale = 2;
@@ -224,7 +218,6 @@ message UserSetting {
 
 message GetUserSettingRequest {
   // The name of the user.
-  // Format: users/{user}
   string name = 1;
 }
 
@@ -243,7 +236,6 @@ message UserAccessToken {
 
 message ListUserAccessTokensRequest {
   // The name of the user.
-  // Format: users/{user}
   string name = 1;
 }
 
@@ -253,7 +245,6 @@ message ListUserAccessTokensResponse {
 
 message CreateUserAccessTokenRequest {
   // The name of the user.
-  // Format: users/{user}
   string name = 1;
 
   string description = 2;
@@ -263,7 +254,6 @@ message CreateUserAccessTokenRequest {
 
 message DeleteUserAccessTokenRequest {
   // The name of the user.
-  // Format: users/{user}
   string name = 1;
   // access_token is the access token to delete.
   string access_token = 2;

@@ -33,11 +33,6 @@ service MemoService {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}"};
     option (google.api.method_signature) = "name";
   }
-  // GetMemoByUid gets a memo by uid
-  rpc GetMemoByUid(GetMemoByUidRequest) returns (Memo) {
-    option (google.api.http) = {get: "/api/v1/memos:by-uid/{uid}"};
-    option (google.api.method_signature) = "uid";
-  }
   // UpdateMemo updates a memo.
   rpc UpdateMemo(UpdateMemoRequest) returns (Memo) {
     option (google.api.http) = {
@@ -130,12 +125,11 @@ enum Visibility {
 
 message Memo {
   // The name of the memo.
-  // Format: memos/{id}
-  // id is the system generated id.
+  // Format: memos/{memo}, memo is the user defined id or uuid.
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // The user defined id of the memo.
-  string uid = 2;
+  // The system generated unique id. Auto-incremented.
+  int32 uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   State state = 3;
 
@@ -226,13 +220,7 @@ message ListMemosResponse {
 
 message GetMemoRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
-}
-
-message GetMemoByUidRequest {
-  // The uid of the memo.
-  string uid = 1;
 }
 
 message UpdateMemoRequest {
@@ -243,7 +231,6 @@ message UpdateMemoRequest {
 
 message DeleteMemoRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
 }
 
@@ -265,7 +252,6 @@ message DeleteMemoTagRequest {
 
 message SetMemoResourcesRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
 
   repeated Resource resources = 2;
@@ -273,7 +259,6 @@ message SetMemoResourcesRequest {
 
 message ListMemoResourcesRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
 }
 
@@ -283,7 +268,6 @@ message ListMemoResourcesResponse {
 
 message SetMemoRelationsRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
 
   repeated MemoRelation relations = 2;
@@ -291,7 +275,6 @@ message SetMemoRelationsRequest {
 
 message ListMemoRelationsRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
 }
 
@@ -301,7 +284,6 @@ message ListMemoRelationsResponse {
 
 message CreateMemoCommentRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
 
   CreateMemoRequest comment = 2;
@@ -309,7 +291,6 @@ message CreateMemoCommentRequest {
 
 message ListMemoCommentsRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
 }
 
@@ -319,7 +300,6 @@ message ListMemoCommentsResponse {
 
 message ListMemoReactionsRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
 }
 
@@ -329,7 +309,6 @@ message ListMemoReactionsResponse {
 
 message UpsertMemoReactionRequest {
   // The name of the memo.
-  // Format: memos/{id}
   string name = 1;
 
   Reaction reaction = 2;

@@ -271,7 +271,7 @@ func (x *ActivityVersionUpdatePayload) GetVersion() string {
 type GetActivityRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the activity.
-	// Format: activities/{id}
+	// Format: activities/{id}, id is the system generated auto-incremented id.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

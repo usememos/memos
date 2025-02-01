@@ -26,10 +26,10 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		displayTs = memo.UpdatedTs
 	}
 
-	name := fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID)
+	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 	memoMessage := &v1pb.Memo{
 		Name:        name,
-		Uid:         memo.UID,
+		Uid:         memo.ID,
 		State:       convertStateFromStore(memo.RowStatus),
 		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, memo.CreatorID),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
@@ -45,8 +45,15 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
 	}
 	if memo.ParentID != nil {
-		parent := fmt.Sprintf("%s%d", MemoNamePrefix, *memo.ParentID)
-		memoMessage.Parent = &parent
+		parent, err := s.Store.GetMemo(ctx, &store.FindMemo{
+			ID:             memo.ParentID,
+			ExcludeContent: true,
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get parent memo")
+		}
+		parentName := fmt.Sprintf("%s%s", MemoNamePrefix, parent.UID)
+		memoMessage.Parent = &parentName
 	}
 
 	listMemoRelationsResponse, err := s.ListMemoRelations(ctx, &v1pb.ListMemoRelationsRequest{Name: name})

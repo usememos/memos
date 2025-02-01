@@ -29,7 +29,6 @@ type Webhook struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// The name of the creator.
-	// Format: users/{user}
 	Creator       string                 `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
 	CreateTime    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
@@ -210,7 +209,6 @@ func (x *GetWebhookRequest) GetId() int32 {
 type ListWebhooksRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the creator.
-	// Format: users/{user}
 	Creator       string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

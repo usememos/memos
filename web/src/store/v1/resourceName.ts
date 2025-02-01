@@ -9,7 +9,7 @@ export const extractUserIdFromName = (name: string) => {
 };
 
 export const extractMemoIdFromName = (name: string) => {
-  return parseInt(name.split(memoNamePrefix).pop() || "", 10);
+  return name.split(memoNamePrefix).pop() || "";
 };
 
 export const extractIdentityProviderIdFromName = (name: string) => {

@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { extractMemoIdFromName } from "@/store/v1";
 import { MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -101,7 +102,7 @@ const AddMemoRelationPopover = (props: Props) => {
         editorRef.current.insertText("\n");
       }
       for (const memo of selectedMemos) {
-        editorRef.current.insertText(`![[memos/${memo.uid}]]\n`);
+        editorRef.current.insertText(`![[memos/${extractMemoIdFromName(memo.name)}]]\n`);
       }
       setTimeout(() => {
         editorRef.current?.scrollToCursor();

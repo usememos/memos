@@ -33,23 +33,41 @@ func (s *APIV1Service) GetActivity(ctx context.Context, request *v1pb.GetActivit
 	return activityMessage, nil
 }
 
-func (*APIV1Service) convertActivityFromStore(_ context.Context, activity *store.Activity) (*v1pb.Activity, error) {
+func (s *APIV1Service) convertActivityFromStore(ctx context.Context, activity *store.Activity) (*v1pb.Activity, error) {
+	payload, err := s.convertActivityPayloadFromStore(ctx, activity.Payload)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to convert activity payload from store: %v", err)
+	}
 	return &v1pb.Activity{
 		Name:       fmt.Sprintf("%s%d", ActivityNamePrefix, activity.ID),
 		Creator:    fmt.Sprintf("%s%d", UserNamePrefix, activity.CreatorID),
 		Type:       activity.Type.String(),
 		Level:      activity.Level.String(),
 		CreateTime: timestamppb.New(time.Unix(activity.CreatedTs, 0)),
-		Payload:    convertActivityPayloadFromStore(activity.Payload),
+		Payload:    payload,
 	}, nil
 }
 
-func convertActivityPayloadFromStore(payload *storepb.ActivityPayload) *v1pb.ActivityPayload {
+func (s *APIV1Service) convertActivityPayloadFromStore(ctx context.Context, payload *storepb.ActivityPayload) (*v1pb.ActivityPayload, error) {
 	v2Payload := &v1pb.ActivityPayload{}
 	if payload.MemoComment != nil {
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+			ID:             &payload.MemoComment.MemoId,
+			ExcludeContent: true,
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
+		}
+		relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+			ID:             &payload.MemoComment.RelatedMemoId,
+			ExcludeContent: true,
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get related memo: %v", err)
+		}
 		v2Payload.MemoComment = &v1pb.ActivityMemoCommentPayload{
-			Memo:        fmt.Sprintf("%s%d", MemoNamePrefix, payload.MemoComment.MemoId),
-			RelatedMemo: fmt.Sprintf("%s%d", MemoNamePrefix, payload.MemoComment.RelatedMemoId),
+			Memo:        fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
+			RelatedMemo: fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID),
 		}
 	}
 	if payload.VersionUpdate != nil {
@@ -57,5 +75,5 @@ func convertActivityPayloadFromStore(payload *storepb.ActivityPayload) *v1pb.Act
 			Version: payload.VersionUpdate.Version,
 		}
 	}
-	return v2Payload
+	return v2Payload, nil
 }

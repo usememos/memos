@@ -76,11 +76,15 @@ func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateR
 	}
 
 	if request.Resource.Memo != nil {
-		memoID, err := ExtractMemoIDFromName(*request.Resource.Memo)
+		id, err := ExtractMemoIDFromName(*request.Resource.Memo)
 		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid memo id: %v", err)
+			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 		}
-		create.MemoID = &memoID
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &id})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to find memo: %v", err)
+		}
+		create.MemoID = &memo.ID
 	}
 	resource, err := s.Store.CreateResource(ctx, create)
 	if err != nil {
@@ -227,15 +231,6 @@ func (s *APIV1Service) UpdateResource(ctx context.Context, request *v1pb.UpdateR
 	for _, field := range request.UpdateMask.Paths {
 		if field == "filename" {
 			update.Filename = &request.Resource.Filename
-		} else if field == "memo" {
-			if request.Resource.Memo == nil {
-				return nil, status.Errorf(codes.InvalidArgument, "memo is required")
-			}
-			memoID, err := ExtractMemoIDFromName(*request.Resource.Memo)
-			if err != nil {
-				return nil, status.Errorf(codes.InvalidArgument, "invalid memo id: %v", err)
-			}
-			update.MemoID = &memoID
 		}
 	}
 
@@ -292,7 +287,7 @@ func (s *APIV1Service) convertResourceFromStore(ctx context.Context, resource *s
 			ID: resource.MemoID,
 		})
 		if memo != nil {
-			memoName := fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID)
+			memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 			resourceMessage.Memo = &memoName
 		}
 	}

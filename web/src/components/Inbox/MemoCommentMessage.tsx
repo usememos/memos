@@ -11,6 +11,7 @@ import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
+import { memoLink } from "@/utils/memo";
 
 interface Props {
   inbox: Inbox;
@@ -51,7 +52,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
       return;
     }
 
-    navigateTo(`/m/${relatedMemo.uid}`);
+    navigateTo(memoLink(relatedMemo.name));
     if (inbox.status === Inbox_Status.UNREAD) {
       handleArchiveMessage(true);
     }
@@ -111,7 +112,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
             >
               {t("inbox.memo-comment", {
                 user: sender?.nickname || sender?.username,
-                memo: `memos/${relatedMemo?.uid}`,
+                memo: relatedMemo?.name,
                 interpolation: { escapeValue: false },
               })}
             </p>

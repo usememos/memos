@@ -13,7 +13,7 @@ import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
-import { convertVisibilityToString } from "@/utils/memo";
+import { convertVisibilityToString, memoLink } from "@/utils/memo";
 import { isSuperUser } from "@/utils/user";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
@@ -61,7 +61,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
   const isArchived = memo.state === State.ARCHIVED;
   const readonly = memo.creator !== user?.name && !isSuperUser(user);
-  const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
+  const isInMemoDetailPage = location.pathname.startsWith(memoLink(memo.name));
   const parentPage = props.parentPage || location.pathname;
 
   // Initial related data: creator.
@@ -71,12 +71,12 @@ const MemoView: React.FC<Props> = (props: Props) => {
   }, []);
 
   const handleGotoMemoDetailPage = useCallback(() => {
-    navigateTo(`/m/${memo.uid}`, {
+    navigateTo(memoLink(memo.name), {
       state: {
         from: parentPage,
       },
     });
-  }, [memo.uid, parentPage]);
+  }, [memo.name, parentPage]);
 
   const handleMemoContentClick = useCallback(async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
@@ -192,7 +192,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     "flex flex-row justify-start items-center hover:opacity-70",
                     commentAmount === 0 && "invisible group-hover:visible",
                   )}
-                  to={`/m/${memo.uid}#comments`}
+                  to={`${memoLink(memo.name)}#comments`}
                   viewTransition
                   state={{
                     from: parentPage,

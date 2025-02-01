@@ -32,7 +32,7 @@ service InboxService {
 
 message Inbox {
   // The name of the inbox.
-  // Format: inboxes/{id}
+  // Format: inboxes/{id}, id is the system generated auto-incremented id.
   string name = 1;
   // Format: users/{user}
   string sender = 2;
@@ -85,6 +85,5 @@ message UpdateInboxRequest {
 
 message DeleteInboxRequest {
   // The name of the inbox to delete.
-  // Format: inboxes/{id}
   string name = 1;
 }

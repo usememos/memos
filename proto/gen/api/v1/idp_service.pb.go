@@ -73,7 +73,7 @@ func (IdentityProvider_Type) EnumDescriptor() ([]byte, []int) {
 type IdentityProvider struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the identityProvider.
-	// Format: identityProviders/{id}
+	// Format: identityProviders/{id}, id is the system generated auto-incremented id.
 	Name             string                  `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Type             IdentityProvider_Type   `protobuf:"varint,2,opt,name=type,proto3,enum=memos.api.v1.IdentityProvider_Type" json:"type,omitempty"`
 	Title            string                  `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
@@ -449,7 +449,6 @@ func (x *ListIdentityProvidersResponse) GetIdentityProviders() []*IdentityProvid
 type GetIdentityProviderRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the identityProvider to get.
-	// Format: identityProviders/{id}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -595,7 +594,6 @@ func (x *UpdateIdentityProviderRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 type DeleteIdentityProviderRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the identityProvider to delete.
-	// Format: identityProviders/{id}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

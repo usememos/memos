@@ -29,8 +29,7 @@ const (
 type Resource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the resource.
-	// Format: resources/{id}
-	// id is the system generated unique identifier.
+	// Format: resources/{id}, id is the system generated auto-incremented id.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The user defined id of the resource.
 	Uid          string                 `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
@@ -40,8 +39,7 @@ type Resource struct {
 	ExternalLink string                 `protobuf:"bytes,6,opt,name=external_link,json=externalLink,proto3" json:"external_link,omitempty"`
 	Type         string                 `protobuf:"bytes,7,opt,name=type,proto3" json:"type,omitempty"`
 	Size         int64                  `protobuf:"varint,8,opt,name=size,proto3" json:"size,omitempty"`
-	// The related memo.
-	// Format: memos/{id}
+	// The related memo. Refer to `Memo.name`.
 	Memo          *string `protobuf:"bytes,9,opt,name=memo,proto3,oneof" json:"memo,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -267,8 +265,6 @@ func (x *ListResourcesResponse) GetResources() []*Resource {
 type GetResourceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the resource.
-	// Format: resources/{id}
-	// id is the system generated unique identifier.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -359,8 +355,6 @@ func (x *GetResourceByUidRequest) GetUid() string {
 type GetResourceBinaryRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the resource.
-	// Format: resources/{id}
-	// id is the system generated unique identifier.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The filename of the resource. Mainly used for downloading.
 	Filename string `protobuf:"bytes,2,opt,name=filename,proto3" json:"filename,omitempty"`
@@ -476,8 +470,6 @@ func (x *UpdateResourceRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 type DeleteResourceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the resource.
-	// Format: resources/{id}
-	// id is the system generated unique identifier.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

@@ -62,15 +62,12 @@ func ExtractUserIDFromName(name string) (int32, error) {
 }
 
 // ExtractMemoIDFromName returns the memo ID from a resource name.
-func ExtractMemoIDFromName(name string) (int32, error) {
+func ExtractMemoIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, MemoNamePrefix)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid memo ID %q", tokens[0])
-	}
+	id := tokens[0]
 	return id, nil
 }
 

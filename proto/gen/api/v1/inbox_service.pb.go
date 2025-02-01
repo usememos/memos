@@ -126,7 +126,7 @@ func (Inbox_Type) EnumDescriptor() ([]byte, []int) {
 type Inbox struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the inbox.
-	// Format: inboxes/{id}
+	// Format: inboxes/{id}, id is the system generated auto-incremented id.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Format: users/{user}
 	Sender string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
@@ -391,7 +391,6 @@ func (x *UpdateInboxRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 type DeleteInboxRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the inbox to delete.
-	// Format: inboxes/{id}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
