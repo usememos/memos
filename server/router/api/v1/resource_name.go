@@ -72,16 +72,13 @@ func ExtractMemoUIDFromName(name string) (string, error) {
 	return id, nil
 }
 
-// ExtractResourceIDFromName returns the resource ID from a resource name.
-func ExtractResourceIDFromName(name string) (int32, error) {
+// ExtractResourceUIDFromName returns the resource UID from a resource name.
+func ExtractResourceUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, ResourceNamePrefix)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid resource ID %q", tokens[0])
-	}
+	id := tokens[0]
 	return id, nil
 }
 

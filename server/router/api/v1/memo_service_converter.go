@@ -29,7 +29,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 	memoMessage := &v1pb.Memo{
 		Name:        name,
-		Uid:         memo.ID,
 		State:       convertStateFromStore(memo.RowStatus),
 		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, memo.CreatorID),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),

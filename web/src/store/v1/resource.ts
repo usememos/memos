@@ -15,9 +15,9 @@ export const useResourceStore = create(
   combine(getDefaultState(), (set, get) => ({
     setState: (state: State) => set(state),
     getState: () => get(),
-    fetchResourceByUID: async (uid: string) => {
-      const resource = await resourceServiceClient.getResourceByUid({
-        uid,
+    fetchResourceByName: async (name: string) => {
+      const resource = await resourceServiceClient.getResource({
+        name,
       });
       const resourceMap = get().resourceMapByName;
       resourceMap[resource.name] = resource;

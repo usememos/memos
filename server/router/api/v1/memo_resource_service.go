@@ -33,7 +33,11 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 	for _, resource := range resources {
 		found := false
 		for _, requestResource := range request.Resources {
-			if resource.UID == requestResource.Uid {
+			requestResourceUID, err := ExtractResourceUIDFromName(requestResource.Name)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
+			}
+			if resource.UID == requestResourceUID {
 				found = true
 				break
 			}
@@ -51,13 +55,17 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 	slices.Reverse(request.Resources)
 	// Update resources' memo_id in the request.
 	for index, resource := range request.Resources {
-		id, err := ExtractResourceIDFromName(resource.Name)
+		resourceUID, err := ExtractResourceUIDFromName(resource.Name)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
 		}
+		tempResource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &resourceUID})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+		}
 		updatedTs := time.Now().Unix() + int64(index)
 		if err := s.Store.UpdateResource(ctx, &store.UpdateResource{
-			ID:        id,
+			ID:        tempResource.ID,
 			MemoID:    &memo.ID,
 			UpdatedTs: &updatedTs,
 		}); err != nil {

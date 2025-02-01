@@ -409,27 +409,6 @@ paths:
             $ref: '#/definitions/v1Resource'
       tags:
         - ResourceService
-  /api/v1/resources:by-uid/{uid}:
-    get:
-      summary: GetResourceByUid returns a resource by uid.
-      operationId: ResourceService_GetResourceByUid
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Resource'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: uid
-          description: The uid of the resource.
-          in: path
-          required: true
-          type: string
-      tags:
-        - ResourceService
   /api/v1/users:
     get:
       summary: ListUsers returns a list of users.
@@ -1509,7 +1488,7 @@ paths:
         - name: resource.name
           description: |-
             The name of the resource.
-            Format: resources/{id}, id is the system generated auto-incremented id.
+            Format: resources/{resource}, resource is the user defined if or uuid.
           in: path
           required: true
           type: string
@@ -1520,9 +1499,6 @@ paths:
           schema:
             type: object
             properties:
-              uid:
-                type: string
-                description: The user defined id of the resource.
               createTime:
                 type: string
                 format: date-time
@@ -2839,10 +2815,7 @@ definitions:
         type: string
         description: |-
           The name of the resource.
-          Format: resources/{id}, id is the system generated auto-incremented id.
-      uid:
-        type: string
-        description: The user defined id of the resource.
+          Format: resources/{resource}, resource is the user defined if or uuid.
       createTime:
         type: string
         format: date-time
