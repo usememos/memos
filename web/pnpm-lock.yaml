@@ -176,7 +176,7 @@ importers:
         version: 7.18.0(eslint@8.57.1)(typescript@5.7.2)
       '@vitejs/plugin-react':
         specifier: ^4.3.4
-        version: 4.3.4(vite@6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.1)(yaml@2.7.0))
+        version: 4.3.4(vite@6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.2)(yaml@2.7.0))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
@@ -196,8 +196,8 @@ importers:
         specifier: ^7.37.3
         version: 7.37.3(eslint@8.57.1)
       less:
-        specifier: ^4.2.1
-        version: 4.2.1
+        specifier: ^4.2.2
+        version: 4.2.2
       long:
         specifier: ^5.2.3
         version: 5.2.3
@@ -218,7 +218,7 @@ importers:
         version: 5.7.2
       vite:
         specifier: ^6.0.6
-        version: 6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.1)(yaml@2.7.0)
+        version: 6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.2)(yaml@2.7.0)
 
 packages:
 
@@ -737,6 +737,7 @@ packages:
   '@mui/base@5.0.0-beta.40-0':
     resolution: {integrity: sha512-hG3atoDUxlvEy+0mqdMpWd04wca8HKr2IHjW/fAjlkCHQolSLazhZM46vnHjOf15M4ESu25mV/3PgjczyjVM4w==}
     engines: {node: '>=12.0.0'}
+    deprecated: This package has been replaced by @base-ui-components/react
     peerDependencies:
       '@types/react': ^17.0.0 || ^18.0.0 || ^19.0.0
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -2570,8 +2571,8 @@ packages:
   leaflet@1.9.4:
     resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
 
-  less@4.2.1:
-    resolution: {integrity: sha512-CasaJidTIhWmjcqv0Uj5vccMI7pJgfD9lMkKtlnTHAdJdYK/7l8pM9tumLyJ0zhbD4KJLo/YvTj+xznQd5NBhg==}
+  less@4.2.2:
+    resolution: {integrity: sha512-tkuLHQlvWUTeQ3doAqnHbNn8T6WX1KA8yvbKG9x4VtKtIjHsVKQZCH11zRgAfbDAXC2UNIg/K9BYAAcEzUIrNg==}
     engines: {node: '>=6'}
     hasBin: true
 
@@ -4813,14 +4814,14 @@ snapshots:
       tailwind-merge: 2.6.0
       tailwindcss: 3.4.17
 
-  '@vitejs/plugin-react@4.3.4(vite@6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.1)(yaml@2.7.0))':
+  '@vitejs/plugin-react@4.3.4(vite@6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.2)(yaml@2.7.0))':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.26.0)
       '@babel/plugin-transform-react-jsx-source': 7.25.9(@babel/core@7.26.0)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.1)(yaml@2.7.0)
+      vite: 6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.2)(yaml@2.7.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -6145,7 +6146,7 @@ snapshots:
 
   leaflet@1.9.4: {}
 
-  less@4.2.1:
+  less@4.2.2:
     dependencies:
       copy-anything: 2.0.6
       parse-node-version: 1.0.1
@@ -7150,7 +7151,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite@6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.1)(yaml@2.7.0):
+  vite@6.0.6(@types/node@22.10.3)(jiti@1.21.7)(less@4.2.2)(yaml@2.7.0):
     dependencies:
       esbuild: 0.24.2
       postcss: 8.4.49
@@ -7159,7 +7160,7 @@ snapshots:
       '@types/node': 22.10.3
       fsevents: 2.3.3
       jiti: 1.21.7
-      less: 4.2.1
+      less: 4.2.2
       yaml: 2.7.0
 
   void-elements@3.1.0: {}
