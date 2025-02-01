@@ -7,6 +7,5 @@ SET pinned = 1
 WHERE EXISTS (
     SELECT 1
     FROM memo_organizer
-    WHERE memo.id = memo_organizer.memo_id
-    AND memo_organizer.pinned = 1
+    WHERE memo.id = memo_organizer.memo_id AND memo_organizer.pinned = 1
 );
