@@ -14,11 +14,11 @@ import (
 )
 
 func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMemoResourcesRequest) (*emptypb.Empty, error) {
-	memoID, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoID})
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
@@ -69,11 +69,11 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 }
 
 func (s *APIV1Service) ListMemoResources(ctx context.Context, request *v1pb.ListMemoResourcesRequest) (*v1pb.ListMemoResourcesResponse, error) {
-	id, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &id})
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
 	}

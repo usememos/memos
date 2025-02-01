@@ -150,12 +150,12 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 }
 
 func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest) (*v1pb.Memo, error) {
-	id, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-		UID: &id,
+		UID: &memoUID,
 	})
 	if err != nil {
 		return nil, err
@@ -184,7 +184,7 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 }
 
 func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoRequest) (*v1pb.Memo, error) {
-	id, err := ExtractMemoIDFromName(request.Memo.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Memo.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
@@ -192,7 +192,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
 
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &id})
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 	if err != nil {
 		return nil, err
 	}
@@ -308,12 +308,12 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 }
 
 func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoRequest) (*emptypb.Empty, error) {
-	id, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-		UID: &id,
+		UID: &memoUID,
 	})
 	if err != nil {
 		return nil, err
@@ -380,42 +380,50 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 }
 
 func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.CreateMemoCommentRequest) (*v1pb.Memo, error) {
-	id, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
-	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &id})
+	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
 
-	// Create the comment memo first.
-	memo, err := s.CreateMemo(ctx, request.Comment)
+	// Create the memo comment first.
+	memoComment, err := s.CreateMemo(ctx, request.Comment)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo")
+	}
+	memoUID, err = ExtractMemoUIDFromName(memoComment.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
 
 	// Build the relation between the comment memo and the original memo.
 	_, err = s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
-		MemoID:        memo.Uid,
+		MemoID:        memo.ID,
 		RelatedMemoID: relatedMemo.ID,
 		Type:          store.MemoRelationComment,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo relation")
 	}
-	creatorID, err := ExtractUserIDFromName(memo.Creator)
+	creatorID, err := ExtractUserIDFromName(memoComment.Creator)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo creator")
 	}
-	if memo.Visibility != v1pb.Visibility_PRIVATE && creatorID != relatedMemo.CreatorID {
+	if memoComment.Visibility != v1pb.Visibility_PRIVATE && creatorID != relatedMemo.CreatorID {
 		activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 			CreatorID: creatorID,
 			Type:      store.ActivityTypeMemoComment,
 			Level:     store.ActivityLevelInfo,
 			Payload: &storepb.ActivityPayload{
 				MemoComment: &storepb.ActivityMemoCommentPayload{
-					MemoId:        memo.Uid,
+					MemoId:        memo.ID,
 					RelatedMemoId: relatedMemo.ID,
 				},
 			},
@@ -436,15 +444,15 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 		}
 	}
 
-	return memo, nil
+	return memoComment, nil
 }
 
 func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListMemoCommentsRequest) (*v1pb.ListMemoCommentsResponse, error) {
-	memoID, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoID})
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
@@ -492,11 +500,11 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 		ExcludeComments: true,
 	}
 	if (request.Parent) != "memos/-" {
-		memoID, err := ExtractMemoIDFromName(request.Parent)
+		memoUID, err := ExtractMemoUIDFromName(request.Parent)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 		}
-		memoFind.UID = &memoID
+		memoFind.UID = &memoUID
 	}
 
 	memos, err := s.Store.ListMemos(ctx, memoFind)
@@ -542,12 +550,12 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 		ExcludeContent:  true,
 		ExcludeComments: true,
 	}
-	if (request.Parent) != "memos/-" {
-		memoID, err := ExtractMemoIDFromName(request.Parent)
+	if request.Parent != "memos/-" {
+		memoUID, err := ExtractMemoUIDFromName(request.Parent)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 		}
-		memoFind.UID = &memoID
+		memoFind.UID = &memoUID
 	}
 
 	memos, err := s.Store.ListMemos(ctx, memoFind)

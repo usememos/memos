@@ -76,11 +76,11 @@ func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateR
 	}
 
 	if request.Resource.Memo != nil {
-		id, err := ExtractMemoIDFromName(*request.Resource.Memo)
+		memoUID, err := ExtractMemoUIDFromName(*request.Resource.Memo)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 		}
-		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &id})
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to find memo: %v", err)
 		}

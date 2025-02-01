@@ -14,11 +14,11 @@ import (
 )
 
 func (s *APIV1Service) SetMemoRelations(ctx context.Context, request *v1pb.SetMemoRelationsRequest) (*emptypb.Empty, error) {
-	memoID, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoID})
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
@@ -41,11 +41,11 @@ func (s *APIV1Service) SetMemoRelations(ctx context.Context, request *v1pb.SetMe
 		if relation.Type == v1pb.MemoRelation_COMMENT {
 			continue
 		}
-		relatedMemoID, err := ExtractMemoIDFromName(relation.RelatedMemo.Name)
+		relatedMemoUID, err := ExtractMemoUIDFromName(relation.RelatedMemo.Name)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid related memo name: %v", err)
 		}
-		relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &relatedMemoID})
+		relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &relatedMemoUID})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get related memo")
 		}
@@ -62,11 +62,11 @@ func (s *APIV1Service) SetMemoRelations(ctx context.Context, request *v1pb.SetMe
 }
 
 func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.ListMemoRelationsRequest) (*v1pb.ListMemoRelationsResponse, error) {
-	memoID, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoID})
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}

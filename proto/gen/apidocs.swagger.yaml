@@ -796,11 +796,6 @@ paths:
           schema:
             type: object
             properties:
-              uid:
-                type: integer
-                format: int32
-                description: The system generated unique id. Auto-incremented.
-                readOnly: true
               state:
                 $ref: '#/definitions/v1State'
               creator:
@@ -1893,11 +1888,6 @@ definitions:
       name:
         type: string
         description: "The name of the memo.\r\nFormat: memos/{memo}, memo is the user defined id or uuid."
-        readOnly: true
-      uid:
-        type: integer
-        format: int32
-        description: The system generated unique id. Auto-incremented.
         readOnly: true
       state:
         $ref: '#/definitions/v1State'
