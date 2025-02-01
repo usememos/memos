@@ -21,7 +21,7 @@ service MemoService {
   rpc CreateMemo(CreateMemoRequest) returns (Memo) {
     option (google.api.http) = {
       post: "/api/v1/memos"
-      body: "*"
+      body: "memo"
     };
   }
   // ListMemos lists memos with pagination and filter.
@@ -185,15 +185,8 @@ message Location {
 }
 
 message CreateMemoRequest {
-  string content = 1;
-
-  Visibility visibility = 2;
-
-  repeated Resource resources = 3;
-
-  repeated MemoRelation relations = 4;
-
-  optional Location location = 5;
+  // The memo to create.
+  Memo memo = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ListMemosRequest {
@@ -223,7 +216,9 @@ message GetMemoRequest {
 }
 
 message UpdateMemoRequest {
-  Memo memo = 1;
+  // The memo to update.
+  // The `name` field is required.
+  Memo memo = 1 [(google.api.field_behavior) = REQUIRED];
 
   google.protobuf.FieldMask update_mask = 2;
 }
@@ -285,7 +280,8 @@ message CreateMemoCommentRequest {
   // The name of the memo.
   string name = 1;
 
-  CreateMemoRequest comment = 2;
+  // The comment to create.
+  Memo comment = 2;
 }
 
 message ListMemoCommentsRequest {

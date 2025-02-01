@@ -35,8 +35,8 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	create := &store.Memo{
 		UID:        shortuuid.New(),
 		CreatorID:  user.ID,
-		Content:    request.Content,
-		Visibility: convertVisibilityToStore(request.Visibility),
+		Content:    request.Memo.Content,
+		Visibility: convertVisibilityToStore(request.Memo.Visibility),
 	}
 	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
@@ -55,27 +55,27 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if err := memopayload.RebuildMemoPayload(create); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 	}
-	if request.Location != nil {
-		create.Payload.Location = convertLocationToStore(request.Location)
+	if request.Memo.Location != nil {
+		create.Payload.Location = convertLocationToStore(request.Memo.Location)
 	}
 
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
 		return nil, err
 	}
-	if len(request.Resources) > 0 {
+	if len(request.Memo.Resources) > 0 {
 		_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{
 			Name:      fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
-			Resources: request.Resources,
+			Resources: request.Memo.Resources,
 		})
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to set memo resources")
 		}
 	}
-	if len(request.Relations) > 0 {
+	if len(request.Memo.Relations) > 0 {
 		_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
 			Name:      fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
-			Relations: request.Relations,
+			Relations: request.Memo.Relations,
 		})
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to set memo relations")
@@ -390,7 +390,7 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 	}
 
 	// Create the memo comment first.
-	memoComment, err := s.CreateMemo(ctx, request.Comment)
+	memoComment, err := s.CreateMemo(ctx, &v1pb.CreateMemoRequest{Memo: request.Comment})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo")
 	}

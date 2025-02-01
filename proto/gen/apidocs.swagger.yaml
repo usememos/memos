@@ -311,12 +311,16 @@ paths:
           type: integer
           format: int32
         - name: pageToken
-          description: "A page token, received from a previous `ListMemos` call.\r\nProvide this to retrieve the subsequent page."
+          description: |-
+            A page token, received from a previous `ListMemos` call.
+            Provide this to retrieve the subsequent page.
           in: query
           required: false
           type: string
         - name: filter
-          description: "Filter is used to filter memos returned in the list.\r\nFormat: \"creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']\""
+          description: |-
+            Filter is used to filter memos returned in the list.
+            Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -335,11 +339,14 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: body
+        - name: memo
+          description: The memo to create.
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1CreateMemoRequest'
+            $ref: '#/definitions/apiv1Memo'
+            required:
+              - memo
       tags:
         - MemoService
   /api/v1/reactions/{id}:
@@ -358,7 +365,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: id
-          description: "The id of the reaction.\r\nRefer to the `Reaction.id`."
+          description: |-
+            The id of the reaction.
+            Refer to the `Reaction.id`.
           in: path
           required: true
           type: integer
@@ -486,7 +495,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: filter
-          description: "Filter is used to filter users returned in the list.\r\nFormat: \"username == 'frank'\""
+          description: |-
+            Filter is used to filter users returned in the list.
+            Format: "username == 'frank'"
           in: query
           required: false
           type: string
@@ -645,7 +656,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The resource name of the workspace setting.\r\nFormat: settings/{setting}"
+          description: |-
+            The resource name of the workspace setting.
+            Format: settings/{setting}
           in: path
           required: true
           type: string
@@ -667,7 +680,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: setting.name
-          description: "name is the name of the setting.\r\nFormat: settings/{setting}"
+          description: |-
+            name is the name of the setting.
+            Format: settings/{setting}
           in: path
           required: true
           type: string
@@ -703,7 +718,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: identityProvider.name
-          description: "The name of the identityProvider.\r\nFormat: identityProviders/{id}, id is the system generated auto-incremented id."
+          description: |-
+            The name of the identityProvider.
+            Format: identityProviders/{id}, id is the system generated auto-incremented id.
           in: path
           required: true
           type: string
@@ -741,7 +758,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: inbox.name
-          description: "The name of the inbox.\r\nFormat: inboxes/{id}, id is the system generated auto-incremented id."
+          description: |-
+            The name of the inbox.
+            Format: inboxes/{id}, id is the system generated auto-incremented id.
           in: path
           required: true
           type: string
@@ -785,12 +804,17 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: memo.name
-          description: "The name of the memo.\r\nFormat: memos/{memo}, memo is the user defined id or uuid."
+          description: |-
+            The name of the memo.
+            Format: memos/{memo}, memo is the user defined id or uuid.
           in: path
           required: true
           type: string
           pattern: memos/[^/]+
         - name: memo
+          description: |-
+            The memo to update.
+            The `name` field is required.
           in: body
           required: true
           schema:
@@ -800,7 +824,9 @@ paths:
                 $ref: '#/definitions/v1State'
               creator:
                 type: string
-                title: "The name of the creator.\r\nFormat: users/{user}"
+                title: |-
+                  The name of the creator.
+                  Format: users/{user}
               createTime:
                 type: string
                 format: date-time
@@ -848,7 +874,9 @@ paths:
                 readOnly: true
               parent:
                 type: string
-                title: "The name of the parent memo.\r\nFormat: memos/{id}"
+                title: |-
+                  The name of the parent memo.
+                  Format: memos/{id}
                 readOnly: true
               snippet:
                 type: string
@@ -857,6 +885,11 @@ paths:
               location:
                 $ref: '#/definitions/apiv1Location'
                 description: The location of the memo.
+            title: |-
+              The memo to update.
+              The `name` field is required.
+            required:
+              - memo
       tags:
         - MemoService
   /api/v1/{name_1}:
@@ -1050,7 +1083,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: "The name of the activity.\r\nFormat: activities/{id}, id is the system generated auto-incremented id."
+          description: |-
+            The name of the activity.
+            Format: activities/{id}, id is the system generated auto-incremented id.
           in: path
           required: true
           type: string
@@ -1197,10 +1232,11 @@ paths:
           type: string
           pattern: memos/[^/]+
         - name: comment
+          description: The comment to create.
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1CreateMemoRequest'
+            $ref: '#/definitions/apiv1Memo'
       tags:
         - MemoService
   /api/v1/{name}/reactions:
@@ -1409,7 +1445,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: "The parent, who owns the tags.\r\nFormat: memos/{id}. Use \"memos/-\" to delete all tags."
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to delete all tags.
           in: path
           required: true
           type: string
@@ -1440,7 +1478,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: "The parent, who owns the tags.\r\nFormat: memos/{id}. Use \"memos/-\" to rename all tags."
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to rename all tags.
           in: path
           required: true
           type: string
@@ -1467,7 +1507,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: resource.name
-          description: "The name of the resource.\r\nFormat: resources/{id}, id is the system generated auto-incremented id."
+          description: |-
+            The name of the resource.
+            Format: resources/{id}, id is the system generated auto-incremented id.
           in: path
           required: true
           type: string
@@ -1556,7 +1598,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user.name
-          description: "The name of the user.\r\nFormat: users/{id}, id is the system generated auto-incremented id."
+          description: |-
+            The name of the user.
+            Format: users/{id}, id is the system generated auto-incremented id.
           in: path
           required: true
           type: string
@@ -1819,7 +1863,9 @@ definitions:
     properties:
       memo:
         type: string
-        description: "The memo name of comment.\r\nRefer to `Memo.name`."
+        description: |-
+          The memo name of comment.
+          Refer to `Memo.name`.
       relatedMemo:
         type: string
         description: The name of related memo.
@@ -1851,7 +1897,9 @@ definitions:
     properties:
       name:
         type: string
-        description: "The name of the identityProvider.\r\nFormat: identityProviders/{id}, id is the system generated auto-incremented id."
+        description: |-
+          The name of the identityProvider.
+          Format: identityProviders/{id}, id is the system generated auto-incremented id.
       type:
         $ref: '#/definitions/apiv1IdentityProviderType'
       title:
@@ -1887,13 +1935,17 @@ definitions:
     properties:
       name:
         type: string
-        description: "The name of the memo.\r\nFormat: memos/{memo}, memo is the user defined id or uuid."
+        description: |-
+          The name of the memo.
+          Format: memos/{memo}, memo is the user defined id or uuid.
         readOnly: true
       state:
         $ref: '#/definitions/v1State'
       creator:
         type: string
-        title: "The name of the creator.\r\nFormat: users/{user}"
+        title: |-
+          The name of the creator.
+          Format: users/{user}
       createTime:
         type: string
         format: date-time
@@ -1941,7 +1993,9 @@ definitions:
         readOnly: true
       parent:
         type: string
-        title: "The name of the parent memo.\r\nFormat: memos/{id}"
+        title: |-
+          The name of the parent memo.
+          Format: memos/{id}
         readOnly: true
       snippet:
         type: string
@@ -2018,7 +2072,10 @@ definitions:
       weekStartDayOffset:
         type: integer
         format: int32
-        description: "week_start_day_offset is the week start day offset from Sunday.\r\n0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday\r\nDefault is Sunday."
+        description: |-
+          week_start_day_offset is the week start day offset from Sunday.
+          0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+          Default is Sunday.
       disallowChangeUsername:
         type: boolean
         description: disallow_change_username disallows changing username.
@@ -2069,7 +2126,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "name is the name of the setting.\r\nFormat: settings/{setting}"
+        title: |-
+          name is the name of the setting.
+          Format: settings/{setting}
       generalSetting:
         $ref: '#/definitions/apiv1WorkspaceGeneralSetting'
       storageSetting:
@@ -2084,7 +2143,9 @@ definitions:
         description: storage_type is the storage type.
       filepathTemplate:
         type: string
-        title: "The template of file path.\r\ne.g. assets/{timestamp}_{filename}"
+        title: |-
+          The template of file path.
+          e.g. assets/{timestamp}_{filename}
       uploadSizeLimitMb:
         type: string
         format: int64
@@ -2243,10 +2304,14 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the activity.\r\nFormat: activities/{id}"
+        title: |-
+          The name of the activity.
+          Format: activities/{id}
       creator:
         type: string
-        title: "The name of the creator.\r\nFormat: users/{user}"
+        title: |-
+          The name of the creator.
+          Format: users/{user}
       type:
         type: string
         description: The type of the activity.
@@ -2305,25 +2370,6 @@ definitions:
     properties:
       content:
         type: string
-  v1CreateMemoRequest:
-    type: object
-    properties:
-      content:
-        type: string
-      visibility:
-        $ref: '#/definitions/v1Visibility'
-      resources:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Resource'
-      relations:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1MemoRelation'
-      location:
-        $ref: '#/definitions/apiv1Location'
   v1CreateWebhookRequest:
     type: object
     properties:
@@ -2385,7 +2431,9 @@ definitions:
     properties:
       name:
         type: string
-        description: "The name of the inbox.\r\nFormat: inboxes/{id}, id is the system generated auto-incremented id."
+        description: |-
+          The name of the inbox.
+          Format: inboxes/{id}, id is the system generated auto-incremented id.
       sender:
         type: string
         title: 'Format: users/{user}'
@@ -2467,7 +2515,9 @@ definitions:
           $ref: '#/definitions/v1Inbox'
       nextPageToken:
         type: string
-        description: "A token, which can be sent as `page_token` to retrieve the next page.\r\nIf this field is omitted, there are no subsequent pages."
+        description: |-
+          A token, which can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
   v1ListMemoCommentsResponse:
     type: object
     properties:
@@ -2510,7 +2560,9 @@ definitions:
           $ref: '#/definitions/apiv1Memo'
       nextPageToken:
         type: string
-        description: "A token, which can be sent as `page_token` to retrieve the next page.\r\nIf this field is omitted, there are no subsequent pages."
+        description: |-
+          A token, which can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
   v1ListNode:
     type: object
     properties:
@@ -2582,10 +2634,14 @@ definitions:
     properties:
       memo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: "The name of memo.\r\nFormat: memos/{id}"
+        title: |-
+          The name of memo.
+          Format: memos/{id}
       relatedMemo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: "The name of related memo.\r\nFormat: memos/{id}"
+        title: |-
+          The name of related memo.
+          Format: memos/{id}
       type:
         $ref: '#/definitions/v1MemoRelationType'
   v1MemoRelationMemo:
@@ -2593,7 +2649,9 @@ definitions:
     properties:
       name:
         type: string
-        title: "The name of the memo.\r\nFormat: memos/{id}"
+        title: |-
+          The name of the memo.
+          Format: memos/{id}
       uid:
         type: string
       snippet:
@@ -2779,7 +2837,9 @@ definitions:
     properties:
       name:
         type: string
-        description: "The name of the resource.\r\nFormat: resources/{id}, id is the system generated auto-incremented id."
+        description: |-
+          The name of the resource.
+          Format: resources/{id}, id is the system generated auto-incremented id.
       uid:
         type: string
         description: The user defined id of the resource.
@@ -2923,7 +2983,9 @@ definitions:
     properties:
       name:
         type: string
-        description: "The name of the user.\r\nFormat: users/{id}, id is the system generated auto-incremented id."
+        description: |-
+          The name of the user.
+          Format: users/{id}, id is the system generated auto-incremented id.
       role:
         $ref: '#/definitions/UserRole'
       username:
@@ -2972,7 +3034,9 @@ definitions:
         items:
           type: string
           format: date-time
-        description: "The timestamps when the memos were displayed.\r\nWe should return raw data to the client, and let the client format the data with the user's timezone."
+        description: |-
+          The timestamps when the memos were displayed.
+          We should return raw data to the client, and let the client format the data with the user's timezone.
       memoTypeStats:
         $ref: '#/definitions/UserStatsMemoTypeStats'
         description: The stats of memo types.
@@ -2981,7 +3045,9 @@ definitions:
         additionalProperties:
           type: integer
           format: int32
-        title: "The count of tags.\r\nFormat: \"tag1\": 1, \"tag2\": 2"
+        title: |-
+          The count of tags.
+          Format: "tag1": 1, "tag2": 2
   v1Visibility:
     type: string
     enum:

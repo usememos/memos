@@ -350,11 +350,13 @@ const MemoEditor = (props: Props) => {
         // Create memo or memo comment.
         const request = !parentMemoName
           ? memoStore.createMemo({
-              content,
-              visibility: state.memoVisibility,
-              resources: state.resourceList,
-              relations: state.relationList,
-              location: state.location,
+              memo: Memo.fromPartial({
+                content,
+                visibility: state.memoVisibility,
+                resources: state.resourceList,
+                relations: state.relationList,
+                location: state.location,
+              }),
             })
           : memoServiceClient
               .createMemoComment({
