@@ -15,7 +15,6 @@ const (
 	MemoNamePrefix             = "memos/"
 	ResourceNamePrefix         = "resources/"
 	InboxNamePrefix            = "inboxes/"
-	StorageNamePrefix          = "storages/"
 	IdentityProviderNamePrefix = "identityProviders/"
 	ActivityNamePrefix         = "activities/"
 )
@@ -91,19 +90,6 @@ func ExtractInboxIDFromName(name string) (int32, error) {
 	id, err := util.ConvertStringToInt32(tokens[0])
 	if err != nil {
 		return 0, errors.Errorf("invalid inbox ID %q", tokens[0])
-	}
-	return id, nil
-}
-
-// ExtractStorageIDFromName returns the storage ID from a resource name.
-func ExtractStorageIDFromName(name string) (int32, error) {
-	tokens, err := GetNameParentTokens(name, StorageNamePrefix)
-	if err != nil {
-		return 0, err
-	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid storage ID %q", tokens[0])
 	}
 	return id, nil
 }

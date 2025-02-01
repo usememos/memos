@@ -32,12 +32,8 @@ const UserProfile = () => {
     }
 
     userStore
-      .searchUsers(`username == "${username}"`)
-      .then((users) => {
-        if (users.length !== 1) {
-          throw new Error("User not found");
-        }
-        const user = users[0];
+      .fetchUserByUsername(username)
+      .then((user) => {
         setUser(user);
         loadingState.setFinish();
       })

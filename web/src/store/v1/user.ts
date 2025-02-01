@@ -63,19 +63,15 @@ export const useUserStore = create(
       set({ userMapByName: userMap });
       return user;
     },
+    fetchUserByUsername: async (username: string) => {
+      const user = await userServiceClient.getUserByUsername({ username });
+      const userMap = get().userMapByName;
+      userMap[user.name] = user;
+      set({ userMapByName: userMap });
+      return user;
+    },
     listUsers: async () => {
       const { users } = await userServiceClient.listUsers({});
-      const userMap = get().userMapByName;
-      for (const user of users) {
-        userMap[user.name] = user;
-      }
-      set({ userMapByName: userMap });
-      return users;
-    },
-    searchUsers: async (filter: string) => {
-      const { users } = await userServiceClient.searchUsers({
-        filter,
-      });
       const userMap = get().userMapByName;
       for (const user of users) {
         userMap[user.name] = user;

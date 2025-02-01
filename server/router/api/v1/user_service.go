@@ -11,11 +11,9 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/cel-go/cel"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -51,39 +49,6 @@ func (s *APIV1Service) ListUsers(ctx context.Context, _ *v1pb.ListUsersRequest) 
 	return response, nil
 }
 
-func (s *APIV1Service) SearchUsers(ctx context.Context, request *v1pb.SearchUsersRequest) (*v1pb.SearchUsersResponse, error) {
-	if request.Filter == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "filter is empty")
-	}
-	filter, err := parseSearchUsersFilter(request.Filter)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to parse filter: %v", err)
-	}
-	userFind := &store.FindUser{}
-	if filter.Username != nil {
-		userFind.Username = filter.Username
-	}
-	if filter.Random {
-		userFind.Random = true
-	}
-	if filter.Limit != nil {
-		userFind.Limit = filter.Limit
-	}
-
-	users, err := s.Store.ListUsers(ctx, userFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to search users: %v", err)
-	}
-
-	response := &v1pb.SearchUsersResponse{
-		Users: []*v1pb.User{},
-	}
-	for _, user := range users {
-		response.Users = append(response.Users, convertUserFromStore(user))
-	}
-	return response, nil
-}
-
 func (s *APIV1Service) GetUser(ctx context.Context, request *v1pb.GetUserRequest) (*v1pb.User, error) {
 	userID, err := ExtractUserIDFromName(request.Name)
 	if err != nil {
@@ -91,6 +56,20 @@ func (s *APIV1Service) GetUser(ctx context.Context, request *v1pb.GetUserRequest
 	}
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
 		ID: &userID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+
+	return convertUserFromStore(user), nil
+}
+
+func (s *APIV1Service) GetUserByUsername(ctx context.Context, request *v1pb.GetUserByUsernameRequest) (*v1pb.User, error) {
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		Username: &request.Username,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -596,63 +575,6 @@ func convertUserRoleToStore(role v1pb.User_Role) store.Role {
 		return store.RoleUser
 	default:
 		return store.RoleUser
-	}
-}
-
-// SearchUsersFilterCELAttributes are the CEL attributes for SearchUsersFilter.
-var SearchUsersFilterCELAttributes = []cel.EnvOption{
-	cel.Variable("username", cel.StringType),
-	cel.Variable("random", cel.BoolType),
-	cel.Variable("limit", cel.IntType),
-}
-
-type SearchUsersFilter struct {
-	Username *string
-	Random   bool
-	Limit    *int
-}
-
-func parseSearchUsersFilter(expression string) (*SearchUsersFilter, error) {
-	e, err := cel.NewEnv(SearchUsersFilterCELAttributes...)
-	if err != nil {
-		return nil, err
-	}
-	ast, issues := e.Compile(expression)
-	if issues != nil {
-		return nil, errors.Errorf("found issue %v", issues)
-	}
-	filter := &SearchUsersFilter{}
-	expr, err := cel.AstToParsedExpr(ast)
-	if err != nil {
-		return nil, err
-	}
-	callExpr := expr.GetExpr().GetCallExpr()
-	findSearchUsersField(callExpr, filter)
-	return filter, nil
-}
-
-func findSearchUsersField(callExpr *expr.Expr_Call, filter *SearchUsersFilter) {
-	if len(callExpr.Args) == 2 {
-		idExpr := callExpr.Args[0].GetIdentExpr()
-		if idExpr != nil {
-			if idExpr.Name == "username" {
-				username := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.Username = &username
-			} else if idExpr.Name == "random" {
-				random := callExpr.Args[1].GetConstExpr().GetBoolValue()
-				filter.Random = random
-			} else if idExpr.Name == "limit" {
-				limit := int(callExpr.Args[1].GetConstExpr().GetInt64Value())
-				filter.Limit = &limit
-			}
-			return
-		}
-	}
-	for _, arg := range callExpr.Args {
-		callExpr := arg.GetCallExpr()
-		if callExpr != nil {
-			findSearchUsersField(callExpr, filter)
-		}
 	}
 }
 

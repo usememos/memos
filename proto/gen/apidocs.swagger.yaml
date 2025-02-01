@@ -459,24 +459,22 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - UserService
-  /api/v1/users:search:
+  /api/v1/users:username:
     get:
-      summary: SearchUsers searches users by filter.
-      operationId: UserService_SearchUsers
+      summary: GetUserByUsername gets a user by username.
+      operationId: UserService_GetUserByUsername
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1SearchUsersResponse'
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: filter
-          description: |-
-            Filter is used to filter users returned in the list.
-            Format: "username == 'frank'"
+        - name: username
+          description: The username of the user.
           in: query
           required: false
           type: string
@@ -2848,14 +2846,6 @@ definitions:
     properties:
       markdown:
         type: string
-  v1SearchUsersResponse:
-    type: object
-    properties:
-      users:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1User'
   v1SpoilerNode:
     type: object
     properties:

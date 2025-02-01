@@ -18,14 +18,15 @@ service UserService {
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
     option (google.api.http) = {get: "/api/v1/users"};
   }
-  // SearchUsers searches users by filter.
-  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {
-    option (google.api.http) = {get: "/api/v1/users:search"};
-  }
   // GetUser gets a user by name.
   rpc GetUser(GetUserRequest) returns (User) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
+  }
+  // GetUserByUsername gets a user by username.
+  rpc GetUserByUsername(GetUserByUsernameRequest) returns (User) {
+    option (google.api.http) = {get: "/api/v1/users:username"};
+    option (google.api.method_signature) = "username";
   }
   // GetUserAvatarBinary gets the avatar of a user.
   rpc GetUserAvatarBinary(GetUserAvatarBinaryRequest) returns (google.api.HttpBody) {
@@ -133,19 +134,14 @@ message ListUsersResponse {
   repeated User users = 1;
 }
 
-message SearchUsersRequest {
-  // Filter is used to filter users returned in the list.
-  // Format: "username == 'frank'"
-  string filter = 1;
-}
-
-message SearchUsersResponse {
-  repeated User users = 1;
-}
-
 message GetUserRequest {
   // The name of the user.
   string name = 1;
+}
+
+message GetUserByUsernameRequest {
+  // The username of the user.
+  string username = 1;
 }
 
 message GetUserAvatarBinaryRequest {
