@@ -1,7 +1,7 @@
-import clsx from "clsx";
 import { head } from "lodash-es";
 import React from "react";
 import { ListNode_Kind, Node, NodeType } from "@/types/proto/api/v1/markdown_service";
+import { cn } from "@/utils";
 import Renderer from "./Renderer";
 
 interface Props {
@@ -43,7 +43,7 @@ const List: React.FC<Props> = ({ kind, indent, children }: Props) => {
   return React.createElement(
     getListContainer(),
     {
-      className: clsx(
+      className: cn(
         `list-inside ${kind === ListNode_Kind.ORDERED ? "list-decimal" : kind === ListNode_Kind.UNORDERED ? "list-disc" : "list-none"}`,
         indent > 0 ? `pl-${2 * indent}` : "",
       ),

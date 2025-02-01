@@ -1,9 +1,9 @@
-import clsx from "clsx";
 import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { Link } from "react-router-dom";
 import { MemoRelation } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
+import { cn } from "@/utils";
 
 interface Props {
   memo: Memo;
@@ -32,7 +32,7 @@ const MemoRelationListView = (props: Props) => {
       <div className="w-full flex flex-row justify-start items-center mb-1 gap-3 opacity-60">
         {referencingMemoList.length > 0 && (
           <button
-            className={clsx(
+            className={cn(
               "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-gray-500",
               selectedTab === "referencing" && "text-gray-800 dark:text-gray-400",
             )}
@@ -45,7 +45,7 @@ const MemoRelationListView = (props: Props) => {
         )}
         {referencedMemoList.length > 0 && (
           <button
-            className={clsx(
+            className={cn(
               "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-gray-500",
               selectedTab === "referenced" && "text-gray-800 dark:text-gray-400",
             )}

@@ -1,5 +1,4 @@
 import { Button } from "@usememos/mui";
-import clsx from "clsx";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
@@ -16,6 +15,7 @@ import { memoNamePrefix, useMemoStore, useWorkspaceSettingStore } from "@/store/
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { memoLink } from "@/utils/memo";
 
@@ -92,8 +92,8 @@ const MemoDetail = () => {
           <MemoDetailSidebarDrawer memo={memo} parentPage={locationState?.from} />
         </MobileHeader>
       )}
-      <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
-        <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
+      <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
+        <div className={cn(md ? "w-[calc(100%-15rem)]" : "w-full")}>
           {parentMemo && (
             <div className="w-auto inline-block mb-2">
               <Link

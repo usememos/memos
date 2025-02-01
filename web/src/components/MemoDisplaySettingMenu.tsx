@@ -1,7 +1,7 @@
 import { Option, Select } from "@mui/joy";
-import clsx from "clsx";
 import { Settings2Icon } from "lucide-react";
 import { useMemoFilterStore } from "@/store/v1";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
@@ -17,7 +17,7 @@ const MemoDisplaySettingMenu = ({ className }: Props) => {
   return (
     <Popover>
       <PopoverTrigger
-        className={clsx(className, isApplying ? "text-teal-600 bg-teal-50 dark:text-teal-500 dark:bg-teal-900 rounded-sm" : "opacity-40")}
+        className={cn(className, isApplying ? "text-teal-600 bg-teal-50 dark:text-teal-500 dark:bg-teal-900 rounded-sm" : "opacity-40")}
       >
         <Settings2Icon className="w-4 h-auto shrink-0" />
       </PopoverTrigger>

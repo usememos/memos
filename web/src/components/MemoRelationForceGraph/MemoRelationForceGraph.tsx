@@ -1,10 +1,10 @@
 import { useColorScheme } from "@mui/joy";
-import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import ForceGraph2D, { ForceGraphMethods, LinkObject, NodeObject } from "react-force-graph-2d";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
+import { cn } from "@/utils";
 import { memoLink } from "@/utils/memo";
 import { LinkType, NodeType } from "./types";
 import { convertMemoRelationsToGraphData } from "./utils";
@@ -40,7 +40,7 @@ const MemoRelationForceGraph = ({ className, memo, parentPage }: Props) => {
   };
 
   return (
-    <div ref={containerRef} className={clsx("dark:opacity-80", className)}>
+    <div ref={containerRef} className={cn("dark:opacity-80", className)}>
       <ForceGraph2D
         ref={graphRef}
         width={graphSize.width}

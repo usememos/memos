@@ -1,9 +1,9 @@
-import clsx from "clsx";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
 import StatisticsView from "@/components/StatisticsView";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoList, useUserStatsStore } from "@/store/v1";
+import { cn } from "@/utils";
 import TagsSection from "./TagsSection";
 
 interface Props {
@@ -25,7 +25,7 @@ const HomeSidebar = (props: Props) => {
 
   return (
     <aside
-      className={clsx(
+      className={cn(
         "relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start",
         props.className,
       )}

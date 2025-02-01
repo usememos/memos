@@ -1,5 +1,4 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
-import clsx from "clsx";
 import copy from "copy-to-clipboard";
 import {
   ArchiveIcon,
@@ -20,6 +19,7 @@ import { useMemoStore, useUserStatsStore } from "@/store/v1";
 import { State } from "@/types/proto/api/v1/common";
 import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { memoLink } from "@/utils/memo";
 
@@ -166,7 +166,7 @@ const MemoActionMenu = (props: Props) => {
   return (
     <Dropdown>
       <MenuButton slots={{ root: "div" }}>
-        <span className={clsx("flex justify-center items-center rounded-full hover:opacity-70", props.className)}>
+        <span className={cn("flex justify-center items-center rounded-full hover:opacity-70", props.className)}>
           <MoreVerticalIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
       </MenuButton>

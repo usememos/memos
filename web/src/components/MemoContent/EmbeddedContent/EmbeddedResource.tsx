@@ -1,8 +1,8 @@
-import clsx from "clsx";
 import { useEffect } from "react";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import useLoading from "@/hooks/useLoading";
 import { useResourceStore } from "@/store/v1";
+import { cn } from "@/utils";
 import Error from "./Error";
 
 interface Props {
@@ -53,7 +53,7 @@ const EmbeddedResource = ({ resourceId: uid, params: paramsStr }: Props) => {
   }
 
   return (
-    <div className={clsx("max-w-full", getAdditionalClassNameWithParams(params))}>
+    <div className={cn("max-w-full", getAdditionalClassNameWithParams(params))}>
       <MemoResourceListView resources={[resource]} />
     </div>
   );

@@ -354,8 +354,8 @@
     "workspace-section": {
       "disallow-user-registration": "Disallow user registration",
       "disallow-password-auth": "Disallow password auth",
-      "disallow-change-username": "Disallow Change Username",
-      "disallow-change-nickname": "Disallow Change Nickname",
+      "disallow-change-username": "Disallow changing username",
+      "disallow-change-nickname": "Disallow changing nickname",
       "week-start-day": "Week start day",
       "saturday": "Saturday",
       "sunday": "Sunday",

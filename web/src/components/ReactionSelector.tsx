@@ -1,5 +1,4 @@
 import { Dropdown, Menu, MenuButton } from "@mui/joy";
-import clsx from "clsx";
 import { SmilePlusIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
@@ -9,6 +8,7 @@ import { useMemoStore, useWorkspaceSettingStore } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { cn } from "@/utils";
 
 interface Props {
   memo: Memo;
@@ -63,7 +63,7 @@ const ReactionSelector = (props: Props) => {
     <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
       <MenuButton slots={{ root: "div" }}>
         <span
-          className={clsx("h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70", className)}
+          className={cn("h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70", className)}
         >
           <SmilePlusIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>
@@ -75,7 +75,7 @@ const ReactionSelector = (props: Props) => {
               return (
                 <span
                   key={reactionType}
-                  className={clsx(
+                  className={cn(
                     "inline-flex w-auto text-base cursor-pointer rounded px-1 text-gray-500 dark:text-gray-400 hover:opacity-80",
                     hasReacted(reactionType) && "bg-blue-100 dark:bg-zinc-800",
                   )}

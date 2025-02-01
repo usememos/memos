@@ -1,8 +1,8 @@
-import clsx from "clsx";
 import { last } from "lodash-es";
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { markdownServiceClient } from "@/grpcweb";
 import { NodeType, OrderedListItemNode, TaskListItemNode, UnorderedListItemNode } from "@/types/proto/api/v1/markdown_service";
+import { cn } from "@/utils";
 import TagSuggestions from "./TagSuggestions";
 
 export interface EditorRefActions {
@@ -187,10 +187,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
 
   return (
     <div
-      className={clsx(
-        "flex flex-col justify-start items-start relative w-full h-auto max-h-[50vh] bg-inherit dark:text-gray-300",
-        className,
-      )}
+      className={cn("flex flex-col justify-start items-start relative w-full h-auto max-h-[50vh] bg-inherit dark:text-gray-300", className)}
     >
       <textarea
         className="w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap word-break"

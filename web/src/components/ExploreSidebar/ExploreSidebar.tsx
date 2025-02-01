@@ -1,7 +1,7 @@
-import clsx from "clsx";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
 import { useUserStatsStore } from "@/store/v1";
+import { cn } from "@/utils";
 import TagsSection from "../HomeSidebar/TagsSection";
 import StatisticsView from "../StatisticsView";
 
@@ -22,7 +22,7 @@ const ExploreSidebar = (props: Props) => {
 
   return (
     <aside
-      className={clsx(
+      className={cn(
         "relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start",
         props.className,
       )}

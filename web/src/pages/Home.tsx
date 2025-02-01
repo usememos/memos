@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
@@ -12,6 +11,7 @@ import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoFilterStore } from "@/store/v1";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
+import { cn } from "@/utils";
 
 const Home = () => {
   const { md } = useResponsiveWidth();
@@ -60,8 +60,8 @@ const Home = () => {
           <HomeSidebarDrawer />
         </MobileHeader>
       )}
-      <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
-        <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
+      <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
+        <div className={cn(md ? "w-[calc(100%-15rem)]" : "w-full")}>
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
           <MemoFilters />
           <div className="flex flex-col justify-start items-start w-full max-w-full">

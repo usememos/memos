@@ -1,8 +1,8 @@
-import clsx from "clsx";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { isSuperUser } from "@/utils/user";
 import Renderer from "./Renderer";
@@ -86,7 +86,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-400 ${className || ""}`}>
         <div
           ref={memoContentContainerRef}
-          className={clsx(
+          className={cn(
             "relative w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
             showCompactMode == "ALL" && "line-clamp-6 max-h-60",
             contentClassName,

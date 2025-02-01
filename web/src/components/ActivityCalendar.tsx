@@ -1,11 +1,10 @@
 import { Tooltip } from "@mui/joy";
-import clsx from "clsx";
 import dayjs from "dayjs";
 import { useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
-import { cn } from "@/utils/utils";
 
 interface Props {
   month: string; // Format: 2021-1
@@ -66,9 +65,9 @@ const ActivityCalendar = (props: Props) => {
   }
 
   return (
-    <div className={clsx("w-full h-auto shrink-0 grid grid-cols-7 grid-flow-row gap-1")}>
+    <div className={cn("w-full h-auto shrink-0 grid grid-cols-7 grid-flow-row gap-1")}>
       {weekDays.map((day, index) => (
-        <div key={index} className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>
+        <div key={index} className={cn("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>
           {day}
         </div>
       ))}

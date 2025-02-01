@@ -1,9 +1,9 @@
-import clsx from "clsx";
 import Fuse from "fuse.js";
 import { useEffect, useRef, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import OverflowTip from "@/components/kit/OverflowTip";
 import { useUserStatsTags } from "@/store/v1";
+import { cn } from "@/utils";
 import { EditorRefActions } from ".";
 
 type Props = {
@@ -110,7 +110,7 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
         <div
           key={tag}
           onMouseDown={() => autocomplete(tag)}
-          className={clsx(
+          className={cn(
             "rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800",
             i === selected ? "bg-zinc-300 dark:bg-zinc-600" : "",
           )}

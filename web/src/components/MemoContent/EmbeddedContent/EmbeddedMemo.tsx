@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import copy from "copy-to-clipboard";
 import { ArrowUpRightIcon } from "lucide-react";
 import { useContext, useEffect } from "react";
@@ -7,6 +6,7 @@ import { Link } from "react-router-dom";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import useLoading from "@/hooks/useLoading";
 import { extractMemoIdFromName, useMemoStore } from "@/store/v1";
+import { cn } from "@/utils";
 import { memoLink } from "@/utils/memo";
 import MemoContent from "..";
 import { RendererContext } from "../types";
@@ -45,7 +45,7 @@ const EmbeddedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
   // Add the memo to the set of embedded memos. This is used to prevent infinite loops when a memo embeds itself.
   context.embeddedMemos.add(memoName);
   const contentNode = useSnippet ? (
-    <div className={clsx("text-gray-800 dark:text-gray-400", inlineMode ? "" : "line-clamp-3")}>{memo.snippet}</div>
+    <div className={cn("text-gray-800 dark:text-gray-400", inlineMode ? "" : "line-clamp-3")}>{memo.snippet}</div>
   ) : (
     <>
       <MemoContent

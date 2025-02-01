@@ -1,5 +1,4 @@
 import { Tooltip } from "@mui/joy";
-import clsx from "clsx";
 import { InboxIcon, LoaderIcon, MessageCircleIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -10,6 +9,7 @@ import { activityNamePrefix, useInboxStore, useMemoStore, useUserStore } from "@
 import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { memoLink } from "@/utils/memo";
 
@@ -74,7 +74,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
   return (
     <div className="w-full flex flex-row justify-start items-start gap-3">
       <div
-        className={clsx(
+        className={cn(
           "shrink-0 mt-2 p-2 rounded-full border",
           inbox.status === Inbox_Status.UNREAD
             ? "border-blue-600 text-blue-600 bg-blue-50 dark:bg-zinc-800"
@@ -86,7 +86,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
         </Tooltip>
       </div>
       <div
-        className={clsx(
+        className={cn(
           "border w-full p-2 px-3 rounded-lg flex flex-col justify-start items-start gap-1 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-700",
           inbox.status !== Inbox_Status.UNREAD && "opacity-60",
         )}
