@@ -79,7 +79,7 @@
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
     "protobufjs": "^7.4.0",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "vite": "^6.0.6"
   }
 }
