@@ -1406,6 +1406,118 @@ paths:
           pattern: users/[^/]+
       tags:
         - UserService
+  /api/v1/{parent}/shortcuts:
+    get:
+      summary: ListShortcuts returns a list of shortcuts for a user.
+      operationId: UserService_ListShortcuts
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListShortcutsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: The name of the user.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - UserService
+    post:
+      summary: CreateShortcut creates a new shortcut for a user.
+      operationId: UserService_CreateShortcut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiv1Shortcut'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: The name of the user.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: shortcut
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiv1Shortcut'
+      tags:
+        - UserService
+  /api/v1/{parent}/shortcuts/{id}:
+    delete:
+      summary: DeleteShortcut deletes a shortcut for a user.
+      operationId: UserService_DeleteShortcut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: The name of the user.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: id
+          description: The id of the shortcut.
+          in: path
+          required: true
+          type: string
+      tags:
+        - UserService
+  /api/v1/{parent}/shortcuts/{shortcut.id}:
+    patch:
+      summary: UpdateShortcut updates a shortcut for a user.
+      operationId: UserService_UpdateShortcut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiv1Shortcut'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: The name of the user.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: shortcut.id
+          in: path
+          required: true
+          type: string
+        - name: shortcut
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              filter:
+                type: string
+      tags:
+        - UserService
   /api/v1/{parent}/tags/{tag}:
     delete:
       summary: DeleteMemoTag deletes a tag for a memo.
@@ -1997,6 +2109,15 @@ definitions:
           type: string
       fieldMapping:
         $ref: '#/definitions/apiv1FieldMapping'
+  apiv1Shortcut:
+    type: object
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      filter:
+        type: string
   apiv1UserSetting:
     type: object
     properties:
@@ -2558,6 +2679,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Resource'
+  v1ListShortcutsResponse:
+    type: object
+    properties:
+      shortcuts:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/apiv1Shortcut'
   v1ListUserAccessTokensResponse:
     type: object
     properties:
