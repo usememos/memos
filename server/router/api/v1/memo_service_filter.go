@@ -141,7 +141,6 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
-	cel.Variable("uid", cel.StringType),
 	cel.Variable("state", cel.StringType),
 	cel.Variable("random", cel.BoolType),
 	cel.Variable("limit", cel.IntType),

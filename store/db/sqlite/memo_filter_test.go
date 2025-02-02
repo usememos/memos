@@ -26,8 +26,20 @@ func TestRestoreExprToSQL(t *testing.T) {
 			want:   "((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag3\"% OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag4\"%) OR (JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag3\"% OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag4\"%))",
 		},
 		{
-			filter: `content.contains("hello")`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.content') LIKE %\"hello\"%",
+			filter: `content.contains("memos")`,
+			want:   "`memo`.`content` LIKE %\"memos\"%",
+		},
+		{
+			filter: `visibility in ["PUBLIC"]`,
+			want:   "`memo`.`visibility` = \"PUBLIC\"",
+		},
+		{
+			filter: `visibility in ["PUBLIC", "PRIVATE"]`,
+			want:   "`memo`.`visibility` IN (\"PUBLIC\",\"PRIVATE\")",
+		},
+		{
+			filter: `create_time == "2006-01-02T15:04:05+07:00"`,
+			want:   "`memo`.`created_ts` = 1136189045",
 		},
 	}
 
