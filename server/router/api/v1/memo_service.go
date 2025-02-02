@@ -134,6 +134,14 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
+	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+	}
+	if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+		memoFind.OrderByUpdatedTs = true
+	}
+
 	var limit, offset int
 	if request.PageToken != "" {
 		var pageToken v1pb.PageToken

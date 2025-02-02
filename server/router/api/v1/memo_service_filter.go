@@ -52,9 +52,6 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 				find.CreatedTsBefore = filterExpr.DisplayTimeBefore
 			}
 		}
-		if filterExpr.IncludeComments {
-			find.ExcludeComments = false
-		}
 		if filterExpr.HasLink {
 			find.PayloadFind.HasLink = true
 		}
@@ -68,14 +65,6 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 			find.PayloadFind.HasIncompleteTasks = true
 		}
 	}
-
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
-	}
-	if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
-		find.OrderByUpdatedTs = true
-	}
 	return nil
 }
 
@@ -85,7 +74,6 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("tag_search", cel.ListType(cel.StringType)),
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
-	cel.Variable("include_comments", cel.BoolType),
 	cel.Variable("has_link", cel.BoolType),
 	cel.Variable("has_task_list", cel.BoolType),
 	cel.Variable("has_code", cel.BoolType),
@@ -97,7 +85,6 @@ type MemoFilter struct {
 	TagSearch          []string
 	DisplayTimeBefore  *int64
 	DisplayTimeAfter   *int64
-	IncludeComments    bool
 	HasLink            bool
 	HasTaskList        bool
 	HasCode            bool
@@ -147,9 +134,6 @@ func findMemoField(callExpr *exprv1.Expr_Call, filter *MemoFilter) {
 			} else if idExpr.Name == "display_time_after" {
 				displayTimeAfter := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.DisplayTimeAfter = &displayTimeAfter
-			} else if idExpr.Name == "include_comments" {
-				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
-				filter.IncludeComments = value
 			} else if idExpr.Name == "has_link" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.HasLink = value
