@@ -17,11 +17,11 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
   if (count === 0) {
     return "";
   }
-  if (count >= 3) {
-    const ratio = count / maxCount;
+  const ratio = count / maxCount;
+  if (count >= 3 && ratio > 0.4) {
     if (ratio > 0.7) {
       return "bg-primary-darker/80 text-gray-100 dark:opacity-80";
-    } else if (ratio > 0.4) {
+    } else {
       return "bg-primary/80 text-gray-100 dark:opacity-80";
     }
   } else {
