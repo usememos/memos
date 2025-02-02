@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
-	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+	exprv1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -18,52 +18,52 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		find.PayloadFind = &store.FindMemoPayload{}
 	}
 	if filter != "" {
-		filter, err := parseMemoFilter(filter)
+		filterExpr, err := parseMemoFilter(filter)
 		if err != nil {
 			return status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 		}
-		if len(filter.ContentSearch) > 0 {
-			find.ContentSearch = filter.ContentSearch
+		if len(filterExpr.ContentSearch) > 0 {
+			find.ContentSearch = filterExpr.ContentSearch
 		}
-		if len(filter.Visibilities) > 0 {
-			find.VisibilityList = filter.Visibilities
+		if len(filterExpr.Visibilities) > 0 {
+			find.VisibilityList = filterExpr.Visibilities
 		}
-		if filter.TagSearch != nil {
+		if filterExpr.TagSearch != nil {
 			if find.PayloadFind == nil {
 				find.PayloadFind = &store.FindMemoPayload{}
 			}
-			find.PayloadFind.TagSearch = filter.TagSearch
+			find.PayloadFind.TagSearch = filterExpr.TagSearch
 		}
-		if filter.OrderByPinned {
-			find.OrderByPinned = filter.OrderByPinned
+		if filterExpr.OrderByPinned {
+			find.OrderByPinned = filterExpr.OrderByPinned
 		}
-		if filter.OrderByTimeAsc {
-			find.OrderByTimeAsc = filter.OrderByTimeAsc
+		if filterExpr.OrderByTimeAsc {
+			find.OrderByTimeAsc = filterExpr.OrderByTimeAsc
 		}
-		if filter.DisplayTimeAfter != nil {
+		if filterExpr.DisplayTimeAfter != nil {
 			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
 				return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 			}
 			if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
-				find.UpdatedTsAfter = filter.DisplayTimeAfter
+				find.UpdatedTsAfter = filterExpr.DisplayTimeAfter
 			} else {
-				find.CreatedTsAfter = filter.DisplayTimeAfter
+				find.CreatedTsAfter = filterExpr.DisplayTimeAfter
 			}
 		}
-		if filter.DisplayTimeBefore != nil {
+		if filterExpr.DisplayTimeBefore != nil {
 			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
 				return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 			}
 			if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
-				find.UpdatedTsBefore = filter.DisplayTimeBefore
+				find.UpdatedTsBefore = filterExpr.DisplayTimeBefore
 			} else {
-				find.CreatedTsBefore = filter.DisplayTimeBefore
+				find.CreatedTsBefore = filterExpr.DisplayTimeBefore
 			}
 		}
-		if filter.Creator != nil {
-			userID, err := ExtractUserIDFromName(*filter.Creator)
+		if filterExpr.Creator != nil {
+			userID, err := ExtractUserIDFromName(*filterExpr.Creator)
 			if err != nil {
 				return errors.Wrap(err, "invalid user name")
 			}
@@ -78,28 +78,28 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 			}
 			find.CreatorID = &user.ID
 		}
-		if filter.RowStatus != nil {
-			find.RowStatus = filter.RowStatus
+		if filterExpr.RowStatus != nil {
+			find.RowStatus = filterExpr.RowStatus
 		}
-		if filter.Random {
-			find.Random = filter.Random
+		if filterExpr.Random {
+			find.Random = filterExpr.Random
 		}
-		if filter.Limit != nil {
-			find.Limit = filter.Limit
+		if filterExpr.Limit != nil {
+			find.Limit = filterExpr.Limit
 		}
-		if filter.IncludeComments {
+		if filterExpr.IncludeComments {
 			find.ExcludeComments = false
 		}
-		if filter.HasLink {
+		if filterExpr.HasLink {
 			find.PayloadFind.HasLink = true
 		}
-		if filter.HasTaskList {
+		if filterExpr.HasTaskList {
 			find.PayloadFind.HasTaskList = true
 		}
-		if filter.HasCode {
+		if filterExpr.HasCode {
 			find.PayloadFind.HasCode = true
 		}
-		if filter.HasIncompleteTasks {
+		if filterExpr.HasIncompleteTasks {
 			find.PayloadFind.HasIncompleteTasks = true
 		}
 	}
@@ -181,16 +181,16 @@ func parseMemoFilter(expression string) (*MemoFilter, error) {
 		return nil, errors.Errorf("found issue %v", issues)
 	}
 	filter := &MemoFilter{}
-	expr, err := cel.AstToParsedExpr(ast)
+	parsedExpr, err := cel.AstToParsedExpr(ast)
 	if err != nil {
 		return nil, err
 	}
-	callExpr := expr.GetExpr().GetCallExpr()
+	callExpr := parsedExpr.GetExpr().GetCallExpr()
 	findMemoField(callExpr, filter)
 	return filter, nil
 }
 
-func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
+func findMemoField(callExpr *exprv1.Expr_Call, filter *MemoFilter) {
 	if len(callExpr.Args) == 2 {
 		idExpr := callExpr.Args[0].GetIdentExpr()
 		if idExpr != nil {
