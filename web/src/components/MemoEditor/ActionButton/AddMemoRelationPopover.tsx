@@ -45,13 +45,14 @@ const AddMemoRelationPopover = (props: Props) => {
 
       setIsFetching(true);
       try {
-        const filters = [`creator == "${user.name}"`, `state == "NORMAL"`];
+        const conditions = [];
         if (searchText) {
-          filters.push(`content_search == [${JSON.stringify(searchText)}]`);
+          conditions.push(`content_search == [${JSON.stringify(searchText)}]`);
         }
         const { memos } = await memoServiceClient.listMemos({
+          parent: user.name,
           pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
-          filter: filters.length > 0 ? filters.join(" && ") : undefined,
+          oldFilter: conditions.length > 0 ? conditions.join(" && ") : undefined,
         });
         setFetchedMemos(memos);
       } catch (error: any) {

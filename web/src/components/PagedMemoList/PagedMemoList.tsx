@@ -5,6 +5,7 @@ import PullToRefresh from "react-simple-pull-to-refresh";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoList, useMemoStore } from "@/store/v1";
+import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "../Empty";
@@ -12,11 +13,14 @@ import Empty from "../Empty";
 interface Props {
   renderer: (memo: Memo) => JSX.Element;
   listSort?: (list: Memo[]) => Memo[];
-  filter?: string;
+  owner?: string;
+  state?: State;
+  direction?: Direction;
+  oldFilter?: string;
   pageSize?: number;
 }
 
-interface State {
+interface LocalState {
   isRequesting: boolean;
   nextPageToken: string;
 }
@@ -26,7 +30,7 @@ const PagedMemoList = (props: Props) => {
   const { md } = useResponsiveWidth();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
-  const [state, setState] = useState<State>({
+  const [state, setState] = useState<LocalState>({
     isRequesting: true, // Initial request
     nextPageToken: "",
   });
@@ -35,7 +39,10 @@ const PagedMemoList = (props: Props) => {
   const fetchMoreMemos = async (nextPageToken: string) => {
     setState((state) => ({ ...state, isRequesting: true }));
     const response = await memoStore.fetchMemos({
-      filter: props.filter || "",
+      parent: props.owner || "",
+      state: props.state || State.NORMAL,
+      direction: props.direction || Direction.DESC,
+      oldFilter: props.oldFilter || "",
       pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
       pageToken: nextPageToken,
     });
@@ -53,7 +60,7 @@ const PagedMemoList = (props: Props) => {
 
   useEffect(() => {
     refreshList();
-  }, [props.filter, props.pageSize]);
+  }, [props.owner, props.state, props.direction, props.oldFilter, props.pageSize]);
 
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">

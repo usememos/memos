@@ -9,7 +9,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
 
@@ -25,20 +24,11 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if len(filterExpr.ContentSearch) > 0 {
 			find.ContentSearch = filterExpr.ContentSearch
 		}
-		if len(filterExpr.Visibilities) > 0 {
-			find.VisibilityList = filterExpr.Visibilities
-		}
 		if filterExpr.TagSearch != nil {
 			if find.PayloadFind == nil {
 				find.PayloadFind = &store.FindMemoPayload{}
 			}
 			find.PayloadFind.TagSearch = filterExpr.TagSearch
-		}
-		if filterExpr.OrderByPinned {
-			find.OrderByPinned = filterExpr.OrderByPinned
-		}
-		if filterExpr.OrderByTimeAsc {
-			find.OrderByTimeAsc = filterExpr.OrderByTimeAsc
 		}
 		if filterExpr.DisplayTimeAfter != nil {
 			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
@@ -62,31 +52,6 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 				find.CreatedTsBefore = filterExpr.DisplayTimeBefore
 			}
 		}
-		if filterExpr.Creator != nil {
-			userID, err := ExtractUserIDFromName(*filterExpr.Creator)
-			if err != nil {
-				return errors.Wrap(err, "invalid user name")
-			}
-			user, err := s.Store.GetUser(ctx, &store.FindUser{
-				ID: &userID,
-			})
-			if err != nil {
-				return status.Errorf(codes.Internal, "failed to get user")
-			}
-			if user == nil {
-				return status.Errorf(codes.NotFound, "user not found")
-			}
-			find.CreatorID = &user.ID
-		}
-		if filterExpr.RowStatus != nil {
-			find.RowStatus = filterExpr.RowStatus
-		}
-		if filterExpr.Random {
-			find.Random = filterExpr.Random
-		}
-		if filterExpr.Limit != nil {
-			find.Limit = filterExpr.Limit
-		}
 		if filterExpr.IncludeComments {
 			find.ExcludeComments = false
 		}
@@ -104,23 +69,6 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		}
 	}
 
-	user, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get current user")
-	}
-	// If the user is not authenticated, only public memos are visible.
-	if user == nil {
-		if filter == "" {
-			// If no filter is provided, return an error.
-			return status.Errorf(codes.InvalidArgument, "filter is required for unauthenticated user")
-		}
-
-		find.VisibilityList = []store.Visibility{store.Public}
-	} else if find.CreatorID == nil || *find.CreatorID != user.ID {
-		// If creator is not specified or the creator is not the current user, only public and protected memos are visible.
-		find.VisibilityList = []store.Visibility{store.Public, store.Protected}
-	}
-
 	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
@@ -134,16 +82,9 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 // MemoFilterCELAttributes are the CEL attributes.
 var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content_search", cel.ListType(cel.StringType)),
-	cel.Variable("visibilities", cel.ListType(cel.StringType)),
 	cel.Variable("tag_search", cel.ListType(cel.StringType)),
-	cel.Variable("order_by_pinned", cel.BoolType),
-	cel.Variable("order_by_time_asc", cel.BoolType),
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
-	cel.Variable("creator", cel.StringType),
-	cel.Variable("state", cel.StringType),
-	cel.Variable("random", cel.BoolType),
-	cel.Variable("limit", cel.IntType),
 	cel.Variable("include_comments", cel.BoolType),
 	cel.Variable("has_link", cel.BoolType),
 	cel.Variable("has_task_list", cel.BoolType),
@@ -153,16 +94,9 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 
 type MemoFilter struct {
 	ContentSearch      []string
-	Visibilities       []store.Visibility
 	TagSearch          []string
-	OrderByPinned      bool
-	OrderByTimeAsc     bool
 	DisplayTimeBefore  *int64
 	DisplayTimeAfter   *int64
-	Creator            *string
-	RowStatus          *store.RowStatus
-	Random             bool
-	Limit              *int
 	IncludeComments    bool
 	HasLink            bool
 	HasTaskList        bool
@@ -200,13 +134,6 @@ func findMemoField(callExpr *exprv1.Expr_Call, filter *MemoFilter) {
 					contentSearch = append(contentSearch, value)
 				}
 				filter.ContentSearch = contentSearch
-			} else if idExpr.Name == "visibilities" {
-				visibilities := []store.Visibility{}
-				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
-					value := expr.GetConstExpr().GetStringValue()
-					visibilities = append(visibilities, store.Visibility(value))
-				}
-				filter.Visibilities = visibilities
 			} else if idExpr.Name == "tag_search" {
 				tagSearch := []string{}
 				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
@@ -214,30 +141,12 @@ func findMemoField(callExpr *exprv1.Expr_Call, filter *MemoFilter) {
 					tagSearch = append(tagSearch, value)
 				}
 				filter.TagSearch = tagSearch
-			} else if idExpr.Name == "order_by_pinned" {
-				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
-				filter.OrderByPinned = value
-			} else if idExpr.Name == "order_by_time_asc" {
-				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
-				filter.OrderByTimeAsc = value
 			} else if idExpr.Name == "display_time_before" {
 				displayTimeBefore := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.DisplayTimeBefore = &displayTimeBefore
 			} else if idExpr.Name == "display_time_after" {
 				displayTimeAfter := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.DisplayTimeAfter = &displayTimeAfter
-			} else if idExpr.Name == "creator" {
-				creator := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.Creator = &creator
-			} else if idExpr.Name == "state" {
-				state := convertStateToStore(apiv1.State(apiv1.State_value[callExpr.Args[1].GetConstExpr().GetStringValue()]))
-				filter.RowStatus = &state
-			} else if idExpr.Name == "random" {
-				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
-				filter.Random = value
-			} else if idExpr.Name == "limit" {
-				limit := int(callExpr.Args[1].GetConstExpr().GetInt64Value())
-				filter.Limit = &limit
 			} else if idExpr.Name == "include_comments" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.IncludeComments = value

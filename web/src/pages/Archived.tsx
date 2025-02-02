@@ -8,7 +8,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import SearchBar from "@/components/SearchBar";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore } from "@/store/v1";
-import { State } from "@/types/proto/api/v1/common";
+import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 
@@ -18,7 +18,7 @@ const Archived = () => {
   const memoFilterStore = useMemoFilterStore();
 
   const memoListFilter = useMemo(() => {
-    const filters = [`creator == "${user.name}"`, `state == "ARCHIVED"`];
+    const conditions = [];
     const contentSearch: string[] = [];
     const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
@@ -28,16 +28,13 @@ const Archived = () => {
         tagSearch.push(`"${filter.value}"`);
       }
     }
-    if (memoFilterStore.orderByTimeAsc) {
-      filters.push(`order_by_time_asc == true`);
-    }
     if (contentSearch.length > 0) {
-      filters.push(`content_search == [${contentSearch.join(", ")}]`);
+      conditions.push(`content_search == [${contentSearch.join(", ")}]`);
     }
     if (tagSearch.length > 0) {
-      filters.push(`tag_search == [${tagSearch.join(", ")}]`);
+      conditions.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
-    return filters.join(" && ");
+    return conditions.join(" && ");
   }, [user, memoFilterStore.filters]);
 
   return (
@@ -66,7 +63,10 @@ const Archived = () => {
                     : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
                 )
             }
-            filter={memoListFilter}
+            owner={user.name}
+            state={State.ARCHIVED}
+            direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+            oldFilter={memoListFilter}
           />
         </div>
       </div>

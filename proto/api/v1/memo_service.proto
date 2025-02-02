@@ -26,7 +26,10 @@ service MemoService {
   }
   // ListMemos lists memos with pagination and filter.
   rpc ListMemos(ListMemosRequest) returns (ListMemosResponse) {
-    option (google.api.http) = {get: "/api/v1/memos"};
+    option (google.api.http) = {
+      get: "/api/v1/memos"
+      additional_bindings: {get: "/api/v1/{parent=users/*}/memos"}
+    };
   }
   // GetMemo gets a memo.
   rpc GetMemo(GetMemoRequest) returns (Memo) {
@@ -190,16 +193,36 @@ message CreateMemoRequest {
 }
 
 message ListMemosRequest {
+  // The parent is the owner of the memos.
+  // If not specified or `users/-`, it will list all memos.
+  string parent = 1;
+
   // The maximum number of memos to return.
-  int32 page_size = 1;
+  int32 page_size = 2;
 
   // A page token, received from a previous `ListMemos` call.
   // Provide this to retrieve the subsequent page.
-  string page_token = 2;
+  string page_token = 3;
 
-  // Filter is used to filter memos returned in the list.
+  // The state of the memos to list.
+  // Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
+  State state = 4;
+
+  // What field to sort the results by.
+  // Default to display_time.
+  string sort = 5;
+
+  // The direction to sort the results by.
+  // Default to DESC.
+  Direction direction = 6;
+
+  // Filter is a CEL expression to filter memos.
+  // Refer to `Shortcut.filter`.
+  string filter = 7;
+
+  // [Deprecated] Old filter contains some specific conditions to filter memos.
   // Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
-  string filter = 3;
+  string old_filter = 8;
 }
 
 message ListMemosResponse {

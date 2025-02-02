@@ -15,3 +15,9 @@ message PageToken {
   int32 limit = 1;
   int32 offset = 2;
 }
+
+enum Direction {
+  DIRECTION_UNSPECIFIED = 0;
+  ASC = 1;
+  DESC = 2;
+}

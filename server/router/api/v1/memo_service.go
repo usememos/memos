@@ -99,8 +99,41 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		// Exclude comments by default.
 		ExcludeComments: true,
 	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.Filter); err != nil {
+	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.OldFilter); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+	}
+	if request.Parent != "" && request.Parent != "users/-" {
+		userID, err := ExtractUserIDFromName(request.Parent)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
+		}
+		memoFind.CreatorID = &userID
+		memoFind.OrderByPinned = true
+	}
+	if request.Direction == v1pb.Direction_ASC {
+		memoFind.OrderByTimeAsc = true
+	}
+	if request.Filter != "" {
+		memoFind.Filter = &request.Filter
+	}
+
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user")
+	}
+	if currentUser == nil {
+		memoFind.VisibilityList = []store.Visibility{store.Public}
+	} else {
+		if memoFind.CreatorID == nil || *memoFind.CreatorID != currentUser.ID {
+			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+		}
+	}
+	if request.State == v1pb.State_ARCHIVED {
+		state := store.Archived
+		memoFind.RowStatus = &state
+	} else {
+		state := store.Normal
+		memoFind.RowStatus = &state
 	}
 
 	var limit, offset int

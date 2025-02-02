@@ -12,7 +12,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
 import { useMemoFilterStore, useUserStore } from "@/store/v1";
-import { State } from "@/types/proto/api/v1/common";
+import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -48,7 +48,7 @@ const UserProfile = () => {
       return "";
     }
 
-    const filters = [`creator == "${user.name}"`, `state == "NORMAL"`, `order_by_pinned == true`];
+    const conditions = [];
     const contentSearch: string[] = [];
     const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
@@ -59,12 +59,12 @@ const UserProfile = () => {
       }
     }
     if (contentSearch.length > 0) {
-      filters.push(`content_search == [${contentSearch.join(", ")}]`);
+      conditions.push(`content_search == [${contentSearch.join(", ")}]`);
     }
     if (tagSearch.length > 0) {
-      filters.push(`tag_search == [${tagSearch.join(", ")}]`);
+      conditions.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
-    return filters.join(" && ");
+    return conditions.join(" && ");
   }, [user, memoFilterStore.filters]);
 
   const handleCopyProfileLink = () => {
@@ -115,7 +115,9 @@ const UserProfile = () => {
                     )
                     .sort((a, b) => Number(b.pinned) - Number(a.pinned))
                 }
-                filter={memoListFilter}
+                owner={user.name}
+                direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+                oldFilter={memoListFilter}
               />
             </>
           ) : (

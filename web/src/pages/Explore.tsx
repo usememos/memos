@@ -8,7 +8,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoFilterStore } from "@/store/v1";
-import { State } from "@/types/proto/api/v1/common";
+import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 
@@ -18,7 +18,7 @@ const Explore = () => {
   const memoFilterStore = useMemoFilterStore();
 
   const memoListFilter = useMemo(() => {
-    const filters = [`state == "NORMAL"`, `visibilities == [${user ? "'PUBLIC', 'PROTECTED'" : "'PUBLIC'"}]`];
+    const conditions = [];
     const contentSearch: string[] = [];
     const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
@@ -27,29 +27,26 @@ const Explore = () => {
       } else if (filter.factor === "tagSearch") {
         tagSearch.push(`"${filter.value}"`);
       } else if (filter.factor === "property.hasLink") {
-        filters.push(`has_link == true`);
+        conditions.push(`has_link == true`);
       } else if (filter.factor === "property.hasTaskList") {
-        filters.push(`has_task_list == true`);
+        conditions.push(`has_task_list == true`);
       } else if (filter.factor === "property.hasCode") {
-        filters.push(`has_code == true`);
+        conditions.push(`has_code == true`);
       } else if (filter.factor === "displayTime") {
         const filterDate = new Date(filter.value);
         const filterUtcTimestamp = filterDate.getTime() + filterDate.getTimezoneOffset() * 60 * 1000;
         const timestampAfter = filterUtcTimestamp / 1000;
-        filters.push(`display_time_after == ${timestampAfter}`);
-        filters.push(`display_time_before == ${timestampAfter + 60 * 60 * 24}`);
+        conditions.push(`display_time_after == ${timestampAfter}`);
+        conditions.push(`display_time_before == ${timestampAfter + 60 * 60 * 24}`);
       }
     }
-    if (memoFilterStore.orderByTimeAsc) {
-      filters.push(`order_by_time_asc == true`);
-    }
     if (contentSearch.length > 0) {
-      filters.push(`content_search == [${contentSearch.join(", ")}]`);
+      conditions.push(`content_search == [${contentSearch.join(", ")}]`);
     }
     if (tagSearch.length > 0) {
-      filters.push(`tag_search == [${tagSearch.join(", ")}]`);
+      conditions.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
-    return filters.join(" && ");
+    return conditions.join(" && ");
   }, [user, memoFilterStore.filters, memoFilterStore.orderByTimeAsc]);
 
   return (
@@ -74,7 +71,8 @@ const Explore = () => {
                       : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
                   )
               }
-              filter={memoListFilter}
+              direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+              oldFilter={memoListFilter}
             />
           </div>
         </div>
