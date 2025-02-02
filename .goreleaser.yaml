@@ -6,9 +6,7 @@ before:
     - go mod tidy
 
 builds:
-  - env:
-      - CGO_ENABLED=0
-    main: ./bin/memos
+  - main: ./bin/memos
     binary: memos
     goos:
       - linux
