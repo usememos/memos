@@ -110,6 +110,13 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		memoFind.CreatorID = &userID
 		memoFind.OrderByPinned = true
 	}
+	if request.State == v1pb.State_ARCHIVED {
+		state := store.Archived
+		memoFind.RowStatus = &state
+	} else {
+		state := store.Normal
+		memoFind.RowStatus = &state
+	}
 	if request.Direction == v1pb.Direction_ASC {
 		memoFind.OrderByTimeAsc = true
 	}
@@ -123,17 +130,8 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	}
 	if currentUser == nil {
 		memoFind.VisibilityList = []store.Visibility{store.Public}
-	} else {
-		if memoFind.CreatorID == nil || *memoFind.CreatorID != currentUser.ID {
-			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
-		}
-	}
-	if request.State == v1pb.State_ARCHIVED {
-		state := store.Archived
-		memoFind.RowStatus = &state
-	} else {
-		state := store.Normal
-		memoFind.RowStatus = &state
+	} else if memoFind.CreatorID == nil || *memoFind.CreatorID != currentUser.ID {
+		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
 	var limit, offset int
