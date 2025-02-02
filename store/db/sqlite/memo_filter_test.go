@@ -31,7 +31,7 @@ func TestRestoreExprToSQL(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		parsedExpr, err := filter.Parse(tt.filter)
+		parsedExpr, err := filter.Parse(tt.filter, filter.MemoFilterCELAttributes...)
 		require.NoError(t, err)
 		result, err := RestoreExprToSQL(parsedExpr.GetExpr())
 		require.NoError(t, err)
