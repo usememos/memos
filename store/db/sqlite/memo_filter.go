@@ -6,8 +6,9 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/plugin/filter"
 	exprv1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+
+	"github.com/usememos/memos/plugin/filter"
 )
 
 func RestoreExprToSQL(expr *exprv1.Expr) (string, error) {
