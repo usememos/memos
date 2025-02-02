@@ -11,7 +11,7 @@ jobs:
       issues: write
 
     steps:
-      - uses: actions/stale@v9.0.0
+      - uses: actions/stale@v9.1.0
         with:
           days-before-issue-stale: 14
           days-before-issue-close: 7
