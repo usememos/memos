@@ -24,8 +24,8 @@ importers:
         specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@18.3.1))(@types/react@18.3.18)(react@18.3.1)
       '@github/relative-time-element':
-        specifier: ^4.4.4
-        version: 4.4.4
+        specifier: ^4.4.5
+        version: 4.4.5
       '@matejmazur/react-katex':
         specifier: ^3.1.3
         version: 3.1.3(katex@0.16.19)(react@18.3.1)
@@ -680,8 +680,8 @@ packages:
   '@floating-ui/utils@0.2.8':
     resolution: {integrity: sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==}
 
-  '@github/relative-time-element@4.4.4':
-    resolution: {integrity: sha512-Oi8uOL8O+ZWLD7dHRWCkm2cudcTYtB3VyOYf9BtzCgDGm+OKomyOREtItNMtWl1dxvec62BTKErq36uy+RYxQg==}
+  '@github/relative-time-element@4.4.5':
+    resolution: {integrity: sha512-9ejPtayBDIJfEU8x1fg/w2o5mahHkkp1SC6uObDtoKs4Gn+2a1vNK8XIiNDD8rMeEfpvDjydgSZZ+uk+7N0VsQ==}
 
   '@humanwhocodes/config-array@0.13.0':
     resolution: {integrity: sha512-DZLEEqFWQFiyK6h5YIeynKx7JlvCYWL0cImfSRXZ9l4Sg2efkFGTuFf6vzXjK1cq6IYkU+Eg/JizXw+TD2vRNw==}
@@ -737,6 +737,7 @@ packages:
   '@mui/base@5.0.0-beta.40-0':
     resolution: {integrity: sha512-hG3atoDUxlvEy+0mqdMpWd04wca8HKr2IHjW/fAjlkCHQolSLazhZM46vnHjOf15M4ESu25mV/3PgjczyjVM4w==}
     engines: {node: '>=12.0.0'}
+    deprecated: This package has been replaced by @base-ui-components/react
     peerDependencies:
       '@types/react': ^17.0.0 || ^18.0.0 || ^19.0.0
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -4078,7 +4079,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.8': {}
 
-  '@github/relative-time-element@4.4.4': {}
+  '@github/relative-time-element@4.4.5': {}
 
   '@humanwhocodes/config-array@0.13.0':
     dependencies:
