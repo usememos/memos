@@ -80,11 +80,9 @@ func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateS
 	}
 	if newShortcut.Filter == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "filter is required")
-	} else {
-		_, err := filter.Parse(newShortcut.Filter, filter.MemoFilterCELAttributes...)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
-		}
+	}
+	if _, err := filter.Parse(newShortcut.Filter, filter.MemoFilterCELAttributes...); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 	}
 	if request.ValidateOnly {
 		return &v1pb.Shortcut{
@@ -175,12 +173,10 @@ func (s *APIV1Service) UpdateShortcut(ctx context.Context, request *v1pb.UpdateS
 				} else if field == "filter" {
 					if request.Shortcut.GetFilter() == "" {
 						return nil, status.Errorf(codes.InvalidArgument, "filter is required")
-					} else {
-						// Validate the filter.
-						_, err := filter.Parse(request.Shortcut.GetFilter(), filter.MemoFilterCELAttributes...)
-						if err != nil {
-							return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
-						}
+					}
+					// Validate the filter.
+					if _, err := filter.Parse(request.Shortcut.GetFilter(), filter.MemoFilterCELAttributes...); err != nil {
+						return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 					}
 					shortcut.Filter = request.Shortcut.GetFilter()
 				}
