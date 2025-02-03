@@ -57,7 +57,7 @@ const PagedMemoList = (props: Props) => {
   const refreshList = async () => {
     memoList.reset();
     setState((state) => ({ ...state, nextPageToken: "" }));
-    fetchMoreMemos("");
+    await fetchMoreMemos("");
   };
 
   useEffect(() => {
