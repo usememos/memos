@@ -102,6 +102,25 @@ func ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
 					return err
 				}
 				ctx.Args = append(ctx.Args, timestamp.Unix())
+			} else if identifier == "visibility" || identifier == "content" {
+				if operator != "=" && operator != "!=" {
+					return errors.Errorf("invalid operator for %s", v.CallExpr.Function)
+				}
+				valueStr, ok := value.(string)
+				if !ok {
+					return errors.New("invalid string value")
+				}
+
+				var factor string
+				if identifier == "visibility" {
+					factor = "`memo`.`visibility`"
+				} else if identifier == "content" {
+					factor = "`memo`.`content`"
+				}
+				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", factor, operator)); err != nil {
+					return err
+				}
+				ctx.Args = append(ctx.Args, valueStr)
 			}
 		case "@in":
 			if len(v.CallExpr.Args) != 2 {
