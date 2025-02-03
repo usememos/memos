@@ -301,6 +301,8 @@ message CreateShortcutRequest {
   string parent = 1;
 
   Shortcut shortcut = 2;
+
+  bool validate_only = 3;
 }
 
 message UpdateShortcutRequest {

@@ -7,6 +7,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/plugin/filter"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -68,6 +70,30 @@ func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateS
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
+	newShortcut := &storepb.ShortcutsUserSetting_Shortcut{
+		Id:     util.GenUUID(),
+		Title:  request.Shortcut.GetTitle(),
+		Filter: request.Shortcut.GetFilter(),
+	}
+	if newShortcut.Title == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "title is required")
+	}
+	if newShortcut.Filter == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "filter is required")
+	} else {
+		_, err := filter.Parse(newShortcut.Filter, filter.MemoFilterCELAttributes...)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		}
+	}
+	if request.ValidateOnly {
+		return &v1pb.Shortcut{
+			Id:     newShortcut.GetId(),
+			Title:  newShortcut.GetTitle(),
+			Filter: newShortcut.GetFilter(),
+		}, nil
+	}
+
 	userSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &userID,
 		Key:    storepb.UserSettingKey_SHORTCUTS,
@@ -79,17 +105,16 @@ func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateS
 		userSetting = &storepb.UserSetting{
 			UserId: userID,
 			Key:    storepb.UserSettingKey_SHORTCUTS,
-			Value:  &storepb.UserSetting_Shortcuts{},
+			Value: &storepb.UserSetting_Shortcuts{
+				Shortcuts: &storepb.ShortcutsUserSetting{
+					Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{},
+				},
+			},
 		}
 	}
-
 	shortcutsUserSetting := userSetting.GetShortcuts()
 	shortcuts := shortcutsUserSetting.GetShortcuts()
-	shortcuts = append(shortcuts, &storepb.ShortcutsUserSetting_Shortcut{
-		Id:     request.Shortcut.GetId(),
-		Title:  request.Shortcut.GetTitle(),
-		Filter: request.Shortcut.GetFilter(),
-	})
+	shortcuts = append(shortcuts, newShortcut)
 	shortcutsUserSetting.Shortcuts = shortcuts
 
 	userSetting.Value = &storepb.UserSetting_Shortcuts{
@@ -121,7 +146,6 @@ func (s *APIV1Service) UpdateShortcut(ctx context.Context, request *v1pb.UpdateS
 	if currentUser == nil || currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
@@ -144,8 +168,20 @@ func (s *APIV1Service) UpdateShortcut(ctx context.Context, request *v1pb.UpdateS
 		if shortcut.GetId() == request.Shortcut.GetId() {
 			for _, field := range request.UpdateMask.Paths {
 				if field == "title" {
+					if request.Shortcut.GetTitle() == "" {
+						return nil, status.Errorf(codes.InvalidArgument, "title is required")
+					}
 					shortcut.Title = request.Shortcut.GetTitle()
 				} else if field == "filter" {
+					if request.Shortcut.GetFilter() == "" {
+						return nil, status.Errorf(codes.InvalidArgument, "filter is required")
+					} else {
+						// Validate the filter.
+						_, err := filter.Parse(request.Shortcut.GetFilter(), filter.MemoFilterCELAttributes...)
+						if err != nil {
+							return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+						}
+					}
 					shortcut.Filter = request.Shortcut.GetFilter()
 				}
 			}

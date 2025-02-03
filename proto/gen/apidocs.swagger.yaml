@@ -1579,6 +1579,10 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/apiv1Shortcut'
+        - name: validateOnly
+          in: query
+          required: false
+          type: boolean
       tags:
         - UserService
   /api/v1/{parent}/shortcuts/{id}:
