@@ -15,15 +15,15 @@ func TestRestoreExprToSQL(t *testing.T) {
 	}{
 		{
 			filter: `tag in ["tag1", "tag2"]`,
-			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag1\"% OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag2\"%)",
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE '%\"tag1\"%' OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE '%\"tag2\"%')",
 		},
 		{
 			filter: `!(tag in ["tag1", "tag2"])`,
-			want:   "NOT ((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag1\"% OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag2\"%))",
+			want:   "NOT ((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE '%\"tag1\"%' OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE '%\"tag2\"%'))",
 		},
 		{
 			filter: `tag in ["tag1", "tag2"] || tag in ["tag3", "tag4"]`,
-			want:   "((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag3\"% OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag4\"%) OR (JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag3\"% OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %\"tag4\"%))",
+			want:   "((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE '%\"tag3\"%' OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE '%\"tag4\"%') OR (JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE '%\"tag3\"%' OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE '%\"tag4\"%'))",
 		},
 		{
 			filter: `content.contains("memos")`,
