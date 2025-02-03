@@ -13,8 +13,7 @@ import (
 )
 
 func ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
-	switch v := expr.ExprKind.(type) {
-	case *exprv1.Expr_CallExpr:
+	if v, ok := expr.ExprKind.(*exprv1.Expr_CallExpr); ok {
 		switch v.CallExpr.Function {
 		case "_||_", "_&&_":
 			if len(v.CallExpr.Args) != 2 {
