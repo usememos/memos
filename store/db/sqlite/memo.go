@@ -108,12 +108,13 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if err != nil {
 			return nil, err
 		}
-		// RestoreExprToSQL parses the expression and returns the SQL condition.
-		condition, err := RestoreExprToSQL(parsedExpr.GetExpr())
-		if err != nil {
+		convertCtx := filter.NewConvertContext()
+		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
+		if err := ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
 			return nil, err
 		}
-		where = append(where, fmt.Sprintf("(%s)", condition))
+		where = append(where, fmt.Sprintf("(%s)", convertCtx.Buffer.String()))
+		args = append(args, convertCtx.Args...)
 	}
 	if find.ExcludeComments {
 		where = append(where, "`parent_id` IS NULL")

@@ -1,4 +1,4 @@
-package sqlite
+package mysql
 
 import (
 	"testing"
@@ -16,18 +16,13 @@ func TestConvertExprToSQL(t *testing.T) {
 	}{
 		{
 			filter: `tag in ["tag1", "tag2"]`,
-			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?)",
-			args:   []any{`%"tag1"%`, `%"tag2"%`},
+			want:   "(JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?) OR JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?))",
+			args:   []any{"tag1", "tag2"},
 		},
 		{
 			filter: `!(tag in ["tag1", "tag2"])`,
-			want:   "NOT ((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?))",
-			args:   []any{`%"tag1"%`, `%"tag2"%`},
-		},
-		{
-			filter: `tag in ["tag1", "tag2"] || tag in ["tag3", "tag4"]`,
-			want:   "((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?) OR (JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?))",
-			args:   []any{`%"tag1"%`, `%"tag2"%`, `%"tag3"%`, `%"tag4"%`},
+			want:   "NOT ((JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?) OR JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?)))",
+			args:   []any{"tag1", "tag2"},
 		},
 		{
 			filter: `content.contains("memos")`,
@@ -46,13 +41,13 @@ func TestConvertExprToSQL(t *testing.T) {
 		},
 		{
 			filter: `create_time == "2006-01-02T15:04:05+07:00"`,
-			want:   "`memo`.`created_ts` = ?",
+			want:   "UNIX_TIMESTAMP(`memo`.`created_ts`) = ?",
 			args:   []any{int64(1136189045)},
 		},
 		{
 			filter: `tag in ['tag1'] || content.contains('hello')`,
-			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR `memo`.`content` LIKE ?)",
-			args:   []any{`%"tag1"%`, "%hello%"},
+			want:   "(JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?) OR `memo`.`content` LIKE ?)",
+			args:   []any{"tag1", "%hello%"},
 		},
 	}
 

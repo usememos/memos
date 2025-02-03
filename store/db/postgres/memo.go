@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/usememos/memos/plugin/filter"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -98,6 +99,22 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if v.HasIncompleteTasks {
 			where = append(where, "(memo.payload->'property'->>'hasIncompleteTasks')::BOOLEAN IS TRUE")
 		}
+	}
+	if v := find.Filter; v != nil {
+		// Parse filter string and return the parsed expression.
+		// The filter string should be a CEL expression.
+		parsedExpr, err := filter.Parse(*v, filter.MemoFilterCELAttributes...)
+		if err != nil {
+			return nil, err
+		}
+		convertCtx := filter.NewConvertContext()
+		convertCtx.ArgsOffset = len(args)
+		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
+		if err := ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
+			return nil, err
+		}
+		where = append(where, fmt.Sprintf("(%s)", convertCtx.Buffer.String()))
+		args = append(args, convertCtx.Args...)
 	}
 	if find.ExcludeComments {
 		where = append(where, "memo_relation.related_memo_id IS NULL")

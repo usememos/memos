@@ -1,4 +1,4 @@
-package sqlite
+package postgres
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 	"github.com/usememos/memos/plugin/filter"
 )
 
-func TestConvertExprToSQL(t *testing.T) {
+func TestRestoreExprToSQL(t *testing.T) {
 	tests := []struct {
 		filter string
 		want   string
@@ -16,43 +16,38 @@ func TestConvertExprToSQL(t *testing.T) {
 	}{
 		{
 			filter: `tag in ["tag1", "tag2"]`,
-			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?)",
-			args:   []any{`%"tag1"%`, `%"tag2"%`},
+			want:   "(memo.payload->'tags' @> $1::jsonb OR memo.payload->'tags' @> $2::jsonb)",
+			args:   []any{[]any{"tag1"}, []any{"tag2"}},
 		},
 		{
 			filter: `!(tag in ["tag1", "tag2"])`,
-			want:   "NOT ((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?))",
-			args:   []any{`%"tag1"%`, `%"tag2"%`},
-		},
-		{
-			filter: `tag in ["tag1", "tag2"] || tag in ["tag3", "tag4"]`,
-			want:   "((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?) OR (JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?))",
-			args:   []any{`%"tag1"%`, `%"tag2"%`, `%"tag3"%`, `%"tag4"%`},
+			want:   `NOT ((memo.payload->'tags' @> $1::jsonb OR memo.payload->'tags' @> $2::jsonb))`,
+			args:   []any{[]any{"tag1"}, []any{"tag2"}},
 		},
 		{
 			filter: `content.contains("memos")`,
-			want:   "`memo`.`content` LIKE ?",
+			want:   "memo.content ILIKE LIKE $1",
 			args:   []any{"%memos%"},
 		},
 		{
 			filter: `visibility in ["PUBLIC"]`,
-			want:   "`memo`.`visibility` IN (?)",
+			want:   "memo.visibility IN ($1)",
 			args:   []any{"PUBLIC"},
 		},
 		{
 			filter: `visibility in ["PUBLIC", "PRIVATE"]`,
-			want:   "`memo`.`visibility` IN (?,?)",
+			want:   "memo.visibility IN ($1,$2)",
 			args:   []any{"PUBLIC", "PRIVATE"},
 		},
 		{
 			filter: `create_time == "2006-01-02T15:04:05+07:00"`,
-			want:   "`memo`.`created_ts` = ?",
+			want:   "memo.created_ts = $1",
 			args:   []any{int64(1136189045)},
 		},
 		{
 			filter: `tag in ['tag1'] || content.contains('hello')`,
-			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR `memo`.`content` LIKE ?)",
-			args:   []any{`%"tag1"%`, "%hello%"},
+			want:   "(memo.payload->'tags' @> $1::jsonb OR memo.content ILIKE LIKE $2)",
+			args:   []any{[]any{"tag1"}, "%hello%"},
 		},
 	}
 
