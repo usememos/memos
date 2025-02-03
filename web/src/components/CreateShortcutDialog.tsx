@@ -100,10 +100,10 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
             <li>
               <a
                 className="text-sm text-blue-600 hover:underline"
-                href="https://www.usememos.com/docs/getting-started/shortcuts#how-to-write-a-filter-in-a-shortcut"
+                href="https://www.usememos.com/docs/getting-started/shortcuts#how-to-write-a-filter"
                 target="_blank"
               >
-                How to Write a Filter in a Shortcut?
+                How to Write a Filter?
               </a>
             </li>
           </ul>
