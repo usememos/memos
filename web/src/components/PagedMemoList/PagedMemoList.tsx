@@ -16,6 +16,7 @@ interface Props {
   owner?: string;
   state?: State;
   direction?: Direction;
+  filter?: string;
   oldFilter?: string;
   pageSize?: number;
 }
@@ -42,6 +43,7 @@ const PagedMemoList = (props: Props) => {
       parent: props.owner || "",
       state: props.state || State.NORMAL,
       direction: props.direction || Direction.DESC,
+      filter: props.filter || "",
       oldFilter: props.oldFilter || "",
       pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
       pageToken: nextPageToken,
@@ -60,7 +62,7 @@ const PagedMemoList = (props: Props) => {
 
   useEffect(() => {
     refreshList();
-  }, [props.owner, props.state, props.direction, props.oldFilter, props.pageSize]);
+  }, [props.owner, props.state, props.direction, props.filter, props.oldFilter, props.pageSize]);
 
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">

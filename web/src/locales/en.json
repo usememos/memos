@@ -79,7 +79,8 @@
     "username": "Username",
     "version": "Version",
     "visibility": "Visibility",
-    "yourself": "Yourself"
+    "yourself": "Yourself",
+    "shortcuts": "Shortcuts"
   },
   "days": {
     "fri": "Fri",
@@ -371,6 +372,7 @@
     },
     "version": "Version"
   },
+  "shortcut": {},
   "tag": {
     "all-tags": "All Tags",
     "create-tag": "Create Tag",

@@ -8,7 +8,7 @@ import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { useMemoFilterStore } from "@/store/v1";
+import { useMemoFilterStore, useUserStore } from "@/store/v1";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
@@ -16,7 +16,9 @@ import { cn } from "@/utils";
 const Home = () => {
   const { md } = useResponsiveWidth();
   const user = useCurrentUser();
+  const userStore = useUserStore();
   const memoFilterStore = useMemoFilterStore();
+  const selectedShortcut = userStore.shortcuts.find((shortcut) => shortcut.id === memoFilterStore.shortcut);
 
   const memoListFilter = useMemo(() => {
     const conditions = [];
@@ -79,6 +81,7 @@ const Home = () => {
               }
               owner={user.name}
               direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+              filter={selectedShortcut?.filter || ""}
               oldFilter={memoListFilter}
             />
           </div>
