@@ -24,6 +24,10 @@ func New(driver Driver, profile *profile.Profile) *Store {
 	}
 }
 
+func (s *Store) GetDriver() Driver {
+	return s.driver
+}
+
 func (s *Store) Close() error {
 	return s.driver.Close()
 }

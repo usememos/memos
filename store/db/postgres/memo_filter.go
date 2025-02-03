@@ -12,7 +12,7 @@ import (
 	"github.com/usememos/memos/plugin/filter"
 )
 
-func ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
+func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
 	if v, ok := expr.ExprKind.(*exprv1.Expr_CallExpr); ok {
 		switch v.CallExpr.Function {
 		case "_||_", "_&&_":
@@ -22,7 +22,7 @@ func ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
 			if _, err := ctx.Buffer.WriteString("("); err != nil {
 				return err
 			}
-			if err := ConvertExprToSQL(ctx, v.CallExpr.Args[0]); err != nil {
+			if err := d.ConvertExprToSQL(ctx, v.CallExpr.Args[0]); err != nil {
 				return err
 			}
 			operator := "AND"
@@ -32,7 +32,7 @@ func ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
 			if _, err := ctx.Buffer.WriteString(fmt.Sprintf(" %s ", operator)); err != nil {
 				return err
 			}
-			if err := ConvertExprToSQL(ctx, v.CallExpr.Args[1]); err != nil {
+			if err := d.ConvertExprToSQL(ctx, v.CallExpr.Args[1]); err != nil {
 				return err
 			}
 			if _, err := ctx.Buffer.WriteString(")"); err != nil {
@@ -45,7 +45,7 @@ func ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
 			if _, err := ctx.Buffer.WriteString("NOT ("); err != nil {
 				return err
 			}
-			if err := ConvertExprToSQL(ctx, v.CallExpr.Args[0]); err != nil {
+			if err := d.ConvertExprToSQL(ctx, v.CallExpr.Args[0]); err != nil {
 				return err
 			}
 			if _, err := ctx.Buffer.WriteString(")"); err != nil {

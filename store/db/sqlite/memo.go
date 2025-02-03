@@ -110,7 +110,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		convertCtx := filter.NewConvertContext()
 		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
-		if err := ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
+		if err := d.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
 			return nil, err
 		}
 		where = append(where, fmt.Sprintf("(%s)", convertCtx.Buffer.String()))

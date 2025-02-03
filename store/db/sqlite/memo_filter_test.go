@@ -57,10 +57,11 @@ func TestConvertExprToSQL(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		db := &DB{}
 		parsedExpr, err := filter.Parse(tt.filter, filter.MemoFilterCELAttributes...)
 		require.NoError(t, err)
 		convertCtx := filter.NewConvertContext()
-		err = ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
+		err = db.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
 		require.NoError(t, err)
 		require.Equal(t, tt.want, convertCtx.Buffer.String())
 		require.Equal(t, tt.args, convertCtx.Args)

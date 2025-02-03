@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/pkg/errors"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/filter"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -78,10 +79,7 @@ func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateS
 	if newShortcut.Title == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "title is required")
 	}
-	if newShortcut.Filter == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "filter is required")
-	}
-	if _, err := filter.Parse(newShortcut.Filter, filter.MemoFilterCELAttributes...); err != nil {
+	if err := s.validateFilter(ctx, newShortcut.Filter); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 	}
 	if request.ValidateOnly {
@@ -171,11 +169,7 @@ func (s *APIV1Service) UpdateShortcut(ctx context.Context, request *v1pb.UpdateS
 					}
 					shortcut.Title = request.Shortcut.GetTitle()
 				} else if field == "filter" {
-					if request.Shortcut.GetFilter() == "" {
-						return nil, status.Errorf(codes.InvalidArgument, "filter is required")
-					}
-					// Validate the filter.
-					if _, err := filter.Parse(request.Shortcut.GetFilter(), filter.MemoFilterCELAttributes...); err != nil {
+					if err := s.validateFilter(ctx, request.Shortcut.GetFilter()); err != nil {
 						return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 					}
 					shortcut.Filter = request.Shortcut.GetFilter()
@@ -243,4 +237,21 @@ func (s *APIV1Service) DeleteShortcut(ctx context.Context, request *v1pb.DeleteS
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+func (s *APIV1Service) validateFilter(_ context.Context, filterStr string) error {
+	if filterStr == "" {
+		return errors.New("filter cannot be empty")
+	}
+	// Validate the filter.
+	parsedExpr, err := filter.Parse(filterStr, filter.MemoFilterCELAttributes...)
+	if err != nil {
+		return errors.Wrap(err, "failed to parse filter")
+	}
+	convertCtx := filter.NewConvertContext()
+	err = s.Store.GetDriver().ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
+	if err != nil {
+		return errors.Wrap(err, "failed to convert filter to SQL")
+	}
+	return nil
 }
