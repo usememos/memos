@@ -97,7 +97,7 @@ func RestoreExprToSQL(expr *exprv1.Expr) (string, error) {
 			if identifier == "tag" {
 				subcodition := []string{}
 				for _, v := range values {
-					subcodition = append(subcodition, fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %s", fmt.Sprintf(`%%"%s"%%`, v)))
+					subcodition = append(subcodition, fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE %s", fmt.Sprintf(`'%%"%s"%%'`, v)))
 				}
 				if len(subcodition) == 1 {
 					condition = subcodition[0]
