@@ -113,7 +113,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if err != nil {
 			return nil, err
 		}
-		where = append(where, condition)
+		where = append(where, fmt.Sprintf("(%s)", condition))
 	}
 	if find.ExcludeComments {
 		where = append(where, "`parent_id` IS NULL")

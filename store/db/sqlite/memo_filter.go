@@ -18,21 +18,22 @@ func RestoreExprToSQL(expr *exprv1.Expr) (string, error) {
 	case *exprv1.Expr_CallExpr:
 		switch v.CallExpr.Function {
 		case "_||_", "_&&_":
-			for _, arg := range v.CallExpr.Args {
-				left, err := RestoreExprToSQL(arg)
-				if err != nil {
-					return "", err
-				}
-				right, err := RestoreExprToSQL(arg)
-				if err != nil {
-					return "", err
-				}
-				operator := "AND"
-				if v.CallExpr.Function == "_||_" {
-					operator = "OR"
-				}
-				condition = fmt.Sprintf("(%s %s %s)", left, operator, right)
+			if len(v.CallExpr.Args) != 2 {
+				return "", errors.Errorf("invalid number of arguments for %s", v.CallExpr.Function)
 			}
+			left, err := RestoreExprToSQL(v.CallExpr.Args[0])
+			if err != nil {
+				return "", err
+			}
+			right, err := RestoreExprToSQL(v.CallExpr.Args[1])
+			if err != nil {
+				return "", err
+			}
+			operator := "AND"
+			if v.CallExpr.Function == "_||_" {
+				operator = "OR"
+			}
+			condition = fmt.Sprintf("(%s %s %s)", left, operator, right)
 		case "_==_", "_!=_", "_<_", "_>_", "_<=_", "_>=_":
 			if len(v.CallExpr.Args) != 2 {
 				return "", errors.Errorf("invalid number of arguments for %s", v.CallExpr.Function)
@@ -130,7 +131,7 @@ func RestoreExprToSQL(expr *exprv1.Expr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			condition = fmt.Sprintf("`memo`.`content` LIKE %s", fmt.Sprintf(`%%"%s"%%`, arg))
+			condition = fmt.Sprintf("`memo`.`content` LIKE %s", fmt.Sprintf(`'%%%s%%'`, arg))
 		case "!_":
 			if len(v.CallExpr.Args) != 1 {
 				return "", errors.Errorf("invalid number of arguments for %s", v.CallExpr.Function)
