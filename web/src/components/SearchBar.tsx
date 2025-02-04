@@ -17,10 +17,12 @@ const SearchBar = () => {
     if (e.key === "Enter") {
       e.preventDefault();
       if (queryText !== "") {
-        memoFilterStore.removeFilter((f) => f.factor === "contentSearch");
-        memoFilterStore.addFilter({
-          factor: "contentSearch",
-          value: queryText,
+        const words = queryText.split(" ");
+        words.forEach((word) => {
+          memoFilterStore.addFilter({
+            factor: "contentSearch",
+            value: word,
+          });
         });
         setQueryText("");
       }
