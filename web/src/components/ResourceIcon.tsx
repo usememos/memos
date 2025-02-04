@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import {
   BinaryIcon,
   BookIcon,
@@ -12,6 +11,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import { Resource } from "@/types/proto/api/v1/resource_service";
+import { cn } from "@/utils";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
@@ -26,7 +26,7 @@ const ResourceIcon = (props: Props) => {
   const { resource } = props;
   const resourceType = getResourceType(resource);
   const resourceUrl = getResourceUrl(resource);
-  const className = clsx("w-full h-auto", props.className);
+  const className = cn("w-full h-auto", props.className);
   const strokeWidth = props.strokeWidth;
 
   const previewResource = () => {
@@ -35,7 +35,7 @@ const ResourceIcon = (props: Props) => {
 
   if (resourceType === "image/*") {
     return (
-      <SquareDiv className={clsx(className, "flex items-center justify-center overflow-clip")}>
+      <SquareDiv className={cn(className, "flex items-center justify-center overflow-clip")}>
         <img
           className="min-w-full min-h-full object-cover"
           src={resource.externalLink ? resourceUrl : resourceUrl + "?thumbnail=true"}
@@ -73,7 +73,7 @@ const ResourceIcon = (props: Props) => {
   };
 
   return (
-    <div onClick={previewResource} className={clsx(className, "max-w-[4rem] opacity-50")}>
+    <div onClick={previewResource} className={cn(className, "max-w-[4rem] opacity-50")}>
       {getResourceIcon()}
     </div>
   );

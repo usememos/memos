@@ -8,9 +8,9 @@ import { Webhook } from "@/types/proto/api/v1/webhook_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateWebhookDialog from "../CreateWebhookDialog";
 
-const listWebhooks = async (userId: number) => {
+const listWebhooks = async (user: string) => {
   const { webhooks } = await webhookServiceClient.listWebhooks({
-    creatorId: userId,
+    creator: user,
   });
   return webhooks;
 };
@@ -21,13 +21,13 @@ const WebhookSection = () => {
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
 
   useEffect(() => {
-    listWebhooks(currentUser.id).then((webhooks) => {
+    listWebhooks(currentUser.name).then((webhooks) => {
       setWebhooks(webhooks);
     });
   }, []);
 
   const handleCreateAccessTokenDialogConfirm = async () => {
-    const webhooks = await listWebhooks(currentUser.id);
+    const webhooks = await listWebhooks(currentUser.name);
     setWebhooks(webhooks);
   };
 

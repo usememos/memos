@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package memos.api.v1;
 
-import "api/v1/common.proto";
 import "api/v1/memo_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
@@ -47,17 +46,16 @@ service WebhookService {
 message Webhook {
   int32 id = 1;
 
-  int32 creator_id = 2;
+  // The name of the creator.
+  string creator = 2;
 
   google.protobuf.Timestamp create_time = 3;
 
   google.protobuf.Timestamp update_time = 4;
 
-  RowStatus row_status = 5;
+  string name = 5;
 
-  string name = 6;
-
-  string url = 7;
+  string url = 6;
 }
 
 message CreateWebhookRequest {
@@ -71,7 +69,8 @@ message GetWebhookRequest {
 }
 
 message ListWebhooksRequest {
-  int32 creator_id = 1;
+  // The name of the creator.
+  string creator = 2;
 }
 
 message ListWebhooksResponse {
@@ -93,7 +92,9 @@ message WebhookRequestPayload {
 
   string activity_type = 2;
 
-  int32 creator_id = 3;
+  // The name of the creator.
+  // Format: users/{user}
+  string creator = 3;
 
   google.protobuf.Timestamp create_time = 4;
 

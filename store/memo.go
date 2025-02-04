@@ -48,10 +48,10 @@ type Memo struct {
 	// Domain specific fields
 	Content    string
 	Visibility Visibility
+	Pinned     bool
 	Payload    *storepb.MemoPayload
 
 	// Composed fields
-	Pinned   bool
 	ParentID *int32
 }
 
@@ -74,6 +74,7 @@ type FindMemo struct {
 	ExcludeContent  bool
 	ExcludeComments bool
 	Random          bool
+	Filter          *string
 
 	// Pagination
 	Limit  *int
@@ -102,6 +103,7 @@ type UpdateMemo struct {
 	RowStatus  *RowStatus
 	Content    *string
 	Visibility *Visibility
+	Pinned     *bool
 	Payload    *storepb.MemoPayload
 }
 

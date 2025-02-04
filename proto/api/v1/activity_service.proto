@@ -21,8 +21,9 @@ message Activity {
   // The name of the activity.
   // Format: activities/{id}
   string name = 1;
-  // The uid of the user who created the activity.
-  int32 creator_id = 2;
+  // The name of the creator.
+  // Format: users/{user}
+  string creator = 2;
   // The type of the activity.
   string type = 3;
   // The level of the activity.
@@ -40,10 +41,11 @@ message ActivityPayload {
 
 // ActivityMemoCommentPayload represents the payload of a memo comment activity.
 message ActivityMemoCommentPayload {
-  // The memo id of comment.
-  int32 memo_id = 1;
-  // The memo id of related memo.
-  int32 related_memo_id = 2;
+  // The memo name of comment.
+  // Refer to `Memo.name`.
+  string memo = 1;
+  // The name of related memo.
+  string related_memo = 2;
 }
 
 message ActivityVersionUpdatePayload {
@@ -53,6 +55,6 @@ message ActivityVersionUpdatePayload {
 
 message GetActivityRequest {
   // The name of the activity.
-  // Format: activities/{id}
+  // Format: activities/{id}, id is the system generated auto-incremented id.
   string name = 1;
 }

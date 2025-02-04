@@ -76,11 +76,15 @@ func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateR
 	}
 
 	if request.Resource.Memo != nil {
-		memoID, err := ExtractMemoIDFromName(*request.Resource.Memo)
+		memoUID, err := ExtractMemoUIDFromName(*request.Resource.Memo)
 		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid memo id: %v", err)
+			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 		}
-		create.MemoID = &memoID
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to find memo: %v", err)
+		}
+		create.MemoID = &memo.ID
 	}
 	resource, err := s.Store.CreateResource(ctx, create)
 	if err != nil {
@@ -110,27 +114,11 @@ func (s *APIV1Service) ListResources(ctx context.Context, _ *v1pb.ListResourcesR
 }
 
 func (s *APIV1Service) GetResource(ctx context.Context, request *v1pb.GetResourceRequest) (*v1pb.Resource, error) {
-	id, err := ExtractResourceIDFromName(request.Name)
+	resourceUID, err := ExtractResourceUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
 	}
-	resource, err := s.Store.GetResource(ctx, &store.FindResource{
-		ID: &id,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
-	}
-	if resource == nil {
-		return nil, status.Errorf(codes.NotFound, "resource not found")
-	}
-	return s.convertResourceFromStore(ctx, resource), nil
-}
-
-//nolint:all
-func (s *APIV1Service) GetResourceByUid(ctx context.Context, request *v1pb.GetResourceByUidRequest) (*v1pb.Resource, error) {
-	resource, err := s.Store.GetResource(ctx, &store.FindResource{
-		UID: &request.Uid,
-	})
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &resourceUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
 	}
@@ -145,11 +133,11 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 		GetBlob: true,
 	}
 	if request.Name != "" {
-		id, err := ExtractResourceIDFromName(request.Name)
+		resourceUID, err := ExtractResourceUIDFromName(request.Name)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
 		}
-		resourceFind.ID = &id
+		resourceFind.UID = &resourceUID
 	}
 	resource, err := s.Store.GetResource(ctx, resourceFind)
 	if err != nil {
@@ -211,31 +199,26 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 }
 
 func (s *APIV1Service) UpdateResource(ctx context.Context, request *v1pb.UpdateResourceRequest) (*v1pb.Resource, error) {
-	id, err := ExtractResourceIDFromName(request.Resource.Name)
+	resourceUID, err := ExtractResourceUIDFromName(request.Resource.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
 	}
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &resourceUID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+	}
 
 	currentTs := time.Now().Unix()
 	update := &store.UpdateResource{
-		ID:        id,
+		ID:        resource.ID,
 		UpdatedTs: &currentTs,
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "filename" {
 			update.Filename = &request.Resource.Filename
-		} else if field == "memo" {
-			if request.Resource.Memo == nil {
-				return nil, status.Errorf(codes.InvalidArgument, "memo is required")
-			}
-			memoID, err := ExtractMemoIDFromName(*request.Resource.Memo)
-			if err != nil {
-				return nil, status.Errorf(codes.InvalidArgument, "invalid memo id: %v", err)
-			}
-			update.MemoID = &memoID
 		}
 	}
 
@@ -248,7 +231,7 @@ func (s *APIV1Service) UpdateResource(ctx context.Context, request *v1pb.UpdateR
 }
 
 func (s *APIV1Service) DeleteResource(ctx context.Context, request *v1pb.DeleteResourceRequest) (*emptypb.Empty, error) {
-	id, err := ExtractResourceIDFromName(request.Name)
+	resourceUID, err := ExtractResourceUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
 	}
@@ -257,7 +240,7 @@ func (s *APIV1Service) DeleteResource(ctx context.Context, request *v1pb.DeleteR
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
-		ID:        &id,
+		UID:       &resourceUID,
 		CreatorID: &user.ID,
 	})
 	if err != nil {
@@ -277,8 +260,7 @@ func (s *APIV1Service) DeleteResource(ctx context.Context, request *v1pb.DeleteR
 
 func (s *APIV1Service) convertResourceFromStore(ctx context.Context, resource *store.Resource) *v1pb.Resource {
 	resourceMessage := &v1pb.Resource{
-		Name:       fmt.Sprintf("%s%d", ResourceNamePrefix, resource.ID),
-		Uid:        resource.UID,
+		Name:       fmt.Sprintf("%s%s", ResourceNamePrefix, resource.UID),
 		CreateTime: timestamppb.New(time.Unix(resource.CreatedTs, 0)),
 		Filename:   resource.Filename,
 		Type:       resource.Type,
@@ -292,7 +274,7 @@ func (s *APIV1Service) convertResourceFromStore(ctx context.Context, resource *s
 			ID: resource.MemoID,
 		})
 		if memo != nil {
-			memoName := fmt.Sprintf("%s%d", MemoNamePrefix, memo.ID)
+			memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 			resourceMessage.Memo = &memoName
 		}
 	}

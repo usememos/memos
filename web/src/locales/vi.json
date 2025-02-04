@@ -241,7 +241,7 @@
       "update-sso": "Cập nhật SSO",
       "user-endpoint": "Điểm cuối người dùng",
       "no-sso-found": "Không tìm thấy SSO nào.",
-      "configuring-keycloak-for-authentication": "Cấu hình Keycloak cho xác thực"
+      "single-sign-on": "Cấu hình Single Sign-On (SSO) cho xác thực"
     },
     "storage": "Lưu trữ",
     "storage-section": {

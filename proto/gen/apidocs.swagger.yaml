@@ -190,7 +190,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user
-          description: 'Format: users/{id}'
+          description: 'Format: users/{user}'
           in: query
           required: false
           type: string
@@ -304,6 +304,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
+        - name: parent
+          description: "The parent is the owner of the memos.\r\nIf not specified or `users/-`, it will list all memos."
+          in: query
+          required: false
+          type: string
         - name: pageSize
           description: The maximum number of memos to return.
           in: query
@@ -311,33 +316,45 @@ paths:
           type: integer
           format: int32
         - name: pageToken
-          description: |-
-            A page token, received from a previous `ListMemos` call.
-            Provide this to retrieve the subsequent page.
+          description: "A page token, received from a previous `ListMemos` call.\r\nProvide this to retrieve the subsequent page."
           in: query
           required: false
           type: string
-        - name: filter
-          description: |-
-            Filter is used to filter memos returned in the list.
-            Format: "creator == 'users/{uid}' && visibilities == ['PUBLIC', 'PROTECTED']"
-          in: query
-          required: false
-          type: string
-        - name: view
-          description: |-
-            The view of the memo.
-
-             - MEMO_VIEW_FULL: The full view of the memo. Includes all fields.
-             - MEMO_VIEW_METADATA_ONLY: The metadata only view of the memo. Excludes the content/snippet fields.
+        - name: state
+          description: "The state of the memos to list.\r\nDefault to `NORMAL`. Set to `ARCHIVED` to list archived memos."
           in: query
           required: false
           type: string
           enum:
-            - MEMO_VIEW_UNSPECIFIED
-            - MEMO_VIEW_FULL
-            - MEMO_VIEW_METADATA_ONLY
-          default: MEMO_VIEW_UNSPECIFIED
+            - STATE_UNSPECIFIED
+            - NORMAL
+            - ARCHIVED
+          default: STATE_UNSPECIFIED
+        - name: sort
+          description: "What field to sort the results by.\r\nDefault to display_time."
+          in: query
+          required: false
+          type: string
+        - name: direction
+          description: "The direction to sort the results by.\r\nDefault to DESC."
+          in: query
+          required: false
+          type: string
+          enum:
+            - DIRECTION_UNSPECIFIED
+            - ASC
+            - DESC
+          default: DIRECTION_UNSPECIFIED
+        - name: filter
+          description: "Filter is a CEL expression to filter memos.\r\nRefer to `Shortcut.filter`."
+          in: query
+          required: false
+          type: string
+        - name: oldFilter
+          description: "[Deprecated] Old filter contains some specific conditions to filter memos.\r\nFormat: \"creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']\""
+          in: query
+          required: false
+          type: string
       tags:
         - MemoService
     post:
@@ -353,35 +370,17 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: body
+        - name: memo
+          description: The memo to create.
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1CreateMemoRequest'
-      tags:
-        - MemoService
-  /api/v1/memos:by-uid/{uid}:
-    get:
-      summary: GetMemoByUid gets a memo by uid
-      operationId: MemoService_GetMemoByUid
-      responses:
-        "200":
-          description: A successful response.
-          schema:
             $ref: '#/definitions/apiv1Memo'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: uid
-          description: The uid of the memo.
-          in: path
-          required: true
-          type: string
+            required:
+              - memo
       tags:
         - MemoService
-  /api/v1/reactions/{reactionId}:
+  /api/v1/reactions/{id}:
     delete:
       summary: DeleteMemoReaction deletes a reaction for a memo.
       operationId: MemoService_DeleteMemoReaction
@@ -396,7 +395,8 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: reactionId
+        - name: id
+          description: "The id of the reaction.\r\nRefer to the `Reaction.id`."
           in: path
           required: true
           type: integer
@@ -438,27 +438,6 @@ paths:
             $ref: '#/definitions/v1Resource'
       tags:
         - ResourceService
-  /api/v1/resources:by-uid/{uid}:
-    get:
-      summary: GetResourceByUid returns a resource by uid.
-      operationId: ResourceService_GetResourceByUid
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Resource'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: uid
-          description: The uid of the resource.
-          in: path
-          required: true
-          type: string
-      tags:
-        - ResourceService
   /api/v1/users:
     get:
       summary: ListUsers returns a list of users.
@@ -494,24 +473,37 @@ paths:
             $ref: '#/definitions/v1User'
       tags:
         - UserService
-  /api/v1/users:search:
-    get:
-      summary: SearchUsers searches users by filter.
-      operationId: UserService_SearchUsers
+  /api/v1/users/-/stats:
+    post:
+      summary: ListAllUserStats returns all user stats.
+      operationId: UserService_ListAllUserStats
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1SearchUsersResponse'
+            $ref: '#/definitions/v1ListAllUserStatsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - UserService
+  /api/v1/users:username:
+    get:
+      summary: GetUserByUsername gets a user by username.
+      operationId: UserService_GetUserByUsername
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1User'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: filter
-          description: |-
-            Filter is used to filter users returned in the list.
-            Format: "username == 'frank'"
+        - name: username
+          description: The username of the user.
           in: query
           required: false
           type: string
@@ -531,11 +523,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: creatorId
+        - name: creator
+          description: The name of the creator.
           in: query
           required: false
-          type: integer
-          format: int32
+          type: string
       tags:
         - WebhookService
     post:
@@ -625,17 +617,15 @@ paths:
           schema:
             type: object
             properties:
-              creatorId:
-                type: integer
-                format: int32
+              creator:
+                type: string
+                description: The name of the creator.
               createTime:
                 type: string
                 format: date-time
               updateTime:
                 type: string
                 format: date-time
-              rowStatus:
-                $ref: '#/definitions/v1RowStatus'
               name:
                 type: string
               url:
@@ -736,7 +726,7 @@ paths:
         - name: identityProvider.name
           description: |-
             The name of the identityProvider.
-            Format: identityProviders/{id}
+            Format: identityProviders/{id}, id is the system generated auto-incremented id.
           in: path
           required: true
           type: string
@@ -776,7 +766,7 @@ paths:
         - name: inbox.name
           description: |-
             The name of the inbox.
-            Format: inboxes/{id}
+            Format: inboxes/{id}, id is the system generated auto-incremented id.
           in: path
           required: true
           type: string
@@ -789,10 +779,10 @@ paths:
             properties:
               sender:
                 type: string
-                title: 'Format: users/{id}'
+                title: 'Format: users/{user}'
               receiver:
                 type: string
-                title: 'Format: users/{id}'
+                title: 'Format: users/{user}'
               status:
                 $ref: '#/definitions/v1InboxStatus'
               createTime:
@@ -820,30 +810,23 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: memo.name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
-            id is the system generated id.
+          description: "The name of the memo.\r\nFormat: memos/{memo}, memo is the user defined id or uuid."
           in: path
           required: true
           type: string
           pattern: memos/[^/]+
         - name: memo
+          description: "The memo to update.\r\nThe `name` field is required."
           in: body
           required: true
           schema:
             type: object
             properties:
-              uid:
-                type: string
-                description: The user defined id of the memo.
-              rowStatus:
-                $ref: '#/definitions/v1RowStatus'
+              state:
+                $ref: '#/definitions/v1State'
               creator:
                 type: string
-                title: |-
-                  The name of the creator.
-                  Format: users/{id}
+                title: "The name of the creator.\r\nFormat: users/{user}"
               createTime:
                 type: string
                 format: date-time
@@ -891,9 +874,7 @@ paths:
                 readOnly: true
               parent:
                 type: string
-                title: |-
-                  The name of the parent memo.
-                  Format: memos/{id}
+                title: "The name of the parent memo.\r\nFormat: memos/{id}"
                 readOnly: true
               snippet:
                 type: string
@@ -902,6 +883,9 @@ paths:
               location:
                 $ref: '#/definitions/apiv1Location'
                 description: The location of the memo.
+            title: "The memo to update.\r\nThe `name` field is required."
+            required:
+              - memo
       tags:
         - MemoService
   /api/v1/{name_1}:
@@ -919,9 +903,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_1
-          description: |-
-            The name of the user.
-            Format: users/{id}
+          description: The name of the user.
           in: path
           required: true
           type: string
@@ -943,9 +925,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_1
-          description: |-
-            The name of the identityProvider to delete.
-            Format: identityProviders/{id}
+          description: The name of the identityProvider to delete.
           in: path
           required: true
           type: string
@@ -967,9 +947,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
-          description: |-
-            The name of the identityProvider to get.
-            Format: identityProviders/{id}
+          description: The name of the identityProvider to get.
           in: path
           required: true
           type: string
@@ -991,9 +969,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
-          description: |-
-            The name of the inbox to delete.
-            Format: inboxes/{id}
+          description: The name of the inbox to delete.
           in: path
           required: true
           type: string
@@ -1015,10 +991,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_3
-          description: |-
-            The name of the resource.
-            Format: resources/{id}
-            id is the system generated unique identifier.
+          description: The name of the resource.
           in: path
           required: true
           type: string
@@ -1040,10 +1013,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_3
-          description: |-
-            The name of the resource.
-            Format: resources/{id}
-            id is the system generated unique identifier.
+          description: The name of the resource.
           in: path
           required: true
           type: string
@@ -1065,9 +1035,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_4
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
@@ -1089,9 +1057,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_4
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
@@ -1115,7 +1081,7 @@ paths:
         - name: name
           description: |-
             The name of the activity.
-            Format: activities/{id}
+            Format: activities/{id}, id is the system generated auto-incremented id.
           in: path
           required: true
           type: string
@@ -1137,9 +1103,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the user.
-            Format: users/{id}
+          description: The name of the user.
           in: path
           required: true
           type: string
@@ -1161,9 +1125,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the user.
-            Format: users/{id}
+          description: The name of the user.
           in: path
           required: true
           type: string
@@ -1184,9 +1146,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the user.
-            Format: users/{id}
+          description: The name of the user.
           in: path
           required: true
           type: string
@@ -1214,9 +1174,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the user.
-            Format: users/{id}
+          description: The name of the user.
           in: path
           required: true
           type: string
@@ -1243,9 +1201,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
@@ -1266,18 +1222,17 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
           pattern: memos/[^/]+
         - name: comment
+          description: The comment to create.
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1CreateMemoRequest'
+            $ref: '#/definitions/apiv1Memo'
       tags:
         - MemoService
   /api/v1/{name}/reactions:
@@ -1295,9 +1250,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
@@ -1318,9 +1271,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
@@ -1347,9 +1298,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
@@ -1371,9 +1320,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
@@ -1400,9 +1347,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
@@ -1424,9 +1369,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the memo.
-            Format: memos/{id}
+          description: The name of the memo.
           in: path
           required: true
           type: string
@@ -1453,13 +1396,217 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the user.
-            Format: users/{id}
+          description: The name of the user.
           in: path
           required: true
           type: string
           pattern: users/[^/]+
+      tags:
+        - UserService
+  /api/v1/{name}/stats:
+    get:
+      summary: GetUserStats returns the stats of a user.
+      operationId: UserService_GetUserStats
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1UserStats'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: The name of the user.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - UserService
+  /api/v1/{parent}/memos:
+    get:
+      summary: ListMemos lists memos with pagination and filter.
+      operationId: MemoService_ListMemos2
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListMemosResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: "The parent is the owner of the memos.\r\nIf not specified or `users/-`, it will list all memos."
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: pageSize
+          description: The maximum number of memos to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: "A page token, received from a previous `ListMemos` call.\r\nProvide this to retrieve the subsequent page."
+          in: query
+          required: false
+          type: string
+        - name: state
+          description: "The state of the memos to list.\r\nDefault to `NORMAL`. Set to `ARCHIVED` to list archived memos."
+          in: query
+          required: false
+          type: string
+          enum:
+            - STATE_UNSPECIFIED
+            - NORMAL
+            - ARCHIVED
+          default: STATE_UNSPECIFIED
+        - name: sort
+          description: "What field to sort the results by.\r\nDefault to display_time."
+          in: query
+          required: false
+          type: string
+        - name: direction
+          description: "The direction to sort the results by.\r\nDefault to DESC."
+          in: query
+          required: false
+          type: string
+          enum:
+            - DIRECTION_UNSPECIFIED
+            - ASC
+            - DESC
+          default: DIRECTION_UNSPECIFIED
+        - name: filter
+          description: "Filter is a CEL expression to filter memos.\r\nRefer to `Shortcut.filter`."
+          in: query
+          required: false
+          type: string
+        - name: oldFilter
+          description: "[Deprecated] Old filter contains some specific conditions to filter memos.\r\nFormat: \"creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']\""
+          in: query
+          required: false
+          type: string
+      tags:
+        - MemoService
+  /api/v1/{parent}/shortcuts:
+    get:
+      summary: ListShortcuts returns a list of shortcuts for a user.
+      operationId: UserService_ListShortcuts
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListShortcutsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: The name of the user.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - UserService
+    post:
+      summary: CreateShortcut creates a new shortcut for a user.
+      operationId: UserService_CreateShortcut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiv1Shortcut'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: The name of the user.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: shortcut
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiv1Shortcut'
+        - name: validateOnly
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - UserService
+  /api/v1/{parent}/shortcuts/{id}:
+    delete:
+      summary: DeleteShortcut deletes a shortcut for a user.
+      operationId: UserService_DeleteShortcut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: The name of the user.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: id
+          description: The id of the shortcut.
+          in: path
+          required: true
+          type: string
+      tags:
+        - UserService
+  /api/v1/{parent}/shortcuts/{shortcut.id}:
+    patch:
+      summary: UpdateShortcut updates a shortcut for a user.
+      operationId: UserService_UpdateShortcut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiv1Shortcut'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: The name of the user.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: shortcut.id
+          in: path
+          required: true
+          type: string
+        - name: shortcut
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              filter:
+                type: string
       tags:
         - UserService
   /api/v1/{parent}/tags/{tag}:
@@ -1478,9 +1625,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: |-
-            The parent, who owns the tags.
-            Format: memos/{id}. Use "memos/-" to delete all tags.
+          description: "The parent, who owns the tags.\r\nFormat: memos/{id}. Use \"memos/-\" to delete all tags."
           in: path
           required: true
           type: string
@@ -1511,9 +1656,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: |-
-            The parent, who owns the tags.
-            Format: memos/{id}. Use "memos/-" to rename all tags.
+          description: "The parent, who owns the tags.\r\nFormat: memos/{id}. Use \"memos/-\" to rename all tags."
           in: path
           required: true
           type: string
@@ -1542,8 +1685,7 @@ paths:
         - name: resource.name
           description: |-
             The name of the resource.
-            Format: resources/{id}
-            id is the system generated unique identifier.
+            Format: resources/{resource}, resource is the user defined if or uuid.
           in: path
           required: true
           type: string
@@ -1554,9 +1696,6 @@ paths:
           schema:
             type: object
             properties:
-              uid:
-                type: string
-                description: The user defined id of the resource.
               createTime:
                 type: string
                 format: date-time
@@ -1575,9 +1714,7 @@ paths:
                 format: int64
               memo:
                 type: string
-                title: |-
-                  The related memo.
-                  Format: memos/{id}
+                description: The related memo. Refer to `Memo.name`.
       tags:
         - ResourceService
   /api/v1/{setting.name}:
@@ -1595,9 +1732,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: setting.name
-          description: |-
-            The name of the user.
-            Format: users/{id}
+          description: The name of the user.
           in: path
           required: true
           type: string
@@ -1636,9 +1771,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user.name
-          description: |-
-            The name of the user.
-            Format: users/{id}
+          description: "The name of the user.\r\nFormat: users/{id}, id is the system generated auto-incremented id."
           in: path
           required: true
           type: string
@@ -1649,10 +1782,6 @@ paths:
           schema:
             type: object
             properties:
-              id:
-                type: integer
-                format: int32
-                description: The system generated uid of the user.
               role:
                 $ref: '#/definitions/UserRole'
               username:
@@ -1667,14 +1796,16 @@ paths:
                 type: string
               password:
                 type: string
-              rowStatus:
-                $ref: '#/definitions/v1RowStatus'
+              state:
+                $ref: '#/definitions/v1State'
               createTime:
                 type: string
                 format: date-time
+                readOnly: true
               updateTime:
                 type: string
                 format: date-time
+                readOnly: true
             required:
               - user
       tags:
@@ -1694,9 +1825,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the user.
-            Format: users/{id}
+          description: The name of the user.
           in: path
           required: true
           type: string
@@ -1729,10 +1858,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the resource.
-            Format: resources/{id}
-            id is the system generated unique identifier.
+          description: The name of the resource.
           in: path
           required: true
           type: string
@@ -1810,6 +1936,21 @@ definitions:
       expiresAt:
         type: string
         format: date-time
+  UserStatsMemoTypeStats:
+    type: object
+    properties:
+      linkCount:
+        type: integer
+        format: int32
+      codeCount:
+        type: integer
+        format: int32
+      todoCount:
+        type: integer
+        format: int32
+      undoCount:
+        type: integer
+        format: int32
   WorkspaceStorageSettingS3Config:
     type: object
     properties:
@@ -1823,6 +1964,8 @@ definitions:
         type: string
       bucket:
         type: string
+      usePathStyle:
+        type: boolean
     title: 'Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/'
   apiHttpBody:
     type: object
@@ -1889,14 +2032,14 @@ definitions:
   apiv1ActivityMemoCommentPayload:
     type: object
     properties:
-      memoId:
-        type: integer
-        format: int32
-        description: The memo id of comment.
-      relatedMemoId:
-        type: integer
-        format: int32
-        description: The memo id of related memo.
+      memo:
+        type: string
+        description: |-
+          The memo name of comment.
+          Refer to `Memo.name`.
+      relatedMemo:
+        type: string
+        description: The name of related memo.
     description: ActivityMemoCommentPayload represents the payload of a memo comment activity.
   apiv1ActivityPayload:
     type: object
@@ -1925,9 +2068,9 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
+        description: |-
           The name of the identityProvider.
-          Format: identityProviders/{id}
+          Format: identityProviders/{id}, id is the system generated auto-incremented id.
       type:
         $ref: '#/definitions/apiv1IdentityProviderType'
       title:
@@ -1963,21 +2106,13 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          The name of the memo.
-          Format: memos/{id}
-          id is the system generated id.
+        description: "The name of the memo.\r\nFormat: memos/{memo}, memo is the user defined id or uuid."
         readOnly: true
-      uid:
-        type: string
-        description: The user defined id of the memo.
-      rowStatus:
-        $ref: '#/definitions/v1RowStatus'
+      state:
+        $ref: '#/definitions/v1State'
       creator:
         type: string
-        title: |-
-          The name of the creator.
-          Format: users/{id}
+        title: "The name of the creator.\r\nFormat: users/{user}"
       createTime:
         type: string
         format: date-time
@@ -2025,9 +2160,7 @@ definitions:
         readOnly: true
       parent:
         type: string
-        title: |-
-          The name of the parent memo.
-          Format: memos/{id}
+        title: "The name of the parent memo.\r\nFormat: memos/{id}"
         readOnly: true
       snippet:
         type: string
@@ -2055,14 +2188,21 @@ definitions:
           type: string
       fieldMapping:
         $ref: '#/definitions/apiv1FieldMapping'
+  apiv1Shortcut:
+    type: object
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      filter:
+        type: string
   apiv1UserSetting:
     type: object
     properties:
       name:
         type: string
-        title: |-
-          The name of the user.
-          Format: users/{id}
+        description: The name of the user.
       locale:
         type: string
         description: The preferred locale of the user.
@@ -2341,10 +2481,11 @@ definitions:
         title: |-
           The name of the activity.
           Format: activities/{id}
-      creatorId:
-        type: integer
-        format: int32
-        description: The uid of the user who created the activity.
+      creator:
+        type: string
+        title: |-
+          The name of the creator.
+          Format: users/{user}
       type:
         type: string
         description: The type of the activity.
@@ -2403,25 +2544,6 @@ definitions:
     properties:
       content:
         type: string
-  v1CreateMemoRequest:
-    type: object
-    properties:
-      content:
-        type: string
-      visibility:
-        $ref: '#/definitions/v1Visibility'
-      resources:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Resource'
-      relations:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1MemoRelation'
-      location:
-        $ref: '#/definitions/apiv1Location'
   v1CreateWebhookRequest:
     type: object
     properties:
@@ -2429,6 +2551,13 @@ definitions:
         type: string
       url:
         type: string
+  v1Direction:
+    type: string
+    enum:
+      - DIRECTION_UNSPECIFIED
+      - ASC
+      - DESC
+    default: DIRECTION_UNSPECIFIED
   v1EmbeddedContentNode:
     type: object
     properties:
@@ -2483,15 +2612,15 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
+        description: |-
           The name of the inbox.
-          Format: inboxes/{id}
+          Format: inboxes/{id}, id is the system generated auto-incremented id.
       sender:
         type: string
-        title: 'Format: users/{id}'
+        title: 'Format: users/{user}'
       receiver:
         type: string
-        title: 'Format: users/{id}'
+        title: 'Format: users/{user}'
       status:
         $ref: '#/definitions/v1InboxStatus'
       createTime:
@@ -2541,6 +2670,14 @@ definitions:
         type: string
       url:
         type: string
+  v1ListAllUserStatsResponse:
+    type: object
+    properties:
+      userStats:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1UserStats'
   v1ListIdentityProvidersResponse:
     type: object
     properties:
@@ -2604,9 +2741,7 @@ definitions:
           $ref: '#/definitions/apiv1Memo'
       nextPageToken:
         type: string
-        description: |-
-          A token, which can be sent as `page_token` to retrieve the next page.
-          If this field is omitted, there are no subsequent pages.
+        description: "A token, which can be sent as `page_token` to retrieve the next page.\r\nIf this field is omitted, there are no subsequent pages."
   v1ListNode:
     type: object
     properties:
@@ -2628,6 +2763,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Resource'
+  v1ListShortcutsResponse:
+    type: object
+    properties:
+      shortcuts:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/apiv1Shortcut'
   v1ListUserAccessTokensResponse:
     type: object
     properties:
@@ -2680,12 +2823,12 @@ definitions:
         $ref: '#/definitions/v1MemoRelationMemo'
         title: |-
           The name of memo.
-          Format: "memos/{uid}"
+          Format: memos/{id}
       relatedMemo:
         $ref: '#/definitions/v1MemoRelationMemo'
         title: |-
           The name of related memo.
-          Format: "memos/{uid}"
+          Format: memos/{id}
       type:
         $ref: '#/definitions/v1MemoRelationType'
   v1MemoRelationMemo:
@@ -2709,16 +2852,6 @@ definitions:
       - REFERENCE
       - COMMENT
     default: TYPE_UNSPECIFIED
-  v1MemoView:
-    type: string
-    enum:
-      - MEMO_VIEW_UNSPECIFIED
-      - MEMO_VIEW_FULL
-      - MEMO_VIEW_METADATA_ONLY
-    default: MEMO_VIEW_UNSPECIFIED
-    description: |2-
-       - MEMO_VIEW_FULL: The full view of the memo. Includes all fields.
-       - MEMO_VIEW_METADATA_ONLY: The metadata only view of the memo. Excludes the content/snippet fields.
   v1Node:
     type: object
     properties:
@@ -2871,9 +3004,12 @@ definitions:
         type: string
         title: |-
           The name of the creator.
-          Format: users/{id}
+          Format: users/{user}
       contentId:
         type: string
+        description: |-
+          The content identifier.
+          For memo, it should be the `Memo.name`.
       reactionType:
         type: string
   v1ReferencedContentNode:
@@ -2890,11 +3026,7 @@ definitions:
         type: string
         description: |-
           The name of the resource.
-          Format: resources/{id}
-          id is the system generated unique identifier.
-      uid:
-        type: string
-        description: The user defined id of the resource.
+          Format: resources/{resource}, resource is the user defined if or uuid.
       createTime:
         type: string
         format: date-time
@@ -2913,9 +3045,7 @@ definitions:
         format: int64
       memo:
         type: string
-        title: |-
-          The related memo.
-          Format: memos/{id}
+        description: The related memo. Refer to `Memo.name`.
   v1RestoreMarkdownNodesRequest:
     type: object
     properties:
@@ -2929,26 +3059,18 @@ definitions:
     properties:
       markdown:
         type: string
-  v1RowStatus:
-    type: string
-    enum:
-      - ROW_STATUS_UNSPECIFIED
-      - ACTIVE
-      - ARCHIVED
-    default: ROW_STATUS_UNSPECIFIED
-  v1SearchUsersResponse:
-    type: object
-    properties:
-      users:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1User'
   v1SpoilerNode:
     type: object
     properties:
       content:
         type: string
+  v1State:
+    type: string
+    enum:
+      - STATE_UNSPECIFIED
+      - NORMAL
+      - ARCHIVED
+    default: STATE_UNSPECIFIED
   v1StrikethroughNode:
     type: object
     properties:
@@ -3037,13 +3159,7 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
-          The name of the user.
-          Format: users/{id}
-      id:
-        type: integer
-        format: int32
-        description: The system generated uid of the user.
+        description: "The name of the user.\r\nFormat: users/{id}, id is the system generated auto-incremented id."
       role:
         $ref: '#/definitions/UserRole'
       username:
@@ -3058,14 +3174,16 @@ definitions:
         type: string
       password:
         type: string
-      rowStatus:
-        $ref: '#/definitions/v1RowStatus'
+      state:
+        $ref: '#/definitions/v1State'
       createTime:
         type: string
         format: date-time
+        readOnly: true
       updateTime:
         type: string
         format: date-time
+        readOnly: true
   v1UserAccessToken:
     type: object
     properties:
@@ -3079,6 +3197,27 @@ definitions:
       expiresAt:
         type: string
         format: date-time
+  v1UserStats:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The name of the user.
+      memoDisplayTimestamps:
+        type: array
+        items:
+          type: string
+          format: date-time
+        description: "The timestamps when the memos were displayed.\r\nWe should return raw data to the client, and let the client format the data with the user's timezone."
+      memoTypeStats:
+        $ref: '#/definitions/UserStatsMemoTypeStats'
+        description: The stats of memo types.
+      tagCount:
+        type: object
+        additionalProperties:
+          type: integer
+          format: int32
+        title: "The count of tags.\r\nFormat: \"tag1\": 1, \"tag2\": 2"
   v1Visibility:
     type: string
     enum:
@@ -3093,17 +3232,15 @@ definitions:
       id:
         type: integer
         format: int32
-      creatorId:
-        type: integer
-        format: int32
+      creator:
+        type: string
+        description: The name of the creator.
       createTime:
         type: string
         format: date-time
       updateTime:
         type: string
         format: date-time
-      rowStatus:
-        $ref: '#/definitions/v1RowStatus'
       name:
         type: string
       url:
@@ -3115,7 +3252,7 @@ definitions:
         type: string
         title: |-
           The name of instance owner.
-          Format: "users/{id}"
+          Format: users/{user}
       version:
         type: string
         title: version is the current version of instance

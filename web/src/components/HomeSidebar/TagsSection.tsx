@@ -1,12 +1,10 @@
 import { Dropdown, Menu, MenuButton, MenuItem, Switch } from "@mui/joy";
-import clsx from "clsx";
 import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "lucide-react";
 import toast from "react-hot-toast";
-import { useLocation } from "react-router-dom";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
-import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoFilterStore, useMemoMetadataStore, useMemoTagList } from "@/store/v1";
+import { useMemoFilterStore, useUserStatsStore, useUserStatsTags } from "@/store/v1";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import showRenameTagDialog from "../RenameTagDialog";
 import TagTree from "../TagTree";
@@ -18,12 +16,10 @@ interface Props {
 
 const TagsSection = (props: Props) => {
   const t = useTranslate();
-  const location = useLocation();
-  const user = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
-  const memoMetadataStore = useMemoMetadataStore();
+  const userStatsStore = useUserStatsStore();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
-  const tags = Object.entries(useMemoTagList())
+  const tags = Object.entries(useUserStatsTags())
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
 
@@ -46,7 +42,7 @@ const TagsSection = (props: Props) => {
         parent: "memos/-",
         tag: tag,
       });
-      await memoMetadataStore.fetchMemoMetadata({ user, location });
+      userStatsStore.setStateId();
       toast.success(t("message.deleted-successfully"));
     }
   };
@@ -98,7 +94,7 @@ const TagsSection = (props: Props) => {
                   </Menu>
                 </Dropdown>
                 <div
-                  className={clsx("inline-flex flex-nowrap ml-0.5 gap-0.5 cursor-pointer max-w-[calc(100%-16px)]")}
+                  className={cn("inline-flex flex-nowrap ml-0.5 gap-0.5 cursor-pointer max-w-[calc(100%-16px)]")}
                   onClick={() => handleTagClick(tag)}
                 >
                   <span className="truncate dark:opacity-80">{tag}</span>

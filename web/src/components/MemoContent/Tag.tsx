@@ -1,9 +1,9 @@
-import clsx from "clsx";
 import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { Routes } from "@/router";
 import { stringifyFilters, useMemoFilterStore } from "@/store/v1";
+import { cn } from "@/utils";
 import { RendererContext } from "./types";
 
 interface Props {
@@ -44,10 +44,7 @@ const Tag: React.FC<Props> = ({ content }: Props) => {
 
   return (
     <span
-      className={clsx(
-        "inline-block w-auto text-blue-600 dark:text-blue-400",
-        context.disableFilter ? "" : "cursor-pointer hover:opacity-80",
-      )}
+      className={cn("inline-block w-auto text-blue-600 dark:text-blue-400", context.disableFilter ? "" : "cursor-pointer hover:opacity-80")}
       onClick={handleTagClick}
     >
       #{content}

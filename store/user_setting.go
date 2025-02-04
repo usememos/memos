@@ -145,6 +145,12 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 			return nil, err
 		}
 		userSetting.Value = &storepb.UserSetting_AccessTokens{AccessTokens: accessTokensUserSetting}
+	case storepb.UserSettingKey_SHORTCUTS:
+		shortcutsUserSetting := &storepb.ShortcutsUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), shortcutsUserSetting); err != nil {
+			return nil, err
+		}
+		userSetting.Value = &storepb.UserSetting_Shortcuts{Shortcuts: shortcutsUserSetting}
 	case storepb.UserSettingKey_LOCALE:
 		userSetting.Value = &storepb.UserSetting_Locale{Locale: raw.Value}
 	case storepb.UserSettingKey_APPEARANCE:
@@ -167,6 +173,13 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 	case storepb.UserSettingKey_ACCESS_TOKENS:
 		accessTokensUserSetting := userSetting.GetAccessTokens()
 		value, err := protojson.Marshal(accessTokensUserSetting)
+		if err != nil {
+			return nil, err
+		}
+		raw.Value = string(value)
+	case storepb.UserSettingKey_SHORTCUTS:
+		shortcutsUserSetting := userSetting.GetShortcuts()
+		value, err := protojson.Marshal(shortcutsUserSetting)
 		if err != nil {
 			return nil, err
 		}

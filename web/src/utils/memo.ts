@@ -1,3 +1,4 @@
+import { extractMemoIdFromName } from "@/store/v1";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 
 export const convertVisibilityFromString = (visibility: string) => {
@@ -25,3 +26,5 @@ export const convertVisibilityToString = (visibility: Visibility) => {
       return "PRIVATE";
   }
 };
+
+export const memoLink = (memo: string) => `/m/${extractMemoIdFromName(memo)}`;

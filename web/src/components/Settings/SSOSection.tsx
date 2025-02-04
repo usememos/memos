@@ -41,7 +41,7 @@ const SSOSection = () => {
       <div className="w-full flex flex-row justify-between items-center gap-1">
         <div className="flex flex-row items-center gap-1">
           <span className="font-mono text-gray-400">{t("setting.sso-section.sso-list")}</span>
-          <LearnMore url="https://usememos.com/docs/advanced-settings/keycloak" />
+          <LearnMore url="https://www.usememos.com/docs/advanced-settings/sso" />
         </div>
         <Button color="primary" onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}>
           {t("common.create")}
@@ -86,10 +86,10 @@ const SSOSection = () => {
           <ListItem>
             <Link
               className="text-sm text-blue-600 hover:underline"
-              to="https://www.usememos.com/docs/advanced-settings/keycloak"
+              to="https://www.usememos.com/docs/advanced-settings/sso"
               target="_blank"
             >
-              {t("setting.sso-section.configuring-keycloak-for-authentication")}
+              {t("setting.sso-section.single-sign-on")}
             </Link>
           </ListItem>
         </List>

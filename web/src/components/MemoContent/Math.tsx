@@ -1,6 +1,6 @@
 import TeX from "@matejmazur/react-katex";
-import clsx from "clsx";
 import "katex/dist/katex.min.css";
+import { cn } from "@/utils";
 
 interface Props {
   content: string;
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const Math: React.FC<Props> = ({ content, block }: Props) => {
-  return <TeX className={clsx("max-w-full", block ? "w-full block" : "inline text-sm")} block={block} math={content}></TeX>;
+  return <TeX className={cn("max-w-full", block ? "w-full block" : "inline text-sm")} block={block} math={content}></TeX>;
 };
 
 export default Math;

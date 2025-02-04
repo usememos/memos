@@ -43,7 +43,7 @@ service IdentityProviderService {
 
 message IdentityProvider {
   // The name of the identityProvider.
-  // Format: identityProviders/{id}
+  // Format: identityProviders/{id}, id is the system generated auto-incremented id.
   string name = 1;
 
   enum Type {
@@ -89,7 +89,6 @@ message ListIdentityProvidersResponse {
 
 message GetIdentityProviderRequest {
   // The name of the identityProvider to get.
-  // Format: identityProviders/{id}
   string name = 1;
 }
 
@@ -109,6 +108,5 @@ message UpdateIdentityProviderRequest {
 
 message DeleteIdentityProviderRequest {
   // The name of the identityProvider to delete.
-  // Format: identityProviders/{id}
   string name = 1;
 }

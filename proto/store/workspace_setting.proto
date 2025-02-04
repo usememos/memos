@@ -91,6 +91,7 @@ message StorageS3Config {
   string endpoint = 3;
   string region = 4;
   string bucket = 5;
+  bool use_path_style = 6;
 }
 
 message WorkspaceMemoRelatedSetting {

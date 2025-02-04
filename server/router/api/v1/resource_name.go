@@ -15,7 +15,6 @@ const (
 	MemoNamePrefix             = "memos/"
 	ResourceNamePrefix         = "resources/"
 	InboxNamePrefix            = "inboxes/"
-	StorageNamePrefix          = "storages/"
 	IdentityProviderNamePrefix = "identityProviders/"
 	ActivityNamePrefix         = "activities/"
 )
@@ -61,29 +60,24 @@ func ExtractUserIDFromName(name string) (int32, error) {
 	return id, nil
 }
 
-// ExtractMemoIDFromName returns the memo ID from a resource name.
-func ExtractMemoIDFromName(name string) (int32, error) {
+// ExtractMemoUIDFromName returns the memo UID from a resource name.
+// e.g., "memos/uuid" -> "uuid".
+func ExtractMemoUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, MemoNamePrefix)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid memo ID %q", tokens[0])
-	}
+	id := tokens[0]
 	return id, nil
 }
 
-// ExtractResourceIDFromName returns the resource ID from a resource name.
-func ExtractResourceIDFromName(name string) (int32, error) {
+// ExtractResourceUIDFromName returns the resource UID from a resource name.
+func ExtractResourceUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, ResourceNamePrefix)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid resource ID %q", tokens[0])
-	}
+	id := tokens[0]
 	return id, nil
 }
 
@@ -96,19 +90,6 @@ func ExtractInboxIDFromName(name string) (int32, error) {
 	id, err := util.ConvertStringToInt32(tokens[0])
 	if err != nil {
 		return 0, errors.Errorf("invalid inbox ID %q", tokens[0])
-	}
-	return id, nil
-}
-
-// ExtractStorageIDFromName returns the storage ID from a resource name.
-func ExtractStorageIDFromName(name string) (int32, error) {
-	tokens, err := GetNameParentTokens(name, StorageNamePrefix)
-	if err != nil {
-		return 0, err
-	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid storage ID %q", tokens[0])
 	}
 	return id, nil
 }

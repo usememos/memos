@@ -11,14 +11,14 @@ message MemoPayload {
 
   repeated string tags = 3;
 
-  // The references of the memo. Should be a list of uuid.
-  repeated string references = 4;
-
+  // The calculated properties from the memo content.
   message Property {
     bool has_link = 1;
     bool has_task_list = 2;
     bool has_code = 3;
     bool has_incomplete_tasks = 4;
+    // The references of the memo. Should be a list of uuid.
+    repeated string references = 5;
   }
 
   message Location {

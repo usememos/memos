@@ -18,7 +18,6 @@ func TestWebhookStore(t *testing.T) {
 		CreatorID: user.ID,
 		Name:      "test_webhook",
 		URL:       "https://example.com",
-		RowStatus: store.Normal,
 	})
 	require.NoError(t, err)
 	require.Equal(t, "test_webhook", webhook.Name)

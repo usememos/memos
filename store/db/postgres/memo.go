@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/usememos/memos/plugin/filter"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -99,6 +100,22 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			where = append(where, "(memo.payload->'property'->>'hasIncompleteTasks')::BOOLEAN IS TRUE")
 		}
 	}
+	if v := find.Filter; v != nil {
+		// Parse filter string and return the parsed expression.
+		// The filter string should be a CEL expression.
+		parsedExpr, err := filter.Parse(*v, filter.MemoFilterCELAttributes...)
+		if err != nil {
+			return nil, err
+		}
+		convertCtx := filter.NewConvertContext()
+		convertCtx.ArgsOffset = len(args)
+		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
+		if err := d.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
+			return nil, err
+		}
+		where = append(where, fmt.Sprintf("(%s)", convertCtx.Buffer.String()))
+		args = append(args, convertCtx.Args...)
+	}
 	if find.ExcludeComments {
 		where = append(where, "memo_relation.related_memo_id IS NULL")
 	}
@@ -129,8 +146,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		`memo.updated_ts AS updated_ts`,
 		`memo.row_status AS row_status`,
 		`memo.visibility AS visibility`,
+		`memo.pinned AS pinned`,
 		`memo.payload AS payload`,
-		`COALESCE(memo_organizer.pinned, 0) AS pinned`,
 		`memo_relation.related_memo_id AS parent_id`,
 	}
 	if !find.ExcludeContent {
@@ -139,7 +156,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	query := `SELECT ` + strings.Join(fields, ", ") + `
 		FROM memo
-		LEFT JOIN memo_organizer ON memo.id = memo_organizer.memo_id AND memo.creator_id = memo_organizer.user_id
 		LEFT JOIN memo_relation ON memo.id = memo_relation.memo_id AND memo_relation.type = 'COMMENT'
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY ` + strings.Join(orders, ", ")
@@ -168,8 +184,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.UpdatedTs,
 			&memo.RowStatus,
 			&memo.Visibility,
-			&payloadBytes,
 			&memo.Pinned,
+			&payloadBytes,
 			&memo.ParentID,
 		}
 		if !find.ExcludeContent {
@@ -226,12 +242,18 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	if v := update.Visibility; v != nil {
 		set, args = append(set, "visibility = "+placeholder(len(args)+1)), append(args, *v)
 	}
+	if v := update.Pinned; v != nil {
+		set, args = append(set, "pinned = "+placeholder(len(args)+1)), append(args, *v)
+	}
 	if v := update.Payload; v != nil {
 		payloadBytes, err := protojson.Marshal(v)
 		if err != nil {
 			return err
 		}
 		set, args = append(set, "payload = "+placeholder(len(args)+1)), append(args, string(payloadBytes))
+	}
+	if len(set) == 0 {
+		return nil
 	}
 
 	stmt := `UPDATE memo SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1)

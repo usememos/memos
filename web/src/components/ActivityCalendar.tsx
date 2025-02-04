@@ -1,11 +1,10 @@
 import { Tooltip } from "@mui/joy";
-import clsx from "clsx";
 import dayjs from "dayjs";
 import { useWorkspaceSettingStore } from "@/store/v1";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
-import { cn } from "@/utils/utils";
 
 interface Props {
   month: string; // Format: 2021-1
@@ -18,13 +17,15 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
   if (count === 0) {
     return "";
   }
-  const ratio = count / maxCount;
-  if (ratio > 0.7) {
-    return "bg-primary-darker text-gray-100 dark:opacity-80";
-  } else if (ratio > 0.4) {
-    return "bg-primary-dark text-gray-100 dark:opacity-80";
+  if (count >= 3) {
+    const ratio = count / maxCount;
+    if (ratio > 0.7) {
+      return "bg-primary-darker/80 text-gray-100 dark:opacity-80";
+    } else if (ratio > 0.4) {
+      return "bg-primary/80 text-gray-100 dark:opacity-80";
+    }
   } else {
-    return "bg-primary text-gray-100 dark:opacity-70";
+    return "bg-primary/70 text-gray-100 dark:opacity-70";
   }
 };
 
@@ -64,9 +65,9 @@ const ActivityCalendar = (props: Props) => {
   }
 
   return (
-    <div className={clsx("w-full h-auto shrink-0 grid grid-cols-7 grid-flow-row gap-1")}>
+    <div className={cn("w-full h-auto shrink-0 grid grid-cols-7 grid-flow-row gap-1")}>
       {weekDays.map((day, index) => (
-        <div key={index} className={clsx("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>
+        <div key={index} className={cn("w-6 h-5 text-xs flex justify-center items-center cursor-default opacity-60")}>
           {day}
         </div>
       ))}
@@ -74,14 +75,21 @@ const ActivityCalendar = (props: Props) => {
         const date = dayjs(`${year}-${month + 1}-${item.day}`).format("YYYY-MM-DD");
         const count = item.isCurrentMonth ? data[date] || 0 : 0;
         const isToday = dayjs().format("YYYY-MM-DD") === date;
-        const tooltipText = count ? t("memo.count-memos-in-date", { count: count, date: date }) : date;
+        const tooltipText =
+          count === 0
+            ? t("memo.no-memos")
+            : t("memo.count-memos-in-date", {
+                count: count,
+                memos: count === 1 ? t("common.memo") : t("common.memos"),
+                date: date,
+              }).toLowerCase();
         const isSelected = dayjs(props.selectedDate).format("YYYY-MM-DD") === date;
 
         return (
           <Tooltip className="shrink-0" key={`${date}-${index}`} title={tooltipText} placement="top" arrow>
             <div
               className={cn(
-                "w-6 h-6 text-xs rounded-xl flex justify-center items-center border cursor-default",
+                "w-6 h-6 text-xs rounded-lg flex justify-center items-center border cursor-default",
                 "text-gray-400",
                 item.isCurrentMonth ? getCellAdditionalStyles(count, maxCount) : "opacity-60",
                 item.isCurrentMonth && isToday && "border-zinc-400",

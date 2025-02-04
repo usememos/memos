@@ -18,14 +18,15 @@ service UserService {
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
     option (google.api.http) = {get: "/api/v1/users"};
   }
-  // SearchUsers searches users by filter.
-  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {
-    option (google.api.http) = {get: "/api/v1/users:search"};
-  }
   // GetUser gets a user by name.
   rpc GetUser(GetUserRequest) returns (User) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
+  }
+  // GetUserByUsername gets a user by username.
+  rpc GetUserByUsername(GetUserByUsernameRequest) returns (User) {
+    option (google.api.http) = {get: "/api/v1/users:username"};
+    option (google.api.method_signature) = "username";
   }
   // GetUserAvatarBinary gets the avatar of a user.
   rpc GetUserAvatarBinary(GetUserAvatarBinaryRequest) returns (google.api.HttpBody) {
@@ -51,6 +52,15 @@ service UserService {
   // DeleteUser deletes a user.
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{name=users/*}"};
+    option (google.api.method_signature) = "name";
+  }
+  // ListAllUserStats returns all user stats.
+  rpc ListAllUserStats(ListAllUserStatsRequest) returns (ListAllUserStatsResponse) {
+    option (google.api.http) = {post: "/api/v1/users/-/stats"};
+  }
+  // GetUserStats returns the stats of a user.
+  rpc GetUserStats(GetUserStatsRequest) returns (UserStats) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*}/stats"};
     option (google.api.method_signature) = "name";
   }
   // GetUserSetting gets the setting of a user.
@@ -84,15 +94,38 @@ service UserService {
     option (google.api.http) = {delete: "/api/v1/{name=users/*}/access_tokens/{access_token}"};
     option (google.api.method_signature) = "name,access_token";
   }
+  // ListShortcuts returns a list of shortcuts for a user.
+  rpc ListShortcuts(ListShortcutsRequest) returns (ListShortcutsResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/shortcuts"};
+    option (google.api.method_signature) = "parent";
+  }
+  // CreateShortcut creates a new shortcut for a user.
+  rpc CreateShortcut(CreateShortcutRequest) returns (Shortcut) {
+    option (google.api.http) = {
+      post: "/api/v1/{parent=users/*}/shortcuts"
+      body: "shortcut"
+    };
+    option (google.api.method_signature) = "parent,shortcut";
+  }
+  // UpdateShortcut updates a shortcut for a user.
+  rpc UpdateShortcut(UpdateShortcutRequest) returns (Shortcut) {
+    option (google.api.http) = {
+      patch: "/api/v1/{parent=users/*}/shortcuts/{shortcut.id}"
+      body: "shortcut"
+    };
+    option (google.api.method_signature) = "parent,shortcut,update_mask";
+  }
+  // DeleteShortcut deletes a shortcut for a user.
+  rpc DeleteShortcut(DeleteShortcutRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{parent=users/*}/shortcuts/{id}"};
+    option (google.api.method_signature) = "parent,id";
+  }
 }
 
 message User {
   // The name of the user.
-  // Format: users/{id}
+  // Format: users/{id}, id is the system generated auto-incremented id.
   string name = 1;
-
-  // The system generated uid of the user.
-  int32 id = 2;
 
   enum Role {
     ROLE_UNSPECIFIED = 0;
@@ -114,11 +147,11 @@ message User {
 
   string password = 9 [(google.api.field_behavior) = INPUT_ONLY];
 
-  RowStatus row_status = 10;
+  State state = 10;
 
-  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp create_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  google.protobuf.Timestamp update_time = 12;
+  google.protobuf.Timestamp update_time = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message ListUsersRequest {}
@@ -127,25 +160,18 @@ message ListUsersResponse {
   repeated User users = 1;
 }
 
-message SearchUsersRequest {
-  // Filter is used to filter users returned in the list.
-  // Format: "username == 'frank'"
-  string filter = 1;
-}
-
-message SearchUsersResponse {
-  repeated User users = 1;
-}
-
 message GetUserRequest {
   // The name of the user.
-  // Format: users/{id}
   string name = 1;
+}
+
+message GetUserByUsernameRequest {
+  // The username of the user.
+  string username = 1;
 }
 
 message GetUserAvatarBinaryRequest {
   // The name of the user.
-  // Format: users/{id}
   string name = 1;
 
   // The raw HTTP body is bound to this field.
@@ -164,13 +190,45 @@ message UpdateUserRequest {
 
 message DeleteUserRequest {
   // The name of the user.
-  // Format: users/{id}
+  string name = 1;
+}
+
+message UserStats {
+  // The name of the user.
+  string name = 1;
+
+  // The timestamps when the memos were displayed.
+  // We should return raw data to the client, and let the client format the data with the user's timezone.
+  repeated google.protobuf.Timestamp memo_display_timestamps = 2;
+
+  // The stats of memo types.
+  MemoTypeStats memo_type_stats = 3;
+
+  // The count of tags.
+  // Format: "tag1": 1, "tag2": 2
+  map<string, int32> tag_count = 4;
+
+  message MemoTypeStats {
+    int32 link_count = 1;
+    int32 code_count = 2;
+    int32 todo_count = 3;
+    int32 undo_count = 4;
+  }
+}
+
+message ListAllUserStatsRequest {}
+
+message ListAllUserStatsResponse {
+  repeated UserStats user_stats = 1;
+}
+
+message GetUserStatsRequest {
+  // The name of the user.
   string name = 1;
 }
 
 message UserSetting {
   // The name of the user.
-  // Format: users/{id}
   string name = 1;
   // The preferred locale of the user.
   string locale = 2;
@@ -182,7 +240,6 @@ message UserSetting {
 
 message GetUserSettingRequest {
   // The name of the user.
-  // Format: users/{id}
   string name = 1;
 }
 
@@ -201,7 +258,6 @@ message UserAccessToken {
 
 message ListUserAccessTokensRequest {
   // The name of the user.
-  // Format: users/{id}
   string name = 1;
 }
 
@@ -211,7 +267,6 @@ message ListUserAccessTokensResponse {
 
 message CreateUserAccessTokenRequest {
   // The name of the user.
-  // Format: users/{id}
   string name = 1;
 
   string description = 2;
@@ -221,8 +276,48 @@ message CreateUserAccessTokenRequest {
 
 message DeleteUserAccessTokenRequest {
   // The name of the user.
-  // Format: users/{id}
   string name = 1;
   // access_token is the access token to delete.
   string access_token = 2;
+}
+
+message Shortcut {
+  string id = 1;
+  string title = 2;
+  string filter = 3;
+}
+
+message ListShortcutsRequest {
+  // The name of the user.
+  string parent = 1;
+}
+
+message ListShortcutsResponse {
+  repeated Shortcut shortcuts = 1;
+}
+
+message CreateShortcutRequest {
+  // The name of the user.
+  string parent = 1;
+
+  Shortcut shortcut = 2;
+
+  bool validate_only = 3;
+}
+
+message UpdateShortcutRequest {
+  // The name of the user.
+  string parent = 1;
+
+  Shortcut shortcut = 2;
+
+  google.protobuf.FieldMask update_mask = 3;
+}
+
+message DeleteShortcutRequest {
+  // The name of the user.
+  string parent = 1;
+
+  // The id of the shortcut.
+  string id = 2;
 }

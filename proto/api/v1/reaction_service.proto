@@ -8,9 +8,11 @@ message Reaction {
   int32 id = 1;
 
   // The name of the creator.
-  // Format: users/{id}
+  // Format: users/{user}
   string creator = 2;
 
+  // The content identifier.
+  // For memo, it should be the `Memo.name`.
   string content_id = 3;
 
   string reaction_type = 4;

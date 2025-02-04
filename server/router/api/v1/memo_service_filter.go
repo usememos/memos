@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
-	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+	exprv1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -17,115 +17,53 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		find.PayloadFind = &store.FindMemoPayload{}
 	}
 	if filter != "" {
-		filter, err := parseMemoFilter(filter)
+		filterExpr, err := parseMemoFilter(filter)
 		if err != nil {
 			return status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 		}
-		if len(filter.ContentSearch) > 0 {
-			find.ContentSearch = filter.ContentSearch
+		if len(filterExpr.ContentSearch) > 0 {
+			find.ContentSearch = filterExpr.ContentSearch
 		}
-		if len(filter.Visibilities) > 0 {
-			find.VisibilityList = filter.Visibilities
-		}
-		if filter.TagSearch != nil {
+		if filterExpr.TagSearch != nil {
 			if find.PayloadFind == nil {
 				find.PayloadFind = &store.FindMemoPayload{}
 			}
-			find.PayloadFind.TagSearch = filter.TagSearch
+			find.PayloadFind.TagSearch = filterExpr.TagSearch
 		}
-		if filter.OrderByPinned {
-			find.OrderByPinned = filter.OrderByPinned
-		}
-		if filter.OrderByTimeAsc {
-			find.OrderByTimeAsc = filter.OrderByTimeAsc
-		}
-		if filter.DisplayTimeAfter != nil {
+		if filterExpr.DisplayTimeAfter != nil {
 			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
 				return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 			}
 			if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
-				find.UpdatedTsAfter = filter.DisplayTimeAfter
+				find.UpdatedTsAfter = filterExpr.DisplayTimeAfter
 			} else {
-				find.CreatedTsAfter = filter.DisplayTimeAfter
+				find.CreatedTsAfter = filterExpr.DisplayTimeAfter
 			}
 		}
-		if filter.DisplayTimeBefore != nil {
+		if filterExpr.DisplayTimeBefore != nil {
 			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 			if err != nil {
 				return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
 			}
 			if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
-				find.UpdatedTsBefore = filter.DisplayTimeBefore
+				find.UpdatedTsBefore = filterExpr.DisplayTimeBefore
 			} else {
-				find.CreatedTsBefore = filter.DisplayTimeBefore
+				find.CreatedTsBefore = filterExpr.DisplayTimeBefore
 			}
 		}
-		if filter.Creator != nil {
-			userID, err := ExtractUserIDFromName(*filter.Creator)
-			if err != nil {
-				return errors.Wrap(err, "invalid user name")
-			}
-			user, err := s.Store.GetUser(ctx, &store.FindUser{
-				ID: &userID,
-			})
-			if err != nil {
-				return status.Errorf(codes.Internal, "failed to get user")
-			}
-			if user == nil {
-				return status.Errorf(codes.NotFound, "user not found")
-			}
-			find.CreatorID = &user.ID
-		}
-		if filter.RowStatus != nil {
-			find.RowStatus = filter.RowStatus
-		}
-		if filter.Random {
-			find.Random = filter.Random
-		}
-		if filter.Limit != nil {
-			find.Limit = filter.Limit
-		}
-		if filter.IncludeComments {
-			find.ExcludeComments = false
-		}
-		if filter.HasLink {
+		if filterExpr.HasLink {
 			find.PayloadFind.HasLink = true
 		}
-		if filter.HasTaskList {
+		if filterExpr.HasTaskList {
 			find.PayloadFind.HasTaskList = true
 		}
-		if filter.HasCode {
+		if filterExpr.HasCode {
 			find.PayloadFind.HasCode = true
 		}
-		if filter.HasIncompleteTasks {
+		if filterExpr.HasIncompleteTasks {
 			find.PayloadFind.HasIncompleteTasks = true
 		}
-	}
-
-	user, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get current user")
-	}
-	// If the user is not authenticated, only public memos are visible.
-	if user == nil {
-		if filter == "" {
-			// If no filter is provided, return an error.
-			return status.Errorf(codes.InvalidArgument, "filter is required for unauthenticated user")
-		}
-
-		find.VisibilityList = []store.Visibility{store.Public}
-	} else if find.CreatorID == nil || *find.CreatorID != user.ID {
-		// If creator is not specified or the creator is not the current user, only public and protected memos are visible.
-		find.VisibilityList = []store.Visibility{store.Public, store.Protected}
-	}
-
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get workspace memo related setting")
-	}
-	if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
-		find.OrderByUpdatedTs = true
 	}
 	return nil
 }
@@ -133,18 +71,9 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 // MemoFilterCELAttributes are the CEL attributes.
 var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content_search", cel.ListType(cel.StringType)),
-	cel.Variable("visibilities", cel.ListType(cel.StringType)),
 	cel.Variable("tag_search", cel.ListType(cel.StringType)),
-	cel.Variable("order_by_pinned", cel.BoolType),
-	cel.Variable("order_by_time_asc", cel.BoolType),
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
-	cel.Variable("creator", cel.StringType),
-	cel.Variable("uid", cel.StringType),
-	cel.Variable("row_status", cel.StringType),
-	cel.Variable("random", cel.BoolType),
-	cel.Variable("limit", cel.IntType),
-	cel.Variable("include_comments", cel.BoolType),
 	cel.Variable("has_link", cel.BoolType),
 	cel.Variable("has_task_list", cel.BoolType),
 	cel.Variable("has_code", cel.BoolType),
@@ -153,17 +82,9 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 
 type MemoFilter struct {
 	ContentSearch      []string
-	Visibilities       []store.Visibility
 	TagSearch          []string
-	OrderByPinned      bool
-	OrderByTimeAsc     bool
 	DisplayTimeBefore  *int64
 	DisplayTimeAfter   *int64
-	Creator            *string
-	RowStatus          *store.RowStatus
-	Random             bool
-	Limit              *int
-	IncludeComments    bool
 	HasLink            bool
 	HasTaskList        bool
 	HasCode            bool
@@ -180,16 +101,16 @@ func parseMemoFilter(expression string) (*MemoFilter, error) {
 		return nil, errors.Errorf("found issue %v", issues)
 	}
 	filter := &MemoFilter{}
-	expr, err := cel.AstToParsedExpr(ast)
+	parsedExpr, err := cel.AstToParsedExpr(ast)
 	if err != nil {
 		return nil, err
 	}
-	callExpr := expr.GetExpr().GetCallExpr()
+	callExpr := parsedExpr.GetExpr().GetCallExpr()
 	findMemoField(callExpr, filter)
 	return filter, nil
 }
 
-func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
+func findMemoField(callExpr *exprv1.Expr_Call, filter *MemoFilter) {
 	if len(callExpr.Args) == 2 {
 		idExpr := callExpr.Args[0].GetIdentExpr()
 		if idExpr != nil {
@@ -200,13 +121,6 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 					contentSearch = append(contentSearch, value)
 				}
 				filter.ContentSearch = contentSearch
-			} else if idExpr.Name == "visibilities" {
-				visibilities := []store.Visibility{}
-				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
-					value := expr.GetConstExpr().GetStringValue()
-					visibilities = append(visibilities, store.Visibility(value))
-				}
-				filter.Visibilities = visibilities
 			} else if idExpr.Name == "tag_search" {
 				tagSearch := []string{}
 				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
@@ -214,33 +128,12 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 					tagSearch = append(tagSearch, value)
 				}
 				filter.TagSearch = tagSearch
-			} else if idExpr.Name == "order_by_pinned" {
-				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
-				filter.OrderByPinned = value
-			} else if idExpr.Name == "order_by_time_asc" {
-				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
-				filter.OrderByTimeAsc = value
 			} else if idExpr.Name == "display_time_before" {
 				displayTimeBefore := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.DisplayTimeBefore = &displayTimeBefore
 			} else if idExpr.Name == "display_time_after" {
 				displayTimeAfter := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.DisplayTimeAfter = &displayTimeAfter
-			} else if idExpr.Name == "creator" {
-				creator := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.Creator = &creator
-			} else if idExpr.Name == "row_status" {
-				rowStatus := store.RowStatus(callExpr.Args[1].GetConstExpr().GetStringValue())
-				filter.RowStatus = &rowStatus
-			} else if idExpr.Name == "random" {
-				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
-				filter.Random = value
-			} else if idExpr.Name == "limit" {
-				limit := int(callExpr.Args[1].GetConstExpr().GetInt64Value())
-				filter.Limit = &limit
-			} else if idExpr.Name == "include_comments" {
-				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
-				filter.IncludeComments = value
 			} else if idExpr.Name == "has_link" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.HasLink = value

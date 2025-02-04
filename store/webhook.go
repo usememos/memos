@@ -9,7 +9,6 @@ type Webhook struct {
 	CreatedTs int64
 	UpdatedTs int64
 	CreatorID int32
-	RowStatus RowStatus
 	Name      string
 	URL       string
 }
@@ -20,10 +19,9 @@ type FindWebhook struct {
 }
 
 type UpdateWebhook struct {
-	ID        int32
-	RowStatus *RowStatus
-	Name      *string
-	URL       *string
+	ID   int32
+	Name *string
+	URL  *string
 }
 
 type DeleteWebhook struct {

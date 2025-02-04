@@ -54,10 +54,8 @@ func TestMemoStore(t *testing.T) {
 	require.Equal(t, 0, len(memoList))
 
 	memoList, err = ts.ListMemos(ctx, &store.FindMemo{
-		CreatorID: &user.ID,
-		VisibilityList: []store.Visibility{
-			store.Public,
-		},
+		CreatorID:      &user.ID,
+		VisibilityList: []store.Visibility{store.Public},
 	})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(memoList))

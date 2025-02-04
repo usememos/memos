@@ -1,5 +1,5 @@
 -- migration_history
-CREATE TABLE  migration_history (
+CREATE TABLE migration_history (
   version TEXT NOT NULL PRIMARY KEY,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
 );
@@ -47,12 +47,11 @@ CREATE TABLE memo (
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   content TEXT NOT NULL DEFAULT '',
   visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE',
+  pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,
   payload TEXT NOT NULL DEFAULT '{}'
 );
 
 CREATE INDEX idx_memo_creator_id ON memo (creator_id);
-CREATE INDEX idx_memo_content ON memo (content);
-CREATE INDEX idx_memo_visibility ON memo (visibility);
 
 -- memo_organizer
 CREATE TABLE memo_organizer (

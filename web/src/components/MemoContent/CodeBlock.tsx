@@ -1,9 +1,9 @@
-import clsx from "clsx";
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import { CopyIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
+import { cn } from "@/utils";
 import MermaidBlock from "./MermaidBlock";
 import { BaseProps } from "./types";
 
@@ -66,9 +66,9 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
       </div>
 
       <div className="overflow-auto">
-        <pre className={clsx("no-wrap overflow-auto", "w-full p-2 bg-amber-50 dark:bg-zinc-700 relative")}>
+        <pre className={cn("no-wrap overflow-auto", "w-full p-2 bg-amber-50 dark:bg-zinc-700 relative")}>
           <code
-            className={clsx(`language-${formatedLanguage}`, "block text-sm leading-5")}
+            className={cn(`language-${formatedLanguage}`, "block text-sm leading-5")}
             dangerouslySetInnerHTML={{ __html: highlightedCode }}
           ></code>
         </pre>

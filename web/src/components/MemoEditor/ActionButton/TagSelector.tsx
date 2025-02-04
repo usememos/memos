@@ -4,7 +4,7 @@ import { HashIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import OverflowTip from "@/components/kit/OverflowTip";
-import { useMemoTagList } from "@/store/v1";
+import { useUserStatsTags } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 
@@ -17,7 +17,7 @@ const TagSelector = (props: Props) => {
   const { editorRef } = props;
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const tags = Object.entries(useMemoTagList())
+  const tags = Object.entries(useUserStatsTags())
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1])
     .map(([tag]) => tag);

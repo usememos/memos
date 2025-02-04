@@ -29,11 +29,6 @@ service ResourceService {
     option (google.api.http) = {get: "/api/v1/{name=resources/*}"};
     option (google.api.method_signature) = "name";
   }
-  // GetResourceByUid returns a resource by uid.
-  rpc GetResourceByUid(GetResourceByUidRequest) returns (Resource) {
-    option (google.api.http) = {get: "/api/v1/resources:by-uid/{uid}"};
-    option (google.api.method_signature) = "uid";
-  }
   // GetResourceBinary returns a resource binary by name.
   rpc GetResourceBinary(GetResourceBinaryRequest) returns (google.api.HttpBody) {
     option (google.api.http) = {get: "/file/{name=resources/*}/{filename}"};
@@ -55,13 +50,11 @@ service ResourceService {
 }
 
 message Resource {
-  // The name of the resource.
-  // Format: resources/{id}
-  // id is the system generated unique identifier.
-  string name = 1;
+  reserved 2;
 
-  // The user defined id of the resource.
-  string uid = 2;
+  // The name of the resource.
+  // Format: resources/{resource}, resource is the user defined if or uuid.
+  string name = 1;
 
   google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 
@@ -75,8 +68,7 @@ message Resource {
 
   int64 size = 8;
 
-  // The related memo.
-  // Format: memos/{id}
+  // The related memo. Refer to `Memo.name`.
   optional string memo = 9;
 }
 
@@ -92,20 +84,11 @@ message ListResourcesResponse {
 
 message GetResourceRequest {
   // The name of the resource.
-  // Format: resources/{id}
-  // id is the system generated unique identifier.
   string name = 1;
-}
-
-message GetResourceByUidRequest {
-  // The uid of the resource.
-  string uid = 1;
 }
 
 message GetResourceBinaryRequest {
   // The name of the resource.
-  // Format: resources/{id}
-  // id is the system generated unique identifier.
   string name = 1;
 
   // The filename of the resource. Mainly used for downloading.
@@ -123,7 +106,5 @@ message UpdateResourceRequest {
 
 message DeleteResourceRequest {
   // The name of the resource.
-  // Format: resources/{id}
-  // id is the system generated unique identifier.
   string name = 1;
 }

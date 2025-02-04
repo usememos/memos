@@ -1,5 +1,4 @@
 import { CssVarsProvider } from "@mui/joy";
-import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
@@ -7,6 +6,7 @@ import CommonContextProvider from "@/layouts/CommonContextProvider";
 import store from "@/store";
 import { useDialogStore } from "@/store/module";
 import theme from "@/theme";
+import { cn } from "@/utils";
 import "@/less/base-dialog.less";
 
 interface DialogConfig {
@@ -56,8 +56,8 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={clsx("dialog-wrapper", className)} onMouseDown={handleSpaceClicked}>
-      <div ref={dialogContainerRef} className={clsx("dialog-container")} onMouseDown={(e) => e.stopPropagation()}>
+    <div className={cn("dialog-wrapper", className)} onMouseDown={handleSpaceClicked}>
+      <div ref={dialogContainerRef} className={cn("dialog-container")} onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>

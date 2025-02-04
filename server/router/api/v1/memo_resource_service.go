@@ -14,12 +14,16 @@ import (
 )
 
 func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMemoResourcesRequest) (*emptypb.Empty, error) {
-	memoID, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo")
+	}
 	resources, err := s.Store.ListResources(ctx, &store.FindResource{
-		MemoID: &memoID,
+		MemoID: &memo.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list resources")
@@ -29,7 +33,11 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 	for _, resource := range resources {
 		found := false
 		for _, requestResource := range request.Resources {
-			if resource.UID == requestResource.Uid {
+			requestResourceUID, err := ExtractResourceUIDFromName(requestResource.Name)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
+			}
+			if resource.UID == requestResourceUID {
 				found = true
 				break
 			}
@@ -37,7 +45,7 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 		if !found {
 			if err = s.Store.DeleteResource(ctx, &store.DeleteResource{
 				ID:     int32(resource.ID),
-				MemoID: &memoID,
+				MemoID: &memo.ID,
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to delete resource")
 			}
@@ -47,14 +55,18 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 	slices.Reverse(request.Resources)
 	// Update resources' memo_id in the request.
 	for index, resource := range request.Resources {
-		id, err := ExtractResourceIDFromName(resource.Name)
+		resourceUID, err := ExtractResourceUIDFromName(resource.Name)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
 		}
+		tempResource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &resourceUID})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+		}
 		updatedTs := time.Now().Unix() + int64(index)
 		if err := s.Store.UpdateResource(ctx, &store.UpdateResource{
-			ID:        id,
-			MemoID:    &memoID,
+			ID:        tempResource.ID,
+			MemoID:    &memo.ID,
 			UpdatedTs: &updatedTs,
 		}); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to update resource: %v", err)
@@ -65,12 +77,16 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 }
 
 func (s *APIV1Service) ListMemoResources(ctx context.Context, request *v1pb.ListMemoResourcesRequest) (*v1pb.ListMemoResourcesResponse, error) {
-	id, err := ExtractMemoIDFromName(request.Name)
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 	}
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
+	}
 	resources, err := s.Store.ListResources(ctx, &store.FindResource{
-		MemoID: &id,
+		MemoID: &memo.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)

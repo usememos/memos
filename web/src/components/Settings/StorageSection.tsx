@@ -1,8 +1,8 @@
-import { Divider, List, ListItem, Radio, RadioGroup, Tooltip } from "@mui/joy";
+import { Divider, List, ListItem, Radio, RadioGroup, Tooltip, Switch } from "@mui/joy";
 import { Button, Input } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { HelpCircleIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
@@ -98,6 +98,12 @@ const StorageSection = () => {
     handlePartialS3ConfigChanged({ bucket: event.target.value });
   };
 
+  const handleS3ConfigUsePathStyleChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handlePartialS3ConfigChanged({
+      usePathStyle: event.target.checked,
+    });
+  };
+
   const handleStorageTypeChanged = async (storageType: WorkspaceStorageSetting_StorageType) => {
     const update: WorkspaceStorageSetting = {
       ...workspaceStorageSetting,
@@ -173,6 +179,10 @@ const StorageSection = () => {
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-gray-700 dark:text-gray-500 mr-1">Bucket</span>
             <Input value={workspaceStorageSetting.s3Config?.bucket} placeholder="" onChange={handleS3ConfigBucketChanged} />
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-gray-700 dark:text-gray-500 mr-1">Use Path Style</span>
+            <Switch checked={workspaceStorageSetting.s3Config?.usePathStyle} onChange={handleS3ConfigUsePathStyleChanged} />
           </div>
         </>
       )}

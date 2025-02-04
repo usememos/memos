@@ -12,7 +12,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
 import { useMemoFilterStore, useUserStore } from "@/store/v1";
-import { RowStatus } from "@/types/proto/api/v1/common";
+import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -32,12 +32,8 @@ const UserProfile = () => {
     }
 
     userStore
-      .searchUsers(`username == "${username}"`)
-      .then((users) => {
-        if (users.length !== 1) {
-          throw new Error("User not found");
-        }
-        const user = users[0];
+      .fetchUserByUsername(username)
+      .then((user) => {
         setUser(user);
         loadingState.setFinish();
       })
@@ -52,7 +48,7 @@ const UserProfile = () => {
       return "";
     }
 
-    const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
+    const conditions = [];
     const contentSearch: string[] = [];
     const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
@@ -63,12 +59,12 @@ const UserProfile = () => {
       }
     }
     if (contentSearch.length > 0) {
-      filters.push(`content_search == [${contentSearch.join(", ")}]`);
+      conditions.push(`content_search == [${contentSearch.join(", ")}]`);
     }
     if (tagSearch.length > 0) {
-      filters.push(`tag_search == [${tagSearch.join(", ")}]`);
+      conditions.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
-    return filters.join(" && ");
+    return conditions.join(" && ");
   }, [user, memoFilterStore.filters]);
 
   const handleCopyProfileLink = () => {
@@ -111,7 +107,7 @@ const UserProfile = () => {
                 )}
                 listSort={(memos: Memo[]) =>
                   memos
-                    .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
+                    .filter((memo) => memo.state === State.NORMAL)
                     .sort((a, b) =>
                       memoFilterStore.orderByTimeAsc
                         ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
@@ -119,7 +115,9 @@ const UserProfile = () => {
                     )
                     .sort((a, b) => Number(b.pinned) - Number(a.pinned))
                 }
-                filter={memoListFilter}
+                owner={user.name}
+                direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+                oldFilter={memoListFilter}
               />
             </>
           ) : (
