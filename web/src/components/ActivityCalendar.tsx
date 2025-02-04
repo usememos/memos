@@ -26,7 +26,7 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
     return "bg-primary/70 text-gray-100 dark:opacity-70";
   } else {
     return "bg-primary/50 text-gray-100 dark:opacity-50";
-  };
+  }
 };
 
 const ActivityCalendar = (props: Props) => {
