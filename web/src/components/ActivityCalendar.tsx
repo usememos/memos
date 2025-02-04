@@ -18,15 +18,15 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
     return "";
   }
   const ratio = count / maxCount;
-  if (count >= 3 && ratio > 0.4) {
-    if (ratio > 0.7) {
-      return "bg-primary-darker/80 text-gray-100 dark:opacity-80";
-    } else {
-      return "bg-primary/80 text-gray-100 dark:opacity-80";
-    }
-  } else {
+  if (ratio > 0.75) {
+    return "bg-primary-darker/90 text-gray-100 dark:opacity-90";
+  } else if (ratio > 0.5) {
+    return "bg-primary-darker/70 text-gray-100 dark:opacity-70";
+  } else if (ratio > 0.25) {
     return "bg-primary/70 text-gray-100 dark:opacity-70";
-  }
+  } else {
+    return "bg-primary/50 text-gray-100 dark:opacity-50";
+  };
 };
 
 const ActivityCalendar = (props: Props) => {
