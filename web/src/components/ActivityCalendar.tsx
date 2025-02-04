@@ -19,13 +19,13 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
   }
   const ratio = count / maxCount;
   if (ratio > 0.75) {
-    return "bg-primary-darker/90 text-gray-100 dark:opacity-90";
+    return "bg-primary-darker/90 text-gray-100 dark:bg-primary-lighter/80";
   } else if (ratio > 0.5) {
-    return "bg-primary-darker/70 text-gray-100 dark:opacity-70";
+    return "bg-primary-darker/70 text-gray-100 dark:bg-primary-lighter/60";
   } else if (ratio > 0.25) {
-    return "bg-primary/70 text-gray-100 dark:opacity-70";
+    return "bg-primary/70 text-gray-100 dark:bg-primary-lighter/40";
   } else {
-    return "bg-primary/50 text-gray-100 dark:opacity-50";
+    return "bg-primary/50 text-gray-100 dark:bg-primary-lighter/20";
   }
 };
 
