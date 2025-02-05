@@ -137,10 +137,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		orders = append(orders, "created_ts "+order)
 	}
 	orders = append(orders, "id "+order)
-	if find.Random {
-		orders = append(orders, "RAND()")
-	}
-
 	fields := []string{
 		`memo.id AS id`,
 		`memo.uid AS uid`,
