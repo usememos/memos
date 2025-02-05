@@ -81,7 +81,7 @@ const App = () => {
     const currentLocale = commonContext.locale;
     i18n.changeLanguage(currentLocale);
     document.documentElement.setAttribute("lang", currentLocale);
-    if (currentLocale === "ar") {
+    if (["ar", "fa"].includes(currentLocale)) {
       document.documentElement.setAttribute("dir", "rtl");
     } else {
       document.documentElement.setAttribute("dir", "ltr");

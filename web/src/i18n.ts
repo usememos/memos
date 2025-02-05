@@ -10,6 +10,7 @@ export const locales = orderBy([
   "en",
   "en-GB",
   "es",
+  "fa",
   "fr",
   "hi",
   "hr",
