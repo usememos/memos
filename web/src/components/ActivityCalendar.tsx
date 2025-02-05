@@ -17,15 +17,15 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
   if (count === 0) {
     return "";
   }
-  if (count >= 3) {
-    const ratio = count / maxCount;
-    if (ratio > 0.7) {
-      return "bg-primary-darker/80 text-gray-100 dark:opacity-80";
-    } else if (ratio > 0.4) {
-      return "bg-primary/80 text-gray-100 dark:opacity-80";
-    }
+  const ratio = count / maxCount;
+  if (ratio > 0.75) {
+    return "bg-primary-darker/90 text-gray-100 dark:bg-primary-lighter/80";
+  } else if (ratio > 0.5) {
+    return "bg-primary-darker/70 text-gray-100 dark:bg-primary-lighter/60";
+  } else if (ratio > 0.25) {
+    return "bg-primary/70 text-gray-100 dark:bg-primary-lighter/40";
   } else {
-    return "bg-primary/70 text-gray-100 dark:opacity-70";
+    return "bg-primary/50 text-gray-100 dark:bg-primary-lighter/20";
   }
 };
 
