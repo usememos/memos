@@ -73,6 +73,18 @@ const ActivityCalendar = (props: Props) => {
       ))}
       {days.map((item, index) => {
         const date = dayjs(`${year}-${month + 1}-${item.day}`).format("YYYY-MM-DD");
+
+        if (!item.isCurrentMonth) {
+          return (
+            <div
+              key={`${date}-${index}`}
+              className={cn("w-6 h-6 text-xs flex justify-center items-center cursor-default", "opacity-60 text-gray-400")}
+            >
+              {item.day}
+            </div>
+          );
+        }
+
         const count = item.isCurrentMonth ? data[date] || 0 : 0;
         const isToday = dayjs().format("YYYY-MM-DD") === date;
         const tooltipText =
@@ -89,13 +101,12 @@ const ActivityCalendar = (props: Props) => {
           <Tooltip className="shrink-0" key={`${date}-${index}`} title={tooltipText} placement="top" arrow>
             <div
               className={cn(
-                "w-6 h-6 text-xs rounded-lg flex justify-center items-center border cursor-default",
-                "text-gray-400",
-                item.isCurrentMonth ? getCellAdditionalStyles(count, maxCount) : "opacity-60",
+                "w-6 h-6 text-xs flex justify-center items-center cursor-default",
+                "rounded-lg border-2 text-gray-400",
+                item.isCurrentMonth && getCellAdditionalStyles(count, maxCount),
                 item.isCurrentMonth && isToday && "border-zinc-400",
-                item.isCurrentMonth && isSelected && "font-bold border-zinc-400",
+                item.isCurrentMonth && isSelected && "font-medium border-zinc-400",
                 item.isCurrentMonth && !isToday && !isSelected && "border-transparent",
-                !item.isCurrentMonth && "border-transparent",
               )}
               onClick={() => count && onClick && onClick(date)}
             >

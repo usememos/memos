@@ -183,10 +183,12 @@ const MemoActionMenu = (props: Props) => {
             </MenuItem>
           </>
         )}
-        <MenuItem onClick={handleCopyLink}>
-          <CopyIcon className="w-4 h-auto" />
-          {t("memo.copy-link")}
-        </MenuItem>
+        {!isArchived && (
+          <MenuItem onClick={handleCopyLink}>
+            <CopyIcon className="w-4 h-auto" />
+            {t("memo.copy-link")}
+          </MenuItem>
+        )}
         {!readonly && (
           <>
             {!isArchived && hasCompletedTaskList && (

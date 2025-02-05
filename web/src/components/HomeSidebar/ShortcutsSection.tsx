@@ -45,7 +45,7 @@ const ShortcutsSection = () => {
               className="shrink-0 w-full text-sm rounded-md leading-6 flex flex-row justify-between items-center select-none gap-2 text-gray-600 dark:text-gray-400 dark:border-zinc-800"
             >
               <span
-                className={cn("truncate cursor-pointer dark:opacity-80", selected && "font-medium underline")}
+                className={cn("truncate cursor-pointer dark:opacity-80", selected && "text-primary font-medium underline")}
                 onClick={() => (selected ? memoFilterStore.setShortcut(undefined) : memoFilterStore.setShortcut(shortcut.id))}
               >
                 {shortcut.title}

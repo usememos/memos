@@ -140,13 +140,20 @@ const MemberSection = () => {
       <div className="w-auto flex flex-col justify-start items-start gap-2 border rounded-md py-2 px-3 dark:border-zinc-700">
         <div className="flex flex-col justify-start items-start gap-1">
           <span>{t("common.username")}</span>
-          <Input type="text" placeholder={t("common.username")} value={state.creatingUser.username} onChange={handleUsernameInputChange} />
+          <Input
+            type="text"
+            placeholder={t("common.username")}
+            autoComplete="off"
+            value={state.creatingUser.username}
+            onChange={handleUsernameInputChange}
+          />
         </div>
         <div className="flex flex-col justify-start items-start gap-1">
           <span>{t("common.password")}</span>
           <Input
             type="password"
             placeholder={t("common.password")}
+            autoComplete="off"
             value={state.creatingUser.password}
             onChange={handlePasswordInputChange}
           />
