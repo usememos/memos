@@ -43,9 +43,6 @@ const Home = () => {
         conditions.push(`display_time_before == ${timestampAfter + 60 * 60 * 24}`);
       }
     }
-    if (memoFilterStore.orderByTimeAsc) {
-      conditions.push(`order_by_time_asc == true`);
-    }
     if (contentSearch.length > 0) {
       conditions.push(`content_search == [${contentSearch.join(", ")}]`);
     }
