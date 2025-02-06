@@ -1,4 +1,4 @@
-name: build-and-push-release-image
+name: Build and Push Release Image by Branch
 
 on:
   push:
@@ -55,8 +55,6 @@ jobs:
             type=semver,pattern={{version}},value=${{ env.VERSION }}
             type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
             type=raw,value=stable
-          flavor: |
-            latest=true
           labels: |
             org.opencontainers.image.version=${{ env.VERSION }}
 
