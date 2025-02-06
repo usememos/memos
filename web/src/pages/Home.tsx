@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import { useMemo } from "react";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import MemoEditor from "@/components/MemoEditor";
-import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
@@ -14,7 +13,7 @@ import { Memo } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 
 const Home = () => {
-  const { md } = useResponsiveWidth();
+  const { md, lg } = useResponsiveWidth();
   const user = useCurrentUser();
   const userStore = useUserStore();
   const memoFilterStore = useMemoFilterStore();
@@ -53,16 +52,26 @@ const Home = () => {
   }, [user, memoFilterStore.filters, memoFilterStore.orderByTimeAsc]);
 
   return (
-    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
+    <section className="@container w-full min-h-full flex flex-col justify-start items-center">
       {!md && (
         <MobileHeader>
           <HomeSidebarDrawer />
         </MobileHeader>
       )}
-      <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
-        <div className={cn(md ? "w-[calc(100%-15rem)]" : "w-full")}>
+      <div className={cn("w-full min-h-full flex flex-row justify-start items-start")}>
+        {md && (
+          <div
+            className={cn(
+              "sticky top-0 left-0 shrink-0 h-[100svh] transition-all",
+              "border-r border-gray-200 dark:border-zinc-800",
+              lg ? "px-5 w-72" : "px-4 w-56",
+            )}
+          >
+            <HomeSidebar className={cn("py-6")} />
+          </div>
+        )}
+        <div className={cn("w-full mx-auto px-4 sm:px-6 sm:pt-3 md:pt-6 pb-8", md && "max-w-3xl")}>
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
-          <MemoFilters />
           <div className="flex flex-col justify-start items-start w-full max-w-full">
             <PagedMemoList
               renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
@@ -83,11 +92,6 @@ const Home = () => {
             />
           </div>
         </div>
-        {md && (
-          <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">
-            <HomeSidebar className="py-6" />
-          </div>
-        )}
       </div>
     </section>
   );

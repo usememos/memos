@@ -4,6 +4,7 @@ import StatisticsView from "@/components/StatisticsView";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoList, useUserStatsStore } from "@/store/v1";
 import { cn } from "@/utils";
+import MemoFilters from "../MemoFilters";
 import ShortcutsSection from "./ShortcutsSection";
 import TagsSection from "./TagsSection";
 
@@ -25,13 +26,9 @@ const HomeSidebar = (props: Props) => {
   );
 
   return (
-    <aside
-      className={cn(
-        "relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start",
-        props.className,
-      )}
-    >
+    <aside className={cn("relative w-full h-full overflow-auto hide-scrollbar flex flex-col justify-start items-start", props.className)}>
       <SearchBar />
+      <MemoFilters />
       <StatisticsView />
       <ShortcutsSection />
       <TagsSection />

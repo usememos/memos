@@ -42,7 +42,7 @@ const StatisticsView = () => {
   };
 
   return (
-    <div className="group w-full mt-4 space-y-1 text-gray-500 dark:text-gray-400">
+    <div className="group w-full mt-3 space-y-1 text-gray-500 dark:text-gray-400">
       <div className="w-full mb-1 flex flex-row justify-between items-center gap-1">
         <div className="relative text-sm font-medium inline-flex flex-row items-center w-auto dark:text-gray-400 truncate">
           <span className="truncate">

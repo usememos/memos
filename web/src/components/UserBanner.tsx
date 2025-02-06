@@ -37,7 +37,7 @@ const UserBanner = (props: Props) => {
         <MenuButton disabled={!user} slots={{ root: "div" }}>
           <div
             className={cn(
-              "py-1 my-1 w-auto flex flex-row justify-start items-center cursor-pointer text-gray-800 dark:text-gray-400",
+              "py-1 w-auto flex flex-row justify-start items-center cursor-pointer text-gray-800 dark:text-gray-400",
               collapsed ? "px-1" : "px-3",
             )}
           >
