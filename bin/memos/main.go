@@ -141,17 +141,20 @@ func init() {
 }
 
 func printGreetings(profile *profile.Profile) {
+	if profile.IsDev() {
+		println("Development mode is enabled")
+		println("DSN: ", profile.DSN)
+	}
 	fmt.Printf(`---
 Server profile
 version: %s
 data: %s
-dsn: %s
 addr: %s
 port: %d
 mode: %s
 driver: %s
 ---
-`, profile.Version, profile.Data, profile.DSN, profile.Addr, profile.Port, profile.Mode, profile.Driver)
+`, profile.Version, profile.Data, profile.Addr, profile.Port, profile.Mode, profile.Driver)
 
 	print(greetingBanner)
 	if len(profile.Addr) == 0 {
