@@ -3,6 +3,8 @@ import dayjs from "dayjs";
 import { countBy } from "lodash-es";
 import { CheckCircleIcon, ChevronDownIcon, ChevronUpIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
 import { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import i18n from "@/i18n";
 import { useMemoFilterStore, useUserStatsStore } from "@/store/v1";
@@ -41,13 +43,30 @@ const StatisticsView = () => {
     memoFilterStore.addFilter({ factor: "displayTime", value: date });
   };
 
+  const currentMonth = dayjs(visibleMonthString).toDate();
+
   return (
     <div className="group w-full mt-3 space-y-1 text-gray-500 dark:text-gray-400">
       <div className="w-full mb-1 flex flex-row justify-between items-center gap-1">
-        <div className="relative text-sm font-medium inline-flex flex-row items-center w-auto dark:text-gray-400 truncate">
-          <span className="truncate">
-            {dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}
-          </span>
+        <div className="relative text-sm font-medium inline-flex flex-row items-center w-auto dark:text-gray-400">
+          <DatePicker
+            selected={currentMonth}
+            onChange={(date) => {
+              if (date) {
+                setVisibleMonthString(dayjs(date).format("YYYY-MM"));
+              }
+            }}
+            dateFormat="MMMM yyyy"
+            showMonthYearPicker
+            showFullMonthYearPicker
+            customInput={
+              <span className="cursor-pointer hover:text-gray-600 dark:hover:text-gray-300">
+                {dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}
+              </span>
+            }
+            popperPlacement="bottom-start"
+            calendarClassName="!bg-white !border-gray-200 !font-normal !shadow-lg"
+          />
         </div>
         <div className="flex justify-end items-center shrink-0 gap-1">
           <span
