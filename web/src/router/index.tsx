@@ -17,6 +17,7 @@ import Setting from "@/pages/Setting";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import UserProfile from "@/pages/UserProfile";
+import MemoDetailRedirect from "./MemoDetailRedirect";
 
 export enum Routes {
   ROOT = "/",
@@ -85,7 +86,7 @@ const router = createBrowserRouter([
             element: <Explore />,
           },
           {
-            path: "m/:uid",
+            path: "memos/:uid",
             element: <MemoDetail />,
           },
           {
@@ -95,6 +96,11 @@ const router = createBrowserRouter([
           {
             path: Routes.ABOUT,
             element: <About />,
+          },
+          // Redirect old path to new path.
+          {
+            path: "m/:uid",
+            element: <MemoDetailRedirect />,
           },
           {
             path: "403",

@@ -13,7 +13,7 @@ import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_sett
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
-import { convertVisibilityToString, memoLink } from "@/utils/memo";
+import { convertVisibilityToString } from "@/utils/memo";
 import { isSuperUser } from "@/utils/user";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
@@ -61,7 +61,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
   const isArchived = memo.state === State.ARCHIVED;
   const readonly = memo.creator !== user?.name && !isSuperUser(user);
-  const isInMemoDetailPage = location.pathname.startsWith(memoLink(memo.name));
+  const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
   const parentPage = props.parentPage || location.pathname;
 
   // Initial related data: creator.
@@ -71,7 +71,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   }, []);
 
   const handleGotoMemoDetailPage = useCallback(() => {
-    navigateTo(memoLink(memo.name), {
+    navigateTo(`/${memo.name}`, {
       state: {
         from: parentPage,
       },
@@ -192,7 +192,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     "flex flex-row justify-start items-center hover:opacity-70",
                     commentAmount === 0 && "invisible group-hover:visible",
                   )}
-                  to={`${memoLink(memo.name)}#comments`}
+                  to={`/${memo.name}#comments`}
                   viewTransition
                   state={{
                     from: parentPage,

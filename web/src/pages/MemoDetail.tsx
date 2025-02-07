@@ -17,7 +17,6 @@ import { Memo } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
-import { memoLink } from "@/utils/memo";
 
 const MemoDetail = () => {
   const t = useTranslate();
@@ -98,7 +97,7 @@ const MemoDetail = () => {
             <div className="w-auto inline-block mb-2">
               <Link
                 className="px-3 py-1 border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
-                to={memoLink(parentMemo.name)}
+                to={`/${parentMemo.name}`}
                 state={locationState}
                 viewTransition
               >
