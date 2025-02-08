@@ -2284,9 +2284,6 @@ definitions:
       enableLocation:
         type: boolean
         description: enable_location enables setting location for memo.
-      defaultVisibility:
-        type: string
-        description: default_visibility set the global memos default visibility.
       reactions:
         type: array
         items:

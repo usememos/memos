@@ -1,16 +1,13 @@
-import { Switch, Select, Option, Chip, ChipDelete } from "@mui/joy";
+import { Switch, Chip, ChipDelete } from "@mui/joy";
 import { Button, Input } from "@usememos/mui";
 import { isEqual, uniq } from "lodash-es";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
-import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
-import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
-import VisibilityIcon from "../VisibilityIcon";
 
 const MemoRelatedSettings = () => {
   const t = useTranslate();
@@ -124,25 +121,6 @@ const MemoRelatedSettings = () => {
           defaultValue={memoRelatedSetting.contentLengthLimit}
           onBlur={(event) => updatePartialSetting({ contentLengthLimit: Number(event.target.value) })}
         />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>
-        <Select
-          className="!min-w-fit"
-          value={memoRelatedSetting.defaultVisibility}
-          startDecorator={<VisibilityIcon visibility={convertVisibilityFromString(memoRelatedSetting.defaultVisibility)} />}
-          onChange={(_, visibility) => {
-            updatePartialSetting({ defaultVisibility: visibility || Visibility.PRIVATE });
-          }}
-        >
-          {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]
-            .map((v) => convertVisibilityToString(v))
-            .map((item) => (
-              <Option key={item} value={item} className="whitespace-nowrap">
-                {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
-              </Option>
-            ))}
-        </Select>
       </div>
       <div className="w-full">
         <span className="truncate">{t("setting.memo-related-settings.reactions")}</span>
