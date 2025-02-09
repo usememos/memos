@@ -202,13 +202,13 @@
         "light": "Завжди світлий",
         "system": "Слідувати системі"
       },
-      "member": "Член",
-      "member-list": "Список членів",
+      "member": "Учасник",
+      "member-list": "Список учасників",
       "member-section": {
-        "archive-member": "Архівувати члена",
+        "archive-member": "Архівувати учасника",
         "archive-warning": "Ви впевнені, що хочете архівувати {{username}}?",
-        "create-a-member": "Створити члена",
-        "delete-member": "Видалити члена",
+        "create-a-member": "Створити учасника",
+        "delete-member": "Видалити учасника",
         "delete-warning": "Ви впевнені, що хочете видалити {{username}}? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ"
       },
       "my-account": "Мій обліковий запис",
