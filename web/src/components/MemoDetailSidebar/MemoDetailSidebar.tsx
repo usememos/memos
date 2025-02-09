@@ -34,7 +34,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
         )}
         <div className="w-full flex flex-col">
           <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
-            <span>Created at</span>
+            <span>{t("common.created-at")}</span>
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">{memo.createTime?.toLocaleString()}</p>
         </div>
