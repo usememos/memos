@@ -76,9 +76,7 @@
     "username": "用户名",
     "version": "版本",
     "visibility": "可见性",
-    "yourself": "您自己",
-    "create-at": "创建时间",
-    "expire-at": "过期时间"
+    "yourself": "您自己"
   },
   "days": {
     "fri": "五",
@@ -313,7 +311,8 @@
         "expires-at": "过期时间",
         "duration-never": "从不",
         "duration-8h": "8 小时",
-        "duration-1m": "1 个月"
+        "duration-1m": "1 个月",
+        "properties": "属性"
       }
     }
   },
