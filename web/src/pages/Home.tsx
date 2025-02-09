@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import MemoEditor from "@/components/MemoEditor";
@@ -7,17 +8,17 @@ import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { useMemoFilterStore, useUserStore } from "@/store/v1";
+import { useMemoFilterStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 
-const Home = () => {
+const Home = observer(() => {
   const { md, lg } = useResponsiveWidth();
   const user = useCurrentUser();
-  const userStore = useUserStore();
   const memoFilterStore = useMemoFilterStore();
-  const selectedShortcut = userStore.shortcuts.find((shortcut) => shortcut.id === memoFilterStore.shortcut);
+  const selectedShortcut = userStore.state.shortcuts.find((shortcut) => shortcut.id === memoFilterStore.shortcut);
 
   const memoListFilter = useMemo(() => {
     const conditions = [];
@@ -95,6 +96,6 @@ const Home = () => {
       </div>
     </section>
   );
-};
+});
 
 export default Home;

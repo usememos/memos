@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
-import { useUserStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { Shortcut } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateUUID } from "@/utils/uuid";
@@ -20,7 +20,6 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const t = useTranslate();
   const user = useCurrentUser();
-  const userStore = useUserStore();
   const [shortcut, setShortcut] = useState(Shortcut.fromPartial({ ...props.shortcut }));
   const requestState = useLoading(false);
   const isCreating = !props.shortcut;

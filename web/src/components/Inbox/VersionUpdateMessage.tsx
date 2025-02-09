@@ -3,7 +3,8 @@ import { ArrowUpIcon, InboxIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
-import { activityNamePrefix, useInboxStore } from "@/store/v1";
+import { activityNamePrefix } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { Activity } from "@/types/proto/api/v1/activity_service";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { cn } from "@/utils";
@@ -15,7 +16,6 @@ interface Props {
 
 const VersionUpdateMessage = ({ inbox }: Props) => {
   const t = useTranslate();
-  const inboxStore = useInboxStore();
   const [activity, setActivity] = useState<Activity | undefined>(undefined);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
   };
 
   const handleArchiveMessage = async (silence = false) => {
-    await inboxStore.updateInbox(
+    await userStore.updateInbox(
       {
         name: inbox.name,
         status: Inbox_Status.ARCHIVED,

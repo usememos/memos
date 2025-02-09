@@ -2,7 +2,7 @@ import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useUserStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
@@ -14,7 +14,6 @@ interface Props extends DialogProps {
 const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
   const { user, destroy } = props;
   const t = useTranslate();
-  const userStore = useUserStore();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 

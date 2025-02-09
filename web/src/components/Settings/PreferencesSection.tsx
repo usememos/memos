@@ -1,6 +1,6 @@
 import { Divider, Option, Select } from "@mui/joy";
-import { useCommonContext } from "@/layouts/CommonContextProvider";
-import { useUserStore } from "@/store/v1";
+import { observer } from "mobx-react-lite";
+import { userStore, workspaceStore } from "@/store/v2";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -10,14 +10,12 @@ import LocaleSelect from "../LocaleSelect";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
 
-const PreferencesSection = () => {
+const PreferencesSection = observer(() => {
   const t = useTranslate();
-  const commonContext = useCommonContext();
-  const userStore = useUserStore();
-  const setting = userStore.userSetting as UserSetting;
+  const setting = userStore.state.userSetting as UserSetting;
 
   const handleLocaleSelectChange = async (locale: Locale) => {
-    commonContext.setLocale(locale);
+    workspaceStore.setPartial({ locale });
     await userStore.updateUserSetting(
       {
         locale,
@@ -27,7 +25,7 @@ const PreferencesSection = () => {
   };
 
   const handleAppearanceSelectChange = async (appearance: Appearance) => {
-    commonContext.setAppearance(appearance);
+    workspaceStore.setPartial({ appearance });
     await userStore.updateUserSetting(
       {
         appearance,
@@ -84,6 +82,6 @@ const PreferencesSection = () => {
       <WebhookSection />
     </div>
   );
-};
+});
 
 export default PreferencesSection;

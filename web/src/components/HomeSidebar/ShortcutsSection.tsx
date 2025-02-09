@@ -1,20 +1,21 @@
 import { Dropdown, Menu, MenuButton, MenuItem, Tooltip } from "@mui/joy";
 import { Edit3Icon, MoreVerticalIcon, TrashIcon, PlusIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { userServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoFilterStore, useUserStore } from "@/store/v1";
+import { useMemoFilterStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { Shortcut } from "@/types/proto/api/v1/user_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import showCreateShortcutDialog from "../CreateShortcutDialog";
 
-const ShortcutsSection = () => {
+const ShortcutsSection = observer(() => {
   const t = useTranslate();
   const user = useCurrentUser();
-  const userStore = useUserStore();
   const memoFilterStore = useMemoFilterStore();
-  const shortcuts = userStore.getState().shortcuts;
+  const shortcuts = userStore.state.shortcuts;
 
   useAsyncEffect(async () => {
     await userStore.fetchShortcuts();
@@ -71,6 +72,6 @@ const ShortcutsSection = () => {
       </div>
     </div>
   );
-};
+});
 
 export default ShortcutsSection;

@@ -1,19 +1,19 @@
 import { Button, Checkbox, Input } from "@usememos/mui";
 import { LoaderIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useUserStore } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { useTranslate } from "@/utils/i18n";
 
-const PasswordSignInForm = () => {
+const PasswordSignInForm = observer(() => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const commonContext = useCommonContext();
   const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
@@ -21,11 +21,11 @@ const PasswordSignInForm = () => {
   const [remember, setRemember] = useState(true);
 
   useEffect(() => {
-    if (commonContext.profile.mode === "demo") {
+    if (workspaceStore.state.profile.mode === "demo") {
       setUsername("yourselfhosted");
       setPassword("yourselfhosted");
     }
-  }, [commonContext.profile.mode]);
+  }, [workspaceStore.state.profile.mode]);
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -117,6 +117,6 @@ const PasswordSignInForm = () => {
       </div>
     </form>
   );
-};
+});
 
 export default PasswordSignInForm;
