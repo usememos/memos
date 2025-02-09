@@ -1,10 +1,11 @@
 import { Tooltip } from "@mui/joy";
 import { ArchiveIcon, BellIcon, Globe2Icon, HomeIcon, LogInIcon, PaperclipIcon, SettingsIcon, SmileIcon, User2Icon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Routes } from "@/router";
-import { useInboxStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -22,30 +23,18 @@ interface Props {
   className?: string;
 }
 
-const Navigation = (props: Props) => {
+const Navigation = observer((props: Props) => {
   const { collapsed, className } = props;
   const t = useTranslate();
   const user = useCurrentUser();
-  const inboxStore = useInboxStore();
-  const hasUnreadInbox = inboxStore.inboxes.some((inbox) => inbox.status === Inbox_Status.UNREAD);
+  const hasUnreadInbox = userStore.state.inboxes.some((inbox) => inbox.status === Inbox_Status.UNREAD);
 
   useEffect(() => {
     if (!user) {
       return;
     }
 
-    inboxStore.fetchInboxes();
-    // Fetch inboxes every 5 minutes.
-    const timer = setInterval(
-      async () => {
-        await inboxStore.fetchInboxes();
-      },
-      1000 * 60 * 5,
-    );
-
-    return () => {
-      clearInterval(timer);
-    };
+    userStore.fetchInboxes();
   }, []);
 
   const homeNavLink: NavLinkItem = {
@@ -147,6 +136,6 @@ const Navigation = (props: Props) => {
       </div>
     </header>
   );
-};
+});
 
 export default Navigation;

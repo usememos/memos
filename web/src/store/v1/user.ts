@@ -1,21 +1,19 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { authServiceClient, userServiceClient } from "@/grpcweb";
-import { Shortcut, User, UserSetting, User_Role } from "@/types/proto/api/v1/user_service";
+import { User, UserSetting, User_Role } from "@/types/proto/api/v1/user_service";
 
 interface State {
   userMapByName: Record<string, User>;
   // The name of current user. Format: `users/${uid}`
   currentUser?: string;
   userSetting?: UserSetting;
-  shortcuts: Shortcut[];
 }
 
 const getDefaultState = (): State => ({
   userMapByName: {},
   currentUser: undefined,
   userSetting: undefined,
-  shortcuts: [],
 });
 
 const getDefaultUserSetting = () => {
@@ -130,14 +128,6 @@ export const useUserStore = create(
       });
       set({ userSetting: updatedUserSetting });
       return updatedUserSetting;
-    },
-    fetchShortcuts: async () => {
-      const { currentUser } = get();
-      if (!currentUser) {
-        return;
-      }
-      const { shortcuts } = await userServiceClient.listShortcuts({ parent: currentUser });
-      set({ shortcuts });
     },
   })),
 );

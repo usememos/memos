@@ -9,8 +9,7 @@ import (
 type ActivityType string
 
 const (
-	ActivityTypeMemoComment   ActivityType = "MEMO_COMMENT"
-	ActivityTypeVersionUpdate ActivityType = "VERSION_UPDATE"
+	ActivityTypeMemoComment ActivityType = "MEMO_COMMENT"
 )
 
 func (t ActivityType) String() string {

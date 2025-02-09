@@ -1,10 +1,8 @@
 import { CssVarsProvider } from "@mui/joy";
+import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";
-import CommonContextProvider from "@/layouts/CommonContextProvider";
-import store from "@/store";
-import { useDialogStore } from "@/store/module";
+import dialogStore from "@/store/v2/dialog";
 import theme from "@/theme";
 import { cn } from "@/utils";
 import "@/less/base-dialog.less";
@@ -19,17 +17,16 @@ interface Props extends DialogConfig, DialogProps {
   children: React.ReactNode;
 }
 
-const BaseDialog: React.FC<Props> = (props: Props) => {
+const BaseDialog = observer((props: Props) => {
   const { children, className, clickSpaceDestroy, dialogName, destroy } = props;
-  const dialogStore = useDialogStore();
   const dialogContainerRef = useRef<HTMLDivElement>(null);
-  const dialogIndex = dialogStore.state.dialogStack.findIndex((item) => item === dialogName);
+  const dialogIndex = dialogStore.state.stack.findIndex((item) => item === dialogName);
 
   useEffect(() => {
-    dialogStore.pushDialogStack(dialogName);
+    dialogStore.pushDialog(dialogName);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Escape") {
-        if (dialogName === dialogStore.topDialogStack()) {
+        if (dialogName === dialogStore.topDialog) {
           destroy();
         }
       }
@@ -62,7 +59,7 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
       </div>
     </div>
   );
-};
+});
 
 export function generateDialog<T extends DialogProps>(
   config: DialogConfig,
@@ -87,19 +84,15 @@ export function generateDialog<T extends DialogProps>(
     destroy: cbs.destroy,
   } as T;
 
-  const Fragment = (
-    <Provider store={store}>
-      <CssVarsProvider theme={theme}>
-        <CommonContextProvider>
-          <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
-            <DialogComponent {...dialogProps} />
-          </BaseDialog>
-        </CommonContextProvider>
-      </CssVarsProvider>
-    </Provider>
-  );
+  const Fragment = observer(() => (
+    <CssVarsProvider theme={theme}>
+      <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
+        <DialogComponent {...dialogProps} />
+      </BaseDialog>
+    </CssVarsProvider>
+  ));
 
-  dialog.render(Fragment);
+  dialog.render(<Fragment />);
 
   return cbs;
 }

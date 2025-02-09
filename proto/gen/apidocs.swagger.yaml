@@ -305,7 +305,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: "The parent is the owner of the memos.\r\nIf not specified or `users/-`, it will list all memos."
+          description: |-
+            The parent is the owner of the memos.
+            If not specified or `users/-`, it will list all memos.
           in: query
           required: false
           type: string
@@ -316,12 +318,16 @@ paths:
           type: integer
           format: int32
         - name: pageToken
-          description: "A page token, received from a previous `ListMemos` call.\r\nProvide this to retrieve the subsequent page."
+          description: |-
+            A page token, received from a previous `ListMemos` call.
+            Provide this to retrieve the subsequent page.
           in: query
           required: false
           type: string
         - name: state
-          description: "The state of the memos to list.\r\nDefault to `NORMAL`. Set to `ARCHIVED` to list archived memos."
+          description: |-
+            The state of the memos to list.
+            Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
           in: query
           required: false
           type: string
@@ -331,12 +337,16 @@ paths:
             - ARCHIVED
           default: STATE_UNSPECIFIED
         - name: sort
-          description: "What field to sort the results by.\r\nDefault to display_time."
+          description: |-
+            What field to sort the results by.
+            Default to display_time.
           in: query
           required: false
           type: string
         - name: direction
-          description: "The direction to sort the results by.\r\nDefault to DESC."
+          description: |-
+            The direction to sort the results by.
+            Default to DESC.
           in: query
           required: false
           type: string
@@ -346,12 +356,16 @@ paths:
             - DESC
           default: DIRECTION_UNSPECIFIED
         - name: filter
-          description: "Filter is a CEL expression to filter memos.\r\nRefer to `Shortcut.filter`."
+          description: |-
+            Filter is a CEL expression to filter memos.
+            Refer to `Shortcut.filter`.
           in: query
           required: false
           type: string
         - name: oldFilter
-          description: "[Deprecated] Old filter contains some specific conditions to filter memos.\r\nFormat: \"creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']\""
+          description: |-
+            [Deprecated] Old filter contains some specific conditions to filter memos.
+            Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -396,7 +410,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: id
-          description: "The id of the reaction.\r\nRefer to the `Reaction.id`."
+          description: |-
+            The id of the reaction.
+            Refer to the `Reaction.id`.
           in: path
           required: true
           type: integer
@@ -810,13 +826,17 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: memo.name
-          description: "The name of the memo.\r\nFormat: memos/{memo}, memo is the user defined id or uuid."
+          description: |-
+            The name of the memo.
+            Format: memos/{memo}, memo is the user defined id or uuid.
           in: path
           required: true
           type: string
           pattern: memos/[^/]+
         - name: memo
-          description: "The memo to update.\r\nThe `name` field is required."
+          description: |-
+            The memo to update.
+            The `name` field is required.
           in: body
           required: true
           schema:
@@ -826,7 +846,9 @@ paths:
                 $ref: '#/definitions/v1State'
               creator:
                 type: string
-                title: "The name of the creator.\r\nFormat: users/{user}"
+                title: |-
+                  The name of the creator.
+                  Format: users/{user}
               createTime:
                 type: string
                 format: date-time
@@ -874,7 +896,9 @@ paths:
                 readOnly: true
               parent:
                 type: string
-                title: "The name of the parent memo.\r\nFormat: memos/{id}"
+                title: |-
+                  The name of the parent memo.
+                  Format: memos/{id}
                 readOnly: true
               snippet:
                 type: string
@@ -883,7 +907,9 @@ paths:
               location:
                 $ref: '#/definitions/apiv1Location'
                 description: The location of the memo.
-            title: "The memo to update.\r\nThe `name` field is required."
+            title: |-
+              The memo to update.
+              The `name` field is required.
             required:
               - memo
       tags:
@@ -1440,7 +1466,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: "The parent is the owner of the memos.\r\nIf not specified or `users/-`, it will list all memos."
+          description: |-
+            The parent is the owner of the memos.
+            If not specified or `users/-`, it will list all memos.
           in: path
           required: true
           type: string
@@ -1452,12 +1480,16 @@ paths:
           type: integer
           format: int32
         - name: pageToken
-          description: "A page token, received from a previous `ListMemos` call.\r\nProvide this to retrieve the subsequent page."
+          description: |-
+            A page token, received from a previous `ListMemos` call.
+            Provide this to retrieve the subsequent page.
           in: query
           required: false
           type: string
         - name: state
-          description: "The state of the memos to list.\r\nDefault to `NORMAL`. Set to `ARCHIVED` to list archived memos."
+          description: |-
+            The state of the memos to list.
+            Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
           in: query
           required: false
           type: string
@@ -1467,12 +1499,16 @@ paths:
             - ARCHIVED
           default: STATE_UNSPECIFIED
         - name: sort
-          description: "What field to sort the results by.\r\nDefault to display_time."
+          description: |-
+            What field to sort the results by.
+            Default to display_time.
           in: query
           required: false
           type: string
         - name: direction
-          description: "The direction to sort the results by.\r\nDefault to DESC."
+          description: |-
+            The direction to sort the results by.
+            Default to DESC.
           in: query
           required: false
           type: string
@@ -1482,12 +1518,16 @@ paths:
             - DESC
           default: DIRECTION_UNSPECIFIED
         - name: filter
-          description: "Filter is a CEL expression to filter memos.\r\nRefer to `Shortcut.filter`."
+          description: |-
+            Filter is a CEL expression to filter memos.
+            Refer to `Shortcut.filter`.
           in: query
           required: false
           type: string
         - name: oldFilter
-          description: "[Deprecated] Old filter contains some specific conditions to filter memos.\r\nFormat: \"creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']\""
+          description: |-
+            [Deprecated] Old filter contains some specific conditions to filter memos.
+            Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
           in: query
           required: false
           type: string
@@ -1625,7 +1665,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: "The parent, who owns the tags.\r\nFormat: memos/{id}. Use \"memos/-\" to delete all tags."
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to delete all tags.
           in: path
           required: true
           type: string
@@ -1656,7 +1698,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: "The parent, who owns the tags.\r\nFormat: memos/{id}. Use \"memos/-\" to rename all tags."
+          description: |-
+            The parent, who owns the tags.
+            Format: memos/{id}. Use "memos/-" to rename all tags.
           in: path
           required: true
           type: string
@@ -1771,7 +1815,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user.name
-          description: "The name of the user.\r\nFormat: users/{id}, id is the system generated auto-incremented id."
+          description: |-
+            The name of the user.
+            Format: users/{id}, id is the system generated auto-incremented id.
           in: path
           required: true
           type: string
@@ -2046,14 +2092,6 @@ definitions:
     properties:
       memoComment:
         $ref: '#/definitions/apiv1ActivityMemoCommentPayload'
-      versionUpdate:
-        $ref: '#/definitions/apiv1ActivityVersionUpdatePayload'
-  apiv1ActivityVersionUpdatePayload:
-    type: object
-    properties:
-      version:
-        type: string
-        description: The updated version of memos.
   apiv1FieldMapping:
     type: object
     properties:
@@ -2106,13 +2144,17 @@ definitions:
     properties:
       name:
         type: string
-        description: "The name of the memo.\r\nFormat: memos/{memo}, memo is the user defined id or uuid."
+        description: |-
+          The name of the memo.
+          Format: memos/{memo}, memo is the user defined id or uuid.
         readOnly: true
       state:
         $ref: '#/definitions/v1State'
       creator:
         type: string
-        title: "The name of the creator.\r\nFormat: users/{user}"
+        title: |-
+          The name of the creator.
+          Format: users/{user}
       createTime:
         type: string
         format: date-time
@@ -2160,7 +2202,9 @@ definitions:
         readOnly: true
       parent:
         type: string
-        title: "The name of the parent memo.\r\nFormat: memos/{id}"
+        title: |-
+          The name of the parent memo.
+          Format: memos/{id}
         readOnly: true
       snippet:
         type: string
@@ -2738,7 +2782,9 @@ definitions:
           $ref: '#/definitions/apiv1Memo'
       nextPageToken:
         type: string
-        description: "A token, which can be sent as `page_token` to retrieve the next page.\r\nIf this field is omitted, there are no subsequent pages."
+        description: |-
+          A token, which can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
   v1ListNode:
     type: object
     properties:
@@ -3156,7 +3202,9 @@ definitions:
     properties:
       name:
         type: string
-        description: "The name of the user.\r\nFormat: users/{id}, id is the system generated auto-incremented id."
+        description: |-
+          The name of the user.
+          Format: users/{id}, id is the system generated auto-incremented id.
       role:
         $ref: '#/definitions/UserRole'
       username:
@@ -3205,7 +3253,9 @@ definitions:
         items:
           type: string
           format: date-time
-        description: "The timestamps when the memos were displayed.\r\nWe should return raw data to the client, and let the client format the data with the user's timezone."
+        description: |-
+          The timestamps when the memos were displayed.
+          We should return raw data to the client, and let the client format the data with the user's timezone.
       memoTypeStats:
         $ref: '#/definitions/UserStatsMemoTypeStats'
         description: The stats of memo types.
@@ -3214,7 +3264,9 @@ definitions:
         additionalProperties:
           type: integer
           format: int32
-        title: "The count of tags.\r\nFormat: \"tag1\": 1, \"tag2\": 2"
+        title: |-
+          The count of tags.
+          Format: "tag1": 1, "tag2": 2
   v1Visibility:
     type: string
     enum:

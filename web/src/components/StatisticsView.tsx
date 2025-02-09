@@ -1,7 +1,7 @@
 import { Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
-import { CheckCircleIcon, ChevronDownIcon, ChevronUpIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
+import { CheckCircleIcon, ChevronRightIcon, ChevronLeftIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -60,7 +60,7 @@ const StatisticsView = () => {
             showMonthYearPicker
             showFullMonthYearPicker
             customInput={
-              <span className="cursor-pointer hover:text-gray-600 dark:hover:text-gray-300">
+              <span className="cursor-pointer text-base md:text-lg hover:text-gray-600 dark:hover:text-gray-300">
                 {dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}
               </span>
             }
@@ -73,13 +73,13 @@ const StatisticsView = () => {
             className="cursor-pointer hover:opacity-80"
             onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
           >
-            <ChevronUpIcon className="w-5 h-auto shrink-0 opacity-40" />
+            <ChevronLeftIcon className="w-5 h-auto shrink-0 opacity-40" />
           </span>
           <span
             className="cursor-pointer hover:opacity-80"
             onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
           >
-            <ChevronDownIcon className="w-5 h-auto shrink-0 opacity-40" />
+            <ChevronRightIcon className="w-5 h-auto shrink-0 opacity-40" />
           </span>
         </div>
       </div>

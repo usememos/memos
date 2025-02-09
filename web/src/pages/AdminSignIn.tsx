@@ -1,23 +1,23 @@
+import { observer } from "mobx-react-lite";
 import AppearanceSelect from "@/components/AppearanceSelect";
 import LocaleSelect from "@/components/LocaleSelect";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
-import { useCommonContext } from "@/layouts/CommonContextProvider";
 import { useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 
-const AdminSignIn = () => {
-  const commonContext = useCommonContext();
+const AdminSignIn = observer(() => {
   const workspaceSettingStore = useWorkspaceSettingStore();
   const workspaceGeneralSetting =
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
 
   const handleLocaleSelectChange = (locale: Locale) => {
-    commonContext.setLocale(locale);
+    workspaceStore.setPartial({ locale });
   };
 
   const handleAppearanceSelectChange = (appearance: Appearance) => {
-    commonContext.setAppearance(appearance);
+    workspaceStore.setPartial({ appearance });
   };
 
   return (
@@ -33,11 +33,11 @@ const AdminSignIn = () => {
         <PasswordSignInForm />
       </div>
       <div className="mt-4 flex flex-row items-center justify-center w-full gap-2">
-        <LocaleSelect value={commonContext.locale} onChange={handleLocaleSelectChange} />
-        <AppearanceSelect value={commonContext.appearance as Appearance} onChange={handleAppearanceSelectChange} />
+        <LocaleSelect value={workspaceStore.state.locale} onChange={handleLocaleSelectChange} />
+        <AppearanceSelect value={workspaceStore.state.appearance as Appearance} onChange={handleAppearanceSelectChange} />
       </div>
     </div>
   );
-};
+});
 
 export default AdminSignIn;
