@@ -9,8 +9,11 @@ option go_package = "gen/store";
 
 enum ResourceStorageType {
   RESOURCE_STORAGE_TYPE_UNSPECIFIED = 0;
+  // Resource is stored locally. AKA, local file system.
   LOCAL = 1;
+  // Resource is stored in S3.
   S3 = 2;
+  // Resource is stored in an external storage. The reference is a URL.
   EXTERNAL = 3;
 }
 
