@@ -339,6 +339,7 @@
         "duration-never": "Ніколи",  
         "duration-8h": "8 годин",  
         "duration-1m": "1 місяць"
+        }
       },
       "webhook-section": {
         "title": "Вебхуки",
@@ -392,5 +393,5 @@
       "official-website": "Офіційний вебсайт",  
       "blogs": "Блоги",  
       "documents": "Документи"
-  }
+    }
 }
