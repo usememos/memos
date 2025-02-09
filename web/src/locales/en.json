@@ -80,7 +80,9 @@
     "version": "Version",
     "visibility": "Visibility",
     "yourself": "Yourself",
-    "shortcuts": "Shortcuts"
+    "shortcuts": "Shortcuts",
+    "created-at": "Created At",
+    "properties": "Properties"
   },
   "days": {
     "fri": "Fri",
