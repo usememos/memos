@@ -68,7 +68,6 @@ const userStore = (() => {
   const fetchInboxes = async () => {
     const { inboxes } = await inboxServiceClient.listInboxes({});
     state.inboxes = inboxes;
-    console.log("inboxes", inboxes);
   };
 
   const updateInbox = async (inbox: Partial<Inbox>, updateMask: string[]) => {
