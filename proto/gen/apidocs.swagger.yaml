@@ -2092,14 +2092,6 @@ definitions:
     properties:
       memoComment:
         $ref: '#/definitions/apiv1ActivityMemoCommentPayload'
-      versionUpdate:
-        $ref: '#/definitions/apiv1ActivityVersionUpdatePayload'
-  apiv1ActivityVersionUpdatePayload:
-    type: object
-    properties:
-      version:
-        type: string
-        description: The updated version of memos.
   apiv1FieldMapping:
     type: object
     properties:

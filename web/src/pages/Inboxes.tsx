@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import Empty from "@/components/Empty";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
-import VersionUpdateMessage from "@/components/Inbox/VersionUpdateMessage";
 import MobileHeader from "@/components/MobileHeader";
 import { userStore } from "@/store/v2";
 import { Inbox_Status, Inbox_Type } from "@/types/proto/api/v1/inbox_service";
@@ -44,8 +43,6 @@ const Inboxes = observer(() => {
               {inboxes.map((inbox) => {
                 if (inbox.type === Inbox_Type.MEMO_COMMENT) {
                   return <MemoCommentMessage key={`${inbox.name}-${inbox.status}`} inbox={inbox} />;
-                } else if (inbox.type === Inbox_Type.VERSION_UPDATE) {
-                  return <VersionUpdateMessage key={`${inbox.name}-${inbox.status}`} inbox={inbox} />;
                 }
                 return undefined;
               })}

@@ -36,7 +36,6 @@ message Activity {
 
 message ActivityPayload {
   ActivityMemoCommentPayload memo_comment = 1;
-  ActivityVersionUpdatePayload version_update = 2;
 }
 
 // ActivityMemoCommentPayload represents the payload of a memo comment activity.
@@ -46,11 +45,6 @@ message ActivityMemoCommentPayload {
   string memo = 1;
   // The name of related memo.
   string related_memo = 2;
-}
-
-message ActivityVersionUpdatePayload {
-  // The updated version of memos.
-  string version = 1;
 }
 
 message GetActivityRequest {
