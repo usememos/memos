@@ -128,10 +128,10 @@
       "remove-completed-task-list-items-confirm": "Ви впевнені, що хочете видалити всі виконані задачі? (Ця дія неодмінна)",
       "filters": "Фільтри",
       "order-by": "Впорядкувати за",
-      "display-time": "Час відображення"
-      "direction": "Напрямок"
-      "direction-desc": "За спаданням"
-      "direction-asc": "За зростанням"
+      "display-time": "Час відображення",
+      "direction": "Напрямок",
+      "direction-desc": "За спаданням",
+      "direction-asc": "За зростанням",
       "no-memos": "Немає нотаток."
     },
     "message": {
