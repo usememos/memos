@@ -24,24 +24,27 @@
       "collapse": "Згорнути",
       "create": "Створити",
       "database": "База даних",
+      "day": "День",
       "days": "Днів",
       "delete": "Видалити",
       "description": "Опис",
       "edit": "Редагувати",
-      "email": "Електронна пошта",
+      "email": "Ел. пошта",
       "expand": "Розгорнути",
       "explore": "Дослідити",
       "file": "Файл",
       "filter": "Фільтр",
       "home": "Головна",
+      "in": "В",
       "image": "Зображення",
       "inbox": "Вхідні",
       "language": "Мова",
       "learn-more": "Дізнатися більше",
       "link": "Посилання",
       "mark": "Позначити",
+      "memo": "Нотатка",
       "memos": "Нотатки",
-      "name": "Ім'я",
+      "name": "Назва",
       "new": "Новий",
       "nickname": "Нікнейм",
       "null": "Нуль",
@@ -76,7 +79,8 @@
       "username": "Ім'я користувача",
       "version": "Версія",
       "visibility": "Видимість",
-      "yourself": "Ви"
+      "yourself": "Ви",
+      "shortcuts": "Ярлики"
     },
     "days": {
       "fri": "П'ят.",
@@ -121,7 +125,14 @@
       "to-do": "Список справ",
       "code": "Код",
       "remove-completed-task-list-items": "Видалити виконані",
-      "remove-completed-task-list-items-confirm": "Ви впевнені, що хочете видалити всі виконані задачі? (Ця дія неодмінна)"
+      "remove-completed-task-list-items-confirm": "Ви впевнені, що хочете видалити всі виконані задачі? (Ця дія неодмінна)",
+      "filters": "Фільтри",
+      "order-by": "Впорядкувати за",
+      "display-time": "Час відображення",
+      "direction": "Напрямок",
+      "direction-desc": "За спаданням",
+      "direction-asc": "За зростанням",
+      "no-memos": "Немає нотаток."
     },
     "message": {
       "archived-successfully": "Архівовано успішно",
@@ -139,7 +150,10 @@
       "succeed-copy-link": "Посилання успішно скопійовано.",
       "update-succeed": "Оновлення успішне",
       "user-not-found": "Користувача не знайдено",
-      "remove-completed-task-list-items-successfully": "Видалення виконаних успішно!"
+      "remove-completed-task-list-items-successfully": "Видалення виконаних успішно!",
+      "failed-to-embed-memo": "Не вдалося вбудувати замітку",  
+      "description-is-required": "Опис є обов’язковим",  
+      "fill-all-required-fields": "Будь ласка, заповніть усі обов’язкові поля"
     },
     "reference": {
       "add-references": "Додати посилання",
@@ -202,13 +216,13 @@
         "light": "Завжди світлий",
         "system": "Слідувати системі"
       },
-      "member": "Член",
-      "member-list": "Список членів",
+      "member": "Учасник",
+      "member-list": "Список учасників",
       "member-section": {
-        "archive-member": "Архівувати члена",
+        "archive-member": "Архівувати учасника",
         "archive-warning": "Ви впевнені, що хочете архівувати {{username}}?",
-        "create-a-member": "Створити члена",
-        "delete-member": "Видалити члена",
+        "create-a-member": "Створити учасника",
+        "delete-member": "Видалити учасника",
         "delete-warning": "Ви впевнені, що хочете видалити {{username}}? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ"
       },
       "my-account": "Мій обліковий запис",
@@ -251,7 +265,7 @@
         "bucket-placeholder": "Назва контейнера",
         "create-a-service": "Створити службу",
         "create-storage": "Створити сховище",
-        "current-storage": "Поточне об'єктне сховище",
+        "current-storage": "Поточне сховище об'єктів",
         "delete-storage": "Видалити сховище",
         "endpoint": "Кінцева точка",
         "local-storage-path": "Шлях до локального сховища",
@@ -303,7 +317,8 @@
         "enable-password-login-warning": "Це дозволить вхід за паролем для всіх користувачів. Продовжуйте тільки якщо ви хочете, щоб користувачі могли входити як через SSO, так і за паролем.",
         "max-upload-size": "Максимальний розмір завантаження (MiB)",
         "max-upload-size-hint": "Рекомендується значення - 32 MiB.",
-        "server-name": "Назва сервера"
+        "server-name": "Назва сервера",
+        "removed-completed-task-list-items": "Увімкнути видалення виконаних"
       },
       "memo-related": "Нотатка",
       "access-token-section": {
@@ -311,12 +326,33 @@
         "description": "Список усіх токенів доступу для вашого облікового запису.",
         "created-at": "Створено о",
         "expires-at": "Термін дії до",
-        "token": "Токен"
+        "token": "Токен",
+        "access-token-deletion": "Ви впевнені, що хочете видалити токен доступу {{accessToken}}? ЦЮ ДІЮ НЕМОЖЛИВО СКАСУВАТИ.",  
+        "access-token-copied-to-clipboard": "Токен доступу скопійовано в буфер обміну",  
+        "create-dialog": {  
+        "create-access-token": "Створити токен доступу",  
+        "description": "Опис",  
+        "some-description": "Деякий опис...",  
+        "expiration": "Термін дії",  
+        "created-at": "Створено",  
+        "expires-at": "Закінчується",  
+        "duration-never": "Ніколи",  
+        "duration-8h": "8 годин",  
+        "duration-1m": "1 місяць"
+        }
       },
       "webhook-section": {
         "title": "Вебхуки",
         "url": "URL",
-        "no-webhooks-found": "Вебхуків не знайдено."
+        "no-webhooks-found": "Вебхуків не знайдено.",
+        "create-dialog": {  
+            "create-webhook": "Створити вебхук",  
+            "edit-webhook": "Редагувати вебхук",  
+            "an-easy-to-remember-name": "Легке для запам'ятовування ім'я",  
+            "title": "Заголовок",  
+            "payload-url": "URL корисного навантаження",  
+            "url-example-post-receive": "https://example.com/postreceive"  
+        }
       },
       "workspace-section": {
         "disallow-user-registration": "Заборонити реєстрацію користувачів",
@@ -349,7 +385,13 @@
     "markdown": {
       "code-block": "Блок коду",
       "checkbox": "Чекбокс",
-      "content-syntax": "Синтаксис вмісту",
-      "removed-completed-task-list-items": "Увімкнути видалення виконаних"
+      "content-syntax": "Синтаксис вмісту"
+    },
+    "about": {
+      "description": "Приватний і легкий сервіс для нотаток. Легко записуйте та діліться своїми чудовими думками.",  
+      "github-repository": "GitHub-репозиторій",  
+      "official-website": "Офіційний вебсайт",  
+      "blogs": "Блоги",  
+      "documents": "Документи"
     }
-  }
+}
