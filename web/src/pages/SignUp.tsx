@@ -38,11 +38,11 @@ const SignUp = observer(() => {
   };
 
   const handleLocaleSelectChange = (locale: Locale) => {
-    workspaceStore.setPartial({ locale });
+    workspaceStore.state.setPartial({ locale });
   };
 
   const handleAppearanceSelectChange = (appearance: Appearance) => {
-    workspaceStore.setPartial({ appearance });
+    workspaceStore.state.setPartial({ appearance });
   };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {

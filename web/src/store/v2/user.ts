@@ -2,27 +2,26 @@ import { makeAutoObservable } from "mobx";
 import { authServiceClient, inboxServiceClient, userServiceClient } from "@/grpcweb";
 import { Inbox } from "@/types/proto/api/v1/inbox_service";
 import { Shortcut, User, UserSetting } from "@/types/proto/api/v1/user_service";
+import workspaceStore from "./workspace";
 
-interface LocalState {
-  // The name of current user. Format: `users/${uid}`
+class LocalState {
   currentUser?: string;
-  // userSetting is the setting of the current user.
   userSetting?: UserSetting;
-  // shortcuts is the list of shortcuts of the current user.
-  shortcuts: Shortcut[];
-  // inboxes is the list of inboxes of the current user.
-  inboxes: Inbox[];
-  // userMapByName is used to cache user information.
-  // Key is the `user.name` and value is the `User` object.
-  userMapByName: Record<string, User>;
+  shortcuts: Shortcut[] = [];
+  inboxes: Inbox[] = [];
+  userMapByName: Record<string, User> = {};
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  setPartial(partial: Partial<LocalState>) {
+    Object.assign(this, partial);
+  }
 }
 
 const userStore = (() => {
-  const state = makeAutoObservable<LocalState>({
-    shortcuts: [],
-    inboxes: [],
-    userMapByName: {},
-  });
+  const state = new LocalState();
 
   const getOrFetchUserByName = async (name: string) => {
     const userMap = state.userMapByName;
@@ -32,8 +31,12 @@ const userStore = (() => {
     const user = await userServiceClient.getUser({
       name: name,
     });
-    userMap[name] = user;
-    state.userMapByName = userMap;
+    state.setPartial({
+      userMapByName: {
+        ...userMap,
+        [name]: user,
+      },
+    });
     return user;
   };
 
@@ -42,10 +45,12 @@ const userStore = (() => {
       user,
       updateMask,
     });
-    state.userMapByName = {
-      ...state.userMapByName,
-      [updatedUser.name]: updatedUser,
-    };
+    state.setPartial({
+      userMapByName: {
+        ...state.userMapByName,
+        [updatedUser.name]: updatedUser,
+      },
+    });
   };
 
   const updateUserSetting = async (userSetting: Partial<UserSetting>, updateMask: string[]) => {
@@ -53,7 +58,12 @@ const userStore = (() => {
       setting: userSetting,
       updateMask: updateMask,
     });
-    state.userSetting = UserSetting.fromPartial(updatedUserSetting);
+    state.setPartial({
+      userSetting: UserSetting.fromPartial({
+        ...state.userSetting,
+        ...updatedUserSetting,
+      }),
+    });
   };
 
   const fetchShortcuts = async () => {
@@ -62,12 +72,16 @@ const userStore = (() => {
     }
 
     const { shortcuts } = await userServiceClient.listShortcuts({ parent: state.currentUser });
-    state.shortcuts = shortcuts;
+    state.setPartial({
+      shortcuts,
+    });
   };
 
   const fetchInboxes = async () => {
     const { inboxes } = await inboxServiceClient.listInboxes({});
-    state.inboxes = inboxes;
+    state.setPartial({
+      inboxes,
+    });
   };
 
   const updateInbox = async (inbox: Partial<Inbox>, updateMask: string[]) => {
@@ -75,7 +89,14 @@ const userStore = (() => {
       inbox,
       updateMask,
     });
-    state.inboxes = state.inboxes.map((i) => (i.name === updatedInbox.name ? updatedInbox : i));
+    state.setPartial({
+      inboxes: state.inboxes.map((i) => {
+        if (i.name === updatedInbox.name) {
+          return updatedInbox;
+        }
+        return i;
+      }),
+    });
     return updatedInbox;
   };
 
@@ -94,7 +115,7 @@ export const initialUserStore = async () => {
   try {
     const currentUser = await authServiceClient.getAuthStatus({});
     const userSetting = await userServiceClient.getUserSetting({});
-    Object.assign(userStore.state, {
+    userStore.state.setPartial({
       currentUser: currentUser.name,
       userSetting: UserSetting.fromPartial({
         ...userSetting,
@@ -102,6 +123,10 @@ export const initialUserStore = async () => {
       userMapByName: {
         [currentUser.name]: currentUser,
       },
+    });
+    workspaceStore.state.setPartial({
+      locale: userSetting.locale,
+      appearance: userSetting.appearance,
     });
   } catch {
     // Do nothing.

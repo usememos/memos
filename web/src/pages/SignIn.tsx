@@ -43,11 +43,11 @@ const SignIn = observer(() => {
   }, []);
 
   const handleLocaleSelectChange = (locale: Locale) => {
-    workspaceStore.setPartial({ locale });
+    workspaceStore.state.setPartial({ locale });
   };
 
   const handleAppearanceSelectChange = (appearance: Appearance) => {
-    workspaceStore.setPartial({ appearance });
+    workspaceStore.state.setPartial({ appearance });
   };
 
   const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {

@@ -1,3 +1,4 @@
+import { uniqBy } from "lodash-es";
 import { makeAutoObservable } from "mobx";
 import { workspaceServiceClient, workspaceSettingServiceClient } from "@/grpcweb";
 import { WorkspaceProfile } from "@/types/proto/api/v1/workspace_service";
@@ -6,38 +7,48 @@ import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { isValidateLocale } from "@/utils/i18n";
 import { workspaceSettingNamePrefix } from "../v1";
 
-interface LocalState {
-  locale: string;
-  appearance: string;
-  profile: WorkspaceProfile;
-  settings: WorkspaceSetting[];
+class LocalState {
+  locale: string = "en";
+  appearance: string = "system";
+  profile: WorkspaceProfile = WorkspaceProfile.fromPartial({});
+  settings: WorkspaceSetting[] = [];
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  setPartial(partial: Partial<LocalState>) {
+    const finalState = {
+      ...this,
+      ...partial,
+    };
+    if (!isValidateLocale(finalState.locale)) {
+      finalState.locale = "en";
+    }
+    if (!["system", "light", "dark"].includes(finalState.appearance)) {
+      finalState.appearance = "system";
+    }
+    Object.assign(this, finalState);
+  }
 }
 
 const workspaceStore = (() => {
-  const state = makeAutoObservable<LocalState>({
-    locale: "en",
-    appearance: "system",
-    profile: WorkspaceProfile.fromPartial({}),
-    settings: [],
-  });
+  const state = new LocalState();
 
   const generalSetting =
     state.settings.find((setting) => setting.name === `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`)?.generalSetting ||
     WorkspaceGeneralSetting.fromPartial({});
 
-  const setPartial = (partial: Partial<LocalState>) => {
-    Object.assign(state, partial);
-  };
-
   const fetchWorkspaceSetting = async (settingKey: WorkspaceSettingKey) => {
     const setting = await workspaceSettingServiceClient.getWorkspaceSetting({ name: `${workspaceSettingNamePrefix}${settingKey}` });
-    state.settings.push(setting);
+    state.setPartial({
+      settings: uniqBy([setting, ...state.settings], "name"),
+    });
   };
 
   return {
     state,
     generalSetting,
-    setPartial,
     fetchWorkspaceSetting,
   };
 })();
@@ -50,17 +61,9 @@ export const initialWorkspaceStore = async () => {
   }
 
   const workspaceGeneralSetting = workspaceStore.generalSetting;
-  let locale = workspaceGeneralSetting.customProfile?.locale;
-  if (!isValidateLocale(locale)) {
-    locale = "en";
-  }
-  let appearance = workspaceGeneralSetting.customProfile?.appearance;
-  if (!appearance || !["system", "light", "dark"].includes(appearance)) {
-    appearance = "system";
-  }
-  workspaceStore.setPartial({
-    locale: locale,
-    appearance: appearance,
+  workspaceStore.state.setPartial({
+    locale: workspaceGeneralSetting.customProfile?.locale,
+    appearance: workspaceGeneralSetting.customProfile?.appearance,
     profile: workspaceProfile,
   });
 };

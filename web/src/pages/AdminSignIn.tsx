@@ -13,11 +13,11 @@ const AdminSignIn = observer(() => {
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
 
   const handleLocaleSelectChange = (locale: Locale) => {
-    workspaceStore.setPartial({ locale });
+    workspaceStore.state.setPartial({ locale });
   };
 
   const handleAppearanceSelectChange = (appearance: Appearance) => {
-    workspaceStore.setPartial({ appearance });
+    workspaceStore.state.setPartial({ appearance });
   };
 
   return (

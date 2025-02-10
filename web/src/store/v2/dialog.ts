@@ -1,21 +1,29 @@
 import { last } from "lodash-es";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
+
+class LocalState {
+  stack: string[] = [];
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  setPartial(partial: Partial<LocalState>) {
+    Object.assign(this, partial);
+  }
+}
 
 const dialogStore = (() => {
-  const state = makeAutoObservable<{
-    stack: string[];
-  }>({
-    stack: [],
-  });
+  const state = new LocalState();
 
   const pushDialog = (name: string) => {
-    state.stack.push(name);
+    runInAction(() => state.stack.push(name));
   };
 
-  const popDialog = () => state.stack.pop();
+  const popDialog = () => runInAction(() => state.stack.pop());
 
   const removeDialog = (name: string) => {
-    state.stack = state.stack.filter((n) => n !== name);
+    runInAction(() => (state.stack = state.stack.filter((n) => n !== name)));
   };
 
   const topDialog = last(state.stack);

@@ -70,6 +70,7 @@ const App = observer(() => {
 
   useEffect(() => {
     const currentLocale = workspaceStore.state.locale;
+    // This will trigger re-rendering of the whole app.
     i18n.changeLanguage(currentLocale);
     document.documentElement.setAttribute("lang", currentLocale);
     if (["ar", "fa"].includes(currentLocale)) {
@@ -101,7 +102,7 @@ const App = observer(() => {
       return;
     }
 
-    workspaceStore.setPartial({
+    workspaceStore.state.setPartial({
       locale: userSetting.locale || workspaceStore.state.locale,
       appearance: userSetting.appearance || workspaceStore.state.appearance,
     });
