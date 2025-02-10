@@ -76,7 +76,9 @@
     "username": "用户名",
     "version": "版本",
     "visibility": "可见性",
-    "yourself": "您自己"
+    "yourself": "您自己",
+    "created-at": "创建时间",
+    "properties": "属性"
   },
   "days": {
     "fri": "五",
@@ -304,7 +306,16 @@
       "server-name": "服务器名称",
       "removed-completed-task-list-items": "启用移除已办"
     },
-    "memo-related": "备忘录"
+    "memo-related": "备忘录",
+    "access-token-section": {
+      "create-dialog": {
+        "created-at": "创建时间",
+        "expires-at": "过期时间",
+        "duration-never": "从不",
+        "duration-8h": "8 小时",
+        "duration-1m": "1 个月"
+      }
+    }
   },
   "tag": {
     "all-tags": "全部标签",
