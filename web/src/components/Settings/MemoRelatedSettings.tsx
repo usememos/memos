@@ -144,7 +144,7 @@ const MemoRelatedSettings = () => {
           })}
           <Input
             className="w-32 !rounded-full !pl-3"
-            placeholder="Input"
+            placeholder={t("common.input")}
             size="sm"
             value={editingReaction}
             onChange={(event) => setEditingReaction(event.target.value.trim())}

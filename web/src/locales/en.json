@@ -82,7 +82,9 @@
     "yourself": "Yourself",
     "shortcuts": "Shortcuts",
     "created-at": "Created At",
-    "properties": "Properties"
+    "properties": "Properties",
+    "shortcut-filter": "Shortcut filter",
+    "input": "Input"
   },
   "days": {
     "fri": "Fri",
@@ -295,6 +297,7 @@
     },
     "system": "System",
     "system-section": {
+      "title": "General",
       "additional-script": "Additional script",
       "additional-script-placeholder": "Additional JavaScript code",
       "additional-style": "Additional style",
