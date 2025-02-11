@@ -5,7 +5,8 @@ import { Link, useLocation } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore, useWorkspaceSettingStore, useMemoStore, useUserStatsStore } from "@/store/v1";
+import { useUserStore, useMemoStore, useUserStatsStore } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
@@ -46,13 +47,12 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const userStore = useUserStore();
   const user = useCurrentUser();
   const memoStore = useMemoStore();
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const userStatsStore = useUserStatsStore();
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const workspaceMemoRelatedSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
+    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
     WorkspaceMemoRelatedSetting.fromPartial({});
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(

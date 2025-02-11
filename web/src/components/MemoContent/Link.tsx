@@ -1,7 +1,7 @@
 import { Link as MLink, Tooltip } from "@mui/joy";
 import { useState } from "react";
 import { markdownServiceClient } from "@/grpcweb";
-import { useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { LinkMetadata } from "@/types/proto/api/v1/markdown_service";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
@@ -21,9 +21,8 @@ const getFaviconWithGoogleS2 = (url: string) => {
 };
 
 const Link: React.FC<Props> = ({ text, url }: Props) => {
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const workspaceMemoRelatedSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
+    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
     WorkspaceMemoRelatedSetting.fromPartial({});
   const [initialized, setInitialized] = useState<boolean>(false);
   const [showTooltip, setShowTooltip] = useState<boolean>(false);

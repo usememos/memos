@@ -4,9 +4,7 @@ import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { Routes } from "@/router";
-import { useWorkspaceSettingStore } from "@/store/v1";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { workspaceStore } from "@/store/v2";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
@@ -20,9 +18,7 @@ const UserBanner = (props: Props) => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const user = useCurrentUser();
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
+  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
   const title = (user ? user.nickname || user.username : workspaceGeneralSetting.customProfile?.title) || "Memos";
   const avatarUrl = (user ? user.avatarUrl : workspaceGeneralSetting.customProfile?.logoUrl) || "/full-logo.webp";
 

@@ -14,8 +14,8 @@ import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore, useResourceStore, useWorkspaceSettingStore } from "@/store/v1";
-import { userStore } from "@/store/v2";
+import { useMemoStore, useResourceStore } from "@/store/v1";
+import { userStore, workspaceStore } from "@/store/v2";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
@@ -63,7 +63,6 @@ const MemoEditor = observer((props: Props) => {
   const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const memoStore = useMemoStore();
   const resourceStore = useResourceStore();
   const currentUser = useCurrentUser();
@@ -89,7 +88,7 @@ const MemoEditor = observer((props: Props) => {
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const workspaceMemoRelatedSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
+    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
     WorkspaceMemoRelatedSetting.fromPartial({});
 
   useEffect(() => {

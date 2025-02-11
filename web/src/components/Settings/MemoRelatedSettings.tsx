@@ -4,16 +4,16 @@ import { isEqual, uniq } from "lodash-es";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceSettingNamePrefix } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = () => {
   const t = useTranslate();
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const originalSetting = WorkspaceMemoRelatedSetting.fromPartial(
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
+    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
   );
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
@@ -42,7 +42,7 @@ const MemoRelatedSettings = () => {
     }
 
     try {
-      await workspaceSettingStore.setWorkspaceSetting({
+      await workspaceStore.upsertWorkspaceSetting({
         name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
         memoRelatedSetting,
       });

@@ -2,15 +2,10 @@ import { observer } from "mobx-react-lite";
 import AppearanceSelect from "@/components/AppearanceSelect";
 import LocaleSelect from "@/components/LocaleSelect";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
-import { useWorkspaceSettingStore } from "@/store/v1";
 import { workspaceStore } from "@/store/v2";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 
 const AdminSignIn = observer(() => {
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
+  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
 
   const handleLocaleSelectChange = (locale: Locale) => {
     workspaceStore.state.setPartial({ locale });

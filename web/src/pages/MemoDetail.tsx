@@ -11,7 +11,8 @@ import MobileHeader from "@/components/MobileHeader";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { memoNamePrefix, useMemoStore, useWorkspaceSettingStore } from "@/store/v1";
+import { memoNamePrefix, useMemoStore } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { WorkspaceMemoRelatedSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
@@ -24,14 +25,13 @@ const MemoDetail = () => {
   const params = useParams();
   const navigateTo = useNavigateTo();
   const { state: locationState } = useLocation();
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const uid = params.uid;
   const memoName = `${memoNamePrefix}${uid}`;
   const memo = memoStore.getMemoByName(memoName);
   const workspaceMemoRelatedSetting = WorkspaceMemoRelatedSetting.fromPartial(
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
+    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
   );
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const [showCommentEditor, setShowCommentEditor] = useState(false);

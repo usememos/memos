@@ -13,7 +13,6 @@ import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import StorageSection from "@/components/Settings/StorageSection";
 import WorkspaceSection from "@/components/Settings/WorkspaceSection";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useWorkspaceSettingStore } from "@/store/v1";
 import { workspaceStore } from "@/store/v2";
 import { User_Role } from "@/types/proto/api/v1/user_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
@@ -41,7 +40,6 @@ const Setting = observer(() => {
   const t = useTranslate();
   const location = useLocation();
   const user = useCurrentUser();
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });
@@ -74,7 +72,7 @@ const Setting = observer(() => {
     // Initial fetch for workspace settings.
     (async () => {
       [WorkspaceSettingKey.MEMO_RELATED, WorkspaceSettingKey.STORAGE].forEach(async (key) => {
-        await workspaceSettingStore.fetchWorkspaceSetting(key);
+        await workspaceStore.fetchWorkspaceSetting(key);
       });
     })();
   }, [isHost]);

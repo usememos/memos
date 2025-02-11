@@ -1,8 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
-import { useWorkspaceSettingStore } from "@/store/v1";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { workspaceStore } from "@/store/v2";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -32,10 +30,7 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
 const ActivityCalendar = (props: Props) => {
   const t = useTranslate();
   const { month: monthStr, data, onClick } = props;
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const weekStartDayOffset = (
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({})
-  ).weekStartDayOffset;
+  const weekStartDayOffset = workspaceStore.state.generalSetting.weekStartDayOffset;
 
   const year = dayjs(monthStr).toDate().getFullYear();
   const month = dayjs(monthStr).toDate().getMonth();

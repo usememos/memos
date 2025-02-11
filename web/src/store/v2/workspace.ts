@@ -13,6 +13,13 @@ class LocalState {
   profile: WorkspaceProfile = WorkspaceProfile.fromPartial({});
   settings: WorkspaceSetting[] = [];
 
+  get generalSetting() {
+    return (
+      this.settings.find((setting) => setting.name === `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`)?.generalSetting ||
+      WorkspaceGeneralSetting.fromPartial({})
+    );
+  }
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -35,10 +42,6 @@ class LocalState {
 const workspaceStore = (() => {
   const state = new LocalState();
 
-  const generalSetting =
-    state.settings.find((setting) => setting.name === `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`)?.generalSetting ||
-    WorkspaceGeneralSetting.fromPartial({});
-
   const fetchWorkspaceSetting = async (settingKey: WorkspaceSettingKey) => {
     const setting = await workspaceSettingServiceClient.getWorkspaceSetting({ name: `${workspaceSettingNamePrefix}${settingKey}` });
     state.setPartial({
@@ -46,10 +49,24 @@ const workspaceStore = (() => {
     });
   };
 
+  const upsertWorkspaceSetting = async (setting: WorkspaceSetting) => {
+    await workspaceSettingServiceClient.setWorkspaceSetting({ setting });
+    state.setPartial({
+      settings: uniqBy([setting, ...state.settings], "name"),
+    });
+  };
+
+  const getWorkspaceSettingByKey = (settingKey: WorkspaceSettingKey) => {
+    return (
+      state.settings.find((setting) => setting.name === `${workspaceSettingNamePrefix}${settingKey}`) || WorkspaceSetting.fromPartial({})
+    );
+  };
+
   return {
     state,
-    generalSetting,
     fetchWorkspaceSetting,
+    upsertWorkspaceSetting,
+    getWorkspaceSettingByKey,
   };
 })();
 
@@ -60,7 +77,7 @@ export const initialWorkspaceStore = async () => {
     await workspaceStore.fetchWorkspaceSetting(key);
   }
 
-  const workspaceGeneralSetting = workspaceStore.generalSetting;
+  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
   workspaceStore.state.setPartial({
     locale: workspaceGeneralSetting.customProfile?.locale,
     appearance: workspaceGeneralSetting.customProfile?.appearance,
