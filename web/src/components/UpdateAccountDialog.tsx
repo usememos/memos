@@ -6,8 +6,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useUserStore } from "@/store/v1";
-import { workspaceStore } from "@/store/v2";
+import { userStore, workspaceStore } from "@/store/v2";
 import { User as UserPb } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
@@ -26,7 +25,6 @@ interface State {
 const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const userStore = useUserStore();
   const [state, setState] = useState<State>({
     avatarUrl: currentUser.avatarUrl,
     username: currentUser.username,

@@ -7,14 +7,13 @@ import { toast } from "react-hot-toast";
 import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore } from "@/store/v1";
 import { workspaceStore } from "@/store/v2";
+import { initialUserStore } from "@/store/v2/user";
 import { useTranslate } from "@/utils/i18n";
 
 const PasswordSignInForm = observer(() => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -54,7 +53,7 @@ const PasswordSignInForm = observer(() => {
     try {
       actionBtnLoadingState.setLoading();
       await authServiceClient.signIn({ username, password, neverExpire: remember });
-      await userStore.fetchCurrentUser();
+      await initialUserStore();
       navigateTo("/");
     } catch (error: any) {
       console.error(error);

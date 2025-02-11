@@ -6,11 +6,21 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { stringifyUserRole, useUserStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
+
+const stringifyUserRole = (role: User_Role) => {
+  if (role === User_Role.HOST) {
+    return "Host";
+  } else if (role === User_Role.ADMIN) {
+    return "Admin";
+  } else {
+    return "User";
+  }
+};
 
 interface LocalState {
   creatingUser: User;
@@ -19,7 +29,6 @@ interface LocalState {
 const MemberSection = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const userStore = useUserStore();
   const [state, setState] = useState<LocalState>({
     creatingUser: User.fromPartial({
       username: "",

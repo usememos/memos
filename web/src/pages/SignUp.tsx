@@ -10,14 +10,13 @@ import LocaleSelect from "@/components/LocaleSelect";
 import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore } from "@/store/v1";
 import { workspaceStore } from "@/store/v2";
+import { initialUserStore } from "@/store/v2/user";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = observer(() => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -58,7 +57,7 @@ const SignUp = observer(() => {
     try {
       actionBtnLoadingState.setLoading();
       await authServiceClient.signUp({ username, password });
-      await userStore.fetchCurrentUser();
+      await initialUserStore();
       navigateTo("/");
     } catch (error: any) {
       console.error(error);

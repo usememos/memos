@@ -40,6 +40,22 @@ const userStore = (() => {
     return user;
   };
 
+  const getUserByName = (name: string) => {
+    return state.userMapByName[name];
+  };
+
+  const fetchUsers = async () => {
+    const { users } = await userServiceClient.listUsers({});
+    const userMap = state.userMapByName;
+    for (const user of users) {
+      userMap[user.name] = user;
+    }
+    state.setPartial({
+      userMapByName: userMap,
+    });
+    return users;
+  };
+
   const updateUser = async (user: Partial<User>, updateMask: string[]) => {
     const updatedUser = await userServiceClient.updateUser({
       user,
@@ -50,6 +66,15 @@ const userStore = (() => {
         ...state.userMapByName,
         [updatedUser.name]: updatedUser,
       },
+    });
+  };
+
+  const deleteUser = async (name: string) => {
+    await userServiceClient.deleteUser({ name });
+    const userMap = state.userMapByName;
+    delete userMap[name];
+    state.setPartial({
+      userMapByName: userMap,
     });
   };
 
@@ -103,7 +128,10 @@ const userStore = (() => {
   return {
     state,
     getOrFetchUserByName,
+    getUserByName,
+    fetchUsers,
     updateUser,
+    deleteUser,
     updateUserSetting,
     fetchShortcuts,
     fetchInboxes,

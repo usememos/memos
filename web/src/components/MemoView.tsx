@@ -5,8 +5,8 @@ import { Link, useLocation } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore, useMemoStore, useUserStatsStore } from "@/store/v1";
-import { workspaceStore } from "@/store/v2";
+import { useMemoStore, useUserStatsStore } from "@/store/v1";
+import { userStore, workspaceStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
@@ -44,7 +44,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
-  const userStore = useUserStore();
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const userStatsStore = useUserStatsStore();
