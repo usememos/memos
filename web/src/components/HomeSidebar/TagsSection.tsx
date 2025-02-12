@@ -58,7 +58,7 @@ const TagsSection = (props: Props) => {
             </PopoverTrigger>
             <PopoverContent align="end" alignOffset={-12}>
               <div className="w-auto flex flex-row justify-between items-center gap-2">
-                <span className="text-sm shrink-0">Tree mode</span>
+                <span className="text-sm shrink-0">{t("common.tree-mode")}</span>
                 <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />
               </div>
             </PopoverContent>

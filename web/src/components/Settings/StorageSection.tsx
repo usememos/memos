@@ -146,7 +146,7 @@ const StorageSection = () => {
       </div>
       {workspaceStorageSetting.storageType !== WorkspaceStorageSetting_StorageType.DATABASE && (
         <div className="w-full flex flex-row justify-between items-center">
-          <span className="text-gray-700 dark:text-gray-500 mr-1">Filepath template</span>
+          <span className="text-gray-700 dark:text-gray-500 mr-1">{t("setting.storage-section.filepath-template")}</span>
           <Input
             value={workspaceStorageSetting.filepathTemplate}
             placeholder="assets/{timestamp}_{filename}"
