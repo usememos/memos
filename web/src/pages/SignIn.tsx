@@ -1,11 +1,9 @@
 import { Divider } from "@mui/joy";
 import { Button } from "@usememos/mui";
-import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import AppearanceSelect from "@/components/AppearanceSelect";
-import LocaleSelect from "@/components/LocaleSelect";
+import AuthFooter from "@/components/AuthFooter";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
 import { identityProviderServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
@@ -16,7 +14,7 @@ import { workspaceStore } from "@/store/v2";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
 
-const SignIn = observer(() => {
+const SignIn = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
@@ -37,14 +35,6 @@ const SignIn = observer(() => {
     };
     fetchIdentityProviderList();
   }, []);
-
-  const handleLocaleSelectChange = (locale: Locale) => {
-    workspaceStore.state.setPartial({ locale });
-  };
-
-  const handleAppearanceSelectChange = (appearance: Appearance) => {
-    workspaceStore.state.setPartial({ appearance });
-  };
 
   const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
     const stateQueryParameter = `auth.signin.${identityProvider.title}-${extractIdentityProviderIdFromName(identityProvider.name)}`;
@@ -105,12 +95,9 @@ const SignIn = observer(() => {
           </>
         )}
       </div>
-      <div className="mt-4 flex flex-row items-center justify-center w-full gap-2">
-        <LocaleSelect value={workspaceStore.state.locale} onChange={handleLocaleSelectChange} />
-        <AppearanceSelect value={workspaceStore.state.appearance as Appearance} onChange={handleAppearanceSelectChange} />
-      </div>
+      <AuthFooter />
     </div>
   );
-});
+};
 
 export default SignIn;

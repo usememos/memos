@@ -14,7 +14,7 @@ import LocaleSelect from "./LocaleSelect";
 
 type Props = DialogProps;
 
-const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
+const UpdateCustomizedProfileDialog = ({ destroy }: Props) => {
   const t = useTranslate();
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
   const [customProfile, setCustomProfile] = useState<WorkspaceCustomProfile>(

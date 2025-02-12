@@ -22,7 +22,7 @@ interface State {
   description: string;
 }
 
-const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
+const UpdateAccountDialog = ({ destroy }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
