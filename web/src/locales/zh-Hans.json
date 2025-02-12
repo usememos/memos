@@ -77,8 +77,11 @@
     "version": "版本",
     "visibility": "可见性",
     "yourself": "您自己",
+    "shortcuts": "捷径",
     "created-at": "创建时间",
-    "properties": "属性"
+    "properties": "属性",
+    "shortcut-filter": "捷径过滤器",
+    "input": "输入"
   },
   "days": {
     "fri": "五",
@@ -123,7 +126,13 @@
     "to-do": "待办",
     "code": "代码",
     "remove-completed-task-list-items": "移除已办",
-    "remove-completed-task-list-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）"
+    "remove-completed-task-list-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）",
+    "order-by": "排序",
+    "display-time": "展示时间",
+    "direction": "排序方式",
+    "direction-desc": "倒序",
+    "direction-asc": "正序",
+    "no-memos": "无备忘"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -241,7 +250,8 @@
       "template": "模板",
       "token-endpoint": "令牌端点（Token Endpoint）",
       "update-sso": "更新单点登录",
-      "user-endpoint": "用户端点（User Endpoint）"
+      "user-endpoint": "用户端点（User Endpoint）",
+      "no-sso-found": "没有 SSO 配置"
     },
     "storage": "存储",
     "storage-section": {
@@ -279,6 +289,7 @@
     },
     "system": "系统",
     "system-section": {
+      "title": "一般设置",
       "additional-script": "自定义脚本",
       "additional-script-placeholder": "自定义 JavaScript 代码",
       "additional-style": "自定义样式",
@@ -308,6 +319,8 @@
     },
     "memo-related": "备忘录",
     "access-token-section": {
+      "title": "访问令牌",
+      "description": "该账号下全部的访问令牌",
       "create-dialog": {
         "created-at": "创建时间",
         "expires-at": "过期时间",
@@ -315,6 +328,27 @@
         "duration-8h": "8 小时",
         "duration-1m": "1 个月"
       }
+    },
+    "webhook-section": {
+      "no-webhooks-found": "没有 webhooks。"
+    },
+    "workspace-section": {
+      "disallow-user-registration": "禁用用户注册",
+      "disallow-password-auth": "禁用密码登录",
+      "disallow-change-username": "禁止修改用户名",
+      "disallow-change-nickname": "禁止修改用户昵称",
+      "week-start-day": "周开始日",
+      "saturday": "周六",
+      "sunday": "周日",
+      "monday": "周一"
+    },
+    "memo-related-settings": {
+      "title": "备忘录相关设置",
+      "enable-link-preview": "启用链接预览",
+      "enable-memo-comments": "启用备忘录评论",
+      "enable-memo-location": "启用备忘录定位",
+      "content-lenght-limit": "内容长度限制（字节）",
+      "reactions": "表态"
     }
   },
   "tag": {
@@ -324,5 +358,12 @@
     "delete-confirm": "您确定要删除此标签吗?所有相关的备忘录将会被归档。",
     "delete-tag": "删除标签",
     "no-tag-found": "没找到此标签"
+  },
+  "about": {
+    "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享你的想法。",
+    "github-repository": "GitHub 参保库",
+    "official-website": "官网",
+    "blogs": "博客",
+    "documents": "文档"
   }
 }

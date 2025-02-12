@@ -75,7 +75,7 @@ const WorkspaceSection = () => {
         </Button>
       </div>
       <Divider />
-      <p className="font-medium text-gray-700 dark:text-gray-500">General</p>
+      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.system-section.title")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.additional-style")}</span>
       </div>

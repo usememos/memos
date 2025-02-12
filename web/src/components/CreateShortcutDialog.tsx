@@ -64,22 +64,22 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">{`${isCreating ? "Create" : "Edit"} Shortcut`}</p>
+        <p className="title-text">{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.shortcuts")}`}</p>
         <Button size="sm" variant="plain" onClick={() => destroy()}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
       <div className="dialog-content-container max-w-md min-w-72">
         <div className="w-full flex flex-col justify-start items-start mb-3">
-          <span className="text-sm whitespace-nowrap mb-1">Title</span>
+          <span className="text-sm whitespace-nowrap mb-1">{t("common.title")}</span>
           <Input className="w-full" type="text" placeholder="" value={shortcut.title} onChange={onShortcutTitleChange} />
-          <span className="text-sm whitespace-nowrap mt-3 mb-1">Filter</span>
+          <span className="text-sm whitespace-nowrap mt-3 mb-1">{t("common.filter")}</span>
           <Textarea
             className="w-full"
             minRows={3}
             maxRows={5}
             size="sm"
-            placeholder={"Shortcut filter"}
+            placeholder={t("common.shortcut-filter")}
             value={shortcut.filter}
             onChange={onShortcutFilterChange}
           />
