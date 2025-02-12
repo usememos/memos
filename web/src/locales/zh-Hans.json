@@ -81,7 +81,8 @@
     "created-at": "创建时间",
     "properties": "属性",
     "shortcut-filter": "捷径过滤器",
-    "input": "输入"
+    "input": "输入",
+    "tree-mode": "树模式"
   },
   "days": {
     "fri": "五",
@@ -285,7 +286,8 @@
       "url-prefix-placeholder": "自定义链接前缀，可选",
       "url-suffix": "链接后缀",
       "url-suffix-placeholder": "自定义链接后缀，可选",
-      "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）"
+      "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）",
+      "filepath-template": "文件路径模板"
     },
     "system": "系统",
     "system-section": {
