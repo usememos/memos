@@ -133,7 +133,9 @@
     "direction": "排序方式",
     "direction-desc": "倒序",
     "direction-asc": "正序",
-    "no-memos": "无备忘"
+    "no-memos": "无备忘",
+    "click-to-show-nsfw-content": "点击显示 NSFW 内容",
+    "click-to-hide-nsfw-content": "点击隐藏 NSFW 内容"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -350,7 +352,8 @@
       "enable-memo-comments": "启用备忘录评论",
       "enable-memo-location": "启用备忘录定位",
       "content-lenght-limit": "内容长度限制（字节）",
-      "reactions": "表态"
+      "reactions": "表态",
+      "enable-blur-nsfw-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）"
     }
   },
   "tag": {

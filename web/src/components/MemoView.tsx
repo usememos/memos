@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/joy";
-import { BookmarkIcon, MessageCircleMoreIcon } from "lucide-react";
+import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
 import { memo, useCallback, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
@@ -34,6 +34,7 @@ interface Props {
   showCreator?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;
+  showNsfwContent?: boolean;
   className?: string;
   parentPage?: string;
 }
@@ -49,6 +50,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const userStatsStore = useUserStatsStore();
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
+  const [showNSFWContent, setShowNSFWContent] = useState(props.showNsfwContent);
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const workspaceMemoRelatedSetting =
     workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
@@ -62,6 +64,9 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const readonly = memo.creator !== user?.name && !isSuperUser(user);
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
   const parentPage = props.parentPage || location.pathname;
+  const nsfw =
+    workspaceMemoRelatedSetting.enableBlurNsfwContent &&
+    memo.tags?.some((tag) => workspaceMemoRelatedSetting.nsfwTags.includes(tag.toLowerCase()));
 
   // Initial related data: creator.
   useAsyncEffect(async () => {
@@ -208,23 +213,46 @@ const MemoView: React.FC<Props> = (props: Props) => {
                   </span>
                 </Tooltip>
               )}
+              {nsfw && showNSFWContent && (
+                <span className="cursor-pointer">
+                  <EyeOffIcon className="w-4 h-auto text-amber-500" onClick={() => setShowNSFWContent(false)} />
+                </span>
+              )}
               <MemoActionMenu className="-ml-1" memo={memo} readonly={readonly} onEdit={() => setShowEditor(true)} />
             </div>
           </div>
-          <MemoContent
-            key={`${memo.name}-${memo.updateTime}`}
-            memoName={memo.name}
-            nodes={memo.nodes}
-            readonly={readonly}
-            onClick={handleMemoContentClick}
-            onDoubleClick={handleMemoContentDoubleClick}
-            compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
-            parentPage={parentPage}
-          />
-          {memo.location && <MemoLocationView location={memo.location} />}
-          <MemoResourceListView resources={memo.resources} />
-          <MemoRelationListView memo={memo} relations={referencedMemos} parentPage={parentPage} />
-          <MemoReactionistView memo={memo} reactions={memo.reactions} />
+          <div
+            className={cn(
+              "flex flex-col justify-start items-start w-full",
+              nsfw && !showNSFWContent && "blur-lg transition-all duration-200",
+            )}
+          >
+            <MemoContent
+              key={`${memo.name}-${memo.updateTime}`}
+              memoName={memo.name}
+              nodes={memo.nodes}
+              readonly={readonly}
+              onClick={handleMemoContentClick}
+              onDoubleClick={handleMemoContentDoubleClick}
+              compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
+              parentPage={parentPage}
+            />
+            {memo.location && <MemoLocationView location={memo.location} />}
+            <MemoResourceListView resources={memo.resources} />
+            <MemoRelationListView memo={memo} relations={referencedMemos} parentPage={parentPage} />
+            <MemoReactionistView memo={memo} reactions={memo.reactions} />
+          </div>
+          {nsfw && !showNSFWContent && (
+            <>
+              <div className="absolute inset-0 bg-transparent" />
+              <button
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 py-2 px-4 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-zinc-800"
+                onClick={() => setShowNSFWContent(true)}
+              >
+                {t("memo.click-to-show-nsfw-content")}
+              </button>
+            </>
+          )}
         </>
       )}
     </div>

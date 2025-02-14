@@ -143,6 +143,9 @@ const DefaultContentLengthLimit = 8 * 1024
 // DefaultReactions is the default reactions for memo related setting.
 var DefaultReactions = []string{"👍", "👎", "❤️", "🎉", "😄", "😕", "😢", "😡"}
 
+// DefaultNsfwTags is the default tags that mark content as NSFW for blurring.
+var DefaultNsfwTags = []string{"nsfw"}
+
 func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.WorkspaceMemoRelatedSetting, error) {
 	workspaceSetting, err := s.GetWorkspaceSetting(ctx, &FindWorkspaceSetting{
 		Name: storepb.WorkspaceSettingKey_MEMO_RELATED.String(),
@@ -160,6 +163,9 @@ func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.Wo
 	}
 	if len(workspaceMemoRelatedSetting.Reactions) == 0 {
 		workspaceMemoRelatedSetting.Reactions = append(workspaceMemoRelatedSetting.Reactions, DefaultReactions...)
+	}
+	if len(workspaceMemoRelatedSetting.NsfwTags) == 0 {
+		workspaceMemoRelatedSetting.NsfwTags = append(workspaceMemoRelatedSetting.NsfwTags, DefaultNsfwTags...)
 	}
 	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_MEMO_RELATED.String(), &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_MEMO_RELATED,

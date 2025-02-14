@@ -115,6 +115,7 @@ const MemoDetail = () => {
             showCreator
             showVisibility
             showPinned
+            showNsfwContent
           />
           <div className="pt-8 pb-16 w-full">
             <h2 id="comments" className="sr-only">
