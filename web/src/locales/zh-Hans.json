@@ -221,7 +221,9 @@
       "archive-warning": "您确定要归档 {{username}} 吗？",
       "create-a-member": "创建成员",
       "delete-member": "删除成员",
-      "delete-warning": "您确定要删除 {{username}} 吗？（此操作不可逆）"
+      "delete-warning": "您确定要删除 {{username}} 吗？（此操作不可逆）",
+      "user": "普通用户",
+      "admin": "管理员"
     },
     "my-account": "我的账号",
     "preference": "偏好设置",
