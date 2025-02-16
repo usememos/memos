@@ -12,17 +12,6 @@ import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 
-const stringifyUserRole = (role: User_Role) => {
-  const t = useTranslate();
-  if (role === User_Role.HOST) {
-    return "Host";
-  } else if (role === User_Role.ADMIN) {
-    return t("setting.member-section.admin");
-  } else {
-    return t("setting.member-section.user");
-  }
-};
-
 interface LocalState {
   creatingUser: User;
 }
@@ -47,6 +36,16 @@ const MemberSection = () => {
   const fetchUsers = async () => {
     const users = await userStore.fetchUsers();
     setUsers(users);
+  };
+
+  const stringifyUserRole = (role: User_Role) => {
+    if (role === User_Role.HOST) {
+      return "Host";
+    } else if (role === User_Role.ADMIN) {
+      return t("setting.member-section.admin");
+    } else {
+      return t("setting.member-section.user");
+    }
   };
 
   const handleUsernameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
