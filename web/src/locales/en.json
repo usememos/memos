@@ -137,7 +137,9 @@
     "direction": "Direction",
     "direction-desc": "Descending",
     "direction-asc": "Ascending",
-    "no-memos": "No memos."
+    "no-memos": "No memos.",
+    "click-to-show-nsfw-content": "Click to show NSFW contnet",
+    "click-to-hide-nsfw-content": "Click to hide NSFW content"
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -377,7 +379,8 @@
       "enable-memo-comments": "Enable memo comments",
       "enable-memo-location": "Enable memo location",
       "content-lenght-limit": "Content length limit (Byte)",
-      "reactions": "Reactions"
+      "reactions": "Reactions",
+      "enable-blur-nsfw-content": "Enable NSFW content blurring (add NSFW tags below)"
     },
     "version": "Version"
   },

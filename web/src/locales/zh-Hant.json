@@ -131,7 +131,9 @@
     "direction": "方向",
     "direction-desc": "降序",
     "direction-asc": "升序",
-    "no-memos": "沒有備忘錄"
+    "no-memos": "沒有備忘錄",
+    "click-to-show-nsfw-content": "點擊顯示 NSFW 內容",
+    "click-to-hide-nsfw-content": "點擊隱藏 NSFW 內容"
   },
   "message": {
     "archived-successfully": "封存成功",
@@ -367,7 +369,8 @@
       "enable-memo-comments": "啟用備忘評論",
       "enable-memo-location": "啟用備忘位置",
       "content-lenght-limit": "內容長度限制（位元組）",
-      "reactions": "表情回應"
+      "reactions": "表情回應",
+      "enable-blur-nsfw-content": "啟用 NSFW 內容模糊化（在下方添加 NSFW 標籤）"
     },
     "version": "版本"
   },

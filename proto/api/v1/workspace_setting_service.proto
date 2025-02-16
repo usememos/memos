@@ -116,6 +116,10 @@ message WorkspaceMemoRelatedSetting {
   repeated string reactions = 10;
   // disable_markdown_shortcuts disallow the registration of markdown shortcuts.
   bool disable_markdown_shortcuts = 11;
+  // enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
+  bool enable_blur_nsfw_content = 12;
+  // nsfw_tags is the list of tags that mark content as NSFW for blurring.
+  repeated string nsfw_tags = 13;
 }
 
 message GetWorkspaceSettingRequest {

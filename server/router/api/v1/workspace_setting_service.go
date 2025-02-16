@@ -239,6 +239,8 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		EnableLocation:           setting.EnableLocation,
 		Reactions:                setting.Reactions,
 		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
+		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
+		NsfwTags:                 setting.NsfwTags,
 	}
 }
 
@@ -257,5 +259,7 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		EnableLocation:           setting.EnableLocation,
 		Reactions:                setting.Reactions,
 		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
+		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
+		NsfwTags:                 setting.NsfwTags,
 	}
 }
