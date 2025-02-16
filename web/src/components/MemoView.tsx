@@ -10,8 +10,6 @@ import { userStore, workspaceStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
-import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
@@ -50,9 +48,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const workspaceMemoRelatedSetting =
-    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
-    WorkspaceMemoRelatedSetting.fromPartial({});
+  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(
     (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo?.name === memo.name,

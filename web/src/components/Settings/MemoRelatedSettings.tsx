@@ -12,9 +12,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = () => {
   const t = useTranslate();
-  const originalSetting = WorkspaceMemoRelatedSetting.fromPartial(
-    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
-  );
+  const originalSetting = workspaceStore.state.memoRelatedSetting;
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
 

@@ -7,8 +7,6 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { workspaceStore } from "@/store/v2";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { cn } from "@/utils";
 
 interface Props {
@@ -22,9 +20,7 @@ const ReactionSelector = (props: Props) => {
   const memoStore = useMemoStore();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const workspaceMemoRelatedSetting =
-    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
-    WorkspaceMemoRelatedSetting.fromPartial({});
+  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
 
   useClickAway(containerRef, () => {
     setOpen(false);

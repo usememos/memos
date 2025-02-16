@@ -20,8 +20,6 @@ import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relat
 import { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
-import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import VisibilityIcon from "../VisibilityIcon";
@@ -87,9 +85,7 @@ const MemoEditor = observer((props: Props) => {
           relation.memo?.name === memoName && relation.relatedMemo?.name !== memoName && relation.type === MemoRelation_Type.REFERENCE,
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
-  const workspaceMemoRelatedSetting =
-    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
-    WorkspaceMemoRelatedSetting.fromPartial({});
+  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
 
   useEffect(() => {
     editorRef.current?.setContent(contentCache || "");
