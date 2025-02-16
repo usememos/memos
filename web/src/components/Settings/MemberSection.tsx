@@ -13,12 +13,13 @@ import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 
 const stringifyUserRole = (role: User_Role) => {
+  const t = useTranslate();
   if (role === User_Role.HOST) {
     return "Host";
   } else if (role === User_Role.ADMIN) {
-    return "Admin";
+    return t("setting.member-section.admin");
   } else {
-    return "User";
+    return t("setting.member-section.user");
   }
 };
 
@@ -170,8 +171,8 @@ const MemberSection = () => {
         <div className="flex flex-col justify-start items-start gap-1">
           <span>{t("common.role")}</span>
           <RadioGroup orientation="horizontal" defaultValue={User_Role.USER} onChange={handleUserRoleInputChange}>
-            <Radio value={User_Role.USER} label="User" />
-            <Radio value={User_Role.ADMIN} label="Admin" />
+            <Radio value={User_Role.USER} label={t("setting.member-section.user")} />
+            <Radio value={User_Role.ADMIN} label={t("setting.member-section.admin")} />
           </RadioGroup>
         </div>
         <div className="mt-2">

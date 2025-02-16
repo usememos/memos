@@ -228,7 +228,9 @@
       "archive-warning": "Are you sure to archive {{username}}?",
       "create-a-member": "Create a member",
       "delete-member": "Delete Member",
-      "delete-warning": "Are you sure to delete {{username}}? THIS ACTION IS IRREVERSIBLE"
+      "delete-warning": "Are you sure to delete {{username}}? THIS ACTION IS IRREVERSIBLE",
+      "user": "User",
+      "admin": "Admin"
     },
     "my-account": "My Account",
     "preference": "Preferences",
