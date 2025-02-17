@@ -368,6 +368,11 @@
     "delete-tag": "删除标签",
     "no-tag-found": "没找到此标签"
   },
+  "markdown": {
+    "code-block": "代码块",
+    "checkbox": "复选框",
+    "content-syntax": "内容语法"
+  },
   "about": {
     "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享你的想法。",
     "github-repository": "GitHub 参保库",
