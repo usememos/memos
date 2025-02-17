@@ -85,7 +85,9 @@
     "properties": "Properties",
     "shortcut-filter": "Shortcut filter",
     "input": "Input",
-    "tree-mode": "Tree mode"
+    "tree-mode": "Tree mode",
+    "last-updated-at": "Last updated at",
+    "referencing": "Referencing"
   },
   "days": {
     "fri": "Fri",

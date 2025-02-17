@@ -82,7 +82,9 @@
     "properties": "属性",
     "shortcut-filter": "捷径过滤器",
     "input": "输入",
-    "tree-mode": "树模式"
+    "tree-mode": "树模式",
+    "last-updated-at": "最后更新时间",
+    "referencing": "相关笔记"
   },
   "days": {
     "fri": "五",
