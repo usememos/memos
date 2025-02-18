@@ -54,11 +54,22 @@ An open-source, self-hosted note-taking solution designed for seamless deploymen
 - **Open Source** 🦦: Memos embraces the future of open source, with all code available on GitHub for transparency and collaboration.
 - **Free to Use** 💸: Enjoy all features completely free, with no charges ever for any content.
 
-## Deploy with Docker in seconds
+## Deploy with Docker in seconds 🚀  
+
+Run the following command to quickly deploy Memos using Docker:  
 
 ```bash
 docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:stable
 ```
+
+### What This Command Does:
+- `-d` → Runs the container in detached mode (in the background).  
+- `--name memos` → Names the container `memos`.  
+- `-p 5230:5230` → Maps **port 5230** on your machine to **port 5230** in the container.  
+- `-v ~/.memos/:/var/opt/memos` →  
+  - `~/.memos/` is the **local directory** where your data will be stored.  
+  - `/var/opt/memos` is the **Docker container’s storage path** (do not modify this).  
+
 
 > [!NOTE]
 > This command is only applicable for Unix/Linux systems. For Windows, please refer to the detailed [documentation](https://www.usememos.com/docs/install/container-install#docker-on-windows).
