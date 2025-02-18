@@ -16,6 +16,35 @@ An open-source, self-hosted note-taking solution designed for seamless deploymen
 
 ![demo](https://www.usememos.com/demo.png)
 
+## 📌 Table of Contents  
+
+- [Releases](#releases)  
+- [Main Features](#main-features)  
+- [Deploy with Docker](#deploy-with-docker)  
+- [Contribution](#contribution)  
+- [Star History](#star-history)  
+- [Other Projects](#other-projects)  
+
+## Releases
+### **v0.24.0**
+- **Shortcuts for Filters**: Easily filter memos by tags, visibility, and timestamps.
+- **Database/API Changes**: Back up data before upgrading.
+- **Fixes**: Migration file issues, pin/unpin errors, calendar coloring.
+- **New**: Farsi (Persian) localization, multi-word search.
+
+### **v0.23.1**
+- **Persistent Filters**: Save filters in URLs.
+- **Localization**: Added French, German, Czech translations.
+- **Fixes**: ARM build panics, S3 URL styles, checkbox behavior.
+- **New**: Pull-to-refresh, improved hyperlink handling.
+
+### **v0.23.0**
+- **Global Default Visibility**: Set default memo visibility.
+- **Disable Markdown Shortcuts**: Optional toggle.
+- **Localization**: Added Georgian, Bahasa Indonesia, Portuguese (Portugal).
+- **Fixes**: Calendar logic, RSS titles, dynamic theme application.
+- **New**: Tag count in tree view, single-letter user IDs.
+
 ## Main Features
 
 - **Privacy First** 🏠: Take control of your data. All runtime data is securely stored in your local database.
@@ -41,6 +70,12 @@ Learn more about [other installation methods](https://www.usememos.com/docs/inst
 ## Contribution
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. We greatly appreciate any contributions you make. Thank you for being a part of our community! 🥰
+
+Here's how to get started:
+1. Fork the repository.
+2. Set up your development environment.
+3. Create a new branch and make your changes.
+4. Submit a pull request with a detailed description of your changes.
 
 ## Star history
 
