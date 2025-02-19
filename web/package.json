@@ -19,7 +19,6 @@
     "@mui/joy": "5.0.0-beta.51",
     "@radix-ui/react-popover": "^1.1.5",
     "@usememos/mui": "0.0.1-alpha.26",
-    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
     "dayjs": "^1.11.13",
