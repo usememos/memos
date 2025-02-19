@@ -219,7 +219,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           </div>
           <div
             className={cn(
-              "flex flex-col justify-start items-start w-full",
+              "w-full flex flex-col justify-start items-start gap-2",
               nsfw && !showNSFWContent && "blur-lg transition-all duration-200",
             )}
           >
