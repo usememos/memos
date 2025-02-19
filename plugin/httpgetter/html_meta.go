@@ -3,6 +3,7 @@ package httpgetter
 import (
 	"errors"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 
@@ -17,7 +18,7 @@ type HTMLMeta struct {
 }
 
 func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
-	if _, err := url.Parse(urlStr); err != nil {
+	if err := validateURL(urlStr); err != nil {
 		return nil, err
 	}
 
@@ -34,6 +35,8 @@ func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
 	if mediatype != "text/html" {
 		return nil, errors.New("not a HTML page")
 	}
+
+	// TODO: limit the size of the response body
 
 	htmlMeta := extractHTMLMeta(response.Body)
 	return htmlMeta, nil
@@ -95,4 +98,26 @@ func extractMetaProperty(token html.Token, prop string) (content string, ok bool
 		}
 	}
 	return content, ok
+}
+
+func validateURL(urlStr string) error {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return errors.New("invalid URL format")
+	}
+
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return errors.New("only http/https protocols are allowed")
+	}
+
+	if host := u.Hostname(); host != "" {
+		ip := net.ParseIP(host)
+		if ip != nil {
+			if ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() {
+				return errors.New("internal IP addresses are not allowed")
+			}
+		}
+	}
+
+	return nil
 }
