@@ -330,6 +330,10 @@
       "title": "访问令牌",
       "description": "该账号下全部的访问令牌",
       "create-dialog": {
+        "create-access-token": "创建令牌",
+        "description": "描述",
+        "some-description": "请输入描述...",
+        "expiration": "过期时间",
         "created-at": "创建时间",
         "expires-at": "过期时间",
         "duration-never": "从不",
@@ -338,7 +342,14 @@
       }
     },
     "webhook-section": {
-      "no-webhooks-found": "没有 webhooks。"
+      "no-webhooks-found": "没有 webhooks。",
+      "create-dialog": {
+        "create-webhook": "创建 Webhook",
+        "edit-webhook": "编辑 webhook",
+        "an-easy-to-remember-name": "请输入一个容易记住的标题",
+        "title": "标题",
+        "payload-url": "请输入有效的 URL"
+      }
     },
     "workspace-section": {
       "disallow-user-registration": "禁用用户注册",
