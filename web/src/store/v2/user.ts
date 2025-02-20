@@ -40,6 +40,19 @@ const userStore = (() => {
     return user;
   };
 
+  const fetchUserByUsername = async (username: string) => {
+    const user = await userServiceClient.getUser({
+      name: username,
+    });
+    state.setPartial({
+      userMapByName: {
+        ...state.userMapByName,
+        [user.name]: user,
+      },
+    });
+    return user;
+  };
+
   const getUserByName = (name: string) => {
     return state.userMapByName[name];
   };
@@ -128,6 +141,7 @@ const userStore = (() => {
   return {
     state,
     getOrFetchUserByName,
+    fetchUserByUsername,
     getUserByName,
     fetchUsers,
     updateUser,
