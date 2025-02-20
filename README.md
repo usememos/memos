@@ -11,6 +11,7 @@ An open-source, self-hosted note-taking solution designed for seamless deploymen
 
 <p>
   <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg"/></a>
+  <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker image size" src="https://img.shields.io/docker/image-size/neosmemo/memos?sort=semver"/></a>
   <a href="https://discord.gg/tfPJa4UmAv"><img alt="Discord" src="https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5" /></a>
 </p>
 
