@@ -41,8 +41,8 @@ const userStore = (() => {
   };
 
   const fetchUserByUsername = async (username: string) => {
-    const user = await userServiceClient.getUser({
-      name: username,
+    const user = await userServiceClient.getUserByUsername({
+      username,
     });
     state.setPartial({
       userMapByName: {
