@@ -1,15 +1,29 @@
 package httpgetter
 
 import (
-	"errors"
 	"io"
 	"net"
 	"net/http"
 	"net/url"
 
+	"github.com/pkg/errors"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
+
+var ErrInternalIP = errors.New("internal IP addresses are not allowed")
+
+var httpClient = &http.Client{
+	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		if err := validateURL(req.URL.String()); err != nil {
+			return errors.Wrap(err, "redirect to internal IP")
+		}
+		if len(via) >= 10 {
+			return errors.New("too many redirects")
+		}
+		return nil
+	},
+}
 
 type HTMLMeta struct {
 	Title       string `json:"title"`
@@ -22,7 +36,7 @@ func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
 		return nil, err
 	}
 
-	response, err := http.Get(urlStr)
+	response, err := httpClient.Get(urlStr)
 	if err != nil {
 		return nil, err
 	}
@@ -110,12 +124,28 @@ func validateURL(urlStr string) error {
 		return errors.New("only http/https protocols are allowed")
 	}
 
-	if host := u.Hostname(); host != "" {
-		ip := net.ParseIP(host)
-		if ip != nil {
-			if ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() {
-				return errors.New("internal IP addresses are not allowed")
-			}
+	host := u.Hostname()
+	if host == "" {
+		return errors.New("empty hostname")
+	}
+
+	// check if the hostname is an IP
+	if ip := net.ParseIP(host); ip != nil {
+		if ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() {
+			return errors.Wrap(ErrInternalIP, ip.String())
+		}
+		return nil
+	}
+
+	// check if it's a hostname, resolve it and check all returned IPs
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		return errors.Errorf("failed to resolve hostname: %v", err)
+	}
+
+	for _, ip := range ips {
+		if ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() {
+			return errors.Wrapf(ErrInternalIP, "host=%s, ip=%s", host, ip.String())
 		}
 	}
 
