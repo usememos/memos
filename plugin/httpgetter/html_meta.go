@@ -2,6 +2,7 @@ package httpgetter
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -39,6 +40,7 @@ func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
 	// TODO: limit the size of the response body
 
 	htmlMeta := extractHTMLMeta(response.Body)
+	enrichSiteMeta(response.Request.URL, htmlMeta)
 	return htmlMeta, nil
 }
 
@@ -120,4 +122,15 @@ func validateURL(urlStr string) error {
 	}
 
 	return nil
+}
+
+func enrichSiteMeta(url *url.URL, meta *HTMLMeta) {
+	if url.Hostname() == "www.youtube.com" {
+		if url.Path == "/watch" {
+			vid := url.Query().Get("v")
+			if vid != "" {
+				meta.Image = fmt.Sprintf("https://img.youtube.com/vi/%s/mqdefault.jpg", vid)
+			}
+		}
+	}
 }
