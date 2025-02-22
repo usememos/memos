@@ -54,7 +54,7 @@ const MemoRelationListView = (props: Props) => {
             onClick={() => setSelectedTab("referenced")}
           >
             <MilestoneIcon className="w-3 h-auto shrink-0 opacity-70" />
-            <span>Referenced by</span>
+            <span>{t("common.referenced-by")}</span>
             <span className="opacity-80">({referencedMemoList.length})</span>
           </button>
         )}
