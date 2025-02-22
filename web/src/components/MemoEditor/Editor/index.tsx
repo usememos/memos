@@ -171,13 +171,13 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       let insertText = indentationMatch ? indentationMatch[0] : ""; // Keep the indentation of the previous line
       if (lastNode.type === NodeType.TASK_LIST_ITEM) {
         const { symbol } = lastNode.taskListItemNode as TaskListItemNode;
-        insertText = `${symbol} [ ] `;
+        insertText += `${symbol} [ ] `;
       } else if (lastNode.type === NodeType.UNORDERED_LIST_ITEM) {
         const { symbol } = lastNode.unorderedListItemNode as UnorderedListItemNode;
-        insertText = `${symbol} `;
+        insertText += `${symbol} `;
       } else if (lastNode.type === NodeType.ORDERED_LIST_ITEM) {
         const { number } = lastNode.orderedListItemNode as OrderedListItemNode;
-        insertText = `${Number(number) + 1}. `;
+        insertText += `${Number(number) + 1}. `;
       }
       if (insertText) {
         editorActions.insertText(insertText);
