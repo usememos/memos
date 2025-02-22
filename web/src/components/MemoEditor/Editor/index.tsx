@@ -155,14 +155,14 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     if (!lastNode) {
       return undefined;
     }
-    if (lastNode.type === NodeType.LIST){
+    if (lastNode.type === NodeType.LIST) {
       const children = lastNode.listNode?.children;
       if (children) {
         return getLastNode(children);
       }
     }
-    return lastNode
-  }
+    return lastNode;
+  };
 
   const handleEditorKeyDown = async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !isInIME) {
