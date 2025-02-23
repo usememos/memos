@@ -54,6 +54,9 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
             {linkMetadata.description && (
               <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>
             )}
+            {linkMetadata.image && (
+              <img className="mt-1 w-full h-32 object-cover rounded" src={linkMetadata.image} alt={linkMetadata.title} />
+            )}
           </div>
         )
       }
