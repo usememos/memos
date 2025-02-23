@@ -33,6 +33,7 @@ import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
+import RecordAudioButton from "./ActionButton/RecordAudioButton";
 
 export interface Props {
   className?: string;
@@ -466,6 +467,7 @@ const MemoEditor = observer((props: Props) => {
             <TagSelector editorRef={editorRef} />
             <MarkdownMenu editorRef={editorRef} />
             <UploadResourceButton />
+            <RecordAudioButton />
             <AddMemoRelationPopover editorRef={editorRef} />
             {workspaceMemoRelatedSetting.enableLocation && (
               <LocationSelector
