@@ -18,7 +18,7 @@ const MemoResource: React.FC<Props> = (props: Props) => {
   return (
     <div className={`w-auto flex flex-row justify-start items-center text-gray-500 dark:text-gray-400 hover:opacity-80 ${className}`}>
       {resource.type.startsWith("audio") ? (
-        <audio src={resourceUrl} controls></audio>
+        <audio src={resourceUrl} controls className="max-w-full" controlsList="nodownload" />
       ) : (
         <>
           <ResourceIcon className="!w-4 !h-4 mr-1" resource={resource} />
