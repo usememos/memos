@@ -14,22 +14,61 @@ const RecordAudioButton = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
 
+  // 检测浏览器支持的音频格式
+  const getSupportedMimeType = () => {
+    const types = [
+      'audio/webm',
+      'audio/mp4',
+      'audio/aac',
+      'audio/wav',
+      'audio/ogg'
+    ];
+    
+    for (const type of types) {
+      if (MediaRecorder.isTypeSupported(type)) {
+        return type;
+      }
+    }
+    return null;
+  };
+
   const startRecording = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      
+      const mimeType = getSupportedMimeType();
+      if (!mimeType) {
+        throw new Error("No supported audio format found");
+      }
+
+      const recorder = new MediaRecorder(stream, {
+        mimeType: mimeType
+      });
+      
       const chunks: BlobPart[] = [];
 
       recorder.ondataavailable = (e) => chunks.push(e.data);
       recorder.onstop = async () => {
-        const blob = new Blob(chunks, { type: "audio/webm" });
+        const blob = new Blob(chunks, { type: mimeType });
         const buffer = new Uint8Array(await blob.arrayBuffer());
         
+        // 根据不同的 mimeType 选择合适的文件扩展名
+        const getFileExtension = (mimeType: string) => {
+          switch (mimeType) {
+            case 'audio/webm': return 'webm';
+            case 'audio/mp4': return 'm4a';
+            case 'audio/aac': return 'aac';
+            case 'audio/wav': return 'wav';
+            case 'audio/ogg': return 'ogg';
+            default: return 'webm';
+          }
+        };
+
         try {
           const resource = await resourceStore.createResource({
             resource: Resource.fromPartial({
-              filename: `recording-${new Date().getTime()}.webm`,
-              type: "audio/webm",
+              filename: `recording-${new Date().getTime()}.${getFileExtension(mimeType)}`,
+              type: mimeType,
               size: buffer.length,
               content: buffer
             }),
@@ -43,14 +82,15 @@ const RecordAudioButton = () => {
         stream.getTracks().forEach(track => track.stop());
       };
 
-      recorder.start();
+      // 每秒记录一次数据
+      recorder.start(1000);
       setMediaRecorder(recorder);
       setIsRecording(true);
     } catch (error) {
       console.error(error);
-      toast.error("无法访问麦克风");
+      toast.error(t("message.microphone-not-available"));
     }
-  }, [context, resourceStore]);
+  }, [context, resourceStore, t]);
 
   const stopRecording = useCallback(() => {
     if (mediaRecorder) {
