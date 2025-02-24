@@ -84,7 +84,9 @@
     "input": "输入",
     "tree-mode": "树模式",
     "last-updated-at": "最后更新时间",
-    "referencing": "相关笔记"
+    "referencing": "引用",
+    "referenced-by": "被引用",
+    "relations": "关系图"
   },
   "days": {
     "fri": "五",

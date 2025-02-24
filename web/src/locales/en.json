@@ -87,7 +87,9 @@
     "input": "Input",
     "tree-mode": "Tree mode",
     "last-updated-at": "Last updated at",
-    "referencing": "Referencing"
+    "referencing": "Referencing",
+    "referenced-by": "Referenced by",
+    "relations": "Relations"
   },
   "days": {
     "fri": "Fri",
