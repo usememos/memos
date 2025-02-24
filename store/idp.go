@@ -131,13 +131,13 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 	return identityProvider, nil
 }
 
-func (s *Store) DeleteIdentityProvider(ctx context.Context, delete *DeleteIdentityProvider) error {
-	err := s.driver.DeleteIdentityProvider(ctx, delete)
+func (s *Store) DeleteIdentityProvider(ctx context.Context, deleteIdp *DeleteIdentityProvider) error {
+	err := s.driver.DeleteIdentityProvider(ctx, deleteIdp)
 	if err != nil {
 		return err
 	}
 
-	s.idpCache.Delete(delete.ID)
+	s.idpCache.Delete(deleteIdp.ID)
 	return nil
 }
 

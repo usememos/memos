@@ -63,10 +63,10 @@ func RandomString(n int) (string, error) {
 }
 
 // ReplaceString replaces all occurrences of old in slice with new.
-func ReplaceString(slice []string, old, new string) []string {
+func ReplaceString(slice []string, old, newStr string) []string {
 	for i, s := range slice {
 		if s == old {
-			slice[i] = new
+			slice[i] = newStr
 		}
 	}
 	return slice

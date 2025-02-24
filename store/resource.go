@@ -97,8 +97,8 @@ func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) erro
 	return s.driver.UpdateResource(ctx, update)
 }
 
-func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) error {
-	resource, err := s.GetResource(ctx, &FindResource{ID: &delete.ID})
+func (s *Store) DeleteResource(ctx context.Context, deleteResource *DeleteResource) error {
+	resource, err := s.GetResource(ctx, &FindResource{ID: &deleteResource.ID})
 	if err != nil {
 		return errors.Wrap(err, "failed to get resource")
 	}
@@ -151,5 +151,5 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 		}
 	}
 
-	return s.driver.DeleteResource(ctx, delete)
+	return s.driver.DeleteResource(ctx, deleteResource)
 }
