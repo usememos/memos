@@ -39,6 +39,6 @@ func (s *Store) ListMemoRelations(ctx context.Context, find *FindMemoRelation) (
 	return s.driver.ListMemoRelations(ctx, find)
 }
 
-func (s *Store) DeleteMemoRelation(ctx context.Context, deleteMR *DeleteMemoRelation) error {
-	return s.driver.DeleteMemoRelation(ctx, deleteMR)
+func (s *Store) DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error {
+	return s.driver.DeleteMemoRelation(ctx, delete)
 }
