@@ -27,7 +27,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
           <div className="relative w-full h-36 border rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
             <MemoRelationForceGraph className="w-full h-full" memo={memo} parentPage={parentPage} />
             <div className="absolute top-1 left-2 text-xs opacity-60 font-mono gap-1 flex flex-row items-center">
-              <span>Relations</span>
+              <span>{t("common.relations")}</span>
               <span className="text-xs opacity-60">(Beta)</span>
             </div>
           </div>
