@@ -60,7 +60,7 @@ const StatisticsView = () => {
             showMonthYearPicker
             showFullMonthYearPicker
             customInput={
-              <span className="cursor-pointer text-base md:text-lg hover:text-gray-600 dark:hover:text-gray-300">
+              <span className="cursor-pointer text-base hover:text-gray-600 dark:hover:text-gray-300">
                 {dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}
               </span>
             }

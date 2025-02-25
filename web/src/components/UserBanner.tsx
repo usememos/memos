@@ -1,5 +1,5 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
-import { LogOutIcon, SmileIcon } from "lucide-react";
+import { LogOutIcon, SmileIcon, User2Icon } from "lucide-react";
 import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -17,10 +17,10 @@ const UserBanner = (props: Props) => {
   const { collapsed } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const user = useCurrentUser();
+  const currentUser = useCurrentUser();
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
-  const title = (user ? user.nickname || user.username : workspaceGeneralSetting.customProfile?.title) || "Memos";
-  const avatarUrl = (user ? user.avatarUrl : workspaceGeneralSetting.customProfile?.logoUrl) || "/full-logo.webp";
+  const title = (currentUser ? currentUser.nickname || currentUser.username : workspaceGeneralSetting.customProfile?.title) || "Memos";
+  const avatarUrl = (currentUser ? currentUser.avatarUrl : workspaceGeneralSetting.customProfile?.logoUrl) || "/full-logo.webp";
 
   const handleSignOut = async () => {
     await authServiceClient.signOut({});
@@ -30,10 +30,10 @@ const UserBanner = (props: Props) => {
   return (
     <div className="relative w-full h-auto px-1 shrink-0">
       <Dropdown>
-        <MenuButton disabled={!user} slots={{ root: "div" }}>
+        <MenuButton disabled={!currentUser} slots={{ root: "div" }}>
           <div
             className={cn(
-              "py-1 w-auto flex flex-row justify-start items-center cursor-pointer text-gray-800 dark:text-gray-400",
+              "w-auto flex flex-row justify-start items-center cursor-pointer text-gray-800 dark:text-gray-400",
               collapsed ? "px-1" : "px-3",
             )}
           >
@@ -42,6 +42,10 @@ const UserBanner = (props: Props) => {
           </div>
         </MenuButton>
         <Menu placement="bottom-start" style={{ zIndex: "9999" }}>
+          <MenuItem onClick={() => navigateTo(`/u/${encodeURIComponent(currentUser.username)}`)}>
+            <User2Icon className="w-4 h-auto opacity-60" />
+            <span className="truncate">{t("common.profile")}</span>
+          </MenuItem>
           <MenuItem onClick={handleSignOut}>
             <LogOutIcon className="w-4 h-auto opacity-60" />
             <span className="truncate">{t("common.sign-out")}</span>

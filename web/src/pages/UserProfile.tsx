@@ -7,7 +7,6 @@ import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
-import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
@@ -77,8 +76,7 @@ const UserProfile = () => {
   };
 
   return (
-    <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
-      <MobileHeader />
+    <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center pb-8">
       <div className="w-full px-4 sm:px-6 flex flex-col justify-start items-center">
         {!loadingState.isLoading &&
           (user ? (

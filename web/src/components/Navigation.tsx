@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/joy";
-import { ArchiveIcon, BellIcon, Globe2Icon, HomeIcon, LogInIcon, PaperclipIcon, SettingsIcon, SmileIcon, User2Icon } from "lucide-react";
+import { ArchiveIcon, BellIcon, PaperclipIcon, SettingsIcon, SmileIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
@@ -37,29 +37,11 @@ const Navigation = observer((props: Props) => {
     userStore.fetchInboxes();
   }, []);
 
-  const homeNavLink: NavLinkItem = {
-    id: "header-home",
-    path: Routes.ROOT,
-    title: t("common.home"),
-    icon: <HomeIcon className="w-6 h-auto opacity-70 shrink-0" />,
-  };
   const resourcesNavLink: NavLinkItem = {
     id: "header-resources",
     path: Routes.RESOURCES,
     title: t("common.resources"),
     icon: <PaperclipIcon className="w-6 h-auto opacity-70 shrink-0" />,
-  };
-  const exploreNavLink: NavLinkItem = {
-    id: "header-explore",
-    path: Routes.EXPLORE,
-    title: t("common.explore"),
-    icon: <Globe2Icon className="w-6 h-auto opacity-70 shrink-0" />,
-  };
-  const profileNavLink: NavLinkItem = {
-    id: "header-profile",
-    path: user ? `/u/${encodeURIComponent(user.username)}` : "",
-    title: t("common.profile"),
-    icon: <User2Icon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const inboxNavLink: NavLinkItem = {
     id: "header-inbox",
@@ -86,12 +68,6 @@ const Navigation = observer((props: Props) => {
     title: t("common.settings"),
     icon: <SettingsIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
-  const signInNavLink: NavLinkItem = {
-    id: "header-auth",
-    path: Routes.AUTH,
-    title: t("common.sign-in"),
-    icon: <LogInIcon className="w-6 h-auto opacity-70 shrink-0" />,
-  };
   const aboutNavLink: NavLinkItem = {
     id: "header-about",
     path: Routes.ABOUT,
@@ -99,16 +75,14 @@ const Navigation = observer((props: Props) => {
     icon: <SmileIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
 
-  const navLinks: NavLinkItem[] = user
-    ? [homeNavLink, resourcesNavLink, exploreNavLink, profileNavLink, inboxNavLink, archivedNavLink, settingNavLink]
-    : [exploreNavLink, signInNavLink, aboutNavLink];
+  const navLinks: NavLinkItem[] = user ? [resourcesNavLink, inboxNavLink, archivedNavLink, settingNavLink] : [aboutNavLink];
 
   return (
     <header
       className={cn("w-full h-full overflow-auto flex flex-col justify-start items-start py-4 md:pt-6 z-30 hide-scrollbar", className)}
     >
       <UserBanner collapsed={collapsed} />
-      <div className="w-full px-1 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
+      <div className="w-full mt-2 px-1 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
         {navLinks.map((navLink) => (
           <NavLink
             className={({ isActive }) =>

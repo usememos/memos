@@ -72,7 +72,7 @@ const MemoFilters = () => {
   }
 
   return (
-    <div className="w-full mt-3 flex flex-row justify-start items-center flex-wrap gap-x-2 gap-y-1">
+    <div className="w-full mt-2 flex flex-row justify-start items-center flex-wrap gap-x-2 gap-y-1">
       {filters.map((filter) => (
         <div
           key={getMemoFilterKey(filter)}
