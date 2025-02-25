@@ -1,10 +1,10 @@
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
-import StatisticsView from "@/components/StatisticsView";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoList, useUserStatsStore } from "@/store/v1";
 import { cn } from "@/utils";
 import MemoFilters from "../MemoFilters";
+import StatisticsView from "../StatisticsView";
 import ShortcutsSection from "./ShortcutsSection";
 import TagsSection from "./TagsSection";
 
@@ -30,7 +30,7 @@ const HomeSidebar = (props: Props) => {
       <SearchBar />
       <MemoFilters />
       <StatisticsView />
-      <ShortcutsSection />
+      {currentUser && <ShortcutsSection />}
       <TagsSection />
     </aside>
   );
