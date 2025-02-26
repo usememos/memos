@@ -61,7 +61,7 @@ const HomeSidebar = (props: Props) => {
       await userStatsStore.listUserStats(parent);
     },
     300,
-    [memoList.size(), userStatsStore.stateId, currentUser, location.pathname],
+    [memoList.size(), userStatsStore.stateId, location.pathname],
   );
 
   return (
