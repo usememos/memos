@@ -44,8 +44,21 @@ export default defineConfig({
     rollupOptions: {
       output: {
         entryFileNames: "app.[hash].js",
-        chunkFileNames: "assets/chunk-vendors.[hash].js",
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split("/") : [];
+          const name = facadeModuleId[facadeModuleId.length - 2] || "[name]";
+          return `assets/${name}/[name].[hash].js`;
+        },
         assetFileNames: "assets/[name].[hash][extname]",
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          "mui-vendor": ["@mui/joy", "@emotion/react", "@emotion/styled"],
+          "utils-vendor": ["dayjs", "lodash-es", "mobx", "mobx-react-lite"],
+          "katex-vendor": ["katex"],
+          "highlight-vendor": ["highlight.js"],
+          "mermaid-vendor": ["mermaid"],
+          "map-vendor": ["leaflet", "react-leaflet"],
+        },
       },
     },
   },
