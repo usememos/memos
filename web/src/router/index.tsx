@@ -6,7 +6,6 @@ import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home";
 import Loading from "@/pages/Loading";
 
-const About = lazy(() => import("@/pages/About"));
 const AdminSignIn = lazy(() => import("@/pages/AdminSignIn"));
 const Archived = lazy(() => import("@/pages/Archived"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
@@ -29,7 +28,6 @@ export enum Routes {
   ARCHIVED = "/archived",
   SETTING = "/setting",
   EXPLORE = "/explore",
-  ABOUT = "/about",
   AUTH = "/auth",
 }
 
@@ -141,14 +139,6 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Loading />}>
                 <MemoDetail />
-              </Suspense>
-            ),
-          },
-          {
-            path: Routes.ABOUT,
-            element: (
-              <Suspense fallback={<Loading />}>
-                <About />
               </Suspense>
             ),
           },

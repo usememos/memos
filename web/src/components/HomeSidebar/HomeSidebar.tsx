@@ -1,4 +1,4 @@
-import { Globe2Icon, HomeIcon, LogInIcon } from "lucide-react";
+import { Globe2Icon, HomeIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
@@ -41,14 +41,8 @@ const HomeSidebar = (props: Props) => {
     title: t("common.explore"),
     icon: <Globe2Icon className="w-4 h-auto opacity-70 shrink-0" />,
   };
-  const signInNavLink: NavLinkItem = {
-    id: "header-auth",
-    path: Routes.AUTH,
-    title: t("common.sign-in"),
-    icon: <LogInIcon className="w-4 h-auto opacity-70 shrink-0" />,
-  };
 
-  const navLinks: NavLinkItem[] = currentUser ? [homeNavLink, exploreNavLink] : [exploreNavLink, signInNavLink];
+  const navLinks: NavLinkItem[] = currentUser ? [homeNavLink, exploreNavLink] : [exploreNavLink];
 
   useDebounce(
     async () => {

@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/joy";
-import { ArchiveIcon, BellIcon, PaperclipIcon, SettingsIcon, SmileIcon } from "lucide-react";
+import { ArchiveIcon, BellIcon, PaperclipIcon, SettingsIcon, UserCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
@@ -9,6 +9,7 @@ import { userStore } from "@/store/v2";
 import { Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
+import BrandBanner from "./BrandBanner";
 import UserBanner from "./UserBanner";
 
 interface NavLinkItem {
@@ -26,11 +27,11 @@ interface Props {
 const Navigation = observer((props: Props) => {
   const { collapsed, className } = props;
   const t = useTranslate();
-  const user = useCurrentUser();
+  const currentUser = useCurrentUser();
   const hasUnreadInbox = userStore.state.inboxes.some((inbox) => inbox.status === Inbox_Status.UNREAD);
 
   useEffect(() => {
-    if (!user) {
+    if (!currentUser) {
       return;
     }
 
@@ -68,21 +69,24 @@ const Navigation = observer((props: Props) => {
     title: t("common.settings"),
     icon: <SettingsIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
-  const aboutNavLink: NavLinkItem = {
-    id: "header-about",
-    path: Routes.ABOUT,
-    title: t("common.about"),
-    icon: <SmileIcon className="w-6 h-auto opacity-70 shrink-0" />,
+  const signInNavLink: NavLinkItem = {
+    id: "header-auth",
+    path: Routes.AUTH,
+    title: t("common.sign-in"),
+    icon: <UserCircleIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
 
-  const navLinks: NavLinkItem[] = user ? [resourcesNavLink, inboxNavLink, archivedNavLink, settingNavLink] : [aboutNavLink];
+  const navLinks: NavLinkItem[] = currentUser ? [resourcesNavLink, inboxNavLink, archivedNavLink, settingNavLink] : [signInNavLink];
 
   return (
     <header
-      className={cn("w-full h-full overflow-auto flex flex-col justify-start items-start py-4 md:pt-6 z-30 hide-scrollbar", className)}
+      className={cn(
+        "w-full h-full overflow-auto flex flex-col justify-between items-start gap-4 py-4 md:pt-6 z-30 hide-scrollbar",
+        className,
+      )}
     >
-      <UserBanner collapsed={collapsed} />
-      <div className="w-full mt-2 px-1 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
+      <div className="w-full px-1 py-2 flex flex-col justify-start items-start space-y-2 overflow-auto hide-scrollbar shrink">
+        <BrandBanner className="mb-2" collapsed={collapsed} />
         {navLinks.map((navLink) => (
           <NavLink
             className={({ isActive }) =>
@@ -108,6 +112,7 @@ const Navigation = observer((props: Props) => {
           </NavLink>
         ))}
       </div>
+      {currentUser && <UserBanner collapsed={collapsed} />}
     </header>
   );
 });
