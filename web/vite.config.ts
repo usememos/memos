@@ -43,12 +43,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        entryFileNames: "app.[hash].js",
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split("/") : [];
-          const name = facadeModuleId[facadeModuleId.length - 2] || "[name]";
-          return `assets/${name}/[name].[hash].js`;
-        },
+        entryFileNames: "assets/app.[hash].js",
+        chunkFileNames: "assets/[name].[hash].js",
         assetFileNames: "assets/[name].[hash][extname]",
         manualChunks: {
           "react-vendor": ["react", "react-dom", "react-router-dom"],
@@ -57,7 +53,7 @@ export default defineConfig({
           "katex-vendor": ["katex"],
           "highlight-vendor": ["highlight.js"],
           "mermaid-vendor": ["mermaid"],
-          "map-vendor": ["leaflet", "react-leaflet"],
+          "leaflet-vendor": ["leaflet", "react-leaflet"],
         },
       },
     },
