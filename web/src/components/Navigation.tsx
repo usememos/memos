@@ -85,7 +85,7 @@ const Navigation = observer((props: Props) => {
         className,
       )}
     >
-      <div className="w-full px-1 py-2 flex flex-col justify-start items-start space-y-2 overflow-auto hide-scrollbar shrink">
+      <div className="w-full px-1 py-1 flex flex-col justify-start items-start space-y-2 overflow-auto hide-scrollbar shrink">
         <BrandBanner className="mb-2" collapsed={collapsed} />
         {navLinks.map((navLink) => (
           <NavLink
