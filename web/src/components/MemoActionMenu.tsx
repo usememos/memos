@@ -15,7 +15,8 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { markdownServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useMemoStore, useUserStatsStore } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
@@ -48,14 +49,13 @@ const MemoActionMenu = (props: Props) => {
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const memoStore = useMemoStore();
-  const userStatsStore = useUserStatsStore();
   const isArchived = memo.state === State.ARCHIVED;
   const hasCompletedTaskList = checkHasCompletedTaskList(memo);
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
 
   const memoUpdatedCallback = () => {
     // Refresh user stats.
-    userStatsStore.setStateId();
+    userStore.setStatsStateId();
   };
 
   const handleTogglePinMemoBtnClick = async () => {

@@ -31,7 +31,7 @@ const UserProfile = () => {
     }
 
     userStore
-      .fetchUserByUsername(username)
+      .getOrFetchUserByUsername(username)
       .then((user) => {
         setUser(user);
         loadingState.setFinish();

@@ -1,11 +1,12 @@
 import { last } from "lodash-es";
 import { Globe2Icon, HomeIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { matchPath, NavLink, useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Routes } from "@/router";
-import { useMemoList, useUserStatsStore } from "@/store/v1";
+import { useMemoList } from "@/store/v1";
 import { userStore } from "@/store/v2";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -25,12 +26,11 @@ interface Props {
   className?: string;
 }
 
-const HomeSidebar = (props: Props) => {
+const HomeSidebar = observer((props: Props) => {
   const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
   const memoList = useMemoList();
-  const userStatsStore = useUserStatsStore();
 
   const homeNavLink: NavLinkItem = {
     id: "header-home",
@@ -55,13 +55,13 @@ const HomeSidebar = (props: Props) => {
       }
       if (matchPath("/u/:username", location.pathname) !== null) {
         const username = last(location.pathname.split("/"));
-        const user = await userStore.fetchUserByUsername(username || "");
+        const user = await userStore.getOrFetchUserByUsername(username || "");
         parent = user.name;
       }
-      await userStatsStore.listUserStats(parent);
+      await userStore.fetchUserStats(parent);
     },
     300,
-    [memoList.size(), userStatsStore.stateId, location.pathname],
+    [memoList.size(), userStore.state.statsStateId, location.pathname],
   );
 
   return (
@@ -93,6 +93,6 @@ const HomeSidebar = (props: Props) => {
       </div>
     </aside>
   );
-};
+});
 
 export default HomeSidebar;

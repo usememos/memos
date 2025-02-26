@@ -2,21 +2,22 @@ import { Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
 import { CheckCircleIcon, ChevronRightIcon, ChevronLeftIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import i18n from "@/i18n";
-import { useMemoFilterStore, useUserStatsStore } from "@/store/v1";
+import { useMemoFilterStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { UserStats_MemoTypeStats } from "@/types/proto/api/v1/user_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
 
-const StatisticsView = () => {
+const StatisticsView = observer(() => {
   const t = useTranslate();
   const memoFilterStore = useMemoFilterStore();
-  const userStatsStore = useUserStatsStore();
   const [memoTypeStats, setMemoTypeStats] = useState<UserStats_MemoTypeStats>(UserStats_MemoTypeStats.fromPartial({}));
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDate] = useState(new Date());
@@ -25,7 +26,7 @@ const StatisticsView = () => {
   useAsyncEffect(async () => {
     const memoTypeStats = UserStats_MemoTypeStats.fromPartial({});
     const displayTimeList: Date[] = [];
-    for (const stats of Object.values(userStatsStore.userStatsByName)) {
+    for (const stats of Object.values(userStore.state.userStatsByName)) {
       displayTimeList.push(...stats.memoDisplayTimestamps);
       if (stats.memoTypeStats) {
         memoTypeStats.codeCount += stats.memoTypeStats.codeCount;
@@ -36,7 +37,7 @@ const StatisticsView = () => {
     }
     setMemoTypeStats(memoTypeStats);
     setActivityStats(countBy(displayTimeList.map((date) => dayjs(date).format("YYYY-MM-DD"))));
-  }, [userStatsStore.userStatsByName, userStatsStore.stateId]);
+  }, [userStore.state.userStatsByName]);
 
   const onCalendarClick = (date: string) => {
     memoFilterStore.removeFilter((f) => f.factor === "displayTime");
@@ -135,6 +136,6 @@ const StatisticsView = () => {
       </div>
     </div>
   );
-};
+});
 
 export default StatisticsView;
