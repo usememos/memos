@@ -2715,8 +2715,11 @@ definitions:
   v1LinkNode:
     type: object
     properties:
-      text:
-        type: string
+      content:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Node'
       url:
         type: string
   v1ListAllUserStatsResponse:
