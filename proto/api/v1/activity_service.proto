@@ -20,7 +20,10 @@ service ActivityService {
 message Activity {
   // The name of the activity.
   // Format: activities/{id}
-  string name = 1;
+  string name = 1 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = IDENTIFIER
+  ];
   // The name of the creator.
   // Format: users/{user}
   string creator = 2;

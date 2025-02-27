@@ -2530,6 +2530,7 @@ definitions:
         title: |-
           The name of the activity.
           Format: activities/{id}
+        readOnly: true
       creator:
         type: string
         title: |-
@@ -2875,14 +2876,8 @@ definitions:
     properties:
       memo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: |-
-          The name of memo.
-          Format: memos/{id}
       relatedMemo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: |-
-          The name of related memo.
-          Format: memos/{id}
       type:
         $ref: '#/definitions/v1MemoRelationType'
   v1MemoRelationMemo:
@@ -3081,6 +3076,7 @@ definitions:
         description: |-
           The name of the resource.
           Format: resources/{resource}, resource is the user defined if or uuid.
+        readOnly: true
       createTime:
         type: string
         format: date-time
@@ -3216,6 +3212,7 @@ definitions:
         description: |-
           The name of the user.
           Format: users/{id}, id is the system generated auto-incremented id.
+        readOnly: true
       role:
         $ref: '#/definitions/UserRole'
       username:
