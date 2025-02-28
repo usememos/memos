@@ -1,24 +1,9 @@
-import { observer } from "mobx-react-lite";
-import AppearanceSelect from "@/components/AppearanceSelect";
-import LocaleSelect from "@/components/LocaleSelect";
+import AuthFooter from "@/components/AuthFooter";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
-import { useWorkspaceSettingStore } from "@/store/v1";
 import { workspaceStore } from "@/store/v2";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 
-const AdminSignIn = observer(() => {
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
-
-  const handleLocaleSelectChange = (locale: Locale) => {
-    workspaceStore.state.setPartial({ locale });
-  };
-
-  const handleAppearanceSelectChange = (appearance: Appearance) => {
-    workspaceStore.state.setPartial({ appearance });
-  };
+const AdminSignIn = () => {
+  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
 
   return (
     <div className="py-4 sm:py-8 w-80 max-w-full min-h-[100svh] mx-auto flex flex-col justify-start items-center">
@@ -32,12 +17,9 @@ const AdminSignIn = observer(() => {
         <p className="w-full text-xl font-medium dark:text-gray-500">Sign in with admin accounts</p>
         <PasswordSignInForm />
       </div>
-      <div className="mt-4 flex flex-row items-center justify-center w-full gap-2">
-        <LocaleSelect value={workspaceStore.state.locale} onChange={handleLocaleSelectChange} />
-        <AppearanceSelect value={workspaceStore.state.appearance as Appearance} onChange={handleAppearanceSelectChange} />
-      </div>
+      <AuthFooter />
     </div>
   );
-});
+};
 
 export default AdminSignIn;

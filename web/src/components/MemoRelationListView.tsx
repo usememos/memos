@@ -1,9 +1,9 @@
 import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { Link } from "react-router-dom";
-import { MemoRelation } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
+import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   memo: Memo;
@@ -12,6 +12,7 @@ interface Props {
 }
 
 const MemoRelationListView = (props: Props) => {
+  const t = useTranslate();
   const { memo, relations: relationList, parentPage } = props;
   const referencingMemoList = relationList
     .filter((relation) => relation.memo?.name === memo.name && relation.relatedMemo?.name !== memo.name)
@@ -39,7 +40,7 @@ const MemoRelationListView = (props: Props) => {
             onClick={() => setSelectedTab("referencing")}
           >
             <LinkIcon className="w-3 h-auto shrink-0 opacity-70" />
-            <span>Referencing</span>
+            <span>{t("common.referencing")}</span>
             <span className="opacity-80">({referencingMemoList.length})</span>
           </button>
         )}
@@ -52,7 +53,7 @@ const MemoRelationListView = (props: Props) => {
             onClick={() => setSelectedTab("referenced")}
           >
             <MilestoneIcon className="w-3 h-auto shrink-0 opacity-70" />
-            <span>Referenced by</span>
+            <span>{t("common.referenced-by")}</span>
             <span className="opacity-80">({referencedMemoList.length})</span>
           </button>
         )}

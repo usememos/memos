@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
@@ -7,9 +8,10 @@ import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
 import { useMemoFilterStore } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { cn } from "@/utils";
 
-const RootLayout = () => {
+const RootLayout = observer(() => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { sm } = useResponsiveWidth();
@@ -21,7 +23,11 @@ const RootLayout = () => {
 
   useEffect(() => {
     if (!currentUser) {
-      if (([Routes.ROOT, Routes.RESOURCES, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(location.pathname)) {
+      // If disallowPublicVisibility is enabled, redirect to the login page if the user is not logged in.
+      if (workspaceStore.state.memoRelatedSetting.disallowPublicVisibility) {
+        window.location.href = Routes.AUTH;
+        return;
+      } else if (([Routes.ROOT, Routes.RESOURCES, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(location.pathname)) {
         window.location.href = Routes.EXPLORE;
         return;
       }
@@ -59,6 +65,6 @@ const RootLayout = () => {
       </div>
     </div>
   );
-};
+});
 
 export default RootLayout;

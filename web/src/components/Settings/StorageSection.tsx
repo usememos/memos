@@ -5,7 +5,8 @@ import { HelpCircleIcon } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceSettingNamePrefix } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import {
   WorkspaceStorageSetting,
   WorkspaceStorageSetting_S3Config,
@@ -16,9 +17,8 @@ import { useTranslate } from "@/utils/i18n";
 
 const StorageSection = () => {
   const t = useTranslate();
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceStorageSetting>(
-    WorkspaceStorageSetting.fromPartial(workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {}),
+    WorkspaceStorageSetting.fromPartial(workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {}),
   );
 
   const allowSaveStorageSetting = useMemo(() => {
@@ -27,7 +27,7 @@ const StorageSection = () => {
     }
 
     const origin = WorkspaceStorageSetting.fromPartial(
-      workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {},
+      workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {},
     );
     if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.LOCAL) {
       if (workspaceStorageSetting.filepathTemplate.length === 0) {
@@ -45,7 +45,7 @@ const StorageSection = () => {
       }
     }
     return !isEqual(origin, workspaceStorageSetting);
-  }, [workspaceStorageSetting, workspaceSettingStore.getState()]);
+  }, [workspaceStorageSetting, workspaceStore.state]);
 
   const handleMaxUploadSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
     let num = parseInt(event.target.value);
@@ -113,7 +113,7 @@ const StorageSection = () => {
   };
 
   const saveWorkspaceStorageSetting = async () => {
-    await workspaceSettingStore.setWorkspaceSetting({
+    await workspaceStore.upsertWorkspaceSetting({
       name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.STORAGE}`,
       storageSetting: workspaceStorageSetting,
     });
@@ -146,7 +146,7 @@ const StorageSection = () => {
       </div>
       {workspaceStorageSetting.storageType !== WorkspaceStorageSetting_StorageType.DATABASE && (
         <div className="w-full flex flex-row justify-between items-center">
-          <span className="text-gray-700 dark:text-gray-500 mr-1">Filepath template</span>
+          <span className="text-gray-700 dark:text-gray-500 mr-1">{t("setting.storage-section.filepath-template")}</span>
           <Input
             value={workspaceStorageSetting.filepathTemplate}
             placeholder="assets/{timestamp}_{filename}"

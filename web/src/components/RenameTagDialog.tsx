@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { memoServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
-import { useUserStatsStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 
@@ -16,7 +15,6 @@ interface Props extends DialogProps {
 const RenameTagDialog: React.FC<Props> = (props: Props) => {
   const { tag, destroy } = props;
   const t = useTranslate();
-  const userStatsStore = useUserStatsStore();
   const [newName, setNewName] = useState(tag);
   const requestState = useLoading(false);
 
@@ -41,7 +39,6 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
         newTag: newName,
       });
       toast.success("Rename tag successfully");
-      userStatsStore.setStateId();
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);

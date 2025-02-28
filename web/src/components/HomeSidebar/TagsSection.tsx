@@ -1,9 +1,11 @@
 import { Dropdown, Menu, MenuButton, MenuItem, Switch } from "@mui/joy";
 import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
-import { useMemoFilterStore, useUserStatsStore, useUserStatsTags } from "@/store/v1";
+import { useMemoFilterStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import showRenameTagDialog from "../RenameTagDialog";
@@ -14,12 +16,11 @@ interface Props {
   readonly?: boolean;
 }
 
-const TagsSection = (props: Props) => {
+const TagsSection = observer((props: Props) => {
   const t = useTranslate();
   const memoFilterStore = useMemoFilterStore();
-  const userStatsStore = useUserStatsStore();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
-  const tags = Object.entries(useUserStatsTags())
+  const tags = Object.entries(userStore.state.tagCount)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
 
@@ -42,7 +43,6 @@ const TagsSection = (props: Props) => {
         parent: "memos/-",
         tag: tag,
       });
-      userStatsStore.setStateId();
       toast.success(t("message.deleted-successfully"));
     }
   };
@@ -58,7 +58,7 @@ const TagsSection = (props: Props) => {
             </PopoverTrigger>
             <PopoverContent align="end" alignOffset={-12}>
               <div className="w-auto flex flex-row justify-between items-center gap-2">
-                <span className="text-sm shrink-0">Tree mode</span>
+                <span className="text-sm shrink-0">{t("common.tree-mode")}</span>
                 <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />
               </div>
             </PopoverContent>
@@ -114,6 +114,6 @@ const TagsSection = (props: Props) => {
       )}
     </div>
   );
-};
+});
 
 export default TagsSection;

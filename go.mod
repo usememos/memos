@@ -1,6 +1,6 @@
 module github.com/usememos/memos
 
-go 1.23
+go 1.24
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.36.0
@@ -23,7 +23,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
-	github.com/usememos/gomark v0.0.0-20240928134159-9aca881d9121
+	github.com/usememos/gomark v0.0.0-20250227070400-97a73c2adb29
 	golang.org/x/crypto v0.32.0
 	golang.org/x/mod v0.22.0
 	golang.org/x/net v0.34.0

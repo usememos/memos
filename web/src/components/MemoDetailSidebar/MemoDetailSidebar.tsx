@@ -1,7 +1,6 @@
 import { isEqual } from "lodash-es";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo, MemoProperty } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation_Type, MemoProperty } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import MemoRelationForceGraph from "../MemoRelationForceGraph";
@@ -27,7 +26,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
           <div className="relative w-full h-36 border rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
             <MemoRelationForceGraph className="w-full h-full" memo={memo} parentPage={parentPage} />
             <div className="absolute top-1 left-2 text-xs opacity-60 font-mono gap-1 flex flex-row items-center">
-              <span>Relations</span>
+              <span>{t("common.relations")}</span>
               <span className="text-xs opacity-60">(Beta)</span>
             </div>
           </div>
@@ -41,7 +40,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
         {!isEqual(memo.createTime, memo.updateTime) && (
           <div className="w-full flex flex-col">
             <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
-              <span>Last updated at</span>
+              <span>{t("common.last-updated-at")}</span>
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">{memo.updateTime?.toLocaleString()}</p>
           </div>

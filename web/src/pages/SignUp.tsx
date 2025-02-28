@@ -1,31 +1,24 @@
 import { Button, Input } from "@usememos/mui";
 import { LoaderIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import AppearanceSelect from "@/components/AppearanceSelect";
-import LocaleSelect from "@/components/LocaleSelect";
+import AuthFooter from "@/components/AuthFooter";
 import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
 import { workspaceStore } from "@/store/v2";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { initialUserStore } from "@/store/v2/user";
 import { useTranslate } from "@/utils/i18n";
 
-const SignUp = observer(() => {
+const SignUp = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
+  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -35,14 +28,6 @@ const SignUp = observer(() => {
   const handlePasswordInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
     setPassword(text);
-  };
-
-  const handleLocaleSelectChange = (locale: Locale) => {
-    workspaceStore.state.setPartial({ locale });
-  };
-
-  const handleAppearanceSelectChange = (appearance: Appearance) => {
-    workspaceStore.state.setPartial({ appearance });
   };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -62,7 +47,7 @@ const SignUp = observer(() => {
     try {
       actionBtnLoadingState.setLoading();
       await authServiceClient.signUp({ username, password });
-      await userStore.fetchCurrentUser();
+      await initialUserStore();
       navigateTo("/");
     } catch (error: any) {
       console.error(error);
@@ -147,12 +132,9 @@ const SignUp = observer(() => {
           </p>
         )}
       </div>
-      <div className="mt-4 flex flex-row items-center justify-center w-full gap-2">
-        <LocaleSelect value={workspaceStore.state.locale} onChange={handleLocaleSelectChange} />
-        <AppearanceSelect value={workspaceStore.state.appearance as Appearance} onChange={handleAppearanceSelectChange} />
-      </div>
+      <AuthFooter />
     </div>
   );
-});
+};
 
 export default SignUp;

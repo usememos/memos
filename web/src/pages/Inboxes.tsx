@@ -1,3 +1,4 @@
+import { sortBy } from "lodash-es";
 import { BellIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
@@ -10,11 +11,10 @@ import { useTranslate } from "@/utils/i18n";
 
 const Inboxes = observer(() => {
   const t = useTranslate();
-  const inboxes = userStore.state.inboxes.sort((a, b) => {
-    if (a.status === b.status) {
-      return 0;
-    }
-    return a.status === Inbox_Status.UNREAD ? -1 : 1;
+  const inboxes = sortBy(userStore.state.inboxes, (inbox) => {
+    if (inbox.status === Inbox_Status.UNREAD) return 0;
+    if (inbox.status === Inbox_Status.ARCHIVED) return 1;
+    return 2;
   });
 
   useEffect(() => {

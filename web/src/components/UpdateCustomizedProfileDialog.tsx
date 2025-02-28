@@ -3,8 +3,9 @@ import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
-import { WorkspaceCustomProfile, WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
+import { workspaceSettingNamePrefix } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
+import { WorkspaceCustomProfile } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "./AppearanceSelect";
@@ -13,12 +14,9 @@ import LocaleSelect from "./LocaleSelect";
 
 type Props = DialogProps;
 
-const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
+const UpdateCustomizedProfileDialog = ({ destroy }: Props) => {
   const t = useTranslate();
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const workspaceGeneralSetting = WorkspaceGeneralSetting.fromPartial(
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {},
-  );
+  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
   const [customProfile, setCustomProfile] = useState<WorkspaceCustomProfile>(
     WorkspaceCustomProfile.fromPartial(workspaceGeneralSetting.customProfile || {}),
   );
@@ -83,7 +81,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
     }
 
     try {
-      await workspaceSettingStore.setWorkspaceSetting({
+      await workspaceStore.upsertWorkspaceSetting({
         name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
         generalSetting: {
           ...workspaceGeneralSetting,

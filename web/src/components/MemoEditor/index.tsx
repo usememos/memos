@@ -14,14 +14,11 @@ import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore, useResourceStore, useWorkspaceSettingStore } from "@/store/v1";
-import { userStore } from "@/store/v2";
-import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service";
+import { useMemoStore, useResourceStore } from "@/store/v1";
+import { userStore, workspaceStore } from "@/store/v2";
+import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
-import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import VisibilityIcon from "../VisibilityIcon";
@@ -63,7 +60,6 @@ const MemoEditor = observer((props: Props) => {
   const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const memoStore = useMemoStore();
   const resourceStore = useResourceStore();
   const currentUser = useCurrentUser();
@@ -88,9 +84,7 @@ const MemoEditor = observer((props: Props) => {
           relation.memo?.name === memoName && relation.relatedMemo?.name !== memoName && relation.type === MemoRelation_Type.REFERENCE,
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
-  const workspaceMemoRelatedSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
-    WorkspaceMemoRelatedSetting.fromPartial({});
+  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
 
   useEffect(() => {
     editorRef.current?.setContent(contentCache || "");

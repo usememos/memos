@@ -13,7 +13,7 @@ const App = observer(() => {
   const { mode, setMode } = useColorScheme();
   const workspaceProfile = workspaceStore.state.profile;
   const userSetting = userStore.state.userSetting;
-  const workspaceGeneralSetting = workspaceStore.generalSetting;
+  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
 
   // Redirect to sign up page if no instance owner.
   useEffect(() => {

@@ -1,10 +1,11 @@
 import { Dropdown, Menu, MenuButton } from "@mui/joy";
 import { Button } from "@usememos/mui";
 import { HashIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import OverflowTip from "@/components/kit/OverflowTip";
-import { useUserStatsTags } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 
@@ -12,12 +13,12 @@ interface Props {
   editorRef: React.RefObject<EditorRefActions>;
 }
 
-const TagSelector = (props: Props) => {
+const TagSelector = observer((props: Props) => {
   const t = useTranslate();
   const { editorRef } = props;
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const tags = Object.entries(useUserStatsTags())
+  const tags = Object.entries(userStore.state.tagCount)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1])
     .map(([tag]) => tag);
@@ -71,6 +72,6 @@ const TagSelector = (props: Props) => {
       </Menu>
     </Dropdown>
   );
-};
+});
 
 export default TagSelector;

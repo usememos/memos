@@ -11,19 +11,20 @@ An open-source, self-hosted note-taking solution designed for seamless deploymen
 
 <p>
   <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg"/></a>
+  <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker image size" src="https://img.shields.io/docker/image-size/neosmemo/memos?sort=semver"/></a>
   <a href="https://discord.gg/tfPJa4UmAv"><img alt="Discord" src="https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5" /></a>
 </p>
 
 ![demo](https://www.usememos.com/demo.png)
 
-## Main Features
+## Features
 
-- **Privacy First** 🏠: Take control of your data. All runtime data is securely stored in your local database.
-- **Create at Speed** ✍️: Save content as plain text for quick access, with Markdown support for fast formatting and easy sharing.
-- **Lightweight but Powerful** 🤲: Built with Go, React.js, and a compact architecture, our application delivers powerful performance in a lightweight package.
-- **Customizable** 🧩: Easily customize your server name, icon, description, system style, and execution scripts to make it uniquely yours.
-- **Open Source** 🦦: Memos embraces the future of open source, with all code available on GitHub for transparency and collaboration.
-- **Free to Use** 💸: Enjoy all features completely free, with no charges ever for any content.
+- **Privacy First** 🏡: Your data, your control. All runtime data is securely stored in your local database.
+- **Create at Speed** ✍️: Write and save content as plain text for quick access, with Markdown support for fast formatting and easy sharing.
+- **Lightweight but Powerful** ⚡: Built with Go and React.js, our app combines a compact architecture with powerful performance.
+- **Customizable** 🧩: Personalize your experience by customizing the server name, icon, description, theme, and execution scripts.
+- **Open Source** 🦦: Fully open source, with all code available on GitHub for transparency and collaboration.
+- **Free to Use** 💸: Enjoy all features at no cost, no hidden fees, no subscriptions.
 
 ## Deploy with Docker in seconds
 
@@ -38,9 +39,14 @@ docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/mem
 
 Learn more about [other installation methods](https://www.usememos.com/docs/install).
 
+> [!WARNING]
+> Memos is still under active development, so you may encounter bugs or breaking changes as we improve.
+
 ## Contribution
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. We greatly appreciate any contributions you make. Thank you for being a part of our community! 🥰
+
+Guide to [contribution](https://www.usememos.com/docs/contribute).
 
 ## Star history
 

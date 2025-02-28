@@ -2336,6 +2336,14 @@ definitions:
       disableMarkdownShortcuts:
         type: boolean
         description: disable_markdown_shortcuts disallow the registration of markdown shortcuts.
+      enableBlurNsfwContent:
+        type: boolean
+        description: enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
+      nsfwTags:
+        type: array
+        items:
+          type: string
+        description: nsfw_tags is the list of tags that mark content as NSFW for blurring.
   apiv1WorkspaceSetting:
     type: object
     properties:
@@ -2522,6 +2530,7 @@ definitions:
         title: |-
           The name of the activity.
           Format: activities/{id}
+        readOnly: true
       creator:
         type: string
         title: |-
@@ -2707,8 +2716,11 @@ definitions:
   v1LinkNode:
     type: object
     properties:
-      text:
-        type: string
+      content:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Node'
       url:
         type: string
   v1ListAllUserStatsResponse:
@@ -2864,14 +2876,8 @@ definitions:
     properties:
       memo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: |-
-          The name of memo.
-          Format: memos/{id}
       relatedMemo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: |-
-          The name of related memo.
-          Format: memos/{id}
       type:
         $ref: '#/definitions/v1MemoRelationType'
   v1MemoRelationMemo:
@@ -3070,6 +3076,7 @@ definitions:
         description: |-
           The name of the resource.
           Format: resources/{resource}, resource is the user defined if or uuid.
+        readOnly: true
       createTime:
         type: string
         format: date-time
@@ -3205,6 +3212,7 @@ definitions:
         description: |-
           The name of the user.
           Format: users/{id}, id is the system generated auto-incremented id.
+        readOnly: true
       role:
         $ref: '#/definitions/UserRole'
       username:
