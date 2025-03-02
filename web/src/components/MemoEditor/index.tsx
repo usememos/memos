@@ -5,7 +5,6 @@ import { LoaderIcon, SendIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
@@ -32,6 +31,7 @@ import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
+import "react-datepicker/dist/react-datepicker.css";
 
 export interface Props {
   className?: string;

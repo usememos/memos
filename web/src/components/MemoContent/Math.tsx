@@ -1,6 +1,6 @@
 import TeX from "@matejmazur/react-katex";
-import "katex/dist/katex.min.css";
 import { cn } from "@/utils";
+import "katex/dist/katex.min.css";
 
 interface Props {
   content: string;

@@ -5,7 +5,6 @@ import { CheckCircleIcon, ChevronRightIcon, ChevronLeftIcon, Code2Icon, LinkIcon
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import i18n from "@/i18n";
 import { useMemoFilterStore } from "@/store/v1";
@@ -14,6 +13,7 @@ import { UserStats_MemoTypeStats } from "@/types/proto/api/v1/user_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
+import "react-datepicker/dist/react-datepicker.css";
 
 const StatisticsView = observer(() => {
   const t = useTranslate();
