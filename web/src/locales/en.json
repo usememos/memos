@@ -76,7 +76,10 @@
     "username": "Username",
     "version": "Version",
     "visibility": "Visibility",
-    "yourself": "Yourself"
+    "yourself": "Yourself",
+    "export": "Export",
+    "background": "Background",
+    "template": "Template"
   },
   "days": {
     "fri": "Fri",
@@ -293,7 +296,7 @@
       },
       "disable-password-login": "Disable password login",
       "disable-password-login-final-warning": "Please type \"CONFIRM\" if you know what you are doing.",
-      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra carefull when removing an identity provider",
+      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You'll also have to be extra carefull when removing an identity provider",
       "disable-public-memos": "Disable public memos",
       "disable-markdown-shortcuts-in-editor": "Disable Markdown shortcuts in editor",
       "display-with-updated-time": "Display with updated time",
@@ -351,5 +354,16 @@
     "code-block": "Code block",
     "checkbox": "Checkbox",
     "content-syntax": "Content syntax"
+  },
+  "exportImage": {
+    "template": {
+      "default": "Default",
+      "twitter": "Twitter"
+    },
+    "background": {
+      "none": "None",
+      "gradient": "Gradient",
+      "pattern": "Pattern"
+    }
   }
 }
