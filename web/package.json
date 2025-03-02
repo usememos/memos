@@ -51,7 +51,7 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
-    "@bufbuild/buf": "^1.48.0",
+    "@bufbuild/buf": "^1.50.0",
     "@bufbuild/protobuf": "^2.2.3",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/d3": "^7.4.3",
