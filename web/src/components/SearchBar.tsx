@@ -39,7 +39,7 @@ const SearchBar = () => {
         onChange={onTextChange}
         onKeyDown={onKeyDown}
       />
-      <MemoDisplaySettingMenu className="absolute right-2 top-2.5" />
+      <MemoDisplaySettingMenu className="absolute right-2 top-2" />
     </div>
   );
 };

@@ -44,24 +44,20 @@ const Explore = () => {
   }, [user, memoFilterStore.filters, memoFilterStore.orderByTimeAsc]);
 
   return (
-    <>
-      <div className="flex flex-col justify-start items-start w-full max-w-full">
-        <PagedMemoList
-          renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showCreator showVisibility compact />}
-          listSort={(memos: Memo[]) =>
-            memos
-              .filter((memo) => memo.state === State.NORMAL)
-              .sort((a, b) =>
-                memoFilterStore.orderByTimeAsc
-                  ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
-                  : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
-              )
-          }
-          direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
-          oldFilter={memoListFilter}
-        />
-      </div>
-    </>
+    <PagedMemoList
+      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showCreator showVisibility compact />}
+      listSort={(memos: Memo[]) =>
+        memos
+          .filter((memo) => memo.state === State.NORMAL)
+          .sort((a, b) =>
+            memoFilterStore.orderByTimeAsc
+              ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
+              : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
+          )
+      }
+      direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+      oldFilter={memoListFilter}
+    />
   );
 };
 

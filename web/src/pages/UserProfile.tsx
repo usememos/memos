@@ -76,7 +76,7 @@ const UserProfile = () => {
   };
 
   return (
-    <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center pb-8">
+    <section className="w-full max-w-3xl mx-auto min-h-full flex flex-col justify-start items-center pb-8">
       <div className="w-full px-4 sm:px-6 flex flex-col justify-start items-center">
         {!loadingState.isLoading &&
           (user ? (

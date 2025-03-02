@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
-import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -48,28 +47,23 @@ const Home = observer(() => {
   }, [user, memoFilterStore.filters, memoFilterStore.orderByTimeAsc]);
 
   return (
-    <>
-      <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
-      <div className="flex flex-col justify-start items-start w-full max-w-full">
-        <PagedMemoList
-          renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
-          listSort={(memos: Memo[]) =>
-            memos
-              .filter((memo) => memo.state === State.NORMAL)
-              .sort((a, b) =>
-                memoFilterStore.orderByTimeAsc
-                  ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
-                  : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
-              )
-              .sort((a, b) => Number(b.pinned) - Number(a.pinned))
-          }
-          owner={user.name}
-          direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
-          filter={selectedShortcut?.filter || ""}
-          oldFilter={memoListFilter}
-        />
-      </div>
-    </>
+    <PagedMemoList
+      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
+      listSort={(memos: Memo[]) =>
+        memos
+          .filter((memo) => memo.state === State.NORMAL)
+          .sort((a, b) =>
+            memoFilterStore.orderByTimeAsc
+              ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
+              : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
+          )
+          .sort((a, b) => Number(b.pinned) - Number(a.pinned))
+      }
+      owner={user.name}
+      direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+      filter={selectedShortcut?.filter || ""}
+      oldFilter={memoListFilter}
+    />
   );
 });
 
