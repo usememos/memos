@@ -93,8 +93,8 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <>
-      <div className="dialog-header-container">
+    <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
+      <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p className="title-text">
           {isCreating ? t("setting.webhook-section.create-dialog.create-webhook") : t("setting.webhook-section.create-dialog.edit-webhook")}
         </p>
@@ -102,7 +102,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
-      <div className="dialog-content-container !w-80">
+      <div className="flex flex-col justify-start items-start !w-80">
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <span className="mb-2">
             {t("setting.webhook-section.create-dialog.title")} <span className="text-red-600">*</span>
@@ -140,7 +140,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
