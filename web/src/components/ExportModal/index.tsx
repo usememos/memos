@@ -3,7 +3,8 @@ import { Button } from "@usememos/mui";
 import { toPng } from "html-to-image";
 import { useState, useRef, useEffect } from "react";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { useTranslate } from "@/utils/i18n";
+import { Translations, useTranslate } from "@/utils/i18n";
+import { getBackgroundStyle, BackgroundType, BACKGROUND_OPTIONS } from "./backgrounds";
 import DefaultTemplate from "./templates/DefaultTemplate";
 import TwitterTemplate from "./templates/TwitterTemplate";
 
@@ -13,7 +14,6 @@ interface ExportModalProps {
 }
 
 type TemplateType = "default" | "twitter";
-type BackgroundType = "none" | "gradient" | "pattern";
 
 // Storage keys for persisting user preferences
 const STORAGE_KEY_TEMPLATE = "memos-export-template";
@@ -73,6 +73,9 @@ const ExportModal = ({ memo, onClose }: ExportModalProps) => {
     }
   };
 
+  // Get background style based on selected background type
+  const backgroundStyle = background ? getBackgroundStyle(background) : {};
+
   return (
     <Modal
       open={true}
@@ -116,9 +119,11 @@ const ExportModal = ({ memo, onClose }: ExportModalProps) => {
             <div className="mb-4">
               <h3 className="text-sm font-medium mb-2">{t("common.background")}</h3>
               <Select value={background} onChange={(_, value) => handleBackgroundChange(value as BackgroundType)} sx={{ width: "100%" }}>
-                <Option value="none">{t("exportImage.background.none")}</Option>
-                <Option value="gradient">{t("exportImage.background.gradient")}</Option>
-                <Option value="pattern">{t("exportImage.background.pattern")}</Option>
+                {BACKGROUND_OPTIONS.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {t(option.label as Translations)}
+                  </Option>
+                ))}
               </Select>
             </div>
 
@@ -134,15 +139,7 @@ const ExportModal = ({ memo, onClose }: ExportModalProps) => {
                 ref={exportRef}
                 className="relative md:w-[400px] w-[calc(100vw-60px)] h-max"
                 style={{
-                  background:
-                    background === "gradient"
-                      ? "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)"
-                      : background === "pattern"
-                        ? "radial-gradient(#e5e7eb 1px, transparent 1px)"
-                        : "transparent",
-                  backgroundSize: background === "pattern" ? "20px 20px" : "auto",
-                  padding: background !== "none" ? "2rem" : "0",
-                  boxSizing: "border-box",
+                  ...backgroundStyle,
                 }}
               >
                 {template === "default" && <DefaultTemplate memo={memo} />}

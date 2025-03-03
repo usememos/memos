@@ -362,8 +362,10 @@
     },
     "background": {
       "none": "None",
-      "gradient": "Gradient",
-      "pattern": "Pattern"
+      "sunset": "Sunset",
+      "ocean": "Ocean",
+      "purple": "Purple",
+      "mint": "Mint"
     }
   }
 }
