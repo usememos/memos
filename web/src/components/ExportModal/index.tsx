@@ -1,4 +1,4 @@
-import { Modal, Tabs, Tab, TabList, Select, Option } from "@mui/joy";
+import { Modal, Select, Option } from "@mui/joy";
 import { Button } from "@usememos/mui";
 import { toPng } from "html-to-image";
 import { useState, useRef, useEffect } from "react";
@@ -6,6 +6,8 @@ import { Memo } from "@/types/proto/api/v1/memo_service";
 import { Translations, useTranslate } from "@/utils/i18n";
 import { getBackgroundStyle, BackgroundType, BACKGROUND_OPTIONS } from "./backgrounds";
 import DefaultTemplate from "./templates/DefaultTemplate";
+import ModernTemplate from "./templates/ModernTemplate";
+import NoteTemplate from "./templates/NoteTemplate";
 import TwitterTemplate from "./templates/TwitterTemplate";
 
 interface ExportModalProps {
@@ -13,7 +15,20 @@ interface ExportModalProps {
   onClose: () => void;
 }
 
-type TemplateType = "default" | "twitter";
+type TemplateType = "default" | "twitter" | "modern" | "note";
+
+// Define template options similar to background options
+interface TemplateOption {
+  value: TemplateType;
+  label: string;
+}
+
+const TEMPLATE_OPTIONS: TemplateOption[] = [
+  { value: "default", label: "exportImage.template.default" },
+  { value: "twitter", label: "exportImage.template.twitter" },
+  { value: "modern", label: "exportImage.template.modern" },
+  { value: "note", label: "exportImage.template.note" },
+];
 
 // Storage keys for persisting user preferences
 const STORAGE_KEY_TEMPLATE = "memos-export-template";
@@ -99,21 +114,13 @@ const ExportModal = ({ memo, onClose }: ExportModalProps) => {
           <div className="w-full md:w-[240px] flex-shrink-0">
             <div className="mb-4">
               <h3 className="text-sm font-medium mb-2">{t("common.template")}</h3>
-              <Tabs
-                value={template}
-                onChange={(_, value) => handleTemplateChange(value as TemplateType)}
-                orientation="vertical"
-                sx={{ borderRadius: "md" }}
-              >
-                <TabList sx={{ width: "100%" }}>
-                  <Tab value="default" sx={{ flexGrow: 1 }}>
-                    {t("exportImage.template.default")}
-                  </Tab>
-                  <Tab value="twitter" sx={{ flexGrow: 1 }}>
-                    {t("exportImage.template.twitter")}
-                  </Tab>
-                </TabList>
-              </Tabs>
+              <Select value={template} onChange={(_, value) => handleTemplateChange(value as TemplateType)} sx={{ width: "100%" }}>
+                {TEMPLATE_OPTIONS.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {t(option.label as Translations)}
+                  </Option>
+                ))}
+              </Select>
             </div>
 
             <div className="mb-4">
@@ -144,6 +151,8 @@ const ExportModal = ({ memo, onClose }: ExportModalProps) => {
               >
                 {template === "default" && <DefaultTemplate memo={memo} />}
                 {template === "twitter" && <TwitterTemplate memo={memo} />}
+                {template === "modern" && <ModernTemplate memo={memo} />}
+                {template === "note" && <NoteTemplate memo={memo} />}
               </div>
             </div>
           </div>
