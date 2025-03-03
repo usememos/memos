@@ -36,7 +36,7 @@ const MasonryView = (props: Props) => {
       const containerWidth = containerRef.current.offsetWidth;
       const scale = containerWidth / MINIMUM_MEMO_VIEWPORT_WIDTH;
       setState({
-        columns: scale > 2 ? Math.floor(scale) : 1,
+        columns: scale >= 2 ? Math.round(scale) : 1,
       });
     };
 
