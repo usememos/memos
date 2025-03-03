@@ -32,6 +32,7 @@ const MemoFilters = () => {
         memoFilterStore.setState({
           filters: parseFilterQuery(filtersInURL),
           orderByTimeAsc: orderByTimeAscInURL,
+          masonry: memoFilterStore.masonry,
         });
       } else if (lastUpdateRef.current === "store") {
         // Sync Store -> URL
