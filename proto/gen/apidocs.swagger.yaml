@@ -662,9 +662,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The resource name of the workspace setting.
-            Format: settings/{setting}
+          description: "The resource name of the workspace setting.\r\nFormat: settings/{setting}"
           in: path
           required: true
           type: string
@@ -686,9 +684,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: setting.name
-          description: |-
-            name is the name of the setting.
-            Format: settings/{setting}
+          description: "name is the name of the setting.\r\nFormat: settings/{setting}"
           in: path
           required: true
           type: string
@@ -724,9 +720,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: identityProvider.name
-          description: |-
-            The name of the identityProvider.
-            Format: identityProviders/{id}, id is the system generated auto-incremented id.
+          description: "The name of the identityProvider.\r\nFormat: identityProviders/{id}, id is the system generated auto-incremented id."
           in: path
           required: true
           type: string
@@ -764,9 +758,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: inbox.name
-          description: |-
-            The name of the inbox.
-            Format: inboxes/{id}, id is the system generated auto-incremented id.
+          description: "The name of the inbox.\r\nFormat: inboxes/{id}, id is the system generated auto-incremented id."
           in: path
           required: true
           type: string
@@ -1079,9 +1071,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: |-
-            The name of the activity.
-            Format: activities/{id}, id is the system generated auto-incremented id.
+          description: "The name of the activity.\r\nFormat: activities/{id}, id is the system generated auto-incremented id."
           in: path
           required: true
           type: string
@@ -1683,9 +1673,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: resource.name
-          description: |-
-            The name of the resource.
-            Format: resources/{resource}, resource is the user defined if or uuid.
+          description: "The name of the resource.\r\nFormat: resources/{resource}, resource is the user defined if or uuid."
           in: path
           required: true
           type: string
@@ -2034,9 +2022,7 @@ definitions:
     properties:
       memo:
         type: string
-        description: |-
-          The memo name of comment.
-          Refer to `Memo.name`.
+        description: "The memo name of comment.\r\nRefer to `Memo.name`."
       relatedMemo:
         type: string
         description: The name of related memo.
@@ -2068,9 +2054,7 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          The name of the identityProvider.
-          Format: identityProviders/{id}, id is the system generated auto-incremented id.
+        description: "The name of the identityProvider.\r\nFormat: identityProviders/{id}, id is the system generated auto-incremented id."
       type:
         $ref: '#/definitions/apiv1IdentityProviderType'
       title:
@@ -2246,10 +2230,7 @@ definitions:
       weekStartDayOffset:
         type: integer
         format: int32
-        description: |-
-          week_start_day_offset is the week start day offset from Sunday.
-          0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
-          Default is Sunday.
+        description: "week_start_day_offset is the week start day offset from Sunday.\r\n0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday\r\nDefault is Sunday."
       disallowChangeUsername:
         type: boolean
         description: disallow_change_username disallows changing username.
@@ -2300,9 +2281,7 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
-          name is the name of the setting.
-          Format: settings/{setting}
+        title: "name is the name of the setting.\r\nFormat: settings/{setting}"
       generalSetting:
         $ref: '#/definitions/apiv1WorkspaceGeneralSetting'
       storageSetting:
@@ -2317,9 +2296,7 @@ definitions:
         description: storage_type is the storage type.
       filepathTemplate:
         type: string
-        title: |-
-          The template of file path.
-          e.g. assets/{timestamp}_{filename}
+        title: "The template of file path.\r\ne.g. assets/{timestamp}_{filename}"
       uploadSizeLimitMb:
         type: string
         format: int64
@@ -2478,14 +2455,10 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
-          The name of the activity.
-          Format: activities/{id}
+        title: "The name of the activity.\r\nFormat: activities/{id}"
       creator:
         type: string
-        title: |-
-          The name of the creator.
-          Format: users/{user}
+        title: "The name of the creator.\r\nFormat: users/{user}"
       type:
         type: string
         description: The type of the activity.
@@ -2612,9 +2585,7 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          The name of the inbox.
-          Format: inboxes/{id}, id is the system generated auto-incremented id.
+        description: "The name of the inbox.\r\nFormat: inboxes/{id}, id is the system generated auto-incremented id."
       sender:
         type: string
         title: 'Format: users/{user}'
@@ -2696,9 +2667,7 @@ definitions:
           $ref: '#/definitions/v1Inbox'
       nextPageToken:
         type: string
-        description: |-
-          A token, which can be sent as `page_token` to retrieve the next page.
-          If this field is omitted, there are no subsequent pages.
+        description: "A token, which can be sent as `page_token` to retrieve the next page.\r\nIf this field is omitted, there are no subsequent pages."
   v1ListMemoCommentsResponse:
     type: object
     properties:
@@ -2821,14 +2790,10 @@ definitions:
     properties:
       memo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: |-
-          The name of memo.
-          Format: memos/{id}
+        title: "The name of memo.\r\nFormat: memos/{id}"
       relatedMemo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: |-
-          The name of related memo.
-          Format: memos/{id}
+        title: "The name of related memo.\r\nFormat: memos/{id}"
       type:
         $ref: '#/definitions/v1MemoRelationType'
   v1MemoRelationMemo:
@@ -2836,9 +2801,7 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
-          The name of the memo.
-          Format: memos/{id}
+        title: "The name of the memo.\r\nFormat: memos/{id}"
       uid:
         type: string
       snippet:
@@ -3002,14 +2965,10 @@ definitions:
         format: int32
       creator:
         type: string
-        title: |-
-          The name of the creator.
-          Format: users/{user}
+        title: "The name of the creator.\r\nFormat: users/{user}"
       contentId:
         type: string
-        description: |-
-          The content identifier.
-          For memo, it should be the `Memo.name`.
+        description: "The content identifier.\r\nFor memo, it should be the `Memo.name`."
       reactionType:
         type: string
   v1ReferencedContentNode:
@@ -3024,9 +2983,7 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          The name of the resource.
-          Format: resources/{resource}, resource is the user defined if or uuid.
+        description: "The name of the resource.\r\nFormat: resources/{resource}, resource is the user defined if or uuid."
       createTime:
         type: string
         format: date-time
@@ -3250,9 +3207,7 @@ definitions:
     properties:
       owner:
         type: string
-        title: |-
-          The name of instance owner.
-          Format: users/{user}
+        title: "The name of instance owner.\r\nFormat: users/{user}"
       version:
         type: string
         title: version is the current version of instance

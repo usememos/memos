@@ -104,7 +104,7 @@ const MemoEditor = (props: Props) => {
   useEffect(() => {
     let visibility = userSetting.memoVisibility;
     if (workspaceMemoRelatedSetting.disallowPublicVisibility && visibility === "PUBLIC") {
-      visibility = "PRIVATE";
+      visibility = "PUBLIC";
     }
     setState((prevState) => ({
       ...prevState,

@@ -93,7 +93,7 @@ const MemoDetail = () => {
         </MobileHeader>
       )}
       <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
-        <div className={cn(md ? "w-[calc(100%-15rem)]" : "w-full")}>
+        <div className={cn(md ? "w-[ calc(100%-15rem)]" : "w-full")}>
           {parentMemo && (
             <div className="w-auto inline-block mb-2">
               <Link
