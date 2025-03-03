@@ -1,7 +1,7 @@
 import { Modal, Tabs, Tab, TabList, Select, Option } from "@mui/joy";
 import { Button } from "@usememos/mui";
 import { toPng } from "html-to-image";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import DefaultTemplate from "./templates/DefaultTemplate";
@@ -15,12 +15,36 @@ interface ExportModalProps {
 type TemplateType = "default" | "twitter";
 type BackgroundType = "none" | "gradient" | "pattern";
 
+// Storage keys for persisting user preferences
+const STORAGE_KEY_TEMPLATE = "memos-export-template";
+const STORAGE_KEY_BACKGROUND = "memos-export-background";
+
 const ExportModal = ({ memo, onClose }: ExportModalProps) => {
   const t = useTranslate();
-  const [template, setTemplate] = useState<TemplateType>("default");
-  const [background, setBackground] = useState<BackgroundType>("none");
+  const [template, setTemplate] = useState<TemplateType | null>(null);
+  const [background, setBackground] = useState<BackgroundType | null>(null);
   const exportRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
+
+  // Load saved preferences when component mounts
+  useEffect(() => {
+    const savedTemplate = localStorage.getItem(STORAGE_KEY_TEMPLATE) as TemplateType;
+    const savedBackground = localStorage.getItem(STORAGE_KEY_BACKGROUND) as BackgroundType;
+
+    setTemplate(savedTemplate || "default");
+    setBackground(savedBackground || "none");
+  }, []);
+
+  // Save preferences when they change
+  const handleTemplateChange = (value: TemplateType) => {
+    setTemplate(value);
+    localStorage.setItem(STORAGE_KEY_TEMPLATE, value);
+  };
+
+  const handleBackgroundChange = (value: BackgroundType) => {
+    setBackground(value);
+    localStorage.setItem(STORAGE_KEY_BACKGROUND, value);
+  };
 
   const handleExport = async () => {
     if (!exportRef.current) return;
@@ -74,7 +98,7 @@ const ExportModal = ({ memo, onClose }: ExportModalProps) => {
               <h3 className="text-sm font-medium mb-2">{t("common.template")}</h3>
               <Tabs
                 value={template}
-                onChange={(_, value) => setTemplate(value as TemplateType)}
+                onChange={(_, value) => handleTemplateChange(value as TemplateType)}
                 orientation="vertical"
                 sx={{ borderRadius: "md" }}
               >
@@ -91,7 +115,7 @@ const ExportModal = ({ memo, onClose }: ExportModalProps) => {
 
             <div className="mb-4">
               <h3 className="text-sm font-medium mb-2">{t("common.background")}</h3>
-              <Select value={background} onChange={(_, value) => setBackground(value as BackgroundType)} sx={{ width: "100%" }}>
+              <Select value={background} onChange={(_, value) => handleBackgroundChange(value as BackgroundType)} sx={{ width: "100%" }}>
                 <Option value="none">{t("exportImage.background.none")}</Option>
                 <Option value="gradient">{t("exportImage.background.gradient")}</Option>
                 <Option value="pattern">{t("exportImage.background.pattern")}</Option>
