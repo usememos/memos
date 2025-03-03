@@ -6,7 +6,10 @@ COPY . .
 
 WORKDIR /frontend-build/web
 
-RUN corepack enable && pnpm i --frozen-lockfile
+# Update corepack to latest version before enabling it
+RUN npm install -g corepack@latest && \
+    corepack enable && \
+    pnpm i --frozen-lockfile
 
 RUN pnpm build
 
