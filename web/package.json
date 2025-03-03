@@ -1,5 +1,6 @@
 {
   "name": "memos",
+  "packageManager": "pnpm@9.15.1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
