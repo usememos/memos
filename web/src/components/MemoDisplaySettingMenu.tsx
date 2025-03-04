@@ -38,7 +38,7 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
             </Select>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3">Masonry View</span>
+            <span className="text-sm shrink-0 mr-3">{t("memo.masonry-view")}</span>
             <Switch checked={memoFilterStore.masonry} onChange={(event) => memoFilterStore.setMasonry(event.target.checked)} />
           </div>
         </div>
