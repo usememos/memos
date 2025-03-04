@@ -85,15 +85,16 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     >
       <div
         className={`prose prose-base prose-neutral max-w-none dark:prose-invert 
-          prose-p:my-1.5 prose-blockquote:my-1.5 prose-pre:my-1.5 
+          prose-p:my-0 prose-blockquote:my-1.5 prose-pre:my-1.5 
           prose-ol:my-1.5 prose-ol:ps-0 prose-ul:my-1.5 prose-ul:ps-0 prose-li:my-1.5 prose-li:items-center
           prose-h1:mb-2 prose-h1:mt-3 
           prose-h2:mb-2 prose-h2:mt-2.5 
           prose-h3:mb-1.5 prose-h3:mt-2 
           prose-h4:mb-1 prose-h4:mt-1.5 
           prose-img:m-0 
-          [&_li_p]:my-0
-          [&_dl]:my-1.5
+          [&_li_p]:my-0 
+          [&_dl]:my-1.5 
+          [&_br]:my-3 
           w-full flex flex-col justify-start items-start ${className || ""}`}
       >
         <div
