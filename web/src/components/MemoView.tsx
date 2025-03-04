@@ -1,6 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import clsx from "clsx";
-import { BookmarkIcon, MessageCircleMoreIcon } from "lucide-react";
+import { BookmarkIcon, MessageCircleMoreIcon, ImageIcon } from "lucide-react";
 import { memo, useCallback, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
@@ -15,6 +15,7 @@ import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import { isSuperUser } from "@/utils/user";
+import ExportModal from "./ExportModal";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoContent from "./MemoContent";
 import MemoEditor from "./MemoEditor";
@@ -34,6 +35,7 @@ interface Props {
   showCreator?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;
+  showExport?: boolean;
   className?: string;
   parentPage?: string;
 }
@@ -62,6 +64,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const readonly = memo.creator !== user?.name && !isSuperUser(user);
   const isInMemoDetailPage = location.pathname.startsWith(`/m/${memo.uid}`);
   const parentPage = props.parentPage || location.pathname;
+  const [showExportModal, setShowExportModal] = useState<boolean>(false);
 
   // Initial related data: creator.
   useAsyncEffect(async () => {
@@ -152,6 +155,10 @@ const MemoView: React.FC<Props> = (props: Props) => {
     return hiddenActions;
   };
 
+  const handleExportClick = useCallback(() => {
+    setShowExportModal(true);
+  }, []);
+
   return (
     <div
       className={clsx(
@@ -213,6 +220,13 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     </span>
                   </Tooltip>
                 )}
+                {props.showExport && (
+                  <Tooltip title={t("common.export")} placement="top">
+                    <span className="flex justify-center items-center hover:opacity-70 cursor-pointer" onClick={handleExportClick}>
+                      <ImageIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    </span>
+                  </Tooltip>
+                )}
                 {currentUser && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
               </div>
               {!isInMemoDetailPage && (workspaceMemoRelatedSetting.enableComment || commentAmount > 0) && (
@@ -257,6 +271,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           <MemoResourceListView resources={memo.resources} />
           <MemoRelationListView memo={memo} relations={referencedMemos} parentPage={parentPage} />
           <MemoReactionistView memo={memo} reactions={memo.reactions} />
+          {showExportModal && <ExportModal memo={memo} onClose={() => setShowExportModal(false)} />}
         </>
       )}
     </div>

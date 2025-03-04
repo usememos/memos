@@ -66,7 +66,9 @@ const Home = () => {
           <MemoFilters />
           <div className="flex flex-col justify-start items-start w-full max-w-full">
             <PagedMemoList
-              renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
+              renderer={(memo: Memo) => (
+                <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned showExport compact />
+              )}
               listSort={(memos: Memo[]) =>
                 memos
                   .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
