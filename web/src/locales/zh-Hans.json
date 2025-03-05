@@ -393,5 +393,10 @@
     "official-website": "官网",
     "blogs": "博客",
     "documents": "文档"
+  },
+  "filters": {
+    "has-link": "有链接",
+    "has-task-list": "有待办",
+    "has-code": "有代码"
   }
 }

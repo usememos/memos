@@ -95,7 +95,7 @@ const StatisticsView = observer(() => {
       <div className="pt-1 w-full flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
         <div
           className={cn("w-auto border dark:border-zinc-800 pl-1.5 pr-2 py-0.5 rounded-md flex justify-between items-center")}
-          onClick={() => memoFilterStore.addFilter({ factor: "property.hasLink", value: "" })}
+          onClick={() => memoFilterStore.addFilter({ factor: "property.hasLink", value: t("filters.has-link") || "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
             <LinkIcon className="w-4 h-auto mr-1" />
@@ -105,7 +105,7 @@ const StatisticsView = observer(() => {
         </div>
         <div
           className={cn("w-auto border dark:border-zinc-800 pl-1.5 pr-2 py-0.5 rounded-md flex justify-between items-center")}
-          onClick={() => memoFilterStore.addFilter({ factor: "property.hasTaskList", value: "" })}
+          onClick={() => memoFilterStore.addFilter({ factor: "property.hasTaskList", value: t("filters.has-task-list") || "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
             {memoTypeStats.undoCount > 0 ? <ListTodoIcon className="w-4 h-auto mr-1" /> : <CheckCircleIcon className="w-4 h-auto mr-1" />}
@@ -125,7 +125,7 @@ const StatisticsView = observer(() => {
         </div>
         <div
           className={cn("w-auto border dark:border-zinc-800 pl-1.5 pr-2 py-0.5 rounded-md flex justify-between items-center")}
-          onClick={() => memoFilterStore.addFilter({ factor: "property.hasCode", value: "" })}
+          onClick={() => memoFilterStore.addFilter({ factor: "property.hasCode", value: t("filters.has-code") || "" })}
         >
           <div className="w-auto flex justify-start items-center mr-1">
             <Code2Icon className="w-4 h-auto mr-1" />
