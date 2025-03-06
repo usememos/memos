@@ -5,29 +5,17 @@ import { useSearchParams } from "react-router-dom";
 import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters, useMemoFilterStore } from "@/store/v1";
 
 const MemoFilters = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
   const memoFilterStore = useMemoFilterStore();
   const filters = memoFilterStore.filters;
 
-  const checkAndSync = () => {
-    const filtersInURL = searchParams.get("filter") || "";
-    const storeMatchesURL = filtersInURL === stringifyFilters(filters);
-
-    if (!storeMatchesURL) {
-      // Sync Store -> URL
-      const newSearchParams = new URLSearchParams(searchParams);
-
-      if (filters.length > 0) {
-        newSearchParams.set("filter", stringifyFilters(filters));
-      } else {
-        newSearchParams.delete("filter");
-      }
-
-      setSearchParams(newSearchParams);
+  useEffect(() => {
+    const searchParams = new URLSearchParams();
+    if (filters.length > 0) {
+      searchParams.set("filter", stringifyFilters(filters));
     }
-  };
-
-  useEffect(checkAndSync, [searchParams, filters]);
+    setSearchParams(searchParams);
+  }, [filters]);
 
   const getFilterDisplayText = (filter: MemoFilter) => {
     if (filter.value) {
