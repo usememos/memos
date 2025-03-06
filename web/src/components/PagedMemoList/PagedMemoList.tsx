@@ -7,7 +7,8 @@ import PullToRefresh from "react-simple-pull-to-refresh";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { Routes } from "@/router";
-import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
+import { useMemoList, useMemoStore } from "@/store/v1";
+import { viewStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -36,7 +37,6 @@ const PagedMemoList = observer((props: Props) => {
   const { md } = useResponsiveWidth();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
-  const memoFilterStore = useMemoFilterStore();
   const [state, setState] = useState<LocalState>({
     isRequesting: true, // Initial request
     nextPageToken: "",
@@ -77,7 +77,7 @@ const PagedMemoList = observer((props: Props) => {
         memoList={sortedMemoList}
         renderer={props.renderer}
         prefixElement={showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" /> : undefined}
-        listMode={!memoFilterStore.masonry}
+        listMode={viewStore.state.layout === "LIST"}
       />
       {state.isRequesting && (
         <div className="w-full flex flex-row justify-center items-center my-4">
@@ -92,7 +92,7 @@ const PagedMemoList = observer((props: Props) => {
               <p className="mt-2 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
             </div>
           ) : (
-            <div className="w-full flex flex-row justify-center items-center my-4">
+            <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
               {state.nextPageToken && (
                 <Button variant="plain" onClick={() => fetchMoreMemos(state.nextPageToken)}>
                   {t("memo.load-more")}
