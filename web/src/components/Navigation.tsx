@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/joy";
-import { ArchiveIcon, BellIcon, PaperclipIcon, SettingsIcon, UserCircleIcon } from "lucide-react";
+import { BellIcon, PaperclipIcon, SettingsIcon, UserCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
@@ -57,12 +57,6 @@ const Navigation = observer((props: Props) => {
       </>
     ),
   };
-  const archivedNavLink: NavLinkItem = {
-    id: "header-archived",
-    path: Routes.ARCHIVED,
-    title: t("common.archived"),
-    icon: <ArchiveIcon className="w-6 h-auto opacity-70 shrink-0" />,
-  };
   const settingNavLink: NavLinkItem = {
     id: "header-setting",
     path: Routes.SETTING,
@@ -76,7 +70,7 @@ const Navigation = observer((props: Props) => {
     icon: <UserCircleIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
 
-  const navLinks: NavLinkItem[] = currentUser ? [resourcesNavLink, inboxNavLink, archivedNavLink, settingNavLink] : [signInNavLink];
+  const navLinks: NavLinkItem[] = currentUser ? [resourcesNavLink, inboxNavLink, settingNavLink] : [signInNavLink];
 
   return (
     <header
