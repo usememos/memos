@@ -1,62 +1,33 @@
 import { isEqual } from "lodash-es";
 import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, HashIcon, LinkIcon, SearchIcon, XIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { FilterFactor, getMemoFilterKey, MemoFilter, parseFilterQuery, stringifyFilters, useMemoFilterStore } from "@/store/v1";
+import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters, useMemoFilterStore } from "@/store/v1";
 
 const MemoFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const memoFilterStore = useMemoFilterStore();
   const filters = memoFilterStore.filters;
-  const orderByTimeAsc = memoFilterStore.orderByTimeAsc;
-  const lastUpdateRef = useRef<"url" | "store">("url");
-
-  // set lastUpdateRef to store when filters or orderByTimeAsc changes
-  useEffect(() => {
-    lastUpdateRef.current = "store";
-  }, [filters, orderByTimeAsc]);
-
-  // set lastUpdateRef to url when searchParams changes
-  useEffect(() => {
-    lastUpdateRef.current = "url";
-  }, [searchParams]);
 
   const checkAndSync = () => {
     const filtersInURL = searchParams.get("filter") || "";
-    const orderByTimeAscInURL = searchParams.get("orderBy") === "asc";
-    const storeMatchesURL = filtersInURL === stringifyFilters(filters) && orderByTimeAscInURL === orderByTimeAsc;
+    const storeMatchesURL = filtersInURL === stringifyFilters(filters);
 
     if (!storeMatchesURL) {
-      if (lastUpdateRef.current === "url") {
-        // Sync URL -> Store
-        memoFilterStore.setState({
-          filters: parseFilterQuery(filtersInURL),
-          orderByTimeAsc: orderByTimeAscInURL,
-          masonry: memoFilterStore.masonry,
-        });
-      } else if (lastUpdateRef.current === "store") {
-        // Sync Store -> URL
-        const newSearchParams = new URLSearchParams(searchParams);
+      // Sync Store -> URL
+      const newSearchParams = new URLSearchParams(searchParams);
 
-        if (orderByTimeAsc) {
-          newSearchParams.set("orderBy", "asc");
-        } else {
-          newSearchParams.delete("orderBy");
-        }
-
-        if (filters.length > 0) {
-          newSearchParams.set("filter", stringifyFilters(filters));
-        } else {
-          newSearchParams.delete("filter");
-        }
-
-        setSearchParams(newSearchParams);
+      if (filters.length > 0) {
+        newSearchParams.set("filter", stringifyFilters(filters));
+      } else {
+        newSearchParams.delete("filter");
       }
+
+      setSearchParams(newSearchParams);
     }
   };
 
-  // Watch both URL and store changes
-  useEffect(checkAndSync, [searchParams, filters, orderByTimeAsc]);
+  useEffect(checkAndSync, [searchParams, filters]);
 
   const getFilterDisplayText = (filter: MemoFilter) => {
     if (filter.value) {

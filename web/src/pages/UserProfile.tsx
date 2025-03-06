@@ -2,6 +2,7 @@ import { Button } from "@usememos/mui";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { ExternalLinkIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -11,13 +12,13 @@ import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
 import { useMemoFilterStore } from "@/store/v1";
-import { userStore } from "@/store/v2";
+import { viewStore, userStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 
-const UserProfile = () => {
+const UserProfile = observer(() => {
   const t = useTranslate();
   const params = useParams();
   const loadingState = useLoading();
@@ -107,14 +108,14 @@ const UserProfile = () => {
                   memos
                     .filter((memo) => memo.state === State.NORMAL)
                     .sort((a, b) =>
-                      memoFilterStore.orderByTimeAsc
+                      viewStore.state.orderByTimeAsc
                         ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
                         : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
                     )
                     .sort((a, b) => Number(b.pinned) - Number(a.pinned))
                 }
                 owner={user.name}
-                direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+                direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
                 oldFilter={memoListFilter}
               />
             </>
@@ -124,6 +125,6 @@ const UserProfile = () => {
       </div>
     </section>
   );
-};
+});
 
 export default UserProfile;
