@@ -32,7 +32,6 @@ const UserBanner = (props: Props) => {
               "w-auto flex flex-row justify-start items-center cursor-pointer text-gray-800 dark:text-gray-400",
               collapsed ? "px-1" : "px-3",
             )}
-            onClick={() => navigateTo(currentUser ? Routes.ROOT : Routes.EXPLORE)}
           >
             {currentUser.avatarUrl ? (
               <UserAvatar className="shrink-0" avatarUrl={currentUser.avatarUrl} />
