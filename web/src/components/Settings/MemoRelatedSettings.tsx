@@ -80,13 +80,6 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.system-section.enable-auto-compact")}</span>
-        <Switch
-          checked={memoRelatedSetting.enableAutoCompact}
-          onChange={(event) => updatePartialSetting({ enableAutoCompact: event.target.checked })}
-        />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.memo-related-settings.enable-link-preview")}</span>
         <Switch
           checked={memoRelatedSetting.enableLinkPreview}

@@ -228,7 +228,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
               readonly={readonly}
               onClick={handleMemoContentClick}
               onDoubleClick={handleMemoContentDoubleClick}
-              compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
+              compact={props.compact}
               parentPage={parentPage}
             />
             {memo.location && <MemoLocationView location={memo.location} />}
