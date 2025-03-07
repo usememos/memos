@@ -33,7 +33,7 @@ const SearchBar = () => {
     <div className="relative w-full h-auto flex flex-row justify-start items-center">
       <SearchIcon className="absolute left-2 w-4 h-auto opacity-40" />
       <input
-        className="w-full text-gray-500 leading-6 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 border dark:border-zinc-800 text-sm rounded-xl p-1 pl-8 outline-none"
+        className="w-full text-gray-500 leading-6 dark:text-gray-400 placeholder:opacity-80 bg-zinc-50 dark:bg-zinc-900 border dark:border-zinc-800 text-sm rounded-xl p-1 pl-8 outline-none"
         placeholder={t("memo.search-placeholder")}
         value={queryText}
         onChange={onTextChange}

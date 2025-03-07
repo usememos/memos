@@ -151,7 +151,7 @@ const MemoEditor = observer((props: Props) => {
     const isMetaKey = event.ctrlKey || event.metaKey;
     if (isMetaKey) {
       if (event.key === "Enter") {
-        void handleSaveBtnClick();
+        handleSaveBtnClick();
         return;
       }
       if (!workspaceMemoRelatedSetting.disableMarkdownShortcuts) {

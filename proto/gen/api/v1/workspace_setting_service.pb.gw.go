@@ -41,6 +41,7 @@ func request_WorkspaceSettingService_GetWorkspaceSetting_0(ctx context.Context, 
 		metadata runtime.ServerMetadata
 		err      error
 	)
+	io.Copy(io.Discard, req.Body)
 	val, ok := pathParams["name"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
