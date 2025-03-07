@@ -88,11 +88,11 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	return memoMessage, nil
 }
 
-func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.MemoProperty {
+func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.Memo_Property {
 	if property == nil {
 		return nil
 	}
-	return &v1pb.MemoProperty{
+	return &v1pb.Memo_Property{
 		HasLink:            property.HasLink,
 		HasTaskList:        property.HasTaskList,
 		HasCode:            property.HasCode,
