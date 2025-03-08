@@ -96,6 +96,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           prose-img:m-0 
           [&_li_p]:my-0 
           [&_dl]:my-1.5 
+          [&_pre_code]:text-[#24292e] dark:[&_pre_code]:text-[#abb2bf]
           w-full flex flex-col justify-start items-start ${className || ""}`}
         >
           <div
