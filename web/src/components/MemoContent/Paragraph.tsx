@@ -1,7 +1,5 @@
 import clsx from "clsx";
 import { useCallback, useRef } from "react";
-import { PhotoProvider } from "react-photo-view";
-import "react-photo-view/dist/react-photo-view.css";
 import { useScrollMask } from "@/hooks/useScrollMask";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
 import Renderer from "./Renderer";
@@ -28,7 +26,7 @@ const Paragraph: React.FC<Props> = ({ children }: Props) => {
       );
     });
 
-    return isChildrenAllImage ? <PhotoProvider>{nodes}</PhotoProvider> : nodes;
+    return nodes;
   }, [children, isChildrenAllImage]);
 
   return (

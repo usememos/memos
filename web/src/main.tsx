@@ -4,6 +4,7 @@ import "@usememos/mui/dist/index.css";
 import "leaflet/dist/leaflet.css";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
+import "react-photo-view/dist/react-photo-view.css";
 import { Provider } from "react-redux";
 import { RouterProvider } from "react-router-dom";
 import "./css/tailwind.css";

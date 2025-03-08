@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { memo, useEffect, useRef, useState } from "react";
+import { PhotoProvider } from "react-photo-view";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
@@ -83,8 +84,9 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         parentPage: props.parentPage,
       }}
     >
-      <div
-        className={`prose prose-base prose-neutral max-w-none dark:prose-invert 
+      <PhotoProvider>
+        <div
+          className={`prose prose-base prose-neutral max-w-none dark:prose-invert 
           prose-p:my-0 prose-blockquote:my-1.5 prose-pre:my-1.5 
           prose-ol:my-1.5 prose-ol:ps-0 prose-ul:my-1.5 prose-ul:ps-0 prose-li:my-1 
           prose-h1:mb-2 prose-h1:mt-3 
@@ -95,43 +97,44 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           [&_li_p]:my-0 
           [&_dl]:my-1.5 
           w-full flex flex-col justify-start items-start ${className || ""}`}
-      >
-        <div
-          ref={memoContentContainerRef}
-          className={clsx(
-            "relative w-full max-w-full word-break whitespace-pre-wrap",
-            showCompactMode == "ALL" && "line-clamp-6 max-h-60",
-            contentClassName,
-          )}
-          onClick={handleMemoContentClick}
-          onDoubleClick={handleMemoContentDoubleClick}
         >
-          {nodes.map((node, index) => {
-            if (prevNode?.type !== NodeType.LINE_BREAK && node.type === NodeType.LINE_BREAK && skipNextLineBreakFlag) {
-              skipNextLineBreakFlag = false;
-              return null;
-            }
-            prevNode = node;
-            skipNextLineBreakFlag = true;
-            return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
-          })}
-          {showCompactMode == "ALL" && (
-            <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-b from-transparent dark:to-zinc-800 to-white pointer-events-none"></div>
+          <div
+            ref={memoContentContainerRef}
+            className={clsx(
+              "relative w-full max-w-full word-break whitespace-pre-wrap",
+              showCompactMode == "ALL" && "line-clamp-6 max-h-60",
+              contentClassName,
+            )}
+            onClick={handleMemoContentClick}
+            onDoubleClick={handleMemoContentDoubleClick}
+          >
+            {nodes.map((node, index) => {
+              if (prevNode?.type !== NodeType.LINE_BREAK && node.type === NodeType.LINE_BREAK && skipNextLineBreakFlag) {
+                skipNextLineBreakFlag = false;
+                return null;
+              }
+              prevNode = node;
+              skipNextLineBreakFlag = true;
+              return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
+            })}
+            {showCompactMode == "ALL" && (
+              <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-b from-transparent dark:to-zinc-800 to-white pointer-events-none"></div>
+            )}
+          </div>
+          {showCompactMode != undefined && (
+            <div className="w-full mt-1">
+              <span
+                className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
+                onClick={() => {
+                  setShowCompactMode(compactStates[showCompactMode].nextState as ContentCompactView);
+                }}
+              >
+                {compactStates[showCompactMode].text}
+              </span>
+            </div>
           )}
         </div>
-        {showCompactMode != undefined && (
-          <div className="w-full mt-1">
-            <span
-              className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
-              onClick={() => {
-                setShowCompactMode(compactStates[showCompactMode].nextState as ContentCompactView);
-              }}
-            >
-              {compactStates[showCompactMode].text}
-            </span>
-          </div>
-        )}
-      </div>
+      </PhotoProvider>
     </RendererContext.Provider>
   );
 };
