@@ -39,7 +39,7 @@ const TaskListItem: React.FC<Props> = ({ node, complete, children }: Props) => {
 
   return (
     <li className={clsx("w-full grid grid-cols-[24px_1fr]")}>
-      <span className="w-6 h-6 flex justify-start items-center">
+      <span className="w-7 h-7 flex justify-start items-center">
         <Checkbox size="sm" checked={checked} disabled={context.readonly} onChange={(e) => handleCheckboxChange(e.target.checked)} />
       </span>
       <p className={clsx(complete && "line-through opacity-80")}>
