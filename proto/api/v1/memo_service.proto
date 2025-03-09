@@ -163,7 +163,7 @@ message Memo {
 
   repeated Reaction reactions = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  MemoProperty property = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  Property property = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The name of the parent memo.
   // Format: memos/{id}
@@ -174,13 +174,13 @@ message Memo {
 
   // The location of the memo.
   optional Location location = 20;
-}
 
-message MemoProperty {
-  bool has_link = 1;
-  bool has_task_list = 2;
-  bool has_code = 3;
-  bool has_incomplete_tasks = 4;
+  message Property {
+    bool has_link = 1;
+    bool has_task_list = 2;
+    bool has_code = 3;
+    bool has_incomplete_tasks = 4;
+  }
 }
 
 message Location {
