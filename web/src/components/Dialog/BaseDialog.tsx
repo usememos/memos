@@ -5,7 +5,6 @@ import { createRoot } from "react-dom/client";
 import dialogStore from "@/store/v2/dialog";
 import theme from "@/theme";
 import { cn } from "@/utils";
-import "@/less/base-dialog.less";
 
 interface DialogConfig {
   dialogName: string;
@@ -53,8 +52,14 @@ const BaseDialog = observer((props: Props) => {
   };
 
   return (
-    <div className={cn("dialog-wrapper", className)} onMouseDown={handleSpaceClicked}>
-      <div ref={dialogContainerRef} className={cn("dialog-container")} onMouseDown={(e) => e.stopPropagation()}>
+    <div
+      className={cn(
+        "fixed top-0 left-0 flex flex-col justify-start items-center w-full h-full pt-16 pb-8 px-4 z-1000 overflow-x-hidden overflow-y-scroll bg-transparent transition-all hide-scrollbar bg-black bg-opacity-60",
+        className,
+      )}
+      onMouseDown={handleSpaceClicked}
+    >
+      <div ref={dialogContainerRef} onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>

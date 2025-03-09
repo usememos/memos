@@ -1,19 +1,14 @@
 import dayjs from "dayjs";
-import { ArchiveIcon } from "lucide-react";
 import { useMemo } from "react";
-import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
-import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
-import SearchBar from "@/components/SearchBar";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore } from "@/store/v1";
+import { viewStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { useTranslate } from "@/utils/i18n";
 
 const Archived = () => {
-  const t = useTranslate();
   const user = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
 
@@ -38,39 +33,22 @@ const Archived = () => {
   }, [user, memoFilterStore.filters]);
 
   return (
-    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
-      <MobileHeader />
-      <div className="w-full px-4 sm:px-6">
-        <div className="w-full flex flex-col justify-start items-start">
-          <div className="w-full flex flex-row justify-between items-center mb-2">
-            <div className="flex flex-row justify-start items-center gap-1">
-              <ArchiveIcon className="w-5 h-auto opacity-70 shrink-0" />
-              <span>{t("common.archived")}</span>
-            </div>
-            <div className="w-44">
-              <SearchBar />
-            </div>
-          </div>
-          <MemoFilters />
-          <PagedMemoList
-            renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility compact />}
-            listSort={(memos: Memo[]) =>
-              memos
-                .filter((memo) => memo.state === State.ARCHIVED)
-                .sort((a, b) =>
-                  memoFilterStore.orderByTimeAsc
-                    ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
-                    : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
-                )
-            }
-            owner={user.name}
-            state={State.ARCHIVED}
-            direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
-            oldFilter={memoListFilter}
-          />
-        </div>
-      </div>
-    </section>
+    <PagedMemoList
+      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility compact />}
+      listSort={(memos: Memo[]) =>
+        memos
+          .filter((memo) => memo.state === State.ARCHIVED)
+          .sort((a, b) =>
+            viewStore.state.orderByTimeAsc
+              ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
+              : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
+          )
+      }
+      owner={user.name}
+      state={State.ARCHIVED}
+      direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+      oldFilter={memoListFilter}
+    />
   );
 };
 

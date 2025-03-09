@@ -40,7 +40,6 @@ export const stringifyFilters = (filters: MemoFilter[]): string => {
 
 interface State {
   filters: MemoFilter[];
-  orderByTimeAsc: boolean;
   // The id of selected shortcut.
   shortcut?: string;
 }
@@ -49,7 +48,6 @@ const getInitialState = (): State => {
   const searchParams = new URLSearchParams(window.location.search);
   return {
     filters: parseFilterQuery(searchParams.get("filter")),
-    orderByTimeAsc: searchParams.get("orderBy") === "asc",
   };
 };
 
@@ -60,7 +58,6 @@ export const useMemoFilterStore = create(
     getFiltersByFactor: (factor: FilterFactor) => get().filters.filter((f) => f.factor === factor),
     addFilter: (filter: MemoFilter) => set((state) => ({ filters: uniqBy([...state.filters, filter], getMemoFilterKey) })),
     removeFilter: (filterFn: (f: MemoFilter) => boolean) => set((state) => ({ filters: state.filters.filter((f) => !filterFn(f)) })),
-    setOrderByTimeAsc: (orderByTimeAsc: boolean) => set({ orderByTimeAsc }),
     setShortcut: (shortcut?: string) => set({ shortcut }),
   })),
 );

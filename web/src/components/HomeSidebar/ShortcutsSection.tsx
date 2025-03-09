@@ -1,5 +1,4 @@
 import { Dropdown, Menu, MenuButton, MenuItem, Tooltip } from "@mui/joy";
-import EmojiRegex from "emoji-regex";
 import { Edit3Icon, MoreVerticalIcon, TrashIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { userServiceClient } from "@/grpcweb";
@@ -12,7 +11,7 @@ import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import showCreateShortcutDialog from "../CreateShortcutDialog";
 
-const emojiRegex = EmojiRegex();
+const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
 
 const ShortcutsSection = observer(() => {
   const t = useTranslate();
@@ -42,10 +41,10 @@ const ShortcutsSection = observer(() => {
       </div>
       <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
         {shortcuts.map((shortcut) => {
-          const selected = memoFilterStore.shortcut === shortcut.id;
           const maybeEmoji = shortcut.title.split(" ")[0];
           const emoji = emojiRegex.test(maybeEmoji) ? maybeEmoji : undefined;
           const title = emoji ? shortcut.title.replace(emoji, "") : shortcut.title;
+          const selected = memoFilterStore.shortcut === shortcut.id;
           return (
             <div
               key={shortcut.id}

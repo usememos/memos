@@ -87,7 +87,9 @@
     "input": "Input",
     "tree-mode": "Tree mode",
     "last-updated-at": "Last updated at",
-    "referencing": "Referencing"
+    "referencing": "Referencing",
+    "referenced-by": "Referenced by",
+    "relations": "Relations"
   },
   "days": {
     "fri": "Fri",
@@ -118,7 +120,7 @@
     "delete-confirm": "Are you sure you want to delete this memo? THIS ACTION IS IRREVERSIBLE",
     "load-more": "Load more",
     "no-archived-memos": "No archived memos.",
-    "search-placeholder": "Search memos",
+    "search-placeholder": "Search memos...",
     "show-more": "Show more",
     "show-less": "Show less",
     "view-detail": "View Detail",
@@ -141,7 +143,8 @@
     "direction-asc": "Ascending",
     "no-memos": "No memos.",
     "click-to-show-nsfw-content": "Click to show NSFW contnet",
-    "click-to-hide-nsfw-content": "Click to hide NSFW content"
+    "click-to-hide-nsfw-content": "Click to hide NSFW content",
+    "masonry-view": "Masonry View"
   },
   "message": {
     "archived-successfully": "Archived successfully",

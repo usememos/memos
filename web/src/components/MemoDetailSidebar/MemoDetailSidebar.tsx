@@ -1,7 +1,6 @@
 import { isEqual } from "lodash-es";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo, MemoProperty } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation_Type, Memo_Property } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import MemoRelationForceGraph from "../MemoRelationForceGraph";
@@ -14,7 +13,7 @@ interface Props {
 
 const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
   const t = useTranslate();
-  const property = MemoProperty.fromPartial(memo.property || {});
+  const property = Memo_Property.fromPartial(memo.property || {});
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode || property.hasIncompleteTasks;
   const shouldShowRelationGraph = memo.relations.filter((r) => r.type === MemoRelation_Type.REFERENCE).length > 0;
 
@@ -27,7 +26,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
           <div className="relative w-full h-36 border rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
             <MemoRelationForceGraph className="w-full h-full" memo={memo} parentPage={parentPage} />
             <div className="absolute top-1 left-2 text-xs opacity-60 font-mono gap-1 flex flex-row items-center">
-              <span>Relations</span>
+              <span>{t("common.relations")}</span>
               <span className="text-xs opacity-60">(Beta)</span>
             </div>
           </div>

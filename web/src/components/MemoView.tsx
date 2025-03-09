@@ -5,11 +5,10 @@ import { Link, useLocation } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useMemoStore, useUserStatsStore } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import { userStore, workspaceStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo, Visibility } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
@@ -45,7 +44,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const currentUser = useCurrentUser();
   const user = useCurrentUser();
   const memoStore = useMemoStore();
-  const userStatsStore = useUserStatsStore();
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const [showNSFWContent, setShowNSFWContent] = useState(props.showNsfwContent);
@@ -102,7 +100,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
 
   const onEditorConfirm = () => {
     setShowEditor(false);
-    userStatsStore.setStateId();
+    userStore.setStatsStateId();
   };
 
   const onPinIconClick = async () => {
@@ -159,7 +157,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                       {creator.nickname || creator.username}
                     </Link>
                     <div
-                      className="w-auto -mt-0.5 text-xs leading-tight text-gray-400 dark:text-gray-500 select-none"
+                      className="w-auto -mt-0.5 text-xs leading-tight text-gray-400 dark:text-gray-500 select-none cursor-pointer"
                       onClick={handleGotoMemoDetailPage}
                     >
                       {displayTime}
@@ -168,7 +166,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                 </div>
               ) : (
                 <div
-                  className="w-full text-sm leading-tight text-gray-400 dark:text-gray-500 select-none"
+                  className="w-full text-sm leading-tight text-gray-400 dark:text-gray-500 select-none cursor-pointer"
                   onClick={handleGotoMemoDetailPage}
                 >
                   {displayTime}
@@ -230,7 +228,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
               readonly={readonly}
               onClick={handleMemoContentClick}
               onDoubleClick={handleMemoContentDoubleClick}
-              compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
+              compact={props.compact}
               parentPage={parentPage}
             />
             {memo.location && <MemoLocationView location={memo.location} />}

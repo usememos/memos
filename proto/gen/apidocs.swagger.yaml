@@ -2313,9 +2313,6 @@ definitions:
         type: integer
         format: int32
         description: content_length_limit is the limit of content length. Unit is byte.
-      enableAutoCompact:
-        type: boolean
-        description: enable_auto_compact enables auto compact for large content.
       enableDoubleClickEdit:
         type: boolean
         description: enable_double_click_edit enables editing on double click.
@@ -2530,6 +2527,7 @@ definitions:
         title: |-
           The name of the activity.
           Format: activities/{id}
+        readOnly: true
       creator:
         type: string
         title: |-
@@ -2715,8 +2713,11 @@ definitions:
   v1LinkNode:
     type: object
     properties:
-      text:
-        type: string
+      content:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Node'
       url:
         type: string
   v1ListAllUserStatsResponse:
@@ -2872,14 +2873,8 @@ definitions:
     properties:
       memo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: |-
-          The name of memo.
-          Format: memos/{id}
       relatedMemo:
         $ref: '#/definitions/v1MemoRelationMemo'
-        title: |-
-          The name of related memo.
-          Format: memos/{id}
       type:
         $ref: '#/definitions/v1MemoRelationType'
   v1MemoRelationMemo:
@@ -3078,6 +3073,7 @@ definitions:
         description: |-
           The name of the resource.
           Format: resources/{resource}, resource is the user defined if or uuid.
+        readOnly: true
       createTime:
         type: string
         format: date-time
@@ -3213,6 +3209,7 @@ definitions:
         description: |-
           The name of the user.
           Format: users/{id}, id is the system generated auto-incremented id.
+        readOnly: true
       role:
         $ref: '#/definitions/UserRole'
       username:

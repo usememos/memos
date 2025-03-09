@@ -242,14 +242,14 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <>
-      <div className="dialog-header-container">
+    <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
+      <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p>{t(isCreating ? "setting.sso-section.create-sso" : "setting.sso-section.update-sso")}</p>
         <Button size="sm" variant="plain" onClick={handleCloseBtnClick}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
-      <div className="dialog-content-container min-w-[19rem]">
+      <div className="flex flex-col justify-start items-start w-80">
         {isCreating && (
           <>
             <Typography className="!mb-1" level="body-md">
@@ -429,7 +429,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

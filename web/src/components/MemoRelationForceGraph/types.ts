@@ -1,4 +1,4 @@
-import { MemoRelation_Memo } from "@/types/proto/api/v1/memo_relation_service";
+import { MemoRelation_Memo } from "@/types/proto/api/v1/memo_service";
 
 export interface NodeType {
   memo: MemoRelation_Memo;

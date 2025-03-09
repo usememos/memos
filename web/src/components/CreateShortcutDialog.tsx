@@ -62,14 +62,14 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <>
-      <div className="dialog-header-container">
+    <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
+      <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p className="title-text">{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.shortcuts")}`}</p>
         <Button size="sm" variant="plain" onClick={() => destroy()}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
-      <div className="dialog-content-container max-w-md min-w-72">
+      <div className="flex flex-col justify-start items-start max-w-md min-w-72">
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <span className="text-sm whitespace-nowrap mb-1">{t("common.title")}</span>
           <Input className="w-full" type="text" placeholder="" value={shortcut.title} onChange={onShortcutTitleChange} />
@@ -116,7 +116,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

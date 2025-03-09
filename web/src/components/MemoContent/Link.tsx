@@ -2,11 +2,12 @@ import { Link as MLink, Tooltip } from "@mui/joy";
 import { useState } from "react";
 import { markdownServiceClient } from "@/grpcweb";
 import { workspaceStore } from "@/store/v2";
-import { LinkMetadata } from "@/types/proto/api/v1/markdown_service";
+import { LinkMetadata, Node } from "@/types/proto/api/v1/markdown_service";
+import Renderer from "./Renderer";
 
 interface Props {
   url: string;
-  text?: string;
+  content?: Node[];
 }
 
 const getFaviconWithGoogleS2 = (url: string) => {
@@ -18,7 +19,7 @@ const getFaviconWithGoogleS2 = (url: string) => {
   }
 };
 
-const Link: React.FC<Props> = ({ text, url }: Props) => {
+const Link: React.FC<Props> = ({ content, url }: Props) => {
   const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
   const [initialized, setInitialized] = useState<boolean>(false);
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
@@ -65,7 +66,7 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
     >
       <MLink underline="always" target="_blank" href={url} rel="noopener noreferrer">
         <span onMouseEnter={handleMouseEnter} onMouseLeave={() => setShowTooltip(false)}>
-          {text || url}
+          {content ? content.map((child, index) => <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />) : url}
         </span>
       </MLink>
     </Tooltip>

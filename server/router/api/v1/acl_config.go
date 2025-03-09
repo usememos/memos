@@ -14,6 +14,7 @@ var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v1.UserService/GetUser":                           true,
 	"/memos.api.v1.UserService/GetUserByUsername":                 true,
 	"/memos.api.v1.UserService/GetUserAvatarBinary":               true,
+	"/memos.api.v1.UserService/GetUserStats":                      true,
 	"/memos.api.v1.UserService/ListAllUserStats":                  true,
 	"/memos.api.v1.UserService/SearchUsers":                       true,
 	"/memos.api.v1.MemoService/GetMemo":                           true,

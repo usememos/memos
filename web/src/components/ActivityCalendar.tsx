@@ -84,7 +84,7 @@ const ActivityCalendar = (props: Props) => {
         const isToday = dayjs().format("YYYY-MM-DD") === date;
         const tooltipText =
           count === 0
-            ? t("memo.no-memos")
+            ? date
             : t("memo.count-memos-in-date", {
                 count: count,
                 memos: count === 1 ? t("common.memo") : t("common.memos"),

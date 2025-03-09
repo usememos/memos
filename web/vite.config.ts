@@ -43,9 +43,18 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        entryFileNames: "app.[hash].js",
-        chunkFileNames: "assets/chunk-vendors.[hash].js",
+        entryFileNames: "assets/app.[hash].js",
+        chunkFileNames: "assets/[name].[hash].js",
         assetFileNames: "assets/[name].[hash][extname]",
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          "mui-vendor": ["@mui/joy", "@emotion/react", "@emotion/styled"],
+          "utils-vendor": ["dayjs", "lodash-es", "mobx", "mobx-react-lite"],
+          "katex-vendor": ["katex"],
+          "highlight-vendor": ["highlight.js"],
+          "mermaid-vendor": ["mermaid"],
+          "leaflet-vendor": ["leaflet", "react-leaflet"],
+        },
       },
     },
   },

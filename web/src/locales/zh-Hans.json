@@ -84,7 +84,9 @@
     "input": "输入",
     "tree-mode": "树模式",
     "last-updated-at": "最后更新时间",
-    "referencing": "相关笔记"
+    "referencing": "引用",
+    "referenced-by": "被引用",
+    "relations": "关系图"
   },
   "days": {
     "fri": "五",
@@ -137,7 +139,8 @@
     "direction-asc": "正序",
     "no-memos": "无备忘",
     "click-to-show-nsfw-content": "点击显示 NSFW 内容",
-    "click-to-hide-nsfw-content": "点击隐藏 NSFW 内容"
+    "click-to-hide-nsfw-content": "点击隐藏 NSFW 内容",
+    "masonry-view": "砖块视图"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -387,7 +390,7 @@
   },
   "about": {
     "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享你的想法。",
-    "github-repository": "GitHub 参保库",
+    "github-repository": "GitHub 仓库",
     "official-website": "官网",
     "blogs": "博客",
     "documents": "文档"

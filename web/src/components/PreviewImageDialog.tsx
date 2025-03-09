@@ -1,7 +1,7 @@
+import { Button } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { generateDialog } from "./Dialog";
-import "@/less/preview-image-dialog.less";
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 5;
@@ -154,13 +154,14 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
 
   return (
     <>
-      <div className="btns-container">
-        <button className="btn" onClick={handleCloseBtnClick}>
-          <XIcon className="icon-img" />
-        </button>
+      <div className="fixed top-8 right-8 flex flex-col justify-start items-center">
+        <Button onClick={handleCloseBtnClick}>
+          <XIcon className="w-6 h-auto" />
+        </Button>
       </div>
-      <div className="img-container" onClick={handleImgContainerClick}>
+      <div className="w-full h-full p-4 sm:p-20 flex flex-col justify-center items-center hide-scrollbar" onClick={handleImgContainerClick}>
         <img
+          className="h-auto w-auto max-w-full max-h-full shadow"
           style={imageComputedStyle}
           src={imgUrls[currentIndex]}
           onClick={(e) => e.stopPropagation()}
@@ -179,7 +180,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
 export default function showPreviewImageDialog(imgUrls: string[] | string, initialIndex?: number): void {
   generateDialog(
     {
-      className: "preview-image-dialog",
+      className: "preview-image-dialog p-0 z-[1001]",
       dialogName: "preview-image-dialog",
     },
     PreviewImageDialog,

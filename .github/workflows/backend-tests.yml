@@ -18,17 +18,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.23
+          go-version: 1.24
           check-latest: true
           cache: true
       - name: Verify go.mod is tidy
         run: |
-          go mod tidy -go=1.23
+          go mod tidy -go=1.24
           git diff --exit-code
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.61.0
+          version: v1.64.5
           args: --verbose --timeout=3m
           skip-cache: true
 
@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.23
+          go-version: 1.24
           check-latest: true
           cache: true
       - name: Run all tests

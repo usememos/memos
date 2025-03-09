@@ -1,8 +1,7 @@
 import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { Link } from "react-router-dom";
-import { MemoRelation } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -54,7 +53,7 @@ const MemoRelationListView = (props: Props) => {
             onClick={() => setSelectedTab("referenced")}
           >
             <MilestoneIcon className="w-3 h-auto shrink-0 opacity-70" />
-            <span>Referenced by</span>
+            <span>{t("common.referenced-by")}</span>
             <span className="opacity-80">({referencedMemoList.length})</span>
           </button>
         )}

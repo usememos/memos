@@ -120,6 +120,7 @@ const WorkspaceSection = () => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.workspace-section.disallow-user-registration")}</span>
         <Switch
+          disabled={workspaceStore.state.profile.mode === "demo"}
           checked={workspaceGeneralSetting.disallowUserRegistration}
           onChange={(event) => updatePartialSetting({ disallowUserRegistration: event.target.checked })}
         />
@@ -127,7 +128,7 @@ const WorkspaceSection = () => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.workspace-section.disallow-password-auth")}</span>
         <Switch
-          disabled={identityProviderList.length === 0 ? true : false}
+          disabled={workspaceStore.state.profile.mode === "demo" || identityProviderList.length === 0}
           checked={workspaceGeneralSetting.disallowPasswordAuth}
           onChange={(event) => updatePartialSetting({ disallowPasswordAuth: event.target.checked })}
         />

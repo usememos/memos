@@ -5,7 +5,6 @@ import { LoaderIcon, SendIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
@@ -16,8 +15,7 @@ import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore, useResourceStore } from "@/store/v1";
 import { userStore, workspaceStore } from "@/store/v2";
-import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service";
+import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -34,6 +32,7 @@ import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
+import "react-datepicker/dist/react-datepicker.css";
 
 export interface Props {
   className?: string;
@@ -153,7 +152,7 @@ const MemoEditor = observer((props: Props) => {
     const isMetaKey = event.ctrlKey || event.metaKey;
     if (isMetaKey) {
       if (event.key === "Enter") {
-        void handleSaveBtnClick();
+        handleSaveBtnClick();
         return;
       }
       if (!workspaceMemoRelatedSetting.disableMarkdownShortcuts) {
