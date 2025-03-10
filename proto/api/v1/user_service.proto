@@ -211,6 +211,9 @@ message UserStats {
   // Format: "tag1": 1, "tag2": 2
   map<string, int32> tag_count = 4;
 
+  // The pinned memos of the user.
+  repeated string pinned_memos = 5;
+
   message MemoTypeStats {
     int32 link_count = 1;
     int32 code_count = 2;

@@ -188,6 +188,16 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			}
 			ctx.Args = append(ctx.Args, fmt.Sprintf("%%%s%%", arg))
 		}
+	} else if v, ok := expr.ExprKind.(*exprv1.Expr_IdentExpr); ok {
+		identifier := v.IdentExpr.GetName()
+		if !slices.Contains([]string{"pinned"}, identifier) {
+			return errors.Errorf("invalid identifier %s", identifier)
+		}
+		if identifier == "pinned" {
+			if _, err := ctx.Buffer.WriteString("`memo`.`pinned` IS TRUE"); err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }

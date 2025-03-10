@@ -62,6 +62,9 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 		for _, tag := range memo.Payload.Tags {
 			userStats.TagCount[tag]++
 		}
+		if memo.Pinned {
+			userStats.PinnedMemos = append(userStats.PinnedMemos, fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID))
+		}
 		if memo.Payload.Property.GetHasLink() {
 			userStats.MemoTypeStats.LinkCount++
 		}
@@ -139,6 +142,9 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		// Handle duplicated tags.
 		for _, tag := range memo.Payload.Tags {
 			userStats.TagCount[tag]++
+		}
+		if memo.Pinned {
+			userStats.PinnedMemos = append(userStats.PinnedMemos, fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID))
 		}
 		if memo.Payload.Property.GetHasLink() {
 			userStats.MemoTypeStats.LinkCount++

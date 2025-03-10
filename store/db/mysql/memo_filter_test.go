@@ -49,6 +49,16 @@ func TestConvertExprToSQL(t *testing.T) {
 			want:   "(JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?) OR `memo`.`content` LIKE ?)",
 			args:   []any{"tag1", "%hello%"},
 		},
+		{
+			filter: `1`,
+			want:   "",
+			args:   []any{},
+		},
+		{
+			filter: `pinned`,
+			want:   "`memo`.`pinned` IS TRUE",
+			args:   []any{},
+		},
 	}
 
 	for _, tt := range tests {

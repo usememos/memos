@@ -59,6 +59,16 @@ func TestConvertExprToSQL(t *testing.T) {
 			want:   "",
 			args:   []any{},
 		},
+		{
+			filter: `pinned`,
+			want:   "`memo`.`pinned` IS TRUE",
+			args:   []any{},
+		},
+		{
+			filter: `!pinned`,
+			want:   "NOT (`memo`.`pinned` IS TRUE)",
+			args:   []any{},
+		},
 	}
 
 	for _, tt := range tests {
