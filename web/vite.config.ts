@@ -1,3 +1,4 @@
+import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
 import { codeInspectorPlugin } from "code-inspector-plugin";
 import { resolve } from "path";
@@ -13,6 +14,9 @@ if (process.env.DEV_PROXY_SERVER && process.env.DEV_PROXY_SERVER.length > 0) {
 export default defineConfig({
   plugins: [
     react(),
+    legacy({
+      targets: ["defaults", "not IE 11"],
+    }),
     codeInspectorPlugin({
       bundler: "vite",
     }),

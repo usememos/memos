@@ -12,6 +12,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	// As the built-in timestamp type is deprecated, we use string type for now.
 	// e.g., "2021-01-01T00:00:00Z"
 	cel.Variable("create_time", cel.StringType),
+	cel.Variable("pinned", cel.BoolType),
 	cel.Variable("tag", cel.StringType),
 	cel.Variable("update_time", cel.StringType),
 	cel.Variable("visibility", cel.StringType),

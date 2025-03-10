@@ -3272,6 +3272,11 @@ definitions:
         title: |-
           The count of tags.
           Format: "tag1": 1, "tag2": 2
+      pinnedMemos:
+        type: array
+        items:
+          type: string
+        description: The pinned memos of the user.
   v1Visibility:
     type: string
     enum:
