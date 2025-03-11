@@ -40,7 +40,7 @@ type NestedKeyOf<T, K = keyof T> = K extends keyof T & (string | number)
 export type Translations = NestedKeyOf<typeof enTranslation>;
 
 // Represents a typed translation function.
-type TypedT = (key: string, params?: Record<string, any>) => string;
+type TypedT = (key: Translations | string, params?: Record<string, any>) => string;
 
 export const useTranslate = (): TypedT => {
   const { t } = useTranslation<Translations>();
