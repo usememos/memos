@@ -19,7 +19,10 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
 
   return (
     <aside
-      className={cn("memo-detail-sidebar relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start", className)}
+      className={cn(
+        "memo-detail-sidebar relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start",
+        className
+      )}
     >
       <div className="flex flex-col justify-start items-start w-full px-1 gap-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
         {shouldShowRelationGraph && (
