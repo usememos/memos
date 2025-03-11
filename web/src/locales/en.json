@@ -410,8 +410,8 @@
     "documents": "Documents"
   },
   "filters": {
-    "has-link": "hasLink",
-    "has-task-list": "hasTaskList",
-    "has-code": "hasCode"
+    "hasLink": "hasLink",
+    "hasTaskList": "hasTaskList",
+    "hasCode": "hasCode"
   }
 }

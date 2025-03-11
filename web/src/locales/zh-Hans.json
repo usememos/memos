@@ -394,8 +394,8 @@
     "documents": "文档"
   },
   "filters": {
-    "has-link": "有链接",
-    "has-task-list": "有待办",
-    "has-code": "有代码"
+    "hasLink": "有链接",
+    "hasTaskList": "有待办",
+    "hasCode": "有代码"
   }
 }
