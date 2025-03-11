@@ -24,6 +24,7 @@ import showPreviewImageDialog from "./PreviewImageDialog";
 import ReactionSelector from "./ReactionSelector";
 import UserAvatar from "./UserAvatar";
 import VisibilityIcon from "./VisibilityIcon";
+import { log } from "mermaid/dist/logger";
 
 interface Props {
   memo: Memo;
@@ -121,10 +122,15 @@ const MemoView: React.FC<Props> = (props: Props) => {
     <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat}></relative-time>
   );
 
+  let memoTags = '';
+  memo.tags?.forEach((tag) => {
+    memoTags = memoTags + ' tagged-' + tag.toLowerCase();
+  });
+  
   return (
     <div
       className={cn(
-        "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
+        "memo " + memoTags + " group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
         className,
       )}
       ref={memoContainerRef}
@@ -140,7 +146,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
         />
       ) : (
         <>
-          <div className="w-full flex flex-row justify-between items-center gap-2">
+          <div className="memo-header w-full flex flex-row justify-between items-center gap-2">
             <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
               {props.showCreator && creator ? (
                 <div className="w-full flex flex-row justify-start items-center">
@@ -216,7 +222,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           </div>
           <div
             className={cn(
-              "w-full flex flex-col justify-start items-start gap-2",
+              "memo-content w-full flex flex-col justify-start items-start gap-2",
               nsfw && !showNSFWContent && "blur-lg transition-all duration-200",
             )}
           >

@@ -72,7 +72,7 @@ const PagedMemoList = observer((props: Props) => {
   }, [props.owner, props.state, props.direction, props.filter, props.oldFilter, props.pageSize]);
 
   const children = (
-    <div className="flex flex-col justify-start items-start w-full max-w-full">
+    <div id="memo-list" className="flex flex-col justify-start items-start w-full max-w-full">
       <MasonryView
         memoList={sortedMemoList}
         renderer={props.renderer}
