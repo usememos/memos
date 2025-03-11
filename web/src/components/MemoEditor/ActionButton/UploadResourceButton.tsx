@@ -67,11 +67,7 @@ const UploadResourceButton = () => {
 
   return (
     <Button className="relative" size="sm" variant="plain" disabled={state.uploadingFlag}>
-      {state.uploadingFlag ? (
-        <LoaderIcon className="w-5 h-5 mx-auto animate-spin" />
-      ) : (
-        <PaperclipIcon className="w-5 h-5 mx-auto" />
-      )}
+      {state.uploadingFlag ? <LoaderIcon className="w-5 h-5 mx-auto animate-spin" /> : <PaperclipIcon className="w-5 h-5 mx-auto" />}
       <input
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         ref={fileInputRef}
