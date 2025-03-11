@@ -38,7 +38,7 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
             </Select>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3">{t("memo.masonry-view")}</span>
+            <span className="text-sm shrink-0 mr-3">Layout</span>
             <Select
               value={viewStore.state.layout}
               onChange={(_, value) =>
