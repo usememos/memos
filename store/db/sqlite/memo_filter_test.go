@@ -69,6 +69,11 @@ func TestConvertExprToSQL(t *testing.T) {
 			want:   "NOT (`memo`.`pinned` IS TRUE)",
 			args:   []any{},
 		},
+		{
+			filter: `creator_id == 101 || visibility in ["PUBLIC", "PRIVATE"]`,
+			want:   "(`memo`.`creator_id` = ? OR `memo`.`visibility` IN (?,?))",
+			args:   []any{int64(101), "PUBLIC", "PRIVATE"},
+		},
 	}
 
 	for _, tt := range tests {
