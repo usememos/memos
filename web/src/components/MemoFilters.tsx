@@ -25,20 +25,19 @@ const MemoFilters = () => {
     }
     if (filter.factor.startsWith("property.")) {
       const factorLabel = filter.factor.replace("property.", "");
-			switch (factorLabel) {
-				case "hasLink":
-					return t("filters.has-link");
-				case "hasCode":
-					return t("filters.has-code");
-			 	case "hasTaskList":
-				 	return t("filters.has-task-list");
-			  default:
-					return factorLabel;
-			}
+      switch (factorLabel) {
+        case "hasLink":
+          return t("filters.has-link");
+        case "hasCode":
+          return t("filters.has-code");
+        case "hasTaskList":
+          return t("filters.has-task-list");
+        default:
+          return factorLabel;
+      }
     }
     return filter.factor;
   };
-
 
   if (filters.length === 0) {
     return undefined;
