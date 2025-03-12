@@ -6,7 +6,6 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
@@ -78,7 +77,7 @@ const UserProfile = observer(() => {
 
   return (
     <section className="w-full max-w-3xl mx-auto min-h-full flex flex-col justify-start items-center pb-8">
-      <div className="w-full px-4 sm:px-6 flex flex-col justify-start items-center">
+      <div className="w-full flex flex-col justify-start items-center max-w-2xl">
         {!loadingState.isLoading &&
           (user ? (
             <>
@@ -99,7 +98,6 @@ const UserProfile = observer(() => {
                   </p>
                 </div>
               </div>
-              <MemoFilters />
               <PagedMemoList
                 renderer={(memo: Memo) => (
                   <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />

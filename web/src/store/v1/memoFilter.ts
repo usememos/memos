@@ -7,6 +7,7 @@ export type FilterFactor =
   | "visibility"
   | "contentSearch"
   | "displayTime"
+  | "pinned"
   | "property.hasLink"
   | "property.hasTaskList"
   | "property.hasCode";

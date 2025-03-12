@@ -52,6 +52,10 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 				find.CreatedTsBefore = filterExpr.DisplayTimeBefore
 			}
 		}
+		if filterExpr.Pinned {
+			pinned := true
+			find.Pinned = &pinned
+		}
 		if filterExpr.HasLink {
 			find.PayloadFind.HasLink = true
 		}
@@ -74,6 +78,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("tag_search", cel.ListType(cel.StringType)),
 	cel.Variable("display_time_before", cel.IntType),
 	cel.Variable("display_time_after", cel.IntType),
+	cel.Variable("pinned", cel.BoolType),
 	cel.Variable("has_link", cel.BoolType),
 	cel.Variable("has_task_list", cel.BoolType),
 	cel.Variable("has_code", cel.BoolType),
@@ -85,6 +90,7 @@ type MemoFilter struct {
 	TagSearch          []string
 	DisplayTimeBefore  *int64
 	DisplayTimeAfter   *int64
+	Pinned             bool
 	HasLink            bool
 	HasTaskList        bool
 	HasCode            bool
@@ -134,6 +140,9 @@ func findMemoField(callExpr *exprv1.Expr_Call, filter *MemoFilter) {
 			} else if idExpr.Name == "display_time_after" {
 				displayTimeAfter := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.DisplayTimeAfter = &displayTimeAfter
+			} else if idExpr.Name == "pinned" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.Pinned = value
 			} else if idExpr.Name == "has_link" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.HasLink = value

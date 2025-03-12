@@ -23,6 +23,8 @@ const Home = observer(() => {
         contentSearch.push(`"${filter.value}"`);
       } else if (filter.factor === "tagSearch") {
         tagSearch.push(`"${filter.value}"`);
+      } else if (filter.factor === "pinned") {
+        conditions.push(`pinned == true`);
       } else if (filter.factor === "property.hasLink") {
         conditions.push(`has_link == true`);
       } else if (filter.factor === "property.hasTaskList") {

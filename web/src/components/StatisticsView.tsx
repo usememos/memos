@@ -1,12 +1,15 @@
 import { Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
-import { CheckCircleIcon, ChevronRightIcon, ChevronLeftIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
+import { CheckCircleIcon, ChevronRightIcon, ChevronLeftIcon, Code2Icon, LinkIcon, ListTodoIcon, PinIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
+import { matchPath, useLocation } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
+import { Routes } from "@/router";
 import { useMemoFilterStore } from "@/store/v1";
 import { userStore } from "@/store/v2";
 import { UserStats_MemoTypeStats } from "@/types/proto/api/v1/user_service";
@@ -17,7 +20,9 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const StatisticsView = observer(() => {
   const t = useTranslate();
+  const location = useLocation();
   const memoFilterStore = useMemoFilterStore();
+  const currentUser = useCurrentUser();
   const [memoTypeStats, setMemoTypeStats] = useState<UserStats_MemoTypeStats>(UserStats_MemoTypeStats.fromPartial({}));
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDate] = useState(new Date());
@@ -92,7 +97,22 @@ const StatisticsView = observer(() => {
           onClick={onCalendarClick}
         />
       </div>
-      <div className="pt-1 w-full flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
+      <div className="pt-1 w-full flex flex-row justify-start items-center gap-1 flex-wrap">
+        {matchPath(Routes.ROOT, location.pathname) &&
+          currentUser &&
+          userStore.state.currentUserStats &&
+          userStore.state.currentUserStats.pinnedMemos.length > 0 && (
+            <div
+              className={cn("w-auto border dark:border-zinc-800 pl-1.5 pr-2 py-0.5 rounded-md flex justify-between items-center")}
+              onClick={() => memoFilterStore.addFilter({ factor: "pinned", value: "" })}
+            >
+              <div className="w-auto flex justify-start items-center mr-1">
+                <PinIcon className="w-4 h-auto mr-1" />
+                <span className="block text-sm">Pinned</span>
+              </div>
+              <span className="text-sm truncate">{userStore.state.currentUserStats.pinnedMemos.length}</span>
+            </div>
+          )}
         <div
           className={cn("w-auto border dark:border-zinc-800 pl-1.5 pr-2 py-0.5 rounded-md flex justify-between items-center")}
           onClick={() => memoFilterStore.addFilter({ factor: "property.hasLink", value: "" })}
