@@ -1,5 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
+// import { log } from "mermaid/dist/logger";
 import { memo, useCallback, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
@@ -24,7 +25,6 @@ import showPreviewImageDialog from "./PreviewImageDialog";
 import ReactionSelector from "./ReactionSelector";
 import UserAvatar from "./UserAvatar";
 import VisibilityIcon from "./VisibilityIcon";
-import { log } from "mermaid/dist/logger";
 
 interface Props {
   memo: Memo;
@@ -126,13 +126,13 @@ const MemoView: React.FC<Props> = (props: Props) => {
   memo.tags?.forEach((tag) => {
     memoTags = memoTags + " tagged-" + tag.toLowerCase();
   });
-  
+
   return (
     <div
       className={cn(
-        "memo " + 
-        memoTags + 
-        " group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
+        "memo " +
+          memoTags +
+          " group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
         className,
       )}
       ref={memoContainerRef}

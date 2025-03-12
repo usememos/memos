@@ -73,10 +73,7 @@ const HomeSidebar = observer((props: Props) => {
   return (
     <aside
       id="home-sidebar"
-      className={cn(
-        "relative w-full h-full overflow-auto flex flex-col justify-start items-start",
-        props.className
-      )}
+      className={cn("relative w-full h-full overflow-auto flex flex-col justify-start items-start", props.className)}
     >
       <SearchBar />
       <div className="mt-2 w-full space-y-1">
