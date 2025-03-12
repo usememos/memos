@@ -3277,6 +3277,9 @@ definitions:
         items:
           type: string
         description: The pinned memos of the user.
+      totalMemoCount:
+        type: integer
+        format: int32
   v1Visibility:
     type: string
     enum:

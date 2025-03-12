@@ -87,6 +87,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 		if memo.Payload.Property.GetHasIncompleteTasks() {
 			userStats.MemoTypeStats.UndoCount++
 		}
+		userStats.TotalMemoCount++
 	}
 	userStatsList := []*v1pb.UserStats{}
 	for _, userStats := range userStatsMap {
@@ -142,6 +143,7 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		MemoDisplayTimestamps: []*timestamppb.Timestamp{},
 		MemoTypeStats:         &v1pb.UserStats_MemoTypeStats{},
 		TagCount:              map[string]int32{},
+		TotalMemoCount:        int32(len(memos)),
 	}
 	for _, memo := range memos {
 		displayTs := memo.CreatedTs
