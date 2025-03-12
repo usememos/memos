@@ -25,15 +25,15 @@ const MemoFilters = () => {
     }
     if (filter.factor.startsWith("property.")) {
       const factorLabel = filter.factor.replace("property.", "");
-       switch(factorLabel){
+			switch (factorLabel) {
 				case "hasLink":
 					return t("filters.has-link");
 				case "hasCode":
 					return t("filters.has-code");
-			 case "hasTaskList":
+			 	case "hasTaskList":
 				 	return t("filters.has-task-list");
-			 default:
-				 return factorLabel;
+			  default:
+					return factorLabel;
 			}
     }
     return filter.factor;
