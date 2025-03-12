@@ -46,7 +46,7 @@ Learn more about [other installation methods](https://www.usememos.com/docs/inst
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. We greatly appreciate any contributions you make. Thank you for being a part of our community! 🥰
 
-Guide to [contribution](https://www.usememos.com/docs/contribute).
+Guide to [contribution](https://www.usememos.com/docs/contribution/development).
 
 ## Star history
 
