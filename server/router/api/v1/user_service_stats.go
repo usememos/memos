@@ -15,15 +15,6 @@ import (
 )
 
 func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUserStatsRequest) (*v1pb.ListAllUserStatsResponse, error) {
-	currentUser, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
-	}
-	visibilities := []store.Visibility{store.Public}
-	if currentUser != nil {
-		visibilities = append(visibilities, store.Protected)
-	}
-
 	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
@@ -34,8 +25,27 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 		// Exclude comments by default.
 		ExcludeComments: true,
 		ExcludeContent:  true,
-		VisibilityList:  visibilities,
 		RowStatus:       &normalStatus,
+	}
+
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser == nil {
+		memoFind.VisibilityList = []store.Visibility{store.Public}
+	} else {
+		if memoFind.CreatorID == nil {
+			internalFilter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "Protected"]`, currentUser.ID)
+			if memoFind.Filter != nil {
+				filter := fmt.Sprintf("(%s) && (%s)", *memoFind.Filter, internalFilter)
+				memoFind.Filter = &filter
+			} else {
+				memoFind.Filter = &internalFilter
+			}
+		} else if *memoFind.CreatorID != currentUser.ID {
+			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+		}
 	}
 	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
