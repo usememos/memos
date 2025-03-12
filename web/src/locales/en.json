@@ -395,7 +395,14 @@
     "create-tags-guide": "You can create tags by inputting `#tag`.",
     "delete-confirm": "Are you sure to delete this tag? All related memos will be archived.",
     "delete-tag": "Delete Tag",
-    "no-tag-found": "No tag found"
+    "no-tag-found": "No tag found",
+    "rename-tag": "Rename tag",
+    "old-name": "Old Name",
+    "new-name": "New Name",
+    "rename-tip": "All your memos with this tag will be updated.",
+    "rename-error-empty": "Tag name cannot be empty or contain spaces",
+    "rename-error-repeat": "New name cannot be the same as the old name",
+    "rename-success": "Rename tag successfully"
   },
   "markdown": {
     "code-block": "Code block",
