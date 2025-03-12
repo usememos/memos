@@ -79,15 +79,20 @@ const HomeSidebar = observer((props: Props) => {
             key={navLink.id}
             className={({ isActive }) =>
               cn(
-                "w-full px-2 rounded-xl border flex flex-row items-center text-sm text-zinc-600 dark:text-gray-400 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-700 dark:hover:bg-zinc-800",
+                "w-full px-2 rounded-xl border flex flex-row items-center justify-between text-sm text-zinc-600 dark:text-gray-400 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-700 dark:hover:bg-zinc-800",
                 isActive ? "bg-white drop-shadow-sm dark:bg-zinc-800 border-gray-200 dark:border-zinc-700" : "border-transparent",
               )
             }
             to={navLink.path}
             viewTransition
           >
-            {navLink.icon}
-            <span className="ml-2 truncate leading-8">{navLink.title}</span>
+            <div className="flex flex-row items-center">
+              {navLink.icon}
+              <span className="ml-2 truncate leading-8">{navLink.title}</span>
+            </div>
+            {navLink.path === Routes.ROOT && currentUser && userStore.state.currentUserStats && (
+              <span className="font-mono text-xs opacity-80">{userStore.state.currentUserStats.totalMemoCount}</span>
+            )}
           </NavLink>
         ))}
       </div>
