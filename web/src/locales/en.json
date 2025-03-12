@@ -408,5 +408,10 @@
     "official-website": "Official Website",
     "blogs": "Blogs",
     "documents": "Documents"
+  },
+  "filters": {
+    "has-link": "hasLink",
+    "has-task-list": "hasTaskList",
+    "has-code": "hasCode"
   }
 }

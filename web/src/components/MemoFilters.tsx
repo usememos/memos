@@ -3,8 +3,10 @@ import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, HashIcon, LinkIcon, S
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters, useMemoFilterStore } from "@/store/v1";
+import { useTranslate } from "@/utils/i18n";
 
 const MemoFilters = () => {
+  const t = useTranslate();
   const [, setSearchParams] = useSearchParams();
   const memoFilterStore = useMemoFilterStore();
   const filters = memoFilterStore.filters;
@@ -22,7 +24,17 @@ const MemoFilters = () => {
       return filter.value;
     }
     if (filter.factor.startsWith("property.")) {
-      return filter.factor.replace("property.", "");
+      const factorLabel = filter.factor.replace("property.", "");
+      switch (factorLabel) {
+        case "hasLink":
+          return t("filters.has-link");
+        case "hasCode":
+          return t("filters.has-code");
+        case "hasTaskList":
+          return t("filters.has-task-list");
+        default:
+          return factorLabel;
+      }
     }
     return filter.factor;
   };
