@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "Blogy",
+    "description": "Jednoduchá služba pro psaní poznámek, která dbá především na soukromí. Snadno zaznamenávejte a sdílejte své skvělé myšlenky.",
+    "documents": "Dokumenty",
+    "github-repository": "GitHub Repo",
+    "official-website": "Oficiální web"
+  },
   "auth": {
     "create-your-account": "Založit nový účet",
     "host-tip": "Registrujete se jako Hostitel stránek.",
@@ -20,8 +27,8 @@
     "change": "Změnit",
     "clear": "Vymazat",
     "close": "Zavřít",
-    "confirm": "Potvrdit",
     "collapse": "Sbalit",
+    "confirm": "Potvrdit",
     "create": "Vytvořit",
     "database": "Databáze",
     "day": "Den",
@@ -35,8 +42,8 @@
     "file": "Soubor",
     "filter": "Filtr",
     "home": "Domů",
-    "in": "V",
     "image": "Obrázek",
+    "in": "V",
     "inbox": "Došlá pošta",
     "language": "Jazyk",
     "learn-more": "Více informací",
@@ -99,8 +106,14 @@
     "memo-comment": "{{user}} komentoval na vaší {{memo}}.",
     "version-update": "Nyní je dostupná nová verze {{version}}!"
   },
+  "markdown": {
+    "checkbox": "Zaškrtávací pole",
+    "code-block": "Blok kódu",
+    "content-syntax": "Syntaxe obsahu"
+  },
   "memo": {
     "archived-at": "Archivováno na",
+    "code": "Kód",
     "comment": {
       "self": "Komentáře",
       "write-a-comment": "Napsat komentář"
@@ -108,51 +121,50 @@
     "copy-link": "Kopírovat odkaz",
     "count-memos-in-date": "{{date}} {{memos}}: {{count}}",
     "delete-confirm": "Opravdu chcete smazat tuto poznámku? TATO AKCE JE NEVRATNÁ",
+    "direction": "Směr",
+    "direction-asc": "Vzestupně",
+    "direction-desc": "Sestupně",
+    "display-time": "Doba zobrazení",
+    "filters": "Filtry",
+    "links": "Odkazy",
     "load-more": "Načíst další",
     "no-archived-memos": "Žádné archivované poznámky.",
+    "no-memos": "Žádné poznámky.",
+    "order-by": "Řadit dle",
+    "remove-completed-task-list-items": "Odstranit dokončené",
+    "remove-completed-task-list-items-confirm": "Jste si jisti, že chcete odstranit všechny dokončené úkoly? TATO AKCE JE NEVRATNÁ",
     "search-placeholder": "Hledat poznámky",
-    "show-more": "Zobrazit více",
     "show-less": "Zobrazit méně",
+    "show-more": "Zobrazit více",
+    "to-do": "Úkoly",
     "view-detail": "Zobrazit podrobnosti",
     "visibility": {
       "disabled": "Veřejné poznámky nejsou povoleny",
       "private": "Soukromá",
       "protected": "Pracovní prostor",
       "public": "Veřejná"
-    },
-    "links": "Odkazy",
-    "to-do": "Úkoly",
-    "code": "Kód",
-    "remove-completed-task-list-items": "Odstranit dokončené",
-    "remove-completed-task-list-items-confirm": "Jste si jisti, že chcete odstranit všechny dokončené úkoly? TATO AKCE JE NEVRATNÁ",
-    "filters": "Filtry",
-    "order-by": "Řadit dle",
-    "display-time": "Doba zobrazení",
-    "direction": "Směr",
-    "direction-desc": "Sestupně",
-    "direction-asc": "Vzestupně",
-    "no-memos": "Žádné poznámky."
+    }
   },
   "message": {
     "archived-successfully": "Úspěšně archivováno",
     "change-memo-created-time": "Změnit čas vytvoření poznámky",
     "copied": "Zkopírováno",
     "deleted-successfully": "Úspěšně smazáno",
+    "description-is-required": "Popis je vyžadován",
+    "failed-to-embed-memo": "Nepodařilo se vložit poznámku",
     "fill-all": "Vyplňte prosím všechna pole",
+    "fill-all-required-fields": "Vyplňte prosím všechny požadované údaje",
     "maximum-upload-size-is": "Maximální povolená velikost souboru je {{size}} MiB",
     "memo-not-found": "Poznámka nenalezena.",
     "new-password-not-match": "Nová hesla nesouhlasí.",
     "no-data": "Nebyly nalezeny žádné údaje.",
     "password-changed": "Heslo změněno",
     "password-not-match": "Hesla nesouhlasí.",
+    "remove-completed-task-list-items-successfully": "Úspěšně odstraněno",
     "restored-successfully": "Úspěšně obnoveno",
     "succeed-copy-link": "Odkaz byl úspěšně zkopírován.",
     "update-succeed": "Aktualizace proběhla úspěšně",
-    "user-not-found": "Uživatel nenalezen",
-    "remove-completed-task-list-items-successfully": "Úspěšně odstraněno",
-    "failed-to-embed-memo": "Nepodařilo se vložit poznámku",
-    "description-is-required": "Popis je vyžadován",
-    "fill-all-required-fields": "Vyplňte prosím všechny požadované údaje"
+    "user-not-found": "Uživatel nenalezen"
   },
   "reference": {
     "add-references": "Přidat odkazy",
@@ -197,6 +209,24 @@
     "go-to-home": "Přejít na úvod"
   },
   "setting": {
+    "access-token-section": {
+      "access-token-copied-to-clipboard": "Přístupový token zkopírován do schránky",
+      "access-token-deletion": "Jste si jistí, že chcete odstranit přístupový token {{accessToken}}? TATO AKCE JE NEVRATNÁ.",
+      "create-dialog": {
+        "create-access-token": "Vytvořit přístupový token",
+        "created-at": "Vytvořeno",
+        "description": "Popis",
+        "duration-1m": "1 měsíc",
+        "duration-8h": "8 hodin",
+        "duration-never": "Nikdy",
+        "expiration": "Platnost",
+        "expires-at": "Vyprší",
+        "some-description": "Nějaký popis..."
+      },
+      "description": "Seznam všech přístupových tokenů k vašemu účtu.",
+      "title": "Přístupové tokeny",
+      "token": "Token"
+    },
     "account-section": {
       "change-password": "Změnit heslo",
       "email-note": "Volitelné",
@@ -224,6 +254,15 @@
       "delete-member": "Odstranit uživatele",
       "delete-warning": "Jste si jisti, že chcete odstranit uživatele {{username}}? TATO AKCE JE NEVRATNÁ"
     },
+    "memo-related": "Poznámky",
+    "memo-related-settings": {
+      "content-lenght-limit": "Omezení velikosti obsahu (bajty)",
+      "enable-link-preview": "Povolit náhled odkazu",
+      "enable-memo-comments": "Povolit komentáře k poznámkám",
+      "enable-memo-location": "Povolit umístění poznámek",
+      "reactions": "Reakce",
+      "title": "Nastavení související s poznámkami"
+    },
     "my-account": "Můj účet",
     "preference": "Předvolby",
     "preference-section": {
@@ -244,6 +283,7 @@
       "display-name": "Zobrazovaný název",
       "identifier": "Identifikátor",
       "identifier-filter": "Filtr identifikátoru",
+      "no-sso-found": "Žádné SSO nenalezeno.",
       "redirect-url": "URL pro přesměrování",
       "scopes": "Rozsahy",
       "sso-created": "SSO {{name}} vytvořeno",
@@ -252,9 +292,7 @@
       "template": "Šablona",
       "token-endpoint": "Koncový bod tokenu",
       "update-sso": "Aktualizovat SSO",
-      "user-endpoint": "Koncový bod uživatele",
-      "no-sso-found": "Žádné SSO nenalezeno.",
-      "configuring-keycloak-for-authentication": "Konfigurace nástroje Keycloak pro přihlašování"
+      "user-endpoint": "Koncový bod uživatele"
     },
     "storage": "Úložiště",
     "storage-section": {
@@ -304,11 +342,11 @@
         "locale": "Lokalizace serveru",
         "title": "Přizpůsobení serveru"
       },
+      "disable-markdown-shortcuts-in-editor": "Zakázat klávesové zkratky Markdown v editoru",
       "disable-password-login": "Zakázat přihlašování heslem",
       "disable-password-login-final-warning": "Pokud víte, co děláte, zadejte \"CONFIRM\".",
       "disable-password-login-warning": "Tímto zakážete přihlašování heslem pro všechny uživatele. Bez obnovení tohoto nastavení v databázi není možné se přihlásit, pokud selžou vámi nakonfigurovaní poskytovatelé identit. Při odebírání poskytovatele identit budete muset být také velmi opatrní.",
       "disable-public-memos": "Zakázat veřejné poznámky",
-      "disable-markdown-shortcuts-in-editor": "Zakázat klávesové zkratky Markdown v editoru",
       "display-with-updated-time": "Zobrazení s časem aktualizace",
       "enable-auto-compact": "Povolit automatické kompaktní zobrazení",
       "enable-double-click-to-edit": "Povolit dvojklik pro editaci",
@@ -316,60 +354,33 @@
       "enable-password-login-warning": "Tímto se povolí přihlašování heslem pro všechny uživatele. Pokračujte pouze v případě, že chcete, aby se uživatelé mohli přihlašovat pomocí SSO i hesla.",
       "max-upload-size": "Maximální velikost nahrávaného souboru (MiB)",
       "max-upload-size-hint": "Doporučená hodnota je 32 MiB.",
-      "server-name": "Název serveru",
-      "removed-completed-task-list-items": "Povolit odstranění dokončených položek ze seznamu úkolů"
+      "removed-completed-task-list-items": "Povolit odstranění dokončených položek ze seznamu úkolů",
+      "server-name": "Název serveru"
     },
-    "memo-related": "Poznámky",
-    "access-token-section": {
-      "title": "Přístupové tokeny",
-      "description": "Seznam všech přístupových tokenů k vašemu účtu.",
-      "token": "Token",
-      "access-token-deletion": "Jste si jistí, že chcete odstranit přístupový token {{accessToken}}? TATO AKCE JE NEVRATNÁ.",
-      "access-token-copied-to-clipboard": "Přístupový token zkopírován do schránky",
-      "create-dialog": {
-        "create-access-token": "Vytvořit přístupový token",
-        "description": "Popis",
-        "some-description": "Nějaký popis...",
-        "expiration": "Platnost",
-        "created-at": "Vytvořeno",
-        "expires-at": "Vyprší",
-        "duration-never": "Nikdy",
-        "duration-8h": "8 hodin",
-        "duration-1m": "1 měsíc"
-      }
-    },
+    "version": "Verze",
     "webhook-section": {
-      "title": "Webhooky",
-      "url": "URL",
-      "no-webhooks-found": "Žádné webhooky nenalezeny.",
       "create-dialog": {
+        "an-easy-to-remember-name": "Snadno zapamatovatelný název",
         "create-webhook": "Vytvořit webhook",
         "edit-webhook": "Upravit webhook",
-        "an-easy-to-remember-name": "Snadno zapamatovatelný název",
-        "title": "Název",
         "payload-url": "Adresa Payload URL",
+        "title": "Název",
         "url-example-post-receive": "https://example.com/postreceive"
-      }
+      },
+      "no-webhooks-found": "Žádné webhooky nenalezeny.",
+      "title": "Webhooky",
+      "url": "URL"
     },
     "workspace-section": {
-      "disallow-user-registration": "Zakázat registraci uživatelů",
-      "disallow-password-auth": "Zakázat ověřování heslem",
-      "disallow-change-username": "Zakázat změnu uživatelského jména",
       "disallow-change-nickname": "Zakázat změnu přezdívky",
-      "week-start-day": "Začátek týdne",
+      "disallow-change-username": "Zakázat změnu uživatelského jména",
+      "disallow-password-auth": "Zakázat ověřování heslem",
+      "disallow-user-registration": "Zakázat registraci uživatelů",
+      "monday": "Pondělí",
       "saturday": "Sobota",
       "sunday": "Neděle",
-      "monday": "Pondělí"
-    },
-    "memo-related-settings": {
-      "title": "Nastavení související s poznámkami",
-      "enable-link-preview": "Povolit náhled odkazu",
-      "enable-memo-comments": "Povolit komentáře k poznámkám",
-      "enable-memo-location": "Povolit umístění poznámek",
-      "content-lenght-limit": "Omezení velikosti obsahu (bajty)",
-      "reactions": "Reakce"
-    },
-    "version": "Verze"
+      "week-start-day": "Začátek týdne"
+    }
   },
   "tag": {
     "all-tags": "Všechny štítky",
@@ -378,17 +389,5 @@
     "delete-confirm": "Jste si jisti, že chcete tento štítek odstranit? Všechny související poznámky budou archivovány.",
     "delete-tag": "Odstranit štítek",
     "no-tag-found": "Žádný štítek nenalezen"
-  },
-  "markdown": {
-    "code-block": "Blok kódu",
-    "checkbox": "Zaškrtávací pole",
-    "content-syntax": "Syntaxe obsahu"
-  },
-  "about": {
-    "description": "Jednoduchá služba pro psaní poznámek, která dbá především na soukromí. Snadno zaznamenávejte a sdílejte své skvělé myšlenky.",
-    "github-repository": "GitHub Repo",
-    "official-website": "Oficiální web",
-    "blogs": "Blogy",
-    "documents": "Dokumenty"
   }
 }

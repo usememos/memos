@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "博客",
+    "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享你的想法。",
+    "documents": "文档",
+    "github-repository": "GitHub 仓库",
+    "official-website": "官网"
+  },
   "auth": {
     "create-your-account": "创建您的账户",
     "host-tip": "您正在注册为站点管理员。",
@@ -20,9 +27,10 @@
     "change": "修改",
     "clear": "清除",
     "close": "关闭",
-    "confirm": "确定",
     "collapse": "收起",
+    "confirm": "确定",
     "create": "创建",
+    "created-at": "创建时间",
     "database": "数据库",
     "days": "天",
     "delete": "删除",
@@ -36,7 +44,9 @@
     "home": "主页",
     "image": "图片",
     "inbox": "通知",
+    "input": "输入",
     "language": "语言",
+    "last-updated-at": "最后更新时间",
     "learn-more": "了解更多",
     "link": "链接",
     "mark": "引用",
@@ -51,6 +61,10 @@
     "pinned": "已置顶",
     "preview": "预览",
     "profile": "个人资料",
+    "properties": "属性",
+    "referenced-by": "被引用",
+    "referencing": "引用",
+    "relations": "关系图",
     "remember-me": "保持登录",
     "rename": "重命名",
     "reset": "重置",
@@ -62,6 +76,8 @@
     "select": "选择",
     "settings": "设置",
     "share": "分享",
+    "shortcut-filter": "捷径过滤器",
+    "shortcuts": "捷径",
     "sign-in": "登录",
     "sign-in-with": "使用 {{provider}} 登录",
     "sign-out": "退出登录",
@@ -69,6 +85,7 @@
     "statistics": "统计",
     "tags": "标签",
     "title": "标题",
+    "tree-mode": "树模式",
     "type": "类型",
     "unpin": "取消置顶",
     "update": "更新",
@@ -76,17 +93,7 @@
     "username": "用户名",
     "version": "版本",
     "visibility": "可见性",
-    "yourself": "您自己",
-    "shortcuts": "捷径",
-    "created-at": "创建时间",
-    "properties": "属性",
-    "shortcut-filter": "捷径过滤器",
-    "input": "输入",
-    "tree-mode": "树模式",
-    "last-updated-at": "最后更新时间",
-    "referencing": "引用",
-    "referenced-by": "被引用",
-    "relations": "关系图"
+    "yourself": "您自己"
   },
   "days": {
     "fri": "五",
@@ -102,12 +109,25 @@
     "any-thoughts": "此刻的想法...",
     "save": "保存"
   },
+  "filters": {
+    "has-code": "有代码",
+    "has-link": "有链接",
+    "has-task-list": "有待办"
+  },
   "inbox": {
     "memo-comment": "{{user}} 评论了您的“{{memo}}”。",
     "version-update": "新版本 {{version}} 现已推出！"
   },
+  "markdown": {
+    "checkbox": "复选框",
+    "code-block": "代码块",
+    "content-syntax": "内容语法"
+  },
   "memo": {
     "archived-at": "归档于",
+    "click-to-hide-nsfw-content": "点击隐藏 NSFW 内容",
+    "click-to-show-nsfw-content": "点击显示 NSFW 内容",
+    "code": "代码",
     "comment": {
       "self": "评论",
       "write-a-comment": "写评论"
@@ -115,31 +135,28 @@
     "copy-link": "复制链接",
     "count-memos-in-date": "{{date}} 有 {{count}} 条备忘录",
     "delete-confirm": "您确定要删除此条备忘录吗？（此操作不可逆）",
+    "direction": "排序方式",
+    "direction-asc": "正序",
+    "direction-desc": "倒序",
+    "display-time": "展示时间",
+    "links": "链接",
     "load-more": "加载更多",
     "no-archived-memos": "没有已归档备忘录。",
+    "no-memos": "无备忘",
+    "order-by": "排序",
+    "remove-completed-task-list-items": "移除已办",
+    "remove-completed-task-list-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）",
     "search-placeholder": "搜索备忘录",
-    "show-more": "查看更多",
     "show-less": "显示较少",
+    "show-more": "查看更多",
+    "to-do": "待办",
     "view-detail": "查看详情",
     "visibility": {
       "disabled": "已禁用公开备忘录",
       "private": "私有",
       "protected": "工作区",
       "public": "公开"
-    },
-    "links": "链接",
-    "to-do": "待办",
-    "code": "代码",
-    "remove-completed-task-list-items": "移除已办",
-    "remove-completed-task-list-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）",
-    "order-by": "排序",
-    "display-time": "展示时间",
-    "direction": "排序方式",
-    "direction-desc": "倒序",
-    "direction-asc": "正序",
-    "no-memos": "无备忘",
-    "click-to-show-nsfw-content": "点击显示 NSFW 内容",
-    "click-to-hide-nsfw-content": "点击隐藏 NSFW 内容"
+    }
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -153,11 +170,11 @@
     "no-data": "未找到任何数据。",
     "password-changed": "密码已修改",
     "password-not-match": "密码不一致。",
+    "remove-completed-task-list-items-successfully": "移除成功！",
     "restored-successfully": "恢复成功",
     "succeed-copy-link": "复制链接到剪贴板成功。",
     "update-succeed": "更新成功",
-    "user-not-found": "未找到该用户",
-    "remove-completed-task-list-items-successfully": "移除成功！"
+    "user-not-found": "未找到该用户"
   },
   "reference": {
     "add-references": "添加引用",
@@ -202,6 +219,21 @@
     "go-to-home": "回到首页"
   },
   "setting": {
+    "access-token-section": {
+      "create-dialog": {
+        "create-access-token": "创建令牌",
+        "created-at": "创建时间",
+        "description": "描述",
+        "duration-1m": "1 个月",
+        "duration-8h": "8 小时",
+        "duration-never": "从不",
+        "expiration": "过期时间",
+        "expires-at": "过期时间",
+        "some-description": "请输入描述..."
+      },
+      "description": "该账号下全部的访问令牌",
+      "title": "访问令牌"
+    },
     "account-section": {
       "change-password": "修改密码",
       "email-note": "可选",
@@ -223,13 +255,23 @@
     "member": "成员",
     "member-list": "成员列表",
     "member-section": {
+      "admin": "管理员",
       "archive-member": "归档成员",
       "archive-warning": "您确定要归档 {{username}} 吗？",
       "create-a-member": "创建成员",
       "delete-member": "删除成员",
       "delete-warning": "您确定要删除 {{username}} 吗？（此操作不可逆）",
-      "user": "普通用户",
-      "admin": "管理员"
+      "user": "普通用户"
+    },
+    "memo-related": "备忘录",
+    "memo-related-settings": {
+      "content-lenght-limit": "内容长度限制（字节）",
+      "enable-blur-nsfw-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）",
+      "enable-link-preview": "启用链接预览",
+      "enable-memo-comments": "启用备忘录评论",
+      "enable-memo-location": "启用备忘录定位",
+      "reactions": "表态",
+      "title": "备忘录相关设置"
     },
     "my-account": "我的账号",
     "preference": "偏好设置",
@@ -251,6 +293,7 @@
       "display-name": "显示名称",
       "identifier": "标识符（Identifier）",
       "identifier-filter": "标识符过滤器（Identifier Filter）",
+      "no-sso-found": "没有 SSO 配置",
       "redirect-url": "重定向链接",
       "scopes": "范围",
       "sso-created": "单点登录 {{name}} 已创建",
@@ -259,8 +302,7 @@
       "template": "模板",
       "token-endpoint": "令牌端点（Token Endpoint）",
       "update-sso": "更新单点登录",
-      "user-endpoint": "用户端点（User Endpoint）",
-      "no-sso-found": "没有 SSO 配置"
+      "user-endpoint": "用户端点（User Endpoint）"
     },
     "storage": "存储",
     "storage-section": {
@@ -273,6 +315,7 @@
       "current-storage": "当前对象存储",
       "delete-storage": "删除存储",
       "endpoint": "端点（Endpoint）",
+      "filepath-template": "文件路径模板",
       "local-storage-path": "本地存储路径",
       "path": "存储路径",
       "path-description": "您可以使用本地存储中的相同动态变量，例如 {filename}",
@@ -294,12 +337,10 @@
       "url-prefix-placeholder": "自定义链接前缀，可选",
       "url-suffix": "链接后缀",
       "url-suffix-placeholder": "自定义链接后缀，可选",
-      "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）",
-      "filepath-template": "文件路径模板"
+      "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）"
     },
     "system": "系统",
     "system-section": {
-      "title": "一般设置",
       "additional-script": "自定义脚本",
       "additional-script-placeholder": "自定义 JavaScript 代码",
       "additional-style": "自定义样式",
@@ -312,11 +353,11 @@
         "locale": "服务器语言环境",
         "title": "自定义服务器"
       },
+      "disable-markdown-shortcuts-in-editor": "禁用编辑器中的 Markdown 快捷键",
       "disable-password-login": "禁用密码登录",
       "disable-password-login-final-warning": "如果您知道自己在做什么，请输入 \"CONFIRM\"。",
       "disable-password-login-warning": "所有用户将无法使用密码登录。如果配置的身份提供程序失效，不在数据库中恢复此设置将无法登录。删除身份提供程序时也要格外小心",
       "disable-public-memos": "禁用公开备忘录",
-      "disable-markdown-shortcuts-in-editor": "禁用编辑器中的 Markdown 快捷键",
       "display-with-updated-time": "根据最后修改时间顺序显示",
       "enable-auto-compact": "启用自动超长折叠显示",
       "enable-double-click-to-edit": "启用双击编辑",
@@ -324,53 +365,29 @@
       "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用单点登录和密码登录，请开启密码登录",
       "max-upload-size": "最大上传大小 (MiB)",
       "max-upload-size-hint": "建议值为 32 MiB。",
+      "removed-completed-task-list-items": "启用移除已办",
       "server-name": "服务器名称",
-      "removed-completed-task-list-items": "启用移除已办"
-    },
-    "memo-related": "备忘录",
-    "access-token-section": {
-      "title": "访问令牌",
-      "description": "该账号下全部的访问令牌",
-      "create-dialog": {
-        "create-access-token": "创建令牌",
-        "description": "描述",
-        "some-description": "请输入描述...",
-        "expiration": "过期时间",
-        "created-at": "创建时间",
-        "expires-at": "过期时间",
-        "duration-never": "从不",
-        "duration-8h": "8 小时",
-        "duration-1m": "1 个月"
-      }
+      "title": "一般设置"
     },
     "webhook-section": {
-      "no-webhooks-found": "没有 webhooks。",
       "create-dialog": {
+        "an-easy-to-remember-name": "请输入一个容易记住的标题",
         "create-webhook": "创建 Webhook",
         "edit-webhook": "编辑 webhook",
-        "an-easy-to-remember-name": "请输入一个容易记住的标题",
-        "title": "标题",
-        "payload-url": "请输入有效的 URL"
-      }
+        "payload-url": "请输入有效的 URL",
+        "title": "标题"
+      },
+      "no-webhooks-found": "没有 webhooks。"
     },
     "workspace-section": {
-      "disallow-user-registration": "禁用用户注册",
-      "disallow-password-auth": "禁用密码登录",
-      "disallow-change-username": "禁止修改用户名",
       "disallow-change-nickname": "禁止修改用户昵称",
-      "week-start-day": "周开始日",
+      "disallow-change-username": "禁止修改用户名",
+      "disallow-password-auth": "禁用密码登录",
+      "disallow-user-registration": "禁用用户注册",
+      "monday": "周一",
       "saturday": "周六",
       "sunday": "周日",
-      "monday": "周一"
-    },
-    "memo-related-settings": {
-      "title": "备忘录相关设置",
-      "enable-link-preview": "启用链接预览",
-      "enable-memo-comments": "启用备忘录评论",
-      "enable-memo-location": "启用备忘录定位",
-      "content-lenght-limit": "内容长度限制（字节）",
-      "reactions": "表态",
-      "enable-blur-nsfw-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）"
+      "week-start-day": "周开始日"
     }
   },
   "tag": {
@@ -379,30 +396,13 @@
     "create-tags-guide": "您可以通过输入 “#标签” 创建标签。",
     "delete-confirm": "您确定要删除此标签吗?所有相关的备忘录将会被归档。",
     "delete-tag": "删除标签",
-    "no-tag-found": "没找到此标签",
-    "rename-tag": "重命名",
-    "old-name": "旧名称",
     "new-name": "新名称",
-    "rename-tip": "您的所有带有此标签的备忘录将被更新。",
+    "no-tag-found": "没找到此标签",
+    "old-name": "旧名称",
     "rename-error-empty": "新名称不能为空或包含空格",
     "rename-error-repeat": "新名称不能与旧名称相同",
-    "rename-success": "重命名成功"
-  },
-  "markdown": {
-    "code-block": "代码块",
-    "checkbox": "复选框",
-    "content-syntax": "内容语法"
-  },
-  "about": {
-    "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享你的想法。",
-    "github-repository": "GitHub 仓库",
-    "official-website": "官网",
-    "blogs": "博客",
-    "documents": "文档"
-  },
-  "filters": {
-    "has-link": "有链接",
-    "has-task-list": "有待办",
-    "has-code": "有代码"
+    "rename-success": "重命名成功",
+    "rename-tag": "重命名",
+    "rename-tip": "您的所有带有此标签的备忘录将被更新。"
   }
 }

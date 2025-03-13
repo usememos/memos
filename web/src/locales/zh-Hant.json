@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "部落格",
+    "description": "以隱私為核心的輕量化筆記服務，輕鬆記錄並分享您的好點子。",
+    "documents": "文件",
+    "github-repository": "GitHub 儲存庫",
+    "official-website": "官方網站"
+  },
   "auth": {
     "create-your-account": "建立您的帳號",
     "host-tip": "您註冊為此站台之管理員。",
@@ -20,8 +27,8 @@
     "change": "變更",
     "clear": "清除",
     "close": "關閉",
-    "confirm": "確認",
     "collapse": "摺疊",
+    "confirm": "確認",
     "create": "建立",
     "database": "資料庫",
     "day": "日",
@@ -35,8 +42,8 @@
     "file": "檔案",
     "filter": "過濾器",
     "home": "首頁",
-    "in": "在",
     "image": "圖片",
+    "in": "在",
     "inbox": "通知",
     "language": "語言",
     "learn-more": "了解",
@@ -99,8 +106,16 @@
     "memo-comment": "{{user}} 對您的 {{memo}} 發表了評論。",
     "version-update": "新版本 {{version}} 現已推出！"
   },
+  "markdown": {
+    "checkbox": "核取方塊",
+    "code-block": "程式碼區塊",
+    "content-syntax": "內容語法"
+  },
   "memo": {
     "archived-at": "封存於",
+    "click-to-hide-nsfw-content": "點擊隱藏 NSFW 內容",
+    "click-to-show-nsfw-content": "點擊顯示 NSFW 內容",
+    "code": "程式碼",
     "comment": {
       "self": "評論",
       "write-a-comment": "寫下留言"
@@ -108,53 +123,50 @@
     "copy-link": "複製連結",
     "count-memos-in-date": "{{date}}的{{count}}個備忘錄",
     "delete-confirm": "您確定要刪除此 Memo？\n\n此操作無法逆轉",
-    "load-more":"載入更多",
+    "direction": "方向",
+    "direction-asc": "升序",
+    "direction-desc": "降序",
+    "display-time": "顯示時間",
+    "filters": "篩選",
+    "links": "連結",
+    "load-more": "載入更多",
     "no-archived-memos": "無封存的 Memos",
+    "no-memos": "沒有備忘錄",
+    "order-by": "按照排序",
+    "remove-completed-task-list-items": "移除已完成",
+    "remove-completed-task-list-items-confirm": "您確定要移除所有完成的待辦嗎？（此操作不可逆）",
     "search-placeholder": "搜尋 Memos",
-    "show-more": "查看更多",
     "show-less": "顯示較少",
+    "show-more": "查看更多",
+    "to-do": "待辦",
     "view-detail": "查看詳情",
     "visibility": {
       "disabled": "公共 Memo 已停用",
       "private": "私人",
       "protected": "成員可見",
       "public": "公開給所有人"
-    },
-    "links": "連結",
-    "to-do": "待辦",
-    "code": "程式碼",
-    "remove-completed-task-list-items": "移除已完成",
-    "remove-completed-task-list-items-confirm": "您確定要移除所有完成的待辦嗎？（此操作不可逆）",
-    "filters": "篩選",
-    "order-by": "按照排序",
-    "display-time": "顯示時間",
-    "direction": "方向",
-    "direction-desc": "降序",
-    "direction-asc": "升序",
-    "no-memos": "沒有備忘錄",
-    "click-to-show-nsfw-content": "點擊顯示 NSFW 內容",
-    "click-to-hide-nsfw-content": "點擊隱藏 NSFW 內容"
+    }
   },
   "message": {
     "archived-successfully": "封存成功",
     "change-memo-created-time": "變更 Memo 建立時間",
     "copied": "已複製",
     "deleted-successfully": "已成功刪除",
+    "description-is-required": "需要描述",
+    "failed-to-embed-memo": "嵌入備忘錄失敗",
     "fill-all": "請填寫所有欄位。",
+    "fill-all-required-fields": "請填寫所有必填欄位",
     "maximum-upload-size-is": "最大允許檔案上傳大小 {{size}} MiB",
     "memo-not-found": "找不到 Memo",
     "new-password-not-match": "新密碼不一致。",
     "no-data": "或許尋覓虛空，或者改換選擇之軌跡。",
     "password-changed": "密碼變更完成",
     "password-not-match": "密碼不一致。",
+    "remove-completed-task-list-items-successfully": "移除成功！",
     "restored-successfully": "還原成功",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
     "update-succeed": "更新成功",
-    "user-not-found": "查無該使用者",
-    "remove-completed-task-list-items-successfully": "移除成功！",
-    "failed-to-embed-memo": "嵌入備忘錄失敗",
-    "description-is-required": "需要描述",
-    "fill-all-required-fields": "請填寫所有必填欄位"
+    "user-not-found": "查無該使用者"
   },
   "reference": {
     "add-references": "添加參考資料",
@@ -199,6 +211,24 @@
     "go-to-home": "回到首頁"
   },
   "setting": {
+    "access-token-section": {
+      "access-token-copied-to-clipboard": "存取令牌已複製到剪貼簿",
+      "access-token-deletion": "您確定要刪除存取令牌 {{accessToken}} 嗎？此操作無法恢復。",
+      "create-dialog": {
+        "create-access-token": "建立存取令牌",
+        "created-at": "建立時間",
+        "description": "描述",
+        "duration-1m": "1 個月",
+        "duration-8h": "8 小時",
+        "duration-never": "永不過期",
+        "expiration": "過期時間",
+        "expires-at": "過期時間",
+        "some-description": "請輸入描述..."
+      },
+      "description": "此處列出您帳號的所有存取令牌。",
+      "title": "存取令牌",
+      "token": "令牌"
+    },
     "account-section": {
       "change-password": "變更密碼",
       "email-note": "非必須的",
@@ -226,6 +256,16 @@
       "delete-member": "刪除使用者",
       "delete-warning": "您確定要刪除 {{username}}?\n\n此操作無法逆轉"
     },
+    "memo-related": "Memo",
+    "memo-related-settings": {
+      "content-lenght-limit": "內容長度限制（位元組）",
+      "enable-blur-nsfw-content": "啟用 NSFW 內容模糊化（在下方添加 NSFW 標籤）",
+      "enable-link-preview": "啟用連結預覽",
+      "enable-memo-comments": "啟用備忘評論",
+      "enable-memo-location": "啟用備忘位置",
+      "reactions": "表情回應",
+      "title": "備忘相關設定"
+    },
     "my-account": "我的帳號",
     "preference": "偏好設定",
     "preference-section": {
@@ -246,17 +286,17 @@
       "display-name": "顯示名稱",
       "identifier": "識別碼（Identifier）",
       "identifier-filter": "識別碼過濾器（Identifier Filter）",
+      "no-sso-found": "沒有設定 SSO",
       "redirect-url": "重新導向網址",
       "scopes": "範圍",
+      "single-sign-on": "設定單一登入 SSO 進行身份驗證",
       "sso-created": "SSO {{name}} 新增成功",
       "sso-list": "SSO 列表",
       "sso-updated": "SSO {{name}} 更新成功",
       "template": "範本",
       "token-endpoint": "權杖端點（Token Endpoint）",
       "update-sso": "更新 SSO",
-      "user-endpoint": "使用者端點（User Endpoint）",
-      "no-sso-found": "沒有設定 SSO",
-      "single-sign-on": "設定單一登入 SSO 進行身份驗證"
+      "user-endpoint": "使用者端點（User Endpoint）"
     },
     "storage": "儲存空間",
     "storage-section": {
@@ -306,11 +346,11 @@
         "locale": "伺服器語言",
         "title": "自訂伺服器"
       },
+      "disable-markdown-shortcuts-in-editor": "停用編輯器 Markdown 快捷鍵",
       "disable-password-login": "禁用密碼登入",
       "disable-password-login-final-warning": "如果你知道自己在做什麼，請輸入「CONFIRM」。",
       "disable-password-login-warning": "所有使用者將無法使用密碼登入。如果設定的身份識別提供者失效，不在資料庫中恢復此設定將無法登入。刪除身分識別提供者時也要特別小心❗",
       "disable-public-memos": "停用公共 Memo",
-      "disable-markdown-shortcuts-in-editor": "停用編輯器 Markdown 快捷鍵",
       "display-with-updated-time": "顯示更新時間",
       "enable-auto-compact": "啟用摺疊顯示",
       "enable-double-click-to-edit": "啟用雙擊後編輯",
@@ -318,61 +358,33 @@
       "enable-password-login-warning": "啟用所有使用者的密碼登入。如果希望使用者同時使用 SSO 和密碼登入，請開啟密碼登入",
       "max-upload-size": "最大上傳檔案大小 (MiB)",
       "max-upload-size-hint": "建議值為 32 MiB。",
-      "server-name": "伺服器名稱",
-      "removed-completed-task-list-items": "啟用移除已完成"
+      "removed-completed-task-list-items": "啟用移除已完成",
+      "server-name": "伺服器名稱"
     },
-    "memo-related": "Memo",
-    "access-token-section": {
-      "title": "存取令牌",
-      "description": "此處列出您帳號的所有存取令牌。",
-      "token": "令牌",
-      "access-token-deletion": "您確定要刪除存取令牌 {{accessToken}} 嗎？此操作無法恢復。",
-      "access-token-copied-to-clipboard": "存取令牌已複製到剪貼簿",
-      "create-dialog": {
-        "create-access-token": "建立存取令牌",
-        "description": "描述",
-        "some-description": "請輸入描述...",
-        "expiration": "過期時間",
-        "created-at": "建立時間",
-        "expires-at": "過期時間",
-        "duration-never": "永不過期",
-        "duration-8h": "8 小時",
-        "duration-1m": "1 個月"
-      }
-    },
+    "version": "版本",
     "webhook-section": {
-      "title": "Webhook",
-      "url": "網址",
-      "no-webhooks-found": "尚未建立任何 Webhook。",
       "create-dialog": {
+        "an-easy-to-remember-name": "一個容易記住的名稱",
         "create-webhook": "建立 Webhook",
         "edit-webhook": "編輯 Webhook",
-        "an-easy-to-remember-name": "一個容易記住的名稱",
-        "title": "標題",
         "payload-url": "負載網址",
+        "title": "標題",
         "url-example-post-receive": "https://example.com/postreceive"
-      }
+      },
+      "no-webhooks-found": "尚未建立任何 Webhook。",
+      "title": "Webhook",
+      "url": "網址"
     },
     "workspace-section": {
-      "disallow-user-registration": "禁止用戶註冊",
-      "disallow-password-auth": "禁止使用密碼驗證",
-      "disallow-change-username": "禁止更改用戶名稱",
       "disallow-change-nickname": "禁止更改暱稱",
-      "week-start-day": "每週起始日",
+      "disallow-change-username": "禁止更改用戶名稱",
+      "disallow-password-auth": "禁止使用密碼驗證",
+      "disallow-user-registration": "禁止用戶註冊",
+      "monday": "星期一",
       "saturday": "星期六",
       "sunday": "星期日",
-      "monday": "星期一"
-    },
-    "memo-related-settings": {
-      "title": "備忘相關設定",
-      "enable-link-preview": "啟用連結預覽",
-      "enable-memo-comments": "啟用備忘評論",
-      "enable-memo-location": "啟用備忘位置",
-      "content-lenght-limit": "內容長度限制（位元組）",
-      "reactions": "表情回應",
-      "enable-blur-nsfw-content": "啟用 NSFW 內容模糊化（在下方添加 NSFW 標籤）"
-    },
-    "version": "版本"
+      "week-start-day": "每週起始日"
+    }
   },
   "tag": {
     "all-tags": "所有標籤",
@@ -381,17 +393,5 @@
     "delete-confirm": "您確定要刪除此標籤嗎？所有關聯的memos將會被封存",
     "delete-tag": "刪除標籤",
     "no-tag-found": "找不到標籤"
-  },
-  "markdown": {
-    "code-block": "程式碼區塊",
-    "checkbox": "核取方塊",
-    "content-syntax": "內容語法"
-  },
-  "about": {
-    "description": "以隱私為核心的輕量化筆記服務，輕鬆記錄並分享您的好點子。",
-    "github-repository": "GitHub 儲存庫",
-    "official-website": "官方網站",
-    "blogs": "部落格",
-    "documents": "文件"
   }
 }

@@ -103,15 +103,13 @@
     "copy-link": "リンクをコピー",
     "count-memos-in-date": "{{date}} 日に {{count}} 件のメモ",
     "delete-confirm": "本当に削除しますか？\n\n削除後の復元は不可能です。",
-    "delete-memo": "メモを削除する",
-    "embed": "埋め込む",
-    "fetch-more": "クリックしてさらに取得する",
-    "fetching-data": "取得中…",
     "links": "リンク",
     "no-archived-memos": "アーカイブされたメモはありません。",
+    "remove-completed-task-list-items": "完了を削除",
+    "remove-completed-task-list-items-confirm": "すべての完了したタスクを削除してもよろしいですか？（このアクションは取り消せません）",
     "search-placeholder": "メモを検索",
-    "show-more": "続きを見る",
     "show-less": "表示を少なくする",
+    "show-more": "続きを見る",
     "to-do": "To-do",
     "view-detail": "詳細を見る",
     "visibility": {
@@ -119,9 +117,7 @@
       "private": "非公開",
       "protected": "メンバーに表示",
       "public": "公開メモ"
-    },
-    "remove-completed-task-list-items": "完了を削除",
-    "remove-completed-task-list-items-confirm": "すべての完了したタスクを削除してもよろしいですか？（このアクションは取り消せません）"
+    }
   },
   "message": {
     "archived-successfully": "アーカイブが完了しました",
@@ -135,11 +131,11 @@
     "no-data": "ファイルが見つかりませんでした。",
     "password-changed": "パスワードを変更しました",
     "password-not-match": "パスワードが一致しません。",
+    "remove-completed-task-list-items-successfully": "削除が成功しました！",
     "restored-successfully": "リストア成功",
     "succeed-copy-link": "リンクのコピーに成功しました。",
     "update-succeed": "変更は保存されました",
-    "user-not-found": "ユーザーが見つかりませんでした",
-    "remove-completed-task-list-items-successfully": "削除が成功しました！"
+    "user-not-found": "ユーザーが見つかりませんでした"
   },
   "reference": {
     "add-references": "変更は保存されました",
@@ -301,8 +297,8 @@
       "enable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが有効になります。SSOとパスワードの両方を使用してログインできるようにしたい場合のみ、続行してください",
       "max-upload-size": "最大ファイルサイズ(MiB)",
       "max-upload-size-hint": "推奨サイズは32 MiBです。",
-      "server-name": "サーバーの名前",
-      "removed-completed-task-list-items": "完了削除を有効にする"
+      "removed-completed-task-list-items": "完了削除を有効にする",
+      "server-name": "サーバーの名前"
     }
   },
   "tag": {
@@ -312,8 +308,5 @@
     "delete-confirm": "このタグを削除しますか?",
     "delete-tag": "タグを削除",
     "no-tag-found": "タグが見つかりませんでした"
-  },
-  "timeline": {
-    "title": "タイムライン"
   }
 }
