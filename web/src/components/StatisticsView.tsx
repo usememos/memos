@@ -1,7 +1,7 @@
 import { Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
-import { CheckCircleIcon, ChevronRightIcon, ChevronLeftIcon, Code2Icon, LinkIcon, ListTodoIcon, PinIcon } from "lucide-react";
+import { CheckCircleIcon, ChevronRightIcon, ChevronLeftIcon, Code2Icon, LinkIcon, ListTodoIcon, BookmarkIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
@@ -107,7 +107,7 @@ const StatisticsView = observer(() => {
               onClick={() => memoFilterStore.addFilter({ factor: "pinned", value: "" })}
             >
               <div className="w-auto flex justify-start items-center mr-1">
-                <PinIcon className="w-4 h-auto mr-1" />
+                <BookmarkIcon className="w-4 h-auto mr-1" />
                 <span className="block text-sm">Pinned</span>
               </div>
               <span className="text-sm truncate">{userStore.state.currentUserStats.pinnedMemos.length}</span>

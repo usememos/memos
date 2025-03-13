@@ -138,13 +138,15 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if find.OrderByTimeAsc {
 		order = "ASC"
 	}
-	orders := []string{}
-	if find.OrderByUpdatedTs {
-		orders = append(orders, "`updated_ts` "+order)
-	} else {
-		orders = append(orders, "`created_ts` "+order)
+	orderBy := []string{}
+	if find.OrderByPinned {
+		orderBy = append(orderBy, "`pinned` DESC")
 	}
-	orders = append(orders, "`id` "+order)
+	if find.OrderByUpdatedTs {
+		orderBy = append(orderBy, "`updated_ts` "+order)
+	} else {
+		orderBy = append(orderBy, "`created_ts` "+order)
+	}
 	fields := []string{
 		"`memo`.`id` AS `id`",
 		"`memo`.`uid` AS `uid`",
@@ -165,7 +167,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"LEFT JOIN `memo_relation` ON `memo`.`id` = `memo_relation`.`memo_id` AND `memo_relation`.`type` = 'COMMENT'" + " " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
 		"HAVING " + strings.Join(having, " AND ") + " " +
-		"ORDER BY " + strings.Join(orders, ", ")
+		"ORDER BY " + strings.Join(orderBy, ", ")
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {

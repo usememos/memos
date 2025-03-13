@@ -1,5 +1,5 @@
 import { isEqual } from "lodash-es";
-import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, HashIcon, LinkIcon, PinIcon, SearchIcon, XIcon } from "lucide-react";
+import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, HashIcon, LinkIcon, BookmarkIcon, SearchIcon, XIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters, useMemoFilterStore } from "@/store/v1";
@@ -68,7 +68,7 @@ const FactorIcon = ({ factor, className }: { factor: FilterFactor; className?: s
     visibility: <EyeIcon className={className} />,
     contentSearch: <SearchIcon className={className} />,
     displayTime: <CalendarIcon className={className} />,
-    pinned: <PinIcon className={className} />,
+    pinned: <BookmarkIcon className={className} />,
     "property.hasLink": <LinkIcon className={className} />,
     "property.hasTaskList": <CheckCircleIcon className={className} />,
     "property.hasCode": <CodeIcon className={className} />,
