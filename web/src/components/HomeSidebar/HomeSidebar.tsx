@@ -1,5 +1,5 @@
 import { last } from "lodash-es";
-import { ArchiveIcon, Globe2Icon, HomeIcon } from "lucide-react";
+import { Globe2Icon, HomeIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { matchPath, NavLink, useLocation } from "react-router-dom";
 import useDebounce from "react-use/lib/useDebounce";
@@ -44,14 +44,8 @@ const HomeSidebar = observer((props: Props) => {
     title: t("common.explore"),
     icon: <Globe2Icon className="w-4 h-auto opacity-70 shrink-0" />,
   };
-  const archivedNavLink: NavLinkItem = {
-    id: "header-archived",
-    path: Routes.ARCHIVED,
-    title: t("common.archived"),
-    icon: <ArchiveIcon className="w-4 h-auto opacity-70 shrink-0" />,
-  };
 
-  const navLinks: NavLinkItem[] = currentUser ? [homeNavLink, exploreNavLink, archivedNavLink] : [exploreNavLink];
+  const navLinks: NavLinkItem[] = currentUser ? [homeNavLink, exploreNavLink] : [exploreNavLink];
 
   useDebounce(
     async () => {
