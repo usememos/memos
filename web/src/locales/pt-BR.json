@@ -112,6 +112,11 @@
     "any-thoughts": "Alguma ideia…",
     "save": "Salvar"
   },
+  "filters": {
+    "has-code": "temCódigo",
+    "has-link": "temLink",
+    "has-task-list": "temListaDeTarefas"
+  },
   "inbox": {
     "memo-comment": "{{user}} tem um comentário sobre {{memo}}.",
     "version-update": "A nova versão {{version}} já está disponível!"
@@ -406,6 +411,13 @@
     "create-tags-guide": "Você pode criar tags inserindo `#tag`.",
     "delete-confirm": "Tem certeza de que deseja excluir esta tag?\\nTodos os memos relacionados serão arquivados.",
     "delete-tag": "Excluir Tag",
-    "no-tag-found": "Nenhuma tag encontrada"
+    "new-name": "Novo Nome",
+    "no-tag-found": "Nenhuma tag encontrada",
+    "old-name": "Nome Antigo",
+    "rename-error-empty": "O nome da tag não pode ser vazio ou conter espaços",
+    "rename-error-repeat": "O novo nome não pode ser o mesmo que o antigo",
+    "rename-success": "Tag renomeada com êxito",
+    "rename-tag": "Renomear tag",
+    "rename-tip": "Todos seus memos com essa tag serão atualizados."
   }
 }

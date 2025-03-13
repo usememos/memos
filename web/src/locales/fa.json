@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "بلاگ‌ها",
+    "description": "یک سرویس یادداشت برداری سبک و در درجه اول حفظ حریم خصوصی. افکار عالی خود را به راحتی ثبت و به اشتراک بگذارید.",
+    "documents": "اسناد",
+    "github-repository": "ریپازیتوری گیت‌هاب",
+    "official-website": "وبسایت رسمی"
+  },
   "auth": {
     "create-your-account": "حساب کاربری خود را ایجاد کنید.",
     "host-tip": "حساب شما به عنوان مدیر سایت تعریف خواهد شد.",
@@ -20,8 +27,8 @@
     "change": "تعویض",
     "clear": "پاکسازی",
     "close": "بستن",
-    "confirm": "تایید",
     "collapse": "Collapse",
+    "confirm": "تایید",
     "create": "ایجاد",
     "database": "پایگاه داده",
     "day": "روز",
@@ -35,8 +42,8 @@
     "file": "فایل",
     "filter": "فیلتر",
     "home": "خانه",
-    "in": "در",
     "image": "تصویر",
+    "in": "در",
     "inbox": "صندوق ورودی",
     "language": "زبان",
     "learn-more": "اطلاعات بیشتر",
@@ -99,8 +106,14 @@
     "memo-comment": " یک نظر برروی یادداشت شما «{{memo}}» اضافه کرده است!{{user}}",
     "version-update": "نسخه جدید «{{version}}» اکنون در دسترس است!"
   },
+  "markdown": {
+    "checkbox": "جعبه بررسی",
+    "code-block": "بلوک کد",
+    "content-syntax": "نحو محتوا"
+  },
   "memo": {
     "archived-at": "آرشیو شده در",
+    "code": "کد",
     "comment": {
       "self": "نظرات",
       "write-a-comment": "یک نظر بنویسید"
@@ -108,51 +121,50 @@
     "copy-link": "کپی لینک",
     "count-memos-in-date": "{{count}} {{memos}} در {{date}}",
     "delete-confirm": "آیا از حذف این یادداشت اطمینان دارید؟ این عمل تغییر ناپذیر است.",
+    "direction": "جهت",
+    "direction-asc": "سعودی",
+    "direction-desc": "نزولی",
+    "display-time": "زمان نمایشی",
+    "filters": "فیلترها",
+    "links": "پیوست‌ها",
     "load-more": "بارگذاری بیشتر",
     "no-archived-memos": "یادداشت آشیرو شده‌ای وجود ندارد.",
+    "no-memos": "یادداشتی یافت نشد.",
+    "order-by": "مرتب کردن بر اساس",
+    "remove-completed-task-list-items": "حذف کارهای انجام شده",
+    "remove-completed-task-list-items-confirm": "آیا از حذف کارهای انجام شده اطمینان دارید؟ این عمل تغییر ناپذیر است",
     "search-placeholder": "جست و جوی یادداشت‌ها",
-    "show-more": "نمایش بیشتر",
     "show-less": "نمایش کمتر",
+    "show-more": "نمایش بیشتر",
+    "to-do": "کارها",
     "view-detail": "نمایش جزئیات",
     "visibility": {
       "disabled": "یادداشت‌های عمومی غیرفعال هستند",
       "private": "خصوصی",
       "protected": "فضای کار",
       "public": "عمومی"
-    },
-    "links": "پیوست‌ها",
-    "to-do": "کارها",
-    "code": "کد",
-    "remove-completed-task-list-items": "حذف کارهای انجام شده",
-    "remove-completed-task-list-items-confirm": "آیا از حذف کارهای انجام شده اطمینان دارید؟ این عمل تغییر ناپذیر است",
-    "filters": "فیلترها",
-    "order-by": "مرتب کردن بر اساس",
-    "display-time": "زمان نمایشی",
-    "direction": "جهت",
-    "direction-desc": "نزولی",
-    "direction-asc": "سعودی",
-    "no-memos": "یادداشتی یافت نشد."
+    }
   },
   "message": {
     "archived-successfully": "با موفقیت آرشیو شد",
     "change-memo-created-time": "تغییر زمان ایجاد یادداشت",
     "copied": "کپی شد",
     "deleted-successfully": "با موفقیت حذف شد",
+    "description-is-required": "توضیحات اجباری است",
+    "failed-to-embed-memo": "یادداشت جاسازی نشد",
     "fill-all": "لطفا تمام فیلدها را پر کنید.",
+    "fill-all-required-fields": "لطفا فیلدهای لازم را پر کنید.",
     "maximum-upload-size-is": "حداکثر حجم قابل بارگذاری «{{size}}» است.",
     "memo-not-found": "یادداشت یافت نشد.",
     "new-password-not-match": "گذرواژه‌های جدید یکی نیستند.",
     "no-data": "داده‌ای یافت نشد.",
     "password-changed": "گذرواژه تغییر یافت",
     "password-not-match": "گذرواژه‌ها یکی نیستند.",
+    "remove-completed-task-list-items-successfully": "حذف با موفقیت انجام شد",
     "restored-successfully": "با موفقیت بازیابی شد",
     "succeed-copy-link": "پیوست با موفقیت کپی شد.",
     "update-succeed": "بروزرسانی موفق بود",
-    "user-not-found": "کاربر یافت نشد",
-    "remove-completed-task-list-items-successfully": "حذف با موفقیت انجام شد",
-    "failed-to-embed-memo": "یادداشت جاسازی نشد",
-    "description-is-required": "توضیحات اجباری است",
-    "fill-all-required-fields": "لطفا فیلدهای لازم را پر کنید."
+    "user-not-found": "کاربر یافت نشد"
   },
   "reference": {
     "add-references": "منابع را اضافه کنید",
@@ -197,6 +209,24 @@
     "go-to-home": "برو به خانه"
   },
   "setting": {
+    "access-token-section": {
+      "access-token-copied-to-clipboard": "توکن دسترسی کپی شد",
+      "access-token-deletion": "آیا شما از حذف توکن {{accessToken}} اطمینان دارید؟ این عمل غیر قابل بازگشت است.",
+      "create-dialog": {
+        "create-access-token": "ایجاد توکن دسترسی",
+        "created-at": "ساخته شده در",
+        "description": "توظیحات",
+        "duration-1m": "1 ماه",
+        "duration-8h": "8 ساعت",
+        "duration-never": "هیچوقت",
+        "expiration": "زمان انقضا",
+        "expires-at": "محلت انقضا:",
+        "some-description": "توضیحات..."
+      },
+      "description": "A list of all access tokens for your account.",
+      "title": "توکن‌های دسترسی",
+      "token": "توکن"
+    },
     "account-section": {
       "change-password": "تغییر گذرواژه",
       "email-note": "اختیاری",
@@ -224,6 +254,15 @@
       "delete-member": "حذف عضو",
       "delete-warning": "آیا از حذظ {{username}} اطمینان دارید؟ این عمل غیر قابل بازگشت است"
     },
+    "memo-related": "یادداشت",
+    "memo-related-settings": {
+      "content-lenght-limit": "محدودیت حجم محتوا(بایت)",
+      "enable-link-preview": "فعال سازی پیشنمایش لینک‌ها",
+      "enable-memo-comments": "فعال سازی نظرات یادداشت‌ها",
+      "enable-memo-location": "فعالسازی موقعیت مکانی یادداشت‌ها",
+      "reactions": "واکنش‌ها",
+      "title": "تنظیمات مربوط به یادداشت‌ها"
+    },
     "my-account": "حساب کاربری من",
     "preference": "تنظیمات",
     "preference-section": {
@@ -244,17 +283,17 @@
       "display-name": "نام نمایشی",
       "identifier": "شناسه",
       "identifier-filter": "فیلتر شناسه",
+      "no-sso-found": "هیچ SSO ای یافت نشد.",
       "redirect-url": "آدرس اینترنتی تغییر مسیر",
       "scopes": "دامنه‌ها",
+      "single-sign-on": "پیکربندی Single Sign-On (SSO) برای احراز هویت",
       "sso-created": "SSO {{name}} ایجاد شد",
       "sso-list": "لیست SSO ها",
       "sso-updated": "SSO {{name}} بروزرسانی شد",
       "template": "قالب",
       "token-endpoint": "اندپوینت توکن",
       "update-sso": "بروزرسانی SSO",
-      "user-endpoint": "اندپوینت کاربر",
-      "no-sso-found": "هیچ SSO ای یافت نشد.",
-      "single-sign-on": "پیکربندی Single Sign-On (SSO) برای احراز هویت"
+      "user-endpoint": "اندپوینت کاربر"
     },
     "storage": "حافظه",
     "storage-section": {
@@ -304,11 +343,11 @@
         "locale": "محل سرور",
         "title": "سفارش سازی سرور"
       },
+      "disable-markdown-shortcuts-in-editor": "غیر فعال کردن علامت گذاری در میانبرها",
       "disable-password-login": "غیر فعال کردن ورود با گذرواژه",
       "disable-password-login-final-warning": "لطفا عبارت \"CONFIRM\" اگر می‌دانید که چه میکنید.",
       "disable-password-login-warning": "با این عمل ورود با گذرواژه برای همه کاربران غیرفعال می شود. در صورت عدم موفقیت ارائه دهندگان هویت پیکربندی شده شما، بدون بازگرداندن این تنظیمات در پایگاه داده، امکان ورود به سیستم وجود ندارد. همچنین باید هنگام حذف یک ارائه دهنده هویت بیشتر مراقب باشید.",
       "disable-public-memos": "غیر فعال کردن یادداشت‌های عمومی",
-      "disable-markdown-shortcuts-in-editor": "غیر فعال کردن علامت گذاری در میانبرها",
       "display-with-updated-time": "نمایش با آخرین زمان ویرایش",
       "enable-auto-compact": "فعال سازی نمایش فشرده",
       "enable-double-click-to-edit": "فعال سازی دوبار کلیک کردن برای ویرایش",
@@ -316,60 +355,33 @@
       "enable-password-login-warning": "با این کار ورود با گذرواژه برای همه کاربران فعال می شود. فقط در صورتی ادامه دهید که می خواهید کاربران بتوانند با استفاده از SSO و رمز عبور وارد سیستم شوند",
       "max-upload-size": "حداکثر حجم بارگذاری(مگابایت)",
       "max-upload-size-hint": "واحد پیشنهادی 32 مگابایت اشت.",
-      "server-name": "نام سرور",
-      "removed-completed-task-list-items": "فعال سازی حذف شدن لیست کارهای به اتمام رسیده."
+      "removed-completed-task-list-items": "فعال سازی حذف شدن لیست کارهای به اتمام رسیده.",
+      "server-name": "نام سرور"
     },
-    "memo-related": "یادداشت",
-    "access-token-section": {
-      "title": "توکن‌های دسترسی",
-      "description": "A list of all access tokens for your account.",
-      "token": "توکن",
-      "access-token-deletion": "آیا شما از حذف توکن {{accessToken}} اطمینان دارید؟ این عمل غیر قابل بازگشت است.",
-      "access-token-copied-to-clipboard": "توکن دسترسی کپی شد",
-      "create-dialog": {
-        "create-access-token": "ایجاد توکن دسترسی",
-        "description": "توظیحات",
-        "some-description": "توضیحات...",
-        "expiration": "زمان انقضا",
-        "created-at": "ساخته شده در",
-        "expires-at": "محلت انقضا:",
-        "duration-never": "هیچوقت",
-        "duration-8h": "8 ساعت",
-        "duration-1m": "1 ماه"
-      }
-    },
+    "version": "نسخه",
     "webhook-section": {
-      "title": "وب‌هوک‌ها",
-      "url": "آدرس اینترنتی",
-      "no-webhooks-found": "وب‌هوکی یافت نشد.",
       "create-dialog": {
+        "an-easy-to-remember-name": "نام قابل حفظ کردن",
         "create-webhook": "ایجاد وب‌هوک",
         "edit-webhook": "ویرایش وب‌هوک",
-        "an-easy-to-remember-name": "نام قابل حفظ کردن",
-        "title": "عنوان",
         "payload-url": "آدرس اینترنتی محموله",
+        "title": "عنوان",
         "url-example-post-receive": "https://example.com/postreceive"
-      }
+      },
+      "no-webhooks-found": "وب‌هوکی یافت نشد.",
+      "title": "وب‌هوک‌ها",
+      "url": "آدرس اینترنتی"
     },
     "workspace-section": {
-      "disallow-user-registration": "غیر فعال کردن ثبت‌نام کاربر",
-      "disallow-password-auth": "غیرفعال کردن ورود با گذرواژه",
-      "disallow-change-username": "غیر فعال کردن تغییر نام کاربری",
       "disallow-change-nickname": "غیر فعال کردن تعویض نام مستعار",
-      "week-start-day": "روز آغازین هفته",
+      "disallow-change-username": "غیر فعال کردن تغییر نام کاربری",
+      "disallow-password-auth": "غیرفعال کردن ورود با گذرواژه",
+      "disallow-user-registration": "غیر فعال کردن ثبت‌نام کاربر",
+      "monday": "دوشنبه",
       "saturday": "شنبه",
       "sunday": "یکشنبه",
-      "monday": "دوشنبه"
-    },
-    "memo-related-settings": {
-      "title": "تنظیمات مربوط به یادداشت‌ها",
-      "enable-link-preview": "فعال سازی پیشنمایش لینک‌ها",
-      "enable-memo-comments": "فعال سازی نظرات یادداشت‌ها",
-      "enable-memo-location": "فعالسازی موقعیت مکانی یادداشت‌ها",
-      "content-lenght-limit": "محدودیت حجم محتوا(بایت)",
-      "reactions": "واکنش‌ها"
-    },
-    "version": "نسخه"
+      "week-start-day": "روز آغازین هفته"
+    }
   },
   "tag": {
     "all-tags": "همه علامت‌ها",
@@ -378,17 +390,5 @@
     "delete-confirm": "آیا از حذف این علامت اطمینان دارید؟ تمامی یادداشت‌های متبط آرشیو خواهند شد.",
     "delete-tag": "حذف لامت",
     "no-tag-found": "علامتی یافت نشد"
-  },
-  "markdown": {
-    "code-block": "بلوک کد",
-    "checkbox": "جعبه بررسی",
-    "content-syntax": "نحو محتوا"
-  },
-  "about": {
-    "description": "یک سرویس یادداشت برداری سبک و در درجه اول حفظ حریم خصوصی. افکار عالی خود را به راحتی ثبت و به اشتراک بگذارید.",
-    "github-repository": "ریپازیتوری گیت‌هاب",
-    "official-website": "وبسایت رسمی",
-    "blogs": "بلاگ‌ها",
-    "documents": "اسناد"
   }
 }

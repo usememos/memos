@@ -89,23 +89,19 @@
     },
     "copy-link": "링크 복사",
     "delete-confirm": "이 메모를 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다",
-    "delete-memo": "메모 삭제",
-    "embed": "임베드",
-    "fetch-more": "더 불러오려면 여기를 누르세요",
-    "fetching-data": "불러오는 중…",
     "no-archived-memos": "보관처리된 메모가 없습니다.",
+    "remove-completed-task-list-items": "완료 제거",
+    "remove-completed-task-list-items-confirm": "모든 완료된 작업을 삭제하겠습니까? (이 작업은 되돌릴 수 없습니다)",
     "search-placeholder": "메모 검색하기",
-    "show-more": "더보기",
     "show-less": "간략히 보기",
+    "show-more": "더보기",
     "view-detail": "자세히 보기",
     "visibility": {
       "disabled": "공개 메모는 비활성화됨",
       "private": "나만 볼 수 있음",
       "protected": "멤버 전용",
       "public": "공개"
-    },
-    "remove-completed-task-list-items": "완료 제거",
-    "remove-completed-task-list-items-confirm": "모든 완료된 작업을 삭제하겠습니까? (이 작업은 되돌릴 수 없습니다)"
+    }
   },
   "message": {
     "change-memo-created-time": "메모 생성 시각 변경",
@@ -117,11 +113,11 @@
     "no-data": "데이터가 없습니다.",
     "password-changed": "비밀번호를 변경했습니다",
     "password-not-match": "비밀번호가 맞지 않습니다.",
+    "remove-completed-task-list-items-successfully": "성공적으로 제거되었습니다!",
     "restored-successfully": "성공적으로 복구했습니다",
     "succeed-copy-link": "링크를 클립보드에 복사했습니다.",
     "update-succeed": "업데이트 성공",
-    "user-not-found": "회원을 찾을 수 없습니다",
-    "remove-completed-task-list-items-successfully": "성공적으로 제거되었습니다!"
+    "user-not-found": "회원을 찾을 수 없습니다"
   },
   "resource": {
     "clear": "클리어",
@@ -272,15 +268,12 @@
       "enable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인할 수 있게 합니다. 사용자들이 SSO와 비밀번호 둘 다 사용할 수 있게 하고 싶은 경우에만 켜 주세요",
       "max-upload-size": "최대 업로드 크기 (MiB)",
       "max-upload-size-hint": "권장값은 32 MiB입니다.",
-      "server-name": "서버 이름",
-      "removed-completed-task-list-items": "완료 제거 활성화"
+      "removed-completed-task-list-items": "완료 제거 활성화",
+      "server-name": "서버 이름"
     }
   },
   "tag": {
     "all-tags": "모든 태그",
     "create-tag": "태그 생성"
-  },
-  "timeline": {
-    "title": "타임라인"
   }
 }

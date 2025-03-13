@@ -85,11 +85,9 @@
     },
     "copy-link": "Kopieer link",
     "delete-confirm": "Weet je zeker dat je deze memo wilt verwijderen?\n\nDit kan niet teruggedraaid worden!",
-    "delete-memo": "Memo verwijderen",
-    "embed": "Insluiten",
-    "fetch-more": "Klik hier om meer op te halen",
-    "fetching-data": "data aan het ophalen...",
     "no-archived-memos": "Geen gearchiveerde memos.",
+    "remove-completed-task-list-items": "Verwijder voltooid",
+    "remove-completed-task-list-items-confirm": "Weet u zeker dat u alle voltooide taken wilt verwijderen? (Deze actie is onomkeerbaar)",
     "search-placeholder": "Zoek memos",
     "view-detail": "Bekijk details",
     "visibility": {
@@ -97,9 +95,7 @@
       "private": "Privé",
       "protected": "Werkruimte",
       "public": "Openbaar"
-    },
-    "remove-completed-task-list-items": "Verwijder voltooid",
-    "remove-completed-task-list-items-confirm": "Weet u zeker dat u alle voltooide taken wilt verwijderen? (Deze actie is onomkeerbaar)"
+    }
   },
   "message": {
     "change-memo-created-time": "Tijd van aanmaken wijzigen",
@@ -110,11 +106,11 @@
     "no-data": "Geen data gevonden.",
     "password-changed": "Wachtwoord gewijzigd.",
     "password-not-match": "Wachtwoorden komen niet overeen.",
+    "remove-completed-task-list-items-successfully": "Gelukt verwijderd!",
     "restored-successfully": "Succesvol teruggezet",
     "succeed-copy-link": "Link gekopieërd naar klembord.",
     "update-succeed": "Update voltooid",
-    "user-not-found": "Gebruiker niet gevonden",
-    "remove-completed-task-list-items-successfully": "Gelukt verwijderd!"
+    "user-not-found": "Gebruiker niet gevonden"
   },
   "resource": {
     "clear": "Opruimen",
@@ -238,8 +234,8 @@
       "enable-password-login-warning": "Als je dit aanzet kan er met zowel SSO als een wachtwoord ingelogd worden",
       "max-upload-size": "Maximum uploadgrootte (MiB)",
       "max-upload-size-hint": "32 MiB wordt aangeraden.",
-      "server-name": "Servernaam",
-      "removed-completed-task-list-items": "Verwijder voltooid inschakelen"
+      "removed-completed-task-list-items": "Verwijder voltooid inschakelen",
+      "server-name": "Servernaam"
     }
   },
   "tag": {
