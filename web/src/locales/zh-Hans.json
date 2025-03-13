@@ -380,7 +380,7 @@
     "delete-confirm": "您确定要删除此标签吗?所有相关的备忘录将会被归档。",
     "delete-tag": "删除标签",
     "no-tag-found": "没找到此标签",
-    "rename-tag": "标签重命名",
+    "rename-tag": "重命名",
     "old-name": "旧名称",
     "new-name": "新名称",
     "rename-tip": "您的所有带有此标签的备忘录将被更新。",
