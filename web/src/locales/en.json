@@ -164,7 +164,8 @@
     "remove-completed-task-list-items-successfully": "The removal was successful",
     "failed-to-embed-memo": "Failed to embed memo",
     "description-is-required": "Description is required",
-    "fill-all-required-fields": "Please fill all required fields"
+    "fill-all-required-fields": "Please fill all required fields",
+    "microphone-not-available": "Cannot access microphone"
   },
   "reference": {
     "add-references": "Add references",
@@ -322,7 +323,7 @@
       },
       "disable-password-login": "Disable password login",
       "disable-password-login-final-warning": "Please type \"CONFIRM\" if you know what you are doing.",
-      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra carefull when removing an identity provider",
+      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You'll also have to be extra carefull when removing an identity provider",
       "disable-public-memos": "Disable public memos",
       "disable-markdown-shortcuts-in-editor": "Disable Markdown shortcuts in editor",
       "display-with-updated-time": "Display with updated time",
