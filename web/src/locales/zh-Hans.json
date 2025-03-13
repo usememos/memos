@@ -52,7 +52,7 @@
     "preview": "预览",
     "profile": "个人资料",
     "remember-me": "保持登录",
-    "rename": "改名",
+    "rename": "重命名",
     "reset": "重置",
     "resources": "资源库",
     "restore": "恢复",
@@ -379,7 +379,14 @@
     "create-tags-guide": "您可以通过输入 “#标签” 创建标签。",
     "delete-confirm": "您确定要删除此标签吗?所有相关的备忘录将会被归档。",
     "delete-tag": "删除标签",
-    "no-tag-found": "没找到此标签"
+    "no-tag-found": "没找到此标签",
+    "rename-tag": "标签重命名",
+    "old-name": "旧名称",
+    "new-name": "新名称",
+    "rename-tip": "您的所有带有此标签的备忘录将被更新。",
+    "rename-error-empty": "新名称不能为空或包含空格",
+    "rename-error-repeat": "新名称不能与旧名称相同",
+    "rename-success": "重命名成功"
   },
   "markdown": {
     "code-block": "代码块",

@@ -24,11 +24,11 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
 
   const handleConfirm = async () => {
     if (!newName || newName.includes(" ")) {
-      toast.error("Tag name cannot be empty or contain spaces");
+      toast.error(t("tag.rename-error-empty"));
       return;
     }
     if (newName === tag) {
-      toast.error("New name cannot be the same as the old name");
+      toast.error(t("tag.rename-error-repeat"));
       return;
     }
 
@@ -38,7 +38,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
         oldTag: tag,
         newTag: newName,
       });
-      toast.success("Rename tag successfully");
+      toast.success(t("tag.rename-success"));
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
@@ -57,16 +57,16 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
       <div className="flex flex-col justify-start items-start max-w-xs">
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <div className="relative w-full mb-2 flex flex-row justify-start items-center space-x-2">
-            <span className="w-20 text-sm whitespace-nowrap shrink-0 text-right">Old Name</span>
+            <span className="w-20 text-sm whitespace-nowrap shrink-0 text-right">{t("tag.old-name")}</span>
             <Input className="w-full" readOnly disabled type="text" placeholder="A new tag name" value={tag} />
           </div>
           <div className="relative w-full mb-2 flex flex-row justify-start items-center space-x-2">
-            <span className="w-20 text-sm whitespace-nowrap shrink-0 text-right">New Name</span>
+            <span className="w-20 text-sm whitespace-nowrap shrink-0 text-right">{t("tag.new-name")}</span>
             <Input className="w-full" type="text" placeholder="A new tag name" value={newName} onChange={handleTagNameInputChange} />
           </div>
           <List size="sm" marker="disc">
             <ListItem>
-              <p className="leading-5">All your memos with this tag will be updated.</p>
+              <p className="leading-5">{t("tag.rename-tip")}</p>
             </ListItem>
           </List>
         </div>
