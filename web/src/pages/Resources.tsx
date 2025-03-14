@@ -132,7 +132,7 @@ const Resources = () => {
                           <div className="w-16 sm:w-24 sm:pl-4 flex flex-col justify-start items-start"></div>
                           <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                             <div className="w-full flex flex-row justify-start items-center gap-2">
-                              <span className="text-gray-600 dark:text-gray-400">Unused resources</span>
+                              <span className="text-gray-600 dark:text-gray-400">{t("resource.unused-resources")}</span>
                               <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedResources.length})</span>
                               <Tooltip title="Delete all" placement="top">
                                 <Button size="sm" variant="plain" onClick={handleDeleteUnusedResources}>

@@ -219,7 +219,8 @@
     "no-unused-resources": "No unused resources",
     "reset-link": "Reset Link",
     "reset-link-prompt": "Are you sure to reset the link? This will break all current link usages. THIS ACTION IS IRREVERSIBLE",
-    "reset-resource-link": "Reset Resource Link"
+    "reset-resource-link": "Reset Resource Link",
+    "unused-resources": "Unused resources"
   },
   "router": {
     "back-to-top": "Back to Top",
