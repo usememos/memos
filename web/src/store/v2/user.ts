@@ -179,7 +179,6 @@ const userStore = (() => {
     }
     state.setPartial({
       userStatsByName: {
-        ...state.userStatsByName,
         ...userStatsByName,
       },
     });
