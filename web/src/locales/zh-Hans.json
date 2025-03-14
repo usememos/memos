@@ -212,7 +212,8 @@
     "no-unused-resources": "没有可删除的资源",
     "reset-link": "重置链接",
     "reset-link-prompt": "您确定要重置链接吗？这将导致当前使用的链接失效。（此操作不可逆）",
-    "reset-resource-link": "重置资源链接"
+    "reset-resource-link": "重置资源链接",
+    "unused-resources": "未使用到的资源"
   },
   "router": {
     "back-to-top": "回到顶部",
