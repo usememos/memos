@@ -227,7 +227,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
               readonly={readonly}
               onClick={handleMemoContentClick}
               onDoubleClick={handleMemoContentDoubleClick}
-              compact={props.compact}
+              compact={memo.pinned ? false : props.compact} // Always show full content when pinned.
               parentPage={parentPage}
             />
             {memo.location && <MemoLocationView location={memo.location} />}
