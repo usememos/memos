@@ -195,8 +195,10 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	}
 
 	response := &v1pb.ListMemosResponse{
-		Memos:         memoMessages,
-		NextPageToken: nextPageToken,
+		Memos: memoMessages,
+	}
+	if nextPageToken != "" {
+		response.NextPageToken = &nextPageToken
 	}
 	return response, nil
 }
