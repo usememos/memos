@@ -5,7 +5,7 @@ import { generateDialog } from "./Dialog";
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 5;
-const SCALE_UNIT = 0.25;
+const SCALE_UNIT = 0.2;
 
 interface Props extends DialogProps {
   imgUrls: string[];
@@ -95,14 +95,22 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   };
 
   const handleImageContainerKeyDown = (event: KeyboardEvent) => {
-    if (event.key == "ArrowLeft") {
-      showPrevImg();
-    } else if (event.key == "ArrowRight") {
-      showNextImg();
+    switch (event.key) {
+      case "ArrowLeft":
+        showPrevImg();
+        break;
+      case "ArrowRight":
+        showNextImg();
+        break;
+      case "Escape":
+        destroyAndResetViewport();
+        break;
+      default:
     }
   };
 
   const handleImgContainerScroll = (event: React.WheelEvent) => {
+    event.stopPropagation();
     const offsetX = event.nativeEvent.offsetX;
     const offsetY = event.nativeEvent.offsetY;
     const sign = event.deltaY < 0 ? 1 : -1;
