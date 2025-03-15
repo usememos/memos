@@ -80,7 +80,7 @@ const EmbeddedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
               minute: "numeric",
             })
           ) : (
-            <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat}></relative-time>
+            <relative-time datetime={memo.displayTime?.toISOString()} format="datetime"></relative-time>
           )}
         </div>
         <div className="flex justify-end items-center gap-1">
