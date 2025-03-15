@@ -1,4 +1,5 @@
 import { Tooltip } from "@mui/joy";
+import i18n from "i18next";
 import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
 import { memo, useCallback, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -53,7 +54,8 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const commentAmount = memo.relations.filter(
     (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo?.name === memo.name,
   ).length;
-  const relativeTimeFormat = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24 ? "datetime" : "auto";
+  const isMemoOlderThan24Hours = Date.now() - memo.displayTime!.getTime() > 1000 * 60 * 60 * 24;
+  const relativeTimeFormat = isMemoOlderThan24Hours ? "datetime" : "auto";
   const isArchived = memo.state === State.ARCHIVED;
   const readonly = memo.creator !== user?.name && !isSuperUser(user);
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
@@ -117,6 +119,14 @@ const MemoView: React.FC<Props> = (props: Props) => {
 
   const displayTime = isArchived ? (
     memo.displayTime?.toLocaleString()
+  ) : isMemoOlderThan24Hours ? (
+    memo.displayTime?.toLocaleString(i18n.resolvedLanguage, {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      hour: "numeric",
+      minute: "numeric",
+    })
   ) : (
     <relative-time datetime={memo.displayTime?.toISOString()} format={relativeTimeFormat}></relative-time>
   );
