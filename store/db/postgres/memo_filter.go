@@ -130,11 +130,8 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 					return errors.New("invalid int value")
 				}
 
-				var factor string
-				if identifier == "creator_id" {
-					factor = "memo.creator_id"
-				}
-				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", factor, operator)); err != nil {
+				factor := "memo.creator_id"
+				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s %s", factor, operator, placeholder(len(ctx.Args)+ctx.ArgsOffset+1))); err != nil {
 					return err
 				}
 				ctx.Args = append(ctx.Args, valueInt)
