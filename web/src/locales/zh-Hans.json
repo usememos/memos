@@ -156,7 +156,10 @@
       "private": "私有",
       "protected": "工作区",
       "public": "公开"
-    }
+    },
+    "layout": "布局",
+    "list": "列表",
+    "masonry": "瀑布"
   },
   "message": {
     "archived-successfully": "归档成功",

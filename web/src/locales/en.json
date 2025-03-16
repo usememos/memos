@@ -160,7 +160,10 @@
       "private": "Private",
       "protected": "Workspace",
       "public": "Public"
-    }
+    },
+    "layout": "Layout",
+    "list": "List",
+    "masonry": "Masonry"
   },
   "message": {
     "archived-successfully": "Archived successfully",
