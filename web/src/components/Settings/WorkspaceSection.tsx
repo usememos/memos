@@ -128,7 +128,10 @@ const WorkspaceSection = () => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.workspace-section.disallow-password-auth")}</span>
         <Switch
-          disabled={workspaceStore.state.profile.mode === "demo" || identityProviderList.length === 0}
+          disabled={
+            workspaceStore.state.profile.mode === "demo" ||
+            (identityProviderList.length === 0 && !workspaceGeneralSetting.disallowPasswordAuth)
+          }
           checked={workspaceGeneralSetting.disallowPasswordAuth}
           onChange={(event) => updatePartialSetting({ disallowPasswordAuth: event.target.checked })}
         />
