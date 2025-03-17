@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -76,6 +77,20 @@ func (s *APIV1Service) SetWorkspaceSetting(ctx context.Context, request *v1pb.Se
 	}
 
 	return convertWorkspaceSettingFromStore(workspaceSetting), nil
+}
+
+func (s *APIV1Service) uploadSizeLimit(ctx context.Context) int {
+	wss, err := s.Store.GetWorkspaceStorageSetting(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to get workspace storage setting", "err", err)
+		return -1
+	}
+
+	if lim := wss.UploadSizeLimitMb; lim != 0 {
+		return int(lim) * MebiByte
+	}
+
+	return MaxUploadBufferSizeBytes
 }
 
 func convertWorkspaceSettingFromStore(setting *storepb.WorkspaceSetting) *v1pb.WorkspaceSetting {

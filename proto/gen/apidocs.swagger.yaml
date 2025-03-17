@@ -7,6 +7,7 @@ tags:
   - name: UserService
   - name: AuthService
   - name: IdentityProviderService
+  - name: ImportService
   - name: InboxService
   - name: MarkdownService
   - name: ResourceService
@@ -175,6 +176,28 @@ paths:
             $ref: '#/definitions/apiv1IdentityProvider'
       tags:
         - IdentityProviderService
+  /api/v1/import:
+    post:
+      summary: ImportMemos imports external note content.
+      operationId: ImportService_ImportMemos
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ImportResult'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: content
+          in: body
+          required: true
+          schema:
+            type: string
+            format: byte
+      tags:
+        - ImportService
   /api/v1/inboxes:
     get:
       summary: ListInboxes lists inboxes for a user.
@@ -2581,6 +2604,8 @@ definitions:
         type: string
       url:
         type: string
+  v1ImportResult:
+    type: object
   v1Inbox:
     type: object
     properties:

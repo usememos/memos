@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	"github.com/usememos/memos/server/importer"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -33,22 +34,27 @@ type APIV1Service struct {
 	v1pb.UnimplementedWebhookServiceServer
 	v1pb.UnimplementedMarkdownServiceServer
 	v1pb.UnimplementedIdentityProviderServiceServer
+	v1pb.UnimplementedImportServiceServer
 
 	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
 
+	importer *importer.Importer
+
 	grpcServer *grpc.Server
 }
 
-func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store, grpcServer *grpc.Server) *APIV1Service {
+func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store, imp *importer.Importer, grpcServer *grpc.Server) *APIV1Service {
 	grpc.EnableTracing = true
 	apiv1Service := &APIV1Service{
 		Secret:     secret,
 		Profile:    profile,
 		Store:      store,
+		importer:   imp,
 		grpcServer: grpcServer,
 	}
+
 	grpc_health_v1.RegisterHealthServer(grpcServer, apiv1Service)
 	v1pb.RegisterWorkspaceServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterWorkspaceSettingServiceServer(grpcServer, apiv1Service)
@@ -61,6 +67,8 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 	v1pb.RegisterWebhookServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterMarkdownServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterIdentityProviderServiceServer(grpcServer, apiv1Service)
+	v1pb.RegisterImportServiceServer(grpcServer, apiv1Service)
+
 	reflection.Register(grpcServer)
 	return apiv1Service
 }
@@ -110,6 +118,10 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	if err := v1pb.RegisterIdentityProviderServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
+	if err := v1pb.RegisterImportServiceHandler(ctx, gwMux, conn); err != nil {
+		return err
+	}
+
 	gwGroup := echoServer.Group("")
 	gwGroup.Use(middleware.CORS())
 	handler := echo.WrapHandler(gwMux)

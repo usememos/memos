@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+
+option go_package = "gen/api/v1";
+
+service ImportService {
+  // ImportMemos imports external note content.
+  rpc ImportMemos(ImportMemosRequest) returns (ImportResult) {
+    option (google.api.http) = {
+      post: "/api/v1/import"
+      body: "content"
+    };
+  }
+}
+
+message ImportResult {}
+
+message ImportMemosRequest {
+  bytes content = 1 [(google.api.field_behavior) = INPUT_ONLY];
+}
