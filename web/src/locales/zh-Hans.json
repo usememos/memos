@@ -158,8 +158,8 @@
       "public": "公开"
     },
     "layout": "布局",
-    "list": "列表",
-    "masonry": "瀑布"
+    "list": "列表模式",
+    "masonry": "瀑布流模式"
   },
   "message": {
     "archived-successfully": "归档成功",
