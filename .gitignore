@@ -19,6 +19,3 @@ dist
 
 # VSCode settings
 .vscode
-
-# Wrong package manager used to install frontend dependencies
-web/package-lock.json
