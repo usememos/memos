@@ -49,6 +49,7 @@
     "input": "Input",
     "language": "Language",
     "last-updated-at": "Last updated at",
+    "layout": "Layout",
     "learn-more": "Learn more",
     "link": "Link",
     "mark": "Mark",
@@ -161,7 +162,6 @@
       "protected": "Workspace",
       "public": "Public"
     },
-    "layout": "Layout",
     "list": "List",
     "masonry": "Masonry"
   },
