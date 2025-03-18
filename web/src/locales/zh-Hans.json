@@ -47,6 +47,7 @@
     "input": "输入",
     "language": "语言",
     "last-updated-at": "最后更新时间",
+    "layout": "布局",
     "learn-more": "了解更多",
     "link": "链接",
     "mark": "引用",
@@ -157,7 +158,6 @@
       "protected": "工作区",
       "public": "公开"
     },
-    "layout": "布局",
     "list": "列表模式",
     "masonry": "瀑布流模式"
   },
