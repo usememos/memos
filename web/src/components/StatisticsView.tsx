@@ -108,7 +108,7 @@ const StatisticsView = observer(() => {
             >
               <div className="w-auto flex justify-start items-center mr-1">
                 <BookmarkIcon className="w-4 h-auto mr-1" />
-                <span className="block text-sm">Pinned</span>
+                <span className="block text-sm">{t("common.pinned")}</span>
               </div>
               <span className="text-sm truncate">{userStore.state.currentUserStats.pinnedMemos.length}</span>
             </div>
