@@ -128,6 +128,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
         className,
       )}
       ref={memoContainerRef}
+      onDoubleClick={() => setShowEditor(true)}
     >
       {showEditor ? (
         <MemoEditor
