@@ -24,6 +24,7 @@ func TestValidateEmail(t *testing.T) {
 	}
 	for _, test := range tests {
 		result := ValidateEmail(test.email)
+		//require.Equal(t, test.want, result)
 		if result != test.want {
 			t.Errorf("Validate Email %s: got result %v, want %v.", test.email, result, test.want)
 		}
