@@ -99,23 +99,19 @@
     },
     "copy-link": "Скопировать ссылку",
     "delete-confirm": "Вы уверены, что хотите удалить эту запись?\nЭТО ДЕЙСТВИЕ НЕВОЗМОЖНО ОТМЕНИТЬ!",
-    "delete-memo": "Удаление записи",
-    "embed": "Встроить запись",
-    "fetch-more": "Загрузить больше",
-    "fetching-data": "загрузка данных…",
     "no-archived-memos": "Нет заархивированных записей.",
+    "remove-completed-task-list-items": "Удалить выполненные",
+    "remove-completed-task-list-items-confirm": "Вы уверены, что хотите удалить все выполненные задачи? (Данное действие необратимо)",
     "search-placeholder": "Поиск записей",
-    "show-more": "Подробнее",
     "show-less": "Показать меньше",
+    "show-more": "Подробнее",
     "view-detail": "Подробно",
     "visibility": {
       "disabled": "Публичные записи отключены",
       "private": "Видно только вам",
       "protected": "Видно только пользователям",
       "public": "Видно всем"
-    },
-    "remove-completed-task-list-items": "Удалить выполненные",
-    "remove-completed-task-list-items-confirm": "Вы уверены, что хотите удалить все выполненные задачи? (Данное действие необратимо)"
+    }
   },
   "message": {
     "archived-successfully": "Успешная архивация",
@@ -129,11 +125,11 @@
     "no-data": "Данные не были найдены.",
     "password-changed": "Пароль изменён",
     "password-not-match": "Пароли не совпадают.",
+    "remove-completed-task-list-items-successfully": "Удалено успешно!",
     "restored-successfully": "Успешно восстановлено.",
     "succeed-copy-link": "Ссылка скопирована в буфер обмена.",
     "update-succeed": "Успешно обновлено",
-    "user-not-found": "Пользователь не найден",
-    "remove-completed-task-list-items-successfully": "Удалено успешно!"
+    "user-not-found": "Пользователь не найден"
   },
   "reference": {
     "add-references": "Добавить ссылку",
@@ -263,8 +259,7 @@
       "url-prefix": "Префикс URL",
       "url-prefix-placeholder": "Пользовательский префикс URL, необязательно",
       "url-suffix": "суффикс URL",
-      "url-suffix-placeholder": "Пользовательский суффикс URL, необязательно",
-      "warning-text": "Вы уверены, что хотите удалить это хранилище?\nЭТО ДЕЙСТВИЕ НЕВОЗМОЖНО ОТМЕНИТЬ!"
+      "url-suffix-placeholder": "Пользовательский суффикс URL, необязательно"
     },
     "system": "Системные",
     "system-section": {
@@ -284,8 +279,8 @@
       "display-with-updated-time": "Отображать время обновления записи",
       "max-upload-size": "Максимальный размер загрузки (МБ)",
       "max-upload-size-hint": "Рекомендуемое значение 32 MБ.",
-      "server-name": "Имя сервера",
-      "removed-completed-task-list-items": "Включить удаление выполненных"
+      "removed-completed-task-list-items": "Включить удаление выполненных",
+      "server-name": "Имя сервера"
     }
   },
   "tag": {
@@ -295,8 +290,5 @@
     "delete-confirm": "Вы точно хотите удалить этот тег?",
     "delete-tag": "Удалить тег",
     "no-tag-found": "Тег не найден"
-  },
-  "timeline": {
-    "title": "Лента"
   }
 }

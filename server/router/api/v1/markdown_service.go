@@ -96,8 +96,7 @@ func convertFromASTNode(rawNode ast.Node) *v1pb.Node {
 	case *ast.Text:
 		node.Node = &v1pb.Node_TextNode{TextNode: &v1pb.TextNode{Content: n.Content}}
 	case *ast.Bold:
-		children := convertFromASTNodes(n.Children)
-		node.Node = &v1pb.Node_BoldNode{BoldNode: &v1pb.BoldNode{Symbol: n.Symbol, Children: children}}
+		node.Node = &v1pb.Node_BoldNode{BoldNode: &v1pb.BoldNode{Symbol: n.Symbol, Children: convertFromASTNodes(n.Children)}}
 	case *ast.Italic:
 		node.Node = &v1pb.Node_ItalicNode{ItalicNode: &v1pb.ItalicNode{Symbol: n.Symbol, Content: n.Content}}
 	case *ast.BoldItalic:
@@ -107,7 +106,7 @@ func convertFromASTNode(rawNode ast.Node) *v1pb.Node {
 	case *ast.Image:
 		node.Node = &v1pb.Node_ImageNode{ImageNode: &v1pb.ImageNode{AltText: n.AltText, Url: n.URL}}
 	case *ast.Link:
-		node.Node = &v1pb.Node_LinkNode{LinkNode: &v1pb.LinkNode{Text: n.Text, Url: n.URL}}
+		node.Node = &v1pb.Node_LinkNode{LinkNode: &v1pb.LinkNode{Content: convertFromASTNodes(n.Content), Url: n.URL}}
 	case *ast.AutoLink:
 		node.Node = &v1pb.Node_AutoLinkNode{AutoLinkNode: &v1pb.AutoLinkNode{Url: n.URL, IsRawText: n.IsRawText}}
 	case *ast.Tag:
@@ -207,8 +206,7 @@ func convertToASTNode(node *v1pb.Node) ast.Node {
 	case *v1pb.Node_TextNode:
 		return &ast.Text{Content: n.TextNode.Content}
 	case *v1pb.Node_BoldNode:
-		children := convertToASTNodes(n.BoldNode.Children)
-		return &ast.Bold{Symbol: n.BoldNode.Symbol, Children: children}
+		return &ast.Bold{Symbol: n.BoldNode.Symbol, Children: convertToASTNodes(n.BoldNode.Children)}
 	case *v1pb.Node_ItalicNode:
 		return &ast.Italic{Symbol: n.ItalicNode.Symbol, Content: n.ItalicNode.Content}
 	case *v1pb.Node_BoldItalicNode:
@@ -218,7 +216,7 @@ func convertToASTNode(node *v1pb.Node) ast.Node {
 	case *v1pb.Node_ImageNode:
 		return &ast.Image{AltText: n.ImageNode.AltText, URL: n.ImageNode.Url}
 	case *v1pb.Node_LinkNode:
-		return &ast.Link{Text: n.LinkNode.Text, URL: n.LinkNode.Url}
+		return &ast.Link{Content: convertToASTNodes(n.LinkNode.Content), URL: n.LinkNode.Url}
 	case *v1pb.Node_AutoLinkNode:
 		return &ast.AutoLink{URL: n.AutoLinkNode.Url, IsRawText: n.AutoLinkNode.IsRawText}
 	case *v1pb.Node_TagNode:

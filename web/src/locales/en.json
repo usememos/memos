@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "Blogs",
+    "description": "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
+    "documents": "Documents",
+    "github-repository": "GitHub Repo",
+    "official-website": "Official Website"
+  },
   "auth": {
     "create-your-account": "Create your account",
     "host-tip": "You are registering as the Site Host.",
@@ -20,9 +27,10 @@
     "change": "Change",
     "clear": "Clear",
     "close": "Close",
-    "confirm": "Confirm",
     "collapse": "Collapse",
+    "confirm": "Confirm",
     "create": "Create",
+    "created-at": "Created At",
     "database": "Database",
     "day": "Day",
     "days": "Days",
@@ -35,10 +43,13 @@
     "file": "File",
     "filter": "Filter",
     "home": "Home",
-    "in": "In",
     "image": "Image",
+    "in": "In",
     "inbox": "Inbox",
+    "input": "Input",
     "language": "Language",
+    "last-updated-at": "Last updated at",
+    "layout": "Layout",
     "learn-more": "Learn more",
     "link": "Link",
     "mark": "Mark",
@@ -54,6 +65,10 @@
     "pinned": "Pinned",
     "preview": "Preview",
     "profile": "Profile",
+    "properties": "Properties",
+    "referenced-by": "Referenced by",
+    "referencing": "Referencing",
+    "relations": "Relations",
     "remember-me": "Remember me",
     "rename": "Rename",
     "reset": "Reset",
@@ -65,6 +80,8 @@
     "select": "Select",
     "settings": "Settings",
     "share": "Share",
+    "shortcut-filter": "Shortcut filter",
+    "shortcuts": "Shortcuts",
     "sign-in": "Sign in",
     "sign-in-with": "Sign in with {{provider}}",
     "sign-out": "Sign out",
@@ -72,6 +89,7 @@
     "statistics": "Statistics",
     "tags": "Tags",
     "title": "Title",
+    "tree-mode": "Tree mode",
     "type": "Type",
     "unpin": "Unpin",
     "update": "Update",
@@ -79,8 +97,7 @@
     "username": "Username",
     "version": "Version",
     "visibility": "Visibility",
-    "yourself": "Yourself",
-    "shortcuts": "Shortcuts"
+    "yourself": "Yourself"
   },
   "days": {
     "fri": "Fri",
@@ -96,12 +113,25 @@
     "any-thoughts": "Any thoughts...",
     "save": "Save"
   },
+  "filters": {
+    "has-code": "hasCode",
+    "has-link": "hasLink",
+    "has-task-list": "hasTaskList"
+  },
   "inbox": {
     "memo-comment": "{{user}} has a comment on your {{memo}}.",
     "version-update": "New version {{version}} is available now!"
   },
+  "markdown": {
+    "checkbox": "Checkbox",
+    "code-block": "Code block",
+    "content-syntax": "Content syntax"
+  },
   "memo": {
     "archived-at": "Archived at",
+    "click-to-hide-nsfw-content": "Click to hide NSFW content",
+    "click-to-show-nsfw-content": "Click to show NSFW content",
+    "code": "Code",
     "comment": {
       "self": "Comments",
       "write-a-comment": "Write a comment"
@@ -109,11 +139,22 @@
     "copy-link": "Copy Link",
     "count-memos-in-date": "{{count}} {{memos}} in {{date}}",
     "delete-confirm": "Are you sure you want to delete this memo? THIS ACTION IS IRREVERSIBLE",
+    "direction": "Direction",
+    "direction-asc": "Ascending",
+    "direction-desc": "Descending",
+    "display-time": "Display Time",
+    "filters": "Filters",
+    "links": "Links",
     "load-more": "Load more",
     "no-archived-memos": "No archived memos.",
-    "search-placeholder": "Search memos",
-    "show-more": "Show more",
+    "no-memos": "No memos.",
+    "order-by": "Order By",
+    "remove-completed-task-list-items": "Remove done",
+    "remove-completed-task-list-items-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE",
+    "search-placeholder": "Search memos...",
     "show-less": "Show less",
+    "show-more": "Show more",
+    "to-do": "To-do",
     "view-detail": "View Detail",
     "visibility": {
       "disabled": "Public memos are disabled",
@@ -121,39 +162,29 @@
       "protected": "Workspace",
       "public": "Public"
     },
-    "links": "Links",
-    "to-do": "To-do",
-    "code": "Code",
-    "remove-completed-task-list-items": "Remove done",
-    "remove-completed-task-list-items-confirm": "Are you sure you want to remove all completed to-dos? THIS ACTION IS IRREVERSIBLE",
-    "filters": "Filters",
-    "order-by": "Order By",
-    "display-time": "Display Time",
-    "direction": "Direction",
-    "direction-desc": "Descending",
-    "direction-asc": "Ascending",
-    "no-memos": "No memos."
+    "list": "List",
+    "masonry": "Masonry"
   },
   "message": {
     "archived-successfully": "Archived successfully",
     "change-memo-created-time": "Change memo created time",
     "copied": "Copied",
     "deleted-successfully": "Deleted successfully",
+    "description-is-required": "Description is required",
+    "failed-to-embed-memo": "Failed to embed memo",
     "fill-all": "Please fill in all fields.",
+    "fill-all-required-fields": "Please fill all required fields",
     "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
     "memo-not-found": "Memo not found.",
     "new-password-not-match": "New passwords do not match.",
     "no-data": "No data found.",
     "password-changed": "Password Changed",
     "password-not-match": "Passwords do not match.",
+    "remove-completed-task-list-items-successfully": "The removal was successful",
     "restored-successfully": "Restored successfully",
     "succeed-copy-link": "Link copied successfully.",
     "update-succeed": "Update succeeded",
-    "user-not-found": "User not found",
-    "remove-completed-task-list-items-successfully": "The removal was successful",
-    "failed-to-embed-memo": "Failed to embed memo",
-    "description-is-required": "Description is required",
-    "fill-all-required-fields": "Please fill all required fields"
+    "user-not-found": "User not found"
   },
   "reference": {
     "add-references": "Add references",
@@ -191,13 +222,32 @@
     "no-unused-resources": "No unused resources",
     "reset-link": "Reset Link",
     "reset-link-prompt": "Are you sure to reset the link? This will break all current link usages. THIS ACTION IS IRREVERSIBLE",
-    "reset-resource-link": "Reset Resource Link"
+    "reset-resource-link": "Reset Resource Link",
+    "unused-resources": "Unused resources"
   },
   "router": {
     "back-to-top": "Back to Top",
     "go-to-home": "Go to Home"
   },
   "setting": {
+    "access-token-section": {
+      "access-token-copied-to-clipboard": "Access token copied to clipboard",
+      "access-token-deletion": "Are you sure to delete access token {{accessToken}}? THIS ACTION IS IRREVERSIBLE.",
+      "create-dialog": {
+        "create-access-token": "Create Access Token",
+        "created-at": "Created At",
+        "description": "Description",
+        "duration-1m": "1 Month",
+        "duration-8h": "8 Hours",
+        "duration-never": "Never",
+        "expiration": "Expiration",
+        "expires-at": "Expires At",
+        "some-description": "Some description..."
+      },
+      "description": "A list of all access tokens for your account.",
+      "title": "Access Tokens",
+      "token": "Token"
+    },
     "account-section": {
       "change-password": "Change password",
       "email-note": "Optional",
@@ -219,11 +269,23 @@
     "member": "Member",
     "member-list": "Member list",
     "member-section": {
+      "admin": "Admin",
       "archive-member": "Archive member",
       "archive-warning": "Are you sure to archive {{username}}?",
       "create-a-member": "Create a member",
       "delete-member": "Delete Member",
-      "delete-warning": "Are you sure to delete {{username}}? THIS ACTION IS IRREVERSIBLE"
+      "delete-warning": "Are you sure to delete {{username}}? THIS ACTION IS IRREVERSIBLE",
+      "user": "User"
+    },
+    "memo-related": "Memo",
+    "memo-related-settings": {
+      "content-lenght-limit": "Content length limit (Byte)",
+      "enable-blur-nsfw-content": "Enable NSFW content blurring (add NSFW tags below)",
+      "enable-link-preview": "Enable link preview",
+      "enable-memo-comments": "Enable memo comments",
+      "enable-memo-location": "Enable memo location",
+      "reactions": "Reactions",
+      "title": "Memo related settings"
     },
     "my-account": "My Account",
     "preference": "Preferences",
@@ -245,17 +307,17 @@
       "display-name": "Display Name",
       "identifier": "Identifier",
       "identifier-filter": "Identifier Filter",
+      "no-sso-found": "No SSO found.",
       "redirect-url": "Redirect URL",
       "scopes": "Scopes",
+      "single-sign-on": "Configuring Single Sign-On (SSO) for Authentication",
       "sso-created": "SSO {{name}} created",
       "sso-list": "SSO List",
       "sso-updated": "SSO {{name}} updated",
       "template": "Template",
       "token-endpoint": "Token endpoint",
       "update-sso": "Update SSO",
-      "user-endpoint": "User endpoint",
-      "no-sso-found": "No SSO found.",
-      "single-sign-on": "Configuring Single Sign-On (SSO) for Authentication"
+      "user-endpoint": "User endpoint"
     },
     "storage": "Storage",
     "storage-section": {
@@ -268,6 +330,7 @@
       "current-storage": "Current object storage",
       "delete-storage": "Delete Storage",
       "endpoint": "Endpoint",
+      "filepath-template": "Filepath template",
       "local-storage-path": "Local storage path",
       "path": "Storage Path",
       "path-description": "You can use the same dynamic variables from local storage, like {filename}",
@@ -305,11 +368,11 @@
         "locale": "Server Locale",
         "title": "Customize Server"
       },
+      "disable-markdown-shortcuts-in-editor": "Disable Markdown shortcuts in editor",
       "disable-password-login": "Disable password login",
       "disable-password-login-final-warning": "Please type \"CONFIRM\" if you know what you are doing.",
       "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra carefull when removing an identity provider",
       "disable-public-memos": "Disable public memos",
-      "disable-markdown-shortcuts-in-editor": "Disable Markdown shortcuts in editor",
       "display-with-updated-time": "Display with updated time",
       "enable-auto-compact": "Enable auto compact",
       "enable-double-click-to-edit": "Enable double click to edit",
@@ -317,80 +380,48 @@
       "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password",
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
+      "removed-completed-task-list-items": "Enable removal of completed task list items",
       "server-name": "Server Name",
-      "removed-completed-task-list-items": "Enable removal of completed task list items"
+      "title": "General"
     },
-    "memo-related": "Memo",
-    "access-token-section": {
-      "title": "Access Tokens",
-      "description": "A list of all access tokens for your account.",
-      "token": "Token",
-      "access-token-deletion": "Are you sure to delete access token {{accessToken}}? THIS ACTION IS IRREVERSIBLE.",
-      "access-token-copied-to-clipboard": "Access token copied to clipboard",
-      "create-dialog": {
-        "create-access-token": "Create Access Token",
-        "description": "Description",
-        "some-description": "Some description...",
-        "expiration": "Expiration",
-        "created-at": "Created At",
-        "expires-at": "Expires At",
-        "duration-never": "Never",
-        "duration-8h": "8 Hours",
-        "duration-1m": "1 Month"
-      }
-    },
+    "version": "Version",
     "webhook-section": {
-      "title": "Webhooks",
-      "url": "URL",
-      "no-webhooks-found": "No webhooks found.",
       "create-dialog": {
+        "an-easy-to-remember-name": "An easy-to-remember name",
         "create-webhook": "Create webhook",
         "edit-webhook": "Edit webhook",
-        "an-easy-to-remember-name": "An easy-to-remember name",
-        "title": "Title",
         "payload-url": "Payload URL",
+        "title": "Title",
         "url-example-post-receive": "https://example.com/postreceive"
-      }
+      },
+      "no-webhooks-found": "No webhooks found.",
+      "title": "Webhooks",
+      "url": "URL"
     },
     "workspace-section": {
-      "disallow-user-registration": "Disallow user registration",
-      "disallow-password-auth": "Disallow password auth",
-      "disallow-change-username": "Disallow changing username",
       "disallow-change-nickname": "Disallow changing nickname",
-      "week-start-day": "Week start day",
+      "disallow-change-username": "Disallow changing username",
+      "disallow-password-auth": "Disallow password auth",
+      "disallow-user-registration": "Disallow user registration",
+      "monday": "Monday",
       "saturday": "Saturday",
       "sunday": "Sunday",
-      "monday": "Monday"
-    },
-    "memo-related-settings": {
-      "title": "Memo related settings",
-      "enable-link-preview": "Enable link preview",
-      "enable-memo-comments": "Enable memo comments",
-      "enable-memo-location": "Enable memo location",
-      "content-lenght-limit": "Content length limit (Byte)",
-      "reactions": "Reactions"
-    },
-    "version": "Version"
+      "week-start-day": "Week start day"
+    }
   },
-  "shortcut": {},
   "tag": {
     "all-tags": "All Tags",
     "create-tag": "Create Tag",
     "create-tags-guide": "You can create tags by inputting `#tag`.",
     "delete-confirm": "Are you sure to delete this tag? All related memos will be archived.",
     "delete-tag": "Delete Tag",
-    "no-tag-found": "No tag found"
-  },
-  "markdown": {
-    "code-block": "Code block",
-    "checkbox": "Checkbox",
-    "content-syntax": "Content syntax"
-  },
-  "about": {
-    "description": "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
-    "github-repository": "GitHub Repo",
-    "official-website": "Official Website",
-    "blogs": "Blogs",
-    "documents": "Documents"
+    "new-name": "New Name",
+    "no-tag-found": "No tag found",
+    "old-name": "Old Name",
+    "rename-error-empty": "Tag name cannot be empty or contain spaces",
+    "rename-error-repeat": "New name cannot be the same as the old name",
+    "rename-success": "Rename tag successfully",
+    "rename-tag": "Rename tag",
+    "rename-tip": "All your memos with this tag will be updated."
   }
 }

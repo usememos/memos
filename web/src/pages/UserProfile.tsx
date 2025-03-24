@@ -2,25 +2,24 @@ import { Button } from "@usememos/mui";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { ExternalLinkIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
-import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
-import { useMemoFilterStore, useUserStore } from "@/store/v1";
+import { useMemoFilterStore } from "@/store/v1";
+import { viewStore, userStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 
-const UserProfile = () => {
+const UserProfile = observer(() => {
   const t = useTranslate();
   const params = useParams();
-  const userStore = useUserStore();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
   const memoFilterStore = useMemoFilterStore();
@@ -32,7 +31,7 @@ const UserProfile = () => {
     }
 
     userStore
-      .fetchUserByUsername(username)
+      .getOrFetchUserByUsername(username)
       .then((user) => {
         setUser(user);
         loadingState.setFinish();
@@ -77,9 +76,8 @@ const UserProfile = () => {
   };
 
   return (
-    <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
-      <MobileHeader />
-      <div className="w-full px-4 sm:px-6 flex flex-col justify-start items-center">
+    <section className="w-full max-w-3xl mx-auto min-h-full flex flex-col justify-start items-center pb-8">
+      <div className="w-full flex flex-col justify-start items-center max-w-2xl">
         {!loadingState.isLoading &&
           (user ? (
             <>
@@ -100,7 +98,6 @@ const UserProfile = () => {
                   </p>
                 </div>
               </div>
-              <MemoFilters />
               <PagedMemoList
                 renderer={(memo: Memo) => (
                   <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />
@@ -109,14 +106,14 @@ const UserProfile = () => {
                   memos
                     .filter((memo) => memo.state === State.NORMAL)
                     .sort((a, b) =>
-                      memoFilterStore.orderByTimeAsc
+                      viewStore.state.orderByTimeAsc
                         ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
                         : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
                     )
                     .sort((a, b) => Number(b.pinned) - Number(a.pinned))
                 }
                 owner={user.name}
-                direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+                direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
                 oldFilter={memoListFilter}
               />
             </>
@@ -126,6 +123,6 @@ const UserProfile = () => {
       </div>
     </section>
   );
-};
+});
 
 export default UserProfile;

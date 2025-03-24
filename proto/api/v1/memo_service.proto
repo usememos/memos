@@ -4,7 +4,6 @@ package memos.api.v1;
 
 import "api/v1/common.proto";
 import "api/v1/markdown_service.proto";
-import "api/v1/memo_relation_service.proto";
 import "api/v1/reaction_service.proto";
 import "api/v1/resource_service.proto";
 import "google/api/annotations.proto";
@@ -131,7 +130,10 @@ message Memo {
 
   // The name of the memo.
   // Format: memos/{memo}, memo is the user defined id or uuid.
-  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string name = 1 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = IDENTIFIER
+  ];
 
   State state = 3;
 
@@ -161,7 +163,7 @@ message Memo {
 
   repeated Reaction reactions = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  MemoProperty property = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  Property property = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The name of the parent memo.
   // Format: memos/{id}
@@ -172,13 +174,13 @@ message Memo {
 
   // The location of the memo.
   optional Location location = 20;
-}
 
-message MemoProperty {
-  bool has_link = 1;
-  bool has_task_list = 2;
-  bool has_code = 3;
-  bool has_incomplete_tasks = 4;
+  message Property {
+    bool has_link = 1;
+    bool has_task_list = 2;
+    bool has_code = 3;
+    bool has_incomplete_tasks = 4;
+  }
 }
 
 message Location {
@@ -281,6 +283,28 @@ message ListMemoResourcesRequest {
 
 message ListMemoResourcesResponse {
   repeated Resource resources = 1;
+}
+
+message MemoRelation {
+  Memo memo = 1;
+
+  Memo related_memo = 2;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    REFERENCE = 1;
+    COMMENT = 2;
+  }
+  Type type = 3;
+
+  message Memo {
+    // The name of the memo.
+    // Format: memos/{id}
+    string name = 1;
+    string uid = 2;
+    // The snippet of the memo content. Plain text only.
+    string snippet = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
 }
 
 message SetMemoRelationsRequest {

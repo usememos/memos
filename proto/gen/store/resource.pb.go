@@ -26,9 +26,12 @@ type ResourceStorageType int32
 
 const (
 	ResourceStorageType_RESOURCE_STORAGE_TYPE_UNSPECIFIED ResourceStorageType = 0
-	ResourceStorageType_LOCAL                             ResourceStorageType = 1
-	ResourceStorageType_S3                                ResourceStorageType = 2
-	ResourceStorageType_EXTERNAL                          ResourceStorageType = 3
+	// Resource is stored locally. AKA, local file system.
+	ResourceStorageType_LOCAL ResourceStorageType = 1
+	// Resource is stored in S3.
+	ResourceStorageType_S3 ResourceStorageType = 2
+	// Resource is stored in an external storage. The reference is a URL.
+	ResourceStorageType_EXTERNAL ResourceStorageType = 3
 )
 
 // Enum value maps for ResourceStorageType.

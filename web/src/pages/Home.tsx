@@ -1,23 +1,18 @@
 import dayjs from "dayjs";
+import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
-import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
-import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
-import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { useMemoFilterStore, useUserStore } from "@/store/v1";
+import { useMemoFilterStore } from "@/store/v1";
+import { viewStore, userStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { cn } from "@/utils";
 
-const Home = () => {
-  const { md, lg } = useResponsiveWidth();
+const Home = observer(() => {
   const user = useCurrentUser();
-  const userStore = useUserStore();
   const memoFilterStore = useMemoFilterStore();
-  const selectedShortcut = userStore.shortcuts.find((shortcut) => shortcut.id === memoFilterStore.shortcut);
+  const selectedShortcut = userStore.state.shortcuts.find((shortcut) => shortcut.id === memoFilterStore.shortcut);
 
   const memoListFilter = useMemo(() => {
     const conditions = [];
@@ -28,6 +23,8 @@ const Home = () => {
         contentSearch.push(`"${filter.value}"`);
       } else if (filter.factor === "tagSearch") {
         tagSearch.push(`"${filter.value}"`);
+      } else if (filter.factor === "pinned") {
+        conditions.push(`pinned == true`);
       } else if (filter.factor === "property.hasLink") {
         conditions.push(`has_link == true`);
       } else if (filter.factor === "property.hasTaskList") {
@@ -49,52 +46,27 @@ const Home = () => {
       conditions.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
     return conditions.join(" && ");
-  }, [user, memoFilterStore.filters, memoFilterStore.orderByTimeAsc]);
+  }, [user, memoFilterStore.filters, viewStore.state.orderByTimeAsc]);
 
   return (
-    <section className="@container w-full min-h-full flex flex-col justify-start items-center">
-      {!md && (
-        <MobileHeader>
-          <HomeSidebarDrawer />
-        </MobileHeader>
-      )}
-      <div className={cn("w-full min-h-full flex flex-row justify-start items-start")}>
-        {md && (
-          <div
-            className={cn(
-              "sticky top-0 left-0 shrink-0 h-[100svh] transition-all",
-              "border-r border-gray-200 dark:border-zinc-800",
-              lg ? "px-5 w-72" : "px-4 w-56",
-            )}
-          >
-            <HomeSidebar className={cn("py-6")} />
-          </div>
-        )}
-        <div className={cn("w-full mx-auto px-4 sm:px-6 sm:pt-3 md:pt-6 pb-8", md && "max-w-3xl")}>
-          <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
-          <div className="flex flex-col justify-start items-start w-full max-w-full">
-            <PagedMemoList
-              renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
-              listSort={(memos: Memo[]) =>
-                memos
-                  .filter((memo) => memo.state === State.NORMAL)
-                  .sort((a, b) =>
-                    memoFilterStore.orderByTimeAsc
-                      ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
-                      : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
-                  )
-                  .sort((a, b) => Number(b.pinned) - Number(a.pinned))
-              }
-              owner={user.name}
-              direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
-              filter={selectedShortcut?.filter || ""}
-              oldFilter={memoListFilter}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+    <PagedMemoList
+      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
+      listSort={(memos: Memo[]) =>
+        memos
+          .filter((memo) => memo.state === State.NORMAL)
+          .sort((a, b) =>
+            viewStore.state.orderByTimeAsc
+              ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
+              : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
+          )
+          .sort((a, b) => Number(b.pinned) - Number(a.pinned))
+      }
+      owner={user.name}
+      direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+      filter={selectedShortcut?.filter || ""}
+      oldFilter={memoListFilter}
+    />
   );
-};
+});
 
 export default Home;

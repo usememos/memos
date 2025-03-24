@@ -4,19 +4,18 @@ import { isEqual, uniq } from "lodash-es";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceSettingNamePrefix } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = () => {
   const t = useTranslate();
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const originalSetting = WorkspaceMemoRelatedSetting.fromPartial(
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
-  );
+  const originalSetting = workspaceStore.state.memoRelatedSetting;
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
+  const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
 
   const updatePartialSetting = (partial: Partial<WorkspaceMemoRelatedSetting>) => {
     const newWorkspaceMemoRelatedSetting = WorkspaceMemoRelatedSetting.fromPartial({
@@ -35,6 +34,15 @@ const MemoRelatedSettings = () => {
     setEditingReaction("");
   };
 
+  const upsertNsfwTags = () => {
+    if (!editingNsfwTag) {
+      return;
+    }
+
+    updatePartialSetting({ nsfwTags: uniq([...memoRelatedSetting.nsfwTags, editingNsfwTag.trim()]) });
+    setEditingNsfwTag("");
+  };
+
   const updateSetting = async () => {
     if (memoRelatedSetting.reactions.length === 0) {
       toast.error("Reactions must not be empty.");
@@ -42,7 +50,7 @@ const MemoRelatedSettings = () => {
     }
 
     try {
-      await workspaceSettingStore.setWorkspaceSetting({
+      await workspaceStore.upsertWorkspaceSetting({
         name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
         memoRelatedSetting,
       });
@@ -69,13 +77,6 @@ const MemoRelatedSettings = () => {
         <Switch
           checked={memoRelatedSetting.displayWithUpdateTime}
           onChange={(event) => updatePartialSetting({ displayWithUpdateTime: event.target.checked })}
-        />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.system-section.enable-auto-compact")}</span>
-        <Switch
-          checked={memoRelatedSetting.enableAutoCompact}
-          onChange={(event) => updatePartialSetting({ enableAutoCompact: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
@@ -144,7 +145,7 @@ const MemoRelatedSettings = () => {
           })}
           <Input
             className="w-32 !rounded-full !pl-3"
-            placeholder="Input"
+            placeholder={t("common.input")}
             size="sm"
             value={editingReaction}
             onChange={(event) => setEditingReaction(event.target.value.trim())}
@@ -152,6 +153,47 @@ const MemoRelatedSettings = () => {
               <CheckIcon
                 className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
                 onClick={() => upsertReaction()}
+              />
+            }
+          />
+        </div>
+      </div>
+      <div className="w-full">
+        <div className="w-full flex flex-row justify-between items-center">
+          <span>{t("setting.memo-related-settings.enable-blur-nsfw-content")}</span>
+          <Switch
+            checked={memoRelatedSetting.enableBlurNsfwContent}
+            onChange={(event) => updatePartialSetting({ enableBlurNsfwContent: event.target.checked })}
+          />
+        </div>
+        <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
+          {memoRelatedSetting.nsfwTags.map((nsfwTag) => {
+            return (
+              <Chip
+                className="!h-8"
+                key={nsfwTag}
+                variant="outlined"
+                size="lg"
+                endDecorator={
+                  <ChipDelete
+                    onDelete={() => updatePartialSetting({ nsfwTags: memoRelatedSetting.nsfwTags.filter((r) => r !== nsfwTag) })}
+                  />
+                }
+              >
+                {nsfwTag}
+              </Chip>
+            );
+          })}
+          <Input
+            className="w-32 !rounded-full !pl-3"
+            placeholder={t("common.input")}
+            size="sm"
+            value={editingNsfwTag}
+            onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
+            endDecorator={
+              <CheckIcon
+                className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
+                onClick={() => upsertNsfwTags()}
               />
             }
           />

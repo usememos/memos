@@ -18,8 +18,6 @@ linters:
     - bodyclose
 
 issues:
-  include:
-    # https://golangci-lint.run/usage/configuration/#command-line-options
   exclude:
     - Rollback
     - fmt.Printf
@@ -72,6 +70,8 @@ linters-settings:
       - name: if-return
         disabled: true
       - name: max-control-nesting
+        disabled: true
+      - name: redefines-builtin-id
         disabled: true
   gocritic:
     disabled-checks:

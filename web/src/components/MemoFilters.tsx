@@ -1,68 +1,40 @@
 import { isEqual } from "lodash-es";
-import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, HashIcon, LinkIcon, SearchIcon, XIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, HashIcon, LinkIcon, BookmarkIcon, SearchIcon, XIcon } from "lucide-react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { FilterFactor, getMemoFilterKey, MemoFilter, parseFilterQuery, stringifyFilters, useMemoFilterStore } from "@/store/v1";
+import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters, useMemoFilterStore } from "@/store/v1";
+import { useTranslate } from "@/utils/i18n";
 
 const MemoFilters = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const t = useTranslate();
+  const [, setSearchParams] = useSearchParams();
   const memoFilterStore = useMemoFilterStore();
   const filters = memoFilterStore.filters;
-  const orderByTimeAsc = memoFilterStore.orderByTimeAsc;
-  const lastUpdateRef = useRef<"url" | "store">("url");
 
-  // set lastUpdateRef to store when filters or orderByTimeAsc changes
   useEffect(() => {
-    lastUpdateRef.current = "store";
-  }, [filters, orderByTimeAsc]);
-
-  // set lastUpdateRef to url when searchParams changes
-  useEffect(() => {
-    lastUpdateRef.current = "url";
-  }, [searchParams]);
-
-  const checkAndSync = () => {
-    const filtersInURL = searchParams.get("filter") || "";
-    const orderByTimeAscInURL = searchParams.get("orderBy") === "asc";
-    const storeMatchesURL = filtersInURL === stringifyFilters(filters) && orderByTimeAscInURL === orderByTimeAsc;
-
-    if (!storeMatchesURL) {
-      if (lastUpdateRef.current === "url") {
-        // Sync URL -> Store
-        memoFilterStore.setState({
-          filters: parseFilterQuery(filtersInURL),
-          orderByTimeAsc: orderByTimeAscInURL,
-        });
-      } else if (lastUpdateRef.current === "store") {
-        // Sync Store -> URL
-        const newSearchParams = new URLSearchParams(searchParams);
-
-        if (orderByTimeAsc) {
-          newSearchParams.set("orderBy", "asc");
-        } else {
-          newSearchParams.delete("orderBy");
-        }
-
-        if (filters.length > 0) {
-          newSearchParams.set("filter", stringifyFilters(filters));
-        } else {
-          newSearchParams.delete("filter");
-        }
-
-        setSearchParams(newSearchParams);
-      }
+    const searchParams = new URLSearchParams();
+    if (filters.length > 0) {
+      searchParams.set("filter", stringifyFilters(filters));
     }
-  };
-
-  // Watch both URL and store changes
-  useEffect(checkAndSync, [searchParams, filters, orderByTimeAsc]);
+    setSearchParams(searchParams);
+  }, [filters]);
 
   const getFilterDisplayText = (filter: MemoFilter) => {
     if (filter.value) {
       return filter.value;
     }
     if (filter.factor.startsWith("property.")) {
-      return filter.factor.replace("property.", "");
+      const factorLabel = filter.factor.replace("property.", "");
+      switch (factorLabel) {
+        case "hasLink":
+          return t("filters.has-link");
+        case "hasCode":
+          return t("filters.has-code");
+        case "hasTaskList":
+          return t("filters.has-task-list");
+        default:
+          return factorLabel;
+      }
     }
     return filter.factor;
   };
@@ -72,7 +44,7 @@ const MemoFilters = () => {
   }
 
   return (
-    <div className="w-full mt-3 flex flex-row justify-start items-center flex-wrap gap-x-2 gap-y-1">
+    <div className="w-full mt-2 flex flex-row justify-start items-center flex-wrap gap-x-2 gap-y-1">
       {filters.map((filter) => (
         <div
           key={getMemoFilterKey(filter)}
@@ -96,6 +68,7 @@ const FactorIcon = ({ factor, className }: { factor: FilterFactor; className?: s
     visibility: <EyeIcon className={className} />,
     contentSearch: <SearchIcon className={className} />,
     displayTime: <CalendarIcon className={className} />,
+    pinned: <BookmarkIcon className={className} />,
     "property.hasLink": <LinkIcon className={className} />,
     "property.hasTaskList": <CheckCircleIcon className={className} />,
     "property.hasCode": <CodeIcon className={className} />,

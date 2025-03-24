@@ -1,9 +1,7 @@
-package util_test
+package util
 
 import (
 	"testing"
-
-	"github.com/usememos/memos/internal/util"
 )
 
 func TestUIDMatcher(t *testing.T) {
@@ -28,7 +26,7 @@ func TestUIDMatcher(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.input, func(*testing.T) {
-			result := util.UIDMatcher.MatchString(test.input)
+			result := UIDMatcher.MatchString(test.input)
 			if result != test.expected {
 				t.Errorf("For input '%s', expected %v but got %v", test.input, test.expected, result)
 			}

@@ -102,23 +102,19 @@
     "copy-link": "लिंकची प्रत बनवा",
     "count-memos-in-date": "{{date}} ला {{count}} मेमो लिहीलीत",
     "delete-confirm": "हा मेमो हटवण्याची तुम्हाला खात्री आहे का? हि क्रिया अपरिवर्तनीय आहे",
-    "delete-memo": "मेमो हटवा",
-    "embed": "एम्बेड करा",
-    "fetch-more": "अधिकसाठी क्लिक करा",
-    "fetching-data": "माहिती मागवत आहे…",
     "no-archived-memos": "कोणतेही संग्रहित मेमो नाहीत.",
+    "remove-completed-task-list-items": "हटवा केलेले",
+    "remove-completed-task-list-items-confirm": "तुम्ही सगळ्या पूर्ण केलेल्या कामांचे हटवणार आहात का? (या क्रियेचे उलट घेणे शक्य नाही)",
     "search-placeholder": "मेमोज शोधा",
-    "show-more": "अधिक दाखवा",
     "show-less": "कमी दाखवा",
+    "show-more": "अधिक दाखवा",
     "view-detail": "तपशील दाखवा",
     "visibility": {
       "disabled": "सार्वजनिक मेमो अक्षम केले आहेत",
       "private": "खाजगी",
       "protected": "कार्यक्षेत्र",
       "public": "सार्वजनिक"
-    },
-    "remove-completed-task-list-items": "हटवा केलेले",
-    "remove-completed-task-list-items-confirm": "तुम्ही सगळ्या पूर्ण केलेल्या कामांचे हटवणार आहात का? (या क्रियेचे उलट घेणे शक्य नाही)"
+    }
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",
@@ -132,11 +128,11 @@
     "no-data": "माहिती आढळली नाही.",
     "password-changed": "पासवर्ड बदलला",
     "password-not-match": "पासवर्ड जुळत नाही.",
+    "remove-completed-task-list-items-successfully": "सफळताने हटवा झाले!",
     "restored-successfully": "यशस्वीरित्या पुनर्संचयित केले",
     "succeed-copy-link": "लिंक यशस्वीरित्या कॉपी केली.",
     "update-succeed": "अपडेट यशस्वी झाले",
-    "user-not-found": "वापरकर्ता सापडला नाही",
-    "remove-completed-task-list-items-successfully": "सफळताने हटवा झाले!"
+    "user-not-found": "वापरकर्ता सापडला नाही"
   },
   "reference": {
     "add-references": "संदर्भ जोडा",
@@ -295,8 +291,8 @@
       "enable-password-login-warning": "हे सर्व वापरकर्त्यांसाठी पासवर्ड लॉगिन सक्षम करेल. जर तुम्ही वापरकर्त्यांना SSO आणि पासवर्ड दोन्ही वापरून लॉग इन करू इच्छित असाल तरच सुरू ठेवा",
       "max-upload-size": "कमाल अपलोड आकार (MiB)",
       "max-upload-size-hint": "शिफारस केलेले मूल्य 32 MiB आहे.",
-      "server-name": "सर्व्हरचे नाव",
-      "removed-completed-task-list-items": "हटवा केलेले सक्षम करा"
+      "removed-completed-task-list-items": "हटवा केलेले सक्षम करा",
+      "server-name": "सर्व्हरचे नाव"
     }
   },
   "tag": {
@@ -306,8 +302,5 @@
     "delete-confirm": "तुम्हाला हा टॅग हटवण्याची खात्री आहे का? सर्व संबंधित मेमो संग्रहित केले जातील.",
     "delete-tag": "टॅग हटवा",
     "no-tag-found": "कोणताही टॅग आढळला नाही"
-  },
-  "timeline": {
-    "title": "कालक्रम"
   }
 }

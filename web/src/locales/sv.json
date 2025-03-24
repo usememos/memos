@@ -58,15 +58,15 @@
   },
   "memo": {
     "copy-link": "Kopiera länk",
+    "remove-completed-task-list-items": "Ta bort avklarade",
+    "remove-completed-task-list-items-confirm": "Är du säker på att du vill ta bort alla avklarade todo? (Detta är oåterkalleligt)",
     "view-detail": "Visa detaljer",
     "visibility": {
       "disabled": "Offentliga anteckningar är inaktiverade",
       "private": "Endast synlig för dig",
       "protected": "Synlig för medlemmar",
       "public": "Synlig för alla"
-    },
-    "remove-completed-task-list-items": "Ta bort avklarade",
-    "remove-completed-task-list-items-confirm": "Är du säker på att du vill ta bort alla avklarade todo? (Detta är oåterkalleligt)"
+    }
   },
   "message": {
     "change-memo-created-time": "Ändra anteckning skapade tid",
@@ -76,11 +76,11 @@
     "new-password-not-match": "Nya lösenord matchar inte.",
     "password-changed": "Lösenord ändrat",
     "password-not-match": "Lösenorden matchar inte.",
+    "remove-completed-task-list-items-successfully": "Borttagning avklarade todo lyckades!",
     "restored-successfully": "Återställdes framgångsrikt",
     "succeed-copy-link": "Länk kopierades framgångsrikt.",
     "update-succeed": "Uppdateras framgångsrikt",
-    "user-not-found": "Användaren hittades inte",
-    "remove-completed-task-list-items-successfully": "Borttagning avklarade todo lyckades!"
+    "user-not-found": "Användaren hittades inte"
   },
   "resource": {
     "clear": "Rensa",
@@ -120,8 +120,7 @@
       "create-a-service": "Skapa en tjänst",
       "delete-storage": "Ta bort lagring",
       "storage-services": "Lista över lagringstjänster",
-      "update-a-service": "Uppdatera en tjänst",
-      "warning-text": "Är du säker på att ta bort den här lagringstjänsten? DEN HÄR ÅTGÄRDEN ÄR IRREVERSIBEL❗"
+      "update-a-service": "Uppdatera en tjänst"
     },
     "system": "System",
     "system-section": {
@@ -136,8 +135,8 @@
       },
       "disable-public-memos": "Inaktivera offentliga anteckningar",
       "display-with-updated-time": "Display with updated time",
-      "server-name": "Server Name",
-      "removed-completed-task-list-items": "Aktivera ta bort avklarade"
+      "removed-completed-task-list-items": "Aktivera ta bort avklarade",
+      "server-name": "Server Name"
     }
   }
 }

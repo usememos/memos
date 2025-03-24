@@ -1,8 +1,7 @@
-import { useUserStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 
 const useCurrentUser = () => {
-  const userStore = useUserStore();
-  return userStore.getUserByName(userStore.currentUser || "");
+  return userStore.state.userMapByName[userStore.state.currentUser || ""];
 };
 
 export default useCurrentUser;

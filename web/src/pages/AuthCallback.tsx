@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { authServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore } from "@/store/v1";
+import { initialUserStore } from "@/store/v2/user";
 
 interface State {
   loading: boolean;
@@ -16,7 +16,6 @@ interface State {
 const AuthCallback = () => {
   const navigateTo = useNavigateTo();
   const [searchParams] = useSearchParams();
-  const userStore = useUserStore();
   const [state, setState] = useState<State>({
     loading: true,
     errorMessage: "",
@@ -55,7 +54,7 @@ const AuthCallback = () => {
           loading: false,
           errorMessage: "",
         });
-        await userStore.fetchCurrentUser();
+        await initialUserStore();
         navigateTo("/");
       } catch (error: any) {
         console.error(error);

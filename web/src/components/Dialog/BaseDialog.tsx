@@ -1,13 +1,10 @@
 import { CssVarsProvider } from "@mui/joy";
+import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";
-import CommonContextProvider from "@/layouts/CommonContextProvider";
-import store from "@/store";
-import { useDialogStore } from "@/store/module";
+import dialogStore from "@/store/v2/dialog";
 import theme from "@/theme";
 import { cn } from "@/utils";
-import "@/less/base-dialog.less";
 
 interface DialogConfig {
   dialogName: string;
@@ -19,17 +16,16 @@ interface Props extends DialogConfig, DialogProps {
   children: React.ReactNode;
 }
 
-const BaseDialog: React.FC<Props> = (props: Props) => {
+const BaseDialog = observer((props: Props) => {
   const { children, className, clickSpaceDestroy, dialogName, destroy } = props;
-  const dialogStore = useDialogStore();
   const dialogContainerRef = useRef<HTMLDivElement>(null);
-  const dialogIndex = dialogStore.state.dialogStack.findIndex((item) => item === dialogName);
+  const dialogIndex = dialogStore.state.stack.findIndex((item) => item === dialogName);
 
   useEffect(() => {
-    dialogStore.pushDialogStack(dialogName);
+    dialogStore.pushDialog(dialogName);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Escape") {
-        if (dialogName === dialogStore.topDialogStack()) {
+        if (dialogName === dialogStore.topDialog) {
           destroy();
         }
       }
@@ -56,13 +52,19 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={cn("dialog-wrapper", className)} onMouseDown={handleSpaceClicked}>
-      <div ref={dialogContainerRef} className={cn("dialog-container")} onMouseDown={(e) => e.stopPropagation()}>
+    <div
+      className={cn(
+        "fixed top-0 left-0 flex flex-col justify-start items-center w-full h-full pt-16 pb-8 px-4 z-1000 overflow-x-hidden overflow-y-scroll bg-transparent transition-all hide-scrollbar bg-black bg-opacity-60",
+        className,
+      )}
+      onMouseDown={handleSpaceClicked}
+    >
+      <div ref={dialogContainerRef} onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
   );
-};
+});
 
 export function generateDialog<T extends DialogProps>(
   config: DialogConfig,
@@ -87,19 +89,15 @@ export function generateDialog<T extends DialogProps>(
     destroy: cbs.destroy,
   } as T;
 
-  const Fragment = (
-    <Provider store={store}>
-      <CssVarsProvider theme={theme}>
-        <CommonContextProvider>
-          <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
-            <DialogComponent {...dialogProps} />
-          </BaseDialog>
-        </CommonContextProvider>
-      </CssVarsProvider>
-    </Provider>
-  );
+  const Fragment = observer(() => (
+    <CssVarsProvider theme={theme}>
+      <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
+        <DialogComponent {...dialogProps} />
+      </BaseDialog>
+    </CssVarsProvider>
+  ));
 
-  dialog.render(Fragment);
+  dialog.render(<Fragment />);
 
   return cbs;
 }

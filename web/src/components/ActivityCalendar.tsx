@@ -1,8 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
-import { useWorkspaceSettingStore } from "@/store/v1";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { workspaceStore } from "@/store/v2";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -32,10 +30,7 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
 const ActivityCalendar = (props: Props) => {
   const t = useTranslate();
   const { month: monthStr, data, onClick } = props;
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const weekStartDayOffset = (
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({})
-  ).weekStartDayOffset;
+  const weekStartDayOffset = workspaceStore.state.generalSetting.weekStartDayOffset;
 
   const year = dayjs(monthStr).toDate().getFullYear();
   const month = dayjs(monthStr).toDate().getMonth();
@@ -78,7 +73,7 @@ const ActivityCalendar = (props: Props) => {
           return (
             <div
               key={`${date}-${index}`}
-              className={cn("w-6 h-6 text-xs flex justify-center items-center cursor-default", "opacity-60 text-gray-400")}
+              className={cn("w-6 h-6 text-xs lg:text-[13px] flex justify-center items-center cursor-default", "opacity-60 text-gray-400")}
             >
               {item.day}
             </div>
@@ -89,7 +84,7 @@ const ActivityCalendar = (props: Props) => {
         const isToday = dayjs().format("YYYY-MM-DD") === date;
         const tooltipText =
           count === 0
-            ? t("memo.no-memos")
+            ? date
             : t("memo.count-memos-in-date", {
                 count: count,
                 memos: count === 1 ? t("common.memo") : t("common.memos"),
@@ -101,7 +96,7 @@ const ActivityCalendar = (props: Props) => {
           <Tooltip className="shrink-0" key={`${date}-${index}`} title={tooltipText} placement="top" arrow>
             <div
               className={cn(
-                "w-6 h-6 text-xs flex justify-center items-center cursor-default",
+                "w-6 h-6 text-xs lg:text-[13px] flex justify-center items-center cursor-default",
                 "rounded-lg border-2 text-gray-400",
                 item.isCurrentMonth && getCellAdditionalStyles(count, maxCount),
                 item.isCurrentMonth && isToday && "border-zinc-400",

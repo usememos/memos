@@ -1,7 +1,6 @@
 import { isEqual } from "lodash-es";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo, MemoProperty } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation_Type, Memo_Property } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import MemoRelationForceGraph from "../MemoRelationForceGraph";
@@ -14,7 +13,7 @@ interface Props {
 
 const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
   const t = useTranslate();
-  const property = MemoProperty.fromPartial(memo.property || {});
+  const property = Memo_Property.fromPartial(memo.property || {});
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode || property.hasIncompleteTasks;
   const shouldShowRelationGraph = memo.relations.filter((r) => r.type === MemoRelation_Type.REFERENCE).length > 0;
 
@@ -27,21 +26,21 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
           <div className="relative w-full h-36 border rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
             <MemoRelationForceGraph className="w-full h-full" memo={memo} parentPage={parentPage} />
             <div className="absolute top-1 left-2 text-xs opacity-60 font-mono gap-1 flex flex-row items-center">
-              <span>Relations</span>
+              <span>{t("common.relations")}</span>
               <span className="text-xs opacity-60">(Beta)</span>
             </div>
           </div>
         )}
         <div className="w-full flex flex-col">
           <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
-            <span>Created at</span>
+            <span>{t("common.created-at")}</span>
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">{memo.createTime?.toLocaleString()}</p>
         </div>
         {!isEqual(memo.createTime, memo.updateTime) && (
           <div className="w-full flex flex-col">
             <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
-              <span>Last updated at</span>
+              <span>{t("common.last-updated-at")}</span>
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">{memo.updateTime?.toLocaleString()}</p>
           </div>
@@ -49,7 +48,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
         {hasSpecialProperty && (
           <div className="w-full flex flex-col">
             <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 dark:text-gray-500 select-none">
-              <span>Properties</span>
+              <span>{t("common.properties")}</span>
             </p>
             <div className="w-full flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap text-gray-500 dark:text-gray-400">
               {property.hasLink && (

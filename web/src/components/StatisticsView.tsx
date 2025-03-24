@@ -1,22 +1,28 @@
 import { Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
-import { CheckCircleIcon, ChevronDownIcon, ChevronUpIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
+import { CheckCircleIcon, ChevronRightIcon, ChevronLeftIcon, Code2Icon, LinkIcon, ListTodoIcon, BookmarkIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { matchPath, useLocation } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
-import { useMemoFilterStore, useUserStatsStore } from "@/store/v1";
+import { Routes } from "@/router";
+import { useMemoFilterStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { UserStats_MemoTypeStats } from "@/types/proto/api/v1/user_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "./ActivityCalendar";
+import "react-datepicker/dist/react-datepicker.css";
 
-const StatisticsView = () => {
+const StatisticsView = observer(() => {
   const t = useTranslate();
+  const location = useLocation();
   const memoFilterStore = useMemoFilterStore();
-  const userStatsStore = useUserStatsStore();
+  const currentUser = useCurrentUser();
   const [memoTypeStats, setMemoTypeStats] = useState<UserStats_MemoTypeStats>(UserStats_MemoTypeStats.fromPartial({}));
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDate] = useState(new Date());
@@ -25,7 +31,7 @@ const StatisticsView = () => {
   useAsyncEffect(async () => {
     const memoTypeStats = UserStats_MemoTypeStats.fromPartial({});
     const displayTimeList: Date[] = [];
-    for (const stats of Object.values(userStatsStore.userStatsByName)) {
+    for (const stats of Object.values(userStore.state.userStatsByName)) {
       displayTimeList.push(...stats.memoDisplayTimestamps);
       if (stats.memoTypeStats) {
         memoTypeStats.codeCount += stats.memoTypeStats.codeCount;
@@ -36,7 +42,7 @@ const StatisticsView = () => {
     }
     setMemoTypeStats(memoTypeStats);
     setActivityStats(countBy(displayTimeList.map((date) => dayjs(date).format("YYYY-MM-DD"))));
-  }, [userStatsStore.userStatsByName, userStatsStore.stateId]);
+  }, [userStore.state.userStatsByName]);
 
   const onCalendarClick = (date: string) => {
     memoFilterStore.removeFilter((f) => f.factor === "displayTime");
@@ -60,7 +66,7 @@ const StatisticsView = () => {
             showMonthYearPicker
             showFullMonthYearPicker
             customInput={
-              <span className="cursor-pointer hover:text-gray-600 dark:hover:text-gray-300">
+              <span className="cursor-pointer text-base hover:text-gray-600 dark:hover:text-gray-300">
                 {dayjs(visibleMonthString).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" })}
               </span>
             }
@@ -73,13 +79,13 @@ const StatisticsView = () => {
             className="cursor-pointer hover:opacity-80"
             onClick={() => setVisibleMonthString(dayjs(visibleMonthString).subtract(1, "month").format("YYYY-MM"))}
           >
-            <ChevronUpIcon className="w-5 h-auto shrink-0 opacity-40" />
+            <ChevronLeftIcon className="w-5 h-auto shrink-0 opacity-40" />
           </span>
           <span
             className="cursor-pointer hover:opacity-80"
             onClick={() => setVisibleMonthString(dayjs(visibleMonthString).add(1, "month").format("YYYY-MM"))}
           >
-            <ChevronDownIcon className="w-5 h-auto shrink-0 opacity-40" />
+            <ChevronRightIcon className="w-5 h-auto shrink-0 opacity-40" />
           </span>
         </div>
       </div>
@@ -91,7 +97,22 @@ const StatisticsView = () => {
           onClick={onCalendarClick}
         />
       </div>
-      <div className="pt-1 w-full flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap">
+      <div className="pt-1 w-full flex flex-row justify-start items-center gap-1 flex-wrap">
+        {matchPath(Routes.ROOT, location.pathname) &&
+          currentUser &&
+          userStore.state.currentUserStats &&
+          userStore.state.currentUserStats.pinnedMemos.length > 0 && (
+            <div
+              className={cn("w-auto border dark:border-zinc-800 pl-1.5 pr-2 py-0.5 rounded-md flex justify-between items-center")}
+              onClick={() => memoFilterStore.addFilter({ factor: "pinned", value: "" })}
+            >
+              <div className="w-auto flex justify-start items-center mr-1">
+                <BookmarkIcon className="w-4 h-auto mr-1" />
+                <span className="block text-sm">{t("common.pinned")}</span>
+              </div>
+              <span className="text-sm truncate">{userStore.state.currentUserStats.pinnedMemos.length}</span>
+            </div>
+          )}
         <div
           className={cn("w-auto border dark:border-zinc-800 pl-1.5 pr-2 py-0.5 rounded-md flex justify-between items-center")}
           onClick={() => memoFilterStore.addFilter({ factor: "property.hasLink", value: "" })}
@@ -135,6 +156,6 @@ const StatisticsView = () => {
       </div>
     </div>
   );
-};
+});
 
 export default StatisticsView;

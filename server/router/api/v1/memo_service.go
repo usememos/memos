@@ -121,6 +121,9 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		memoFind.OrderByTimeAsc = true
 	}
 	if request.Filter != "" {
+		if err := s.validateFilter(ctx, request.Filter); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		}
 		memoFind.Filter = &request.Filter
 	}
 
@@ -130,8 +133,18 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	}
 	if currentUser == nil {
 		memoFind.VisibilityList = []store.Visibility{store.Public}
-	} else if memoFind.CreatorID == nil || *memoFind.CreatorID != currentUser.ID {
-		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+	} else {
+		if memoFind.CreatorID == nil {
+			internalFilter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
+			if memoFind.Filter != nil {
+				filter := fmt.Sprintf("(%s) && (%s)", *memoFind.Filter, internalFilter)
+				memoFind.Filter = &filter
+			} else {
+				memoFind.Filter = &internalFilter
+			}
+		} else if *memoFind.CreatorID != currentUser.ID {
+			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+		}
 	}
 
 	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)

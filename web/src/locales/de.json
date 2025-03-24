@@ -20,8 +20,8 @@
     "change": "Ändern",
     "clear": "Leeren",
     "close": "Schließen",
-    "confirm": "Bestätigen",
     "collapse": "Einklappen",
+    "confirm": "Bestätigen",
     "create": "Erstellen",
     "database": "Datenbank",
     "days": "Tage",
@@ -87,7 +87,7 @@
     "tue": "Di",
     "wed": "Mi"
   },
-  "editor": { 
+  "editor": {
     "add-your-comment-here": "Füge deinen Kommentar hinzu...",
     "any-thoughts": "Ein Gedanke...",
     "save": "Speichern"
@@ -95,10 +95,15 @@
   "inbox": {
     "memo-comment": "{{user}} hat einen Kommentar zu {{memo}} hinterlassen.",
     "version-update": "Die neue Version {{version}} ist jetzt verfügbar!"
- 
+  },
+  "markdown": {
+    "checkbox": "Checkbox",
+    "code-block": "Quellcode-Block",
+    "content-syntax": "Inhaltssyntax"
   },
   "memo": {
     "archived-at": "Archiviert am",
+    "code": "Code",
     "comment": {
       "self": "Kommentare",
       "write-a-comment": "Schreibe einen Kommentar"
@@ -106,23 +111,22 @@
     "copy-link": "Link kopieren",
     "count-memos-in-date": "{{count}} Notizen in {{date}}",
     "delete-confirm": "Bist du sicher, dass du diese Notiz löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+    "links": "Links",
     "load-more": "Load more",
     "no-archived-memos": "Keine archivierten Notizen",
+    "remove-completed-task-list-items": "Erledigt entfernen",
+    "remove-completed-task-list-items-confirm": "Sind Sie sicher, dass Sie alle abgeschlossenen Aufgaben entfernen möchten? (Diese Aktion kann nicht rückgängig gemacht werden)",
     "search-placeholder": "Suche Notizen",
-    "show-more": "Show more",
     "show-less": "Show less",
+    "show-more": "Show more",
+    "to-do": "To-do",
     "view-detail": "Details anzeigen",
     "visibility": {
       "disabled": "Öffentliche Notizen sind deaktiviert",
       "private": "Nur für dich sichtbar",
       "protected": "Mitglieder",
       "public": "Öffentlich"
-    },
-    "links": "Links",
-    "to-do": "To-do",
-    "code": "Code",
-    "remove-completed-task-list-items": "Erledigt entfernen",
-    "remove-completed-task-list-items-confirm": "Sind Sie sicher, dass Sie alle abgeschlossenen Aufgaben entfernen möchten? (Diese Aktion kann nicht rückgängig gemacht werden)"
+    }
   },
   "message": {
     "archived-successfully": "Erfolgreich archiviert",
@@ -136,11 +140,11 @@
     "no-data": "Keine Daten gefunden,.",
     "password-changed": "Passwort geändert",
     "password-not-match": "Passwörter stimmen nicht überein",
+    "remove-completed-task-list-items-successfully": "Erfolgreich entfernt!",
     "restored-successfully": "Erfolgreich wiederhergestellt",
     "succeed-copy-link": "Link erfolgreich kopiert",
     "update-succeed": "Update erfolgreich",
-    "user-not-found": "Nutzer nicht gefunden",
-    "remove-completed-task-list-items-successfully": "Erfolgreich entfernt!"
+    "user-not-found": "Nutzer nicht gefunden"
   },
   "reference": {
     "add-references": "Referenz hinzufügen",
@@ -185,6 +189,11 @@
     "go-to-home": "Zurück zur Startseite"
   },
   "setting": {
+    "access-token-section": {
+      "description": "Liste aller Zugangstoken für deinen Benutzer.",
+      "title": "Zugangstoken",
+      "token": "Token"
+    },
     "account-section": {
       "change-password": "Passwort ändern",
       "email-note": "Optional",
@@ -212,6 +221,15 @@
       "delete-member": "Mitglied löschen",
       "delete-warning": "Bist du sicher, dass du {{username}} löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN"
     },
+    "memo-related": "Memo",
+    "memo-related-settings": {
+      "content-lenght-limit": "Limitierung der Inhaltslänge in Byte auf",
+      "enable-link-preview": "Aktivierung der Link-Vorschau",
+      "enable-memo-comments": "Aktivierung der Kommentarfunktion für Notizen",
+      "enable-memo-location": "Aktivierung Notiz-Standort",
+      "reactions": "Vordefinierte Reaktionen",
+      "title": "Einstellungen für Notizen"
+    },
     "my-account": "Mein Konto",
     "preference": "Einstellungen",
     "preference-section": {
@@ -232,17 +250,17 @@
       "display-name": "Anzeigename",
       "identifier": "Kennzeichnung",
       "identifier-filter": "Kennzeichnungsfilter",
+      "no-sso-found": "Kein SSO found.",
       "redirect-url": "URL-Weiterleitung",
       "scopes": "Geltungsbereiche",
+      "single-sign-on": "Konfiguriere Single Sign-On (SSO) für die Authentifizierung",
       "sso-created": "SSO {{name}} erstellt",
       "sso-list": "SSO Liste",
       "sso-updated": "SSO {{name}} aktualisiert",
       "template": "Vorlage",
       "token-endpoint": "Tokenendpunkt",
       "update-sso": "SSO aktualisieren",
-      "user-endpoint": "Benutzerendpunkt",
-      "no-sso-found": "Kein SSO found.",
-      "single-sign-on": "Konfiguriere Single Sign-On (SSO) für die Authentifizierung"
+      "user-endpoint": "Benutzerendpunkt"
     },
     "storage": "Speicher",
     "storage-section": {
@@ -292,11 +310,11 @@
         "locale": "Sprache",
         "title": "Server bearbeiten"
       },
+      "disable-markdown-shortcuts-in-editor": "Deaktiviere Markdown-Shortcuts im Editor",
       "disable-password-login": "Anmeldung mit Passwort deaktivieren",
       "disable-password-login-final-warning": "Bitte gebe \"CONFIRM\" ein, wenn du weißt, was du tust.",
       "disable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer deaktiviert. Es ist nicht möglich sich anzumelden, ohne diese Einstellung in der Datenbank rückgängig zu machen, wenn deine konfigurierten Provider ausfallen. Du musst auch besonders vorsichtig sein, wenn du einen Identitätsanbieter entfernst",
       "disable-public-memos": "Öffentliche memos deaktivieren",
-      "disable-markdown-shortcuts-in-editor": "Deaktiviere Markdown-Shortcuts im Editor",
       "display-with-updated-time": "Anzeige mit aktualisierter Zeit",
       "enable-auto-compact": "Aktivieren der automatischen Komprimierung",
       "enable-double-click-to-edit": "Doppelklick zum Bearbeiten aktivieren",
@@ -304,41 +322,25 @@
       "enable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer aktiviert. Fahre nur fort, wenn du möchtest, dass sich Benutzer sowohl mit SSO als auch mit einem Passwort anmelden können",
       "max-upload-size": "Maximale Uploadgröße (MiB)",
       "max-upload-size-hint": "Empfohlene Wert ist 32 MiB.",
-      "server-name": "Servername",
-      "removed-completed-task-list-items": "Entfernen abgeschlossen aktivieren"
+      "removed-completed-task-list-items": "Entfernen abgeschlossen aktivieren",
+      "server-name": "Servername"
     },
-    "memo-related": "Memo",
-    "access-token-section":{
-      "title": "Zugangstoken",
-      "description": "Liste aller Zugangstoken für deinen Benutzer.",
-      "created-at": "Erzeugt am",
-      "expires-at": "Läuft ab am",
-      "token": "Token"
-    },
+    "version": "Version",
     "webhook-section": {
+      "no-webhooks-found": "Keine Webhooks gefunden.",
       "title": "Webhooks",
-      "url": "Url",
-      "no-webhooks-found": "Keine Webhooks gefunden."
+      "url": "Url"
     },
     "workspace-section": {
-      "disallow-user-registration": "Benutzerregistrierung verbieten",
-      "disallow-password-auth": "Benutzer/Passwort-Anmeldung verbieten",
-      "disallow-change-username": "Wechsel des Benutzernamen verbieten",
       "disallow-change-nickname": "Wechsel des Nickname verbieten",
-      "week-start-day": "Woche beginnt am",
+      "disallow-change-username": "Wechsel des Benutzernamen verbieten",
+      "disallow-password-auth": "Benutzer/Passwort-Anmeldung verbieten",
+      "disallow-user-registration": "Benutzerregistrierung verbieten",
+      "monday": "Montag",
       "saturday": "Samstag",
       "sunday": "Sonntag",
-      "monday": "Montag"            
-    },
-    "memo-related-settings": {
-      "title": "Einstellungen für Notizen",
-      "enable-link-preview": "Aktivierung der Link-Vorschau",
-      "enable-memo-comments": "Aktivierung der Kommentarfunktion für Notizen",
-      "enable-memo-location": "Aktivierung Notiz-Standort",
-      "content-lenght-limit": "Limitierung der Inhaltslänge in Byte auf",
-      "reactions": "Vordefinierte Reaktionen"
-    },
-    "version": "Version"
+      "week-start-day": "Woche beginnt am"
+    }
   },
   "tag": {
     "all-tags": "Alle Tags",
@@ -347,10 +349,5 @@
     "delete-confirm": "Bist Du sicher, dass Du diesen Tag löschen möchtest? Alle verknüpften Notizen werden archiviert.",
     "delete-tag": "Tag löschen",
     "no-tag-found": "Keine Tags gefunden"
-  },
-  "markdown": {
-    "code-block": "Quellcode-Block",
-    "checkbox": "Checkbox",
-    "content-syntax": "Inhaltssyntax"
   }
 }

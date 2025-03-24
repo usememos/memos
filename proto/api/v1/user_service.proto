@@ -125,7 +125,10 @@ service UserService {
 message User {
   // The name of the user.
   // Format: users/{id}, id is the system generated auto-incremented id.
-  string name = 1;
+  string name = 1 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = IDENTIFIER
+  ];
 
   enum Role {
     ROLE_UNSPECIFIED = 0;
@@ -207,6 +210,11 @@ message UserStats {
   // The count of tags.
   // Format: "tag1": 1, "tag2": 2
   map<string, int32> tag_count = 4;
+
+  // The pinned memos of the user.
+  repeated string pinned_memos = 5;
+
+  int32 total_memo_count = 6;
 
   message MemoTypeStats {
     int32 link_count = 1;

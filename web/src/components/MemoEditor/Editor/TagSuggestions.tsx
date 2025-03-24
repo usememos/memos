@@ -1,8 +1,9 @@
 import Fuse from "fuse.js";
+import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import OverflowTip from "@/components/kit/OverflowTip";
-import { useUserStatsTags } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { cn } from "@/utils";
 import { EditorRefActions } from ".";
 
@@ -13,12 +14,12 @@ type Props = {
 
 type Position = { left: number; top: number; height: number };
 
-const TagSuggestions = ({ editorRef, editorActions }: Props) => {
+const TagSuggestions = observer(({ editorRef, editorActions }: Props) => {
   const [position, setPosition] = useState<Position | null>(null);
   const [selected, select] = useState(0);
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
-  const tags = Object.entries(useUserStatsTags())
+  const tags = Object.entries(userStore.state.tagCount)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1])
     .map(([tag]) => tag);
@@ -120,6 +121,6 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
       ))}
     </div>
   );
-};
+});
 
 export default TagSuggestions;

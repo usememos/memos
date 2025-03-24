@@ -54,7 +54,10 @@ message Resource {
 
   // The name of the resource.
   // Format: resources/{resource}, resource is the user defined if or uuid.
-  string name = 1;
+  string name = 1 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = IDENTIFIER
+  ];
 
   google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 
