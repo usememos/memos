@@ -371,7 +371,7 @@
       "disable-markdown-shortcuts-in-editor": "Disable Markdown shortcuts in editor",
       "disable-password-login": "Disable password login",
       "disable-password-login-final-warning": "Please type \"CONFIRM\" if you know what you are doing.",
-      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra carefull when removing an identity provider",
+      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra careful when removing an identity provider",
       "disable-public-memos": "Disable public memos",
       "display-with-updated-time": "Display with updated time",
       "enable-auto-compact": "Enable auto compact",
@@ -420,7 +420,7 @@
     "old-name": "Old Name",
     "rename-error-empty": "Tag name cannot be empty or contain spaces",
     "rename-error-repeat": "New name cannot be the same as the old name",
-    "rename-success": "Rename tag successfully",
+    "rename-success": "Renamed tag successfully",
     "rename-tag": "Rename tag",
     "rename-tip": "All your memos with this tag will be updated."
   }
