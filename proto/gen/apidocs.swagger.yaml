@@ -2697,8 +2697,11 @@ definitions:
     properties:
       symbol:
         type: string
-      content:
-        type: string
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Node'
   v1LineBreakNode:
     type: object
   v1LinkMetadata:

@@ -233,7 +233,7 @@ message BoldNode {
 
 message ItalicNode {
   string symbol = 1;
-  string content = 2;
+  repeated Node children = 2;
 }
 
 message BoldItalicNode {

@@ -98,7 +98,7 @@ func convertFromASTNode(rawNode ast.Node) *v1pb.Node {
 	case *ast.Bold:
 		node.Node = &v1pb.Node_BoldNode{BoldNode: &v1pb.BoldNode{Symbol: n.Symbol, Children: convertFromASTNodes(n.Children)}}
 	case *ast.Italic:
-		node.Node = &v1pb.Node_ItalicNode{ItalicNode: &v1pb.ItalicNode{Symbol: n.Symbol, Content: n.Content}}
+		node.Node = &v1pb.Node_ItalicNode{ItalicNode: &v1pb.ItalicNode{Symbol: n.Symbol, Children: convertFromASTNodes(n.Children)}}
 	case *ast.BoldItalic:
 		node.Node = &v1pb.Node_BoldItalicNode{BoldItalicNode: &v1pb.BoldItalicNode{Symbol: n.Symbol, Content: n.Content}}
 	case *ast.Code:
@@ -208,7 +208,7 @@ func convertToASTNode(node *v1pb.Node) ast.Node {
 	case *v1pb.Node_BoldNode:
 		return &ast.Bold{Symbol: n.BoldNode.Symbol, Children: convertToASTNodes(n.BoldNode.Children)}
 	case *v1pb.Node_ItalicNode:
-		return &ast.Italic{Symbol: n.ItalicNode.Symbol, Content: n.ItalicNode.Content}
+		return &ast.Italic{Symbol: n.ItalicNode.Symbol, Children: convertToASTNodes(n.ItalicNode.Children)}
 	case *v1pb.Node_BoldItalicNode:
 		return &ast.BoldItalic{Symbol: n.BoldItalicNode.Symbol, Content: n.BoldItalicNode.Content}
 	case *v1pb.Node_CodeNode:
