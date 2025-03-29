@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -24,6 +25,10 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 	id, err := result.LastInsertId()
 	if err != nil {
 		return nil, err
+	}
+
+	if id < math.MinInt32 || id > math.MaxInt32 {
+		return nil, errors.Wrapf(nil, "id %d is out of range for int32", id)
 	}
 
 	id32 := int32(id)
