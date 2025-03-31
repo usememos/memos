@@ -58,6 +58,6 @@ func TestResourceStore(t *testing.T) {
 	err = ts.DeleteResource(ctx, &store.DeleteResource{
 		ID: 2,
 	})
-	require.NoError(t, err)
+	require.ErrorContains(t, err, "resource not found")
 	ts.Close()
 }
