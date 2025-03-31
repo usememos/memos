@@ -33,7 +33,7 @@ const LocaleSelect: FC<Props> = (props: Props) => {
               </Option>
             );
           }
-        } catch (error) {
+        } catch {
           // do nth
         }
 

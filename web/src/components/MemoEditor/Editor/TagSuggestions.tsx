@@ -86,7 +86,11 @@ const TagSuggestions = observer(({ editorRef, editorActions }: Props) => {
 
     const caretCordinates = getCaretCoordinates(editor, index);
     caretCordinates.top -= editor.scrollTop;
-    isActive ? setPosition(caretCordinates) : hide();
+    if (isActive) {
+      setPosition(caretCordinates);
+    } else {
+      hide();
+    }
   };
 
   const listenersAreRegisteredRef = useRef(false);

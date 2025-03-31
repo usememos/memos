@@ -58,7 +58,7 @@ const ReactionView = (props: Props) => {
           await memoServiceClient.deleteMemoReaction({ id: reaction.id });
         }
       }
-    } catch (error) {
+    } catch {
       // Skip error.
     }
     await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });

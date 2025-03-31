@@ -77,7 +77,7 @@ const MemoActionMenu = (props: Props) => {
           ["pinned"],
         );
       }
-    } catch (error) {
+    } catch {
       // do nth
     }
   };
@@ -108,7 +108,7 @@ const MemoActionMenu = (props: Props) => {
     }
 
     if (isInMemoDetailPage) {
-      memo.state === State.ARCHIVED ? navigateTo("/") : navigateTo("/archived");
+      navigateTo(memo.state === State.ARCHIVED ? "/" : "/archived");
     }
     memoUpdatedCallback();
   };

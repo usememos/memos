@@ -49,7 +49,7 @@ const ReactionSelector = (props: Props) => {
         });
       }
       await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
-    } catch (error) {
+    } catch {
       // skip error.
     }
     setOpen(false);
