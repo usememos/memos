@@ -103,7 +103,8 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 		return errors.Wrap(err, "failed to get resource")
 	}
 	if resource == nil {
-		return errors.Wrap(nil, "resource not found")
+		slog.Debug("resource not found", slog.Int("id", int(delete.ID)))
+		return nil
 	}
 
 	if resource.StorageType == storepb.ResourceStorageType_LOCAL {
