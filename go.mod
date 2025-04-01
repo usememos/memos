@@ -29,7 +29,7 @@ require (
 	golang.org/x/net v0.35.0
 	golang.org/x/oauth2 v0.27.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20250227231956-55c901821b1e
-	google.golang.org/grpc v1.70.0
+	google.golang.org/grpc v1.71.1
 	modernc.org/sqlite v1.36.0
 )
 
