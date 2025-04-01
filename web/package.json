@@ -4,8 +4,7 @@
     "dev": "vite",
     "build": "vite build",
     "release": "vite build --mode release --outDir=../server/router/frontend/dist --emptyOutDir",
-    "lint": "eslint --ext .js,.ts,.tsx, src",
-    "type-check": "tsc --noEmit --skipLibCheck",
+    "lint": "tsc --noEmit --skipLibCheck && eslint --ext .js,.ts,.tsx, src",
     "postinstall": "cd ../proto && buf generate"
   },
   "dependencies": {

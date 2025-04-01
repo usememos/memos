@@ -24,11 +24,8 @@ jobs:
           cache-dependency-path: "web/pnpm-lock.yaml"
       - run: pnpm install
         working-directory: web
-      - name: Run eslint check
+      - name: Run check
         run: pnpm lint
-        working-directory: web
-      - name: Run type checks
-        run: pnpm type-check
         working-directory: web
 
   frontend-build:
