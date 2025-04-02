@@ -2,13 +2,13 @@ package v1
 
 import (
 	"context"
-
 	"github.com/pkg/errors"
 	"github.com/usememos/gomark/ast"
 	"github.com/usememos/gomark/parser"
 	"github.com/usememos/gomark/parser/tokenizer"
 	"github.com/usememos/gomark/renderer"
 	"github.com/usememos/gomark/restore"
+	"regexp"
 
 	"github.com/usememos/memos/plugin/httpgetter"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -110,7 +110,15 @@ func convertFromASTNode(rawNode ast.Node) *v1pb.Node {
 	case *ast.AutoLink:
 		node.Node = &v1pb.Node_AutoLinkNode{AutoLinkNode: &v1pb.AutoLinkNode{Url: n.URL, IsRawText: n.IsRawText}}
 	case *ast.Tag:
-		node.Node = &v1pb.Node_TagNode{TagNode: &v1pb.TagNode{Content: n.Content}}
+		re := regexp.MustCompile(`^([\p{L}\p{N}_\x{1F300}-\x{1FAD6}]+)`)
+		tag := re.FindString(n.Content)
+		if tag != "" {
+			node.Node = &v1pb.Node_TagNode{
+				TagNode: &v1pb.TagNode{
+					Content: tag,
+				},
+			}
+		}
 	case *ast.Strikethrough:
 		node.Node = &v1pb.Node_StrikethroughNode{StrikethroughNode: &v1pb.StrikethroughNode{Content: n.Content}}
 	case *ast.EscapingCharacter:
