@@ -92,11 +92,6 @@ linters:
         - pattern: 'fmt\.Errorf(# Please use errors\.Wrap\|Wrapf\|Errorf instead)?'
         - pattern: 'ioutil\.ReadDir(# Please use os\.ReadDir)?'
 
-issues:
-  exclude:
-    - Rollback
-    - fmt.Printf
-
 formatters:
   enable:
     - goimports
