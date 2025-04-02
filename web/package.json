@@ -52,7 +52,7 @@
     "@bufbuild/buf": "^1.50.1",
     "@bufbuild/protobuf": "^2.2.3",
     "@eslint/js": "^9.23.0",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/d3": "^7.4.3",
     "@types/katex": "^0.16.7",
     "@types/leaflet": "^1.9.16",
