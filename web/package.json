@@ -72,7 +72,7 @@
     "eslint-plugin-prettier": "^5.2.5",
     "eslint-plugin-react": "^7.37.4",
     "long": "^5.3.1",
-    "nice-grpc-web": "^3.3.6",
+    "nice-grpc-web": "^3.3.7",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "protobufjs": "^7.4.0",
