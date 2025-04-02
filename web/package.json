@@ -27,7 +27,7 @@
     "katex": "^0.16.21",
     "leaflet": "^1.9.4",
     "lodash-es": "^4.17.21",
-    "lucide-react": "^0.453.0",
+    "lucide-react": "^0.486.0",
     "mermaid": "^11.4.1",
     "mobx": "^6.13.6",
     "mobx-react-lite": "^4.1.0",
