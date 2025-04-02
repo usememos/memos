@@ -2,13 +2,14 @@ package v1
 
 import (
 	"context"
+	"regexp"
+
 	"github.com/pkg/errors"
 	"github.com/usememos/gomark/ast"
 	"github.com/usememos/gomark/parser"
 	"github.com/usememos/gomark/parser/tokenizer"
 	"github.com/usememos/gomark/renderer"
 	"github.com/usememos/gomark/restore"
-	"regexp"
 
 	"github.com/usememos/memos/plugin/httpgetter"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
