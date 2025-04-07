@@ -76,7 +76,17 @@
     "username": "用户名",
     "version": "版本",
     "visibility": "可见性",
-    "yourself": "您自己"
+    "yourself": "您自己",
+    "shortcuts": "捷径",
+    "created-at": "创建时间",
+    "properties": "属性",
+    "shortcut-filter": "捷径过滤器",
+    "input": "输入",
+    "tree-mode": "树模式",
+    "last-updated-at": "最后更新时间",
+    "referencing": "引用",
+    "referenced-by": "被引用",
+    "relations": "关系图"
   },
   "days": {
     "fri": "五",
@@ -121,7 +131,15 @@
     "to-do": "待办",
     "code": "代码",
     "remove-completed-task-list-items": "移除已办",
-    "remove-completed-task-list-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）"
+    "remove-completed-task-list-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）",
+    "order-by": "排序",
+    "display-time": "展示时间",
+    "direction": "排序方式",
+    "direction-desc": "倒序",
+    "direction-asc": "正序",
+    "no-memos": "无备忘",
+    "click-to-show-nsfw-content": "点击显示 NSFW 内容",
+    "click-to-hide-nsfw-content": "点击隐藏 NSFW 内容"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -209,7 +227,9 @@
       "archive-warning": "您确定要归档 {{username}} 吗？",
       "create-a-member": "创建成员",
       "delete-member": "删除成员",
-      "delete-warning": "您确定要删除 {{username}} 吗？（此操作不可逆）"
+      "delete-warning": "您确定要删除 {{username}} 吗？（此操作不可逆）",
+      "user": "普通用户",
+      "admin": "管理员"
     },
     "my-account": "我的账号",
     "preference": "偏好设置",
@@ -239,7 +259,8 @@
       "template": "模板",
       "token-endpoint": "令牌端点（Token Endpoint）",
       "update-sso": "更新单点登录",
-      "user-endpoint": "用户端点（User Endpoint）"
+      "user-endpoint": "用户端点（User Endpoint）",
+      "no-sso-found": "没有 SSO 配置"
     },
     "storage": "存储",
     "storage-section": {
@@ -273,10 +294,12 @@
       "url-prefix-placeholder": "自定义链接前缀，可选",
       "url-suffix": "链接后缀",
       "url-suffix-placeholder": "自定义链接后缀，可选",
-      "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）"
+      "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）",
+      "filepath-template": "文件路径模板"
     },
     "system": "系统",
     "system-section": {
+      "title": "一般设置",
       "additional-script": "自定义脚本",
       "additional-script-placeholder": "自定义 JavaScript 代码",
       "additional-style": "自定义样式",
@@ -304,7 +327,51 @@
       "server-name": "服务器名称",
       "removed-completed-task-list-items": "启用移除已办"
     },
-    "memo-related": "备忘录"
+    "memo-related": "备忘录",
+    "access-token-section": {
+      "title": "访问令牌",
+      "description": "该账号下全部的访问令牌",
+      "create-dialog": {
+        "create-access-token": "创建令牌",
+        "description": "描述",
+        "some-description": "请输入描述...",
+        "expiration": "过期时间",
+        "created-at": "创建时间",
+        "expires-at": "过期时间",
+        "duration-never": "从不",
+        "duration-8h": "8 小时",
+        "duration-1m": "1 个月"
+      }
+    },
+    "webhook-section": {
+      "no-webhooks-found": "没有 webhooks。",
+      "create-dialog": {
+        "create-webhook": "创建 Webhook",
+        "edit-webhook": "编辑 webhook",
+        "an-easy-to-remember-name": "请输入一个容易记住的标题",
+        "title": "标题",
+        "payload-url": "请输入有效的 URL"
+      }
+    },
+    "workspace-section": {
+      "disallow-user-registration": "禁用用户注册",
+      "disallow-password-auth": "禁用密码登录",
+      "disallow-change-username": "禁止修改用户名",
+      "disallow-change-nickname": "禁止修改用户昵称",
+      "week-start-day": "周开始日",
+      "saturday": "周六",
+      "sunday": "周日",
+      "monday": "周一"
+    },
+    "memo-related-settings": {
+      "title": "备忘录相关设置",
+      "enable-link-preview": "启用链接预览",
+      "enable-memo-comments": "启用备忘录评论",
+      "enable-memo-location": "启用备忘录定位",
+      "content-lenght-limit": "内容长度限制（字节）",
+      "reactions": "表态",
+      "enable-blur-nsfw-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）"
+    }
   },
   "tag": {
     "all-tags": "全部标签",
@@ -313,5 +380,17 @@
     "delete-confirm": "您确定要删除此标签吗?所有相关的备忘录将会被归档。",
     "delete-tag": "删除标签",
     "no-tag-found": "没找到此标签"
+  },
+  "markdown": {
+    "code-block": "代码块",
+    "checkbox": "复选框",
+    "content-syntax": "内容语法"
+  },
+  "about": {
+    "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享你的想法。",
+    "github-repository": "GitHub 仓库",
+    "official-website": "官网",
+    "blogs": "博客",
+    "documents": "文档"
   }
 }

@@ -70,12 +70,6 @@ func (s *APIV1Service) SetWorkspaceSetting(ctx context.Context, request *v1pb.Se
 	}
 
 	updateSetting := convertWorkspaceSettingToStore(request.Setting)
-	// Don't allow to update workspace general setting in demo mode.
-	// Such as disallow user registration, disallow password auth, etc.
-	if s.Profile.Mode == "demo" && updateSetting.Key == storepb.WorkspaceSettingKey_GENERAL {
-		return nil, status.Errorf(codes.InvalidArgument, "setting workspace setting is not allowed in demo mode")
-	}
-
 	workspaceSetting, err := s.Store.UpsertWorkspaceSetting(ctx, updateSetting)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert workspace setting: %v", err)
@@ -237,9 +231,10 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		EnableLinkPreview:        setting.EnableLinkPreview,
 		EnableComment:            setting.EnableComment,
 		EnableLocation:           setting.EnableLocation,
-		DefaultVisibility:        setting.DefaultVisibility,
 		Reactions:                setting.Reactions,
 		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
+		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
+		NsfwTags:                 setting.NsfwTags,
 	}
 }
 
@@ -256,8 +251,9 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelate
 		EnableLinkPreview:        setting.EnableLinkPreview,
 		EnableComment:            setting.EnableComment,
 		EnableLocation:           setting.EnableLocation,
-		DefaultVisibility:        setting.DefaultVisibility,
 		Reactions:                setting.Reactions,
 		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
+		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
+		NsfwTags:                 setting.NsfwTags,
 	}
 }

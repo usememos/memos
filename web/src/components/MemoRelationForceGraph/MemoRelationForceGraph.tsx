@@ -2,10 +2,8 @@ import { useColorScheme } from "@mui/joy";
 import { useEffect, useRef, useState } from "react";
 import ForceGraph2D, { ForceGraphMethods, LinkObject, NodeObject } from "react-force-graph-2d";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
-import { memoLink } from "@/utils/memo";
 import { LinkType, NodeType } from "./types";
 import { convertMemoRelationsToGraphData } from "./utils";
 
@@ -32,7 +30,7 @@ const MemoRelationForceGraph = ({ className, memo, parentPage }: Props) => {
 
   const onNodeClick = (node: NodeObject<NodeType>) => {
     if (node.memo.name === memo.name) return;
-    navigateTo(memoLink(memo.name), {
+    navigateTo(`/${memo.name}`, {
       state: {
         from: parentPage,
       },

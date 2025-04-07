@@ -183,7 +183,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if err != nil {
 				return err
 			}
-			if _, err := ctx.Buffer.WriteString("memo.content ILIKE LIKE " + placeholder(len(ctx.Args)+ctx.ArgsOffset+1)); err != nil {
+			if _, err := ctx.Buffer.WriteString("memo.content ILIKE " + placeholder(len(ctx.Args)+ctx.ArgsOffset+1)); err != nil {
 				return err
 			}
 			ctx.Args = append(ctx.Args, fmt.Sprintf("%%%s%%", arg))

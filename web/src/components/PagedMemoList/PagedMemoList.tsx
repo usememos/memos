@@ -1,14 +1,19 @@
 import { Button } from "@usememos/mui";
-import { ArrowDownIcon, ArrowUpIcon, LoaderIcon, SlashIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, LoaderIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { matchPath } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { useMemoList, useMemoStore } from "@/store/v1";
+import { Routes } from "@/router";
+import { useMemoFilterStore, useMemoList, useMemoStore } from "@/store/v1";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "../Empty";
+import MasonryView from "../MasonryView";
+import MemoEditor from "../MemoEditor";
 
 interface Props {
   renderer: (memo: Memo) => JSX.Element;
@@ -26,16 +31,18 @@ interface LocalState {
   nextPageToken: string;
 }
 
-const PagedMemoList = (props: Props) => {
+const PagedMemoList = observer((props: Props) => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
+  const memoFilterStore = useMemoFilterStore();
   const [state, setState] = useState<LocalState>({
     isRequesting: true, // Initial request
     nextPageToken: "",
   });
   const sortedMemoList = props.listSort ? props.listSort(memoList.value) : memoList.value;
+  const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
 
   const fetchMoreMemos = async (nextPageToken: string) => {
     setState((state) => ({ ...state, isRequesting: true }));
@@ -66,7 +73,12 @@ const PagedMemoList = (props: Props) => {
 
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">
-      {sortedMemoList.map((memo) => props.renderer(memo))}
+      <MasonryView
+        memoList={sortedMemoList}
+        renderer={props.renderer}
+        prefixElement={showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" /> : undefined}
+        listMode={!memoFilterStore.masonry}
+      />
       {state.isRequesting && (
         <div className="w-full flex flex-row justify-center items-center my-4">
           <LoaderIcon className="animate-spin text-zinc-500" />
@@ -82,13 +94,10 @@ const PagedMemoList = (props: Props) => {
           ) : (
             <div className="w-full flex flex-row justify-center items-center my-4">
               {state.nextPageToken && (
-                <>
-                  <Button variant="plain" onClick={() => fetchMoreMemos(state.nextPageToken)}>
-                    {t("memo.load-more")}
-                    <ArrowDownIcon className="ml-1 w-4 h-auto" />
-                  </Button>
-                  <SlashIcon className="mx-1 w-4 h-auto opacity-40" />
-                </>
+                <Button variant="plain" onClick={() => fetchMoreMemos(state.nextPageToken)}>
+                  {t("memo.load-more")}
+                  <ArrowDownIcon className="ml-1 w-4 h-auto" />
+                </Button>
               )}
               <BackToTop />
             </div>
@@ -120,7 +129,7 @@ const PagedMemoList = (props: Props) => {
       {children}
     </PullToRefresh>
   );
-};
+});
 
 const BackToTop = () => {
   const t = useTranslate();

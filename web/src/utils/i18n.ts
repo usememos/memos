@@ -46,3 +46,8 @@ export const useTranslate = (): TypedT => {
   const { t } = useTranslation<Translations>();
   return t;
 };
+
+export const isValidateLocale = (locale: string | undefined | null): boolean => {
+  if (!locale) return false;
+  return locales.includes(locale);
+};

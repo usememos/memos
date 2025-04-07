@@ -7,11 +7,11 @@ import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
-import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
-import { useMemoFilterStore, useUserStore } from "@/store/v1";
+import { useMemoFilterStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -20,7 +20,6 @@ import { useTranslate } from "@/utils/i18n";
 const UserProfile = () => {
   const t = useTranslate();
   const params = useParams();
-  const userStore = useUserStore();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
   const memoFilterStore = useMemoFilterStore();
@@ -32,7 +31,7 @@ const UserProfile = () => {
     }
 
     userStore
-      .fetchUserByUsername(username)
+      .getOrFetchUserByUsername(username)
       .then((user) => {
         setUser(user);
         loadingState.setFinish();
@@ -77,8 +76,7 @@ const UserProfile = () => {
   };
 
   return (
-    <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
-      <MobileHeader />
+    <section className="w-full max-w-3xl mx-auto min-h-full flex flex-col justify-start items-center pb-8">
       <div className="w-full px-4 sm:px-6 flex flex-col justify-start items-center">
         {!loadingState.isLoading &&
           (user ? (

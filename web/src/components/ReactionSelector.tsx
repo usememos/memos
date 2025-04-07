@@ -4,10 +4,9 @@ import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore, useWorkspaceSettingStore } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { cn } from "@/utils";
 
 interface Props {
@@ -19,12 +18,9 @@ const ReactionSelector = (props: Props) => {
   const { memo, className } = props;
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const workspaceMemoRelatedSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting ||
-    WorkspaceMemoRelatedSetting.fromPartial({});
+  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
 
   useClickAway(containerRef, () => {
     setOpen(false);

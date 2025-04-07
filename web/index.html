@@ -10,15 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <!-- memos.metadata.head -->
     <title>Memos</title>
-    <script>
-      // Prevent flash of light mode.
-      const appearance = localStorage.getItem("appearance");
-      if (appearance === `"dark"`) {
-        document.documentElement.classList.add("dark");
-      }
-    </script>
   </head>
-  <body class="text-base w-full min-h-[100svh] bg-zinc-100 dark:bg-zinc-900">
+  <body class="text-base w-full min-h-[100svh] bg-zinc-50 dark:bg-zinc-900">
     <div id="root" class="relative w-full min-h-full"></div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- memos.metadata.body -->

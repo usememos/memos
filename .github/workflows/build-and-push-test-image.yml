@@ -1,4 +1,4 @@
-name: build-and-push-test-image
+name: Build and Push Test Image
 
 on:
   push:

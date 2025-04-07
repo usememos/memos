@@ -1,5 +1,6 @@
-import { Option, Select } from "@mui/joy";
+import { Option, Select, Switch } from "@mui/joy";
 import { Settings2Icon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useMemoFilterStore } from "@/store/v1";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -9,10 +10,10 @@ interface Props {
   className?: string;
 }
 
-const MemoDisplaySettingMenu = ({ className }: Props) => {
+const MemoDisplaySettingMenu = observer(({ className }: Props) => {
   const t = useTranslate();
   const memoFilterStore = useMemoFilterStore();
-  const isApplying = Boolean(memoFilterStore.orderByTimeAsc) !== false;
+  const isApplying = Boolean(memoFilterStore.orderByTimeAsc) !== false || memoFilterStore.masonry;
 
   return (
     <Popover>
@@ -36,10 +37,14 @@ const MemoDisplaySettingMenu = ({ className }: Props) => {
               <Option value={true}>{t("memo.direction-asc")}</Option>
             </Select>
           </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3">Masonry View</span>
+            <Switch checked={memoFilterStore.masonry} onChange={(event) => memoFilterStore.setMasonry(event.target.checked)} />
+          </div>
         </div>
       </PopoverContent>
     </Popover>
   );
-};
+});
 
 export default MemoDisplaySettingMenu;

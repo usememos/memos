@@ -113,8 +113,11 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if err := d.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
 			return nil, err
 		}
-		where = append(where, fmt.Sprintf("(%s)", convertCtx.Buffer.String()))
-		args = append(args, convertCtx.Args...)
+		condition := convertCtx.Buffer.String()
+		if condition != "" {
+			where = append(where, fmt.Sprintf("(%s)", condition))
+			args = append(args, convertCtx.Args...)
+		}
 	}
 	if find.ExcludeComments {
 		where = append(where, "memo_relation.related_memo_id IS NULL")
@@ -134,10 +137,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		orders = append(orders, "created_ts "+order)
 	}
 	orders = append(orders, "id "+order)
-	if find.Random {
-		orders = append(orders, "RAND()")
-	}
-
 	fields := []string{
 		`memo.id AS id`,
 		`memo.uid AS uid`,

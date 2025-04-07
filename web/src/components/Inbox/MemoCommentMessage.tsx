@@ -5,13 +5,13 @@ import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { activityNamePrefix, useInboxStore, useMemoStore, useUserStore } from "@/store/v1";
+import { activityNamePrefix, useMemoStore } from "@/store/v1";
+import { userStore } from "@/store/v2";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
-import { memoLink } from "@/utils/memo";
 
 interface Props {
   inbox: Inbox;
@@ -20,9 +20,7 @@ interface Props {
 const MemoCommentMessage = ({ inbox }: Props) => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const inboxStore = useInboxStore();
   const memoStore = useMemoStore();
-  const userStore = useUserStore();
   const [relatedMemo, setRelatedMemo] = useState<Memo | undefined>(undefined);
   const [sender, setSender] = useState<User | undefined>(undefined);
   const [initialized, setInitialized] = useState<boolean>(false);
@@ -52,14 +50,14 @@ const MemoCommentMessage = ({ inbox }: Props) => {
       return;
     }
 
-    navigateTo(memoLink(relatedMemo.name));
+    navigateTo(`/${relatedMemo.name}`);
     if (inbox.status === Inbox_Status.UNREAD) {
       handleArchiveMessage(true);
     }
   };
 
   const handleArchiveMessage = async (silence = false) => {
-    await inboxStore.updateInbox(
+    await userStore.updateInbox(
       {
         name: inbox.name,
         status: Inbox_Status.ARCHIVED,

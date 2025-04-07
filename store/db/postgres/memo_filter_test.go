@@ -26,7 +26,7 @@ func TestRestoreExprToSQL(t *testing.T) {
 		},
 		{
 			filter: `content.contains("memos")`,
-			want:   "memo.content ILIKE LIKE $1",
+			want:   "memo.content ILIKE $1",
 			args:   []any{"%memos%"},
 		},
 		{
@@ -46,7 +46,7 @@ func TestRestoreExprToSQL(t *testing.T) {
 		},
 		{
 			filter: `tag in ['tag1'] || content.contains('hello')`,
-			want:   "(memo.payload->'tags' @> $1::jsonb OR memo.content ILIKE LIKE $2)",
+			want:   "(memo.payload->'tags' @> $1::jsonb OR memo.content ILIKE $2)",
 			args:   []any{[]any{"tag1"}, "%hello%"},
 		},
 	}

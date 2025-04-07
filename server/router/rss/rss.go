@@ -108,10 +108,12 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 		if err != nil {
 			return "", err
 		}
+		link := &feeds.Link{Href: baseURL + "/memos/" + memo.UID}
 		feed.Items[i] = &feeds.Item{
-			Link:        &feeds.Link{Href: baseURL + "/m/" + memo.UID},
+			Link:        link,
 			Description: description,
 			Created:     time.Unix(memo.CreatedTs, 0),
+			Id:          link.Href,
 		}
 		resources, err := s.Store.ListResources(ctx, &store.FindResource{
 			MemoID: &memo.ID,

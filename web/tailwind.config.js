@@ -11,6 +11,7 @@ module.exports = {
           DEFAULT: "#0d9488", // Teal 600
           dark: "#0f766e", // Teal 700
           darker: "#0d5a56", // Teal 800
+          lighter: "#14b8a6", // Teal 500
         },
         success: {
           DEFAULT: "#16a34a", // Green 600

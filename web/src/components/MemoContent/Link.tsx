@@ -1,14 +1,13 @@
 import { Link as MLink, Tooltip } from "@mui/joy";
 import { useState } from "react";
 import { markdownServiceClient } from "@/grpcweb";
-import { useWorkspaceSettingStore } from "@/store/v1";
-import { LinkMetadata } from "@/types/proto/api/v1/markdown_service";
-import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { workspaceStore } from "@/store/v2";
+import { LinkMetadata, Node } from "@/types/proto/api/v1/markdown_service";
+import Renderer from "./Renderer";
 
 interface Props {
   url: string;
-  text?: string;
+  content?: Node[];
 }
 
 const getFaviconWithGoogleS2 = (url: string) => {
@@ -20,11 +19,8 @@ const getFaviconWithGoogleS2 = (url: string) => {
   }
 };
 
-const Link: React.FC<Props> = ({ text, url }: Props) => {
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const workspaceMemoRelatedSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
-    WorkspaceMemoRelatedSetting.fromPartial({});
+const Link: React.FC<Props> = ({ content, url }: Props) => {
+  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
   const [initialized, setInitialized] = useState<boolean>(false);
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [linkMetadata, setLinkMetadata] = useState<LinkMetadata | undefined>();
@@ -59,15 +55,18 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
             {linkMetadata.description && (
               <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>
             )}
+            {linkMetadata.image && (
+              <img className="mt-1 w-full h-32 object-cover rounded" src={linkMetadata.image} alt={linkMetadata.title} />
+            )}
           </div>
         )
       }
       open={showTooltip}
       arrow
     >
-      <MLink underline="always" target="_blank" href={url}>
+      <MLink underline="always" target="_blank" href={url} rel="noopener noreferrer">
         <span onMouseEnter={handleMouseEnter} onMouseLeave={() => setShowTooltip(false)}>
-          {text || url}
+          {content ? content.map((child, index) => <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />) : url}
         </span>
       </MLink>
     </Tooltip>

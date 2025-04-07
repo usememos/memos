@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/usememos/memos/store"
@@ -101,10 +100,6 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	}
 
 	orderBy := []string{"created_ts DESC", "row_status DESC"}
-	if find.Random {
-		orderBy = slices.Concat([]string{"RANDOM()"}, orderBy)
-	}
-
 	query := `
 		SELECT 
 			id,

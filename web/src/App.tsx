@@ -1,28 +1,19 @@
 import { useColorScheme } from "@mui/joy";
+import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
-import useLocalStorage from "react-use/lib/useLocalStorage";
 import { getSystemColorScheme } from "./helpers/utils";
 import useNavigateTo from "./hooks/useNavigateTo";
-import { useCommonContext } from "./layouts/CommonContextProvider";
-import { useUserStore, useWorkspaceSettingStore } from "./store/v1";
-import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "./types/proto/store/workspace_setting";
+import { userStore, workspaceStore } from "./store/v2";
 
-const App = () => {
+const App = observer(() => {
   const { i18n } = useTranslation();
   const navigateTo = useNavigateTo();
   const { mode, setMode } = useColorScheme();
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const userStore = useUserStore();
-  const commonContext = useCommonContext();
-  const [, setLocale] = useLocalStorage("locale", "en");
-  const [, setAppearance] = useLocalStorage("appearance", "system");
-  const workspaceProfile = commonContext.profile;
-  const userSetting = userStore.userSetting;
-
-  const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({});
+  const workspaceProfile = workspaceStore.state.profile;
+  const userSetting = userStore.state.userSetting;
+  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
 
   // Redirect to sign up page if no instance owner.
   useEffect(() => {
@@ -78,25 +69,24 @@ const App = () => {
   }, [workspaceGeneralSetting.customProfile]);
 
   useEffect(() => {
-    const currentLocale = commonContext.locale;
+    const currentLocale = workspaceStore.state.locale;
+    // This will trigger re-rendering of the whole app.
     i18n.changeLanguage(currentLocale);
     document.documentElement.setAttribute("lang", currentLocale);
-    if (currentLocale === "ar") {
+    if (["ar", "fa"].includes(currentLocale)) {
       document.documentElement.setAttribute("dir", "rtl");
     } else {
       document.documentElement.setAttribute("dir", "ltr");
     }
-    setLocale(currentLocale);
-  }, [commonContext.locale]);
+  }, [workspaceStore.state.locale]);
 
   useEffect(() => {
-    let currentAppearance = commonContext.appearance as Appearance;
+    let currentAppearance = workspaceStore.state.appearance as Appearance;
     if (currentAppearance === "system") {
       currentAppearance = getSystemColorScheme();
     }
     setMode(currentAppearance);
-    setAppearance(currentAppearance);
-  }, [commonContext.appearance]);
+  }, [workspaceStore.state.appearance]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -112,11 +102,13 @@ const App = () => {
       return;
     }
 
-    commonContext.setLocale(userSetting.locale);
-    commonContext.setAppearance(userSetting.appearance);
+    workspaceStore.state.setPartial({
+      locale: userSetting.locale || workspaceStore.state.locale,
+      appearance: userSetting.appearance || workspaceStore.state.appearance,
+    });
   }, [userSetting?.locale, userSetting?.appearance]);
 
   return <Outlet />;
-};
+});
 
 export default App;

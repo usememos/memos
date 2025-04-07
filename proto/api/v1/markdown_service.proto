@@ -251,7 +251,7 @@ message ImageNode {
 }
 
 message LinkNode {
-  string text = 1;
+  repeated Node content = 1;
   string url = 2;
 }
 

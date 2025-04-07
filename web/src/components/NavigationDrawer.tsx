@@ -27,7 +27,7 @@ const NavigationDrawer = () => {
         <MenuIcon className="w-5 h-auto dark:text-gray-400" />
       </Button>
       <Drawer anchor="left" size="sm" open={open} onClose={toggleDrawer(false)}>
-        <div className="w-full h-full overflow-auto px-4 bg-zinc-100 dark:bg-zinc-900">
+        <div className="w-full h-full overflow-auto px-2 bg-zinc-100 dark:bg-zinc-900">
           <Navigation />
         </div>
       </Drawer>

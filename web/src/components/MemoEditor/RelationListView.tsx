@@ -1,8 +1,7 @@
 import { LinkIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMemoStore } from "@/store/v1";
-import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 
 interface Props {
   relationList: MemoRelation[];

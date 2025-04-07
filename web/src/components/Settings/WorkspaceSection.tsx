@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { identityProviderServiceClient } from "@/grpcweb";
-import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
+import { workspaceSettingNamePrefix } from "@/store/v1";
+import { workspaceStore } from "@/store/v2";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
@@ -15,16 +16,15 @@ import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog"
 
 const WorkspaceSection = () => {
   const t = useTranslate();
-  const workspaceSettingStore = useWorkspaceSettingStore();
   const originalSetting = WorkspaceGeneralSetting.fromPartial(
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {},
+    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {},
   );
   const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(originalSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
     setWorkspaceGeneralSetting(originalSetting);
-  }, [workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)]);
+  }, [workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)]);
 
   const handleUpdateCustomizedProfileButtonClick = () => {
     showUpdateCustomizedProfileDialog();
@@ -41,7 +41,7 @@ const WorkspaceSection = () => {
 
   const handleSaveGeneralSetting = async () => {
     try {
-      await workspaceSettingStore.setWorkspaceSetting({
+      await workspaceStore.upsertWorkspaceSetting({
         name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
         generalSetting: workspaceGeneralSetting,
       });
@@ -75,7 +75,7 @@ const WorkspaceSection = () => {
         </Button>
       </div>
       <Divider />
-      <p className="font-medium text-gray-700 dark:text-gray-500">General</p>
+      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.system-section.title")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.additional-style")}</span>
       </div>
@@ -120,6 +120,7 @@ const WorkspaceSection = () => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.workspace-section.disallow-user-registration")}</span>
         <Switch
+          disabled={workspaceStore.state.profile.mode === "demo"}
           checked={workspaceGeneralSetting.disallowUserRegistration}
           onChange={(event) => updatePartialSetting({ disallowUserRegistration: event.target.checked })}
         />
@@ -127,7 +128,7 @@ const WorkspaceSection = () => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.workspace-section.disallow-password-auth")}</span>
         <Switch
-          disabled={identityProviderList.length === 0 ? true : false}
+          disabled={workspaceStore.state.profile.mode === "demo" || identityProviderList.length === 0}
           checked={workspaceGeneralSetting.disallowPasswordAuth}
           onChange={(event) => updatePartialSetting({ disallowPasswordAuth: event.target.checked })}
         />

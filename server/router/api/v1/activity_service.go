@@ -70,10 +70,5 @@ func (s *APIV1Service) convertActivityPayloadFromStore(ctx context.Context, payl
 			RelatedMemo: fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID),
 		}
 	}
-	if payload.VersionUpdate != nil {
-		v2Payload.VersionUpdate = &v1pb.ActivityVersionUpdatePayload{
-			Version: payload.VersionUpdate.Version,
-		}
-	}
 	return v2Payload, nil
 }
