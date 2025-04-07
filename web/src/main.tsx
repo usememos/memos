@@ -4,7 +4,6 @@ import { observer } from "mobx-react-lite";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
-import "./css/highlight.css";
 import "./css/tailwind.css";
 import "./i18n";
 import router from "./router";

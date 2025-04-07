@@ -9,6 +9,7 @@ import MobileHeader from "@/components/MobileHeader";
 import ResourceIcon from "@/components/ResourceIcon";
 import { resourceServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
+import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
 import { useMemoStore } from "@/store/v1";
 import { Resource } from "@/types/proto/api/v1/resource_service";
@@ -34,6 +35,7 @@ interface State {
 
 const Resources = () => {
   const t = useTranslate();
+  const { md } = useResponsiveWidth();
   const loadingState = useLoading();
   const [state, setState] = useState<State>({
     searchQuery: "",
@@ -64,7 +66,7 @@ const Resources = () => {
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
-      <MobileHeader />
+      {!md && <MobileHeader />}
       <div className="w-full px-4 sm:px-6">
         <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-black dark:text-gray-300">
           <div className="relative w-full flex flex-row justify-between items-center">
@@ -130,7 +132,7 @@ const Resources = () => {
                           <div className="w-16 sm:w-24 sm:pl-4 flex flex-col justify-start items-start"></div>
                           <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                             <div className="w-full flex flex-row justify-start items-center gap-2">
-                              <span className="text-gray-600 dark:text-gray-400">Unused resources</span>
+                              <span className="text-gray-600 dark:text-gray-400">{t("resource.unused-resources")}</span>
                               <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedResources.length})</span>
                               <Tooltip title="Delete all" placement="top">
                                 <Button size="sm" variant="plain" onClick={handleDeleteUnusedResources}>

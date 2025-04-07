@@ -49,6 +49,16 @@ func TestRestoreExprToSQL(t *testing.T) {
 			want:   "(memo.payload->'tags' @> $1::jsonb OR memo.content ILIKE $2)",
 			args:   []any{[]any{"tag1"}, "%hello%"},
 		},
+		{
+			filter: `1`,
+			want:   "",
+			args:   []any{},
+		},
+		{
+			filter: `pinned`,
+			want:   "memo.pinned IS TRUE",
+			args:   []any{},
+		},
 	}
 
 	for _, tt := range tests {

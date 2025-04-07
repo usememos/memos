@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -19,6 +20,8 @@ import (
 )
 
 type APIV1Service struct {
+	grpc_health_v1.UnimplementedHealthServer
+
 	v1pb.UnimplementedWorkspaceServiceServer
 	v1pb.UnimplementedWorkspaceSettingServiceServer
 	v1pb.UnimplementedAuthServiceServer
@@ -46,6 +49,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		Store:      store,
 		grpcServer: grpcServer,
 	}
+	grpc_health_v1.RegisterHealthServer(grpcServer, apiv1Service)
 	v1pb.RegisterWorkspaceServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterWorkspaceSettingServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterAuthServiceServer(grpcServer, apiv1Service)

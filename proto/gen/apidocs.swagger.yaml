@@ -2294,9 +2294,6 @@ definitions:
         type: integer
         format: int32
         description: content_length_limit is the limit of content length. Unit is byte.
-      enableAutoCompact:
-        type: boolean
-        description: enable_auto_compact enables auto compact for large content.
       enableDoubleClickEdit:
         type: boolean
         description: enable_double_click_edit enables editing on double click.
@@ -2673,8 +2670,11 @@ definitions:
     properties:
       symbol:
         type: string
-      content:
-        type: string
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Node'
   v1LineBreakNode:
     type: object
   v1LinkMetadata:
@@ -3240,6 +3240,14 @@ definitions:
         title: |-
           The count of tags.
           Format: "tag1": 1, "tag2": 2
+      pinnedMemos:
+        type: array
+        items:
+          type: string
+        description: The pinned memos of the user.
+      totalMemoCount:
+        type: integer
+        format: int32
   v1Visibility:
     type: string
     enum:

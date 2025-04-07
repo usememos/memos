@@ -26,6 +26,13 @@ class LocalState {
     return tagCount;
   }
 
+  get currentUserStats() {
+    if (!this.currentUser) {
+      return undefined;
+    }
+    return this.userStatsByName[this.currentUser];
+  }
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -171,7 +178,9 @@ const userStore = (() => {
       userStatsByName[user] = userStats;
     }
     state.setPartial({
-      userStatsByName,
+      userStatsByName: {
+        ...userStatsByName,
+      },
     });
   };
 

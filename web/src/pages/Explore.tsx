@@ -4,6 +4,7 @@ import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore } from "@/store/v1";
+import { viewStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 
@@ -41,7 +42,7 @@ const Explore = () => {
       conditions.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
     return conditions.join(" && ");
-  }, [user, memoFilterStore.filters, memoFilterStore.orderByTimeAsc]);
+  }, [user, memoFilterStore.filters, viewStore.state.orderByTimeAsc]);
 
   return (
     <PagedMemoList
@@ -50,12 +51,12 @@ const Explore = () => {
         memos
           .filter((memo) => memo.state === State.NORMAL)
           .sort((a, b) =>
-            memoFilterStore.orderByTimeAsc
+            viewStore.state.orderByTimeAsc
               ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
               : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
           )
       }
-      direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+      direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
       oldFilter={memoListFilter}
     />
   );

@@ -20,8 +20,8 @@
     "change": "ცვლილება",
     "clear": "გასუფთავება",
     "close": "დახურვა",
-    "confirm": "დადასტურება",
     "collapse": "შეკუმშვა",
+    "confirm": "დადასტურება",
     "create": "შექმნა",
     "database": "მონაცემთა ბაზა",
     "days": "დღეები",
@@ -98,6 +98,7 @@
   },
   "memo": {
     "archived-at": "დაარქივებულია",
+    "code": "კოდი",
     "comment": {
       "self": "კომენტარები",
       "write-a-comment": "კომენტარის დაწერა"
@@ -105,21 +106,20 @@
     "copy-link": "ლინკის კოპირება",
     "count-memos-in-date": "{{count}} მემოები {{date}}-ში",
     "delete-confirm": "დარწმუნებული ხართ, რომ გინდათ ამ მემოს წაშლა? ეს ქმედება შეუქცევადია",
+    "links": "ლინკები",
     "load-more": "მეტის ჩატვირთვა",
     "no-archived-memos": "დაარქივებული მემოები არ არის.",
     "search-placeholder": "მემოების ძიება",
-    "show-more": "მეტის ჩვენება",
     "show-less": "ნაკლების ჩვენება",
+    "show-more": "მეტის ჩვენება",
+    "to-do": "სამოქმედო",
     "view-detail": "დეტალების ნახვა",
     "visibility": {
       "disabled": "საჯარო მემოები გამორთულია",
       "private": "პირადი",
       "protected": "სამუშაო სივრცე",
       "public": "საჯარო"
-    },
-    "links": "ლინკები",
-    "to-do": "სამოქმედო",
-    "code": "კოდი"
+    }
   },
   "message": {
     "archived-successfully": "წარმატებით დაარქივდა",
@@ -208,6 +208,7 @@
       "delete-member": "წევრის წაშლა",
       "delete-warning": "დარწმუნებული ხართ, რომ გინდათ {{username}}-ის წაშლა? ეს ქმედება შეუქცევადია"
     },
+    "memo-related": "მემო",
     "my-account": "ჩემი ანგარიში",
     "preference": "პარამეტრები",
     "preference-section": {
@@ -298,8 +299,7 @@
       "max-upload-size": "მაქსიმალური ატვირთვის ზომა (MiB)",
       "max-upload-size-hint": "რეკომენდირებული ზომა არის 32 MiB.",
       "server-name": "სერვერის სახელი"
-    },
-    "memo-related": "მემო"
+    }
   },
   "tag": {
     "all-tags": "ყველა თეგი",

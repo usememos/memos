@@ -87,6 +87,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("`memo`.`visibility` in (%s)", strings.Join(placeholder, ",")))
 	}
+	if v := find.Pinned; v != nil {
+		where, args = append(where, "`memo`.`pinned` = ?"), append(args, *v)
+	}
 	if v := find.PayloadFind; v != nil {
 		if v.Raw != nil {
 			where, args = append(where, "`memo`.`payload` = ?"), append(args, *v.Raw)
@@ -131,20 +134,19 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		having = append(having, "`parent_id` IS NULL")
 	}
 
-	orders := []string{}
-	if find.OrderByPinned {
-		orders = append(orders, "`pinned` DESC")
-	}
 	order := "DESC"
 	if find.OrderByTimeAsc {
 		order = "ASC"
 	}
-	if find.OrderByUpdatedTs {
-		orders = append(orders, "`updated_ts` "+order)
-	} else {
-		orders = append(orders, "`created_ts` "+order)
+	orderBy := []string{}
+	if find.OrderByPinned {
+		orderBy = append(orderBy, "`pinned` DESC")
 	}
-	orders = append(orders, "`id` "+order)
+	if find.OrderByUpdatedTs {
+		orderBy = append(orderBy, "`updated_ts` "+order)
+	} else {
+		orderBy = append(orderBy, "`created_ts` "+order)
+	}
 	fields := []string{
 		"`memo`.`id` AS `id`",
 		"`memo`.`uid` AS `uid`",
@@ -165,7 +167,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"LEFT JOIN `memo_relation` ON `memo`.`id` = `memo_relation`.`memo_id` AND `memo_relation`.`type` = 'COMMENT'" + " " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
 		"HAVING " + strings.Join(having, " AND ") + " " +
-		"ORDER BY " + strings.Join(orders, ", ")
+		"ORDER BY " + strings.Join(orderBy, ", ")
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {

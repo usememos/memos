@@ -19,8 +19,8 @@
     "change": "Zmień",
     "clear": "Wyczyść",
     "close": "Zamknij",
-    "confirm": "Potwierdź",
     "collapse": "Zwiń",
+    "confirm": "Potwierdź",
     "create": "Utwórz",
     "database": "Baza danych",
     "days": "Dni",
@@ -97,6 +97,7 @@
   },
   "memo": {
     "archived-at": "Zarchiwizowano w dniu",
+    "code": "Kod",
     "comment": {
       "self": "Komentarze",
       "write-a-comment": "Napisz komentarz"
@@ -104,23 +105,22 @@
     "copy-link": "Kopiuj link",
     "count-memos-in-date": "{{count}} notatek w dniu {{date}}",
     "delete-confirm": "Czy na pewno chcesz usunąć tę notatkę? TA AKCJA JEST NIEODWRACALNA",
+    "links": "Linki",
     "load-more": "Załaduj więcej",
     "no-archived-memos": "Brak zarchiwizowanych notatek.",
+    "remove-completed-task-list-items": "Usuń zakończone",
+    "remove-completed-task-list-items-confirm": "Czy jesteś pewny, że chcesz usunąć wszystkie zakończone zadania? (Ta akcja jest nieodwracalna)",
     "search-placeholder": "Szukaj notatek",
-    "show-more": "Pokaż więcej",
     "show-less": "Pokaż mniej",
+    "show-more": "Pokaż więcej",
+    "to-do": "Lista zadań",
     "view-detail": "Zobacz szczegóły",
     "visibility": {
       "disabled": "Publiczne notatki są wyłączone",
       "private": "Prywatne",
       "protected": "Przestrzeń robocza",
       "public": "Publiczne"
-    },
-    "links": "Linki",
-    "to-do": "Lista zadań",
-    "code": "Kod",
-    "remove-completed-task-list-items": "Usuń zakończone",
-    "remove-completed-task-list-items-confirm": "Czy jesteś pewny, że chcesz usunąć wszystkie zakończone zadania? (Ta akcja jest nieodwracalna)"
+    }
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",
@@ -134,11 +134,11 @@
     "no-data": "Nie znaleziono danych.",
     "password-changed": "Hasło zostało zmienione",
     "password-not-match": "Hasła nie pasują do siebie.",
+    "remove-completed-task-list-items-successfully": "Pomyślnie usunięto!",
     "restored-successfully": "Przywrócono pomyślnie",
     "succeed-copy-link": "Link skopiowany pomyślnie.",
     "update-succeed": "Aktualizacja zakończona sukcesem",
-    "user-not-found": "Użytkownik nie został znaleziony",
-    "remove-completed-task-list-items-successfully": "Pomyślnie usunięto!"
+    "user-not-found": "Użytkownik nie został znaleziony"
   },
   "reference": {
     "add-references": "Dodaj odniesienia",
@@ -210,6 +210,7 @@
       "delete-member": "Usuń członka",
       "delete-warning": "Czy na pewno chcesz usunąć {{username}}? TA AKCJA JEST NIEODWRACALNA"
     },
+    "memo-related": "Notatki",
     "my-account": "Moje konto",
     "preference": "Preferencje",
     "preference-section": {
@@ -299,10 +300,9 @@
       "enable-password-login-warning": "To włączy logowanie hasłem dla wszystkich użytkowników. Kontynuuj tylko wtedy, gdy chcesz, aby użytkownicy mogli logować się za pomocą zarówno SSO, jak i hasła",
       "max-upload-size": "Maksymalny rozmiar przesyłanego pliku (MiB)",
       "max-upload-size-hint": "Zalecana wartość to 32 MiB.",
-      "server-name": "Nazwa serwera",
-      "removed-completed-task-list-items": "Włącz usuwanie zakończonych"
-    },
-    "memo-related": "Notatki"
+      "removed-completed-task-list-items": "Włącz usuwanie zakończonych",
+      "server-name": "Nazwa serwera"
+    }
   },
   "tag": {
     "all-tags": "Wszystkie tagi",

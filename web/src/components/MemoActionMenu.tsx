@@ -49,9 +49,10 @@ const MemoActionMenu = (props: Props) => {
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const memoStore = useMemoStore();
-  const isArchived = memo.state === State.ARCHIVED;
   const hasCompletedTaskList = checkHasCompletedTaskList(memo);
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
+  const isComment = Boolean(memo.parent);
+  const isArchived = memo.state === State.ARCHIVED;
 
   const memoUpdatedCallback = () => {
     // Refresh user stats.
@@ -77,7 +78,7 @@ const MemoActionMenu = (props: Props) => {
           ["pinned"],
         );
       }
-    } catch (error) {
+    } catch {
       // do nth
     }
   };
@@ -108,7 +109,7 @@ const MemoActionMenu = (props: Props) => {
     }
 
     if (isInMemoDetailPage) {
-      memo.state === State.ARCHIVED ? navigateTo("/") : navigateTo("/archived");
+      navigateTo(memo.state === State.ARCHIVED ? "/" : "/archived");
     }
     memoUpdatedCallback();
   };
@@ -170,7 +171,7 @@ const MemoActionMenu = (props: Props) => {
         </span>
       </MenuButton>
       <Menu className="text-sm" size="sm" placement="bottom-end">
-        {!readonly && !isArchived && (
+        {!readonly && !isArchived && !isComment && (
           <>
             <MenuItem onClick={handleTogglePinMemoBtnClick}>
               {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
@@ -190,16 +191,18 @@ const MemoActionMenu = (props: Props) => {
         )}
         {!readonly && (
           <>
-            {!isArchived && hasCompletedTaskList && (
+            {!isArchived && !isComment && hasCompletedTaskList && (
               <MenuItem color="warning" onClick={handleRemoveCompletedTaskListItemsClick}>
                 <SquareCheckIcon className="w-4 h-auto" />
                 {t("memo.remove-completed-task-list-items")}
               </MenuItem>
             )}
-            <MenuItem color="warning" onClick={handleToggleMemoStatusClick}>
-              {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
-              {isArchived ? t("common.restore") : t("common.archive")}
-            </MenuItem>
+            {!isComment && (
+              <MenuItem color="warning" onClick={handleToggleMemoStatusClick}>
+                {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
+                {isArchived ? t("common.restore") : t("common.archive")}
+              </MenuItem>
+            )}
             <MenuItem color="danger" onClick={handleDeleteMemoClick}>
               <TrashIcon className="w-4 h-auto" />
               {t("common.delete")}

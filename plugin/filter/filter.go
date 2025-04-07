@@ -9,9 +9,11 @@ import (
 // MemoFilterCELAttributes are the CEL attributes for memo.
 var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content", cel.StringType),
+	cel.Variable("creator_id", cel.IntType),
 	// As the built-in timestamp type is deprecated, we use string type for now.
 	// e.g., "2021-01-01T00:00:00Z"
 	cel.Variable("create_time", cel.StringType),
+	cel.Variable("pinned", cel.BoolType),
 	cel.Variable("tag", cel.StringType),
 	cel.Variable("update_time", cel.StringType),
 	cel.Variable("visibility", cel.StringType),

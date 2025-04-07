@@ -1,11 +1,11 @@
-name: Build and Push Test Image
+name: Build and Push Canary Image
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-and-push-test-image:
+  build-and-push-canary-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,14 +46,14 @@ jobs:
           flavor: |
             latest=false
           tags: |
-            type=raw,value=test
+            type=raw,value=canary
 
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v6
         with:
-          context: ./
-          file: ./Dockerfile
+          context: .
+          file: ./scripts/Dockerfile
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

@@ -32,7 +32,7 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 		return nil, err
 	}
 	if len(list) != 1 {
-		return nil, errors.Wrapf(nil, "unexpected user count: %d", len(list))
+		return nil, errors.Errorf("unexpected user count: %d", len(list))
 	}
 
 	return list[0], nil
@@ -142,7 +142,7 @@ func (d *DB) GetUser(ctx context.Context, find *store.FindUser) (*store.User, er
 		return nil, err
 	}
 	if len(list) != 1 {
-		return nil, errors.Wrapf(nil, "unexpected user count: %d", len(list))
+		return nil, errors.Errorf("unexpected user count: %d", len(list))
 	}
 	return list[0], nil
 }

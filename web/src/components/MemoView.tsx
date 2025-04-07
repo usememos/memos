@@ -125,7 +125,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
     <div
       className={cn(
         "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
-        props.showPinned && memo.pinned && "border-gray-200 border dark:border-zinc-700",
         className,
       )}
       ref={memoContainerRef}
@@ -228,7 +227,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
               readonly={readonly}
               onClick={handleMemoContentClick}
               onDoubleClick={handleMemoContentDoubleClick}
-              compact={props.compact && workspaceMemoRelatedSetting.enableAutoCompact}
+              compact={memo.pinned ? false : props.compact} // Always show full content when pinned.
               parentPage={parentPage}
             />
             {memo.location && <MemoLocationView location={memo.location} />}

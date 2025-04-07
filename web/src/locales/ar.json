@@ -76,11 +76,9 @@
     },
     "copy-link": "نسخ الرابط",
     "delete-confirm": "هل أنت متأكد أنك تريد حذف هذه المذكرة؟\n\nهذا الإجراء لا رجعة فيه",
-    "delete-memo": "حذف المذكرة",
-    "embed": "تضمين",
-    "fetch-more": "اضغط هنا لجلب المزيد",
-    "fetching-data": "جلب البيانات…",
     "no-archived-memos": "لا يوجد مذكرات مؤرشفة",
+    "remove-completed-task-list-items": "إزالة المنجز",
+    "remove-completed-task-list-items-confirm": "هل أنت متأكد أنك تريد إزالة جميع المهام المنجزة؟ (هذه العملية لا يمكن التراجع عنها)",
     "search-placeholder": "ابحث عن مذكرة",
     "view-detail": "عرض التفاصيل",
     "visibility": {
@@ -88,9 +86,7 @@
       "private": "خاص",
       "protected": "مساحة عمل",
       "public": "عام"
-    },
-    "remove-completed-task-list-items": "إزالة المنجز",
-    "remove-completed-task-list-items-confirm": "هل أنت متأكد أنك تريد إزالة جميع المهام المنجزة؟ (هذه العملية لا يمكن التراجع عنها)"
+    }
   },
   "resource": {
     "clear": "مسح",

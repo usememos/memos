@@ -59,7 +59,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if err != nil {
 				return err
 			}
-			if !slices.Contains([]string{"create_time", "update_time", "visibility", "content"}, identifier) {
+			if !slices.Contains([]string{"creator_id", "create_time", "update_time", "visibility", "content"}, identifier) {
 				return errors.Errorf("invalid identifier for %s", v.CallExpr.Function)
 			}
 			value, err := filter.GetConstValue(v.CallExpr.Args[1])
@@ -121,6 +121,23 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 					return err
 				}
 				ctx.Args = append(ctx.Args, valueStr)
+			} else if identifier == "creator_id" {
+				if operator != "=" && operator != "!=" {
+					return errors.Errorf("invalid operator for %s", v.CallExpr.Function)
+				}
+				valueInt, ok := value.(int64)
+				if !ok {
+					return errors.New("invalid int value")
+				}
+
+				var factor string
+				if identifier == "creator_id" {
+					factor = "`memo`.`creator_id`"
+				}
+				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", factor, operator)); err != nil {
+					return err
+				}
+				ctx.Args = append(ctx.Args, valueInt)
 			}
 		case "@in":
 			if len(v.CallExpr.Args) != 2 {
@@ -187,6 +204,16 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 				return err
 			}
 			ctx.Args = append(ctx.Args, fmt.Sprintf("%%%s%%", arg))
+		}
+	} else if v, ok := expr.ExprKind.(*exprv1.Expr_IdentExpr); ok {
+		identifier := v.IdentExpr.GetName()
+		if !slices.Contains([]string{"pinned"}, identifier) {
+			return errors.Errorf("invalid identifier %s", identifier)
+		}
+		if identifier == "pinned" {
+			if _, err := ctx.Buffer.WriteString("`memo`.`pinned` IS TRUE"); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

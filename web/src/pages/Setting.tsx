@@ -13,6 +13,7 @@ import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import StorageSection from "@/components/Settings/StorageSection";
 import WorkspaceSection from "@/components/Settings/WorkspaceSection";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { workspaceStore } from "@/store/v2";
 import { User_Role } from "@/types/proto/api/v1/user_service";
 import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
@@ -38,6 +39,7 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
 
 const Setting = observer(() => {
   const t = useTranslate();
+  const { md } = useResponsiveWidth();
   const location = useLocation();
   const user = useCurrentUser();
   const [state, setState] = useState<State>({
@@ -83,7 +85,7 @@ const Setting = observer(() => {
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
-      <MobileHeader />
+      {!md && <MobileHeader />}
       <div className="w-full px-4 sm:px-6">
         <div className="w-full shadow flex flex-row justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-gray-600 dark:text-gray-400">
           <div className="hidden sm:flex flex-col justify-start items-start w-40 h-auto shrink-0 py-2">

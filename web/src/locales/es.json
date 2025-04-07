@@ -92,23 +92,19 @@
     },
     "copy-link": "Copiar enlace",
     "delete-confirm": "¿Estás seguro que quieres borrar este memo? ESTA ACCIÓN ES IRREVERSIBLE",
-    "delete-memo": "Borrar memo",
-    "embed": "Integrar",
-    "fetch-more": "Haz clic para obtener más",
-    "fetching-data": "Obteniendo datos…",
     "no-archived-memos": "No hay memos archivados.",
+    "remove-completed-task-list-items": "Eliminar completado",
+    "remove-completed-task-list-items-confirm": "¿Estás seguro de que quieres eliminar todas las tareas completadas? (Esta acción es irreversible)",
     "search-placeholder": "Buscar memos",
-    "show-more": "Mostrar más",
     "show-less": "Mostrar menos",
+    "show-more": "Mostrar más",
     "view-detail": "Ver detalles",
     "visibility": {
       "disabled": "Los memos públicos están deshabilitados",
       "private": "Solo visible para ti",
       "protected": "Espacio de trabajo",
       "public": "Todo el mundo lo puede ver"
-    },
-    "remove-completed-task-list-items": "Eliminar completado",
-    "remove-completed-task-list-items-confirm": "¿Estás seguro de que quieres eliminar todas las tareas completadas? (Esta acción es irreversible)"
+    }
   },
   "message": {
     "change-memo-created-time": "Cambiar la hora de creación del memo",
@@ -120,11 +116,11 @@
     "no-data": "No se encontraron datos.",
     "password-changed": "Contraseña cambiada",
     "password-not-match": "Las contraseñas no coinciden.",
+    "remove-completed-task-list-items-successfully": "¡Eliminado con éxito!",
     "restored-successfully": "Restaurado con éxito",
     "succeed-copy-link": "Enlace copiado correctamente.",
     "update-succeed": "Actualización exitosa",
-    "user-not-found": "Usuario no encontrado",
-    "remove-completed-task-list-items-successfully": "¡Eliminado con éxito!"
+    "user-not-found": "Usuario no encontrado"
   },
   "resource": {
     "clear": "Limpiar",
@@ -269,15 +265,12 @@
       "enable-password-login-warning": "Esto habilitará el inicio de sesión con contraseña para todos los usuarios. Continúa sólo si deseas que los usuarios puedan iniciar sesión mediante SSO y contraseña",
       "max-upload-size": "Tamaño máximo de subida (MiB)",
       "max-upload-size-hint": "El valor recomendado es de 32 MiB.",
-      "server-name": "Nombre del servidor",
-      "removed-completed-task-list-items": "Habilitar eliminar completado"
+      "removed-completed-task-list-items": "Habilitar eliminar completado",
+      "server-name": "Nombre del servidor"
     }
   },
   "tag": {
     "all-tags": "Todas las etiquetas",
     "create-tag": "Crear etiqueta"
-  },
-  "timeline": {
-    "title": "Línea de tiempo"
   }
 }

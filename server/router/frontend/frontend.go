@@ -35,20 +35,7 @@ func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 	}
 
 	// Route to serve the main app with HTML5 fallback for SPA behavior.
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			// Skip API routes.
-			if apiSkipper(c) {
-				return next(c)
-			}
-			// Skip `/index.html`.
-			if c.Path() == "/index.html" {
-				return next(c)
-			}
-			c.Response().Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
-			return next(c)
-		}
-	}, middleware.StaticWithConfig(middleware.StaticConfig{
+	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Filesystem: getFileSystem("dist"),
 		HTML5:      true, // Enable fallback to index.html
 		Skipper:    apiSkipper,

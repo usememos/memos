@@ -27,7 +27,7 @@ RUN apk add --no-cache tzdata
 ENV TZ="UTC"
 
 COPY --from=backend /backend-build/memos /usr/local/memos/
-COPY entrypoint.sh /usr/local/memos/
+COPY ./scripts/entrypoint.sh /usr/local/memos/
 
 EXPOSE 5230
 

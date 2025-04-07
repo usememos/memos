@@ -90,11 +90,9 @@
     },
     "copy-link": "Kopiraj Link",
     "delete-confirm": "Jesi li siguran?\n\nOVA AKCIJA JE NEPOVRATNA❗",
-    "delete-memo": "Obriši Memo",
-    "embed": "Ugradi",
-    "fetch-more": "Klikni ovdje da učitaš više",
-    "fetching-data": "dohvaćam podatke...",
     "no-archived-memos": "Nema arhiviranih memoa.",
+    "remove-completed-task-list-items": "Ukloni obavljen",
+    "remove-completed-task-list-items-confirm": "Jeste li sigurni da želite ukloniti sve obavljene zadatke? (Ova akcija je nevraćiva)",
     "search-placeholder": "Pretraži memoe",
     "view-detail": "Vidi detalje",
     "visibility": {
@@ -102,9 +100,7 @@
       "private": "Privatno",
       "protected": "Vidljivo članovima",
       "public": "Javno"
-    },
-    "remove-completed-task-list-items": "Ukloni obavljen",
-    "remove-completed-task-list-items-confirm": "Jeste li sigurni da želite ukloniti sve obavljene zadatke? (Ova akcija je nevraćiva)"
+    }
   },
   "message": {
     "change-memo-created-time": "Promijeni vrijeme stvaranja memoa",
@@ -116,11 +112,11 @@
     "no-data": "Nisu nađeni podaci.",
     "password-changed": "Lozinka je promijenjena",
     "password-not-match": "Lozinke nisu jednake.",
+    "remove-completed-task-list-items-successfully": "Uspješno uklonjeno!",
     "restored-successfully": "Uspješno vraćeno",
     "succeed-copy-link": "Link je uspješno kopiran.",
     "update-succeed": "Obnavljanje aplikacije je uspjelo!🎉",
-    "user-not-found": "Korisnik nije nađen",
-    "remove-completed-task-list-items-successfully": "Uspješno uklonjeno!"
+    "user-not-found": "Korisnik nije nađen"
   },
   "resource": {
     "clear": "Očisti",
@@ -270,8 +266,8 @@
       "enable-password-login-warning": "Ovo će omogućiti prijavu lozinkom za sve korisnike.",
       "max-upload-size": "Maximalna veličina uploada (MiB)",
       "max-upload-size-hint": "Preporučena vrijednost je 32 MiB.",
-      "server-name": "Ime servera",
-      "removed-completed-task-list-items": "Omogući uklanjanje obavljenog"
+      "removed-completed-task-list-items": "Omogući uklanjanje obavljenog",
+      "server-name": "Ime servera"
     }
   },
   "tag": {
