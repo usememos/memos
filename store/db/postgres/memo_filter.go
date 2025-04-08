@@ -160,7 +160,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 				subcodition := []string{}
 				args := []any{}
 				for _, v := range values {
-					subcodition, args = append(subcodition, fmt.Sprintf(`memo.payload->'tags' @> %s::jsonb`, placeholder(len(ctx.Args)+ctx.ArgsOffset+len(args)+1))), append(args, []any{v})
+					subcodition, args = append(subcodition, fmt.Sprintf(`memo.payload->'tags' @> jsonb_build_array(%s)`, placeholder(len(ctx.Args)+ctx.ArgsOffset+len(args)+1))), append(args, v)
 				}
 				if len(subcodition) == 1 {
 					if _, err := ctx.Buffer.WriteString(subcodition[0]); err != nil {
