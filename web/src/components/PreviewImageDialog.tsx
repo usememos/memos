@@ -162,14 +162,17 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
 
   return (
     <>
-      <div className="fixed top-8 right-8 flex flex-col justify-start items-center">
+      <div className="fixed top-8 right-8 z-1 flex flex-col justify-start items-center">
         <Button onClick={handleCloseBtnClick}>
           <XIcon className="w-6 h-auto" />
         </Button>
       </div>
-      <div className="w-full h-full p-4 sm:p-20 flex flex-col justify-center items-center hide-scrollbar" onClick={handleImgContainerClick}>
+      <div
+        className="w-full h-screen p-4 sm:p-8 flex flex-col justify-center items-center hide-scrollbar"
+        onClick={handleImgContainerClick}
+      >
         <img
-          className="h-auto w-auto max-w-full max-h-full shadow"
+          className="h-auto w-auto min-w-16 max-w-full max-h-full grow"
           style={imageComputedStyle}
           src={imgUrls[currentIndex]}
           onClick={(e) => e.stopPropagation()}

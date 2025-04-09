@@ -60,20 +60,9 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
   };
 
   const MediaList = ({ resources = [] }: { resources: Resource[] }) => {
-    if (resources.length === 1) {
-      const resource = mediaResources[0];
-      return (
-        <div className="max-w-full flex flex-col justify-start items-start overflow-hidden hide-scrollbar">
-          <MediaCard className="max-h-64" resource={resource} />
-          <span className="max-w-full text-xs pl-1 text-gray-400 dark:text-zinc-500 truncate">{resource.filename}</span>
-        </div>
-      );
-    }
-
     const cards = resources.map((resource) => (
-      <div key={resource.name} className="max-w-[70%] flex flex-col justify-start items-start shrink-0">
-        <MediaCard className="max-h-64" resource={resource} />
-        <span className="max-w-full text-xs pl-1 text-gray-400 dark:text-zinc-500 truncate">{resource.filename}</span>
+      <div key={resource.name} className="max-w-[70%] grow flex flex-col justify-start items-start shrink-0">
+        <MediaCard className="max-h-64 grow" resource={resource} />
       </div>
     ));
 
