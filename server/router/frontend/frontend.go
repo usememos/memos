@@ -36,6 +36,7 @@ func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 		}
 		// Set Cache-Control header to allow public caching with a max-age of 30 days (in seconds).
 		c.Response().Header().Set(echo.HeaderCacheControl, "public, max-age=2592000")
+		c.Response().Header().Set(echo.HeaderCacheControl, "public, max-age=2592000")
 		return false
 	}
 
