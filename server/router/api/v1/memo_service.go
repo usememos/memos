@@ -3,6 +3,8 @@ package v1
 import (
 	"context"
 	"fmt"
+	log "github.com/sirupsen/logrus"
+	"github.com/usememos/memos/internal/mail"
 	"log/slog"
 	"time"
 	"unicode/utf8"
@@ -90,6 +92,24 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
 		slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
 	}
+
+	// 发送笔记创建事件到 Kafka
+	//go func() {
+	//	writer := mq.NewKafkaWriter("localhost:9094", "orders")
+	//	message := "memo-created: " + memo.UID + "content is: " + memo.Content
+	//	err = mq.SendMessage(writer, message)
+	//	if err != nil {
+	//		log.Printf("Error sending Kafka message: %v", err)
+	//	}
+	//
+	//}()
+
+	go func() {
+		err := mail.SendEmail(ctx, memo, user)
+		if err != nil {
+			log.Errorf("send email failed %v", err)
+		}
+	}()
 
 	return memoMessage, nil
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	log "github.com/sirupsen/logrus"
+	"github.com/usememos/memos/internal/redis"
 	"log/slog"
 	"net/http"
 	"os"
@@ -11,7 +13,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/version"
@@ -57,7 +58,18 @@ var (
 				return
 			}
 
-			storeInstance := store.New(dbDriver, instanceProfile)
+			//rdb := redis.NewClient(&redis.Options{
+			//	Addr:     "localhost:6379",
+			//	Password: "",
+			//	DB:       0,
+			//})
+			//if err := rdb.Ping(ctx).Err(); err != nil {
+			//	log.Error("failed to connect to redis error is :", err)
+			//	panic(err)
+			//}
+			rdb := redis.InitRedis(ctx)
+			log.Debug("...redis init ok...")
+			storeInstance := store.New(dbDriver, instanceProfile, rdb)
 			if err := storeInstance.Migrate(ctx); err != nil {
 				cancel()
 				slog.Error("failed to migrate", "error", err)
@@ -83,6 +95,9 @@ var (
 					cancel()
 				}
 			}
+			//go func() {
+			//	mq.InitKafkaConsumer([]string{viper.GetString("kafka_broker")}, "1", viper.GetString("kafka_topic"))
+			//}()
 
 			printGreetings(instanceProfile)
 
@@ -100,16 +115,22 @@ var (
 
 func init() {
 	viper.SetDefault("mode", "dev")
-	viper.SetDefault("driver", "sqlite")
+	viper.SetDefault("driver", "mysql")
 	viper.SetDefault("port", 8081)
+	viper.SetDefault("kafka_broker", "localhost:9092")
+	viper.SetDefault("kafka_topic", "orders")
 
 	rootCmd.PersistentFlags().String("mode", "dev", `mode of server, can be "prod" or "dev" or "demo"`)
 	rootCmd.PersistentFlags().String("addr", "", "address of server")
 	rootCmd.PersistentFlags().Int("port", 8081, "port of server")
 	rootCmd.PersistentFlags().String("data", "", "data directory")
-	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
-	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
+	rootCmd.PersistentFlags().String("driver", "", "database driver")
+	rootCmd.PersistentFlags().String("dsn", "root:1234@tcp(localhost:3306)/memos_prod", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
+	rootCmd.PersistentFlags().String("kafka_broker", "", "kafka broker")
+	rootCmd.PersistentFlags().String("kafka_topic", "", "kafka broker")
+
+	log.SetLevel(log.DebugLevel)
 
 	if err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode")); err != nil {
 		panic(err)

@@ -50,6 +50,7 @@ func ExtractWorkspaceSettingKeyFromName(name string) (string, error) {
 // ExtractUserIDFromName returns the uid from a resource name.
 func ExtractUserIDFromName(name string) (int32, error) {
 	tokens, err := GetNameParentTokens(name, UserNamePrefix)
+	//slog.Debug("tokens is :", slog.Any("tokens", tokens))
 	if err != nil {
 		return 0, err
 	}

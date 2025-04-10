@@ -7,6 +7,7 @@ import (
 	"math"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -72,6 +73,9 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	// Create and register RSS routes.
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
+
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	slog.SetDefault(logger)
 
 	grpcServer := grpc.NewServer(
 		// Override the maximum receiving message size to math.MaxInt32 for uploading large resources.

@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 
@@ -43,11 +44,13 @@ func NewGRPCAuthInterceptor(store *store.Store, secret string) *GRPCAuthIntercep
 
 // AuthenticationInterceptor is the unary interceptor for gRPC API.
 func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+	log.Debugf("AuthenticationInterceptor excute")
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to parse metadata from incoming context")
 	}
 	accessToken, err := getTokenFromMetadata(md)
+	log.Debugf("accessToken is:", accessToken)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to get access token: %v", err)
 	}
@@ -132,6 +135,8 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessToken str
 func getTokenFromMetadata(md metadata.MD) (string, error) {
 	// Check the HTTP request header first.
 	authorizationHeaders := md.Get("Authorization")
+	log.Debugf("Authorization is: %s", authorizationHeaders)
+	//slog.Debug("Authorization is : ", "Authorization", authorizationHeaders)
 	if len(md.Get("Authorization")) > 0 {
 		authHeaderParts := strings.Fields(authorizationHeaders[0])
 		if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
@@ -139,6 +144,9 @@ func getTokenFromMetadata(md metadata.MD) (string, error) {
 		}
 		return authHeaderParts[1], nil
 	}
+	log.Debugf("grpcgateway-cookie is: %s", md.Get("grpcgateway-cookie"))
+	log.Debugf("cookie is: %s", md.Get("cookie"))
+
 	// Check the cookie header.
 	var accessToken string
 	for _, t := range append(md.Get("grpcgateway-cookie"), md.Get("cookie")...) {
