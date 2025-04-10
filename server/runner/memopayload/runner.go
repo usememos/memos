@@ -3,6 +3,7 @@ package memopayload
 import (
 	"context"
 	"log/slog"
+	"regexp"
 	"slices"
 
 	"github.com/pkg/errors"
@@ -60,9 +61,12 @@ func RebuildMemoPayload(memo *store.Memo) error {
 	TraverseASTNodes(nodes, func(node ast.Node) {
 		switch n := node.(type) {
 		case *ast.Tag:
-			tag := n.Content
-			if !slices.Contains(tags, tag) {
-				tags = append(tags, tag)
+			re := regexp.MustCompile(`^[\w\p{L}\p{N}\x{1F300}-\x{1FAD6}]+`)
+			tag := re.FindString(n.Content)
+			if tag != "" {
+				if !slices.Contains(tags, tag) {
+					tags = append(tags, tag)
+				}
 			}
 		case *ast.Link, *ast.AutoLink:
 			property.HasLink = true
