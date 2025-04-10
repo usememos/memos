@@ -44,8 +44,8 @@ const List: React.FC<Props> = ({ kind, indent, children }: Props) => {
     getListContainer(),
     {
       className: cn(
-        `list-inside ${kind === ListNode_Kind.ORDERED ? "list-decimal" : kind === ListNode_Kind.UNORDERED ? "list-disc" : "list-none"}`,
-        indent > 0 ? `pl-${2 * indent}` : "",
+        kind === ListNode_Kind.ORDERED ? "list-decimal" : kind === ListNode_Kind.UNORDERED ? "list-disc" : "list-none",
+        `pl-${2 * indent + 6}`,
       ),
       ...getAttributes(),
     },
