@@ -2,8 +2,10 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
+	"github.com/usememos/memos/plugin/filter"
 	"github.com/usememos/memos/store"
 )
 
