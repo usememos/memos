@@ -49,8 +49,8 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@bufbuild/buf": "^1.50.1",
-    "@bufbuild/protobuf": "^2.2.3",
+    "@bufbuild/buf": "^1.52.1",
+    "@bufbuild/protobuf": "^2.2.5",
     "@eslint/js": "^9.23.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/d3": "^7.4.3",
