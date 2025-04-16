@@ -6,11 +6,15 @@ import { useResourceStore } from "@/store/v1";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { MemoEditorContext } from "../types";
 
+interface Props {
+  isUploadingResource?: boolean;
+}
+
 interface State {
   uploadingFlag: boolean;
 }
 
-const UploadResourceButton = () => {
+const UploadResourceButton = (props: Props) => {
   const context = useContext(MemoEditorContext);
   const resourceStore = useResourceStore();
   const [state, setState] = useState<State>({
@@ -65,13 +69,15 @@ const UploadResourceButton = () => {
     });
   };
 
+  const isUploading = state.uploadingFlag || props.isUploadingResource;
+
   return (
-    <Button className="relative" size="sm" variant="plain" disabled={state.uploadingFlag}>
-      {state.uploadingFlag ? <LoaderIcon className="w-5 h-5 mx-auto animate-spin" /> : <PaperclipIcon className="w-5 h-5 mx-auto" />}
+    <Button className="relative" size="sm" variant="plain" disabled={isUploading}>
+      {isUploading ? <LoaderIcon className="w-5 h-5 mx-auto animate-spin" /> : <PaperclipIcon className="w-5 h-5 mx-auto" />}
       <input
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         ref={fileInputRef}
-        disabled={state.uploadingFlag}
+        disabled={isUploading}
         onChange={handleFileInputChange}
         type="file"
         id="files"
