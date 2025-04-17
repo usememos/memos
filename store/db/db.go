@@ -1,9 +1,6 @@
 package db
 
 import (
-	"runtime"
-	"time"
-
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/server/profile"
@@ -32,9 +29,8 @@ func NewDBDriver(profile *profile.Profile) (store.Driver, error) {
 		return nil, errors.Wrap(err, "failed to create db driver")
 	}
 
-	cores := runtime.NumCPU()
-	driver.GetDB().SetMaxOpenConns(cores * 2)
-	driver.GetDB().SetMaxIdleConns(cores)
-	driver.GetDB().SetConnMaxLifetime(time.Minute * 5)
+	driver.GetDB().SetMaxOpenConns(profile.DBMaxOpenConns)
+	driver.GetDB().SetMaxIdleConns(profile.DBMaxIdleConns)
+	driver.GetDB().SetConnMaxLifetime(profile.DBConnMaxLifetime)
 	return driver, nil
 }

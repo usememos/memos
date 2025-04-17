@@ -36,19 +36,21 @@ var (
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		Run: func(_ *cobra.Command, _ []string) {
 			instanceProfile := &profile.Profile{
-				Mode:        viper.GetString("mode"),
-				Addr:        viper.GetString("addr"),
-				Port:        viper.GetInt("port"),
-				Data:        viper.GetString("data"),
-				Driver:      viper.GetString("driver"),
-				DSN:         viper.GetString("dsn"),
-				InstanceURL: viper.GetString("instance-url"),
-				Version:     version.GetCurrentVersion(viper.GetString("mode")),
+				Mode:              viper.GetString("mode"),
+				Addr:              viper.GetString("addr"),
+				Port:              viper.GetInt("port"),
+				Data:              viper.GetString("data"),
+				Driver:            viper.GetString("driver"),
+				DSN:               viper.GetString("dsn"),
+				InstanceURL:       viper.GetString("instance-url"),
+				Version:           version.GetCurrentVersion(viper.GetString("mode")),
+				DBMaxOpenConns:    viper.GetInt("max-open-conns"),
+				DBMaxIdleConns:    viper.GetInt("max-idle-conns"),
+				DBConnMaxLifetime: viper.GetDuration("conn-max-lifetime"),
 			}
 			if err := instanceProfile.Validate(); err != nil {
 				panic(err)
 			}
-
 			ctx, cancel := context.WithCancel(context.Background())
 			dbDriver, err := db.NewDBDriver(instanceProfile)
 			if err != nil {
@@ -110,6 +112,9 @@ func init() {
 	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
+	rootCmd.PersistentFlags().Int("max-open-conns", 0, "maximum number of open database connections")
+	rootCmd.PersistentFlags().Int("max-idle-conns", 2, "maximum number of connections in the idle connection pool")
+	rootCmd.PersistentFlags().Duration("conn-max-lifetime", 0, "maximum amount of time a connection may be reused")
 
 	if err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode")); err != nil {
 		panic(err)
@@ -132,10 +137,28 @@ func init() {
 	if err := viper.BindPFlag("instance-url", rootCmd.PersistentFlags().Lookup("instance-url")); err != nil {
 		panic(err)
 	}
+	if err := viper.BindPFlag("max-open-conns", rootCmd.PersistentFlags().Lookup("max-open-conns")); err != nil {
+		panic(err)
+	}
+	if err := viper.BindPFlag("max-idle-conns", rootCmd.PersistentFlags().Lookup("max-idle-conns")); err != nil {
+		panic(err)
+	}
+	if err := viper.BindPFlag("conn-max-lifetime", rootCmd.PersistentFlags().Lookup("conn-max-lifetime")); err != nil {
+		panic(err)
+	}
 
 	viper.SetEnvPrefix("memos")
 	viper.AutomaticEnv()
 	if err := viper.BindEnv("instance-url", "MEMOS_INSTANCE_URL"); err != nil {
+		panic(err)
+	}
+	if err := viper.BindEnv("max-open-conns", "MEMOS_MAX_OPEN_CONNS"); err != nil {
+		panic(err)
+	}
+	if err := viper.BindEnv("max-idle-conns", "MEMOS_MAX_IDLE_CONNS"); err != nil {
+		panic(err)
+	}
+	if err := viper.BindEnv("conn-max-lifetime", "MEMOS_CONN_MAX_LIFETIME"); err != nil {
 		panic(err)
 	}
 }
@@ -153,8 +176,11 @@ addr: %s
 port: %d
 mode: %s
 driver: %s
+max-open-conns: %d
+max-idle-conns: %d
+conn-max-lifetime: %s
 ---
-`, profile.Version, profile.Data, profile.Addr, profile.Port, profile.Mode, profile.Driver)
+`, profile.Version, profile.Data, profile.Addr, profile.Port, profile.Mode, profile.Driver, profile.DBMaxOpenConns, profile.DBMaxIdleConns, profile.DBConnMaxLifetime)
 
 	print(greetingBanner)
 	if len(profile.Addr) == 0 {

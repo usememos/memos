@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -30,6 +31,12 @@ type Profile struct {
 	Version string
 	// InstanceURL is the url of your memos instance.
 	InstanceURL string
+	// DBMaxOpenConns is the maximum number of open connections to the database.
+	DBMaxOpenConns int
+	// DBMaxIdleConns is the maximum number of idle connections to the database.
+	DBMaxIdleConns int
+	// DBConnMaxLifetime is the maximum amount of time a connection may be reused.
+	DBConnMaxLifetime time.Duration
 }
 
 func (p *Profile) IsDev() bool {
@@ -76,7 +83,7 @@ func (p *Profile) Validate() error {
 
 	dataDir, err := checkDataDir(p.Data)
 	if err != nil {
-		slog.Error("failed to check dsn", slog.String("data", dataDir), slog.String("error", err.Error()))
+		slog.Error("failed to check data directory", slog.String("data", dataDir), slog.String("error", err.Error()))
 		return err
 	}
 
