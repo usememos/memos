@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import { authServiceClient, inboxServiceClient, userServiceClient } from "@/grpcweb";
 import { Inbox } from "@/types/proto/api/v1/inbox_service";
 import { Shortcut, User, UserSetting, UserStats } from "@/types/proto/api/v1/user_service";
+import { findNearestMatchedLanguage } from "@/utils/i18n";
 import workspaceStore from "./workspace";
 
 class LocalState {
@@ -223,7 +224,10 @@ export const initialUserStore = async () => {
       appearance: userSetting.appearance,
     });
   } catch {
-    // Do nothing.
+    const locale = findNearestMatchedLanguage(navigator.language);
+    workspaceStore.state.setPartial({
+      locale: locale,
+    });
   }
 };
 
