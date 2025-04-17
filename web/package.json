@@ -4,8 +4,7 @@
     "dev": "vite",
     "build": "vite build",
     "release": "vite build --mode release --outDir=../server/router/frontend/dist --emptyOutDir",
-    "lint": "tsc --noEmit --skipLibCheck && eslint --ext .js,.ts,.tsx, src",
-    "postinstall": "cd ../proto && buf generate"
+    "lint": "tsc --noEmit --skipLibCheck && eslint --ext .js,.ts,.tsx, src"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -49,7 +48,6 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@bufbuild/buf": "^1.52.1",
     "@bufbuild/protobuf": "^2.2.5",
     "@eslint/js": "^9.23.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
@@ -75,7 +73,6 @@
     "nice-grpc-web": "^3.3.7",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
-    "protobufjs": "^7.4.0",
     "terser": "^5.39.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.28.0",
@@ -83,7 +80,6 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@bufbuild/buf",
       "esbuild"
     ]
   }

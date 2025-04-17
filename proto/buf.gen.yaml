@@ -1,4 +1,5 @@
 version: v2
+clean: true
 managed:
   enabled: true
   disable:

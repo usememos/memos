@@ -812,9 +812,9 @@ const file_api_v1_workspace_setting_service_proto_rawDesc = "" +
 	" \x03(\tR\treactions\x12<\n" +
 	"\x1adisable_markdown_shortcuts\x18\v \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\f \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
-	"\tnsfw_tags\x18\r \x03(\tR\bnsfwTagsJ\x04\b\x04\x10\x05\"6\n" +
-	"\x1aGetWorkspaceSettingRequest\x12\x18\n" +
-	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"V\n" +
+	"\tnsfw_tags\x18\r \x03(\tR\bnsfwTagsJ\x04\b\x04\x10\x05\"5\n" +
+	"\x1aGetWorkspaceSettingRequest\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"V\n" +
 	"\x1aSetWorkspaceSettingRequest\x128\n" +
 	"\asetting\x18\x01 \x01(\v2\x1e.memos.api.v1.WorkspaceSettingR\asetting2\xd9\x02\n" +
 	"\x17WorkspaceSettingService\x12\x93\x01\n" +

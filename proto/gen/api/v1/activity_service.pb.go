@@ -266,12 +266,12 @@ var File_api_v1_activity_service_proto protoreflect.FileDescriptor
 const file_api_v1_activity_service_proto_rawDesc = "" +
 	"\n" +
 	"\x1dapi/v1/activity_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\x01\n" +
-	"\bActivity\x12\x19\n" +
-	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x18\n" +
+	"\bActivity\x12\x1a\n" +
+	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x18\n" +
 	"\acreator\x18\x02 \x01(\tR\acreator\x12\x12\n" +
 	"\x04type\x18\x03 \x01(\tR\x04type\x12\x14\n" +
-	"\x05level\x18\x04 \x01(\tR\x05level\x12A\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"\x05level\x18\x04 \x01(\tR\x05level\x12@\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x127\n" +
 	"\apayload\x18\x06 \x01(\v2\x1d.memos.api.v1.ActivityPayloadR\apayload\"^\n" +
 	"\x0fActivityPayload\x12K\n" +

@@ -15,8 +15,8 @@ import WorkspaceSection from "@/components/Settings/WorkspaceSection";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { workspaceStore } from "@/store/v2";
+import { WorkspaceSettingKey } from "@/store/v2/workspace";
 import { User_Role } from "@/types/proto/api/v1/user_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso";

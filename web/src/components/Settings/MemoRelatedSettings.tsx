@@ -6,8 +6,8 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { workspaceSettingNamePrefix } from "@/store/v1";
 import { workspaceStore } from "@/store/v2";
+import { WorkspaceSettingKey } from "@/store/v2/workspace";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = () => {

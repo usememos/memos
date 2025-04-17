@@ -1623,22 +1623,22 @@ var File_api_v1_user_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_user_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19api/v1/user_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\x03\n" +
-	"\x04User\x12\x19\n" +
-	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12+\n" +
+	"\x19api/v1/user_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xeb\x03\n" +
+	"\x04User\x12\x1a\n" +
+	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12+\n" +
 	"\x04role\x18\x03 \x01(\x0e2\x17.memos.api.v1.User.RoleR\x04role\x12\x1a\n" +
 	"\busername\x18\x04 \x01(\tR\busername\x12\x14\n" +
 	"\x05email\x18\x05 \x01(\tR\x05email\x12\x1a\n" +
 	"\bnickname\x18\x06 \x01(\tR\bnickname\x12\x1d\n" +
 	"\n" +
 	"avatar_url\x18\a \x01(\tR\tavatarUrl\x12 \n" +
-	"\vdescription\x18\b \x01(\tR\vdescription\x12 \n" +
-	"\bpassword\x18\t \x01(\tB\x04\xe2A\x01\x04R\bpassword\x12)\n" +
+	"\vdescription\x18\b \x01(\tR\vdescription\x12\x1f\n" +
+	"\bpassword\x18\t \x01(\tB\x03\xe0A\x04R\bpassword\x12)\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2\x13.memos.api.v1.StateR\x05state\x12A\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
-	"createTime\x12A\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	" \x01(\x0e2\x13.memos.api.v1.StateR\x05state\x12@\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12@\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\";\n" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\b\n" +
@@ -1656,9 +1656,9 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x121\n" +
 	"\thttp_body\x18\x02 \x01(\v2\x14.google.api.HttpBodyR\bhttpBody\";\n" +
 	"\x11CreateUserRequest\x12&\n" +
-	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\"~\n" +
-	"\x11UpdateUserRequest\x12,\n" +
-	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserB\x04\xe2A\x01\x02R\x04user\x12;\n" +
+	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\"}\n" +
+	"\x11UpdateUserRequest\x12+\n" +
+	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserB\x03\xe0A\x02R\x04user\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"'\n" +
 	"\x11DeleteUserRequest\x12\x12\n" +
@@ -1696,9 +1696,9 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"appearance\x12'\n" +
 	"\x0fmemo_visibility\x18\x04 \x01(\tR\x0ememoVisibility\"+\n" +
 	"\x15GetUserSettingRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"\x92\x01\n" +
-	"\x18UpdateUserSettingRequest\x129\n" +
-	"\asetting\x18\x01 \x01(\v2\x19.memos.api.v1.UserSettingB\x04\xe2A\x01\x02R\asetting\x12;\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\"\x91\x01\n" +
+	"\x18UpdateUserSettingRequest\x128\n" +
+	"\asetting\x18\x01 \x01(\v2\x19.memos.api.v1.UserSettingB\x03\xe0A\x02R\asetting\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"\xca\x01\n" +
 	"\x0fUserAccessToken\x12!\n" +

@@ -462,13 +462,13 @@ var File_api_v1_resource_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_resource_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/resource_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x99\x02\n" +
-	"\bResource\x12\x19\n" +
-	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12A\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"\x1dapi/v1/resource_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x98\x02\n" +
+	"\bResource\x12\x1a\n" +
+	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12@\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12\x1a\n" +
-	"\bfilename\x18\x04 \x01(\tR\bfilename\x12\x1e\n" +
-	"\acontent\x18\x05 \x01(\fB\x04\xe2A\x01\x04R\acontent\x12#\n" +
+	"\bfilename\x18\x04 \x01(\tR\bfilename\x12\x1d\n" +
+	"\acontent\x18\x05 \x01(\fB\x03\xe0A\x04R\acontent\x12#\n" +
 	"\rexternal_link\x18\x06 \x01(\tR\fexternalLink\x12\x12\n" +
 	"\x04type\x18\a \x01(\tR\x04type\x12\x12\n" +
 	"\x04size\x18\b \x01(\x03R\x04size\x12\x17\n" +
