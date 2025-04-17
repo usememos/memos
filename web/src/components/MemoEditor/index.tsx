@@ -201,7 +201,7 @@ const MemoEditor = observer((props: Props) => {
         isUploadingResource: true,
       };
     });
-    
+
     const { name: filename, size, type } = file;
     const buffer = new Uint8Array(await file.arrayBuffer());
 
@@ -265,7 +265,7 @@ const MemoEditor = observer((props: Props) => {
         ...prevState,
         isDraggingFile: false,
       }));
-      
+
       await uploadMultiFiles(event.dataTransfer.files);
     }
   };
@@ -482,8 +482,8 @@ const MemoEditor = observer((props: Props) => {
         onFocus={handleEditorFocus}
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
-        style={{ 
-          cursor: state.isDraggingFile ? "copy" : "auto" 
+        style={{
+          cursor: state.isDraggingFile ? "copy" : "auto",
         }}
       >
         {memoName && displayTime && (
