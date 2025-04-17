@@ -472,7 +472,9 @@ const MemoEditor = observer((props: Props) => {
         className={`${
           className ?? ""
         } relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-800 px-4 pt-4 rounded-lg border ${
-          state.isDraggingFile ? "border-dashed border-gray-400 dark:border-primary-400 cursor-copy" : "border-gray-200 dark:border-zinc-700 cursor-auto"
+          state.isDraggingFile
+            ? "border-dashed border-gray-400 dark:border-primary-400 cursor-copy"
+            : "border-gray-200 dark:border-zinc-700 cursor-auto"
         }`}
         tabIndex={0}
         onKeyDown={handleKeyDown}
