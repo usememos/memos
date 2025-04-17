@@ -224,6 +224,7 @@ export const initialUserStore = async () => {
       appearance: userSetting.appearance,
     });
   } catch {
+    // find the nearest matched lang based on the `navigator.language` if the user is unauthenticated or settings retrieval fails.
     const locale = findNearestMatchedLanguage(navigator.language);
     workspaceStore.state.setPartial({
       locale: locale,
