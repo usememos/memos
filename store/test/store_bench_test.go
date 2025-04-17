@@ -7,15 +7,16 @@ import (
 	"time"
 
 	"github.com/lithammer/shortuuid/v4"
+
 	"github.com/usememos/memos/store"
 )
 
-// BenchmarkDB groups all database benchmarks
+// BenchmarkDB groups all database benchmarks.
 func BenchmarkDB(b *testing.B) {
 	b.Run("BenchmarkDBConnPool", BenchmarkDBConnPool)
 }
 
-// benchmarkConfig defines the configuration for benchmark testing
+// benchmarkConfig defines the configuration for benchmark testing.
 type benchmarkConfig struct {
 	maxOpenConns    int
 	maxIdleConns    int
