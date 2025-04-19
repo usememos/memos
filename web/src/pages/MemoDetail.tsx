@@ -113,7 +113,7 @@ const MemoDetail = () => {
             showPinned
             showNsfwContent
           />
-          <div className="pt-8 pb-16 w-full">
+          <div id="memo-comments" className="pt-8 pb-16 w-full">
             <h2 id="comments" className="sr-only">
               {t("memo.comment.self")}
             </h2>
