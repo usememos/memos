@@ -57,6 +57,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      # Frontend build.
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: "web/pnpm-lock.yaml"
+      - run: pnpm install
+        working-directory: web
+      - name: Run frontend build
+        run: pnpm release
+        working-directory: web
+
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v6
