@@ -1,11 +1,13 @@
 FROM golang:1.24-alpine AS backend
 WORKDIR /backend-build
-
+COPY go.mod go.sum ./
+RUN go mod download
 COPY . .
 # Please build frontend first, so that the static files are available.
 # Refer to `pnpm release` in package.json for the build command.
-
-RUN go build -o memos ./bin/memos/main.go
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go build -ldflags="-s -w" -o memos ./bin/memos/main.go
 
 # Make workspace with above generated files.
 FROM alpine:latest AS monolithic
