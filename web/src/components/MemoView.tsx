@@ -59,13 +59,14 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
   const parentPage = props.parentPage || location.pathname;
   const nsfw =
-    workspaceMemoRelatedSetting.enableBlurNsfwContent &&
-    memo.tags?.some((tag) => {
-      return (
-        tag.startsWith("nsfw") ||
-        workspaceMemoRelatedSetting.nsfwTags.includes(tag)
-      );
-    });
+  workspaceMemoRelatedSetting.enableBlurNsfwContent &&
+  memo.tags?.some((tag) =>
+    workspaceMemoRelatedSetting.nsfwTags.some((nsfwTag) =>
+      tag === nsfwTag ||
+      tag.startsWith(`${nsfwTag}/`)
+    )
+  );
+
   // Initial related data: creator.
   useAsyncEffect(async () => {
     const user = await userStore.getOrFetchUserByName(memo.creator);
