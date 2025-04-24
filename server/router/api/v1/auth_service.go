@@ -129,9 +129,10 @@ func (s *APIV1Service) SignInWithSSO(ctx context.Context, request *v1pb.SignInWi
 		userCreate := &store.User{
 			Username: userInfo.Identifier,
 			// The new signup user should be normal user by default.
-			Role:     store.RoleUser,
-			Nickname: userInfo.DisplayName,
-			Email:    userInfo.Email,
+			Role:      store.RoleUser,
+			Nickname:  userInfo.DisplayName,
+			Email:     userInfo.Email,
+			AvatarURL: userInfo.AvatarURL,
 		}
 		password, err := util.RandomString(20)
 		if err != nil {

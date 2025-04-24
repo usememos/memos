@@ -64,6 +64,7 @@ export interface FieldMapping {
   identifier: string;
   displayName: string;
   email: string;
+  avatarUrl: string;
 }
 
 export interface OAuth2Config {
@@ -255,7 +256,7 @@ export const IdentityProviderConfig: MessageFns<IdentityProviderConfig> = {
 };
 
 function createBaseFieldMapping(): FieldMapping {
-  return { identifier: "", displayName: "", email: "" };
+  return { identifier: "", displayName: "", email: "", avatarUrl: "" };
 }
 
 export const FieldMapping: MessageFns<FieldMapping> = {
@@ -268,6 +269,9 @@ export const FieldMapping: MessageFns<FieldMapping> = {
     }
     if (message.email !== "") {
       writer.uint32(26).string(message.email);
+    }
+    if (message.avatarUrl !== "") {
+      writer.uint32(34).string(message.avatarUrl);
     }
     return writer;
   },
@@ -303,6 +307,14 @@ export const FieldMapping: MessageFns<FieldMapping> = {
           message.email = reader.string();
           continue;
         }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.avatarUrl = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -320,6 +332,7 @@ export const FieldMapping: MessageFns<FieldMapping> = {
     message.identifier = object.identifier ?? "";
     message.displayName = object.displayName ?? "";
     message.email = object.email ?? "";
+    message.avatarUrl = object.avatarUrl ?? "";
     return message;
   },
 };
