@@ -23,11 +23,11 @@ const templateList: IdentityProvider[] = [
         tokenUrl: "https://github.com/login/oauth/access_token",
         userInfoUrl: "https://api.github.com/user",
         scopes: ["read:user"],
-        fieldMapping: {
+        fieldMapping: FieldMapping.fromPartial({
           identifier: "login",
           displayName: "name",
           email: "email",
-        },
+        }),
       },
     },
   },
@@ -44,11 +44,11 @@ const templateList: IdentityProvider[] = [
         tokenUrl: "https://gitlab.com/oauth/token",
         userInfoUrl: "https://gitlab.com/oauth/userinfo",
         scopes: ["openid"],
-        fieldMapping: {
+        fieldMapping: FieldMapping.fromPartial({
           identifier: "name",
           displayName: "name",
           email: "email",
-        },
+        }),
       },
     },
   },
@@ -65,11 +65,11 @@ const templateList: IdentityProvider[] = [
         tokenUrl: "https://oauth2.googleapis.com/token",
         userInfoUrl: "https://www.googleapis.com/oauth2/v2/userinfo",
         scopes: ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"],
-        fieldMapping: {
+        fieldMapping: FieldMapping.fromPartial({
           identifier: "email",
           displayName: "name",
           email: "email",
-        },
+        }),
       },
     },
   },
@@ -86,11 +86,11 @@ const templateList: IdentityProvider[] = [
         tokenUrl: "",
         userInfoUrl: "",
         scopes: [],
-        fieldMapping: {
+        fieldMapping: FieldMapping.fromPartial({
           identifier: "",
           displayName: "",
           email: "",
-        },
+        }),
       },
     },
   },
@@ -117,11 +117,11 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     tokenUrl: "",
     userInfoUrl: "",
     scopes: [],
-    fieldMapping: {
+    fieldMapping: FieldMapping.fromPartial({
       identifier: "",
       displayName: "",
       email: "",
-    },
+    }),
   });
   const [oauth2Scopes, setOAuth2Scopes] = useState<string>("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("GitHub");
@@ -415,6 +415,18 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               value={oauth2Config.fieldMapping!.email}
               onChange={(e) =>
                 setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, email: e.target.value } as FieldMapping })
+              }
+              fullWidth
+            />
+            <Typography className="!mb-1" level="body-md">
+              Avatar URL
+            </Typography>
+            <Input
+              className="mb-2"
+              placeholder={"Avatar URL"}
+              value={oauth2Config.fieldMapping!.avatarUrl}
+              onChange={(e) =>
+                setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, avatarUrl: e.target.value } as FieldMapping })
               }
               fullWidth
             />
