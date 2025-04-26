@@ -24,11 +24,17 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g pnpm
 
+# Switch to non-root user
+USER $USERNAME
+
+# Configure pnpm to avoid long path issues
+RUN pnpm config set store-dir /home/dev/.pnpm-store && \
+    pnpm config set virtual-store-dir .pnpm
+
+
 # Set environment variables
 ENV PATH="/usr/local/go/bin:${PATH}"
 
-# Switch to non-root user
-USER $USERNAME
 
 # Set working directory
 WORKDIR /workspaces/memos
