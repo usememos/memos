@@ -1,0 +1,24 @@
+{
+    // "postCreateCommand": "./init_container.sh",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            "USER_UID": "${localEnv:USER_UID}",
+            "USER_GID": "${localEnv:USER_GID}"
+        }
+    },
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    "forwardPorts": [
+        3001
+    ],
+    // Configure tool-specific properties.
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go",
+                "mhutchie.git-graph",
+                "dbaeumer.vscode-eslint"
+            ]
+        }
+    }
+}
