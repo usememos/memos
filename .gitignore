@@ -22,3 +22,4 @@ dist
 
 # Node modules
 .pnpm-store/
+.pnpm/
