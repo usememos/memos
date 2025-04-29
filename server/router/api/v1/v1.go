@@ -67,8 +67,14 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 
 // RegisterGateway registers the gRPC-Gateway with the given Echo instance.
 func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
+	var target string
+	if len(s.Profile.UNIXSock) == 0 {
+		target = fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port)
+	} else {
+		target = fmt.Sprintf("unix:%s", s.Profile.UNIXSock)
+	}
 	conn, err := grpc.NewClient(
-		fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port),
+		target,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(math.MaxInt32)),
 	)
