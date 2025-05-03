@@ -65,7 +65,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.21",
     "code-inspector-plugin": "^0.18.3",
-    "eslint": "^9.23.0",
+    "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.5",
     "eslint-plugin-react": "^7.37.4",
