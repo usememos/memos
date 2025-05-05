@@ -113,5 +113,10 @@ func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo
 			userInfo.Email = v
 		}
 	}
+	if p.config.FieldMapping.AvatarUrl != "" {
+		if v, ok := claims[p.config.FieldMapping.AvatarUrl].(string); ok {
+			userInfo.AvatarURL = v
+		}
+	}
 	return userInfo, nil
 }

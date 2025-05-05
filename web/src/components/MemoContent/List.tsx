@@ -43,10 +43,8 @@ const List: React.FC<Props> = ({ kind, indent, children }: Props) => {
   return React.createElement(
     getListContainer(),
     {
-      className: cn(
-        `list-inside ${kind === ListNode_Kind.ORDERED ? "list-decimal" : kind === ListNode_Kind.UNORDERED ? "list-disc" : "list-none"}`,
-        indent > 0 ? `pl-${2 * indent}` : "",
-      ),
+      className: cn(kind === ListNode_Kind.ORDERED ? "list-decimal" : kind === ListNode_Kind.UNORDERED ? "list-disc" : "list-none"),
+      style: { paddingLeft: `${(2 * indent + 6) * 4}px` },
       ...getAttributes(),
     },
     children.map((child, index) => {

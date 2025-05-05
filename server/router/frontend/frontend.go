@@ -31,7 +31,12 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 
 func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 	apiSkipper := func(c echo.Context) bool {
-		return util.HasPrefixes(c.Path(), "/api", "/memos.api.v1")
+		if util.HasPrefixes(c.Path(), "/api", "/memos.api.v1") {
+			return true
+		}
+		// Set Cache-Control header to allow public caching with a max-age of 30 days (in seconds).
+		c.Response().Header().Set(echo.HeaderCacheControl, "public, max-age=2592000")
+		return false
 	}
 
 	// Route to serve the main app with HTML5 fallback for SPA behavior.

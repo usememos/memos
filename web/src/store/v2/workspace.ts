@@ -3,9 +3,19 @@ import { makeAutoObservable } from "mobx";
 import { workspaceServiceClient, workspaceSettingServiceClient } from "@/grpcweb";
 import { WorkspaceProfile } from "@/types/proto/api/v1/workspace_service";
 import { WorkspaceGeneralSetting, WorkspaceMemoRelatedSetting, WorkspaceSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { isValidateLocale } from "@/utils/i18n";
 import { workspaceSettingNamePrefix } from "../v1";
+
+export enum WorkspaceSettingKey {
+  /** BASIC - BASIC is the key for basic settings. */
+  BASIC = "BASIC",
+  /** GENERAL - GENERAL is the key for general settings. */
+  GENERAL = "GENERAL",
+  /** STORAGE - STORAGE is the key for storage settings. */
+  STORAGE = "STORAGE",
+  /** MEMO_RELATED - MEMO_RELATED is the key for memo related settings. */
+  MEMO_RELATED = "MEMO_RELATED",
+}
 
 class LocalState {
   locale: string = "en";

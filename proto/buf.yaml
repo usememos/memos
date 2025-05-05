@@ -1,8 +1,6 @@
 version: v2
-name: buf.build/yourselfhosted/memos
 deps:
   - buf.build/googleapis/googleapis
-  - buf.build/grpc-ecosystem/grpc-gateway
 lint:
   use:
     - BASIC

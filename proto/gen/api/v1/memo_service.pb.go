@@ -1666,9 +1666,9 @@ var File_api_v1_memo_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19api/v1/memo_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x1dapi/v1/markdown_service.proto\x1a\x1dapi/v1/reaction_service.proto\x1a\x1dapi/v1/resource_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\a\n" +
-	"\x04Memo\x12\x19\n" +
-	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12)\n" +
+	"\x19api/v1/memo_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x1dapi/v1/markdown_service.proto\x1a\x1dapi/v1/reaction_service.proto\x1a\x1dapi/v1/resource_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\a\n" +
+	"\x04Memo\x12\x1a\n" +
+	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12)\n" +
 	"\x05state\x18\x03 \x01(\x0e2\x13.memos.api.v1.StateR\x05state\x12\x18\n" +
 	"\acreator\x18\x04 \x01(\tR\acreator\x12;\n" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -1676,20 +1676,20 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12=\n" +
 	"\fdisplay_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\vdisplayTime\x12\x18\n" +
-	"\acontent\x18\b \x01(\tR\acontent\x12.\n" +
-	"\x05nodes\x18\t \x03(\v2\x12.memos.api.v1.NodeB\x04\xe2A\x01\x03R\x05nodes\x128\n" +
+	"\acontent\x18\b \x01(\tR\acontent\x12-\n" +
+	"\x05nodes\x18\t \x03(\v2\x12.memos.api.v1.NodeB\x03\xe0A\x03R\x05nodes\x128\n" +
 	"\n" +
 	"visibility\x18\n" +
 	" \x01(\x0e2\x18.memos.api.v1.VisibilityR\n" +
-	"visibility\x12\x18\n" +
-	"\x04tags\x18\v \x03(\tB\x04\xe2A\x01\x03R\x04tags\x12\x16\n" +
+	"visibility\x12\x17\n" +
+	"\x04tags\x18\v \x03(\tB\x03\xe0A\x03R\x04tags\x12\x16\n" +
 	"\x06pinned\x18\f \x01(\bR\x06pinned\x124\n" +
 	"\tresources\x18\x0e \x03(\v2\x16.memos.api.v1.ResourceR\tresources\x128\n" +
-	"\trelations\x18\x0f \x03(\v2\x1a.memos.api.v1.MemoRelationR\trelations\x12:\n" +
-	"\treactions\x18\x10 \x03(\v2\x16.memos.api.v1.ReactionB\x04\xe2A\x01\x03R\treactions\x12=\n" +
-	"\bproperty\x18\x11 \x01(\v2\x1b.memos.api.v1.Memo.PropertyB\x04\xe2A\x01\x03R\bproperty\x12!\n" +
-	"\x06parent\x18\x12 \x01(\tB\x04\xe2A\x01\x03H\x00R\x06parent\x88\x01\x01\x12\x1e\n" +
-	"\asnippet\x18\x13 \x01(\tB\x04\xe2A\x01\x03R\asnippet\x127\n" +
+	"\trelations\x18\x0f \x03(\v2\x1a.memos.api.v1.MemoRelationR\trelations\x129\n" +
+	"\treactions\x18\x10 \x03(\v2\x16.memos.api.v1.ReactionB\x03\xe0A\x03R\treactions\x12<\n" +
+	"\bproperty\x18\x11 \x01(\v2\x1b.memos.api.v1.Memo.PropertyB\x03\xe0A\x03R\bproperty\x12 \n" +
+	"\x06parent\x18\x12 \x01(\tB\x03\xe0A\x03H\x00R\x06parent\x88\x01\x01\x12\x1d\n" +
+	"\asnippet\x18\x13 \x01(\tB\x03\xe0A\x03R\asnippet\x127\n" +
 	"\blocation\x18\x14 \x01(\v2\x16.memos.api.v1.LocationH\x01R\blocation\x88\x01\x01\x1a\x96\x01\n" +
 	"\bProperty\x12\x19\n" +
 	"\bhas_link\x18\x01 \x01(\bR\ahasLink\x12\"\n" +
@@ -1701,9 +1701,9 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\bLocation\x12 \n" +
 	"\vplaceholder\x18\x01 \x01(\tR\vplaceholder\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
-	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\"A\n" +
-	"\x11CreateMemoRequest\x12,\n" +
-	"\x04memo\x18\x01 \x01(\v2\x12.memos.api.v1.MemoB\x04\xe2A\x01\x02R\x04memo\"\x93\x02\n" +
+	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\"@\n" +
+	"\x11CreateMemoRequest\x12+\n" +
+	"\x04memo\x18\x01 \x01(\v2\x12.memos.api.v1.MemoB\x03\xe0A\x02R\x04memo\"\x93\x02\n" +
 	"\x10ListMemosRequest\x12\x16\n" +
 	"\x06parent\x18\x01 \x01(\tR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1719,9 +1719,9 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x05memos\x18\x01 \x03(\v2\x12.memos.api.v1.MemoR\x05memos\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"$\n" +
 	"\x0eGetMemoRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"~\n" +
-	"\x11UpdateMemoRequest\x12,\n" +
-	"\x04memo\x18\x01 \x01(\v2\x12.memos.api.v1.MemoB\x04\xe2A\x01\x02R\x04memo\x12;\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\"}\n" +
+	"\x11UpdateMemoRequest\x12+\n" +
+	"\x04memo\x18\x01 \x01(\v2\x12.memos.api.v1.MemoB\x03\xe0A\x02R\x04memo\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"'\n" +
 	"\x11DeleteMemoRequest\x12\x12\n" +
@@ -1740,15 +1740,15 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x18ListMemoResourcesRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"Q\n" +
 	"\x19ListMemoResourcesResponse\x124\n" +
-	"\tresources\x18\x01 \x03(\v2\x16.memos.api.v1.ResourceR\tresources\"\xc4\x02\n" +
+	"\tresources\x18\x01 \x03(\v2\x16.memos.api.v1.ResourceR\tresources\"\xc3\x02\n" +
 	"\fMemoRelation\x123\n" +
 	"\x04memo\x18\x01 \x01(\v2\x1f.memos.api.v1.MemoRelation.MemoR\x04memo\x12B\n" +
 	"\frelated_memo\x18\x02 \x01(\v2\x1f.memos.api.v1.MemoRelation.MemoR\vrelatedMemo\x123\n" +
-	"\x04type\x18\x03 \x01(\x0e2\x1f.memos.api.v1.MemoRelation.TypeR\x04type\x1aL\n" +
+	"\x04type\x18\x03 \x01(\x0e2\x1f.memos.api.v1.MemoRelation.TypeR\x04type\x1aK\n" +
 	"\x04Memo\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
-	"\x03uid\x18\x02 \x01(\tR\x03uid\x12\x1e\n" +
-	"\asnippet\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\asnippet\"8\n" +
+	"\x03uid\x18\x02 \x01(\tR\x03uid\x12\x1d\n" +
+	"\asnippet\x18\x03 \x01(\tB\x03\xe0A\x03R\asnippet\"8\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tREFERENCE\x10\x01\x12\v\n" +

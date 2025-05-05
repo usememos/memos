@@ -132,6 +132,9 @@ func (s *Server) Shutdown(ctx context.Context) {
 		slog.Error("failed to shutdown server", slog.String("error", err.Error()))
 	}
 
+	// Shutdown gRPC server.
+	s.grpcServer.GracefulStop()
+
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
 		slog.Error("failed to close database", slog.String("error", err.Error()))
