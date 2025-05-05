@@ -1,3 +1,12 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "api/v1/memo_service.proto";
+
+option go_package = "gen/api/v1";
+
 service MemoCommentService {
     // CreateMemoComment creates a comment for a memo.
     rpc CreateMemoComment(CreateMemoCommentRequest) returns (Memo) {

@@ -55,6 +55,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 	v1pb.RegisterAuthServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterUserServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterMemoServiceServer(grpcServer, apiv1Service)
+	v1pb.RegisterMemoCommentServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterResourceServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterInboxServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterActivityServiceServer(grpcServer, apiv1Service)
