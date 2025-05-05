@@ -7,7 +7,9 @@ import (
     "google.golang.org/grpc/status"
     "github.com/pkg/errors"
     v1pb "github.com/usememos/memos/proto/gen/api/v1"
-    "github.com/usememos/memos/store"
+	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/store"
+
 )
 
 func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.CreateMemoCommentRequest) (*v1pb.Memo, error) {

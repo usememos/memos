@@ -4,6 +4,7 @@ package memos.api.v1;
 
 import "google/api/annotations.proto";
 import "api/v1/memo_service.proto";
+import "google/api/client.proto";
 
 option go_package = "gen/api/v1";
 

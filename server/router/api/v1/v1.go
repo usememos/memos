@@ -27,6 +27,7 @@ type APIV1Service struct {
 	v1pb.UnimplementedAuthServiceServer
 	v1pb.UnimplementedUserServiceServer
 	v1pb.UnimplementedMemoServiceServer
+	v1pb.UnimplementedMemoCommentServiceServer
 	v1pb.UnimplementedResourceServiceServer
 	v1pb.UnimplementedInboxServiceServer
 	v1pb.UnimplementedActivityServiceServer
