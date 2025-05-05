@@ -1,0 +1,32 @@
+service MemoCommentService {
+    // CreateMemoComment creates a comment for a memo.
+    rpc CreateMemoComment(CreateMemoCommentRequest) returns (Memo) {
+        option (google.api.http) = {
+        post: "/api/v1/{name=memos/*}/comments"
+        body: "comment"
+        };
+        option (google.api.method_signature) = "name";
+    }
+    // ListMemoComments lists comments for a memo.
+    rpc ListMemoComments(ListMemoCommentsRequest) returns (ListMemoCommentsResponse) {
+        option (google.api.http) = {get: "/api/v1/{name=memos/*}/comments"};
+        option (google.api.method_signature) = "name";
+    }
+}
+
+message CreateMemoCommentRequest {
+  // The name of the memo.
+  string name = 1;
+
+  // The comment to create.
+  Memo comment = 2;
+}
+
+message ListMemoCommentsRequest {
+  // The name of the memo.
+  string name = 1;
+}
+
+message ListMemoCommentsResponse {
+  repeated Memo memos = 1;
+}
