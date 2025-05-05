@@ -92,6 +92,9 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	if err := v1pb.RegisterMemoServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
+	if err := v1pb.RegisterMemoCommentServiceHandler(ctx, gwMux, conn); err != nil {
+		return err
+	}
 	if err := v1pb.RegisterResourceServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
