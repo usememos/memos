@@ -56,6 +56,7 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 			return nil, err
 		}
 		convertCtx := filter.NewConvertContext()
+		convertCtx.ArgsOffset = len(args)
 		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
 		if err := d.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
 			return nil, err
@@ -64,7 +65,7 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 		if condition != "" {
 			where = append(where, fmt.Sprintf("memo_id IN (SELECT id FROM memo WHERE %s)", condition))
 			where = append(where, fmt.Sprintf("related_memo_id IN (SELECT id FROM memo WHERE %s)", condition))
-			args = append(args, append(convertCtx.Args, convertCtx.Args...)...)
+			args = append(args, convertCtx.Args...)
 		}
 	}
 
