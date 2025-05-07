@@ -2,11 +2,11 @@
 // source: api/v1/user_service.proto
 
 /*
-Package v1 is a reverse proxy.
+Package apiv1 is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package v1
+package apiv1
 
 import (
 	"context"

@@ -11,6 +11,7 @@ tags:
   - name: MarkdownService
   - name: ResourceService
   - name: MemoService
+  - name: MemoCommentService
   - name: WebhookService
   - name: WorkspaceService
   - name: WorkspaceSettingService
@@ -1179,7 +1180,7 @@ paths:
   /api/v1/{name}/comments:
     get:
       summary: ListMemoComments lists comments for a memo.
-      operationId: MemoService_ListMemoComments
+      operationId: MemoCommentService_ListMemoComments
       responses:
         "200":
           description: A successful response.
@@ -1197,10 +1198,10 @@ paths:
           type: string
           pattern: memos/[^/]+
       tags:
-        - MemoService
+        - MemoCommentService
     post:
       summary: CreateMemoComment creates a comment for a memo.
-      operationId: MemoService_CreateMemoComment
+      operationId: MemoCommentService_CreateMemoComment
       responses:
         "200":
           description: A successful response.
@@ -1224,7 +1225,7 @@ paths:
           schema:
             $ref: '#/definitions/apiv1Memo'
       tags:
-        - MemoService
+        - MemoCommentService
   /api/v1/{name}/reactions:
     get:
       summary: ListMemoReactions lists reactions for a memo.
