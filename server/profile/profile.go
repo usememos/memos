@@ -19,6 +19,8 @@ type Profile struct {
 	Addr string
 	// Port is the binding port for server
 	Port int
+	// UNIXSock is the IPC binding path. Overrides Addr and Port
+	UNIXSock string
 	// Data is the data directory
 	Data string
 	// DSN points to where memos stores its own data
