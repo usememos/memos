@@ -8,7 +8,7 @@ import DatePicker from "react-datepicker";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
-import { memoServiceClient } from "@/grpcweb";
+import { memoCommentServiceClient, memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
@@ -387,7 +387,7 @@ const MemoEditor = observer((props: Props) => {
                 location: state.location,
               }),
             })
-          : memoServiceClient
+          : memoCommentServiceClient
               .createMemoComment({
                 name: parentMemoName,
                 comment: {
