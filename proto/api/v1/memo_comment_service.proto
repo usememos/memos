@@ -2,26 +2,26 @@ syntax = "proto3";
 
 package memos.api.v1;
 
-import "google/api/annotations.proto";
 import "api/v1/memo_service.proto";
+import "google/api/annotations.proto";
 import "google/api/client.proto";
 
 option go_package = "gen/api/v1";
 
 service MemoCommentService {
-    // CreateMemoComment creates a comment for a memo.
-    rpc CreateMemoComment(CreateMemoCommentRequest) returns (Memo) {
-        option (google.api.http) = {
-        post: "/api/v1/{name=memos/*}/comments"
-        body: "comment"
-        };
-        option (google.api.method_signature) = "name";
-    }
-    // ListMemoComments lists comments for a memo.
-    rpc ListMemoComments(ListMemoCommentsRequest) returns (ListMemoCommentsResponse) {
-        option (google.api.http) = {get: "/api/v1/{name=memos/*}/comments"};
-        option (google.api.method_signature) = "name";
-    }
+  // CreateMemoComment creates a comment for a memo.
+  rpc CreateMemoComment(CreateMemoCommentRequest) returns (Memo) {
+    option (google.api.http) = {
+      post: "/api/v1/{name=memos/*}/comments"
+      body: "comment"
+    };
+    option (google.api.method_signature) = "name";
+  }
+  // ListMemoComments lists comments for a memo.
+  rpc ListMemoComments(ListMemoCommentsRequest) returns (ListMemoCommentsResponse) {
+    option (google.api.http) = {get: "/api/v1/{name=memos/*}/comments"};
+    option (google.api.method_signature) = "name";
+  }
 }
 
 message CreateMemoCommentRequest {
