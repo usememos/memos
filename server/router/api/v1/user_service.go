@@ -537,7 +537,13 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 	}
 	// Use the avatar URL instead of raw base64 image data to reduce the response size.
 	if user.AvatarURL != "" {
-		userpb.AvatarUrl = fmt.Sprintf("/file/%s/avatar", userpb.Name)
+		// Check if avatar url is base64 format.
+		_, _, err := extractImageInfo(user.AvatarURL)
+		if err == nil {
+			userpb.AvatarUrl = fmt.Sprintf("/file/%s/avatar", userpb.Name)
+		} else {
+			userpb.AvatarUrl = user.AvatarURL
+		}
 	}
 	return userpb
 }
