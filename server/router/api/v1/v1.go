@@ -27,6 +27,7 @@ type APIV1Service struct {
 	v1pb.UnimplementedAuthServiceServer
 	v1pb.UnimplementedUserServiceServer
 	v1pb.UnimplementedMemoServiceServer
+	v1pb.UnimplementedMemoCommentServiceServer
 	v1pb.UnimplementedResourceServiceServer
 	v1pb.UnimplementedInboxServiceServer
 	v1pb.UnimplementedActivityServiceServer
@@ -55,6 +56,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 	v1pb.RegisterAuthServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterUserServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterMemoServiceServer(grpcServer, apiv1Service)
+	v1pb.RegisterMemoCommentServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterResourceServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterInboxServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterActivityServiceServer(grpcServer, apiv1Service)
@@ -96,6 +98,9 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	if err := v1pb.RegisterMemoServiceHandler(ctx, gwMux, conn); err != nil {
+		return err
+	}
+	if err := v1pb.RegisterMemoCommentServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
 	if err := v1pb.RegisterResourceServiceHandler(ctx, gwMux, conn); err != nil {
