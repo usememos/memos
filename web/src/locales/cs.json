@@ -30,6 +30,7 @@
     "collapse": "Sbalit",
     "confirm": "Potvrdit",
     "create": "Vytvořit",
+    "created-at": "Vytvořeno",
     "database": "Databáze",
     "day": "Den",
     "days": "Dny",
@@ -45,7 +46,10 @@
     "image": "Obrázek",
     "in": "V",
     "inbox": "Došlá pošta",
+    "input": "Vstup",
     "language": "Jazyk",
+    "last-updated-at": "Změněno",
+    "layout": "Rozložení",
     "learn-more": "Více informací",
     "link": "Odkaz",
     "mark": "Značka",
@@ -61,6 +65,10 @@
     "pinned": "Připnutá",
     "preview": "Náhled",
     "profile": "Profil",
+    "properties": "Vlastnosti",
+    "referenced-by": "Odkazováno",
+    "referencing": "Odkazuje na",
+    "relations": "Souvislosti",
     "remember-me": "Zapamatovat si mě",
     "rename": "Přejmenovat",
     "reset": "Resetovat",
@@ -72,6 +80,8 @@
     "select": "Vybrat",
     "settings": "Nastavení",
     "share": "Sdílet",
+    "shortcut-filter": "Filtr zkratek",
+    "shortcuts": "Zkratky",
     "sign-in": "Přihlásit se",
     "sign-in-with": "Přihlásit se pomocí {{provider}}",
     "sign-out": "Odhlásit se",
@@ -79,6 +89,7 @@
     "statistics": "Statistiky",
     "tags": "Štítky",
     "title": "Název",
+    "tree-mode": "Stromový pohled",
     "type": "Typ",
     "unpin": "Odepnout",
     "update": "Aktualizovat",
@@ -102,6 +113,11 @@
     "any-thoughts": "Jakékoli myšlenky...",
     "save": "Uložit"
   },
+  "filters": {
+    "has-code": "hasCode",
+    "has-link": "hasLink",
+    "has-task-list": "hasTaskList"
+  },
   "inbox": {
     "memo-comment": "{{user}} komentoval na vaší {{memo}}.",
     "version-update": "Nyní je dostupná nová verze {{version}}!"
@@ -113,6 +129,8 @@
   },
   "memo": {
     "archived-at": "Archivováno na",
+    "click-to-hide-nsfw-content": "Klikněte pro skrytí citlivého obsahu",
+    "click-to-show-nsfw-content": "Klikněte pro zobrazení citlivého obsahu",
     "code": "Kód",
     "comment": {
       "self": "Komentáře",
@@ -143,7 +161,9 @@
       "private": "Soukromá",
       "protected": "Pracovní prostor",
       "public": "Veřejná"
-    }
+    },
+    "list": "Seznam",
+    "masonry": "Zdivo"
   },
   "message": {
     "archived-successfully": "Úspěšně archivováno",
@@ -202,7 +222,8 @@
     "no-unused-resources": "Žádné nepoužité zdroje",
     "reset-link": "Resetovat odkaz",
     "reset-link-prompt": "Jste si jisti, že chcete odkaz resetovat? Tím se přeruší všechna stávající použití odkazu. TATO AKCE JE NEVRATNÁ",
-    "reset-resource-link": "Resetovat odkaz na zdroj"
+    "reset-resource-link": "Resetovat odkaz na zdroj",
+    "unused-resources": "Nepoužité zdroje"
   },
   "router": {
     "back-to-top": "Zpět na začátek",
@@ -248,15 +269,18 @@
     "member": "Uživatel",
     "member-list": "Seznam uživatelů",
     "member-section": {
+      "admin": "Admin",
       "archive-member": "Archivovat uživatele",
       "archive-warning": "Jste si jisti, že chcete archivovat uživatele {{username}}?",
       "create-a-member": "Založit uživatele",
       "delete-member": "Odstranit uživatele",
-      "delete-warning": "Jste si jisti, že chcete odstranit uživatele {{username}}? TATO AKCE JE NEVRATNÁ"
+      "delete-warning": "Jste si jisti, že chcete odstranit uživatele {{username}}? TATO AKCE JE NEVRATNÁ",
+      "user": "Uživatel"
     },
     "memo-related": "Poznámky",
     "memo-related-settings": {
       "content-lenght-limit": "Omezení velikosti obsahu (bajty)",
+      "enable-blur-nsfw-content": "Povolit rozostření citlivého obsahu",
       "enable-link-preview": "Povolit náhled odkazu",
       "enable-memo-comments": "Povolit komentáře k poznámkám",
       "enable-memo-location": "Povolit umístění poznámek",
@@ -270,7 +294,7 @@
       "default-memo-visibility": "Výchozí viditelnost poznámky",
       "theme": "Motiv"
     },
-    "sso": "SSO - jednotné přihlašování",
+    "sso": "SSO",
     "sso-section": {
       "authorization-endpoint": "Autorizační koncový bod",
       "client-id": "ID klienta",
@@ -286,6 +310,7 @@
       "no-sso-found": "Žádné SSO nenalezeno.",
       "redirect-url": "URL pro přesměrování",
       "scopes": "Rozsahy",
+      "single-sign-on": "Nastavení SSO pro autentizaci",
       "sso-created": "SSO {{name}} vytvořeno",
       "sso-list": "Seznam SSO",
       "sso-updated": "SSO {{name}} aktualizováno",
@@ -305,6 +330,7 @@
       "current-storage": "Aktuální úložiště objektů",
       "delete-storage": "Odstranit úložiště",
       "endpoint": "Koncový bod",
+      "filepath-template": "Šablona cesty k souboru",
       "local-storage-path": "Cesta k místnímu úložišti",
       "path": "Cesta k úložišti",
       "path-description": "Můžete použít stejné dynamické proměnné z místního úložiště, například {filename}",
@@ -355,7 +381,8 @@
       "max-upload-size": "Maximální velikost nahrávaného souboru (MiB)",
       "max-upload-size-hint": "Doporučená hodnota je 32 MiB.",
       "removed-completed-task-list-items": "Povolit odstranění dokončených položek ze seznamu úkolů",
-      "server-name": "Název serveru"
+      "server-name": "Název serveru",
+      "title": "Obecné"
     },
     "version": "Verze",
     "webhook-section": {
@@ -388,6 +415,13 @@
     "create-tags-guide": "Štítky můžete vytvořit zadáním `#tag`.",
     "delete-confirm": "Jste si jisti, že chcete tento štítek odstranit? Všechny související poznámky budou archivovány.",
     "delete-tag": "Odstranit štítek",
-    "no-tag-found": "Žádný štítek nenalezen"
+    "new-name": "Nový název",
+    "no-tag-found": "Žádný štítek nenalezen",
+    "old-name": "Původní název",
+    "rename-error-empty": "Název štítku nemůže být prázdný nebo obsahovat mezery",
+    "rename-error-repeat": "Nový název se nemůže shodovat s původním názvem",
+    "rename-success": "Štítek úspěšně přejmenován",
+    "rename-tag": "Přejmenovat štítek",
+    "rename-tip": "Všechny vaše poznámky s tímto štítkem budou aktualizovány."
   }
 }
