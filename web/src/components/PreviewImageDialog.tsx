@@ -172,7 +172,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
         onClick={handleImgContainerClick}
       >
         <img
-          className="h-auto w-auto min-w-16 max-w-full max-h-full grow"
+          className="object-contain max-h-full max-w-full"
           style={imageComputedStyle}
           src={imgUrls[currentIndex]}
           onClick={(e) => e.stopPropagation()}
