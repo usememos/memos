@@ -126,6 +126,16 @@ func (s *APIV1Service) SignInWithSSO(ctx context.Context, request *v1pb.SignInWi
 		return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
 	}
 	if user == nil {
+		// Check if the user is allowed to sign up.
+		workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get workspace general setting, error: %v", err)
+		}
+		if workspaceGeneralSetting.DisallowUserRegistration {
+			return nil, status.Errorf(codes.PermissionDenied, "user registration is not allowed")
+		}
+
+		// Create a new user with the user info from the identity provider.
 		userCreate := &store.User{
 			Username: userInfo.Identifier,
 			// The new signup user should be normal user by default.
