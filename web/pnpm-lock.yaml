@@ -36,8 +36,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@usememos/mui':
-        specifier: 0.1.0-20250312125611
-        version: 0.1.0-20250312125611(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 0.1.0-20250513152542
+        version: 0.1.0-20250513152542(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -1821,8 +1821,8 @@ packages:
     resolution: {integrity: sha512-hbn8SZ8w4u2pRwgQ1GlUrPKE+t2XvcCW5tTRF7j6SMYIuYG37XuzIW44JCZPa36evi0Oy2SnM664BlIaAuQcvg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@usememos/mui@0.1.0-20250312125611':
-    resolution: {integrity: sha512-DyXvdXOnem5XJJsUQOTjRKhy7Cc/82PDatvz8sLclQegMx2dBwwSxJxELlK8eMskJgQjbDTLwRLvA/AcTt4ztQ==}
+  '@usememos/mui@0.1.0-20250513152542':
+    resolution: {integrity: sha512-v8yGnYIj6RQ47qiILYKIhCLaWNWzcI7e5dqsOEp2crHinvRcNw/fN27ewvmw87ArnymK7Ox6FsQ83987biXoIQ==}
     peerDependencies:
       react: '>=17.0.0'
       react-dom: '>=17.0.0'
@@ -5817,7 +5817,7 @@ snapshots:
       '@typescript-eslint/types': 8.28.0
       eslint-visitor-keys: 4.2.0
 
-  '@usememos/mui@0.1.0-20250312125611(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@usememos/mui@0.1.0-20250513152542(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
