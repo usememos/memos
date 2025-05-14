@@ -7,8 +7,11 @@ on:
 env:
   DOCKER_PLATFORMS: |
     linux/amd64
-    linux/arm/v7
     linux/arm64
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.repository }}
+  cancel-in-progress: true
 
 jobs:
   build-and-push-canary-image:
