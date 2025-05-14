@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -86,11 +87,10 @@ func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo
 	defer resp.Body.Close()
 
 	var claims map[string]any
-	err = json.Unmarshal(body, &claims)
-	if err != nil {
+	if err := json.Unmarshal(body, &claims); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal response body")
 	}
-
+	slog.Info("user info claims", "claims", claims)
 	userInfo := &idp.IdentityProviderUserInfo{}
 	if v, ok := claims[p.config.FieldMapping.Identifier].(string); ok {
 		userInfo.Identifier = v
@@ -118,5 +118,6 @@ func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo
 			userInfo.AvatarURL = v
 		}
 	}
+	slog.Info("user info", "userInfo", userInfo)
 	return userInfo, nil
 }
