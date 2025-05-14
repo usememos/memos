@@ -45,7 +45,7 @@ const PasswordSignInForm = observer(() => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await authServiceClient.signIn({ username, password, neverExpire: remember });
+      await authServiceClient.signIn({ passwordCredentials: { username, password }, neverExpire: remember });
       await initialUserStore();
       navigateTo("/");
     } catch (error: any) {

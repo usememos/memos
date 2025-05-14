@@ -45,10 +45,12 @@ const AuthCallback = () => {
     const redirectUri = absolutifyLink("/auth/callback");
     (async () => {
       try {
-        await authServiceClient.signInWithSSO({
-          idpId: identityProviderId,
-          code,
-          redirectUri,
+        await authServiceClient.signIn({
+          ssoCredentials: {
+            idpId: identityProviderId,
+            code,
+            redirectUri,
+          },
         });
         setState({
           loading: false,
