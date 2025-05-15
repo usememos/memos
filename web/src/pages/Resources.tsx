@@ -135,7 +135,7 @@ const Resources = () => {
                               <span className="text-gray-600 dark:text-gray-400">{t("resource.unused-resources")}</span>
                               <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedResources.length})</span>
                               <Tooltip title="Delete all" placement="top">
-                                <Button size="sm" variant="plain" onClick={handleDeleteUnusedResources}>
+                                <Button variant="plain" onClick={handleDeleteUnusedResources}>
                                   <TrashIcon className="w-4 h-auto opacity-60" />
                                 </Button>
                               </Tooltip>

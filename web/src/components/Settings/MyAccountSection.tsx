@@ -26,13 +26,13 @@ const MyAccountSection = () => {
         </div>
       </div>
       <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
-        <Button variant="outlined" size="sm" onClick={showUpdateAccountDialog}>
+        <Button variant="outlined" onClick={showUpdateAccountDialog}>
           <PenLineIcon className="w-4 h-4 mx-auto mr-1" />
           {t("common.edit")}
         </Button>
         <Dropdown>
           <MenuButton slots={{ root: "div" }}>
-            <Button variant="outlined" size="sm">
+            <Button variant="outlined">
               <MoreVerticalIcon className="w-4 h-4 mx-auto" />
             </Button>
           </MenuButton>

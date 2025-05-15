@@ -1,5 +1,4 @@
-import { Textarea } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
+import { Button, Input, Textarea } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
@@ -143,7 +142,7 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
     <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p className="title-text">{t("setting.account-section.update-information")}</p>
-        <Button size="sm" variant="plain" onClick={handleCloseBtnClick}>
+        <Button variant="plain" onClick={handleCloseBtnClick}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
@@ -191,14 +190,7 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
         </p>
         <Input fullWidth type="email" value={state.email} onChange={handleEmailChanged} />
         <p className="text-sm">{t("common.description")}</p>
-        <Textarea
-          className="w-full"
-          color="neutral"
-          minRows={2}
-          maxRows={4}
-          value={state.description}
-          onChange={handleDescriptionChanged}
-        />
+        <Textarea rows={2} fullWidth value={state.description} onChange={handleDescriptionChanged} />
         <div className="w-full flex flex-row justify-end items-center pt-4 space-x-2">
           <Button variant="plain" onClick={handleCloseBtnClick}>
             {t("common.cancel")}

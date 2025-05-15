@@ -1,5 +1,5 @@
-import { Select, Textarea, Option, Divider, Switch } from "@mui/joy";
-import { Button } from "@usememos/mui";
+import { Select, Option, Divider, Switch } from "@mui/joy";
+import { Button, Textarea } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -80,13 +80,9 @@ const WorkspaceSection = () => {
         <span>{t("setting.system-section.additional-style")}</span>
       </div>
       <Textarea
-        className="w-full"
-        sx={{
-          fontFamily: "monospace",
-          fontSize: "14px",
-        }}
-        minRows={2}
-        maxRows={4}
+        className="font-mono"
+        rows={3}
+        fullWidth
         placeholder={t("setting.system-section.additional-style-placeholder")}
         value={workspaceGeneralSetting.additionalStyle}
         onChange={(event) => updatePartialSetting({ additionalStyle: event.target.value })}
@@ -95,14 +91,9 @@ const WorkspaceSection = () => {
         <span>{t("setting.system-section.additional-script")}</span>
       </div>
       <Textarea
-        className="w-full"
-        color="neutral"
-        sx={{
-          fontFamily: "monospace",
-          fontSize: "14px",
-        }}
-        minRows={2}
-        maxRows={4}
+        className="font-mono"
+        rows={3}
+        fullWidth
         placeholder={t("setting.system-section.additional-script-placeholder")}
         value={workspaceGeneralSetting.additionalScript}
         onChange={(event) => updatePartialSetting({ additionalScript: event.target.value })}

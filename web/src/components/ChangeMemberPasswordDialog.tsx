@@ -69,7 +69,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
         <p>
           {t("setting.account-section.change-password")} ({user.nickname})
         </p>
-        <Button size="sm" variant="plain" onClick={handleCloseBtnClick}>
+        <Button variant="plain" onClick={handleCloseBtnClick}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>

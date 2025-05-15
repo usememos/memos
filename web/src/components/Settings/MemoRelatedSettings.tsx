@@ -144,9 +144,8 @@ const MemoRelatedSettings = () => {
             );
           })}
           <Input
-            className="w-32 !rounded-full !pl-3"
+            className="w-32 !rounded-full !pl-1"
             placeholder={t("common.input")}
-            size="sm"
             value={editingReaction}
             onChange={(event) => setEditingReaction(event.target.value.trim())}
             endDecorator={
@@ -185,9 +184,8 @@ const MemoRelatedSettings = () => {
             );
           })}
           <Input
-            className="w-32 !rounded-full !pl-3"
+            className="w-32 !rounded-full !pl-1"
             placeholder={t("common.input")}
-            size="sm"
             value={editingNsfwTag}
             onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
             endDecorator={

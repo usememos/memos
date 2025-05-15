@@ -98,7 +98,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
         <p className="title-text">
           {isCreating ? t("setting.webhook-section.create-dialog.create-webhook") : t("setting.webhook-section.create-dialog.edit-webhook")}
         </p>
-        <Button size="sm" variant="plain" onClick={() => destroy()}>
+        <Button variant="plain" onClick={() => destroy()}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>

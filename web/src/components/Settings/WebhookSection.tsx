@@ -85,7 +85,6 @@ const WebhookSection = () => {
                     <td className="relative whitespace-nowrap px-3 py-2 text-right text-sm">
                       <Button
                         variant="plain"
-                        size="sm"
                         onClick={() => {
                           handleDeleteWebhook(webhook);
                         }}

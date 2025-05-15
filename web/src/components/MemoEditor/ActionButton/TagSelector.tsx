@@ -43,8 +43,8 @@ const TagSelector = observer((props: Props) => {
   return (
     <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
       <MenuButton slots={{ root: "div" }}>
-        <Button size="sm" variant="plain">
-          <HashIcon className="w-5 h-5 mx-auto" />
+        <Button variant="plain" className="p-0">
+          <HashIcon className="w-5 h-5" />
         </Button>
       </MenuButton>
       <Menu className="relative" component="div" size="sm" placement="bottom-start">

@@ -129,8 +129,8 @@ const AddMemoRelationPopover = (props: Props) => {
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger className="w-9 relative">
-        <Button className="flex items-center justify-center" size="sm" variant="plain" asChild>
+      <PopoverTrigger className="relative">
+        <Button className="flex items-center justify-center p-0" variant="plain" asChild>
           <LinkIcon className="w-5 h-5 mx-auto p-0" />
         </Button>
       </PopoverTrigger>
@@ -174,7 +174,7 @@ const AddMemoRelationPopover = (props: Props) => {
           />
           <div className="mt-2 w-full flex flex-row justify-end items-center gap-2">
             <Checkbox size="sm" label={"Embed"} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
-            <Button size="sm" color="primary" onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
+            <Button color="primary" onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
               {t("common.add")}
             </Button>
           </div>
