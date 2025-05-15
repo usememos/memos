@@ -10,7 +10,7 @@ import { userStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
+import showCreateUserDialog from "../CreateUserDialog";
 
 interface LocalState {
   creatingUser: User;
@@ -104,10 +104,6 @@ const MemberSection = () => {
         role: User_Role.USER,
       }),
     });
-  };
-
-  const handleChangePasswordClick = (user: User) => {
-    showChangeMemberPasswordDialog(user);
   };
 
   const handleArchiveUserClick = async (user: User) => {
@@ -222,9 +218,7 @@ const MemberSection = () => {
                           <MoreVerticalIcon className="w-4 h-auto" />
                         </MenuButton>
                         <Menu placement="bottom-end" size="sm">
-                          <MenuItem onClick={() => handleChangePasswordClick(user)}>
-                            {t("setting.account-section.change-password")}
-                          </MenuItem>
+                          <MenuItem onClick={() => showCreateUserDialog(user, () => fetchUsers())}>{t("common.update")}</MenuItem>
                           {user.state === State.NORMAL ? (
                             <MenuItem onClick={() => handleArchiveUserClick(user)}>{t("setting.member-section.archive-member")}</MenuItem>
                           ) : (

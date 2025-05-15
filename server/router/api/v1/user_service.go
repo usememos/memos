@@ -145,11 +145,9 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 }
 
 func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserRequest) (*v1pb.User, error) {
-	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
+	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
-
 	userID, err := ExtractUserIDFromName(request.User.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -158,11 +156,10 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
+	// Check permission.
+	// Only allow admin or self to update user.
 	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
-		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
 
 	user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
@@ -177,6 +174,10 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	update := &store.UpdateUser{
 		ID:        user.ID,
 		UpdatedTs: &currentTs,
+	}
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "username" {
@@ -199,6 +200,10 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		} else if field == "description" {
 			update.Description = &request.User.Description
 		} else if field == "role" {
+			// Only allow admin to update role.
+			if currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
+				return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+			}
 			role := convertUserRoleToStore(request.User.Role)
 			update.Role = &role
 		} else if field == "password" {

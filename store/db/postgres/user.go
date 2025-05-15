@@ -51,6 +51,9 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	if v := update.Description; v != nil {
 		set, args = append(set, "description = "+placeholder(len(args)+1)), append(args, *v)
 	}
+	if v := update.Role; v != nil {
+		set, args = append(set, "role = "+placeholder(len(args)+1)), append(args, *v)
+	}
 
 	query := `
 		UPDATE "user"
