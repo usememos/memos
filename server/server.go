@@ -18,6 +18,7 @@ import (
 	"google.golang.org/grpc"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/importer"
 	"github.com/usememos/memos/server/profile"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/frontend"
@@ -83,7 +84,9 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		))
 	s.grpcServer = grpcServer
 
-	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, grpcServer)
+	imp := importer.New(s.Store)
+
+	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, imp, grpcServer)
 	// Register gRPC gateway as api v1.
 	if err := apiV1Service.RegisterGateway(ctx, echoServer); err != nil {
 		return nil, errors.Wrap(err, "failed to register gRPC gateway")
