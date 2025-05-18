@@ -2,19 +2,29 @@ import { DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSens
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { XIcon } from "lucide-react";
 import { Resource } from "@/types/proto/api/v1/resource_service";
+import { useTranslate } from "@/utils/i18n";
 import ResourceIcon from "../ResourceIcon";
 import SortableItem from "./SortableItem";
 
 interface Props {
   resourceList: Resource[];
   setResourceList: (resourceList: Resource[]) => void;
+  checkIfSafeToDeleteResource?: (resource: Resource) => boolean;
 }
 
 const ResourceListView = (props: Props) => {
-  const { resourceList, setResourceList } = props;
+  const { resourceList, setResourceList, checkIfSafeToDeleteResource } = props;
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
+  const t = useTranslate();
 
   const handleDeleteResource = async (name: string) => {
+    if (
+      typeof checkIfSafeToDeleteResource === "function" &&
+      !checkIfSafeToDeleteResource(resourceList.find((resource) => resource.name === name)!)
+    ) {
+      const confirmationText = t("resource.delete-confirm-referenced");
+      if (!window.confirm(confirmationText)) return;
+    }
     setResourceList(resourceList.filter((resource) => resource.name !== name));
   };
 

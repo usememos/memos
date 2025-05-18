@@ -20,6 +20,7 @@ import { Resource } from "@/types/proto/api/v1/resource_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
+import { getResourceUrl } from "@/utils/resource";
 import VisibilityIcon from "../VisibilityIcon";
 import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import LocationSelector from "./ActionButton/LocationSelector";
@@ -185,6 +186,14 @@ const MemoEditor = observer((props: Props) => {
       ...prevState,
       resourceList,
     }));
+  };
+
+  const checkIfSafeToDeleteResource = (resource: Resource): boolean => {
+    const content = editorRef.current?.getContent();
+    const marker = `(${getResourceUrl(resource)})`;
+    if (content && content.includes(marker)) return false; // referenced!
+
+    return true;
   };
 
   const handleSetRelationList = (relationList: MemoRelation[]) => {
@@ -513,7 +522,11 @@ const MemoEditor = observer((props: Props) => {
           />
         )}
         <Editor ref={editorRef} {...editorConfig} />
-        <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
+        <ResourceListView
+          resourceList={state.resourceList}
+          setResourceList={handleSetResourceList}
+          checkIfSafeToDeleteResource={checkIfSafeToDeleteResource}
+        />
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
         <div className="relative w-full flex flex-row justify-between items-center pt-2" onFocus={(e) => e.stopPropagation()}>
           <div className="flex flex-row justify-start items-center opacity-80 dark:opacity-60 space-x-2">
