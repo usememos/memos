@@ -307,7 +307,7 @@ const MemoEditor = observer((props: Props) => {
 
       if (editor) {
         // create a placeholder for uploaded files, and select it.
-        placeholder = `<resource_${Date.now()}>`;
+        placeholder = `[[resources/${Date.now()}?uploading]]`;
         const position = editor.getCursorPosition();
         editor.insertText(placeholder);
         editor.setCursorPosition(position, position + placeholder.length);
