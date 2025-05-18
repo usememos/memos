@@ -48,7 +48,11 @@ export const isResourceEmbeddedInContent = (content: string | undefined, resourc
   if (!content) return false;
 
   if (content.includes(`(${getResourceUrl(resource)})`)) return true;
-  if (content.includes(`[[${resource.name}]]`)) return true; // marker like ![[resources/1234]]
+
+  // match markers like ![[resources/1234]]
+  // regex: /\[\[resources\/123456(\?[^\]]*)?\]\]/
+  const re = new RegExp(`\\[\\[${resource.name.replace(/\//g, "\\/")}(\\?[^\\]]*)?\\]\\]`);
+  if (re.test(content)) return true;
 
   return false;
 };

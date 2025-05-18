@@ -1,5 +1,4 @@
 import { Resource } from "@/types/proto/api/v1/resource_service";
-import { getResourceUrl } from "@/utils/resource";
 import { EditorRefActions } from "./Editor";
 
 export const handleEditorKeydownWithMarkdownShortcuts = (event: React.KeyboardEvent, editorRef: EditorRefActions) => {
@@ -62,14 +61,19 @@ export function insertResourceText(editor: EditorRefActions, resources: Resource
 
   const insertingParts: string[] = [];
   for (const res of resources) {
-    const isImage = String(res.type).startsWith("image/");
-    const title = res.filename;
-    const url = getResourceUrl(res);
+    insertingParts.push(`[[${res.name}?name=${encodeURIComponent(res.filename)}]]`);
 
-    let part = `[${title}](${url})`;
-    if (isImage) part = `!${part}`;
+    // -----
+    // or create a normal Markdown?
 
-    insertingParts.push(part);
+    // const isImage = String(res.type).startsWith("image/");
+    // const title = res.filename;
+    // const url = getResourceUrl(res);
+
+    // let part = `[${title}](${url})`;
+    // if (isImage) part = `!${part}`;
+
+    // insertingParts.push(part);
   }
   const inserting = insertingParts.join(" ");
 
