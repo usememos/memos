@@ -12,6 +12,9 @@ interface Props {
 
 const getAdditionalClassNameWithParams = (params: URLSearchParams) => {
   const additionalClassNames = [];
+  if (params.has("inline")) {
+    additionalClassNames.push("inline-block");
+  }
   if (params.has("align")) {
     const align = params.get("align");
     if (align === "center") {
@@ -54,7 +57,7 @@ const EmbeddedResource = ({ resourceId: uid, params: paramsStr }: Props) => {
 
   return (
     <div className={cn("max-w-full", getAdditionalClassNameWithParams(params))}>
-      <MemoResourceListView resources={[resource]} />
+      <MemoResourceListView resources={[resource]} allowFullWidth={params.has("inline")} />
     </div>
   );
 };

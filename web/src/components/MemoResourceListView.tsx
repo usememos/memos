@@ -10,10 +10,12 @@ const MemoResourceListView = ({
   memo,
   resources = [],
   noThumbnailForEmbedded,
+  allowFullWidth,
 }: {
   memo?: Memo;
   resources: Resource[];
   noThumbnailForEmbedded?: boolean;
+  allowFullWidth?: boolean;
 }) => {
   const mediaResources: Resource[] = [];
   const otherResources: Resource[] = [];
@@ -76,7 +78,10 @@ const MemoResourceListView = ({
 
   const MediaList = ({ resources = [] }: { resources: Resource[] }) => {
     const cards = resources.map((resource) => (
-      <div key={resource.name} className="max-w-[70%] grow flex flex-col justify-start items-start shrink-0">
+      <div
+        key={resource.name}
+        className={cn(allowFullWidth ? "max-w-full" : "max-w-[70%]", "grow flex flex-col justify-start items-start shrink-0")}
+      >
         <MediaCard className="max-h-64 grow" resource={resource} />
       </div>
     ));

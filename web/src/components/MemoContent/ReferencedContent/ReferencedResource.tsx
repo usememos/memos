@@ -6,7 +6,7 @@ interface Props {
 }
 
 const ReferencedResource = ({ resourceId: uid, params }: Props) => {
-  return <EmbeddedResource resourceId={uid} params={params} />;
+  return <EmbeddedResource resourceId={uid} params={`inline&${params}`} />;
 };
 
 export default ReferencedResource;
