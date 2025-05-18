@@ -57,6 +57,7 @@ const MemoResourceListView = ({
           className={cn("cursor-pointer h-full w-auto rounded-lg border dark:border-zinc-800 object-contain hover:opacity-80", className)}
           src={resource.externalLink ? resourceUrl : resourceUrl + "?thumbnail=true"}
           onClick={() => handleImageClick(resourceUrl)}
+          data-is-resource-media
           decoding="async"
           loading="lazy"
         />

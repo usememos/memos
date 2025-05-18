@@ -79,7 +79,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const handleMemoContentClick = useCallback(async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
-    if (targetEl.tagName === "IMG") {
+    if (targetEl.tagName === "IMG" && !targetEl.hasAttribute("data-is-resource-media")) {
       const imgUrl = targetEl.getAttribute("src");
       if (imgUrl) {
         showPreviewImageDialog([imgUrl], 0);
