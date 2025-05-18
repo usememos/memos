@@ -20,7 +20,7 @@ import { Resource } from "@/types/proto/api/v1/resource_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
-import { getResourceUrl } from "@/utils/resource";
+import { isResourceEmbeddedInContent } from "@/utils/resource";
 import VisibilityIcon from "../VisibilityIcon";
 import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import LocationSelector from "./ActionButton/LocationSelector";
@@ -190,10 +190,7 @@ const MemoEditor = observer((props: Props) => {
 
   const checkIfSafeToDeleteResource = (resource: Resource): boolean => {
     const content = editorRef.current?.getContent();
-    const marker = `(${getResourceUrl(resource)})`;
-    if (content && content.includes(marker)) return false; // referenced!
-
-    return true;
+    return !isResourceEmbeddedInContent(content, resource);
   };
 
   const handleSetRelationList = (relationList: MemoRelation[]) => {

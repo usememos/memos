@@ -1,9 +1,8 @@
 import { memo } from "react";
-import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { cn } from "@/utils";
-import { getResourceType, getResourceUrl } from "@/utils/resource";
+import { getResourceType, getResourceUrl, isResourceEmbeddedInContent } from "@/utils/resource";
 import MemoResource from "./MemoResource";
 import showPreviewImageDialog from "./PreviewImageDialog";
 
@@ -23,12 +22,7 @@ const MemoResourceListView = ({
     const type = getResourceType(resource);
     if (type === "image/*" || type === "video/*") {
       let useThumbnail = true;
-      if (memo && noThumbnailForEmbedded) {
-        const urlMarker = `(${getResourceUrl(resource)})`;
-        if (memo.content.includes(urlMarker)) useThumbnail = false;
-        if (memo.nodes?.some((x) => x.type === NodeType.EMBEDDED_CONTENT && x.embeddedContentNode?.resourceName === resource.name))
-          useThumbnail = false;
-      }
+      if (memo && noThumbnailForEmbedded) useThumbnail = !isResourceEmbeddedInContent(memo.content, resource);
 
       if (useThumbnail) {
         mediaResources.push(resource);

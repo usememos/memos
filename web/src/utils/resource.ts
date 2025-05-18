@@ -43,3 +43,12 @@ export const isImage = (t: string) => {
 const isPSD = (t: string) => {
   return t === "image/vnd.adobe.photoshop" || t === "image/x-photoshop" || t === "image/photoshop";
 };
+
+export const isResourceEmbeddedInContent = (content: string | undefined, resource: Resource): boolean => {
+  if (!content) return false;
+
+  if (content.includes(`(${getResourceUrl(resource)})`)) return true;
+  if (content.includes(`[[${resource.name}]]`)) return true; // marker like ![[resources/1234]]
+
+  return false;
+};
