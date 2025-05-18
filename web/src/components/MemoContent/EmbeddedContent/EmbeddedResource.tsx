@@ -38,7 +38,7 @@ const getAdditionalClassNameWithParams = (params: URLSearchParams) => {
 const EmbeddedResource = ({ resourceId: uid, params: paramsStr }: Props) => {
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
-  const resource = resourceStore.getResourceByName(uid);
+  const resource = resourceStore.getResourceByName(`resources/${uid}`);
   const params = new URLSearchParams(paramsStr);
 
   useEffect(() => {
