@@ -231,7 +231,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
               parentPage={parentPage}
             />
             {memo.location && <MemoLocationView location={memo.location} />}
-            <MemoResourceListView resources={memo.resources} />
+            <MemoResourceListView memo={memo} resources={memo.resources} noThumbnailForEmbedded />
             <MemoRelationListView memo={memo} relations={referencedMemos} parentPage={parentPage} />
             <MemoReactionistView memo={memo} reactions={memo.reactions} />
           </div>
