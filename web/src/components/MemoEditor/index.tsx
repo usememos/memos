@@ -29,7 +29,7 @@ import UploadResourceButton from "./ActionButton/UploadResourceButton";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
-import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
+import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText, insertResourceText } from "./handlers";
 import { MemoEditorContext } from "./types";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -233,7 +233,7 @@ const MemoEditor = observer((props: Props) => {
     }
   };
 
-  const uploadMultiFiles = async (files: FileList) => {
+  const uploadMultiFiles = async (files: FileList): Promise<Resource[]> => {
     const uploadedResourceList: Resource[] = [];
     for (const file of files) {
       const resource = await handleUploadResource(file);
@@ -256,6 +256,7 @@ const MemoEditor = observer((props: Props) => {
         resourceList: [...prevState.resourceList, ...uploadedResourceList],
       }));
     }
+    return uploadedResourceList;
   };
 
   const handleDropEvent = async (event: React.DragEvent) => {
@@ -294,7 +295,20 @@ const MemoEditor = observer((props: Props) => {
   const handlePasteEvent = async (event: React.ClipboardEvent) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
-      await uploadMultiFiles(event.clipboardData.files);
+
+      const editor = editorRef.current;
+      let placeholder = "";
+
+      if (editor) {
+        placeholder = `<resource_${Date.now()}>`;
+        editor.insertText(placeholder);
+      }
+
+      const resources = await uploadMultiFiles(event.clipboardData.files);
+
+      if (editor) {
+        insertResourceText(editor, resources, placeholder);
+      }
     } else if (
       editorRef.current != null &&
       editorRef.current.getSelectedContent().length != 0 &&

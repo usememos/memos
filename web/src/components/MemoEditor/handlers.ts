@@ -1,3 +1,5 @@
+import { Resource } from "@/types/proto/api/v1/resource_service";
+import { getResourceUrl } from "@/utils/resource";
 import { EditorRefActions } from "./Editor";
 
 export const handleEditorKeydownWithMarkdownShortcuts = (event: React.KeyboardEvent, editorRef: EditorRefActions) => {
@@ -50,3 +52,32 @@ const styleHighlightedText = (editor: EditorRefActions, delimiter: string) => {
     editor.setCursorPosition(cursorPosition + delimiter.length, cursorPosition + delimiter.length + selectedContent.length);
   }
 };
+
+export function insertResourceText(editor: EditorRefActions, resources: Resource[], placeholder: string) {
+  let text = editor.getContent();
+  const pos = text.indexOf(placeholder);
+  if (pos === -1) return;
+
+  const insertingParts: string[] = [];
+  for (const res of resources) {
+    const isImage = String(res.type).startsWith("image/");
+    const title = res.filename;
+    const url = getResourceUrl(res);
+
+    let part = `[${title}](${url})`;
+    if (isImage) part = `!${part}`;
+
+    insertingParts.push(part);
+  }
+  const inserting = insertingParts.join(" ");
+
+  // compute new cursorPos
+  let cursorPos = editor.getCursorPosition();
+  if (cursorPos >= pos + placeholder.length) cursorPos += inserting.length - placeholder.length;
+  else if (cursorPos > pos) cursorPos = pos + inserting.length;
+
+  text = text.slice(0, pos) + inserting + text.slice(pos + placeholder.length);
+
+  editor.setContent(text);
+  editor.setCursorPosition(cursorPos);
+}
