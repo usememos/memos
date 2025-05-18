@@ -54,6 +54,8 @@ const styleHighlightedText = (editor: EditorRefActions, delimiter: string) => {
 };
 
 export function insertResourceText(editor: EditorRefActions, resources: Resource[], placeholder: string) {
+  if (!placeholder) return;
+
   let text = editor.getContent();
   const pos = text.indexOf(placeholder);
   if (pos === -1) return;
@@ -73,11 +75,17 @@ export function insertResourceText(editor: EditorRefActions, resources: Resource
 
   // compute new cursorPos
   let cursorPos = editor.getCursorPosition();
-  if (cursorPos >= pos + placeholder.length) cursorPos += inserting.length - placeholder.length;
-  else if (cursorPos > pos) cursorPos = pos + inserting.length;
+  let selectionLength = 0;
+
+  if (cursorPos > pos + placeholder.length) {
+    cursorPos += inserting.length - placeholder.length;
+  } else if (cursorPos >= pos) {
+    cursorPos = pos;
+    selectionLength = inserting.length;
+  }
 
   text = text.slice(0, pos) + inserting + text.slice(pos + placeholder.length);
 
   editor.setContent(text);
-  editor.setCursorPosition(cursorPos);
+  editor.setCursorPosition(cursorPos, cursorPos + selectionLength);
 }

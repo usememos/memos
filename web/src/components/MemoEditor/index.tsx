@@ -309,8 +309,11 @@ const MemoEditor = observer((props: Props) => {
       let placeholder = "";
 
       if (editor) {
+        // create a placeholder for uploaded files, and select it.
         placeholder = `<resource_${Date.now()}>`;
+        const position = editor.getCursorPosition();
         editor.insertText(placeholder);
+        editor.setCursorPosition(position, position + placeholder.length);
       }
 
       const resources = await uploadMultiFiles(event.clipboardData.files);
