@@ -138,8 +138,6 @@ export interface WorkspaceMemoRelatedSetting {
   enableLinkPreview: boolean;
   /** enable_comment enables comment. */
   enableComment: boolean;
-  /** enable_location enables setting location for memo. */
-  enableLocation: boolean;
   /** reactions is the list of reactions. */
   reactions: string[];
   /** disable_markdown_shortcuts disallow the registration of markdown shortcuts. */
@@ -689,7 +687,6 @@ function createBaseWorkspaceMemoRelatedSetting(): WorkspaceMemoRelatedSetting {
     enableDoubleClickEdit: false,
     enableLinkPreview: false,
     enableComment: false,
-    enableLocation: false,
     reactions: [],
     disableMarkdownShortcuts: false,
     enableBlurNsfwContent: false,
@@ -716,9 +713,6 @@ export const WorkspaceMemoRelatedSetting: MessageFns<WorkspaceMemoRelatedSetting
     }
     if (message.enableComment !== false) {
       writer.uint32(56).bool(message.enableComment);
-    }
-    if (message.enableLocation !== false) {
-      writer.uint32(64).bool(message.enableLocation);
     }
     for (const v of message.reactions) {
       writer.uint32(82).string(v!);
@@ -790,14 +784,6 @@ export const WorkspaceMemoRelatedSetting: MessageFns<WorkspaceMemoRelatedSetting
           message.enableComment = reader.bool();
           continue;
         }
-        case 8: {
-          if (tag !== 64) {
-            break;
-          }
-
-          message.enableLocation = reader.bool();
-          continue;
-        }
         case 10: {
           if (tag !== 82) {
             break;
@@ -850,7 +836,6 @@ export const WorkspaceMemoRelatedSetting: MessageFns<WorkspaceMemoRelatedSetting
     message.enableDoubleClickEdit = object.enableDoubleClickEdit ?? false;
     message.enableLinkPreview = object.enableLinkPreview ?? false;
     message.enableComment = object.enableComment ?? false;
-    message.enableLocation = object.enableLocation ?? false;
     message.reactions = object.reactions?.map((e) => e) || [];
     message.disableMarkdownShortcuts = object.disableMarkdownShortcuts ?? false;
     message.enableBlurNsfwContent = object.enableBlurNsfwContent ?? false;

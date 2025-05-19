@@ -669,8 +669,6 @@ type WorkspaceMemoRelatedSetting struct {
 	EnableLinkPreview bool `protobuf:"varint,6,opt,name=enable_link_preview,json=enableLinkPreview,proto3" json:"enable_link_preview,omitempty"`
 	// enable_comment enables comment.
 	EnableComment bool `protobuf:"varint,7,opt,name=enable_comment,json=enableComment,proto3" json:"enable_comment,omitempty"`
-	// enable_location enables setting location for memo.
-	EnableLocation bool `protobuf:"varint,8,opt,name=enable_location,json=enableLocation,proto3" json:"enable_location,omitempty"`
 	// reactions is the list of reactions.
 	Reactions []string `protobuf:"bytes,10,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	// disable markdown shortcuts
@@ -755,13 +753,6 @@ func (x *WorkspaceMemoRelatedSetting) GetEnableComment() bool {
 	return false
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetEnableLocation() bool {
-	if x != nil {
-		return x.EnableLocation
-	}
-	return false
-}
-
 func (x *WorkspaceMemoRelatedSetting) GetReactions() []string {
 	if x != nil {
 		return x.Reactions
@@ -839,20 +830,19 @@ const file_store_workspace_setting_proto_rawDesc = "" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xb7\x04\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\x94\x04\n" +
 	"\x1bWorkspaceMemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x05 \x01(\bR\x15enableDoubleClickEdit\x12.\n" +
 	"\x13enable_link_preview\x18\x06 \x01(\bR\x11enableLinkPreview\x12%\n" +
-	"\x0eenable_comment\x18\a \x01(\bR\renableComment\x12'\n" +
-	"\x0fenable_location\x18\b \x01(\bR\x0eenableLocation\x12\x1c\n" +
+	"\x0eenable_comment\x18\a \x01(\bR\renableComment\x12\x1c\n" +
 	"\treactions\x18\n" +
 	" \x03(\tR\treactions\x12<\n" +
 	"\x1adisable_markdown_shortcuts\x18\v \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\f \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
-	"\tnsfw_tags\x18\r \x03(\tR\bnsfwTagsJ\x04\b\x04\x10\x05*s\n" +
+	"\tnsfw_tags\x18\r \x03(\tR\bnsfwTagsJ\x04\b\x04\x10\x05J\x04\b\b\x10\t*s\n" +
 	"\x13WorkspaceSettingKey\x12%\n" +
 	"!WORKSPACE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\v\n" +

@@ -94,13 +94,6 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.memo-related-settings.enable-memo-location")}</span>
-        <Switch
-          checked={memoRelatedSetting.enableLocation}
-          onChange={(event) => updatePartialSetting({ enableLocation: event.target.checked })}
-        />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.enable-double-click-to-edit")}</span>
         <Switch
           checked={memoRelatedSetting.enableDoubleClickEdit}
