@@ -65,9 +65,9 @@ const SignIn = () => {
         </div>
         {!workspaceGeneralSetting.disallowPasswordAuth ? (
           <PasswordSignInForm />
-        ) : (identityProviderList.length == 0 && (
-          <p className="w-full text-2xl mt-2 dark:text-gray-500">Password auth is not allowed.</p>
-        ))}
+        ) : (
+          identityProviderList.length == 0 && <p className="w-full text-2xl mt-2 dark:text-gray-500">Password auth is not allowed.</p>
+        )}
         {!workspaceGeneralSetting.disallowUserRegistration && !workspaceGeneralSetting.disallowPasswordAuth && (
           <p className="w-full mt-4 text-sm">
             <span className="dark:text-gray-500">{t("auth.sign-up-tip")}</span>
