@@ -45,24 +45,22 @@ const RootLayout = observer(() => {
   return !initialized ? (
     <Loading />
   ) : (
-    <div className="w-full min-h-full">
-      <div className={cn("w-full transition-all mx-auto flex flex-row justify-center items-start", "sm:pl-16")}>
-        {sm && (
-          <div
-            className={cn(
-              "group flex flex-col justify-start items-start fixed top-0 left-0 select-none border-r dark:border-zinc-800 h-full bg-zinc-100 dark:bg-zinc-800 dark:bg-opacity-40 transition-all hover:shadow-xl z-2",
-              "w-16 px-2",
-            )}
-          >
-            <Navigation collapsed={true} />
-          </div>
-        )}
-        <main className="w-full h-auto flex-grow shrink flex flex-col justify-start items-center">
-          <Suspense fallback={<Loading />}>
-            <Outlet />
-          </Suspense>
-        </main>
-      </div>
+    <div className="w-full min-h-full flex flex-row justify-center items-start sm:pl-16">
+      {sm && (
+        <div
+          className={cn(
+            "group flex flex-col justify-start items-start fixed top-0 left-0 select-none border-r dark:border-zinc-800 h-full bg-zinc-100 dark:bg-zinc-800 dark:bg-opacity-40",
+            "w-16 px-2",
+          )}
+        >
+          <Navigation collapsed={true} />
+        </div>
+      )}
+      <main className="w-full h-auto flex-grow shrink flex flex-col justify-start items-center">
+        <Suspense fallback={<Loading />}>
+          <Outlet />
+        </Suspense>
+      </main>
     </div>
   );
 });
