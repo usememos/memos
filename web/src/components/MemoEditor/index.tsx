@@ -522,9 +522,8 @@ const MemoEditor = observer((props: Props) => {
         <div className="w-full flex flex-row justify-between items-center py-3 gap-2 overflow-auto dark:border-t-zinc-500">
           <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
             <Select
-              className="!text-sm"
               variant="plain"
-              size="md"
+              size="sm"
               value={state.memoVisibility}
               startDecorator={<VisibilityIcon visibility={state.memoVisibility} />}
               onChange={(_, visibility) => {

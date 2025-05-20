@@ -1,3 +1,6 @@
+@import url("highlight.js/styles/github.css") (prefers-color-scheme: light);
+@import url("highlight.js/styles/github-dark.css") (prefers-color-scheme: dark);
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
