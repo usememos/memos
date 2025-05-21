@@ -46,11 +46,11 @@ const Home = observer(() => {
       conditions.push(`tag_search == [${tagSearch.join(", ")}]`);
     }
     return conditions.join(" && ");
-  }, [user, memoFilterStore.filters, viewStore.state.orderByTimeAsc]);
+  }, [user, memoFilterStore.filters, viewStore.state.compact, viewStore.state.orderByTimeAsc]);
 
   return (
     <PagedMemoList
-      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
+      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact={viewStore.state.compact} />}
       listSort={(memos: Memo[]) =>
         memos
           .filter((memo) => memo.state === State.NORMAL)

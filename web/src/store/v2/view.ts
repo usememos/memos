@@ -5,6 +5,7 @@ const LOCAL_STORAGE_KEY = "memos-view-setting";
 class LocalState {
   orderByTimeAsc: boolean = false;
   layout: "LIST" | "MASONRY" = "LIST";
+  compact: boolean = true;
 
   constructor() {
     makeAutoObservable(this);
@@ -35,6 +36,9 @@ const viewStore = (() => {
     const cache = JSON.parse(localCache);
     if (Object.hasOwn(cache, "orderByTimeAsc")) {
       viewStore.state.setPartial({ orderByTimeAsc: Boolean(cache.orderByTimeAsc) });
+    }
+    if (Object.hasOwn(cache, "compact")) {
+      viewStore.state.setPartial({ compact: Boolean(cache.compact) });
     }
     if (Object.hasOwn(cache, "layout")) {
       if (["LIST", "MASONRY"].includes(cache.layout)) {
