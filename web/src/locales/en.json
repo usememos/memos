@@ -213,6 +213,7 @@
       "title": "Create Resource",
       "upload-method": "Upload method"
     },
+    "delete-confirm-referenced": "Resource is referenced in memo content, delete anyway?",
     "delete-resource": "Delete Resource",
     "delete-selected-resources": "Delete Selected Resources",
     "fetching-data": "Fetching data…",

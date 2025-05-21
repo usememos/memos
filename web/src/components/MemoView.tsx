@@ -79,7 +79,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const handleMemoContentClick = useCallback(async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
-    if (targetEl.tagName === "IMG") {
+    if (targetEl.tagName === "IMG" && !targetEl.hasAttribute("data-is-resource-media")) {
       const imgUrl = targetEl.getAttribute("src");
       if (imgUrl) {
         showPreviewImageDialog([imgUrl], 0);
@@ -231,7 +231,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
               parentPage={parentPage}
             />
             {memo.location && <MemoLocationView location={memo.location} />}
-            <MemoResourceListView resources={memo.resources} />
+            <MemoResourceListView memo={memo} resources={memo.resources} noThumbnailForEmbedded />
             <MemoRelationListView memo={memo} relations={referencedMemos} parentPage={parentPage} />
             <MemoReactionistView memo={memo} reactions={memo.reactions} />
           </div>
