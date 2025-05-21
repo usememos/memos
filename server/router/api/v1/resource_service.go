@@ -188,6 +188,12 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 	if strings.HasPrefix(contentType, "text/") {
 		contentType += "; charset=utf-8"
 	}
+	// Prevent XSS attacks by serving potentially unsafe files with a content type that prevents script execution.
+	if strings.EqualFold(contentType, "image/svg+xml") ||
+		strings.EqualFold(contentType, "text/html") ||
+		strings.EqualFold(contentType, "application/xhtml+xml") {
+		contentType = "application/octet-stream"
+	}
 
 	return &httpbody.HttpBody{
 		ContentType: contentType,
