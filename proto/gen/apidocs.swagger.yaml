@@ -11,6 +11,7 @@ tags:
   - name: MarkdownService
   - name: ResourceService
   - name: MemoService
+  - name: MemoCommentService
   - name: WebhookService
   - name: WorkspaceService
   - name: WorkspaceSettingService
@@ -724,9 +725,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: identityProvider.name
-          description: |-
-            The name of the identityProvider.
-            Format: identityProviders/{id}, id is the system generated auto-incremented id.
+          description: "The name of the identityProvider.\r\nFormat: identityProviders/{id}, id is the system generated auto-incremented id."
           in: path
           required: true
           type: string
@@ -764,9 +763,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: inbox.name
-          description: |-
-            The name of the inbox.
-            Format: inboxes/{id}, id is the system generated auto-incremented id.
+          description: "The name of the inbox.\r\nFormat: inboxes/{id}, id is the system generated auto-incremented id."
           in: path
           required: true
           type: string
@@ -1199,7 +1196,7 @@ paths:
   /api/v1/{name}/comments:
     get:
       summary: ListMemoComments lists comments for a memo.
-      operationId: MemoService_ListMemoComments
+      operationId: MemoCommentService_ListMemoComments
       responses:
         "200":
           description: A successful response.
@@ -1217,10 +1214,10 @@ paths:
           type: string
           pattern: memos/[^/]+
       tags:
-        - MemoService
+        - MemoCommentService
     post:
       summary: CreateMemoComment creates a comment for a memo.
-      operationId: MemoService_CreateMemoComment
+      operationId: MemoCommentService_CreateMemoComment
       responses:
         "200":
           description: A successful response.
@@ -1244,7 +1241,7 @@ paths:
           schema:
             $ref: '#/definitions/apiv1Memo'
       tags:
-        - MemoService
+        - MemoCommentService
   /api/v1/{name}/reactions:
     get:
       summary: ListMemoReactions lists reactions for a memo.
@@ -2092,9 +2089,7 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          The name of the identityProvider.
-          Format: identityProviders/{id}, id is the system generated auto-incremented id.
+        description: "The name of the identityProvider.\r\nFormat: identityProviders/{id}, id is the system generated auto-incremented id."
       type:
         $ref: '#/definitions/apiv1IdentityProviderType'
       title:
@@ -2642,9 +2637,7 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          The name of the inbox.
-          Format: inboxes/{id}, id is the system generated auto-incremented id.
+        description: "The name of the inbox.\r\nFormat: inboxes/{id}, id is the system generated auto-incremented id."
       sender:
         type: string
         title: 'Format: users/{user}'
@@ -2732,9 +2725,7 @@ definitions:
           $ref: '#/definitions/v1Inbox'
       nextPageToken:
         type: string
-        description: |-
-          A token, which can be sent as `page_token` to retrieve the next page.
-          If this field is omitted, there are no subsequent pages.
+        description: "A token, which can be sent as `page_token` to retrieve the next page.\r\nIf this field is omitted, there are no subsequent pages."
   v1ListMemoCommentsResponse:
     type: object
     properties:
@@ -3043,14 +3034,10 @@ definitions:
         format: int32
       creator:
         type: string
-        title: |-
-          The name of the creator.
-          Format: users/{user}
+        title: "The name of the creator.\r\nFormat: users/{user}"
       contentId:
         type: string
-        description: |-
-          The content identifier.
-          For memo, it should be the `Memo.name`.
+        description: "The content identifier.\r\nFor memo, it should be the `Memo.name`."
       reactionType:
         type: string
   v1ReferencedContentNode:
@@ -3320,9 +3307,7 @@ definitions:
     properties:
       owner:
         type: string
-        title: |-
-          The name of instance owner.
-          Format: users/{user}
+        title: "The name of instance owner.\r\nFormat: users/{user}"
       version:
         type: string
         title: version is the current version of instance
