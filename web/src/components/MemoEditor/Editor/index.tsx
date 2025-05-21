@@ -192,7 +192,19 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       } else if (lastNode.type === NodeType.ORDERED_LIST_ITEM) {
         const { number } = lastNode.orderedListItemNode as OrderedListItemNode;
         insertText += `${Number(number) + 1}. `;
+      } else if (lastNode.type === NodeType.TABLE) {
+        const columns = lastNode.tableNode?.header.length;
+        if (!columns) {
+          return;
+        }
+
+        insertText += "| ";
+        for (let i = 1; i < columns; i++) {
+          insertText += " | ";
+        }
+        insertText += " |";
       }
+
       if (insertText) {
         editorActions.insertText(insertText);
       }
