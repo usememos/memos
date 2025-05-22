@@ -1,4 +1,4 @@
-import { Divider, Option, Select } from "@mui/joy";
+import { Divider, Option, Select, Switch } from "@mui/joy";
 import { observer } from "mobx-react-lite";
 import { userStore } from "@/store/v2";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
@@ -15,44 +15,37 @@ const PreferencesSection = observer(() => {
   const setting = userStore.state.userSetting as UserSetting;
 
   const handleLocaleSelectChange = async (locale: Locale) => {
-    await userStore.updateUserSetting(
-      {
-        locale,
-      },
-      ["locale"],
-    );
+    await userStore.updateUserSetting({ locale }, ["locale"]);
   };
 
   const handleAppearanceSelectChange = async (appearance: Appearance) => {
-    await userStore.updateUserSetting(
-      {
-        appearance,
-      },
-      ["appearance"],
-    );
+    await userStore.updateUserSetting({ appearance }, ["appearance"]);
   };
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {
-    await userStore.updateUserSetting(
-      {
-        memoVisibility: value,
-      },
-      ["memo_visibility"],
-    );
+    await userStore.updateUserSetting({ memoVisibility: value }, ["memo_visibility"]);
+  };
+
+  const handleInfiniteScrollingToggle = async (checked: boolean) => {
+    await userStore.updateUserSetting({ infiniteScrollingEnabled: checked }, ["infinite_scrolling_enabled"]);
   };
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
+
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("common.language")}</span>
         <LocaleSelect value={setting.locale} onChange={handleLocaleSelectChange} />
       </div>
+
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.preference-section.theme")}</span>
         <AppearanceSelect value={setting.appearance as Appearance} onChange={handleAppearanceSelectChange} />
       </div>
+
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.preference")}</p>
+
       <div className="w-full flex flex-row justify-between items-center">
         <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>
         <Select
@@ -73,6 +66,15 @@ const PreferencesSection = observer(() => {
               </Option>
             ))}
         </Select>
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="truncate flex items-center gap-2">
+          {t("setting.preference-section.scrolling-infinite")}
+        </span>
+        <Switch
+          checked={setting.infiniteScrollingEnabled ?? false}
+          onChange={(e) => handleInfiniteScrollingToggle(e.target.checked)}
+        />
       </div>
 
       <Divider className="!my-3" />
