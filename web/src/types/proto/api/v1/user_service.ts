@@ -14,6 +14,39 @@ import { State, stateFromJSON, stateToNumber } from "./common";
 
 export const protobufPackage = "memos.api.v1";
 
+export enum ScrollMode {
+  BUTTON = "BUTTON",
+  INFINITE = "INFINITE",
+  UNRECOGNIZED = "UNRECOGNIZED",
+}
+
+export function scrollModeFromJSON(object: any): ScrollMode {
+  switch (object) {
+    case 0:
+    case "BUTTON":
+      return ScrollMode.BUTTON;
+    case 1:
+    case "INFINITE":
+      return ScrollMode.INFINITE;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return ScrollMode.UNRECOGNIZED;
+  }
+}
+
+export function scrollModeToNumber(object: ScrollMode): number {
+  switch (object) {
+    case ScrollMode.BUTTON:
+      return 0;
+    case ScrollMode.INFINITE:
+      return 1;
+    case ScrollMode.UNRECOGNIZED:
+    default:
+      return -1;
+  }
+}
+
 export interface User {
   /**
    * The name of the user.
@@ -170,6 +203,8 @@ export interface UserSetting {
   appearance: string;
   /** The default visibility of the memo. */
   memoVisibility: string;
+  /** Whether infinite scroll should be enabled */
+  scrollMode: ScrollMode;
 }
 
 export interface GetUserSettingRequest {
@@ -1198,7 +1233,7 @@ export const GetUserStatsRequest: MessageFns<GetUserStatsRequest> = {
 };
 
 function createBaseUserSetting(): UserSetting {
-  return { name: "", locale: "", appearance: "", memoVisibility: "" };
+  return { name: "", locale: "", appearance: "", memoVisibility: "", scrollMode: ScrollMode.BUTTON };
 }
 
 export const UserSetting: MessageFns<UserSetting> = {
@@ -1214,6 +1249,9 @@ export const UserSetting: MessageFns<UserSetting> = {
     }
     if (message.memoVisibility !== "") {
       writer.uint32(34).string(message.memoVisibility);
+    }
+    if (message.scrollMode !== ScrollMode.BUTTON) {
+      writer.uint32(40).int32(scrollModeToNumber(message.scrollMode));
     }
     return writer;
   },
@@ -1257,6 +1295,14 @@ export const UserSetting: MessageFns<UserSetting> = {
           message.memoVisibility = reader.string();
           continue;
         }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.scrollMode = scrollModeFromJSON(reader.int32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1275,6 +1321,7 @@ export const UserSetting: MessageFns<UserSetting> = {
     message.locale = object.locale ?? "";
     message.appearance = object.appearance ?? "";
     message.memoVisibility = object.memoVisibility ?? "";
+    message.scrollMode = object.scrollMode ?? ScrollMode.BUTTON;
     return message;
   },
 };

@@ -294,8 +294,9 @@
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
       "theme": "Theme",
-      "scrolling-infinite": "Enable infinite scroll",
-      "scrolling-button": "Load more button"
+      "scroll-mode": "Default scroll mode",
+      "scroll-with-button": "Use load more button",
+      "scroll-infinitely": "Use infinite scrolling"
     },
     "sso": "SSO",
     "sso-section": {

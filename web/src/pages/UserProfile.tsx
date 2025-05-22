@@ -16,6 +16,7 @@ import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
+import { ScrollMode } from "@/types/proto/store/user_setting";
 
 const UserProfile = observer(() => {
   const t = useTranslate();
@@ -23,6 +24,7 @@ const UserProfile = observer(() => {
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
   const memoFilterStore = useMemoFilterStore();
+  const enableInfiniteScroll = userStore.state.userSetting?.scrollMode == ScrollMode.INFINITE;
 
   useEffect(() => {
     const username = params.username;
@@ -115,7 +117,7 @@ const UserProfile = observer(() => {
                 owner={user.name}
                 direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
                 oldFilter={memoListFilter}
-                enableInfiniteScroll
+                enableInfiniteScroll={enableInfiniteScroll}
               />
             </>
           ) : (

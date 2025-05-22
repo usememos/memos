@@ -16,6 +16,13 @@ enum UserSettingKey {
   MEMO_VISIBILITY = 4;
   // The shortcuts of the user.
   SHORTCUTS = 5;
+  // Whether infinite scroll should be enabled
+  SCROLL_MODE = 6;
+}
+
+enum ScrollMode {
+  BUTTON = 0;
+  INFINITE = 1;
 }
 
 message UserSetting {
@@ -27,6 +34,7 @@ message UserSetting {
     string appearance = 5;
     string memo_visibility = 6;
     ShortcutsUserSetting shortcuts = 7;
+    ScrollMode scroll_mode = 8;
   }
 }
 

@@ -122,6 +122,11 @@ service UserService {
   }
 }
 
+enum ScrollMode {
+  BUTTON = 0;
+  INFINITE = 1;
+}
+
 message User {
   // The name of the user.
   // Format: users/{id}, id is the system generated auto-incremented id.
@@ -244,6 +249,8 @@ message UserSetting {
   string appearance = 3;
   // The default visibility of the memo.
   string memo_visibility = 4;
+  // Whether infinite scroll should be enabled
+  ScrollMode scroll_mode = 5;
 }
 
 message GetUserSettingRequest {

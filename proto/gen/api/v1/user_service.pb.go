@@ -26,6 +26,52 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type ScrollMode int32
+
+const (
+	ScrollMode_BUTTON   ScrollMode = 0
+	ScrollMode_INFINITE ScrollMode = 1
+)
+
+// Enum value maps for ScrollMode.
+var (
+	ScrollMode_name = map[int32]string{
+		0: "BUTTON",
+		1: "INFINITE",
+	}
+	ScrollMode_value = map[string]int32{
+		"BUTTON":   0,
+		"INFINITE": 1,
+	}
+)
+
+func (x ScrollMode) Enum() *ScrollMode {
+	p := new(ScrollMode)
+	*p = x
+	return p
+}
+
+func (x ScrollMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ScrollMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_v1_user_service_proto_enumTypes[0].Descriptor()
+}
+
+func (ScrollMode) Type() protoreflect.EnumType {
+	return &file_api_v1_user_service_proto_enumTypes[0]
+}
+
+func (x ScrollMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ScrollMode.Descriptor instead.
+func (ScrollMode) EnumDescriptor() ([]byte, []int) {
+	return file_api_v1_user_service_proto_rawDescGZIP(), []int{0}
+}
+
 type User_Role int32
 
 const (
@@ -62,11 +108,11 @@ func (x User_Role) String() string {
 }
 
 func (User_Role) Descriptor() protoreflect.EnumDescriptor {
-	return file_api_v1_user_service_proto_enumTypes[0].Descriptor()
+	return file_api_v1_user_service_proto_enumTypes[1].Descriptor()
 }
 
 func (User_Role) Type() protoreflect.EnumType {
-	return &file_api_v1_user_service_proto_enumTypes[0]
+	return &file_api_v1_user_service_proto_enumTypes[1]
 }
 
 func (x User_Role) Number() protoreflect.EnumNumber {
@@ -795,8 +841,10 @@ type UserSetting struct {
 	Appearance string `protobuf:"bytes,3,opt,name=appearance,proto3" json:"appearance,omitempty"`
 	// The default visibility of the memo.
 	MemoVisibility string `protobuf:"bytes,4,opt,name=memo_visibility,json=memoVisibility,proto3" json:"memo_visibility,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Whether infinite scroll should be enabled
+	ScrollMode    ScrollMode `protobuf:"varint,5,opt,name=scroll_mode,json=scrollMode,proto3,enum=memos.api.v1.ScrollMode" json:"scroll_mode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UserSetting) Reset() {
@@ -855,6 +903,13 @@ func (x *UserSetting) GetMemoVisibility() string {
 		return x.MemoVisibility
 	}
 	return ""
+}
+
+func (x *UserSetting) GetScrollMode() ScrollMode {
+	if x != nil {
+		return x.ScrollMode
+	}
+	return ScrollMode_BUTTON
 }
 
 type GetUserSettingRequest struct {
@@ -1687,14 +1742,16 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\n" +
 	"user_stats\x18\x01 \x03(\v2\x17.memos.api.v1.UserStatsR\tuserStats\")\n" +
 	"\x13GetUserStatsRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"\x82\x01\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\"\xbd\x01\n" +
 	"\vUserSetting\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
 	"\x06locale\x18\x02 \x01(\tR\x06locale\x12\x1e\n" +
 	"\n" +
 	"appearance\x18\x03 \x01(\tR\n" +
 	"appearance\x12'\n" +
-	"\x0fmemo_visibility\x18\x04 \x01(\tR\x0ememoVisibility\"+\n" +
+	"\x0fmemo_visibility\x18\x04 \x01(\tR\x0ememoVisibility\x129\n" +
+	"\vscroll_mode\x18\x05 \x01(\x0e2\x18.memos.api.v1.ScrollModeR\n" +
+	"scrollMode\"+\n" +
 	"\x15GetUserSettingRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"\x91\x01\n" +
 	"\x18UpdateUserSettingRequest\x128\n" +
@@ -1739,7 +1796,12 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"updateMask\"?\n" +
 	"\x15DeleteShortcutRequest\x12\x16\n" +
 	"\x06parent\x18\x01 \x01(\tR\x06parent\x12\x0e\n" +
-	"\x02id\x18\x02 \x01(\tR\x02id2\xa9\x13\n" +
+	"\x02id\x18\x02 \x01(\tR\x02id*&\n" +
+	"\n" +
+	"ScrollMode\x12\n" +
+	"\n" +
+	"\x06BUTTON\x10\x00\x12\f\n" +
+	"\bINFINITE\x10\x012\xa9\x13\n" +
 	"\vUserService\x12c\n" +
 	"\tListUsers\x12\x1e.memos.api.v1.ListUsersRequest\x1a\x1f.memos.api.v1.ListUsersResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/api/v1/users\x12b\n" +
 	"\aGetUser\x12\x1c.memos.api.v1.GetUserRequest\x1a\x12.memos.api.v1.User\"%\xdaA\x04name\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/{name=users/*}\x12z\n" +
@@ -1776,110 +1838,112 @@ func file_api_v1_user_service_proto_rawDescGZIP() []byte {
 	return file_api_v1_user_service_proto_rawDescData
 }
 
-var file_api_v1_user_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_api_v1_user_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_api_v1_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_api_v1_user_service_proto_goTypes = []any{
-	(User_Role)(0),                       // 0: memos.api.v1.User.Role
-	(*User)(nil),                         // 1: memos.api.v1.User
-	(*ListUsersRequest)(nil),             // 2: memos.api.v1.ListUsersRequest
-	(*ListUsersResponse)(nil),            // 3: memos.api.v1.ListUsersResponse
-	(*GetUserRequest)(nil),               // 4: memos.api.v1.GetUserRequest
-	(*GetUserByUsernameRequest)(nil),     // 5: memos.api.v1.GetUserByUsernameRequest
-	(*GetUserAvatarBinaryRequest)(nil),   // 6: memos.api.v1.GetUserAvatarBinaryRequest
-	(*CreateUserRequest)(nil),            // 7: memos.api.v1.CreateUserRequest
-	(*UpdateUserRequest)(nil),            // 8: memos.api.v1.UpdateUserRequest
-	(*DeleteUserRequest)(nil),            // 9: memos.api.v1.DeleteUserRequest
-	(*UserStats)(nil),                    // 10: memos.api.v1.UserStats
-	(*ListAllUserStatsRequest)(nil),      // 11: memos.api.v1.ListAllUserStatsRequest
-	(*ListAllUserStatsResponse)(nil),     // 12: memos.api.v1.ListAllUserStatsResponse
-	(*GetUserStatsRequest)(nil),          // 13: memos.api.v1.GetUserStatsRequest
-	(*UserSetting)(nil),                  // 14: memos.api.v1.UserSetting
-	(*GetUserSettingRequest)(nil),        // 15: memos.api.v1.GetUserSettingRequest
-	(*UpdateUserSettingRequest)(nil),     // 16: memos.api.v1.UpdateUserSettingRequest
-	(*UserAccessToken)(nil),              // 17: memos.api.v1.UserAccessToken
-	(*ListUserAccessTokensRequest)(nil),  // 18: memos.api.v1.ListUserAccessTokensRequest
-	(*ListUserAccessTokensResponse)(nil), // 19: memos.api.v1.ListUserAccessTokensResponse
-	(*CreateUserAccessTokenRequest)(nil), // 20: memos.api.v1.CreateUserAccessTokenRequest
-	(*DeleteUserAccessTokenRequest)(nil), // 21: memos.api.v1.DeleteUserAccessTokenRequest
-	(*Shortcut)(nil),                     // 22: memos.api.v1.Shortcut
-	(*ListShortcutsRequest)(nil),         // 23: memos.api.v1.ListShortcutsRequest
-	(*ListShortcutsResponse)(nil),        // 24: memos.api.v1.ListShortcutsResponse
-	(*CreateShortcutRequest)(nil),        // 25: memos.api.v1.CreateShortcutRequest
-	(*UpdateShortcutRequest)(nil),        // 26: memos.api.v1.UpdateShortcutRequest
-	(*DeleteShortcutRequest)(nil),        // 27: memos.api.v1.DeleteShortcutRequest
-	nil,                                  // 28: memos.api.v1.UserStats.TagCountEntry
-	(*UserStats_MemoTypeStats)(nil),      // 29: memos.api.v1.UserStats.MemoTypeStats
-	(State)(0),                           // 30: memos.api.v1.State
-	(*timestamppb.Timestamp)(nil),        // 31: google.protobuf.Timestamp
-	(*httpbody.HttpBody)(nil),            // 32: google.api.HttpBody
-	(*fieldmaskpb.FieldMask)(nil),        // 33: google.protobuf.FieldMask
-	(*emptypb.Empty)(nil),                // 34: google.protobuf.Empty
+	(ScrollMode)(0),                      // 0: memos.api.v1.ScrollMode
+	(User_Role)(0),                       // 1: memos.api.v1.User.Role
+	(*User)(nil),                         // 2: memos.api.v1.User
+	(*ListUsersRequest)(nil),             // 3: memos.api.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),            // 4: memos.api.v1.ListUsersResponse
+	(*GetUserRequest)(nil),               // 5: memos.api.v1.GetUserRequest
+	(*GetUserByUsernameRequest)(nil),     // 6: memos.api.v1.GetUserByUsernameRequest
+	(*GetUserAvatarBinaryRequest)(nil),   // 7: memos.api.v1.GetUserAvatarBinaryRequest
+	(*CreateUserRequest)(nil),            // 8: memos.api.v1.CreateUserRequest
+	(*UpdateUserRequest)(nil),            // 9: memos.api.v1.UpdateUserRequest
+	(*DeleteUserRequest)(nil),            // 10: memos.api.v1.DeleteUserRequest
+	(*UserStats)(nil),                    // 11: memos.api.v1.UserStats
+	(*ListAllUserStatsRequest)(nil),      // 12: memos.api.v1.ListAllUserStatsRequest
+	(*ListAllUserStatsResponse)(nil),     // 13: memos.api.v1.ListAllUserStatsResponse
+	(*GetUserStatsRequest)(nil),          // 14: memos.api.v1.GetUserStatsRequest
+	(*UserSetting)(nil),                  // 15: memos.api.v1.UserSetting
+	(*GetUserSettingRequest)(nil),        // 16: memos.api.v1.GetUserSettingRequest
+	(*UpdateUserSettingRequest)(nil),     // 17: memos.api.v1.UpdateUserSettingRequest
+	(*UserAccessToken)(nil),              // 18: memos.api.v1.UserAccessToken
+	(*ListUserAccessTokensRequest)(nil),  // 19: memos.api.v1.ListUserAccessTokensRequest
+	(*ListUserAccessTokensResponse)(nil), // 20: memos.api.v1.ListUserAccessTokensResponse
+	(*CreateUserAccessTokenRequest)(nil), // 21: memos.api.v1.CreateUserAccessTokenRequest
+	(*DeleteUserAccessTokenRequest)(nil), // 22: memos.api.v1.DeleteUserAccessTokenRequest
+	(*Shortcut)(nil),                     // 23: memos.api.v1.Shortcut
+	(*ListShortcutsRequest)(nil),         // 24: memos.api.v1.ListShortcutsRequest
+	(*ListShortcutsResponse)(nil),        // 25: memos.api.v1.ListShortcutsResponse
+	(*CreateShortcutRequest)(nil),        // 26: memos.api.v1.CreateShortcutRequest
+	(*UpdateShortcutRequest)(nil),        // 27: memos.api.v1.UpdateShortcutRequest
+	(*DeleteShortcutRequest)(nil),        // 28: memos.api.v1.DeleteShortcutRequest
+	nil,                                  // 29: memos.api.v1.UserStats.TagCountEntry
+	(*UserStats_MemoTypeStats)(nil),      // 30: memos.api.v1.UserStats.MemoTypeStats
+	(State)(0),                           // 31: memos.api.v1.State
+	(*timestamppb.Timestamp)(nil),        // 32: google.protobuf.Timestamp
+	(*httpbody.HttpBody)(nil),            // 33: google.api.HttpBody
+	(*fieldmaskpb.FieldMask)(nil),        // 34: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),                // 35: google.protobuf.Empty
 }
 var file_api_v1_user_service_proto_depIdxs = []int32{
-	0,  // 0: memos.api.v1.User.role:type_name -> memos.api.v1.User.Role
-	30, // 1: memos.api.v1.User.state:type_name -> memos.api.v1.State
-	31, // 2: memos.api.v1.User.create_time:type_name -> google.protobuf.Timestamp
-	31, // 3: memos.api.v1.User.update_time:type_name -> google.protobuf.Timestamp
-	1,  // 4: memos.api.v1.ListUsersResponse.users:type_name -> memos.api.v1.User
-	32, // 5: memos.api.v1.GetUserAvatarBinaryRequest.http_body:type_name -> google.api.HttpBody
-	1,  // 6: memos.api.v1.CreateUserRequest.user:type_name -> memos.api.v1.User
-	1,  // 7: memos.api.v1.UpdateUserRequest.user:type_name -> memos.api.v1.User
-	33, // 8: memos.api.v1.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
-	31, // 9: memos.api.v1.UserStats.memo_display_timestamps:type_name -> google.protobuf.Timestamp
-	29, // 10: memos.api.v1.UserStats.memo_type_stats:type_name -> memos.api.v1.UserStats.MemoTypeStats
-	28, // 11: memos.api.v1.UserStats.tag_count:type_name -> memos.api.v1.UserStats.TagCountEntry
-	10, // 12: memos.api.v1.ListAllUserStatsResponse.user_stats:type_name -> memos.api.v1.UserStats
-	14, // 13: memos.api.v1.UpdateUserSettingRequest.setting:type_name -> memos.api.v1.UserSetting
-	33, // 14: memos.api.v1.UpdateUserSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	31, // 15: memos.api.v1.UserAccessToken.issued_at:type_name -> google.protobuf.Timestamp
-	31, // 16: memos.api.v1.UserAccessToken.expires_at:type_name -> google.protobuf.Timestamp
-	17, // 17: memos.api.v1.ListUserAccessTokensResponse.access_tokens:type_name -> memos.api.v1.UserAccessToken
-	31, // 18: memos.api.v1.CreateUserAccessTokenRequest.expires_at:type_name -> google.protobuf.Timestamp
-	22, // 19: memos.api.v1.ListShortcutsResponse.shortcuts:type_name -> memos.api.v1.Shortcut
-	22, // 20: memos.api.v1.CreateShortcutRequest.shortcut:type_name -> memos.api.v1.Shortcut
-	22, // 21: memos.api.v1.UpdateShortcutRequest.shortcut:type_name -> memos.api.v1.Shortcut
-	33, // 22: memos.api.v1.UpdateShortcutRequest.update_mask:type_name -> google.protobuf.FieldMask
-	2,  // 23: memos.api.v1.UserService.ListUsers:input_type -> memos.api.v1.ListUsersRequest
-	4,  // 24: memos.api.v1.UserService.GetUser:input_type -> memos.api.v1.GetUserRequest
-	5,  // 25: memos.api.v1.UserService.GetUserByUsername:input_type -> memos.api.v1.GetUserByUsernameRequest
-	6,  // 26: memos.api.v1.UserService.GetUserAvatarBinary:input_type -> memos.api.v1.GetUserAvatarBinaryRequest
-	7,  // 27: memos.api.v1.UserService.CreateUser:input_type -> memos.api.v1.CreateUserRequest
-	8,  // 28: memos.api.v1.UserService.UpdateUser:input_type -> memos.api.v1.UpdateUserRequest
-	9,  // 29: memos.api.v1.UserService.DeleteUser:input_type -> memos.api.v1.DeleteUserRequest
-	11, // 30: memos.api.v1.UserService.ListAllUserStats:input_type -> memos.api.v1.ListAllUserStatsRequest
-	13, // 31: memos.api.v1.UserService.GetUserStats:input_type -> memos.api.v1.GetUserStatsRequest
-	15, // 32: memos.api.v1.UserService.GetUserSetting:input_type -> memos.api.v1.GetUserSettingRequest
-	16, // 33: memos.api.v1.UserService.UpdateUserSetting:input_type -> memos.api.v1.UpdateUserSettingRequest
-	18, // 34: memos.api.v1.UserService.ListUserAccessTokens:input_type -> memos.api.v1.ListUserAccessTokensRequest
-	20, // 35: memos.api.v1.UserService.CreateUserAccessToken:input_type -> memos.api.v1.CreateUserAccessTokenRequest
-	21, // 36: memos.api.v1.UserService.DeleteUserAccessToken:input_type -> memos.api.v1.DeleteUserAccessTokenRequest
-	23, // 37: memos.api.v1.UserService.ListShortcuts:input_type -> memos.api.v1.ListShortcutsRequest
-	25, // 38: memos.api.v1.UserService.CreateShortcut:input_type -> memos.api.v1.CreateShortcutRequest
-	26, // 39: memos.api.v1.UserService.UpdateShortcut:input_type -> memos.api.v1.UpdateShortcutRequest
-	27, // 40: memos.api.v1.UserService.DeleteShortcut:input_type -> memos.api.v1.DeleteShortcutRequest
-	3,  // 41: memos.api.v1.UserService.ListUsers:output_type -> memos.api.v1.ListUsersResponse
-	1,  // 42: memos.api.v1.UserService.GetUser:output_type -> memos.api.v1.User
-	1,  // 43: memos.api.v1.UserService.GetUserByUsername:output_type -> memos.api.v1.User
-	32, // 44: memos.api.v1.UserService.GetUserAvatarBinary:output_type -> google.api.HttpBody
-	1,  // 45: memos.api.v1.UserService.CreateUser:output_type -> memos.api.v1.User
-	1,  // 46: memos.api.v1.UserService.UpdateUser:output_type -> memos.api.v1.User
-	34, // 47: memos.api.v1.UserService.DeleteUser:output_type -> google.protobuf.Empty
-	12, // 48: memos.api.v1.UserService.ListAllUserStats:output_type -> memos.api.v1.ListAllUserStatsResponse
-	10, // 49: memos.api.v1.UserService.GetUserStats:output_type -> memos.api.v1.UserStats
-	14, // 50: memos.api.v1.UserService.GetUserSetting:output_type -> memos.api.v1.UserSetting
-	14, // 51: memos.api.v1.UserService.UpdateUserSetting:output_type -> memos.api.v1.UserSetting
-	19, // 52: memos.api.v1.UserService.ListUserAccessTokens:output_type -> memos.api.v1.ListUserAccessTokensResponse
-	17, // 53: memos.api.v1.UserService.CreateUserAccessToken:output_type -> memos.api.v1.UserAccessToken
-	34, // 54: memos.api.v1.UserService.DeleteUserAccessToken:output_type -> google.protobuf.Empty
-	24, // 55: memos.api.v1.UserService.ListShortcuts:output_type -> memos.api.v1.ListShortcutsResponse
-	22, // 56: memos.api.v1.UserService.CreateShortcut:output_type -> memos.api.v1.Shortcut
-	22, // 57: memos.api.v1.UserService.UpdateShortcut:output_type -> memos.api.v1.Shortcut
-	34, // 58: memos.api.v1.UserService.DeleteShortcut:output_type -> google.protobuf.Empty
-	41, // [41:59] is the sub-list for method output_type
-	23, // [23:41] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	1,  // 0: memos.api.v1.User.role:type_name -> memos.api.v1.User.Role
+	31, // 1: memos.api.v1.User.state:type_name -> memos.api.v1.State
+	32, // 2: memos.api.v1.User.create_time:type_name -> google.protobuf.Timestamp
+	32, // 3: memos.api.v1.User.update_time:type_name -> google.protobuf.Timestamp
+	2,  // 4: memos.api.v1.ListUsersResponse.users:type_name -> memos.api.v1.User
+	33, // 5: memos.api.v1.GetUserAvatarBinaryRequest.http_body:type_name -> google.api.HttpBody
+	2,  // 6: memos.api.v1.CreateUserRequest.user:type_name -> memos.api.v1.User
+	2,  // 7: memos.api.v1.UpdateUserRequest.user:type_name -> memos.api.v1.User
+	34, // 8: memos.api.v1.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
+	32, // 9: memos.api.v1.UserStats.memo_display_timestamps:type_name -> google.protobuf.Timestamp
+	30, // 10: memos.api.v1.UserStats.memo_type_stats:type_name -> memos.api.v1.UserStats.MemoTypeStats
+	29, // 11: memos.api.v1.UserStats.tag_count:type_name -> memos.api.v1.UserStats.TagCountEntry
+	11, // 12: memos.api.v1.ListAllUserStatsResponse.user_stats:type_name -> memos.api.v1.UserStats
+	0,  // 13: memos.api.v1.UserSetting.scroll_mode:type_name -> memos.api.v1.ScrollMode
+	15, // 14: memos.api.v1.UpdateUserSettingRequest.setting:type_name -> memos.api.v1.UserSetting
+	34, // 15: memos.api.v1.UpdateUserSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	32, // 16: memos.api.v1.UserAccessToken.issued_at:type_name -> google.protobuf.Timestamp
+	32, // 17: memos.api.v1.UserAccessToken.expires_at:type_name -> google.protobuf.Timestamp
+	18, // 18: memos.api.v1.ListUserAccessTokensResponse.access_tokens:type_name -> memos.api.v1.UserAccessToken
+	32, // 19: memos.api.v1.CreateUserAccessTokenRequest.expires_at:type_name -> google.protobuf.Timestamp
+	23, // 20: memos.api.v1.ListShortcutsResponse.shortcuts:type_name -> memos.api.v1.Shortcut
+	23, // 21: memos.api.v1.CreateShortcutRequest.shortcut:type_name -> memos.api.v1.Shortcut
+	23, // 22: memos.api.v1.UpdateShortcutRequest.shortcut:type_name -> memos.api.v1.Shortcut
+	34, // 23: memos.api.v1.UpdateShortcutRequest.update_mask:type_name -> google.protobuf.FieldMask
+	3,  // 24: memos.api.v1.UserService.ListUsers:input_type -> memos.api.v1.ListUsersRequest
+	5,  // 25: memos.api.v1.UserService.GetUser:input_type -> memos.api.v1.GetUserRequest
+	6,  // 26: memos.api.v1.UserService.GetUserByUsername:input_type -> memos.api.v1.GetUserByUsernameRequest
+	7,  // 27: memos.api.v1.UserService.GetUserAvatarBinary:input_type -> memos.api.v1.GetUserAvatarBinaryRequest
+	8,  // 28: memos.api.v1.UserService.CreateUser:input_type -> memos.api.v1.CreateUserRequest
+	9,  // 29: memos.api.v1.UserService.UpdateUser:input_type -> memos.api.v1.UpdateUserRequest
+	10, // 30: memos.api.v1.UserService.DeleteUser:input_type -> memos.api.v1.DeleteUserRequest
+	12, // 31: memos.api.v1.UserService.ListAllUserStats:input_type -> memos.api.v1.ListAllUserStatsRequest
+	14, // 32: memos.api.v1.UserService.GetUserStats:input_type -> memos.api.v1.GetUserStatsRequest
+	16, // 33: memos.api.v1.UserService.GetUserSetting:input_type -> memos.api.v1.GetUserSettingRequest
+	17, // 34: memos.api.v1.UserService.UpdateUserSetting:input_type -> memos.api.v1.UpdateUserSettingRequest
+	19, // 35: memos.api.v1.UserService.ListUserAccessTokens:input_type -> memos.api.v1.ListUserAccessTokensRequest
+	21, // 36: memos.api.v1.UserService.CreateUserAccessToken:input_type -> memos.api.v1.CreateUserAccessTokenRequest
+	22, // 37: memos.api.v1.UserService.DeleteUserAccessToken:input_type -> memos.api.v1.DeleteUserAccessTokenRequest
+	24, // 38: memos.api.v1.UserService.ListShortcuts:input_type -> memos.api.v1.ListShortcutsRequest
+	26, // 39: memos.api.v1.UserService.CreateShortcut:input_type -> memos.api.v1.CreateShortcutRequest
+	27, // 40: memos.api.v1.UserService.UpdateShortcut:input_type -> memos.api.v1.UpdateShortcutRequest
+	28, // 41: memos.api.v1.UserService.DeleteShortcut:input_type -> memos.api.v1.DeleteShortcutRequest
+	4,  // 42: memos.api.v1.UserService.ListUsers:output_type -> memos.api.v1.ListUsersResponse
+	2,  // 43: memos.api.v1.UserService.GetUser:output_type -> memos.api.v1.User
+	2,  // 44: memos.api.v1.UserService.GetUserByUsername:output_type -> memos.api.v1.User
+	33, // 45: memos.api.v1.UserService.GetUserAvatarBinary:output_type -> google.api.HttpBody
+	2,  // 46: memos.api.v1.UserService.CreateUser:output_type -> memos.api.v1.User
+	2,  // 47: memos.api.v1.UserService.UpdateUser:output_type -> memos.api.v1.User
+	35, // 48: memos.api.v1.UserService.DeleteUser:output_type -> google.protobuf.Empty
+	13, // 49: memos.api.v1.UserService.ListAllUserStats:output_type -> memos.api.v1.ListAllUserStatsResponse
+	11, // 50: memos.api.v1.UserService.GetUserStats:output_type -> memos.api.v1.UserStats
+	15, // 51: memos.api.v1.UserService.GetUserSetting:output_type -> memos.api.v1.UserSetting
+	15, // 52: memos.api.v1.UserService.UpdateUserSetting:output_type -> memos.api.v1.UserSetting
+	20, // 53: memos.api.v1.UserService.ListUserAccessTokens:output_type -> memos.api.v1.ListUserAccessTokensResponse
+	18, // 54: memos.api.v1.UserService.CreateUserAccessToken:output_type -> memos.api.v1.UserAccessToken
+	35, // 55: memos.api.v1.UserService.DeleteUserAccessToken:output_type -> google.protobuf.Empty
+	25, // 56: memos.api.v1.UserService.ListShortcuts:output_type -> memos.api.v1.ListShortcutsResponse
+	23, // 57: memos.api.v1.UserService.CreateShortcut:output_type -> memos.api.v1.Shortcut
+	23, // 58: memos.api.v1.UserService.UpdateShortcut:output_type -> memos.api.v1.Shortcut
+	35, // 59: memos.api.v1.UserService.DeleteShortcut:output_type -> google.protobuf.Empty
+	42, // [42:60] is the sub-list for method output_type
+	24, // [24:42] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_user_service_proto_init() }
@@ -1894,7 +1958,7 @@ func file_api_v1_user_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_user_service_proto_rawDesc), len(file_api_v1_user_service_proto_rawDesc)),
-			NumEnums:      1,
+			NumEnums:      2,
 			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
