@@ -80,6 +80,8 @@ const MemoEditor = observer((props: Props) => {
   const userSetting = userStore.state.userSetting as UserSetting;
   const contentCacheKey = `${currentUser.name}-${cacheKey || ""}`;
   const [contentCache, setContentCache] = useLocalStorage<string>(contentCacheKey, "");
+  const resourceCacheKey = `${currentUser.name}-${cacheKey || ""}-resources`;
+  const [resourceCache, setResourceCache] = useLocalStorage<Resource[]>(resourceCacheKey, []);
   const referenceRelations = memoName
     ? state.relationList.filter(
         (relation) =>
@@ -108,6 +110,35 @@ const MemoEditor = observer((props: Props) => {
       memoVisibility: convertVisibilityFromString(visibility),
     }));
   }, [userSetting.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
+
+  useEffect(() => {
+    setResourceCache(state.resourceList);
+  }, [state.resourceList]);
+
+  function reviveResourceCache(resourceCache: Resource[]): Resource[] {
+    return resourceCache.map((res) => {
+      const revived: Resource = { ...res };
+      if (revived.createTime && typeof revived.createTime === "string") {
+        revived.createTime = new Date(revived.createTime);
+      }
+      if (typeof revived.size !== "number") {
+        revived.size = Number(revived.size);
+      }
+      if (!(revived.content instanceof Uint8Array)) {
+        revived.content = new Uint8Array();
+      }
+      return revived;
+    });
+  }
+
+  useEffect(() => {
+    if (!memoName && Array.isArray(resourceCache) && resourceCache.length > 0) {
+      setState((prevState) => ({
+        ...prevState,
+        resourceList: reviveResourceCache(resourceCache),
+      }));
+    }
+  }, [memoName]);
 
   useAsyncEffect(async () => {
     if (!memoName) {
@@ -411,6 +442,7 @@ const MemoEditor = observer((props: Props) => {
     }
 
     localStorage.removeItem(contentCacheKey);
+    localStorage.removeItem(resourceCacheKey);
     setState((state) => {
       return {
         ...state,
@@ -425,6 +457,7 @@ const MemoEditor = observer((props: Props) => {
 
   const handleCancelBtnClick = () => {
     localStorage.removeItem(contentCacheKey);
+    localStorage.removeItem(resourceCacheKey);
 
     if (onCancel) {
       onCancel();
