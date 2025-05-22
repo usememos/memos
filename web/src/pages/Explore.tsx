@@ -58,6 +58,7 @@ const Explore = () => {
       }
       direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
       oldFilter={memoListFilter}
+      enableInfiniteScroll
     />
   );
 };

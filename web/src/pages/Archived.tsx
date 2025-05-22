@@ -48,6 +48,7 @@ const Archived = () => {
       state={State.ARCHIVED}
       direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
       oldFilter={memoListFilter}
+      enableInfiniteScroll
     />
   );
 };

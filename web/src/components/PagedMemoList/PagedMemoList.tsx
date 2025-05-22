@@ -25,6 +25,7 @@ interface Props {
   filter?: string;
   oldFilter?: string;
   pageSize?: number;
+  enableInfiniteScroll?: boolean;
 }
 
 interface LocalState {
@@ -71,6 +72,23 @@ const PagedMemoList = observer((props: Props) => {
     refreshList();
   }, [props.owner, props.state, props.direction, props.filter, props.oldFilter, props.pageSize]);
 
+  useEffect(() => {
+    if (!props.enableInfiniteScroll || !state.nextPageToken) return;
+  
+    const handleScroll = () => {
+      const nearBottom =
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
+  
+      if (nearBottom && !state.isRequesting) {
+        fetchMoreMemos(state.nextPageToken);
+      }
+    };
+  
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [props.enableInfiniteScroll, state.nextPageToken, state.isRequesting]);
+  
+
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">
       <MasonryView
@@ -93,7 +111,7 @@ const PagedMemoList = observer((props: Props) => {
             </div>
           ) : (
             <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
-              {state.nextPageToken && (
+              {state.nextPageToken && !props.enableInfiniteScroll && (
                 <Button variant="plain" onClick={() => fetchMoreMemos(state.nextPageToken)}>
                   {t("memo.load-more")}
                   <ArrowDownIcon className="ml-1 w-4 h-auto" />

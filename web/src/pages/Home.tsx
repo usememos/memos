@@ -65,6 +65,7 @@ const Home = observer(() => {
       direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
       filter={selectedShortcut?.filter || ""}
       oldFilter={memoListFilter}
+      enableInfiniteScroll
     />
   );
 });
