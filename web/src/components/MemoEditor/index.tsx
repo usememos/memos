@@ -132,7 +132,7 @@ const MemoEditor = observer((props: Props) => {
   }
 
   useEffect(() => {
-    if (!memoName && Array.isArray(resourceCache) && resourceCache.length > 0) {
+    if (Array.isArray(resourceCache) && resourceCache.length > 0) {
       setState((prevState) => ({
         ...prevState,
         resourceList: reviveResourceCache(resourceCache),
@@ -152,7 +152,8 @@ const MemoEditor = observer((props: Props) => {
       setState((prevState) => ({
         ...prevState,
         memoVisibility: memo.visibility,
-        resourceList: memo.resources,
+        // Only set resourceList if no local cache
+        resourceList: Array.isArray(resourceCache) && resourceCache.length > 0 ? prevState.resourceList : memo.resources,
         relationList: memo.relations,
         location: memo.location,
       }));
