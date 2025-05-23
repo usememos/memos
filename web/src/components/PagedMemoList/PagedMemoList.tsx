@@ -73,21 +73,15 @@ const PagedMemoList = observer((props: Props) => {
 
   useEffect(() => {
     if (!state.nextPageToken) return;
-  
     const handleScroll = () => {
-      const nearBottom =
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
-  
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
       if (nearBottom && !state.isRequesting) {
         fetchMoreMemos(state.nextPageToken);
       }
     };
-  
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [state.nextPageToken, state.isRequesting]);
-  
-
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">
       <MasonryView
@@ -109,7 +103,9 @@ const PagedMemoList = observer((props: Props) => {
               <p className="mt-2 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
             </div>
           ) : (
-            null
+            <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
+              <BackToTop />
+            </div>
           )}
         </>
       )}
