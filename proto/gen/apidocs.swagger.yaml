@@ -1780,9 +1780,6 @@ paths:
               memoVisibility:
                 type: string
                 description: The default visibility of the memo.
-              scrollMode:
-                $ref: '#/definitions/apiv1ScrollMode'
-                title: Whether infinite scroll should be enabled
             required:
               - setting
       tags:
@@ -2221,12 +2218,6 @@ definitions:
           type: string
       fieldMapping:
         $ref: '#/definitions/apiv1FieldMapping'
-  apiv1ScrollMode:
-    type: string
-    enum:
-      - BUTTON
-      - INFINITE
-    default: BUTTON
   apiv1Shortcut:
     type: object
     properties:
@@ -2251,9 +2242,6 @@ definitions:
       memoVisibility:
         type: string
         description: The default visibility of the memo.
-      scrollMode:
-        $ref: '#/definitions/apiv1ScrollMode'
-        title: Whether infinite scroll should be enabled
   apiv1WorkspaceCustomProfile:
     type: object
     properties:

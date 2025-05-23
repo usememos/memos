@@ -293,10 +293,7 @@
     "preference-section": {
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
-      "theme": "Theme",
-      "scroll-mode": "Default scroll mode",
-      "scroll-with-button": "Use load more button",
-      "scroll-infinitely": "Use infinite scrolling"
+      "theme": "Theme"
     },
     "sso": "SSO",
     "sso-section": {

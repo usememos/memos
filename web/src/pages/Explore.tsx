@@ -4,15 +4,13 @@ import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore } from "@/store/v1";
-import { userStore, viewStore } from "@/store/v2";
+import { viewStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { ScrollMode } from "@/types/proto/store/user_setting";
 
 const Explore = () => {
   const user = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
-  const enableInfiniteScroll = userStore.state.userSetting?.scrollMode == ScrollMode.INFINITE;
 
   const memoListFilter = useMemo(() => {
     const conditions = [];
@@ -60,7 +58,6 @@ const Explore = () => {
       }
       direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
       oldFilter={memoListFilter}
-      enableInfiniteScroll={enableInfiniteScroll}
     />
   );
 };

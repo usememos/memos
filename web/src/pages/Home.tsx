@@ -8,13 +8,11 @@ import { useMemoFilterStore } from "@/store/v1";
 import { viewStore, userStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { ScrollMode } from "@/types/proto/store/user_setting";
 
 const Home = observer(() => {
   const user = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
   const selectedShortcut = userStore.state.shortcuts.find((shortcut) => shortcut.id === memoFilterStore.shortcut);
-  const enableInfiniteScroll = userStore.state.userSetting?.scrollMode == ScrollMode.INFINITE;
 
   const memoListFilter = useMemo(() => {
     const conditions = [];
@@ -67,7 +65,6 @@ const Home = observer(() => {
       direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
       filter={selectedShortcut?.filter || ""}
       oldFilter={memoListFilter}
-      enableInfiniteScroll={enableInfiniteScroll}
     />
   );
 });

@@ -287,8 +287,6 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, _ *v1pb.GetUserSettin
 			userSettingMessage.Appearance = setting.GetAppearance()
 		} else if setting.Key == storepb.UserSettingKey_MEMO_VISIBILITY {
 			userSettingMessage.MemoVisibility = setting.GetMemoVisibility()
-		} else if setting.Key == storepb.UserSettingKey_SCROLL_MODE {
-			userSettingMessage.ScrollMode = v1pb.ScrollMode(int32(setting.GetScrollMode()))
 		}
 	}
 	return userSettingMessage, nil
@@ -331,16 +329,6 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 				Key:    storepb.UserSettingKey_MEMO_VISIBILITY,
 				Value: &storepb.UserSetting_MemoVisibility{
 					MemoVisibility: request.Setting.MemoVisibility,
-				},
-			}); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
-			}
-		} else if field == "scroll_mode" {
-			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
-				UserId: user.ID,
-				Key:    storepb.UserSettingKey_SCROLL_MODE,
-				Value: &storepb.UserSetting_ScrollMode{
-					ScrollMode: storepb.ScrollMode(int32(request.Setting.ScrollMode)),
 				},
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)

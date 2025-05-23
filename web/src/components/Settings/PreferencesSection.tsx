@@ -1,4 +1,4 @@
-import { Box, Divider, Option, Select } from "@mui/joy";
+import { Divider, Option, Select } from "@mui/joy";
 import { observer } from "mobx-react-lite";
 import { userStore } from "@/store/v2";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
@@ -9,8 +9,6 @@ import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
-import { ArrowDownIcon, InfinityIcon } from "lucide-react";
-import { ScrollMode } from "@/types/proto/store/user_setting";
 
 const PreferencesSection = observer(() => {
   const t = useTranslate();
@@ -26,10 +24,6 @@ const PreferencesSection = observer(() => {
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {
     await userStore.updateUserSetting({ memoVisibility: value }, ["memo_visibility"]);
-  };
-
-  const handleScrollModeChanged = async (value: ScrollMode) => {
-    await userStore.updateUserSetting({ scrollMode: value }, ["scroll_mode"])
   };
 
   return (
@@ -67,38 +61,6 @@ const PreferencesSection = observer(() => {
                 {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
               </Option>
             ))}
-        </Select>
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span className="truncate">{t("setting.preference-section.scroll-mode")}</span>
-        <Select
-          className="!min-w-fit"
-          value={setting.scrollMode}
-          startDecorator={
-            setting.scrollMode === ScrollMode.INFINITE ? (
-              <InfinityIcon />
-            ) : (
-              <ArrowDownIcon />
-            )
-          }
-          onChange={(_, value) => {
-            if (value && value in ScrollMode) {
-              handleScrollModeChanged(value);
-            }
-          }}
-        >
-          <Option value={ScrollMode.BUTTON}>
-            <Box className="flex items-center gap-2">
-              <ArrowDownIcon />
-              {t("setting.preference-section.scroll-with-button")}
-            </Box>
-          </Option>
-          <Option value={ScrollMode.INFINITE}>
-            <Box className="flex items-center gap-2">
-              <InfinityIcon />
-              {t("setting.preference-section.scroll-infinitely")}
-            </Box>
-          </Option>
         </Select>
       </div>
 

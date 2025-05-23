@@ -1,5 +1,5 @@
 import { Button } from "@usememos/mui";
-import { ArrowDownIcon, ArrowUpIcon, LoaderIcon } from "lucide-react";
+import { ArrowUpIcon, LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { matchPath } from "react-router-dom";
@@ -25,7 +25,6 @@ interface Props {
   filter?: string;
   oldFilter?: string;
   pageSize?: number;
-  enableInfiniteScroll?: boolean;
 }
 
 interface LocalState {
@@ -73,7 +72,7 @@ const PagedMemoList = observer((props: Props) => {
   }, [props.owner, props.state, props.direction, props.filter, props.oldFilter, props.pageSize]);
 
   useEffect(() => {
-    if (!props.enableInfiniteScroll || !state.nextPageToken) return;
+    if (!state.nextPageToken) return;
   
     const handleScroll = () => {
       const nearBottom =
@@ -86,7 +85,7 @@ const PagedMemoList = observer((props: Props) => {
   
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [props.enableInfiniteScroll, state.nextPageToken, state.isRequesting]);
+  }, [state.nextPageToken, state.isRequesting]);
   
 
   const children = (
@@ -110,15 +109,7 @@ const PagedMemoList = observer((props: Props) => {
               <p className="mt-2 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
             </div>
           ) : (
-            <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
-              {state.nextPageToken && !props.enableInfiniteScroll && (
-                <Button variant="plain" onClick={() => fetchMoreMemos(state.nextPageToken)}>
-                  {t("memo.load-more")}
-                  <ArrowDownIcon className="ml-1 w-4 h-auto" />
-                </Button>
-              )}
-              <BackToTop />
-            </div>
+            null
           )}
         </>
       )}

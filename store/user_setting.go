@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -158,14 +157,6 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 		userSetting.Value = &storepb.UserSetting_Appearance{Appearance: raw.Value}
 	case storepb.UserSettingKey_MEMO_VISIBILITY:
 		userSetting.Value = &storepb.UserSetting_MemoVisibility{MemoVisibility: raw.Value}
-	case storepb.UserSettingKey_SCROLL_MODE:
-		modeValue, ok := storepb.ScrollMode_value[raw.Value]
-		if !ok {
-			return nil, fmt.Errorf("invalid scroll_mode name: %s", raw.Value)
-		}
-		userSetting.Value = &storepb.UserSetting_ScrollMode{
-			ScrollMode: storepb.ScrollMode(modeValue),
-		}
 	default:
 		return nil, nil
 	}
@@ -199,8 +190,6 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 		raw.Value = userSetting.GetAppearance()
 	case storepb.UserSettingKey_MEMO_VISIBILITY:
 		raw.Value = userSetting.GetMemoVisibility()
-	case storepb.UserSettingKey_SCROLL_MODE:
-		raw.Value = storepb.ScrollMode_name[int32(userSetting.GetScrollMode())]
 	default:
 		return nil, errors.Errorf("unsupported user setting key: %v", userSetting.Key)
 	}

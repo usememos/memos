@@ -35,8 +35,6 @@ const (
 	UserSettingKey_MEMO_VISIBILITY UserSettingKey = 4
 	// The shortcuts of the user.
 	UserSettingKey_SHORTCUTS UserSettingKey = 5
-	// Whether infinite scroll should be enabled
-	UserSettingKey_SCROLL_MODE UserSettingKey = 6
 )
 
 // Enum value maps for UserSettingKey.
@@ -48,7 +46,6 @@ var (
 		3: "APPEARANCE",
 		4: "MEMO_VISIBILITY",
 		5: "SHORTCUTS",
-		6: "SCROLL_MODE",
 	}
 	UserSettingKey_value = map[string]int32{
 		"USER_SETTING_KEY_UNSPECIFIED": 0,
@@ -57,7 +54,6 @@ var (
 		"APPEARANCE":                   3,
 		"MEMO_VISIBILITY":              4,
 		"SHORTCUTS":                    5,
-		"SCROLL_MODE":                  6,
 	}
 )
 
@@ -88,52 +84,6 @@ func (UserSettingKey) EnumDescriptor() ([]byte, []int) {
 	return file_store_user_setting_proto_rawDescGZIP(), []int{0}
 }
 
-type ScrollMode int32
-
-const (
-	ScrollMode_BUTTON   ScrollMode = 0
-	ScrollMode_INFINITE ScrollMode = 1
-)
-
-// Enum value maps for ScrollMode.
-var (
-	ScrollMode_name = map[int32]string{
-		0: "BUTTON",
-		1: "INFINITE",
-	}
-	ScrollMode_value = map[string]int32{
-		"BUTTON":   0,
-		"INFINITE": 1,
-	}
-)
-
-func (x ScrollMode) Enum() *ScrollMode {
-	p := new(ScrollMode)
-	*p = x
-	return p
-}
-
-func (x ScrollMode) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (ScrollMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_store_user_setting_proto_enumTypes[1].Descriptor()
-}
-
-func (ScrollMode) Type() protoreflect.EnumType {
-	return &file_store_user_setting_proto_enumTypes[1]
-}
-
-func (x ScrollMode) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use ScrollMode.Descriptor instead.
-func (ScrollMode) EnumDescriptor() ([]byte, []int) {
-	return file_store_user_setting_proto_rawDescGZIP(), []int{1}
-}
-
 type UserSetting struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	UserId int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -145,7 +95,6 @@ type UserSetting struct {
 	//	*UserSetting_Appearance
 	//	*UserSetting_MemoVisibility
 	//	*UserSetting_Shortcuts
-	//	*UserSetting_ScrollMode
 	Value         isUserSetting_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -247,15 +196,6 @@ func (x *UserSetting) GetShortcuts() *ShortcutsUserSetting {
 	return nil
 }
 
-func (x *UserSetting) GetScrollMode() ScrollMode {
-	if x != nil {
-		if x, ok := x.Value.(*UserSetting_ScrollMode); ok {
-			return x.ScrollMode
-		}
-	}
-	return ScrollMode_BUTTON
-}
-
 type isUserSetting_Value interface {
 	isUserSetting_Value()
 }
@@ -280,10 +220,6 @@ type UserSetting_Shortcuts struct {
 	Shortcuts *ShortcutsUserSetting `protobuf:"bytes,7,opt,name=shortcuts,proto3,oneof"`
 }
 
-type UserSetting_ScrollMode struct {
-	ScrollMode ScrollMode `protobuf:"varint,8,opt,name=scroll_mode,json=scrollMode,proto3,enum=memos.store.ScrollMode,oneof"`
-}
-
 func (*UserSetting_AccessTokens) isUserSetting_Value() {}
 
 func (*UserSetting_Locale) isUserSetting_Value() {}
@@ -293,8 +229,6 @@ func (*UserSetting_Appearance) isUserSetting_Value() {}
 func (*UserSetting_MemoVisibility) isUserSetting_Value() {}
 
 func (*UserSetting_Shortcuts) isUserSetting_Value() {}
-
-func (*UserSetting_ScrollMode) isUserSetting_Value() {}
 
 type AccessTokensUserSetting struct {
 	state         protoimpl.MessageState                 `protogen:"open.v1"`
@@ -503,7 +437,7 @@ var File_store_user_setting_proto protoreflect.FileDescriptor
 
 const file_store_user_setting_proto_rawDesc = "" +
 	"\n" +
-	"\x18store/user_setting.proto\x12\vmemos.store\"\x91\x03\n" +
+	"\x18store/user_setting.proto\x12\vmemos.store\"\xd5\x02\n" +
 	"\vUserSetting\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12-\n" +
 	"\x03key\x18\x02 \x01(\x0e2\x1b.memos.store.UserSettingKeyR\x03key\x12K\n" +
@@ -513,9 +447,7 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"appearance\x18\x05 \x01(\tH\x00R\n" +
 	"appearance\x12)\n" +
 	"\x0fmemo_visibility\x18\x06 \x01(\tH\x00R\x0ememoVisibility\x12A\n" +
-	"\tshortcuts\x18\a \x01(\v2!.memos.store.ShortcutsUserSettingH\x00R\tshortcuts\x12:\n" +
-	"\vscroll_mode\x18\b \x01(\x0e2\x17.memos.store.ScrollModeH\x00R\n" +
-	"scrollModeB\a\n" +
+	"\tshortcuts\x18\a \x01(\v2!.memos.store.ShortcutsUserSettingH\x00R\tshortcutsB\a\n" +
 	"\x05value\"\xc4\x01\n" +
 	"\x17AccessTokensUserSetting\x12U\n" +
 	"\raccess_tokens\x18\x01 \x03(\v20.memos.store.AccessTokensUserSetting.AccessTokenR\faccessTokens\x1aR\n" +
@@ -527,7 +459,7 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\bShortcut\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
-	"\x06filter\x18\x03 \x01(\tR\x06filter*\x96\x01\n" +
+	"\x06filter\x18\x03 \x01(\tR\x06filter*\x85\x01\n" +
 	"\x0eUserSettingKey\x12 \n" +
 	"\x1cUSER_SETTING_KEY_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rACCESS_TOKENS\x10\x01\x12\n" +
@@ -536,13 +468,7 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\n" +
 	"APPEARANCE\x10\x03\x12\x13\n" +
 	"\x0fMEMO_VISIBILITY\x10\x04\x12\r\n" +
-	"\tSHORTCUTS\x10\x05\x12\x0f\n" +
-	"\vSCROLL_MODE\x10\x06*&\n" +
-	"\n" +
-	"ScrollMode\x12\n" +
-	"\n" +
-	"\x06BUTTON\x10\x00\x12\f\n" +
-	"\bINFINITE\x10\x01B\x9b\x01\n" +
+	"\tSHORTCUTS\x10\x05B\x9b\x01\n" +
 	"\x0fcom.memos.storeB\x10UserSettingProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
 var (
@@ -557,29 +483,27 @@ func file_store_user_setting_proto_rawDescGZIP() []byte {
 	return file_store_user_setting_proto_rawDescData
 }
 
-var file_store_user_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_store_user_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_store_user_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_store_user_setting_proto_goTypes = []any{
 	(UserSettingKey)(0),                         // 0: memos.store.UserSettingKey
-	(ScrollMode)(0),                             // 1: memos.store.ScrollMode
-	(*UserSetting)(nil),                         // 2: memos.store.UserSetting
-	(*AccessTokensUserSetting)(nil),             // 3: memos.store.AccessTokensUserSetting
-	(*ShortcutsUserSetting)(nil),                // 4: memos.store.ShortcutsUserSetting
-	(*AccessTokensUserSetting_AccessToken)(nil), // 5: memos.store.AccessTokensUserSetting.AccessToken
-	(*ShortcutsUserSetting_Shortcut)(nil),       // 6: memos.store.ShortcutsUserSetting.Shortcut
+	(*UserSetting)(nil),                         // 1: memos.store.UserSetting
+	(*AccessTokensUserSetting)(nil),             // 2: memos.store.AccessTokensUserSetting
+	(*ShortcutsUserSetting)(nil),                // 3: memos.store.ShortcutsUserSetting
+	(*AccessTokensUserSetting_AccessToken)(nil), // 4: memos.store.AccessTokensUserSetting.AccessToken
+	(*ShortcutsUserSetting_Shortcut)(nil),       // 5: memos.store.ShortcutsUserSetting.Shortcut
 }
 var file_store_user_setting_proto_depIdxs = []int32{
 	0, // 0: memos.store.UserSetting.key:type_name -> memos.store.UserSettingKey
-	3, // 1: memos.store.UserSetting.access_tokens:type_name -> memos.store.AccessTokensUserSetting
-	4, // 2: memos.store.UserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting
-	1, // 3: memos.store.UserSetting.scroll_mode:type_name -> memos.store.ScrollMode
-	5, // 4: memos.store.AccessTokensUserSetting.access_tokens:type_name -> memos.store.AccessTokensUserSetting.AccessToken
-	6, // 5: memos.store.ShortcutsUserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting.Shortcut
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	2, // 1: memos.store.UserSetting.access_tokens:type_name -> memos.store.AccessTokensUserSetting
+	3, // 2: memos.store.UserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting
+	4, // 3: memos.store.AccessTokensUserSetting.access_tokens:type_name -> memos.store.AccessTokensUserSetting.AccessToken
+	5, // 4: memos.store.ShortcutsUserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting.Shortcut
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_store_user_setting_proto_init() }
@@ -593,14 +517,13 @@ func file_store_user_setting_proto_init() {
 		(*UserSetting_Appearance)(nil),
 		(*UserSetting_MemoVisibility)(nil),
 		(*UserSetting_Shortcuts)(nil),
-		(*UserSetting_ScrollMode)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_user_setting_proto_rawDesc), len(file_store_user_setting_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      1,
 			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
