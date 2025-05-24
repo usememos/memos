@@ -2,7 +2,7 @@ import { Divider, List, ListItem, Radio, RadioGroup, Tooltip, Switch } from "@mu
 import { Button, Input } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { HelpCircleIcon } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { workspaceSettingNamePrefix } from "@/store/v1";
@@ -20,6 +20,12 @@ const StorageSection = () => {
   const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceStorageSetting>(
     WorkspaceStorageSetting.fromPartial(workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {}),
   );
+
+  useEffect(() => {
+    setWorkspaceStorageSetting(
+      WorkspaceStorageSetting.fromPartial(workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {}),
+    );
+  }, [workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)]);
 
   const allowSaveStorageSetting = useMemo(() => {
     if (workspaceStorageSetting.uploadSizeLimitMb <= 0) {
