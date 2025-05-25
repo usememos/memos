@@ -12,7 +12,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = () => {
   const t = useTranslate();
-  const originalSetting = workspaceStore.state.memoRelatedSetting;
+  const [originalSetting, setOriginalSetting] = useState<WorkspaceMemoRelatedSetting>(workspaceStore.state.memoRelatedSetting);
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
   const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
@@ -43,24 +43,25 @@ const MemoRelatedSettings = () => {
     setEditingNsfwTag("");
   };
 
-  const updateSetting = async () => {
-    if (memoRelatedSetting.reactions.length === 0) {
-      toast.error("Reactions must not be empty.");
-      return;
-    }
+const updateSetting = async () => {
+  if (memoRelatedSetting.reactions.length === 0) {
+    toast.error("Reactions must not be empty.");
+    return;
+  }
 
-    try {
-      await workspaceStore.upsertWorkspaceSetting({
-        name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
-        memoRelatedSetting,
-      });
-    } catch (error: any) {
-      toast.error(error.details);
-      console.error(error);
-      return;
-    }
+  try {
+    await workspaceStore.upsertWorkspaceSetting({
+      name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
+      memoRelatedSetting,
+    });
+    setOriginalSetting(memoRelatedSetting);
     toast.success(t("message.update-succeed"));
-  };
+  } catch (error: any) {
+    toast.error(error.details);
+    console.error(error);
+  }
+};
+
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
