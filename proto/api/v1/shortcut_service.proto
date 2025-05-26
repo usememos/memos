@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "gen/api/v1";
+
+service ShortcutService {
+  // ListShortcuts returns a list of shortcuts for a user.
+  rpc ListShortcuts(ListShortcutsRequest) returns (ListShortcutsResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/shortcuts"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // CreateShortcut creates a new shortcut for a user.
+  rpc CreateShortcut(CreateShortcutRequest) returns (Shortcut) {
+    option (google.api.http) = {
+      post: "/api/v1/{parent=users/*}/shortcuts"
+      body: "shortcut"
+    };
+    option (google.api.method_signature) = "parent,shortcut";
+  }
+
+  // UpdateShortcut updates a shortcut for a user.
+  rpc UpdateShortcut(UpdateShortcutRequest) returns (Shortcut) {
+    option (google.api.http) = {
+      patch: "/api/v1/{parent=users/*}/shortcuts/{shortcut.id}"
+      body: "shortcut"
+    };
+    option (google.api.method_signature) = "parent,shortcut,update_mask";
+  }
+
+  // DeleteShortcut deletes a shortcut for a user.
+  rpc DeleteShortcut(DeleteShortcutRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{parent=users/*}/shortcuts/{id}"};
+    option (google.api.method_signature) = "parent,id";
+  }
+}
+
+message Shortcut {
+  string id = 1;
+  string title = 2;
+  string filter = 3;
+}
+
+message ListShortcutsRequest {
+  // The name of the user.
+  string parent = 1;
+}
+
+message ListShortcutsResponse {
+  repeated Shortcut shortcuts = 1;
+}
+
+message CreateShortcutRequest {
+  // The name of the user.
+  string parent = 1;
+
+  Shortcut shortcut = 2;
+
+  bool validate_only = 3;
+}
+
+message UpdateShortcutRequest {
+  // The name of the user.
+  string parent = 1;
+
+  Shortcut shortcut = 2;
+
+  google.protobuf.FieldMask update_mask = 3;
+}
+
+message DeleteShortcutRequest {
+  // The name of the user.
+  string parent = 1;
+
+  // The id of the shortcut.
+  string id = 2;
+}

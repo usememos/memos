@@ -2,11 +2,11 @@ import { Input, Textarea, Button } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
-import { userServiceClient } from "@/grpcweb";
+import { shortcutServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { userStore } from "@/store/v2";
-import { Shortcut } from "@/types/proto/api/v1/user_service";
+import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateUUID } from "@/utils/uuid";
 import { generateDialog } from "./Dialog";
@@ -19,7 +19,11 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const t = useTranslate();
   const user = useCurrentUser();
-  const [shortcut, setShortcut] = useState(Shortcut.fromPartial({ ...props.shortcut }));
+  const [shortcut, setShortcut] = useState<Shortcut>({
+    id: props.shortcut?.id || "",
+    title: props.shortcut?.title || "",
+    filter: props.shortcut?.filter || "",
+  });
   const requestState = useLoading(false);
   const isCreating = !props.shortcut;
 
@@ -39,7 +43,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
 
     try {
       if (isCreating) {
-        await userServiceClient.createShortcut({
+        await shortcutServiceClient.createShortcut({
           parent: user.name,
           shortcut: {
             ...shortcut,
@@ -48,7 +52,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
         });
         toast.success("Create shortcut successfully");
       } else {
-        await userServiceClient.updateShortcut({ parent: user.name, shortcut, updateMask: ["title", "filter"] });
+        await shortcutServiceClient.updateShortcut({ parent: user.name, shortcut, updateMask: ["title", "filter"] });
         toast.success("Update shortcut successfully");
       }
       // Refresh shortcuts.

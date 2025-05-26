@@ -35,10 +35,6 @@ const (
 	UserService_ListUserAccessTokens_FullMethodName  = "/memos.api.v1.UserService/ListUserAccessTokens"
 	UserService_CreateUserAccessToken_FullMethodName = "/memos.api.v1.UserService/CreateUserAccessToken"
 	UserService_DeleteUserAccessToken_FullMethodName = "/memos.api.v1.UserService/DeleteUserAccessToken"
-	UserService_ListShortcuts_FullMethodName         = "/memos.api.v1.UserService/ListShortcuts"
-	UserService_CreateShortcut_FullMethodName        = "/memos.api.v1.UserService/CreateShortcut"
-	UserService_UpdateShortcut_FullMethodName        = "/memos.api.v1.UserService/UpdateShortcut"
-	UserService_DeleteShortcut_FullMethodName        = "/memos.api.v1.UserService/DeleteShortcut"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -73,14 +69,6 @@ type UserServiceClient interface {
 	CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*UserAccessToken, error)
 	// DeleteUserAccessToken deletes an access token for a user.
 	DeleteUserAccessToken(ctx context.Context, in *DeleteUserAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// ListShortcuts returns a list of shortcuts for a user.
-	ListShortcuts(ctx context.Context, in *ListShortcutsRequest, opts ...grpc.CallOption) (*ListShortcutsResponse, error)
-	// CreateShortcut creates a new shortcut for a user.
-	CreateShortcut(ctx context.Context, in *CreateShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error)
-	// UpdateShortcut updates a shortcut for a user.
-	UpdateShortcut(ctx context.Context, in *UpdateShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error)
-	// DeleteShortcut deletes a shortcut for a user.
-	DeleteShortcut(ctx context.Context, in *DeleteShortcutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type userServiceClient struct {
@@ -231,46 +219,6 @@ func (c *userServiceClient) DeleteUserAccessToken(ctx context.Context, in *Delet
 	return out, nil
 }
 
-func (c *userServiceClient) ListShortcuts(ctx context.Context, in *ListShortcutsRequest, opts ...grpc.CallOption) (*ListShortcutsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListShortcutsResponse)
-	err := c.cc.Invoke(ctx, UserService_ListShortcuts_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) CreateShortcut(ctx context.Context, in *CreateShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Shortcut)
-	err := c.cc.Invoke(ctx, UserService_CreateShortcut_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) UpdateShortcut(ctx context.Context, in *UpdateShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Shortcut)
-	err := c.cc.Invoke(ctx, UserService_UpdateShortcut_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) DeleteShortcut(ctx context.Context, in *DeleteShortcutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, UserService_DeleteShortcut_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -303,14 +251,6 @@ type UserServiceServer interface {
 	CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*UserAccessToken, error)
 	// DeleteUserAccessToken deletes an access token for a user.
 	DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error)
-	// ListShortcuts returns a list of shortcuts for a user.
-	ListShortcuts(context.Context, *ListShortcutsRequest) (*ListShortcutsResponse, error)
-	// CreateShortcut creates a new shortcut for a user.
-	CreateShortcut(context.Context, *CreateShortcutRequest) (*Shortcut, error)
-	// UpdateShortcut updates a shortcut for a user.
-	UpdateShortcut(context.Context, *UpdateShortcutRequest) (*Shortcut, error)
-	// DeleteShortcut deletes a shortcut for a user.
-	DeleteShortcut(context.Context, *DeleteShortcutRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -362,18 +302,6 @@ func (UnimplementedUserServiceServer) CreateUserAccessToken(context.Context, *Cr
 }
 func (UnimplementedUserServiceServer) DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserAccessToken not implemented")
-}
-func (UnimplementedUserServiceServer) ListShortcuts(context.Context, *ListShortcutsRequest) (*ListShortcutsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListShortcuts not implemented")
-}
-func (UnimplementedUserServiceServer) CreateShortcut(context.Context, *CreateShortcutRequest) (*Shortcut, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateShortcut not implemented")
-}
-func (UnimplementedUserServiceServer) UpdateShortcut(context.Context, *UpdateShortcutRequest) (*Shortcut, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateShortcut not implemented")
-}
-func (UnimplementedUserServiceServer) DeleteShortcut(context.Context, *DeleteShortcutRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteShortcut not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -648,78 +576,6 @@ func _UserService_DeleteUserAccessToken_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_ListShortcuts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListShortcutsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).ListShortcuts(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_ListShortcuts_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ListShortcuts(ctx, req.(*ListShortcutsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_CreateShortcut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateShortcutRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).CreateShortcut(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_CreateShortcut_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).CreateShortcut(ctx, req.(*CreateShortcutRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_UpdateShortcut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateShortcutRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).UpdateShortcut(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_UpdateShortcut_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).UpdateShortcut(ctx, req.(*UpdateShortcutRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_DeleteShortcut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteShortcutRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).DeleteShortcut(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_DeleteShortcut_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).DeleteShortcut(ctx, req.(*DeleteShortcutRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -782,22 +638,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUserAccessToken",
 			Handler:    _UserService_DeleteUserAccessToken_Handler,
-		},
-		{
-			MethodName: "ListShortcuts",
-			Handler:    _UserService_ListShortcuts_Handler,
-		},
-		{
-			MethodName: "CreateShortcut",
-			Handler:    _UserService_CreateShortcut_Handler,
-		},
-		{
-			MethodName: "UpdateShortcut",
-			Handler:    _UserService_UpdateShortcut_Handler,
-		},
-		{
-			MethodName: "DeleteShortcut",
-			Handler:    _UserService_DeleteShortcut_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

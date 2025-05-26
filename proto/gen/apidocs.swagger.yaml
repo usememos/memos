@@ -11,6 +11,7 @@ tags:
   - name: MarkdownService
   - name: ResourceService
   - name: MemoService
+  - name: ShortcutService
   - name: WebhookService
   - name: WorkspaceService
   - name: WorkspaceSettingService
@@ -1520,7 +1521,7 @@ paths:
   /api/v1/{parent}/shortcuts:
     get:
       summary: ListShortcuts returns a list of shortcuts for a user.
-      operationId: UserService_ListShortcuts
+      operationId: ShortcutService_ListShortcuts
       responses:
         "200":
           description: A successful response.
@@ -1538,10 +1539,10 @@ paths:
           type: string
           pattern: users/[^/]+
       tags:
-        - UserService
+        - ShortcutService
     post:
       summary: CreateShortcut creates a new shortcut for a user.
-      operationId: UserService_CreateShortcut
+      operationId: ShortcutService_CreateShortcut
       responses:
         "200":
           description: A successful response.
@@ -1568,11 +1569,11 @@ paths:
           required: false
           type: boolean
       tags:
-        - UserService
+        - ShortcutService
   /api/v1/{parent}/shortcuts/{id}:
     delete:
       summary: DeleteShortcut deletes a shortcut for a user.
-      operationId: UserService_DeleteShortcut
+      operationId: ShortcutService_DeleteShortcut
       responses:
         "200":
           description: A successful response.
@@ -1596,11 +1597,11 @@ paths:
           required: true
           type: string
       tags:
-        - UserService
+        - ShortcutService
   /api/v1/{parent}/shortcuts/{shortcut.id}:
     patch:
       summary: UpdateShortcut updates a shortcut for a user.
-      operationId: UserService_UpdateShortcut
+      operationId: ShortcutService_UpdateShortcut
       responses:
         "200":
           description: A successful response.
@@ -1632,7 +1633,7 @@ paths:
               filter:
                 type: string
       tags:
-        - UserService
+        - ShortcutService
   /api/v1/{parent}/tags/{tag}:
     delete:
       summary: DeleteMemoTag deletes a tag for a memo.

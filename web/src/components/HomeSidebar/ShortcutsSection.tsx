@@ -1,12 +1,12 @@
 import { Dropdown, Menu, MenuButton, MenuItem, Tooltip } from "@mui/joy";
 import { Edit3Icon, MoreVerticalIcon, TrashIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { userServiceClient } from "@/grpcweb";
+import { shortcutServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilterStore } from "@/store/v1";
 import { userStore } from "@/store/v2";
-import { Shortcut } from "@/types/proto/api/v1/user_service";
+import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import showCreateShortcutDialog from "../CreateShortcutDialog";
@@ -26,7 +26,7 @@ const ShortcutsSection = observer(() => {
   const handleDeleteShortcut = async (shortcut: Shortcut) => {
     const confirmed = window.confirm("Are you sure you want to delete this shortcut?");
     if (confirmed) {
-      await userServiceClient.deleteShortcut({ parent: user.name, id: shortcut.id });
+      await shortcutServiceClient.deleteShortcut({ parent: user.name, id: shortcut.id });
       await userStore.fetchShortcuts();
     }
   };

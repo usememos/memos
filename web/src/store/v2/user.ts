@@ -1,8 +1,9 @@
 import { uniqueId } from "lodash-es";
 import { makeAutoObservable } from "mobx";
-import { authServiceClient, inboxServiceClient, userServiceClient } from "@/grpcweb";
+import { authServiceClient, inboxServiceClient, shortcutServiceClient, userServiceClient } from "@/grpcweb";
 import { Inbox } from "@/types/proto/api/v1/inbox_service";
-import { Shortcut, User, UserSetting, UserStats } from "@/types/proto/api/v1/user_service";
+import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
+import { User, UserSetting, UserStats } from "@/types/proto/api/v1/user_service";
 import { findNearestMatchedLanguage } from "@/utils/i18n";
 import workspaceStore from "./workspace";
 
@@ -138,7 +139,7 @@ const userStore = (() => {
       return;
     }
 
-    const { shortcuts } = await userServiceClient.listShortcuts({ parent: state.currentUser });
+    const { shortcuts } = await shortcutServiceClient.listShortcuts({ parent: state.currentUser });
     state.setPartial({
       shortcuts,
     });
