@@ -59,6 +59,41 @@ func TestRestoreExprToSQL(t *testing.T) {
 			want:   "memo.pinned IS TRUE",
 			args:   []any{},
 		},
+		{
+			filter: `has_task_list`,
+			want:   "(memo.payload->'property'->>'hasTaskList')::boolean IS TRUE",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == true`,
+			want:   "(memo.payload->'property'->>'hasTaskList')::boolean = $1",
+			args:   []any{true},
+		},
+		{
+			filter: `has_task_list != false`,
+			want:   "(memo.payload->'property'->>'hasTaskList')::boolean != $1",
+			args:   []any{false},
+		},
+		{
+			filter: `has_task_list == false`,
+			want:   "(memo.payload->'property'->>'hasTaskList')::boolean = $1",
+			args:   []any{false},
+		},
+		{
+			filter: `!has_task_list`,
+			want:   "NOT ((memo.payload->'property'->>'hasTaskList')::boolean IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && pinned`,
+			want:   "((memo.payload->'property'->>'hasTaskList')::boolean IS TRUE AND memo.pinned IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && content.contains("todo")`,
+			want:   "((memo.payload->'property'->>'hasTaskList')::boolean IS TRUE AND memo.content ILIKE $1)",
+			args:   []any{"%todo%"},
+		},
 	}
 
 	for _, tt := range tests {

@@ -59,6 +59,41 @@ func TestConvertExprToSQL(t *testing.T) {
 			want:   "`memo`.`pinned` IS TRUE",
 			args:   []any{},
 		},
+		{
+			filter: `has_task_list`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == true`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list != false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') != CAST('false' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('false' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `!has_task_list`,
+			want:   "NOT (JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON))",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && pinned`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON) AND `memo`.`pinned` IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && content.contains("todo")`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON) AND `memo`.`content` LIKE ?)",
+			args:   []any{"%todo%"},
+		},
 	}
 
 	for _, tt := range tests {

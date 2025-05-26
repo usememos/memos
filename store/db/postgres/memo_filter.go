@@ -59,7 +59,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if err != nil {
 				return err
 			}
-			if !slices.Contains([]string{"creator_id", "create_time", "update_time", "visibility", "content"}, identifier) {
+			if !slices.Contains([]string{"creator_id", "create_time", "update_time", "visibility", "content", "has_task_list"}, identifier) {
 				return errors.Errorf("invalid identifier for %s", v.CallExpr.Function)
 			}
 			value, err := filter.GetConstValue(v.CallExpr.Args[1])
@@ -135,6 +135,20 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 					return err
 				}
 				ctx.Args = append(ctx.Args, valueInt)
+			} else if identifier == "has_task_list" {
+				if operator != "=" && operator != "!=" {
+					return errors.Errorf("invalid operator for %s", v.CallExpr.Function)
+				}
+				valueBool, ok := value.(bool)
+				if !ok {
+					return errors.New("invalid boolean value for has_task_list")
+				}
+
+				// In PostgreSQL, extract the boolean from the JSON and compare it
+				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("(memo.payload->'property'->>'hasTaskList')::boolean %s %s", operator, placeholder(len(ctx.Args)+ctx.ArgsOffset+1))); err != nil {
+					return err
+				}
+				ctx.Args = append(ctx.Args, valueBool)
 			}
 		case "@in":
 			if len(v.CallExpr.Args) != 2 {
@@ -204,11 +218,15 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 		}
 	} else if v, ok := expr.ExprKind.(*exprv1.Expr_IdentExpr); ok {
 		identifier := v.IdentExpr.GetName()
-		if !slices.Contains([]string{"pinned"}, identifier) {
+		if !slices.Contains([]string{"pinned", "has_task_list"}, identifier) {
 			return errors.Errorf("invalid identifier %s", identifier)
 		}
 		if identifier == "pinned" {
 			if _, err := ctx.Buffer.WriteString("memo.pinned IS TRUE"); err != nil {
+				return err
+			}
+		} else if identifier == "has_task_list" {
+			if _, err := ctx.Buffer.WriteString("(memo.payload->'property'->>'hasTaskList')::boolean IS TRUE"); err != nil {
 				return err
 			}
 		}
