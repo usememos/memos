@@ -43,25 +43,24 @@ const MemoRelatedSettings = () => {
     setEditingNsfwTag("");
   };
 
-const updateSetting = async () => {
-  if (memoRelatedSetting.reactions.length === 0) {
-    toast.error("Reactions must not be empty.");
-    return;
-  }
+  const updateSetting = async () => {
+    if (memoRelatedSetting.reactions.length === 0) {
+      toast.error("Reactions must not be empty.");
+      return;
+    }
 
-  try {
-    await workspaceStore.upsertWorkspaceSetting({
-      name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
-      memoRelatedSetting,
-    });
-    setOriginalSetting(memoRelatedSetting);
-    toast.success(t("message.update-succeed"));
-  } catch (error: any) {
-    toast.error(error.details);
-    console.error(error);
-  }
-};
-
+    try {
+      await workspaceStore.upsertWorkspaceSetting({
+        name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
+        memoRelatedSetting,
+      });
+      setOriginalSetting(memoRelatedSetting);
+      toast.success(t("message.update-succeed"));
+    } catch (error: any) {
+      toast.error(error.details);
+      console.error(error);
+    }
+  };
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
