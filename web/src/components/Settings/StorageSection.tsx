@@ -5,7 +5,7 @@ import { HelpCircleIcon } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { workspaceSettingNamePrefix } from "@/store/v1";
+import { workspaceSettingNamePrefix } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
 import { WorkspaceSettingKey } from "@/store/v2/workspace";
 import {

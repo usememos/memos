@@ -1,7 +1,8 @@
 import { useContext, useEffect } from "react";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { memoNamePrefix, useMemoStore } from "@/store/v1";
+import { memoNamePrefix } from "@/store/common";
+import { useMemoStore } from "@/store/v1";
 import { RendererContext } from "../types";
 import Error from "./Error";
 

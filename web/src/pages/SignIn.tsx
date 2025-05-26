@@ -9,7 +9,7 @@ import { identityProviderServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Routes } from "@/router";
-import { extractIdentityProviderIdFromName } from "@/store/v1";
+import { extractIdentityProviderIdFromName } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
