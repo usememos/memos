@@ -53,7 +53,7 @@ func (s *Store) UpsertWorkspaceSetting(ctx context.Context, upsert *storepb.Work
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to convert workspace setting")
 	}
-	s.workspaceSettingCache.Store(workspaceSetting.Key.String(), workspaceSetting)
+	s.workspaceSettingCache.Set(ctx, workspaceSetting.Key.String(), workspaceSetting)
 	return workspaceSetting, nil
 }
 
@@ -72,14 +72,14 @@ func (s *Store) ListWorkspaceSettings(ctx context.Context, find *FindWorkspaceSe
 		if workspaceSetting == nil {
 			continue
 		}
-		s.workspaceSettingCache.Store(workspaceSetting.Key.String(), workspaceSetting)
+		s.workspaceSettingCache.Set(ctx, workspaceSetting.Key.String(), workspaceSetting)
 		workspaceSettings = append(workspaceSettings, workspaceSetting)
 	}
 	return workspaceSettings, nil
 }
 
 func (s *Store) GetWorkspaceSetting(ctx context.Context, find *FindWorkspaceSetting) (*storepb.WorkspaceSetting, error) {
-	if cache, ok := s.workspaceSettingCache.Load(find.Name); ok {
+	if cache, ok := s.workspaceSettingCache.Get(ctx, find.Name); ok {
 		workspaceSetting, ok := cache.(*storepb.WorkspaceSetting)
 		if ok {
 			return workspaceSetting, nil
@@ -111,7 +111,7 @@ func (s *Store) GetWorkspaceBasicSetting(ctx context.Context) (*storepb.Workspac
 	if workspaceSetting != nil {
 		workspaceBasicSetting = workspaceSetting.GetBasicSetting()
 	}
-	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_BASIC.String(), &storepb.WorkspaceSetting{
+	s.workspaceSettingCache.Set(ctx, storepb.WorkspaceSettingKey_BASIC.String(), &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_BASIC,
 		Value: &storepb.WorkspaceSetting_BasicSetting{BasicSetting: workspaceBasicSetting},
 	})
@@ -130,7 +130,7 @@ func (s *Store) GetWorkspaceGeneralSetting(ctx context.Context) (*storepb.Worksp
 	if workspaceSetting != nil {
 		workspaceGeneralSetting = workspaceSetting.GetGeneralSetting()
 	}
-	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_GENERAL.String(), &storepb.WorkspaceSetting{
+	s.workspaceSettingCache.Set(ctx, storepb.WorkspaceSettingKey_GENERAL.String(), &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_GENERAL,
 		Value: &storepb.WorkspaceSetting_GeneralSetting{GeneralSetting: workspaceGeneralSetting},
 	})
@@ -167,7 +167,7 @@ func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.Wo
 	if len(workspaceMemoRelatedSetting.NsfwTags) == 0 {
 		workspaceMemoRelatedSetting.NsfwTags = append(workspaceMemoRelatedSetting.NsfwTags, DefaultNsfwTags...)
 	}
-	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_MEMO_RELATED.String(), &storepb.WorkspaceSetting{
+	s.workspaceSettingCache.Set(ctx, storepb.WorkspaceSettingKey_MEMO_RELATED.String(), &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_MEMO_RELATED,
 		Value: &storepb.WorkspaceSetting_MemoRelatedSetting{MemoRelatedSetting: workspaceMemoRelatedSetting},
 	})
@@ -201,7 +201,7 @@ func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.Worksp
 	if workspaceStorageSetting.FilepathTemplate == "" {
 		workspaceStorageSetting.FilepathTemplate = defaultWorkspaceFilepathTemplate
 	}
-	s.workspaceSettingCache.Store(storepb.WorkspaceSettingKey_STORAGE.String(), &storepb.WorkspaceSetting{
+	s.workspaceSettingCache.Set(ctx, storepb.WorkspaceSettingKey_STORAGE.String(), &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_STORAGE,
 		Value: &storepb.WorkspaceSetting_StorageSetting{StorageSetting: workspaceStorageSetting},
 	})
