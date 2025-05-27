@@ -152,8 +152,9 @@ func (c *Cache) Delete(_ context.Context, key string) {
 		atomic.AddInt64(&c.itemCount, -1)
 
 		if c.config.OnEviction != nil {
-			itm, _ := value.(item)
-			c.config.OnEviction(key, itm.value)
+			if itm, ok := value.(item); ok {
+				c.config.OnEviction(key, itm.value)
+			}
 		}
 	}
 }
@@ -162,8 +163,13 @@ func (c *Cache) Delete(_ context.Context, key string) {
 func (c *Cache) Clear(_ context.Context) {
 	if c.config.OnEviction != nil {
 		c.data.Range(func(key, value any) bool {
-			itm, _ := value.(item)
-			c.config.OnEviction(key.(string), itm.value)
+			itm, ok := value.(item)
+			if !ok {
+				return true
+			}
+			if keyStr, ok := key.(string); ok {
+				c.config.OnEviction(keyStr, itm.value)
+			}
 			return true
 		})
 	}
@@ -214,13 +220,18 @@ func (c *Cache) cleanup() {
 	count := 0
 
 	c.data.Range(func(key, value any) bool {
-		itm, _ := value.(item)
+		itm, ok := value.(item)
+		if !ok {
+			return true
+		}
 		if time.Now().After(itm.expiration) {
 			c.data.Delete(key)
 			count++
 
 			if c.config.OnEviction != nil {
-				evicted[key.(string)] = itm.value
+				if keyStr, ok := key.(string); ok {
+					evicted[keyStr] = itm.value
+				}
 			}
 		}
 		return true
@@ -261,9 +272,12 @@ func (c *Cache) cleanupOldest() {
 	candidates := make([]keyExpPair, 0, threshold)
 
 	c.data.Range(func(key, value any) bool {
-		itm := value.(item)
-		if len(candidates) < threshold {
-			candidates = append(candidates, keyExpPair{key.(string), itm.value, itm.expiration})
+		itm, ok := value.(item)
+		if !ok {
+			return true
+		}
+		if keyStr, ok := key.(string); ok && len(candidates) < threshold {
+			candidates = append(candidates, keyExpPair{keyStr, itm.value, itm.expiration})
 			return true
 		}
 
