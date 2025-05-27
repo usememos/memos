@@ -25,7 +25,7 @@ func NewProfiler() *Profiler {
 }
 
 // RegisterRoutes adds profiling endpoints to the Echo server.
-func (p *Profiler) RegisterRoutes(e *echo.Echo) {
+func (*Profiler) RegisterRoutes(e *echo.Echo) {
 	// Register pprof handlers
 	g := e.Group("/debug/pprof")
 	g.GET("", echo.WrapHandler(http.HandlerFunc(pprof.Index)))
@@ -97,7 +97,6 @@ func (p *Profiler) StartMemoryMonitor(ctx context.Context) {
 				// Force GC if memory usage is high to see if objects can be reclaimed.
 				if m.HeapAlloc > 500*1024*1024 { // 500 MB threshold
 					slog.Info("forcing garbage collection due to high memory usage")
-					runtime.GC()
 				}
 			case <-ctx.Done():
 				return

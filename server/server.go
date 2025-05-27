@@ -163,9 +163,6 @@ func (s *Server) Shutdown(ctx context.Context) {
 	// Stop the profiler
 	if s.profiler != nil {
 		slog.Info("stopping profiler")
-		// Force one last garbage collection to clean up remaining objects
-		runtime.GC()
-
 		// Log final memory stats
 		var m runtime.MemStats
 		runtime.ReadMemStats(&m)

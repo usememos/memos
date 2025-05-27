@@ -98,7 +98,7 @@ func (s *RSSService) GetUserRSS(c echo.Context) error {
 }
 
 func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*store.Memo, baseURL string) (string, error) {
-	rssHeading, err := getRSSHeading(s.Store, ctx)
+	rssHeading, err := getRSSHeading(ctx, s.Store)
 	if err != nil {
 		return "", err
 	}
@@ -160,8 +160,8 @@ func getRSSItemDescription(content string) (string, error) {
 	return result, nil
 }
 
-func getRSSHeading(store *store.Store, ctx context.Context) (RSSHeading, error) {
-	settings, err := store.GetWorkspaceGeneralSetting(ctx)
+func getRSSHeading(ctx context.Context, stores *store.Store) (RSSHeading, error) {
+	settings, err := stores.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
 		return RSSHeading{}, err
 	}

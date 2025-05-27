@@ -3,7 +3,6 @@ package memopayload
 import (
 	"context"
 	"log/slog"
-	"runtime"
 	"slices"
 
 	"github.com/pkg/errors"
@@ -70,9 +69,6 @@ func (r *Runner) RunOnce(ctx context.Context) {
 
 		// Move to next batch
 		offset += len(memos)
-
-		// Force garbage collection between batches to prevent memory accumulation
-		runtime.GC()
 	}
 }
 

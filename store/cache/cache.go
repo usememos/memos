@@ -95,7 +95,7 @@ func (c *Cache) Set(ctx context.Context, key string, value any) {
 }
 
 // SetWithTTL adds a value to the cache with a custom TTL.
-func (c *Cache) SetWithTTL(ctx context.Context, key string, value any, ttl time.Duration) {
+func (c *Cache) SetWithTTL(_ context.Context, key string, value any, ttl time.Duration) {
 	// Estimate size of the item (very rough approximation).
 	size := estimateSize(value)
 
@@ -120,13 +120,18 @@ func (c *Cache) SetWithTTL(ctx context.Context, key string, value any, ttl time.
 }
 
 // Get retrieves a value from the cache.
-func (c *Cache) Get(ctx context.Context, key string) (any, bool) {
+func (c *Cache) Get(_ context.Context, key string) (any, bool) {
 	value, ok := c.data.Load(key)
 	if !ok {
 		return nil, false
 	}
 
-	itm := value.(item)
+	itm, ok := value.(item)
+	if !ok {
+		// If the value is not of type item, it means it was corrupted or not set correctly.
+		c.data.Delete(key)
+		return nil, false
+	}
 	if time.Now().After(itm.expiration) {
 		c.data.Delete(key)
 		atomic.AddInt64(&c.itemCount, -1)
@@ -142,22 +147,22 @@ func (c *Cache) Get(ctx context.Context, key string) (any, bool) {
 }
 
 // Delete removes a value from the cache.
-func (c *Cache) Delete(ctx context.Context, key string) {
+func (c *Cache) Delete(_ context.Context, key string) {
 	if value, loaded := c.data.LoadAndDelete(key); loaded {
 		atomic.AddInt64(&c.itemCount, -1)
 
 		if c.config.OnEviction != nil {
-			itm := value.(item)
+			itm, _ := value.(item)
 			c.config.OnEviction(key, itm.value)
 		}
 	}
 }
 
 // Clear removes all values from the cache.
-func (c *Cache) Clear(ctx context.Context) {
+func (c *Cache) Clear(_ context.Context) {
 	if c.config.OnEviction != nil {
 		c.data.Range(func(key, value any) bool {
-			itm := value.(item)
+			itm, _ := value.(item)
 			c.config.OnEviction(key.(string), itm.value)
 			return true
 		})
@@ -209,7 +214,7 @@ func (c *Cache) cleanup() {
 	count := 0
 
 	c.data.Range(func(key, value any) bool {
-		itm := value.(item)
+		itm, _ := value.(item)
 		if time.Now().After(itm.expiration) {
 			c.data.Delete(key)
 			count++

@@ -3,7 +3,6 @@ package s3presign
 import (
 	"context"
 	"log/slog"
-	"runtime"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -131,8 +130,5 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 
 		// Move to next batch
 		offset += len(resources)
-
-		// Prevent memory accumulation between batches
-		runtime.GC()
 	}
 }
