@@ -7,53 +7,53 @@ import (
 	"time"
 )
 
-// Interface defines the operations a cache must support
+// Interface defines the operations a cache must support.
 type Interface interface {
-	// Set adds a value to the cache with the default TTL
-	Set(ctx context.Context, key string, value interface{})
+	// Set adds a value to the cache with the default TTL.
+	Set(ctx context.Context, key string, value any)
 
-	// SetWithTTL adds a value to the cache with a custom TTL
-	SetWithTTL(ctx context.Context, key string, value interface{}, ttl time.Duration)
+	// SetWithTTL adds a value to the cache with a custom TTL.
+	SetWithTTL(ctx context.Context, key string, value any, ttl time.Duration)
 
-	// Get retrieves a value from the cache
-	Get(ctx context.Context, key string) (interface{}, bool)
+	// Get retrieves a value from the cache.
+	Get(ctx context.Context, key string) (any, bool)
 
-	// Delete removes a value from the cache
+	// Delete removes a value from the cache.
 	Delete(ctx context.Context, key string)
 
-	// Clear removes all values from the cache
+	// Clear removes all values from the cache.
 	Clear(ctx context.Context)
 
-	// Size returns the number of items in the cache
+	// Size returns the number of items in the cache.
 	Size() int64
 
-	// Close stops all background tasks and releases resources
+	// Close stops all background tasks and releases resources.
 	Close() error
 }
 
-// item represents a cached value with metadata
+// item represents a cached value with metadata.
 type item struct {
-	value      interface{}
+	value      any
 	expiration time.Time
 	size       int // Approximate size in bytes
 }
 
-// Config contains options for configuring a cache
+// Config contains options for configuring a cache.
 type Config struct {
-	// DefaultTTL is the default time-to-live for cache entries
+	// DefaultTTL is the default time-to-live for cache entries.
 	DefaultTTL time.Duration
 
-	// CleanupInterval is how often the cache runs cleanup
+	// CleanupInterval is how often the cache runs cleanup.
 	CleanupInterval time.Duration
 
-	// MaxItems is the maximum number of items allowed in the cache
+	// MaxItems is the maximum number of items allowed in the cache.
 	MaxItems int
 
-	// OnEviction is called when an item is evicted from the cache
-	OnEviction func(key string, value interface{})
+	// OnEviction is called when an item is evicted from the cache.
+	OnEviction func(key string, value any)
 }
 
-// DefaultConfig returns a default configuration for the cache
+// DefaultConfig returns a default configuration for the cache.
 func DefaultConfig() Config {
 	return Config{
 		DefaultTTL:      10 * time.Minute,
@@ -63,7 +63,7 @@ func DefaultConfig() Config {
 	}
 }
 
-// Cache is a thread-safe in-memory cache with TTL and memory management
+// Cache is a thread-safe in-memory cache with TTL and memory management.
 type Cache struct {
 	data       sync.Map
 	config     Config
@@ -72,7 +72,7 @@ type Cache struct {
 	closedChan chan struct{}
 }
 
-// New creates a new memory cache with the given configuration
+// New creates a new memory cache with the given configuration.
 func New(config Config) *Cache {
 	c := &Cache{
 		config:     config,
@@ -84,27 +84,26 @@ func New(config Config) *Cache {
 	return c
 }
 
-// NewDefault creates a new memory cache with default configuration
+// NewDefault creates a new memory cache with default configuration.
 func NewDefault() *Cache {
 	return New(DefaultConfig())
 }
 
-// Set adds a value to the cache with the default TTL
-func (c *Cache) Set(ctx context.Context, key string, value interface{}) {
+// Set adds a value to the cache with the default TTL.
+func (c *Cache) Set(ctx context.Context, key string, value any) {
 	c.SetWithTTL(ctx, key, value, c.config.DefaultTTL)
 }
 
-// SetWithTTL adds a value to the cache with a custom TTL
-func (c *Cache) SetWithTTL(ctx context.Context, key string, value interface{}, ttl time.Duration) {
-	// Estimate size of the item (very rough approximation)
+// SetWithTTL adds a value to the cache with a custom TTL.
+func (c *Cache) SetWithTTL(ctx context.Context, key string, value any, ttl time.Duration) {
+	// Estimate size of the item (very rough approximation).
 	size := estimateSize(value)
 
-	// Check if item already exists to avoid double counting
+	// Check if item already exists to avoid double counting.
 	if _, exists := c.data.Load(key); exists {
 		c.data.Delete(key)
-		// Don't decrement count - we'll replace it
 	} else {
-		// Only increment if this is a new key
+		// Only increment if this is a new key.
 		atomic.AddInt64(&c.itemCount, 1)
 	}
 
@@ -114,14 +113,14 @@ func (c *Cache) SetWithTTL(ctx context.Context, key string, value interface{}, t
 		size:       size,
 	})
 
-	// If we're over the max items, clean up old items
+	// If we're over the max items, clean up old items.
 	if c.config.MaxItems > 0 && atomic.LoadInt64(&c.itemCount) > int64(c.config.MaxItems) {
 		c.cleanupOldest()
 	}
 }
 
-// Get retrieves a value from the cache
-func (c *Cache) Get(ctx context.Context, key string) (interface{}, bool) {
+// Get retrieves a value from the cache.
+func (c *Cache) Get(ctx context.Context, key string) (any, bool) {
 	value, ok := c.data.Load(key)
 	if !ok {
 		return nil, false
@@ -142,7 +141,7 @@ func (c *Cache) Get(ctx context.Context, key string) (interface{}, bool) {
 	return itm.value, true
 }
 
-// Delete removes a value from the cache
+// Delete removes a value from the cache.
 func (c *Cache) Delete(ctx context.Context, key string) {
 	if value, loaded := c.data.LoadAndDelete(key); loaded {
 		atomic.AddInt64(&c.itemCount, -1)
@@ -154,10 +153,10 @@ func (c *Cache) Delete(ctx context.Context, key string) {
 	}
 }
 
-// Clear removes all values from the cache
+// Clear removes all values from the cache.
 func (c *Cache) Clear(ctx context.Context) {
 	if c.config.OnEviction != nil {
-		c.data.Range(func(key, value interface{}) bool {
+		c.data.Range(func(key, value any) bool {
 			itm := value.(item)
 			c.config.OnEviction(key.(string), itm.value)
 			return true
@@ -168,12 +167,12 @@ func (c *Cache) Clear(ctx context.Context) {
 	atomic.StoreInt64(&c.itemCount, 0)
 }
 
-// Size returns the number of items in the cache
+// Size returns the number of items in the cache.
 func (c *Cache) Size() int64 {
 	return atomic.LoadInt64(&c.itemCount)
 }
 
-// Close stops the cache cleanup goroutine
+// Close stops the cache cleanup goroutine.
 func (c *Cache) Close() error {
 	select {
 	case <-c.stopChan:
@@ -186,7 +185,7 @@ func (c *Cache) Close() error {
 	}
 }
 
-// cleanupLoop periodically cleans up expired items
+// cleanupLoop periodically cleans up expired items.
 func (c *Cache) cleanupLoop() {
 	ticker := time.NewTicker(c.config.CleanupInterval)
 	defer func() {
@@ -204,12 +203,12 @@ func (c *Cache) cleanupLoop() {
 	}
 }
 
-// cleanup removes expired items
+// cleanup removes expired items.
 func (c *Cache) cleanup() {
-	evicted := make(map[string]interface{})
+	evicted := make(map[string]any)
 	count := 0
 
-	c.data.Range(func(key, value interface{}) bool {
+	c.data.Range(func(key, value any) bool {
 		itm := value.(item)
 		if time.Now().After(itm.expiration) {
 			c.data.Delete(key)
@@ -234,7 +233,7 @@ func (c *Cache) cleanup() {
 	}
 }
 
-// cleanupOldest removes the oldest items if we're over the max items
+// cleanupOldest removes the oldest items if we're over the max items.
 func (c *Cache) cleanupOldest() {
 	threshold := c.config.MaxItems / 5 // Remove 20% of max items at once
 	if threshold < 1 {
@@ -251,12 +250,12 @@ func (c *Cache) cleanupOldest() {
 	// Find the oldest items
 	type keyExpPair struct {
 		key        string
-		value      interface{}
+		value      any
 		expiration time.Time
 	}
 	candidates := make([]keyExpPair, 0, threshold)
 
-	c.data.Range(func(key, value interface{}) bool {
+	c.data.Range(func(key, value any) bool {
 		itm := value.(item)
 		if len(candidates) < threshold {
 			candidates = append(candidates, keyExpPair{key.(string), itm.value, itm.expiration})
@@ -296,14 +295,14 @@ func (c *Cache) cleanupOldest() {
 	}
 }
 
-// estimateSize attempts to estimate the memory footprint of a value
-func estimateSize(value interface{}) int {
+// estimateSize attempts to estimate the memory footprint of a value.
+func estimateSize(value any) int {
 	switch v := value.(type) {
 	case string:
 		return len(v) + 24 // base size + string overhead
 	case []byte:
 		return len(v) + 24 // base size + slice overhead
-	case map[string]interface{}:
+	case map[string]any:
 		return len(v) * 64 // rough estimate
 	default:
 		return 64 // default conservative estimate

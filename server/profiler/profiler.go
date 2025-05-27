@@ -12,19 +12,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Profiler provides HTTP endpoints for memory profiling
+// Profiler provides HTTP endpoints for memory profiling.
 type Profiler struct {
 	memStatsLogInterval time.Duration
 }
 
-// NewProfiler creates a new profiler
+// NewProfiler creates a new profiler.
 func NewProfiler() *Profiler {
 	return &Profiler{
 		memStatsLogInterval: 1 * time.Minute,
 	}
 }
 
-// RegisterRoutes adds profiling endpoints to the Echo server
+// RegisterRoutes adds profiling endpoints to the Echo server.
 func (p *Profiler) RegisterRoutes(e *echo.Echo) {
 	// Register pprof handlers
 	g := e.Group("/debug/pprof")
@@ -41,7 +41,7 @@ func (p *Profiler) RegisterRoutes(e *echo.Echo) {
 	g.GET("/mutex", echo.WrapHandler(http.HandlerFunc(pprof.Handler("mutex").ServeHTTP)))
 	g.GET("/threadcreate", echo.WrapHandler(http.HandlerFunc(pprof.Handler("threadcreate").ServeHTTP)))
 
-	// Add a custom memory stats endpoint
+	// Add a custom memory stats endpoint.
 	g.GET("/memstats", func(c echo.Context) error {
 		var m runtime.MemStats
 		runtime.ReadMemStats(&m)
@@ -58,13 +58,13 @@ func (p *Profiler) RegisterRoutes(e *echo.Echo) {
 	})
 }
 
-// StartMemoryMonitor starts a goroutine that periodically logs memory stats
+// StartMemoryMonitor starts a goroutine that periodically logs memory stats.
 func (p *Profiler) StartMemoryMonitor(ctx context.Context) {
 	go func() {
 		ticker := time.NewTicker(p.memStatsLogInterval)
 		defer ticker.Stop()
 
-		// Store previous heap allocation to track growth
+		// Store previous heap allocation to track growth.
 		var lastHeapAlloc uint64
 		var lastNumGC uint32
 
@@ -74,7 +74,7 @@ func (p *Profiler) StartMemoryMonitor(ctx context.Context) {
 				var m runtime.MemStats
 				runtime.ReadMemStats(&m)
 
-				// Calculate heap growth since last check
+				// Calculate heap growth since last check.
 				heapGrowth := int64(m.HeapAlloc) - int64(lastHeapAlloc)
 				gcCount := m.NumGC - lastNumGC
 
@@ -90,11 +90,11 @@ func (p *Profiler) StartMemoryMonitor(ctx context.Context) {
 					"gcPause", time.Duration(m.PauseNs[(m.NumGC+255)%256]).String(),
 				)
 
-				// Track values for next iteration
+				// Track values for next iteration.
 				lastHeapAlloc = m.HeapAlloc
 				lastNumGC = m.NumGC
 
-				// Force GC if memory usage is high to see if objects can be reclaimed
+				// Force GC if memory usage is high to see if objects can be reclaimed.
 				if m.HeapAlloc > 500*1024*1024 { // 500 MB threshold
 					slog.Info("forcing garbage collection due to high memory usage")
 					runtime.GC()
@@ -106,7 +106,7 @@ func (p *Profiler) StartMemoryMonitor(ctx context.Context) {
 	}()
 }
 
-// byteCountIEC converts bytes to a human-readable string (MiB, GiB)
+// byteCountIEC converts bytes to a human-readable string (MiB, GiB).
 func byteCountIEC(b uint64) string {
 	const unit = 1024
 	if b < unit {
