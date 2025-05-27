@@ -11,11 +11,12 @@ import {
   TrashIcon,
   SquareCheckIcon,
 } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { markdownServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { userStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { NodeType } from "@/types/proto/api/v1/markdown_service";
@@ -43,12 +44,11 @@ const checkHasCompletedTaskList = (memo: Memo) => {
   return false;
 };
 
-const MemoActionMenu = (props: Props) => {
+const MemoActionMenu = observer((props: Props) => {
   const { memo, readonly } = props;
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
-  const memoStore = useMemoStore();
   const hasCompletedTaskList = checkHasCompletedTaskList(memo);
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
   const isComment = Boolean(memo.parent);
@@ -212,6 +212,6 @@ const MemoActionMenu = (props: Props) => {
       </Menu>
     </Dropdown>
   );
-};
+});
 
 export default MemoActionMenu;

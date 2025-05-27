@@ -1,8 +1,9 @@
+import { observer } from "mobx-react-lite";
 import { useContext, useEffect } from "react";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { memoNamePrefix } from "@/store/common";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { RendererContext } from "../types";
 import Error from "./Error";
 
@@ -11,10 +12,9 @@ interface Props {
   params: string;
 }
 
-const ReferencedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
+const ReferencedMemo = observer(({ resourceId: uid, params: paramsStr }: Props) => {
   const navigateTo = useNavigateTo();
   const loadingState = useLoading();
-  const memoStore = useMemoStore();
   const memoName = `${memoNamePrefix}${uid}`;
   const memo = memoStore.getMemoByName(memoName);
   const params = new URLSearchParams(paramsStr);
@@ -50,6 +50,6 @@ const ReferencedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
       {displayContent}
     </span>
   );
-};
+});
 
 export default ReferencedMemo;

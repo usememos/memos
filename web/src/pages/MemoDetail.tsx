@@ -1,5 +1,6 @@
 import { Button } from "@usememos/mui";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -12,20 +13,19 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { memoNamePrefix } from "@/store/common";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { workspaceStore } from "@/store/v2";
 import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
-const MemoDetail = () => {
+const MemoDetail = observer(() => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
   const params = useParams();
   const navigateTo = useNavigateTo();
   const { state: locationState } = useLocation();
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
   const uid = params.uid;
   const memoName = `${memoNamePrefix}${uid}`;
   const memo = memoStore.getMemoByName(memoName);
@@ -176,6 +176,6 @@ const MemoDetail = () => {
       </div>
     </section>
   );
-};
+});
 
 export default MemoDetail;

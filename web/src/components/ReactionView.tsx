@@ -1,7 +1,8 @@
 import { Tooltip } from "@mui/joy";
+import { observer } from "mobx-react-lite";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -28,10 +29,9 @@ const stringifyUsers = (users: User[], reactionType: string): string => {
   );
 };
 
-const ReactionView = (props: Props) => {
+const ReactionView = observer((props: Props) => {
   const { memo, reactionType, users } = props;
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
   const hasReaction = users.some((user) => currentUser && user.username === currentUser.username);
   const readonly = memo.state === State.ARCHIVED;
 
@@ -80,6 +80,6 @@ const ReactionView = (props: Props) => {
       </div>
     </Tooltip>
   );
-};
+});
 
 export default ReactionView;

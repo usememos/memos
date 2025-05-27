@@ -1,7 +1,8 @@
 import { Checkbox } from "@usememos/mui";
+import { observer } from "mobx-react-lite";
 import { useContext } from "react";
 import { markdownServiceClient } from "@/grpcweb";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { Node, TaskListItemNode } from "@/types/proto/api/v1/markdown_service";
 import { cn } from "@/utils";
 import Renderer from "./Renderer";
@@ -16,9 +17,8 @@ interface Props {
   children: Node[];
 }
 
-const TaskListItem: React.FC<Props> = ({ node, complete, children }: Props) => {
+const TaskListItem = observer(({ node, complete, children }: Props) => {
   const context = useContext(RendererContext);
-  const memoStore = useMemoStore();
 
   const handleCheckboxChange = async (on: boolean) => {
     if (context.readonly || !context.memoName) {
@@ -48,6 +48,6 @@ const TaskListItem: React.FC<Props> = ({ node, complete, children }: Props) => {
       </p>
     </li>
   );
-};
+});
 
 export default TaskListItem;

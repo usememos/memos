@@ -7,8 +7,7 @@ import PullToRefresh from "react-simple-pull-to-refresh";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { Routes } from "@/router";
-import { useMemoList, useMemoStore } from "@/store/v1";
-import { viewStore } from "@/store/v2";
+import { memoStore, viewStore } from "@/store/v2";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -35,13 +34,11 @@ interface LocalState {
 const PagedMemoList = observer((props: Props) => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
-  const memoStore = useMemoStore();
-  const memoList = useMemoList();
   const [state, setState] = useState<LocalState>({
     isRequesting: true, // Initial request
     nextPageToken: "",
   });
-  const sortedMemoList = props.listSort ? props.listSort(memoList.value) : memoList.value;
+  const sortedMemoList = props.listSort ? props.listSort(memoStore.state.memos) : memoStore.state.memos;
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
 
   const fetchMoreMemos = async (nextPageToken: string) => {
@@ -62,7 +59,7 @@ const PagedMemoList = observer((props: Props) => {
   };
 
   const refreshList = async () => {
-    memoList.reset();
+    memoStore.state.updateStateId();
     setState((state) => ({ ...state, nextPageToken: "" }));
     await fetchMoreMemos("");
   };
