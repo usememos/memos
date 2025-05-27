@@ -4,8 +4,8 @@ import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
-import { useMemoFilterStore } from "@/store/v1";
 import { userStore } from "@/store/v2";
+import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import showRenameTagDialog from "../RenameTagDialog";
@@ -18,16 +18,15 @@ interface Props {
 
 const TagsSection = observer((props: Props) => {
   const t = useTranslate();
-  const memoFilterStore = useMemoFilterStore();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
   const tags = Object.entries(userStore.state.tagCount)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
 
   const handleTagClick = (tag: string) => {
-    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter) => filter.value === tag);
+    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
     if (isActive) {
-      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === tag);
+      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag);
     } else {
       memoFilterStore.addFilter({
         factor: "tagSearch",

@@ -2,7 +2,8 @@ import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { Routes } from "@/router";
-import { stringifyFilters, useMemoFilterStore } from "@/store/v1";
+import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
+import { stringifyFilters } from "@/store/v2/memoFilter";
 import { cn } from "@/utils";
 import { RendererContext } from "./types";
 
@@ -12,7 +13,6 @@ interface Props {
 
 const Tag: React.FC<Props> = ({ content }: Props) => {
   const context = useContext(RendererContext);
-  const memoFilterStore = useMemoFilterStore();
   const location = useLocation();
   const navigateTo = useNavigateTo();
 
@@ -31,9 +31,9 @@ const Tag: React.FC<Props> = ({ content }: Props) => {
       return;
     }
 
-    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter) => filter.value === content);
+    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === content);
     if (isActive) {
-      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === content);
+      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === content);
     } else {
       memoFilterStore.addFilter({
         factor: "tagSearch",

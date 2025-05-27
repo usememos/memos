@@ -4,8 +4,8 @@ import { observer } from "mobx-react-lite";
 import { shortcutServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoFilterStore } from "@/store/v1";
 import { userStore } from "@/store/v2";
+import memoFilterStore from "@/store/v2/memoFilter";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -16,7 +16,6 @@ const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
 const ShortcutsSection = observer(() => {
   const t = useTranslate();
   const user = useCurrentUser();
-  const memoFilterStore = useMemoFilterStore();
   const shortcuts = userStore.state.shortcuts;
 
   useAsyncEffect(async () => {

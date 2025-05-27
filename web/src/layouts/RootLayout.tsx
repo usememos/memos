@@ -7,8 +7,8 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
-import { useMemoFilterStore } from "@/store/v1";
 import { workspaceStore } from "@/store/v2";
+import memoFilterStore from "@/store/v2/memoFilter";
 import { cn } from "@/utils";
 
 const RootLayout = observer(() => {
@@ -16,7 +16,6 @@ const RootLayout = observer(() => {
   const [searchParams] = useSearchParams();
   const { sm } = useResponsiveWidth();
   const currentUser = useCurrentUser();
-  const memoFilterStore = useMemoFilterStore();
   const [initialized, setInitialized] = useState(false);
   const pathname = useMemo(() => location.pathname, [location.pathname]);
   const prevPathname = usePrevious(pathname);

@@ -1,7 +1,7 @@
 import { ChevronRightIcon, HashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
-import { useMemoFilterStore } from "@/store/v1";
+import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
 
 interface Tag {
   key: string;
@@ -85,15 +85,14 @@ interface TagItemContainerProps {
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
   const { tag } = props;
-  const memoFilterStore = useMemoFilterStore();
   const tagFilters = memoFilterStore.getFiltersByFactor("tagSearch");
-  const isActive = tagFilters.some((f) => f.value === tag.text);
+  const isActive = tagFilters.some((f: MemoFilter) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
   const [showSubTags, toggleSubTags] = useToggle(false);
 
   const handleTagClick = () => {
     if (isActive) {
-      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === tag.text);
+      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag.text);
     } else {
       memoFilterStore.addFilter({
         factor: "tagSearch",

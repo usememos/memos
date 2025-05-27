@@ -1,12 +1,11 @@
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
-import { useMemoFilterStore } from "@/store/v1";
+import memoFilterStore from "@/store/v2/memoFilter";
 import { useTranslate } from "@/utils/i18n";
 import MemoDisplaySettingMenu from "./MemoDisplaySettingMenu";
 
 const SearchBar = () => {
   const t = useTranslate();
-  const memoFilterStore = useMemoFilterStore();
   const [queryText, setQueryText] = useState("");
 
   const onTextChange = (event: React.FormEvent<HTMLInputElement>) => {

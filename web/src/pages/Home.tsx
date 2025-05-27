@@ -4,14 +4,13 @@ import { useMemo } from "react";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoFilterStore } from "@/store/v1";
 import { viewStore, userStore } from "@/store/v2";
+import memoFilterStore from "@/store/v2/memoFilter";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 
 const Home = observer(() => {
   const user = useCurrentUser();
-  const memoFilterStore = useMemoFilterStore();
   const selectedShortcut = userStore.state.shortcuts.find((shortcut) => shortcut.id === memoFilterStore.shortcut);
 
   const memoListFilter = useMemo(() => {
