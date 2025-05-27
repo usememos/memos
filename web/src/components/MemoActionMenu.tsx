@@ -171,12 +171,14 @@ const MemoActionMenu = observer((props: Props) => {
         </span>
       </MenuButton>
       <Menu className="text-sm" size="sm" placement="bottom-end">
-        {!readonly && !isArchived && !isComment && (
+        {!readonly && !isArchived && (
           <>
-            <MenuItem onClick={handleTogglePinMemoBtnClick}>
-              {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
-              {memo.pinned ? t("common.unpin") : t("common.pin")}
-            </MenuItem>
+            {!isComment && (
+              <MenuItem onClick={handleTogglePinMemoBtnClick}>
+                {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
+                {memo.pinned ? t("common.unpin") : t("common.pin")}
+              </MenuItem>
+            )}
             <MenuItem onClick={handleEditMemoClick}>
               <Edit3Icon className="w-4 h-auto" />
               {t("common.edit")}
