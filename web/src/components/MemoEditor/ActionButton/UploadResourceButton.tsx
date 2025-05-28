@@ -1,8 +1,9 @@
 import { Button } from "@usememos/mui";
 import { LoaderIcon, PaperclipIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useContext, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { useResourceStore } from "@/store/v1";
+import { resourceStore } from "@/store/v2";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { MemoEditorContext } from "../types";
 
@@ -14,9 +15,8 @@ interface State {
   uploadingFlag: boolean;
 }
 
-const UploadResourceButton = (props: Props) => {
+const UploadResourceButton = observer((props: Props) => {
   const context = useContext(MemoEditorContext);
-  const resourceStore = useResourceStore();
   const [state, setState] = useState<State>({
     uploadingFlag: false,
   });
@@ -86,6 +86,6 @@ const UploadResourceButton = (props: Props) => {
       />
     </Button>
   );
-};
+});
 
 export default UploadResourceButton;

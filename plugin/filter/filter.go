@@ -1,7 +1,11 @@
 package filter
 
 import (
+	"time"
+
 	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
 	"github.com/pkg/errors"
 	exprv1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
@@ -10,13 +14,22 @@ import (
 var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content", cel.StringType),
 	cel.Variable("creator_id", cel.IntType),
-	// As the built-in timestamp type is deprecated, we use string type for now.
-	// e.g., "2021-01-01T00:00:00Z"
-	cel.Variable("create_time", cel.StringType),
+	cel.Variable("created_ts", cel.IntType),
+	cel.Variable("updated_ts", cel.IntType),
 	cel.Variable("pinned", cel.BoolType),
 	cel.Variable("tag", cel.StringType),
-	cel.Variable("update_time", cel.StringType),
 	cel.Variable("visibility", cel.StringType),
+	cel.Variable("has_task_list", cel.BoolType),
+	// Current timestamp function.
+	cel.Function("now",
+		cel.Overload("now",
+			[]*cel.Type{},
+			cel.IntType,
+			cel.FunctionBinding(func(_ ...ref.Val) ref.Val {
+				return types.Int(time.Now().Unix())
+			}),
+		),
+	),
 }
 
 // Parse parses the filter string and returns the parsed expression.

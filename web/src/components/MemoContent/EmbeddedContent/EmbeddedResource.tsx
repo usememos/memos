@@ -1,7 +1,8 @@
+import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import useLoading from "@/hooks/useLoading";
-import { useResourceStore } from "@/store/v1";
+import { resourceStore } from "@/store/v2";
 import { cn } from "@/utils";
 import Error from "./Error";
 
@@ -38,7 +39,7 @@ const getAdditionalClassNameWithParams = (params: URLSearchParams) => {
   return additionalClassNames.join(" ");
 };
 
-const EmbeddedResource = ({ resourceId: uid, params: paramsStr }: Props) => {
+const EmbeddedResource = observer(({ resourceId: uid, params: paramsStr }: Props) => {
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
   const resource = resourceStore.getResourceByName(`resources/${uid}`);
@@ -60,6 +61,6 @@ const EmbeddedResource = ({ resourceId: uid, params: paramsStr }: Props) => {
       <MemoResourceListView resources={[resource]} allowFullWidth={params.has("inline")} />
     </div>
   );
-};
+});
 
 export default EmbeddedResource;

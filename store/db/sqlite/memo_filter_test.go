@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -45,11 +46,6 @@ func TestConvertExprToSQL(t *testing.T) {
 			args:   []any{"PUBLIC", "PRIVATE"},
 		},
 		{
-			filter: `create_time == "2006-01-02T15:04:05+07:00"`,
-			want:   "`memo`.`created_ts` = ?",
-			args:   []any{int64(1136189045)},
-		},
-		{
 			filter: `tag in ['tag1'] || content.contains('hello')`,
 			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR `memo`.`content` LIKE ?)",
 			args:   []any{`%"tag1"%`, "%hello%"},
@@ -73,6 +69,46 @@ func TestConvertExprToSQL(t *testing.T) {
 			filter: `creator_id == 101 || visibility in ["PUBLIC", "PRIVATE"]`,
 			want:   "(`memo`.`creator_id` = ? OR `memo`.`visibility` IN (?,?))",
 			args:   []any{int64(101), "PUBLIC", "PRIVATE"},
+		},
+		{
+			filter: `has_task_list`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') IS TRUE",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == true`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = 1",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list != false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') != 0",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = 0",
+			args:   []any{},
+		},
+		{
+			filter: `!has_task_list`,
+			want:   "NOT (JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && pinned`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') IS TRUE AND `memo`.`pinned` IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && content.contains("todo")`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') IS TRUE AND `memo`.`content` LIKE ?)",
+			args:   []any{"%todo%"},
+		},
+		{
+			filter: `created_ts > now() - 60 * 60 * 24`,
+			want:   "`memo`.`created_ts` > ?",
+			args:   []any{time.Now().Unix() - 60*60*24},
 		},
 	}
 

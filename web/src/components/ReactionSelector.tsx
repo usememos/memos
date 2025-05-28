@@ -1,10 +1,11 @@
 import { Dropdown, Menu, MenuButton } from "@mui/joy";
 import { SmilePlusIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { workspaceStore } from "@/store/v2";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
@@ -14,10 +15,9 @@ interface Props {
   className?: string;
 }
 
-const ReactionSelector = (props: Props) => {
+const ReactionSelector = observer((props: Props) => {
   const { memo, className } = props;
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
@@ -86,6 +86,6 @@ const ReactionSelector = (props: Props) => {
       </Menu>
     </Dropdown>
   );
-};
+});
 
 export default ReactionSelector;

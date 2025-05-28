@@ -97,7 +97,7 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 		return nil, err
 	}
 
-	s.userCache.Store(user.ID, user)
+	s.userCache.Set(ctx, string(user.ID), user)
 	return user, nil
 }
 
@@ -107,7 +107,7 @@ func (s *Store) UpdateUser(ctx context.Context, update *UpdateUser) (*User, erro
 		return nil, err
 	}
 
-	s.userCache.Store(user.ID, user)
+	s.userCache.Set(ctx, string(user.ID), user)
 	return user, nil
 }
 
@@ -118,7 +118,7 @@ func (s *Store) ListUsers(ctx context.Context, find *FindUser) ([]*User, error) 
 	}
 
 	for _, user := range list {
-		s.userCache.Store(user.ID, user)
+		s.userCache.Set(ctx, string(user.ID), user)
 	}
 	return list, nil
 }
@@ -128,7 +128,7 @@ func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 		if *find.ID == SystemBotID {
 			return SystemBot, nil
 		}
-		if cache, ok := s.userCache.Load(*find.ID); ok {
+		if cache, ok := s.userCache.Get(ctx, string(*find.ID)); ok {
 			user, ok := cache.(*User)
 			if ok {
 				return user, nil
@@ -145,7 +145,7 @@ func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 	}
 
 	user := list[0]
-	s.userCache.Store(user.ID, user)
+	s.userCache.Set(ctx, string(user.ID), user)
 	return user, nil
 }
 
@@ -154,7 +154,6 @@ func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) error {
 	if err != nil {
 		return err
 	}
-
-	s.userCache.Delete(delete.ID)
+	s.userCache.Delete(ctx, string(delete.ID))
 	return nil
 }

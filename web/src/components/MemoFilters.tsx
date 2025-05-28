@@ -2,13 +2,13 @@ import { isEqual } from "lodash-es";
 import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, HashIcon, LinkIcon, BookmarkIcon, SearchIcon, XIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters, useMemoFilterStore } from "@/store/v1";
+import memoFilterStore from "@/store/v2/memoFilter";
+import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters } from "@/store/v2/memoFilter";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoFilters = () => {
   const t = useTranslate();
   const [, setSearchParams] = useSearchParams();
-  const memoFilterStore = useMemoFilterStore();
   const filters = memoFilterStore.filters;
 
   useEffect(() => {
@@ -45,11 +45,11 @@ const MemoFilters = () => {
 
   return (
     <div className="w-full mt-2 flex flex-row justify-start items-center flex-wrap gap-x-2 gap-y-1">
-      {filters.map((filter) => (
+      {filters.map((filter: MemoFilter) => (
         <div
           key={getMemoFilterKey(filter)}
           className="w-auto leading-7 h-7 shrink-0 flex flex-row items-center gap-1 bg-white dark:bg-zinc-800 border dark:border-zinc-700 pl-1.5 pr-1 rounded-md hover:line-through cursor-pointer"
-          onClick={() => memoFilterStore.removeFilter((f) => isEqual(f, filter))}
+          onClick={() => memoFilterStore.removeFilter((f: MemoFilter) => isEqual(f, filter))}
         >
           <FactorIcon className="w-4 h-auto text-gray-500 dark:text-gray-400 opacity-60" factor={filter.factor} />
           <span className="text-gray-500 dark:text-gray-400 text-sm max-w-32 truncate">{getFilterDisplayText(filter)}</span>

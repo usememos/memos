@@ -13,8 +13,7 @@ import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore, useResourceStore } from "@/store/v1";
-import { userStore, workspaceStore } from "@/store/v2";
+import { memoStore, resourceStore, userStore, workspaceStore } from "@/store/v2";
 import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
@@ -42,6 +41,8 @@ export interface Props {
   memoName?: string;
   // The name of the parent memo if the memo is a comment.
   parentMemoName?: string;
+  // The visibility of the parent memo for preset when commenting
+  parentMemoVisibility?: Visibility;
   autoFocus?: boolean;
   onConfirm?: (memoName: string) => void;
   onCancel?: () => void;
@@ -59,14 +60,12 @@ interface State {
 }
 
 const MemoEditor = observer((props: Props) => {
-  const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
+  const { className, cacheKey, memoName, parentMemoName, parentMemoVisibility, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
-  const memoStore = useMemoStore();
-  const resourceStore = useResourceStore();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
-    memoVisibility: Visibility.PRIVATE,
+    memoVisibility: parentMemoVisibility ?? Visibility.PRIVATE,
     resourceList: [],
     relationList: [],
     location: undefined,
@@ -100,7 +99,7 @@ const MemoEditor = observer((props: Props) => {
   }, [autoFocus]);
 
   useEffect(() => {
-    let visibility = userSetting.memoVisibility;
+    let visibility = parentMemoVisibility ?? userSetting.memoVisibility;
     if (workspaceMemoRelatedSetting.disallowPublicVisibility && visibility === "PUBLIC") {
       visibility = "PRIVATE";
     }
@@ -108,7 +107,7 @@ const MemoEditor = observer((props: Props) => {
       ...prevState,
       memoVisibility: convertVisibilityFromString(visibility),
     }));
-  }, [userSetting.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
+  }, [parentMemoVisibility, userSetting.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
 
   useAsyncEffect(async () => {
     if (!memoName) {
@@ -534,26 +533,23 @@ const MemoEditor = observer((props: Props) => {
             <MarkdownMenu editorRef={editorRef} />
             <UploadResourceButton isUploadingResource={state.isUploadingResource} />
             <AddMemoRelationPopover editorRef={editorRef} />
-            {workspaceMemoRelatedSetting.enableLocation && (
-              <LocationSelector
-                location={state.location}
-                onChange={(location) =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    location,
-                  }))
-                }
-              />
-            )}
+            <LocationSelector
+              location={state.location}
+              onChange={(location) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  location,
+                }))
+              }
+            />
           </div>
         </div>
         <Divider className="!mt-2 opacity-40" />
         <div className="w-full flex flex-row justify-between items-center py-3 gap-2 overflow-auto dark:border-t-zinc-500">
           <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
             <Select
-              className="!text-sm"
               variant="plain"
-              size="md"
+              size="sm"
               value={state.memoVisibility}
               startDecorator={<VisibilityIcon visibility={state.memoVisibility} />}
               onChange={(_, visibility) => {

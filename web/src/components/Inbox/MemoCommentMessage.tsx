@@ -1,12 +1,13 @@
 import { Tooltip } from "@mui/joy";
 import { InboxIcon, LoaderIcon, MessageCircleIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { activityNamePrefix, useMemoStore } from "@/store/v1";
-import { userStore } from "@/store/v2";
+import { activityNamePrefix } from "@/store/common";
+import { memoStore, userStore } from "@/store/v2";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -17,10 +18,9 @@ interface Props {
   inbox: Inbox;
 }
 
-const MemoCommentMessage = ({ inbox }: Props) => {
+const MemoCommentMessage = observer(({ inbox }: Props) => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const memoStore = useMemoStore();
   const [relatedMemo, setRelatedMemo] = useState<Memo | undefined>(undefined);
   const [sender, setSender] = useState<User | undefined>(undefined);
   const [initialized, setInitialized] = useState<boolean>(false);
@@ -123,6 +123,6 @@ const MemoCommentMessage = ({ inbox }: Props) => {
       </div>
     </div>
   );
-};
+});
 
 export default MemoCommentMessage;

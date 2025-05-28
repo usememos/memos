@@ -10,8 +10,8 @@ import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
 import { Routes } from "@/router";
-import { useMemoFilterStore } from "@/store/v1";
 import { userStore } from "@/store/v2";
+import memoFilterStore from "@/store/v2/memoFilter";
 import { UserStats_MemoTypeStats } from "@/types/proto/api/v1/user_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -21,7 +21,6 @@ import "react-datepicker/dist/react-datepicker.css";
 const StatisticsView = observer(() => {
   const t = useTranslate();
   const location = useLocation();
-  const memoFilterStore = useMemoFilterStore();
   const currentUser = useCurrentUser();
   const [memoTypeStats, setMemoTypeStats] = useState<UserStats_MemoTypeStats>(UserStats_MemoTypeStats.fromPartial({}));
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});

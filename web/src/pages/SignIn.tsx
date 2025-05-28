@@ -9,7 +9,7 @@ import { identityProviderServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Routes } from "@/router";
-import { extractIdentityProviderIdFromName } from "@/store/v1";
+import { extractIdentityProviderIdFromName } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
@@ -66,7 +66,7 @@ const SignIn = () => {
         {!workspaceGeneralSetting.disallowPasswordAuth ? (
           <PasswordSignInForm />
         ) : (
-          <p className="w-full text-2xl mt-2 dark:text-gray-500">Password auth is not allowed.</p>
+          identityProviderList.length == 0 && <p className="w-full text-2xl mt-2 dark:text-gray-500">Password auth is not allowed.</p>
         )}
         {!workspaceGeneralSetting.disallowUserRegistration && !workspaceGeneralSetting.disallowPasswordAuth && (
           <p className="w-full mt-4 text-sm">
@@ -78,7 +78,7 @@ const SignIn = () => {
         )}
         {identityProviderList.length > 0 && (
           <>
-            <Divider className="!my-4">{t("common.or")}</Divider>
+            {!workspaceGeneralSetting.disallowPasswordAuth && <Divider className="!my-4">{t("common.or")}</Divider>}
             <div className="w-full flex flex-col space-y-2">
               {identityProviderList.map((identityProvider) => (
                 <Button

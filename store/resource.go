@@ -74,6 +74,17 @@ func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource
 }
 
 func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resource, error) {
+	// Set default limits to prevent loading too many resources at once
+	if find.Limit == nil && find.GetBlob {
+		// When fetching blobs, we should be especially careful with limits
+		defaultLimit := 10
+		find.Limit = &defaultLimit
+	} else if find.Limit == nil {
+		// Even without blobs, let's default to a reasonable limit
+		defaultLimit := 100
+		find.Limit = &defaultLimit
+	}
+
 	return s.driver.ListResources(ctx, find)
 }
 
@@ -110,7 +121,7 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 		if err := func() error {
 			p := filepath.FromSlash(resource.Reference)
 			if !filepath.IsAbs(p) {
-				p = filepath.Join(s.Profile.Data, p)
+				p = filepath.Join(s.profile.Data, p)
 			}
 			err := os.Remove(p)
 			if err != nil {

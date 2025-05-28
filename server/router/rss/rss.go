@@ -26,6 +26,11 @@ type RSSService struct {
 	Store   *store.Store
 }
 
+type RSSHeading struct {
+	Title       string
+	Description string
+}
+
 func NewRSSService(profile *profile.Profile, store *store.Store) *RSSService {
 	return &RSSService{
 		Profile: profile,
@@ -93,10 +98,14 @@ func (s *RSSService) GetUserRSS(c echo.Context) error {
 }
 
 func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*store.Memo, baseURL string) (string, error) {
+	rssHeading, err := getRSSHeading(ctx, s.Store)
+	if err != nil {
+		return "", err
+	}
 	feed := &feeds.Feed{
-		Title:       "Memos",
+		Title:       rssHeading.Title,
 		Link:        &feeds.Link{Href: baseURL},
-		Description: "An open source, lightweight note-taking service. Easily capture and share your great thoughts.",
+		Description: rssHeading.Description,
 		Created:     time.Now(),
 	}
 
@@ -149,4 +158,22 @@ func getRSSItemDescription(content string) (string, error) {
 	}
 	result := renderer.NewHTMLRenderer().Render(nodes)
 	return result, nil
+}
+
+func getRSSHeading(ctx context.Context, stores *store.Store) (RSSHeading, error) {
+	settings, err := stores.GetWorkspaceGeneralSetting(ctx)
+	if err != nil {
+		return RSSHeading{}, err
+	}
+	if settings == nil || settings.CustomProfile == nil {
+		return RSSHeading{
+			Title:       "Memos",
+			Description: "An open source, lightweight note-taking service. Easily capture and share your great thoughts.",
+		}, nil
+	}
+	customProfile := settings.CustomProfile
+	return RSSHeading{
+		Title:       customProfile.Title,
+		Description: customProfile.Description,
+	}, nil
 }

@@ -1,11 +1,12 @@
 import { Tooltip } from "@mui/joy";
 import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { memo, useCallback, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { userStore, workspaceStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
@@ -36,14 +37,13 @@ interface Props {
   parentPage?: string;
 }
 
-const MemoView: React.FC<Props> = (props: Props) => {
+const MemoView: React.FC<Props> = observer((props: Props) => {
   const { memo, className } = props;
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
   const user = useCurrentUser();
-  const memoStore = useMemoStore();
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const [showNSFWContent, setShowNSFWContent] = useState(props.showNsfwContent);
@@ -250,6 +250,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
       )}
     </div>
   );
-};
+});
 
 export default memo(MemoView);

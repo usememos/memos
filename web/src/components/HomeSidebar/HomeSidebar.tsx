@@ -6,8 +6,7 @@ import useDebounce from "react-use/lib/useDebounce";
 import SearchBar from "@/components/SearchBar";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Routes } from "@/router";
-import { useMemoList } from "@/store/v1";
-import { userStore } from "@/store/v2";
+import { memoStore, userStore } from "@/store/v2";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import MemoFilters from "../MemoFilters";
@@ -30,7 +29,6 @@ const HomeSidebar = observer((props: Props) => {
   const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
-  const memoList = useMemoList();
 
   const homeNavLink: NavLinkItem = {
     id: "header-home",
@@ -61,7 +59,7 @@ const HomeSidebar = observer((props: Props) => {
       await userStore.fetchUserStats(parent);
     },
     300,
-    [memoList.size(), userStore.state.statsStateId, location.pathname],
+    [memoStore.state.memos.length, userStore.state.statsStateId, location.pathname],
   );
 
   return (

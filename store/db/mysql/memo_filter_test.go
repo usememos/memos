@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -40,11 +41,6 @@ func TestConvertExprToSQL(t *testing.T) {
 			args:   []any{"PUBLIC", "PRIVATE"},
 		},
 		{
-			filter: `create_time == "2006-01-02T15:04:05+07:00"`,
-			want:   "UNIX_TIMESTAMP(`memo`.`created_ts`) = ?",
-			args:   []any{int64(1136189045)},
-		},
-		{
 			filter: `tag in ['tag1'] || content.contains('hello')`,
 			want:   "(JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?) OR `memo`.`content` LIKE ?)",
 			args:   []any{"tag1", "%hello%"},
@@ -58,6 +54,46 @@ func TestConvertExprToSQL(t *testing.T) {
 			filter: `pinned`,
 			want:   "`memo`.`pinned` IS TRUE",
 			args:   []any{},
+		},
+		{
+			filter: `has_task_list`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == true`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list != false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') != CAST('false' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('false' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `!has_task_list`,
+			want:   "NOT (JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON))",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && pinned`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON) AND `memo`.`pinned` IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && content.contains("todo")`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON) AND `memo`.`content` LIKE ?)",
+			args:   []any{"%todo%"},
+		},
+		{
+			filter: `created_ts > now() - 60 * 60 * 24`,
+			want:   "UNIX_TIMESTAMP(`memo`.`created_ts`) > ?",
+			args:   []any{time.Now().Unix() - 60*60*24},
 		},
 	}
 

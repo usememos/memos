@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"slices"
 	"strings"
-	"time"
 
 	"github.com/pkg/errors"
 	exprv1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
@@ -59,10 +58,10 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if err != nil {
 				return err
 			}
-			if !slices.Contains([]string{"creator_id", "create_time", "update_time", "visibility", "content"}, identifier) {
+			if !slices.Contains([]string{"creator_id", "created_ts", "updated_ts", "visibility", "content", "has_task_list"}, identifier) {
 				return errors.Errorf("invalid identifier for %s", v.CallExpr.Function)
 			}
-			value, err := filter.GetConstValue(v.CallExpr.Args[1])
+			value, err := filter.GetExprValue(v.CallExpr.Args[1])
 			if err != nil {
 				return err
 			}
@@ -82,26 +81,22 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 				operator = ">="
 			}
 
-			if identifier == "create_time" || identifier == "update_time" {
-				timestampStr, ok := value.(string)
+			if identifier == "created_ts" || identifier == "updated_ts" {
+				valueInt, ok := value.(int64)
 				if !ok {
-					return errors.New("invalid timestamp value")
-				}
-				timestamp, err := time.Parse(time.RFC3339, timestampStr)
-				if err != nil {
-					return errors.Wrap(err, "failed to parse timestamp")
+					return errors.New("invalid integer timestamp value")
 				}
 
 				var factor string
-				if identifier == "create_time" {
+				if identifier == "created_ts" {
 					factor = "`memo`.`created_ts`"
-				} else if identifier == "update_time" {
+				} else if identifier == "updated_ts" {
 					factor = "`memo`.`updated_ts`"
 				}
 				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", factor, operator)); err != nil {
 					return err
 				}
-				ctx.Args = append(ctx.Args, timestamp.Unix())
+				ctx.Args = append(ctx.Args, valueInt)
 			} else if identifier == "visibility" || identifier == "content" {
 				if operator != "=" && operator != "!=" {
 					return errors.Errorf("invalid operator for %s", v.CallExpr.Function)
@@ -138,6 +133,22 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 					return err
 				}
 				ctx.Args = append(ctx.Args, valueInt)
+			} else if identifier == "has_task_list" {
+				if operator != "=" && operator != "!=" {
+					return errors.Errorf("invalid operator for %s", v.CallExpr.Function)
+				}
+				valueBool, ok := value.(bool)
+				if !ok {
+					return errors.New("invalid boolean value for has_task_list")
+				}
+				// In SQLite JSON boolean values are 1 for true and 0 for false
+				compareValue := 0
+				if valueBool {
+					compareValue = 1
+				}
+				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') %s %d", operator, compareValue)); err != nil {
+					return err
+				}
 			}
 		case "@in":
 			if len(v.CallExpr.Args) != 2 {
@@ -207,11 +218,16 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 		}
 	} else if v, ok := expr.ExprKind.(*exprv1.Expr_IdentExpr); ok {
 		identifier := v.IdentExpr.GetName()
-		if !slices.Contains([]string{"pinned"}, identifier) {
+		if !slices.Contains([]string{"pinned", "has_task_list"}, identifier) {
 			return errors.Errorf("invalid identifier %s", identifier)
 		}
 		if identifier == "pinned" {
 			if _, err := ctx.Buffer.WriteString("`memo`.`pinned` IS TRUE"); err != nil {
+				return err
+			}
+		} else if identifier == "has_task_list" {
+			// Handle has_task_list as a standalone boolean identifier
+			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') IS TRUE"); err != nil {
 				return err
 			}
 		}

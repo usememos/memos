@@ -30,11 +30,7 @@ const App = observer(() => {
     };
 
     try {
-      if (darkMediaQuery.addEventListener) {
-        darkMediaQuery.addEventListener("change", handleColorSchemeChange);
-      } else {
-        darkMediaQuery.addListener(handleColorSchemeChange);
-      }
+      darkMediaQuery.addEventListener("change", handleColorSchemeChange);
     } catch (error) {
       console.error("failed to initial color scheme listener", error);
     }

@@ -1226,331 +1226,6 @@ func (x *DeleteUserAccessTokenRequest) GetAccessToken() string {
 	return ""
 }
 
-type Shortcut struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Shortcut) Reset() {
-	*x = Shortcut{}
-	mi := &file_api_v1_user_service_proto_msgTypes[21]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Shortcut) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Shortcut) ProtoMessage() {}
-
-func (x *Shortcut) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[21]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Shortcut.ProtoReflect.Descriptor instead.
-func (*Shortcut) Descriptor() ([]byte, []int) {
-	return file_api_v1_user_service_proto_rawDescGZIP(), []int{21}
-}
-
-func (x *Shortcut) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *Shortcut) GetTitle() string {
-	if x != nil {
-		return x.Title
-	}
-	return ""
-}
-
-func (x *Shortcut) GetFilter() string {
-	if x != nil {
-		return x.Filter
-	}
-	return ""
-}
-
-type ListShortcutsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the user.
-	Parent        string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListShortcutsRequest) Reset() {
-	*x = ListShortcutsRequest{}
-	mi := &file_api_v1_user_service_proto_msgTypes[22]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListShortcutsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListShortcutsRequest) ProtoMessage() {}
-
-func (x *ListShortcutsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[22]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListShortcutsRequest.ProtoReflect.Descriptor instead.
-func (*ListShortcutsRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_user_service_proto_rawDescGZIP(), []int{22}
-}
-
-func (x *ListShortcutsRequest) GetParent() string {
-	if x != nil {
-		return x.Parent
-	}
-	return ""
-}
-
-type ListShortcutsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Shortcuts     []*Shortcut            `protobuf:"bytes,1,rep,name=shortcuts,proto3" json:"shortcuts,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListShortcutsResponse) Reset() {
-	*x = ListShortcutsResponse{}
-	mi := &file_api_v1_user_service_proto_msgTypes[23]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListShortcutsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListShortcutsResponse) ProtoMessage() {}
-
-func (x *ListShortcutsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[23]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListShortcutsResponse.ProtoReflect.Descriptor instead.
-func (*ListShortcutsResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_user_service_proto_rawDescGZIP(), []int{23}
-}
-
-func (x *ListShortcutsResponse) GetShortcuts() []*Shortcut {
-	if x != nil {
-		return x.Shortcuts
-	}
-	return nil
-}
-
-type CreateShortcutRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the user.
-	Parent        string    `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	Shortcut      *Shortcut `protobuf:"bytes,2,opt,name=shortcut,proto3" json:"shortcut,omitempty"`
-	ValidateOnly  bool      `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateShortcutRequest) Reset() {
-	*x = CreateShortcutRequest{}
-	mi := &file_api_v1_user_service_proto_msgTypes[24]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateShortcutRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateShortcutRequest) ProtoMessage() {}
-
-func (x *CreateShortcutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[24]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateShortcutRequest.ProtoReflect.Descriptor instead.
-func (*CreateShortcutRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_user_service_proto_rawDescGZIP(), []int{24}
-}
-
-func (x *CreateShortcutRequest) GetParent() string {
-	if x != nil {
-		return x.Parent
-	}
-	return ""
-}
-
-func (x *CreateShortcutRequest) GetShortcut() *Shortcut {
-	if x != nil {
-		return x.Shortcut
-	}
-	return nil
-}
-
-func (x *CreateShortcutRequest) GetValidateOnly() bool {
-	if x != nil {
-		return x.ValidateOnly
-	}
-	return false
-}
-
-type UpdateShortcutRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the user.
-	Parent        string                 `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	Shortcut      *Shortcut              `protobuf:"bytes,2,opt,name=shortcut,proto3" json:"shortcut,omitempty"`
-	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdateShortcutRequest) Reset() {
-	*x = UpdateShortcutRequest{}
-	mi := &file_api_v1_user_service_proto_msgTypes[25]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateShortcutRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateShortcutRequest) ProtoMessage() {}
-
-func (x *UpdateShortcutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[25]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateShortcutRequest.ProtoReflect.Descriptor instead.
-func (*UpdateShortcutRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_user_service_proto_rawDescGZIP(), []int{25}
-}
-
-func (x *UpdateShortcutRequest) GetParent() string {
-	if x != nil {
-		return x.Parent
-	}
-	return ""
-}
-
-func (x *UpdateShortcutRequest) GetShortcut() *Shortcut {
-	if x != nil {
-		return x.Shortcut
-	}
-	return nil
-}
-
-func (x *UpdateShortcutRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
-	if x != nil {
-		return x.UpdateMask
-	}
-	return nil
-}
-
-type DeleteShortcutRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the user.
-	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The id of the shortcut.
-	Id            string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeleteShortcutRequest) Reset() {
-	*x = DeleteShortcutRequest{}
-	mi := &file_api_v1_user_service_proto_msgTypes[26]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeleteShortcutRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteShortcutRequest) ProtoMessage() {}
-
-func (x *DeleteShortcutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[26]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteShortcutRequest.ProtoReflect.Descriptor instead.
-func (*DeleteShortcutRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_user_service_proto_rawDescGZIP(), []int{26}
-}
-
-func (x *DeleteShortcutRequest) GetParent() string {
-	if x != nil {
-		return x.Parent
-	}
-	return ""
-}
-
-func (x *DeleteShortcutRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
 type UserStats_MemoTypeStats struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LinkCount     int32                  `protobuf:"varint,1,opt,name=link_count,json=linkCount,proto3" json:"link_count,omitempty"`
@@ -1563,7 +1238,7 @@ type UserStats_MemoTypeStats struct {
 
 func (x *UserStats_MemoTypeStats) Reset() {
 	*x = UserStats_MemoTypeStats{}
-	mi := &file_api_v1_user_service_proto_msgTypes[28]
+	mi := &file_api_v1_user_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1575,7 +1250,7 @@ func (x *UserStats_MemoTypeStats) String() string {
 func (*UserStats_MemoTypeStats) ProtoMessage() {}
 
 func (x *UserStats_MemoTypeStats) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[28]
+	mi := &file_api_v1_user_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1719,27 +1394,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\v_expires_at\"U\n" +
 	"\x1cDeleteUserAccessTokenRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
-	"\faccess_token\x18\x02 \x01(\tR\vaccessToken\"H\n" +
-	"\bShortcut\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
-	"\x06filter\x18\x03 \x01(\tR\x06filter\".\n" +
-	"\x14ListShortcutsRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\"M\n" +
-	"\x15ListShortcutsResponse\x124\n" +
-	"\tshortcuts\x18\x01 \x03(\v2\x16.memos.api.v1.ShortcutR\tshortcuts\"\x88\x01\n" +
-	"\x15CreateShortcutRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\x122\n" +
-	"\bshortcut\x18\x02 \x01(\v2\x16.memos.api.v1.ShortcutR\bshortcut\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\xa0\x01\n" +
-	"\x15UpdateShortcutRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\x122\n" +
-	"\bshortcut\x18\x02 \x01(\v2\x16.memos.api.v1.ShortcutR\bshortcut\x12;\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"?\n" +
-	"\x15DeleteShortcutRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\x12\x0e\n" +
-	"\x02id\x18\x02 \x01(\tR\x02id2\xa9\x13\n" +
+	"\faccess_token\x18\x02 \x01(\tR\vaccessToken2\xc2\x0e\n" +
 	"\vUserService\x12c\n" +
 	"\tListUsers\x12\x1e.memos.api.v1.ListUsersRequest\x1a\x1f.memos.api.v1.ListUsersResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/api/v1/users\x12b\n" +
 	"\aGetUser\x12\x1c.memos.api.v1.GetUserRequest\x1a\x12.memos.api.v1.User\"%\xdaA\x04name\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/{name=users/*}\x12z\n" +
@@ -1757,11 +1412,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x11UpdateUserSetting\x12&.memos.api.v1.UpdateUserSettingRequest\x1a\x19.memos.api.v1.UserSetting\"M\xdaA\x13setting,update_mask\x82\xd3\xe4\x93\x021:\asetting2&/api/v1/{setting.name=users/*/setting}\x12\xa2\x01\n" +
 	"\x14ListUserAccessTokens\x12).memos.api.v1.ListUserAccessTokensRequest\x1a*.memos.api.v1.ListUserAccessTokensResponse\"3\xdaA\x04name\x82\xd3\xe4\x93\x02&\x12$/api/v1/{name=users/*}/access_tokens\x12\x9a\x01\n" +
 	"\x15CreateUserAccessToken\x12*.memos.api.v1.CreateUserAccessTokenRequest\x1a\x1d.memos.api.v1.UserAccessToken\"6\xdaA\x04name\x82\xd3\xe4\x93\x02):\x01*\"$/api/v1/{name=users/*}/access_tokens\x12\xac\x01\n" +
-	"\x15DeleteUserAccessToken\x12*.memos.api.v1.DeleteUserAccessTokenRequest\x1a\x16.google.protobuf.Empty\"O\xdaA\x11name,access_token\x82\xd3\xe4\x93\x025*3/api/v1/{name=users/*}/access_tokens/{access_token}\x12\x8d\x01\n" +
-	"\rListShortcuts\x12\".memos.api.v1.ListShortcutsRequest\x1a#.memos.api.v1.ListShortcutsResponse\"3\xdaA\x06parent\x82\xd3\xe4\x93\x02$\x12\"/api/v1/{parent=users/*}/shortcuts\x12\x95\x01\n" +
-	"\x0eCreateShortcut\x12#.memos.api.v1.CreateShortcutRequest\x1a\x16.memos.api.v1.Shortcut\"F\xdaA\x0fparent,shortcut\x82\xd3\xe4\x93\x02.:\bshortcut\"\"/api/v1/{parent=users/*}/shortcuts\x12\xaf\x01\n" +
-	"\x0eUpdateShortcut\x12#.memos.api.v1.UpdateShortcutRequest\x1a\x16.memos.api.v1.Shortcut\"`\xdaA\x1bparent,shortcut,update_mask\x82\xd3\xe4\x93\x02<:\bshortcut20/api/v1/{parent=users/*}/shortcuts/{shortcut.id}\x12\x8a\x01\n" +
-	"\x0eDeleteShortcut\x12#.memos.api.v1.DeleteShortcutRequest\x1a\x16.google.protobuf.Empty\";\xdaA\tparent,id\x82\xd3\xe4\x93\x02)*'/api/v1/{parent=users/*}/shortcuts/{id}B\xa8\x01\n" +
+	"\x15DeleteUserAccessToken\x12*.memos.api.v1.DeleteUserAccessTokenRequest\x1a\x16.google.protobuf.Empty\"O\xdaA\x11name,access_token\x82\xd3\xe4\x93\x025*3/api/v1/{name=users/*}/access_tokens/{access_token}B\xa8\x01\n" +
 	"\x10com.memos.api.v1B\x10UserServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (
@@ -1777,7 +1428,7 @@ func file_api_v1_user_service_proto_rawDescGZIP() []byte {
 }
 
 var file_api_v1_user_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_api_v1_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_api_v1_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_api_v1_user_service_proto_goTypes = []any{
 	(User_Role)(0),                       // 0: memos.api.v1.User.Role
 	(*User)(nil),                         // 1: memos.api.v1.User
@@ -1801,85 +1452,67 @@ var file_api_v1_user_service_proto_goTypes = []any{
 	(*ListUserAccessTokensResponse)(nil), // 19: memos.api.v1.ListUserAccessTokensResponse
 	(*CreateUserAccessTokenRequest)(nil), // 20: memos.api.v1.CreateUserAccessTokenRequest
 	(*DeleteUserAccessTokenRequest)(nil), // 21: memos.api.v1.DeleteUserAccessTokenRequest
-	(*Shortcut)(nil),                     // 22: memos.api.v1.Shortcut
-	(*ListShortcutsRequest)(nil),         // 23: memos.api.v1.ListShortcutsRequest
-	(*ListShortcutsResponse)(nil),        // 24: memos.api.v1.ListShortcutsResponse
-	(*CreateShortcutRequest)(nil),        // 25: memos.api.v1.CreateShortcutRequest
-	(*UpdateShortcutRequest)(nil),        // 26: memos.api.v1.UpdateShortcutRequest
-	(*DeleteShortcutRequest)(nil),        // 27: memos.api.v1.DeleteShortcutRequest
-	nil,                                  // 28: memos.api.v1.UserStats.TagCountEntry
-	(*UserStats_MemoTypeStats)(nil),      // 29: memos.api.v1.UserStats.MemoTypeStats
-	(State)(0),                           // 30: memos.api.v1.State
-	(*timestamppb.Timestamp)(nil),        // 31: google.protobuf.Timestamp
-	(*httpbody.HttpBody)(nil),            // 32: google.api.HttpBody
-	(*fieldmaskpb.FieldMask)(nil),        // 33: google.protobuf.FieldMask
-	(*emptypb.Empty)(nil),                // 34: google.protobuf.Empty
+	nil,                                  // 22: memos.api.v1.UserStats.TagCountEntry
+	(*UserStats_MemoTypeStats)(nil),      // 23: memos.api.v1.UserStats.MemoTypeStats
+	(State)(0),                           // 24: memos.api.v1.State
+	(*timestamppb.Timestamp)(nil),        // 25: google.protobuf.Timestamp
+	(*httpbody.HttpBody)(nil),            // 26: google.api.HttpBody
+	(*fieldmaskpb.FieldMask)(nil),        // 27: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),                // 28: google.protobuf.Empty
 }
 var file_api_v1_user_service_proto_depIdxs = []int32{
 	0,  // 0: memos.api.v1.User.role:type_name -> memos.api.v1.User.Role
-	30, // 1: memos.api.v1.User.state:type_name -> memos.api.v1.State
-	31, // 2: memos.api.v1.User.create_time:type_name -> google.protobuf.Timestamp
-	31, // 3: memos.api.v1.User.update_time:type_name -> google.protobuf.Timestamp
+	24, // 1: memos.api.v1.User.state:type_name -> memos.api.v1.State
+	25, // 2: memos.api.v1.User.create_time:type_name -> google.protobuf.Timestamp
+	25, // 3: memos.api.v1.User.update_time:type_name -> google.protobuf.Timestamp
 	1,  // 4: memos.api.v1.ListUsersResponse.users:type_name -> memos.api.v1.User
-	32, // 5: memos.api.v1.GetUserAvatarBinaryRequest.http_body:type_name -> google.api.HttpBody
+	26, // 5: memos.api.v1.GetUserAvatarBinaryRequest.http_body:type_name -> google.api.HttpBody
 	1,  // 6: memos.api.v1.CreateUserRequest.user:type_name -> memos.api.v1.User
 	1,  // 7: memos.api.v1.UpdateUserRequest.user:type_name -> memos.api.v1.User
-	33, // 8: memos.api.v1.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
-	31, // 9: memos.api.v1.UserStats.memo_display_timestamps:type_name -> google.protobuf.Timestamp
-	29, // 10: memos.api.v1.UserStats.memo_type_stats:type_name -> memos.api.v1.UserStats.MemoTypeStats
-	28, // 11: memos.api.v1.UserStats.tag_count:type_name -> memos.api.v1.UserStats.TagCountEntry
+	27, // 8: memos.api.v1.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
+	25, // 9: memos.api.v1.UserStats.memo_display_timestamps:type_name -> google.protobuf.Timestamp
+	23, // 10: memos.api.v1.UserStats.memo_type_stats:type_name -> memos.api.v1.UserStats.MemoTypeStats
+	22, // 11: memos.api.v1.UserStats.tag_count:type_name -> memos.api.v1.UserStats.TagCountEntry
 	10, // 12: memos.api.v1.ListAllUserStatsResponse.user_stats:type_name -> memos.api.v1.UserStats
 	14, // 13: memos.api.v1.UpdateUserSettingRequest.setting:type_name -> memos.api.v1.UserSetting
-	33, // 14: memos.api.v1.UpdateUserSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	31, // 15: memos.api.v1.UserAccessToken.issued_at:type_name -> google.protobuf.Timestamp
-	31, // 16: memos.api.v1.UserAccessToken.expires_at:type_name -> google.protobuf.Timestamp
+	27, // 14: memos.api.v1.UpdateUserSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	25, // 15: memos.api.v1.UserAccessToken.issued_at:type_name -> google.protobuf.Timestamp
+	25, // 16: memos.api.v1.UserAccessToken.expires_at:type_name -> google.protobuf.Timestamp
 	17, // 17: memos.api.v1.ListUserAccessTokensResponse.access_tokens:type_name -> memos.api.v1.UserAccessToken
-	31, // 18: memos.api.v1.CreateUserAccessTokenRequest.expires_at:type_name -> google.protobuf.Timestamp
-	22, // 19: memos.api.v1.ListShortcutsResponse.shortcuts:type_name -> memos.api.v1.Shortcut
-	22, // 20: memos.api.v1.CreateShortcutRequest.shortcut:type_name -> memos.api.v1.Shortcut
-	22, // 21: memos.api.v1.UpdateShortcutRequest.shortcut:type_name -> memos.api.v1.Shortcut
-	33, // 22: memos.api.v1.UpdateShortcutRequest.update_mask:type_name -> google.protobuf.FieldMask
-	2,  // 23: memos.api.v1.UserService.ListUsers:input_type -> memos.api.v1.ListUsersRequest
-	4,  // 24: memos.api.v1.UserService.GetUser:input_type -> memos.api.v1.GetUserRequest
-	5,  // 25: memos.api.v1.UserService.GetUserByUsername:input_type -> memos.api.v1.GetUserByUsernameRequest
-	6,  // 26: memos.api.v1.UserService.GetUserAvatarBinary:input_type -> memos.api.v1.GetUserAvatarBinaryRequest
-	7,  // 27: memos.api.v1.UserService.CreateUser:input_type -> memos.api.v1.CreateUserRequest
-	8,  // 28: memos.api.v1.UserService.UpdateUser:input_type -> memos.api.v1.UpdateUserRequest
-	9,  // 29: memos.api.v1.UserService.DeleteUser:input_type -> memos.api.v1.DeleteUserRequest
-	11, // 30: memos.api.v1.UserService.ListAllUserStats:input_type -> memos.api.v1.ListAllUserStatsRequest
-	13, // 31: memos.api.v1.UserService.GetUserStats:input_type -> memos.api.v1.GetUserStatsRequest
-	15, // 32: memos.api.v1.UserService.GetUserSetting:input_type -> memos.api.v1.GetUserSettingRequest
-	16, // 33: memos.api.v1.UserService.UpdateUserSetting:input_type -> memos.api.v1.UpdateUserSettingRequest
-	18, // 34: memos.api.v1.UserService.ListUserAccessTokens:input_type -> memos.api.v1.ListUserAccessTokensRequest
-	20, // 35: memos.api.v1.UserService.CreateUserAccessToken:input_type -> memos.api.v1.CreateUserAccessTokenRequest
-	21, // 36: memos.api.v1.UserService.DeleteUserAccessToken:input_type -> memos.api.v1.DeleteUserAccessTokenRequest
-	23, // 37: memos.api.v1.UserService.ListShortcuts:input_type -> memos.api.v1.ListShortcutsRequest
-	25, // 38: memos.api.v1.UserService.CreateShortcut:input_type -> memos.api.v1.CreateShortcutRequest
-	26, // 39: memos.api.v1.UserService.UpdateShortcut:input_type -> memos.api.v1.UpdateShortcutRequest
-	27, // 40: memos.api.v1.UserService.DeleteShortcut:input_type -> memos.api.v1.DeleteShortcutRequest
-	3,  // 41: memos.api.v1.UserService.ListUsers:output_type -> memos.api.v1.ListUsersResponse
-	1,  // 42: memos.api.v1.UserService.GetUser:output_type -> memos.api.v1.User
-	1,  // 43: memos.api.v1.UserService.GetUserByUsername:output_type -> memos.api.v1.User
-	32, // 44: memos.api.v1.UserService.GetUserAvatarBinary:output_type -> google.api.HttpBody
-	1,  // 45: memos.api.v1.UserService.CreateUser:output_type -> memos.api.v1.User
-	1,  // 46: memos.api.v1.UserService.UpdateUser:output_type -> memos.api.v1.User
-	34, // 47: memos.api.v1.UserService.DeleteUser:output_type -> google.protobuf.Empty
-	12, // 48: memos.api.v1.UserService.ListAllUserStats:output_type -> memos.api.v1.ListAllUserStatsResponse
-	10, // 49: memos.api.v1.UserService.GetUserStats:output_type -> memos.api.v1.UserStats
-	14, // 50: memos.api.v1.UserService.GetUserSetting:output_type -> memos.api.v1.UserSetting
-	14, // 51: memos.api.v1.UserService.UpdateUserSetting:output_type -> memos.api.v1.UserSetting
-	19, // 52: memos.api.v1.UserService.ListUserAccessTokens:output_type -> memos.api.v1.ListUserAccessTokensResponse
-	17, // 53: memos.api.v1.UserService.CreateUserAccessToken:output_type -> memos.api.v1.UserAccessToken
-	34, // 54: memos.api.v1.UserService.DeleteUserAccessToken:output_type -> google.protobuf.Empty
-	24, // 55: memos.api.v1.UserService.ListShortcuts:output_type -> memos.api.v1.ListShortcutsResponse
-	22, // 56: memos.api.v1.UserService.CreateShortcut:output_type -> memos.api.v1.Shortcut
-	22, // 57: memos.api.v1.UserService.UpdateShortcut:output_type -> memos.api.v1.Shortcut
-	34, // 58: memos.api.v1.UserService.DeleteShortcut:output_type -> google.protobuf.Empty
-	41, // [41:59] is the sub-list for method output_type
-	23, // [23:41] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	25, // 18: memos.api.v1.CreateUserAccessTokenRequest.expires_at:type_name -> google.protobuf.Timestamp
+	2,  // 19: memos.api.v1.UserService.ListUsers:input_type -> memos.api.v1.ListUsersRequest
+	4,  // 20: memos.api.v1.UserService.GetUser:input_type -> memos.api.v1.GetUserRequest
+	5,  // 21: memos.api.v1.UserService.GetUserByUsername:input_type -> memos.api.v1.GetUserByUsernameRequest
+	6,  // 22: memos.api.v1.UserService.GetUserAvatarBinary:input_type -> memos.api.v1.GetUserAvatarBinaryRequest
+	7,  // 23: memos.api.v1.UserService.CreateUser:input_type -> memos.api.v1.CreateUserRequest
+	8,  // 24: memos.api.v1.UserService.UpdateUser:input_type -> memos.api.v1.UpdateUserRequest
+	9,  // 25: memos.api.v1.UserService.DeleteUser:input_type -> memos.api.v1.DeleteUserRequest
+	11, // 26: memos.api.v1.UserService.ListAllUserStats:input_type -> memos.api.v1.ListAllUserStatsRequest
+	13, // 27: memos.api.v1.UserService.GetUserStats:input_type -> memos.api.v1.GetUserStatsRequest
+	15, // 28: memos.api.v1.UserService.GetUserSetting:input_type -> memos.api.v1.GetUserSettingRequest
+	16, // 29: memos.api.v1.UserService.UpdateUserSetting:input_type -> memos.api.v1.UpdateUserSettingRequest
+	18, // 30: memos.api.v1.UserService.ListUserAccessTokens:input_type -> memos.api.v1.ListUserAccessTokensRequest
+	20, // 31: memos.api.v1.UserService.CreateUserAccessToken:input_type -> memos.api.v1.CreateUserAccessTokenRequest
+	21, // 32: memos.api.v1.UserService.DeleteUserAccessToken:input_type -> memos.api.v1.DeleteUserAccessTokenRequest
+	3,  // 33: memos.api.v1.UserService.ListUsers:output_type -> memos.api.v1.ListUsersResponse
+	1,  // 34: memos.api.v1.UserService.GetUser:output_type -> memos.api.v1.User
+	1,  // 35: memos.api.v1.UserService.GetUserByUsername:output_type -> memos.api.v1.User
+	26, // 36: memos.api.v1.UserService.GetUserAvatarBinary:output_type -> google.api.HttpBody
+	1,  // 37: memos.api.v1.UserService.CreateUser:output_type -> memos.api.v1.User
+	1,  // 38: memos.api.v1.UserService.UpdateUser:output_type -> memos.api.v1.User
+	28, // 39: memos.api.v1.UserService.DeleteUser:output_type -> google.protobuf.Empty
+	12, // 40: memos.api.v1.UserService.ListAllUserStats:output_type -> memos.api.v1.ListAllUserStatsResponse
+	10, // 41: memos.api.v1.UserService.GetUserStats:output_type -> memos.api.v1.UserStats
+	14, // 42: memos.api.v1.UserService.GetUserSetting:output_type -> memos.api.v1.UserSetting
+	14, // 43: memos.api.v1.UserService.UpdateUserSetting:output_type -> memos.api.v1.UserSetting
+	19, // 44: memos.api.v1.UserService.ListUserAccessTokens:output_type -> memos.api.v1.ListUserAccessTokensResponse
+	17, // 45: memos.api.v1.UserService.CreateUserAccessToken:output_type -> memos.api.v1.UserAccessToken
+	28, // 46: memos.api.v1.UserService.DeleteUserAccessToken:output_type -> google.protobuf.Empty
+	33, // [33:47] is the sub-list for method output_type
+	19, // [19:33] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_user_service_proto_init() }
@@ -1895,7 +1528,7 @@ func file_api_v1_user_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_user_service_proto_rawDesc), len(file_api_v1_user_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   29,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

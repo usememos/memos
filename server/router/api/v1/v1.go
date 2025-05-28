@@ -28,6 +28,7 @@ type APIV1Service struct {
 	v1pb.UnimplementedUserServiceServer
 	v1pb.UnimplementedMemoServiceServer
 	v1pb.UnimplementedResourceServiceServer
+	v1pb.UnimplementedShortcutServiceServer
 	v1pb.UnimplementedInboxServiceServer
 	v1pb.UnimplementedActivityServiceServer
 	v1pb.UnimplementedWebhookServiceServer
@@ -56,6 +57,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 	v1pb.RegisterUserServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterMemoServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterResourceServiceServer(grpcServer, apiv1Service)
+	v1pb.RegisterShortcutServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterInboxServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterActivityServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterWebhookServiceServer(grpcServer, apiv1Service)
@@ -99,6 +101,9 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	if err := v1pb.RegisterResourceServiceHandler(ctx, gwMux, conn); err != nil {
+		return err
+	}
+	if err := v1pb.RegisterShortcutServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
 	if err := v1pb.RegisterInboxServiceHandler(ctx, gwMux, conn); err != nil {

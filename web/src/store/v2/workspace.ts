@@ -4,7 +4,7 @@ import { workspaceServiceClient, workspaceSettingServiceClient } from "@/grpcweb
 import { WorkspaceProfile } from "@/types/proto/api/v1/workspace_service";
 import { WorkspaceGeneralSetting, WorkspaceMemoRelatedSetting, WorkspaceSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { isValidateLocale } from "@/utils/i18n";
-import { workspaceSettingNamePrefix } from "../v1";
+import { workspaceSettingNamePrefix } from "../common";
 
 export enum WorkspaceSettingKey {
   /** BASIC - BASIC is the key for basic settings. */

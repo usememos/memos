@@ -10,8 +10,8 @@ import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
-import { useMemoFilterStore } from "@/store/v1";
 import { viewStore, userStore } from "@/store/v2";
+import memoFilterStore from "@/store/v2/memoFilter";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -22,7 +22,6 @@ const UserProfile = observer(() => {
   const params = useParams();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
-  const memoFilterStore = useMemoFilterStore();
 
   useEffect(() => {
     const username = params.username;

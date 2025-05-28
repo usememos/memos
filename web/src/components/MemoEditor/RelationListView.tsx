@@ -1,6 +1,7 @@
 import { LinkIcon, XIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { Memo, MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 
 interface Props {
@@ -8,9 +9,8 @@ interface Props {
   setRelationList: (relationList: MemoRelation[]) => void;
 }
 
-const RelationListView = (props: Props) => {
+const RelationListView = observer((props: Props) => {
   const { relationList, setRelationList } = props;
-  const memoStore = useMemoStore();
   const [referencingMemoList, setReferencingMemoList] = useState<Memo[]>([]);
 
   useEffect(() => {
@@ -50,6 +50,6 @@ const RelationListView = (props: Props) => {
       )}
     </>
   );
-};
+});
 
 export default RelationListView;

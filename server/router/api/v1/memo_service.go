@@ -689,9 +689,9 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 		}
 		payload.ActivityType = activityType
 		payload.Url = hook.URL
-		if err := webhook.Post(payload); err != nil {
-			return errors.Wrap(err, "failed to post webhook")
-		}
+
+		// Use asynchronous webhook dispatch
+		webhook.PostAsync(payload)
 	}
 	return nil
 }

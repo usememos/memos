@@ -4,7 +4,7 @@ import { isEqual, uniq } from "lodash-es";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { workspaceSettingNamePrefix } from "@/store/v1";
+import { workspaceSettingNamePrefix } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
 import { WorkspaceSettingKey } from "@/store/v2/workspace";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
@@ -12,7 +12,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = () => {
   const t = useTranslate();
-  const originalSetting = workspaceStore.state.memoRelatedSetting;
+  const [originalSetting, setOriginalSetting] = useState<WorkspaceMemoRelatedSetting>(workspaceStore.state.memoRelatedSetting);
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
   const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
@@ -54,12 +54,12 @@ const MemoRelatedSettings = () => {
         name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
         memoRelatedSetting,
       });
+      setOriginalSetting(memoRelatedSetting);
+      toast.success(t("message.update-succeed"));
     } catch (error: any) {
       toast.error(error.details);
       console.error(error);
-      return;
     }
-    toast.success(t("message.update-succeed"));
   };
 
   return (
@@ -91,13 +91,6 @@ const MemoRelatedSettings = () => {
         <Switch
           checked={memoRelatedSetting.enableComment}
           onChange={(event) => updatePartialSetting({ enableComment: event.target.checked })}
-        />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.memo-related-settings.enable-memo-location")}</span>
-        <Switch
-          checked={memoRelatedSetting.enableLocation}
-          onChange={(event) => updatePartialSetting({ enableLocation: event.target.checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">

@@ -1,6 +1,7 @@
+import { observer } from "mobx-react-lite";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -29,11 +30,10 @@ interface Props {
 
 type ContentCompactView = "ALL" | "SNIPPET";
 
-const MemoContent: React.FC<Props> = (props: Props) => {
+const MemoContent = observer((props: Props) => {
   const { className, contentClassName, nodes, memoName, embeddedMemos, onClick, onDoubleClick } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<ContentCompactView | undefined>(undefined);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
@@ -122,6 +122,6 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       </div>
     </RendererContext.Provider>
   );
-};
+});
 
 export default memo(MemoContent);
