@@ -109,6 +109,41 @@ func TestConvertExprToSQL(t *testing.T) {
 			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') IS TRUE AND `memo`.`content` LIKE ?)",
 			args:   []any{"%todo%"},
 		},
+		{
+			filter: `has_incomplete_tasks`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks == true`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') = 1",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks != false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') != 0",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks == false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') = 0",
+			args:   []any{},
+		},
+		{
+			filter: `!has_incomplete_tasks`,
+			want:   "NOT (JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks && pinned`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE AND `memo`.`pinned` IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks && content.contains("todo")`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE AND `memo`.`content` LIKE ?)",
+			args:   []any{"%todo%"},
+		},
 	}
 
 	for _, tt := range tests {
