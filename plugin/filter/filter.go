@@ -25,7 +25,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 		cel.Overload("now",
 			[]*cel.Type{},
 			cel.IntType,
-			cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+			cel.FunctionBinding(func(_ ...ref.Val) ref.Val {
 				return types.Int(time.Now().Unix())
 			}),
 		),
