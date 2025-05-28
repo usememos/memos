@@ -54,7 +54,7 @@ const EmbeddedMemo = observer(({ resourceId: uid, params: paramsStr }: Props) =>
         nodes={memo.nodes}
         embeddedMemos={context.embeddedMemos}
       />
-      <MemoResourceListView resources={memo.resources} />
+      <MemoResourceListView memo={memo} resources={memo.resources} noThumbnailForEmbedded />
     </>
   );
   if (inlineMode) {

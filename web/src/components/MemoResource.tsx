@@ -11,10 +11,6 @@ const MemoResource: React.FC<Props> = (props: Props) => {
   const { className, resource } = props;
   const resourceUrl = getResourceUrl(resource);
 
-  const handlePreviewBtnClick = () => {
-    window.open(resourceUrl);
-  };
-
   return (
     <div className={`w-auto flex flex-row justify-start items-center text-gray-500 dark:text-gray-400 hover:opacity-80 ${className}`}>
       {resource.type.startsWith("audio") ? (
@@ -22,9 +18,9 @@ const MemoResource: React.FC<Props> = (props: Props) => {
       ) : (
         <>
           <ResourceIcon className="!w-4 !h-4 mr-1" resource={resource} />
-          <span className="text-sm max-w-[256px] truncate cursor-pointer" onClick={handlePreviewBtnClick}>
+          <a className="text-sm max-w-[256px] truncate cursor-pointer" target="_blank" href={resourceUrl}>
             {resource.filename}
-          </span>
+          </a>
         </>
       )}
     </div>

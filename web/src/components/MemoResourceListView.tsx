@@ -1,19 +1,35 @@
 import { memo } from "react";
+import { Memo } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { cn } from "@/utils";
-import { getResourceType, getResourceUrl } from "@/utils/resource";
+import { getResourceType, getResourceUrl, isResourceEmbeddedInContent } from "@/utils/resource";
 import MemoResource from "./MemoResource";
 import showPreviewImageDialog from "./PreviewImageDialog";
 
-const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => {
+const MemoResourceListView = ({
+  memo,
+  resources = [],
+  noThumbnailForEmbedded,
+  allowFullWidth,
+}: {
+  memo?: Memo;
+  resources: Resource[];
+  noThumbnailForEmbedded?: boolean;
+  allowFullWidth?: boolean;
+}) => {
   const mediaResources: Resource[] = [];
   const otherResources: Resource[] = [];
 
   resources.forEach((resource) => {
     const type = getResourceType(resource);
     if (type === "image/*" || type === "video/*") {
-      mediaResources.push(resource);
-      return;
+      let useThumbnail = true;
+      if (memo && noThumbnailForEmbedded) useThumbnail = !isResourceEmbeddedInContent(memo.content, resource);
+
+      if (useThumbnail) {
+        mediaResources.push(resource);
+        return;
+      }
     }
 
     otherResources.push(resource);
@@ -37,6 +53,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
           className={cn("cursor-pointer h-full w-auto rounded-lg border dark:border-zinc-800 object-contain hover:opacity-80", className)}
           src={resource.externalLink ? resourceUrl : resourceUrl + "?thumbnail=true"}
           onClick={() => handleImageClick(resourceUrl)}
+          data-is-resource-media
           decoding="async"
           loading="lazy"
         />
@@ -61,7 +78,10 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
 
   const MediaList = ({ resources = [] }: { resources: Resource[] }) => {
     const cards = resources.map((resource) => (
-      <div key={resource.name} className="max-w-[70%] grow flex flex-col justify-start items-start shrink-0">
+      <div
+        key={resource.name}
+        className={cn(allowFullWidth ? "max-w-full" : "max-w-[70%]", "grow flex flex-col justify-start items-start shrink-0")}
+      >
         <MediaCard className="max-h-64 grow" resource={resource} />
       </div>
     ));

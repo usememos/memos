@@ -205,6 +205,7 @@
       "title": "创建资源",
       "upload-method": "上传方式"
     },
+    "delete-confirm-referenced": "资源在正文已中被引用，确定要删除吗？",
     "delete-resource": "删除资源",
     "delete-selected-resources": "删除选中资源",
     "fetching-data": "正在获取数据…",
