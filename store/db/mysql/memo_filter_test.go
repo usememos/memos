@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -38,11 +39,6 @@ func TestConvertExprToSQL(t *testing.T) {
 			filter: `visibility in ["PUBLIC", "PRIVATE"]`,
 			want:   "`memo`.`visibility` IN (?,?)",
 			args:   []any{"PUBLIC", "PRIVATE"},
-		},
-		{
-			filter: `create_time == "2006-01-02T15:04:05+07:00"`,
-			want:   "UNIX_TIMESTAMP(`memo`.`created_ts`) = ?",
-			args:   []any{int64(1136189045)},
 		},
 		{
 			filter: `tag in ['tag1'] || content.contains('hello')`,
@@ -93,6 +89,11 @@ func TestConvertExprToSQL(t *testing.T) {
 			filter: `has_task_list && content.contains("todo")`,
 			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON) AND `memo`.`content` LIKE ?)",
 			args:   []any{"%todo%"},
+		},
+		{
+			filter: `created_ts > now() - 60 * 60 * 24`,
+			want:   "UNIX_TIMESTAMP(`memo`.`created_ts`) > ?",
+			args:   []any{time.Now().Unix() - 60*60*24},
 		},
 	}
 
