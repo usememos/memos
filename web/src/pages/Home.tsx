@@ -50,7 +50,9 @@ const Home = observer(() => {
 
   return (
     <PagedMemoList
-      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact={viewStore.state.compact} />}
+      renderer={(memo: Memo) => (
+        <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact={viewStore.state.compact} />
+      )}
       listSort={(memos: Memo[]) =>
         memos
           .filter((memo) => memo.state === State.NORMAL)

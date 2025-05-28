@@ -35,14 +35,12 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
-  // const [showCompactMode, setShowCompactMode] = useState<ContentCompactView>(props.compact ? "SNIPPET" : "ALL");
   const [showCompactMode, setShowCompactMode] = useState<ContentCompactView | undefined>(undefined);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
   const allowEdit = !props.readonly && memo && (currentUser?.name === memo.creator || isSuperUser(currentUser));
 
   // Initial compact mode.
   useEffect(() => {
-    console.log("Updating compactness")
     if (!memoContentContainerRef.current) {
       return;
     }
