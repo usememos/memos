@@ -40,6 +40,8 @@ export interface Props {
   memoName?: string;
   // The name of the parent memo if the memo is a comment.
   parentMemoName?: string;
+  // The visibility of the parent memo for preset when commenting
+  parentMemoVisibility?: Visibility;
   autoFocus?: boolean;
   onConfirm?: (memoName: string) => void;
   onCancel?: () => void;
@@ -57,12 +59,12 @@ interface State {
 }
 
 const MemoEditor = observer((props: Props) => {
-  const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
+  const { className, cacheKey, memoName, parentMemoName, parentMemoVisibility, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
-    memoVisibility: Visibility.PRIVATE,
+    memoVisibility: parentMemoVisibility ?? Visibility.PRIVATE,
     resourceList: [],
     relationList: [],
     location: undefined,
@@ -96,7 +98,7 @@ const MemoEditor = observer((props: Props) => {
   }, [autoFocus]);
 
   useEffect(() => {
-    let visibility = userSetting.memoVisibility;
+    let visibility = parentMemoVisibility ?? userSetting.memoVisibility;
     if (workspaceMemoRelatedSetting.disallowPublicVisibility && visibility === "PUBLIC") {
       visibility = "PRIVATE";
     }
@@ -104,7 +106,7 @@ const MemoEditor = observer((props: Props) => {
       ...prevState,
       memoVisibility: convertVisibilityFromString(visibility),
     }));
-  }, [userSetting.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
+  }, [parentMemoVisibility, userSetting.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
 
   useAsyncEffect(async () => {
     if (!memoName) {
