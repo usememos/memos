@@ -18,6 +18,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("update_time", cel.StringType),
 	cel.Variable("visibility", cel.StringType),
 	cel.Variable("has_task_list", cel.BoolType),
+	cel.Variable("has_incomplete_tasks", cel.BoolType),
 }
 
 // Parse parses the filter string and returns the parsed expression.
