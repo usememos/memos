@@ -59,7 +59,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if err != nil {
 				return err
 			}
-			if !slices.Contains([]string{"creator_id", "create_time", "update_time", "visibility", "content", "has_task_list"}, identifier) {
+			if !slices.Contains([]string{"creator_id", "create_time", "update_time", "visibility", "content", "has_task_list","has_incomplete_tasks"}, identifier) {
 				return errors.Errorf("invalid identifier for %s", v.CallExpr.Function)
 			}
 			value, err := filter.GetConstValue(v.CallExpr.Args[1])
@@ -157,6 +157,25 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') %s CAST('%s' AS JSON)", operator, compareValue)); err != nil {
 					return err
 				}
+			} else if identifier == "has_incomplete_tasks" {
+				if operator != "=" && operator != "!=" {
+					return errors.Errorf("invalid operator for %s", v.CallExpr.Function)
+				}
+				valueBool, ok := value.(bool)
+				if !ok {
+					return errors.New("invalid boolean value for has_incomplete_tasks")
+				}
+
+				// In MySQL, we can use JSON_EXTRACT to get the value and compare it to 'true' or 'false'
+				compareValue := "false"
+				if valueBool {
+					compareValue = "true"
+				}
+
+				// MySQL uses -> as a shorthand for JSON_EXTRACT
+				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') %s CAST('%s' AS JSON)", operator, compareValue)); err != nil {
+					return err
+				}
 			}
 		case "@in":
 			if len(v.CallExpr.Args) != 2 {
@@ -226,7 +245,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 		}
 	} else if v, ok := expr.ExprKind.(*exprv1.Expr_IdentExpr); ok {
 		identifier := v.IdentExpr.GetName()
-		if !slices.Contains([]string{"pinned", "has_task_list"}, identifier) {
+		if !slices.Contains([]string{"pinned", "has_task_list","has_incomplete_tasks"}, identifier) {
 			return errors.Errorf("invalid identifier for %s", identifier)
 		}
 		if identifier == "pinned" {
@@ -235,6 +254,10 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			}
 		} else if identifier == "has_task_list" {
 			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON)"); err != nil {
+				return err
+			}
+		} else if identifier == "has_incomplete_tasks" {
+			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') = CAST('true' AS JSON)"); err != nil {
 				return err
 			}
 		}
