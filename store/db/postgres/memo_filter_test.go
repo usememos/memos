@@ -94,6 +94,41 @@ func TestRestoreExprToSQL(t *testing.T) {
 			want:   "((memo.payload->'property'->>'hasTaskList')::boolean IS TRUE AND memo.content ILIKE $1)",
 			args:   []any{"%todo%"},
 		},
+		{
+			filter: `has_incomplete_tasks`,
+			want:   "(memo.payload->'property'->>'hasIncompleteTasks')::boolean IS TRUE",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks == true`,
+			want:   "(memo.payload->'property'->>'hasIncompleteTasks')::boolean = $1",
+			args:   []any{true},
+		},
+		{
+			filter: `has_incomplete_tasks != false`,
+			want:   "(memo.payload->'property'->>'hasIncompleteTasks')::boolean != $1",
+			args:   []any{false},
+		},
+		{
+			filter: `has_incomplete_tasks == false`,
+			want:   "(memo.payload->'property'->>'hasIncompleteTasks')::boolean = $1",
+			args:   []any{false},
+		},
+		{
+			filter: `!has_incomplete_tasks`,
+			want:   "NOT ((memo.payload->'property'->>'hasIncompleteTasks')::boolean IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks && pinned`,
+			want:   "((memo.payload->'property'->>'hasIncompleteTasks')::boolean IS TRUE AND memo.pinned IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks && content.contains("todo")`,
+			want:   "((memo.payload->'property'->>'hasIncompleteTasks')::boolean IS TRUE AND memo.content ILIKE $1)",
+			args:   []any{"%todo%"},
+		},
 	}
 
 	for _, tt := range tests {
