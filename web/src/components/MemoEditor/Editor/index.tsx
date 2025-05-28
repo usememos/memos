@@ -169,11 +169,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
         return;
       }
-      // Prevent a newline from being inserted, so that we can insert it manually later.
-      // This prevents a race condition that occurs between the newline insertion and
-      // inserting the insertText.
-      // Needs to be called before any async call.
-      event.preventDefault();
 
       const cursorPosition = editorActions.getCursorPosition();
       const prevContent = editorActions.getContent().substring(0, cursorPosition);
@@ -210,7 +205,15 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         insertText += " |";
       }
 
-      editorActions.insertText("\n" + insertText);
+      if (insertText) {
+        // Prevent a newline from being inserted, so that we can insert it manually later.
+        // This prevents a race condition that occurs between the newline insertion and
+        // inserting the insertText.
+        // Needs to be called before any async call.
+        event.preventDefault();
+        // Insert the text at the current cursor position
+        editorActions.insertText("\n" + insertText);
+      }
     }
   };
 
@@ -220,7 +223,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     >
       <textarea
         className="w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap word-break"
-        rows={1}
+        rows={2}
         placeholder={placeholder}
         ref={editorRef}
         onPaste={onPaste}
