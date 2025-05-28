@@ -1,7 +1,7 @@
 import { Button } from "@usememos/mui";
 import { ArrowUpIcon, LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { matchPath } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
@@ -38,6 +38,7 @@ const PagedMemoList = observer((props: Props) => {
     isRequesting: true, // Initial request
     nextPageToken: "",
   });
+  const checkTimeoutRef = useRef<number | null>(null);
   const sortedMemoList = props.listSort ? props.listSort(memoStore.state.memos) : memoStore.state.memos;
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
 
@@ -58,6 +59,38 @@ const PagedMemoList = observer((props: Props) => {
     }));
   };
 
+  // Check if content fills the viewport and fetch more if needed
+  const checkAndFetchIfNeeded = useCallback(async () => {
+    // Clear any pending checks
+    if (checkTimeoutRef.current) {
+      clearTimeout(checkTimeoutRef.current);
+    }
+
+    // Wait a bit for DOM to update after memo list changes
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // Check if page is scrollable using multiple methods for better reliability
+    const documentHeight = Math.max(
+      document.body.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.clientHeight,
+      document.documentElement.scrollHeight,
+      document.documentElement.offsetHeight,
+    );
+
+    const windowHeight = window.innerHeight;
+    const isScrollable = documentHeight > windowHeight + 100; // 100px buffer
+
+    // If not scrollable and we have more data to fetch and not currently fetching
+    if (!isScrollable && state.nextPageToken && !state.isRequesting && sortedMemoList.length > 0) {
+      await fetchMoreMemos(state.nextPageToken);
+      // Schedule another check after a delay to prevent rapid successive calls
+      checkTimeoutRef.current = window.setTimeout(() => {
+        checkAndFetchIfNeeded();
+      }, 500);
+    }
+  }, [state.nextPageToken, state.isRequesting, sortedMemoList.length]);
+
   const refreshList = async () => {
     memoStore.state.updateStateId();
     setState((state) => ({ ...state, nextPageToken: "" }));
@@ -67,6 +100,22 @@ const PagedMemoList = observer((props: Props) => {
   useEffect(() => {
     refreshList();
   }, [props.owner, props.state, props.direction, props.filter, props.oldFilter, props.pageSize]);
+
+  // Check if we need to fetch more data when content changes.
+  useEffect(() => {
+    if (!state.isRequesting && sortedMemoList.length > 0) {
+      checkAndFetchIfNeeded();
+    }
+  }, [sortedMemoList.length, state.isRequesting, state.nextPageToken, checkAndFetchIfNeeded]);
+
+  // Cleanup timeout on unmount.
+  useEffect(() => {
+    return () => {
+      if (checkTimeoutRef.current) {
+        clearTimeout(checkTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!state.nextPageToken) return;

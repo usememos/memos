@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -38,11 +39,6 @@ func TestRestoreExprToSQL(t *testing.T) {
 			filter: `visibility in ["PUBLIC", "PRIVATE"]`,
 			want:   "memo.visibility IN ($1,$2)",
 			args:   []any{"PUBLIC", "PRIVATE"},
-		},
-		{
-			filter: `create_time == "2006-01-02T15:04:05+07:00"`,
-			want:   "memo.created_ts = $1",
-			args:   []any{int64(1136189045)},
 		},
 		{
 			filter: `tag in ['tag1'] || content.contains('hello')`,
@@ -129,6 +125,11 @@ func TestRestoreExprToSQL(t *testing.T) {
 			want:   "((memo.payload->'property'->>'hasIncompleteTasks')::boolean IS TRUE AND memo.content ILIKE $1)",
 			args:   []any{"%todo%"},
 		},
+    {
+      filter: `created_ts > now() - 60 * 60 * 24`,
+			want:   "EXTRACT(EPOCH FROM memo.created_ts) > $1",
+			args:   []any{time.Now().Unix() - 60*60*24},
+    }
 	}
 
 	for _, tt := range tests {
