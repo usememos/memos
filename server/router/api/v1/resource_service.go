@@ -58,18 +58,11 @@ func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateR
 		Type:      request.Resource.Type,
 	}
 
-	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace storage setting: %v", err)
-	}
 	size := binary.Size(request.Resource.Content)
-	uploadSizeLimit := int(workspaceStorageSetting.UploadSizeLimitMb) * MebiByte
-	if uploadSizeLimit == 0 {
-		uploadSizeLimit = MaxUploadBufferSizeBytes
-	}
-	if size > uploadSizeLimit {
+	if lim := s.uploadSizeLimit(ctx); size > lim {
 		return nil, status.Errorf(codes.InvalidArgument, "file size exceeds the limit")
 	}
+
 	create.Size = int64(size)
 	create.Blob = request.Resource.Content
 	if err := SaveResourceBlob(ctx, s.Profile, s.Store, create); err != nil {
@@ -169,7 +162,7 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 	if request.Thumbnail && util.HasPrefixes(resource.Type, SupportedThumbnailMimeTypes...) {
 		thumbnailBlob, err := s.getOrGenerateThumbnail(resource)
 		if err != nil {
-			// thumbnail failures are logged as warnings and not cosidered critical failures as
+			// thumbnail failures are logged as warnings and not considered critical failures as
 			// a resource image can be used in its place.
 			slog.Warn("failed to get resource thumbnail image", slog.Any("error", err))
 		} else {
@@ -322,7 +315,7 @@ func SaveResourceBlob(ctx context.Context, profile *profile.Profile, stores *sto
 		defer dst.Close()
 
 		// Write the blob to the file.
-		if err := os.WriteFile(osPath, create.Blob, 0644); err != nil {
+		if err := os.WriteFile(osPath, create.Blob, 0o644); err != nil {
 			return errors.Wrap(err, "Failed to write file")
 		}
 		create.Reference = internalPath
@@ -331,7 +324,7 @@ func SaveResourceBlob(ctx context.Context, profile *profile.Profile, stores *sto
 	} else if workspaceStorageSetting.StorageType == storepb.WorkspaceStorageSetting_S3 {
 		s3Config := workspaceStorageSetting.S3Config
 		if s3Config == nil {
-			return errors.Errorf("No actived external storage found")
+			return errors.Errorf("No active external storage found")
 		}
 		s3Client, err := s3.NewClient(ctx, s3Config)
 		if err != nil {
