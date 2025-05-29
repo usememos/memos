@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
@@ -207,7 +208,7 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 		Nickname:     request.Username,
 		PasswordHash: string(passwordHash),
 	}
-	if !util.UIDMatcher.MatchString(strings.ToLower(create.Username)) {
+	if !base.UIDMatcher.MatchString(strings.ToLower(create.Username)) {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", create.Username)
 	}
 

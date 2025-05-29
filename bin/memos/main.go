@@ -12,9 +12,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/internal/version"
 	"github.com/usememos/memos/server"
-	"github.com/usememos/memos/server/profile"
-	"github.com/usememos/memos/server/version"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 )

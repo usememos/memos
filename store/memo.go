@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/internal/base"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -112,7 +112,7 @@ type DeleteMemo struct {
 }
 
 func (s *Store) CreateMemo(ctx context.Context, create *Memo) (*Memo, error) {
-	if !util.UIDMatcher.MatchString(create.UID) {
+	if !base.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
 	return s.driver.CreateMemo(ctx, create)
@@ -136,7 +136,7 @@ func (s *Store) GetMemo(ctx context.Context, find *FindMemo) (*Memo, error) {
 }
 
 func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
-	if update.UID != nil && !util.UIDMatcher.MatchString(*update.UID) {
+	if update.UID != nil && !base.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
 	}
 	return s.driver.UpdateMemo(ctx, update)

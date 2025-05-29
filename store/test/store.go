@@ -13,8 +13,8 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"github.com/usememos/memos/server/profile"
-	"github.com/usememos/memos/server/version"
+	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/internal/version"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 )

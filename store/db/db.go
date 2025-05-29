@@ -3,7 +3,7 @@ package db
 import (
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db/mysql"
 	"github.com/usememos/memos/store/db/postgres"

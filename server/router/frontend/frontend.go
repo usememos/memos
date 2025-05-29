@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/util"
-	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
 
@@ -30,12 +30,17 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 }
 
 func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
-	apiSkipper := func(c echo.Context) bool {
+	skipper := func(c echo.Context) bool {
+		// Skip API routes.
 		if util.HasPrefixes(c.Path(), "/api", "/memos.api.v1") {
 			return true
 		}
-		// Set Cache-Control header to allow public caching with a max-age of 30 days (in seconds).
-		c.Response().Header().Set(echo.HeaderCacheControl, "public, max-age=2592000")
+		// Skip setting cache headers for index.html
+		if c.Path() == "/" || c.Path() == "/index.html" {
+			return false
+		}
+		// Set Cache-Control header to allow public caching with a max-age of 7 days.
+		c.Response().Header().Set(echo.HeaderCacheControl, "public, max-age=604800") // 7 days
 		return false
 	}
 
@@ -43,7 +48,7 @@ func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Filesystem: getFileSystem("dist"),
 		HTML5:      true, // Enable fallback to index.html
-		Skipper:    apiSkipper,
+		Skipper:    skipper,
 	}))
 }
 

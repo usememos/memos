@@ -3,7 +3,7 @@ package store
 import (
 	"time"
 
-	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/store/cache"
 )
 

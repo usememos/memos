@@ -8,7 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/plugin/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -67,7 +67,7 @@ type DeleteResource struct {
 }
 
 func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {
-	if !util.UIDMatcher.MatchString(create.UID) {
+	if !base.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
 	return s.driver.CreateResource(ctx, create)
@@ -102,7 +102,7 @@ func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource,
 }
 
 func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) error {
-	if update.UID != nil && !util.UIDMatcher.MatchString(*update.UID) {
+	if update.UID != nil && !base.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
 	}
 	return s.driver.UpdateResource(ctx, update)
