@@ -3,7 +3,6 @@ import { isEqual } from "lodash-es";
 import { LoaderIcon, SendIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import DatePicker from "react-datepicker";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
@@ -19,6 +18,7 @@ import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
+import DateTimeInput from "../DateTimeInput";
 import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import LocationSelector from "./ActionButton/LocationSelector";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
@@ -30,7 +30,6 @@ import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
-import "react-datepicker/dist/react-datepicker.css";
 
 export interface Props {
   className?: string;
@@ -71,7 +70,10 @@ const MemoEditor = observer((props: Props) => {
     isComposing: false,
     isDraggingFile: false,
   });
-  const [displayTime, setDisplayTime] = useState<Date | undefined>();
+  const [createTime, setCreateTime] = useState<Date | undefined>();
+  const [updateTime, setUpdateTime] = useState<Date | undefined>();
+  const [originalCreateTime, setOriginalCreateTime] = useState<Date | undefined>();
+  const [originalUpdateTime, setOriginalUpdateTime] = useState<Date | undefined>();
   const [hasContent, setHasContent] = useState<boolean>(false);
   const [isVisibilitySelectorOpen, setIsVisibilitySelectorOpen] = useState(false);
   const editorRef = useRef<EditorRefActions>(null);
@@ -119,7 +121,10 @@ const MemoEditor = observer((props: Props) => {
     const memo = await memoStore.getOrFetchMemoByName(memoName);
     if (memo) {
       handleEditorFocus();
-      setDisplayTime(memo.displayTime);
+      setCreateTime(memo.createTime);
+      setUpdateTime(memo.updateTime);
+      setOriginalCreateTime(memo.createTime);
+      setOriginalUpdateTime(memo.updateTime);
       setState((prevState) => ({
         ...prevState,
         memoVisibility: memo.visibility,
@@ -361,9 +366,13 @@ const MemoEditor = observer((props: Props) => {
           if (["content", "resources", "relations", "location"].some((key) => updateMask.has(key))) {
             updateMask.add("update_time");
           }
-          if (!isEqual(displayTime, prevMemo.displayTime)) {
-            updateMask.add("display_time");
-            memoPatch.displayTime = displayTime;
+          if (createTime && !isEqual(createTime, prevMemo.createTime)) {
+            updateMask.add("create_time");
+            memoPatch.createTime = createTime;
+          }
+          if (updateTime && !isEqual(updateTime, prevMemo.updateTime)) {
+            updateMask.add("update_time");
+            memoPatch.updateTime = updateTime;
           }
           if (updateMask.size === 0) {
             toast.error("No changes detected");
@@ -487,19 +496,6 @@ const MemoEditor = observer((props: Props) => {
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
       >
-        {memoName && displayTime && (
-          <DatePicker
-            selected={displayTime}
-            onChange={(date) => date && setDisplayTime(date)}
-            showTimeSelect
-            showMonthDropdown
-            showYearDropdown
-            yearDropdownItemNumber={5}
-            dateFormatCalendar=" "
-            customInput={<span className="cursor-pointer text-sm text-gray-400 dark:text-gray-500">{displayTime.toLocaleString()}</span>}
-            calendarClassName="ml-24 sm:ml-44"
-          />
-        )}
         <Editor ref={editorRef} {...editorConfig} />
         <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
@@ -547,6 +543,20 @@ const MemoEditor = observer((props: Props) => {
           />
         </div>
       </div>
+
+      {/* Show memo metadata if memoName is provided */}
+      {memoName && (
+        <div className="w-full mb-4 text-xs leading-5 px-4 opacity-60 font-mono text-gray-500 dark:text-zinc-500">
+          {!isEqual(createTime, updateTime) && (
+            <DateTimeInput label="Updated" value={updateTime} originalValue={originalUpdateTime} onChange={setUpdateTime} />
+          )}
+          <DateTimeInput label="Created" value={createTime} originalValue={originalCreateTime} onChange={setCreateTime} />
+          <div className="w-full flex items-center gap-2">
+            <span>ID:</span>
+            <span>{memoName}</span>
+          </div>
+        </div>
+      )}
     </MemoEditorContext.Provider>
   );
 });
