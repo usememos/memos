@@ -3,16 +3,18 @@ import { useState } from "react";
 import VisibilityIcon from "@/components/VisibilityIcon";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   value: Visibility;
   onChange: (visibility: Visibility) => void;
+  onOpenChange?: (open: boolean) => void;
   className?: string;
 }
 
 const VisibilitySelector = (props: Props) => {
-  const { value, onChange, className } = props;
+  const { value, onChange } = props;
   const t = useTranslate();
   const [open, setOpen] = useState(false);
 
@@ -26,14 +28,24 @@ const VisibilitySelector = (props: Props) => {
 
   const handleSelect = (visibility: Visibility) => {
     onChange(visibility);
-    setOpen(false);
+    handleOpenChange(false);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setOpen(open);
+    if (props.onOpenChange) {
+      props.onOpenChange(open);
+    }
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <button
-          className={`flex items-center justify-center gap-1 px-0.5 text-xs rounded hover:bg-gray-100 dark:hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors ${className || ""}`}
+          className={cn(
+            `flex items-center justify-center gap-1 px-0.5 text-xs rounded hover:bg-gray-100 dark:hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors`,
+            props.className,
+          )}
           type="button"
         >
           <VisibilityIcon className="w-3 h-3" visibility={value} />
