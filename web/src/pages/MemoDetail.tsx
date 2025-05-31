@@ -160,7 +160,6 @@ const MemoDetail = observer(() => {
                   cacheKey={`${memo.name}-${memo.updateTime}-comment`}
                   placeholder={t("editor.add-your-comment-here")}
                   parentMemoName={memo.name}
-                  parentMemoVisibility={memo.visibility}
                   autoFocus
                   onConfirm={handleCommentCreated}
                   onCancel={() => setShowCommentEditor(false)}
