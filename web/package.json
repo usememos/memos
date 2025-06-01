@@ -74,7 +74,7 @@
     "prettier": "^3.5.3",
     "terser": "^5.39.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.32.1",
+    "typescript-eslint": "^8.33.0",
     "vite": "^6.3.5"
   },
   "pnpm": {
