@@ -47,7 +47,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@bufbuild/protobuf": "^2.5.0",
+    "@bufbuild/protobuf": "^2.5.1",
     "@eslint/js": "^9.27.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/d3": "^7.4.3",
