@@ -1,4 +1,5 @@
 import { ChevronRightIcon, HashIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
 import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
@@ -83,7 +84,7 @@ interface TagItemContainerProps {
   tag: Tag;
 }
 
-const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
+const TagItemContainer = observer((props: TagItemContainerProps) => {
   const { tag } = props;
   const tagFilters = memoFilterStore.getFiltersByFactor("tagSearch");
   const isActive = tagFilters.some((f: MemoFilter) => f.value === tag.text);
@@ -145,6 +146,6 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       ) : null}
     </>
   );
-};
+});
 
 export default TagTree;

@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
@@ -8,7 +9,7 @@ import memoFilterStore from "@/store/v2/memoFilter";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 
-const Archived = () => {
+const Archived = observer(() => {
   const user = useCurrentUser();
 
   const memoListFilter = useMemo(() => {
@@ -49,6 +50,6 @@ const Archived = () => {
       oldFilter={memoListFilter}
     />
   );
-};
+});
 
 export default Archived;

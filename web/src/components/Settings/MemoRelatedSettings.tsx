@@ -2,6 +2,7 @@ import { Switch, Chip, ChipDelete } from "@mui/joy";
 import { Button, Input } from "@usememos/mui";
 import { isEqual, uniq } from "lodash-es";
 import { CheckIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { workspaceSettingNamePrefix } from "@/store/common";
@@ -10,7 +11,7 @@ import { WorkspaceSettingKey } from "@/store/v2/workspace";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
 import { useTranslate } from "@/utils/i18n";
 
-const MemoRelatedSettings = () => {
+const MemoRelatedSettings = observer(() => {
   const t = useTranslate();
   const [originalSetting, setOriginalSetting] = useState<WorkspaceMemoRelatedSetting>(workspaceStore.state.memoRelatedSetting);
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
@@ -197,6 +198,6 @@ const MemoRelatedSettings = () => {
       </div>
     </div>
   );
-};
+});
 
 export default MemoRelatedSettings;

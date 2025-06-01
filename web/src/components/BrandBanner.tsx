@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { workspaceStore } from "@/store/v2";
 import { cn } from "@/utils";
 import UserAvatar from "./UserAvatar";
@@ -7,7 +8,7 @@ interface Props {
   collapsed?: boolean;
 }
 
-const BrandBanner = (props: Props) => {
+const BrandBanner = observer((props: Props) => {
   const { collapsed } = props;
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
   const title = workspaceGeneralSetting.customProfile?.title || "Memos";
@@ -21,6 +22,6 @@ const BrandBanner = (props: Props) => {
       </div>
     </div>
   );
-};
+});
 
 export default BrandBanner;

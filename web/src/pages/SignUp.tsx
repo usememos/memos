@@ -1,5 +1,6 @@
 import { Button, Input } from "@usememos/mui";
 import { LoaderIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -12,7 +13,7 @@ import { workspaceStore } from "@/store/v2";
 import { initialUserStore } from "@/store/v2/user";
 import { useTranslate } from "@/utils/i18n";
 
-const SignUp = () => {
+const SignUp = observer(() => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const actionBtnLoadingState = useLoading(false);
@@ -135,6 +136,6 @@ const SignUp = () => {
       <AuthFooter />
     </div>
   );
-};
+});
 
 export default SignUp;

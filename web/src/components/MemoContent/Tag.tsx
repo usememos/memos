@@ -1,9 +1,10 @@
+import { observer } from "mobx-react-lite";
 import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { Routes } from "@/router";
-import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
-import { stringifyFilters } from "@/store/v2/memoFilter";
+import { memoFilterStore } from "@/store/v2";
+import { stringifyFilters, MemoFilter } from "@/store/v2/memoFilter";
 import { cn } from "@/utils";
 import { RendererContext } from "./types";
 
@@ -11,7 +12,7 @@ interface Props {
   content: string;
 }
 
-const Tag: React.FC<Props> = ({ content }: Props) => {
+const Tag = observer(({ content }: Props) => {
   const context = useContext(RendererContext);
   const location = useLocation();
   const navigateTo = useNavigateTo();
@@ -50,6 +51,6 @@ const Tag: React.FC<Props> = ({ content }: Props) => {
       #{content}
     </span>
   );
-};
+});
 
 export default Tag;

@@ -2,6 +2,7 @@ import { Dropdown, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/jo
 import { Button, Input } from "@usememos/mui";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
@@ -16,7 +17,7 @@ interface LocalState {
   creatingUser: User;
 }
 
-const MemberSection = () => {
+const MemberSection = observer(() => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<LocalState>({
@@ -239,6 +240,6 @@ const MemberSection = () => {
       </div>
     </div>
   );
-};
+});
 
 export default MemberSection;

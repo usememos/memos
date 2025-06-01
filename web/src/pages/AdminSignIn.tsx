@@ -1,8 +1,9 @@
+import { observer } from "mobx-react-lite";
 import AuthFooter from "@/components/AuthFooter";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
 import { workspaceStore } from "@/store/v2";
 
-const AdminSignIn = () => {
+const AdminSignIn = observer(() => {
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
 
   return (
@@ -20,6 +21,6 @@ const AdminSignIn = () => {
       <AuthFooter />
     </div>
   );
-};
+});
 
 export default AdminSignIn;
