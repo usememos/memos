@@ -17,7 +17,7 @@ export const MonthNavigator = ({ visibleMonth, onMonthChange }: MonthNavigatorPr
   return (
     <div className="w-full mb-1 flex flex-row justify-between items-center gap-1">
       <div className="relative text-sm inline-flex flex-row items-center w-auto gap-2 dark:text-gray-400">
-        <CalendarIcon className="w-4 h-4" />
+        <CalendarIcon className="w-4 h-auto opacity-70 ml-px" />
         {currentMonth.toLocaleString(i18n.language, { year: "numeric", month: "long" })}
       </div>
       <div className="flex justify-end items-center shrink-0 gap-1">

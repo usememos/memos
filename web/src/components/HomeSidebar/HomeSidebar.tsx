@@ -88,9 +88,9 @@ const HomeSidebar = observer((props: Props) => {
           </NavLink>
         ))}
       </div>
-      <MemoFilters />
       <div className="px-2 w-full">
         <StatisticsView />
+        <MemoFilters />
         {currentUser && <ShortcutsSection />}
         <TagsSection />
       </div>

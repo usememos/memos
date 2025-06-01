@@ -1,4 +1,5 @@
 import { Button } from "@usememos/mui";
+import copy from "copy-to-clipboard";
 import { isEqual } from "lodash-es";
 import { LoaderIcon, SendIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -11,6 +12,7 @@ import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { extractMemoIdFromName } from "@/store/common";
 import { memoStore, resourceStore, userStore, workspaceStore } from "@/store/v2";
 import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
@@ -547,13 +549,25 @@ const MemoEditor = observer((props: Props) => {
       {/* Show memo metadata if memoName is provided */}
       {memoName && (
         <div className="w-full mb-4 text-xs leading-5 px-4 opacity-60 font-mono text-gray-500 dark:text-zinc-500">
-          {!isEqual(createTime, updateTime) && (
-            <DateTimeInput label="Updated" value={updateTime} originalValue={originalUpdateTime} onChange={setUpdateTime} />
-          )}
-          <DateTimeInput label="Created" value={createTime} originalValue={originalCreateTime} onChange={setCreateTime} />
-          <div className="w-full flex items-center gap-2">
-            <span>ID:</span>
-            <span>{memoName}</span>
+          <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 items-center">
+            {!isEqual(createTime, updateTime) && (
+              <>
+                <span className="text-left">Updated</span>
+                <DateTimeInput value={updateTime} originalValue={originalUpdateTime} onChange={setUpdateTime} />
+              </>
+            )}
+            <span className="text-left">Created</span>
+            <DateTimeInput value={createTime} originalValue={originalCreateTime} onChange={setCreateTime} />
+            <span className="text-left">ID</span>
+            <span
+              className="px-1 border border-transparent cursor-default"
+              onClick={() => {
+                copy(extractMemoIdFromName(memoName));
+                toast.success(t("message.copied"));
+              }}
+            >
+              {extractMemoIdFromName(memoName)}
+            </span>
           </div>
         </div>
       )}
