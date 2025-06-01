@@ -1,4 +1,5 @@
-import { Dropdown, Menu, MenuButton, MenuItem, Switch } from "@mui/joy";
+import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Switch } from "@usememos/mui";
 import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";

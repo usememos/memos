@@ -1,5 +1,5 @@
-import { Switch, Chip, ChipDelete } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
+import { Chip, ChipDelete } from "@mui/joy";
+import { Button, Input, Switch } from "@usememos/mui";
 import { isEqual, uniq } from "lodash-es";
 import { CheckIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
