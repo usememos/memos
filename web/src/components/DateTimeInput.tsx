@@ -7,6 +7,12 @@ const toLocalDateTimeString = (date: Date | undefined): string => {
   return date?.toLocaleString() || "";
 };
 
+// Helper function to convert Date to ISO string in local timezone.
+const toLocalDateISOString = (date: Date | undefined): string => {
+  if (!date) return "";
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000).toISOString().slice(0, 19);
+};
+
 interface Props {
   value: Date | undefined;
   originalValue: Date | undefined;
@@ -24,12 +30,16 @@ const DateTimeInput: React.FC<Props> = ({ value, originalValue, onChange }) => {
         "border",
       )}
       defaultValue={toLocalDateTimeString(value)}
+      onFocus={(e) => {
+        e.target.value = toLocalDateISOString(value);
+      }}
       onBlur={(e) => {
         const inputValue = e.target.value;
         if (inputValue) {
           const date = new Date(inputValue);
           if (!isNaN(date.getTime())) {
             onChange(date);
+            e.target.value = toLocalDateTimeString(date);
           } else {
             toast.error("Invalid datetime format. Use format: 2023-12-31T23:59:59");
             e.target.value = toLocalDateTimeString(value);
