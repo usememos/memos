@@ -1,5 +1,5 @@
 import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
-import { ArchiveIcon, LogOutIcon, User2Icon, SquareUserIcon } from "lucide-react";
+import { ArchiveIcon, LogOutIcon, User2Icon, SquareUserIcon, SettingsIcon, BellIcon } from "lucide-react";
 import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -45,7 +45,7 @@ const UserBanner = (props: Props) => {
             )}
           </div>
         </MenuButton>
-        <Menu placement="bottom-start" style={{ zIndex: "9999" }}>
+        <Menu size="sm" placement="bottom-start" style={{ zIndex: "9999" }}>
           <MenuItem onClick={() => navigateTo(`/u/${encodeURIComponent(currentUser.username)}`)}>
             <SquareUserIcon className="w-4 h-auto opacity-60" />
             <span className="truncate">{t("common.profile")}</span>
@@ -53,6 +53,14 @@ const UserBanner = (props: Props) => {
           <MenuItem onClick={() => navigateTo(Routes.ARCHIVED)}>
             <ArchiveIcon className="w-4 h-auto opacity-60" />
             <span className="truncate">{t("common.archived")}</span>
+          </MenuItem>
+          <MenuItem onClick={() => navigateTo(Routes.INBOX)}>
+            <BellIcon className="w-4 h-auto opacity-60" />
+            <span className="truncate">{t("common.inbox")}</span>
+          </MenuItem>
+          <MenuItem onClick={() => navigateTo(Routes.SETTING)}>
+            <SettingsIcon className="w-4 h-auto opacity-60" />
+            <span className="truncate">{t("common.settings")}</span>
           </MenuItem>
           <MenuItem onClick={handleSignOut}>
             <LogOutIcon className="w-4 h-auto opacity-60" />

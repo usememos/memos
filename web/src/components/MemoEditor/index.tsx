@@ -548,7 +548,7 @@ const MemoEditor = observer((props: Props) => {
 
       {/* Show memo metadata if memoName is provided */}
       {memoName && (
-        <div className="w-full mb-4 text-xs leading-5 px-4 opacity-60 font-mono text-gray-500 dark:text-zinc-500">
+        <div className="w-full -mt-1 mb-4 text-xs leading-5 px-4 opacity-60 font-mono text-gray-500 dark:text-zinc-500">
           <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 items-center">
             {!isEqual(createTime, updateTime) && (
               <>

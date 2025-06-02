@@ -14,9 +14,9 @@ export const StatCard = ({ icon, label, count, onClick, tooltip, className }: St
     >
       <div className="w-auto flex justify-start items-center mr-1">
         {icon}
-        <span className="block text-sm">{label}</span>
+        <span className="block text-xs opacity-80">{label}</span>
       </div>
-      <span className="text-sm truncate">{count}</span>
+      <span className="text-xs truncate opacity-80">{count}</span>
     </div>
   );
 

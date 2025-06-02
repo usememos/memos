@@ -1,12 +1,10 @@
-import dayjs from "dayjs";
 import { isEqual } from "lodash-es";
 import toast from "react-hot-toast";
 import { cn } from "@/utils";
 
 // Helper function to convert Date to local datetime string.
 const toLocalDateTimeString = (date: Date | undefined): string => {
-  if (!date) return "";
-  return dayjs(date).format("YYYY-MM-DDTHH:mm:ss");
+  return date?.toLocaleString() || "";
 };
 
 interface Props {
@@ -20,7 +18,7 @@ const DateTimeInput: React.FC<Props> = ({ value, originalValue, onChange }) => {
     <input
       type="text"
       className={cn(
-        "w-auto px-1 bg-transparent rounded text-xs transition-all",
+        "px-1 bg-transparent rounded text-xs transition-all",
         "border-transparent outline-none focus:border-gray-300 dark:focus:border-zinc-700",
         !isEqual(value, originalValue) && "border-gray-300 dark:border-zinc-700",
         "border",

@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import i18n from "@/i18n";
 import type { MonthNavigatorProps } from "@/types/statistics";
 
@@ -16,15 +16,14 @@ export const MonthNavigator = ({ visibleMonth, onMonthChange }: MonthNavigatorPr
 
   return (
     <div className="w-full mb-1 flex flex-row justify-between items-center gap-1">
-      <div className="relative text-sm inline-flex flex-row items-center w-auto gap-2 dark:text-gray-400">
-        <CalendarIcon className="w-4 h-auto opacity-70 ml-px" />
+      <span className="relative text-sm dark:text-gray-400">
         {currentMonth.toLocaleString(i18n.language, { year: "numeric", month: "long" })}
-      </div>
+      </span>
       <div className="flex justify-end items-center shrink-0 gap-1">
-        <button className="p-1 cursor-pointer hover:opacity-80 transition-opacity" onClick={handlePrevMonth} aria-label="Previous month">
+        <button className="cursor-pointer hover:opacity-80 transition-opacity" onClick={handlePrevMonth} aria-label="Previous month">
           <ChevronLeftIcon className="w-5 h-auto shrink-0 opacity-40" />
         </button>
-        <button className="p-1 cursor-pointer hover:opacity-80 transition-opacity" onClick={handleNextMonth} aria-label="Next month">
+        <button className="cursor-pointer hover:opacity-80 transition-opacity" onClick={handleNextMonth} aria-label="Next month">
           <ChevronRightIcon className="w-5 h-auto shrink-0 opacity-40" />
         </button>
       </div>

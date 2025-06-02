@@ -1,12 +1,11 @@
 import { Tooltip } from "@mui/joy";
-import { BellIcon, PaperclipIcon, SettingsIcon, UserCircleIcon } from "lucide-react";
+import { EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Routes } from "@/router";
 import { userStore } from "@/store/v2";
-import { Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import BrandBanner from "./BrandBanner";
@@ -28,7 +27,6 @@ const Navigation = observer((props: Props) => {
   const { collapsed, className } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const hasUnreadInbox = userStore.state.inboxes.some((inbox) => inbox.status === Inbox_Status.UNREAD);
 
   useEffect(() => {
     if (!currentUser) {
@@ -38,30 +36,23 @@ const Navigation = observer((props: Props) => {
     userStore.fetchInboxes();
   }, []);
 
+  const homeNavLink: NavLinkItem = {
+    id: "header-memos",
+    path: Routes.ROOT,
+    title: t("common.memos"),
+    icon: <LibraryIcon className="w-6 h-auto opacity-70 shrink-0" />,
+  };
+  const exploreNavLink: NavLinkItem = {
+    id: "header-explore",
+    path: Routes.EXPLORE,
+    title: t("common.explore"),
+    icon: <EarthIcon className="w-6 h-auto opacity-70 shrink-0" />,
+  };
   const resourcesNavLink: NavLinkItem = {
     id: "header-resources",
     path: Routes.RESOURCES,
     title: t("common.resources"),
     icon: <PaperclipIcon className="w-6 h-auto opacity-70 shrink-0" />,
-  };
-  const inboxNavLink: NavLinkItem = {
-    id: "header-inbox",
-    path: Routes.INBOX,
-    title: t("common.inbox"),
-    icon: (
-      <>
-        <div className="relative">
-          <BellIcon className="w-6 h-auto opacity-70 shrink-0" />
-          {hasUnreadInbox && <div className="absolute top-0 left-5 w-2 h-2 rounded-full bg-blue-500"></div>}
-        </div>
-      </>
-    ),
-  };
-  const settingNavLink: NavLinkItem = {
-    id: "header-setting",
-    path: Routes.SETTING,
-    title: t("common.settings"),
-    icon: <SettingsIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const signInNavLink: NavLinkItem = {
     id: "header-auth",
@@ -70,7 +61,7 @@ const Navigation = observer((props: Props) => {
     icon: <UserCircleIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
 
-  const navLinks: NavLinkItem[] = currentUser ? [resourcesNavLink, inboxNavLink, settingNavLink] : [signInNavLink];
+  const navLinks: NavLinkItem[] = currentUser ? [homeNavLink, exploreNavLink, resourcesNavLink] : [exploreNavLink, signInNavLink];
 
   return (
     <header
@@ -80,7 +71,7 @@ const Navigation = observer((props: Props) => {
       )}
     >
       <div className="w-full px-1 py-1 flex flex-col justify-start items-start space-y-2 overflow-auto hide-scrollbar shrink">
-        <NavLink className="mb-2" to={currentUser ? Routes.ROOT : Routes.EXPLORE}>
+        <NavLink className="mb-2 cursor-default" to={currentUser ? Routes.ROOT : Routes.EXPLORE}>
           <BrandBanner collapsed={collapsed} />
         </NavLink>
         {navLinks.map((navLink) => (
