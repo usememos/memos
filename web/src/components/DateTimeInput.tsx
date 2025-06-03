@@ -1,10 +1,11 @@
+import dayjs from "dayjs";
 import { isEqual } from "lodash-es";
 import toast from "react-hot-toast";
 import { cn } from "@/utils";
 
-// Helper function to convert Date to local datetime string.
-const toLocalDateTimeString = (date: Date | undefined): string => {
-  return date?.toLocaleString() || "";
+// convert Date to datetime string.
+const formatDate = (date: Date | undefined): string => {
+  return dayjs(date).format("M/D/YYYY, H:mm:ss");
 };
 
 interface Props {
@@ -23,7 +24,7 @@ const DateTimeInput: React.FC<Props> = ({ value, originalValue, onChange }) => {
         !isEqual(value, originalValue) && "border-gray-300 dark:border-zinc-700",
         "border",
       )}
-      defaultValue={toLocalDateTimeString(value)}
+      defaultValue={formatDate(value)}
       onBlur={(e) => {
         const inputValue = e.target.value;
         if (inputValue) {
@@ -31,12 +32,12 @@ const DateTimeInput: React.FC<Props> = ({ value, originalValue, onChange }) => {
           if (!isNaN(date.getTime())) {
             onChange(date);
           } else {
-            toast.error("Invalid datetime format. Use format: 2023-12-31T23:59:59");
-            e.target.value = toLocalDateTimeString(value);
+            toast.error("Invalid datetime format. Use format: 12/31/2023, 23:59:59");
+            e.target.value = formatDate(value);
           }
         }
       }}
-      placeholder="YYYY-MM-DDTHH:mm:ss"
+      placeholder="M/D/YYYY, H:mm:ss"
     />
   );
 };
