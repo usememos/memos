@@ -74,8 +74,6 @@ const MemoEditor = observer((props: Props) => {
   });
   const [createTime, setCreateTime] = useState<Date | undefined>();
   const [updateTime, setUpdateTime] = useState<Date | undefined>();
-  const [originalCreateTime, setOriginalCreateTime] = useState<Date | undefined>();
-  const [originalUpdateTime, setOriginalUpdateTime] = useState<Date | undefined>();
   const [hasContent, setHasContent] = useState<boolean>(false);
   const [isVisibilitySelectorOpen, setIsVisibilitySelectorOpen] = useState(false);
   const editorRef = useRef<EditorRefActions>(null);
@@ -125,8 +123,6 @@ const MemoEditor = observer((props: Props) => {
       handleEditorFocus();
       setCreateTime(memo.createTime);
       setUpdateTime(memo.updateTime);
-      setOriginalCreateTime(memo.createTime);
-      setOriginalUpdateTime(memo.updateTime);
       setState((prevState) => ({
         ...prevState,
         memoVisibility: memo.visibility,
@@ -550,14 +546,18 @@ const MemoEditor = observer((props: Props) => {
       {memoName && (
         <div className="w-full -mt-1 mb-4 text-xs leading-5 px-4 opacity-60 font-mono text-gray-500 dark:text-zinc-500">
           <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 items-center">
-            {!isEqual(createTime, updateTime) && (
+            {!isEqual(createTime, updateTime) && updateTime && (
               <>
                 <span className="text-left">Updated</span>
-                <DateTimeInput value={updateTime} originalValue={originalUpdateTime} onChange={setUpdateTime} />
+                <DateTimeInput value={updateTime} onChange={setUpdateTime} />
               </>
             )}
-            <span className="text-left">Created</span>
-            <DateTimeInput value={createTime} originalValue={originalCreateTime} onChange={setCreateTime} />
+            {createTime && (
+              <>
+                <span className="text-left">Created</span>
+                <DateTimeInput value={createTime} onChange={setCreateTime} />
+              </>
+            )}
             <span className="text-left">ID</span>
             <span
               className="px-1 border border-transparent cursor-default"

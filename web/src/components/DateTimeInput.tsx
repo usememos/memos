@@ -1,34 +1,34 @@
 import dayjs from "dayjs";
-import { isEqual } from "lodash-es";
 import toast from "react-hot-toast";
 import { cn } from "@/utils";
 
+const DATE_TIME_FORMAT = "M/D/YYYY, H:mm:ss";
+
 // convert Date to datetime string.
-const formatDate = (date: Date | undefined): string => {
-  return dayjs(date).format("M/D/YYYY, H:mm:ss");
+const formatDate = (date: Date): string => {
+  return dayjs(date).format(DATE_TIME_FORMAT);
 };
 
 interface Props {
-  value: Date | undefined;
-  originalValue: Date | undefined;
+  value: Date;
   onChange: (date: Date) => void;
 }
 
-const DateTimeInput: React.FC<Props> = ({ value, originalValue, onChange }) => {
+const DateTimeInput: React.FC<Props> = ({ value, onChange }) => {
   return (
     <input
       type="text"
       className={cn(
         "px-1 bg-transparent rounded text-xs transition-all",
         "border-transparent outline-none focus:border-gray-300 dark:focus:border-zinc-700",
-        !isEqual(value, originalValue) && "border-gray-300 dark:border-zinc-700",
         "border",
       )}
       defaultValue={formatDate(value)}
       onBlur={(e) => {
         const inputValue = e.target.value;
         if (inputValue) {
-          const date = new Date(inputValue);
+          const date = dayjs(inputValue, DATE_TIME_FORMAT, true).toDate();
+          // Check if the date is valid.
           if (!isNaN(date.getTime())) {
             onChange(date);
           } else {
@@ -37,7 +37,7 @@ const DateTimeInput: React.FC<Props> = ({ value, originalValue, onChange }) => {
           }
         }
       }}
-      placeholder="M/D/YYYY, H:mm:ss"
+      placeholder={DATE_TIME_FORMAT}
     />
   );
 };
