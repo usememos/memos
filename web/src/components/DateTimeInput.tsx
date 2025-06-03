@@ -5,7 +5,7 @@ import { cn } from "@/utils";
 
 // convert Date to datetime string.
 const formatDate = (date: Date | undefined): string => {
-  return dayjs(date).format("M/D/YYYY, H:mm:ss");
+  return date ? dayjs(date).format("M/D/YYYY, H:mm:ss") : "";
 };
 
 interface Props {
