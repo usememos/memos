@@ -211,8 +211,8 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         // inserting the insertText.
         // Needs to be called before any async call.
         event.preventDefault();
-        // Insert the text at the current cursor position
-        editorActions.insertText("\n" + insertText);
+        // Insert the text at the current cursor position.
+        editorActions.insertText(insertText);
       }
     }
   };
