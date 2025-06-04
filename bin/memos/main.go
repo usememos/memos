@@ -29,8 +29,9 @@ const (
 ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚══════╝
 `
 )
-
+// Using viper and cobra a cli is created with viper handling the configuration and cobra being cli interface
 var (
+	// The cli is initialized here and passed to the main function
 	rootCmd = &cobra.Command{
 		Use:   "memos",
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
@@ -46,10 +47,11 @@ var (
 				InstanceURL: viper.GetString("instance-url"),
 				Version:     version.GetCurrentVersion(viper.GetString("mode")),
 			}
+			// error handling for if the instance profile is invalid
 			if err := instanceProfile.Validate(); err != nil {
 				panic(err)
 			}
-
+			// error handling for if it failed to create a database driver
 			ctx, cancel := context.WithCancel(context.Background())
 			dbDriver, err := db.NewDBDriver(instanceProfile)
 			if err != nil {
@@ -57,14 +59,14 @@ var (
 				slog.Error("failed to create db driver", "error", err)
 				return
 			}
-
+			// error handling for if it failed to migrate
 			storeInstance := store.New(dbDriver, instanceProfile)
 			if err := storeInstance.Migrate(ctx); err != nil {
 				cancel()
 				slog.Error("failed to migrate", "error", err)
 				return
 			}
-
+			// error handling for if there was a problem initiating a server instance
 			s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 			if err != nil {
 				cancel()
@@ -99,11 +101,14 @@ var (
 	}
 )
 
+// This code sets up configuration defaults and flags for the cli
 func init() {
+	// setting default values
 	viper.SetDefault("mode", "dev")
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("port", 8081)
 
+	// setting command line flags
 	rootCmd.PersistentFlags().String("mode", "dev", `mode of server, can be "prod" or "dev" or "demo"`)
 	rootCmd.PersistentFlags().String("addr", "", "address of server")
 	rootCmd.PersistentFlags().Int("port", 8081, "port of server")
@@ -138,13 +143,14 @@ func init() {
 		panic(err)
 	}
 
+	// setting environment variables
 	viper.SetEnvPrefix("memos")
 	viper.AutomaticEnv()
 	if err := viper.BindEnv("instance-url", "MEMOS_INSTANCE_URL"); err != nil {
 		panic(err)
 	}
 }
-
+// Prints the greeting banner and a message that is based on a given server profile
 func printGreetings(profile *profile.Profile) {
 	if profile.IsDev() {
 		println("Development mode is enabled")
@@ -180,6 +186,7 @@ See more in:
 `, "https://usememos.com", "https://github.com/usememos/memos")
 }
 
+// The main entry point for the go program
 func main() {
 	if err := rootCmd.Execute(); err != nil {
 		panic(err)
