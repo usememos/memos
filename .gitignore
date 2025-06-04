@@ -19,3 +19,7 @@ dist
 
 # VSCode settings
 .vscode
+
+# Node modules
+.pnpm-store/
+.pnpm/
