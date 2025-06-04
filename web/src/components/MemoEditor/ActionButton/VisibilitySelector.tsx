@@ -49,7 +49,7 @@ const VisibilitySelector = (props: Props) => {
           type="button"
         >
           <VisibilityIcon className="w-3 h-3" visibility={value} />
-          <span className="hidden sm:inline">{currentOption?.label}</span>
+          <span>{currentOption?.label}</span>
           <ChevronDownIcon className="w-3 h-3 opacity-60" />
         </button>
       </PopoverTrigger>
