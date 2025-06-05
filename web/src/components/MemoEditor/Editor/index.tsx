@@ -206,11 +206,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       }
 
       if (insertText) {
-        // Prevent a newline from being inserted, so that we can insert it manually later.
-        // This prevents a race condition that occurs between the newline insertion and
-        // inserting the insertText.
-        // Needs to be called before any async call.
-        event.preventDefault();
         // Insert the text at the current cursor position.
         editorActions.insertText(insertText);
       }
