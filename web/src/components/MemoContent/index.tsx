@@ -41,17 +41,16 @@ const MemoContent = observer((props: Props) => {
 
   // Initial compact mode.
   useEffect(() => {
-    if (!props.compact) {
-      return;
-    }
     if (!memoContentContainerRef.current) {
       return;
     }
 
-    if ((memoContentContainerRef.current as HTMLDivElement).getBoundingClientRect().height > MAX_DISPLAY_HEIGHT) {
+    if (props.compact && (memoContentContainerRef.current as HTMLDivElement).getBoundingClientRect().height > MAX_DISPLAY_HEIGHT) {
       setShowCompactMode("ALL");
+    } else if (showCompactMode !== undefined) {
+      setShowCompactMode("SNIPPET");
     }
-  }, []);
+  }, [props.compact]);
 
   const onMemoContentClick = async (e: React.MouseEvent) => {
     if (onClick) {
