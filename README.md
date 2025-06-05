@@ -46,7 +46,6 @@ Memos is a lightweight, self-hosted alternative to cloud-based note-taking servi
 - **Plain Text Efficiency**: Streamlined text input with immediate save functionality
 - **Advanced Markdown Support**: Comprehensive Markdown rendering with syntax highlighting
 - **Rich Media Integration**: Support for images, links, and embedded content
-- **Real-time Collaboration**: Multi-user support with concurrent editing capabilities
 
 ### Technical Excellence
 
@@ -59,7 +58,6 @@ Memos is a lightweight, self-hosted alternative to cloud-based note-taking servi
 
 - **Configurable Interface**: Customizable server branding, themes, and user interface elements
 - **API-First Design**: RESTful API with comprehensive documentation for third-party integrations
-- **Plugin Architecture**: Extensible system for custom functionality and integrations
 - **Multi-Database Support**: Compatible with SQLite, PostgreSQL, and MySQL databases
 
 ### Cost-Effective Solution
@@ -72,7 +70,7 @@ Memos is a lightweight, self-hosted alternative to cloud-based note-taking servi
 
 ### Prerequisites
 
-- Docker and Docker Compose installed on your system
+- Docker or Docker Compose installed on your system
 - Minimum 512MB RAM and 1GB available disk space
 
 ### Docker Deployment
@@ -138,8 +136,6 @@ Memos supports multiple installation approaches to accommodate different deploym
 ### Binary Installation
 
 - **Pre-compiled Binaries**: Available for Linux, macOS, and Windows on the releases page
-- **Package Managers**: Distribution-specific packages for major Linux distributions
-- **Homebrew**: macOS installation via `brew install memos`
 
 ### Source Installation
 
