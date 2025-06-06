@@ -30,6 +30,7 @@
     "collapse": "Réduire",
     "confirm": "Confirmer",
     "create": "Créer",
+    "created-at": "Créé le",
     "database": "Base de données",
     "day": "Jour",
     "days": "Jours",
@@ -45,7 +46,10 @@
     "image": "Image",
     "in": "En",
     "inbox": "Notifications",
+    "input": "Input",
     "language": "Langue",
+    "last-updated-at": "Dernière mise à jour le",
+    "layout": "Layout",
     "learn-more": "En savoir plus",
     "link": "Lien",
     "mark": "Lier",
@@ -61,6 +65,10 @@
     "pinned": "Épinglé",
     "preview": "Aperçu",
     "profile": "Profil",
+    "properties": "Propriétés",
+    "referenced-by": "Référencé par",
+    "referencing": "Référence",
+    "relations": "Relations",
     "remember-me": "Se souvenir de moi",
     "rename": "Renommer",
     "reset": "Réinitialiser",
@@ -72,6 +80,8 @@
     "select": "Sélectionner",
     "settings": "Paramètres",
     "share": "Partager",
+    "shortcut-filter": "Filtre de raccourci",
+    "shortcuts": "Raccourcis",
     "sign-in": "Se connecter",
     "sign-in-with": "S'identifier avec {{provider}}",
     "sign-out": "Se déconnecter",
@@ -79,10 +89,12 @@
     "statistics": "Statistiques",
     "tags": "Étiquettes",
     "title": "Titre",
+    "tree-mode": "Mode d'arborescence",
     "type": "Type",
     "unpin": "Désépingler",
     "update": "Mise à jour",
     "upload": "Téléverser",
+    "user": "Utilisateur",
     "username": "Nom d'utilisateur",
     "version": "Version",
     "visibility": "Visibilité",
@@ -102,6 +114,11 @@
     "any-thoughts": "Une idée …",
     "save": "Enregistrer"
   },
+  "filters": {
+    "has-code": "possède un code",
+    "has-link": "possède un lien",
+    "has-task-list": "possède une liste de tâches"
+  },
   "inbox": {
     "memo-comment": "{{user}} a fait un commentaire sur votre {{memo}}.",
     "version-update": "Une nouvelle version {{version}} est disponible dès maintenant !"
@@ -113,6 +130,8 @@
   },
   "memo": {
     "archived-at": "Archivé le",
+    "click-to-hide-nsfw-content": "Cliquer pour masquer le contenu NSFW",
+    "click-to-show-nsfw-content": "Cliquer pour afficher le contenu NSFW",
     "code": "Code",
     "comment": {
       "self": "Commentaires",
@@ -131,7 +150,7 @@
     "no-archived-memos": "Pas de memos archivés.",
     "no-memos": "Pas de memos.",
     "order-by": "Ordonner par",
-    "remove-completed-task-list-items": "Supprimer terminées",
+    "remove-completed-task-list-items": "Suppression terminée",
     "remove-completed-task-list-items-confirm": "Êtes-vous sûr de vouloir supprimer toutes les tâches terminées ? CETTE ACTION EST IRRÉVERSIBLE",
     "search-placeholder": "Recherche de memos",
     "show-less": "Afficher moins",
@@ -143,13 +162,16 @@
       "private": "Privé",
       "protected": "Accès aux membres",
       "public": "Public"
-    }
+    },
+    "list": "Liste",
+    "masonry": "Mosaïque"
   },
   "message": {
     "archived-successfully": "Archivé avec succès",
     "change-memo-created-time": "Modifier l'heure de création du memo",
     "copied": "Copié",
     "deleted-successfully": "Supprimé avec succès",
+    "description-is-required": "La description est requise",
     "failed-to-embed-memo": "Échec de l'intégration du memo.",
     "fill-all": "Veuillez remplir tous les champs.",
     "fill-all-required-fields": "Merci de remplir tous les champs requis",
@@ -161,7 +183,7 @@
     "password-not-match": "Les mots de passe ne correspondent pas.",
     "remove-completed-task-list-items-successfully": "Supprimé avec succès !",
     "restored-successfully": "Restauré avec succès",
-    "succeed-copy-link": "Succeed to copy link to clipboard.",
+    "succeed-copy-link": "Lien copié dans le presse-papier avec succès.",
     "update-succeed": "Mise à jour effectuée",
     "user-not-found": "Utilisateur introuvable"
   },
@@ -201,7 +223,8 @@
     "no-unused-resources": "Aucune ressource inutilisée",
     "reset-link": "Réinitialiser le lien",
     "reset-link-prompt": "Êtes-vous sûr de réinitialiser le lien ? Cette action interrompra toutes les utilisations actuelles du lien. CETTE ACTION EST IRRÉVERSIBLE",
-    "reset-resource-link": "Réinitialiser le lien de ressource"
+    "reset-resource-link": "Réinitialiser le lien de ressource",
+    "unused-resources": "Ressources inutilisées"
   },
   "router": {
     "back-to-top": "Haut de page",
@@ -214,9 +237,11 @@
       "create-dialog": {
         "create-access-token": "Créer un jeton d'accès",
         "created-at": "Créé le",
+        "description": "Description",
         "duration-1m": "1 Mois",
         "duration-8h": "8 Heures",
         "duration-never": "Jamais",
+        "expiration": "Expiration",
         "expires-at": "Expire le",
         "some-description": "Une description…"
       },
@@ -245,15 +270,18 @@
     "member": "Membre",
     "member-list": "Liste des membres",
     "member-section": {
+      "admin": "Admin",
       "archive-member": "Membre archivé",
       "archive-warning": "Êtes-vous sûr d'archiver {{username}} ?",
       "create-a-member": "Créer un membre",
       "delete-member": "Supprimer un membre",
-      "delete-warning": "Êtes-vous sûr de vouloir supprimer {{username}} ? CETTE ACTION EST IRRÉVERSIBLE"
+      "delete-warning": "Êtes-vous sûr de vouloir supprimer {{username}} ? CETTE ACTION EST IRRÉVERSIBLE",
+      "user": "Utilisateur"
     },
     "memo-related": "Memo",
     "memo-related-settings": {
       "content-lenght-limit": "Taille maximum de contenu (Octet)",
+      "enable-blur-nsfw-content": "Activer le floutage du contenu sensible (NSFW)",
       "enable-link-preview": "Activer la prévisualisation de liens",
       "enable-memo-comments": "Activer les commentaires des memos",
       "enable-memo-location": "Activer la géolocalisation des memos",
@@ -303,6 +331,7 @@
       "current-storage": "Stockage actuel d'objets",
       "delete-storage": "Effacer le stockage",
       "endpoint": "Endpoint",
+      "filepath-template": "Chemin du modèle",
       "local-storage-path": "Chemin de stockage Local",
       "path": "Chemin de stockage",
       "path-description": "Vous pouvez utiliser les mêmes variables dynamiques du stockage local, comme {filename}",
@@ -353,7 +382,8 @@
       "max-upload-size": "Taille maximale du téléversement (MiB)",
       "max-upload-size-hint": "La valeur recommandée est 32 MiB.",
       "removed-completed-task-list-items": "Activer la suppression terminée",
-      "server-name": "Nom du serveur"
+      "server-name": "Nom du serveur",
+      "title": "General"
     },
     "version": "Version",
     "webhook-section": {
@@ -386,6 +416,13 @@
     "create-tags-guide": "Vous pouvez ajouter des étiquettes en écrivant `#etiquette`.",
     "delete-confirm": "Voulez-vous vraiment supprimer cette étiquette? Tous les memos liés seront archivés.",
     "delete-tag": "Supprimer l'étiquette",
-    "no-tag-found": "Aucune étiquette trouvée"
+    "new-name": "Nouveau nom",
+    "no-tag-found": "Aucune étiquette trouvée",
+    "old-name": "Ancien nom",
+    "rename-error-empty": "Le nom de l'étiquette ne peut pas être vide ou contenir des espaces",
+    "rename-error-repeat": "Le nouveau nom ne peut pas être identique à l'ancien",
+    "rename-success": "Étiquette renommée avec succès",
+    "rename-tag": "Renommer l'étiquette",
+    "rename-tip": "Tous vos memos avec cette étiquette seront mis à jour."
   }
 }
