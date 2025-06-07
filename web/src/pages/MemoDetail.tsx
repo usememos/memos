@@ -93,7 +93,7 @@ const MemoDetail = observer(() => {
           {parentMemo && (
             <div className="w-auto inline-block mb-2">
               <Link
-                className="px-3 py-1 border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
+                className="px-3 py-1 border border-zinc-200 rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
                 to={`/${parentMemo.name}`}
                 state={locationState}
                 viewTransition

@@ -23,7 +23,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
     >
       <div className="flex flex-col justify-start items-start w-full px-1 gap-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
         {shouldShowRelationGraph && (
-          <div className="relative w-full h-36 border rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
+          <div className="relative w-full h-36 border border-zinc-200 rounded-lg bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
             <MemoRelationForceGraph className="w-full h-full" memo={memo} parentPage={parentPage} />
             <div className="absolute top-1 left-2 text-xs opacity-60 font-mono gap-1 flex flex-row items-center">
               <span>{t("common.relations")}</span>
@@ -52,7 +52,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
             </p>
             <div className="w-full flex flex-row justify-start items-center gap-x-2 gap-y-1 flex-wrap text-gray-500 dark:text-gray-400">
               {property.hasLink && (
-                <div className="w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center">
+                <div className="w-auto border border-zinc-200 dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center">
                   <div className="w-auto flex justify-start items-center mr-1">
                     <LinkIcon className="w-4 h-auto mr-1" />
                     <span className="block text-sm">{t("memo.links")}</span>
@@ -60,7 +60,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
                 </div>
               )}
               {property.hasTaskList && (
-                <div className="w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center">
+                <div className="w-auto border border-zinc-200 dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center">
                   <div className="w-auto flex justify-start items-center mr-1">
                     <CheckCircleIcon className="w-4 h-auto mr-1" />
                     <span className="block text-sm">{t("memo.to-do")}</span>
@@ -68,7 +68,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
                 </div>
               )}
               {property.hasCode && (
-                <div className="w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center">
+                <div className="w-auto border border-zinc-200 dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center">
                   <div className="w-auto flex justify-start items-center mr-1">
                     <Code2Icon className="w-4 h-auto mr-1" />
                     <span className="block text-sm">{t("memo.code")}</span>

@@ -48,7 +48,7 @@ const MemoResourceListView = ({ resources = [] }: { resources: Resource[] }) => 
       return (
         <video
           className={cn(
-            "cursor-pointer h-full w-auto rounded-lg border dark:border-zinc-800 object-contain bg-zinc-100 dark:bg-zinc-800",
+            "cursor-pointer h-full w-auto rounded-lg border border-zinc-200 dark:border-zinc-800 object-contain bg-zinc-100 dark:bg-zinc-800",
             className,
           )}
           preload="metadata"

@@ -106,7 +106,7 @@ const TagsSection = observer((props: Props) => {
         )
       ) : (
         !props.readonly && (
-          <div className="p-2 border border-dashed dark:border-zinc-800 rounded-md flex flex-row justify-start items-start gap-1 text-gray-400 dark:text-gray-500">
+          <div className="p-2 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-md flex flex-row justify-start items-start gap-1 text-gray-400 dark:text-gray-500">
             <TagsIcon />
             <p className="mt-0.5 text-sm leading-snug italic">{t("tag.create-tags-guide")}</p>
           </div>

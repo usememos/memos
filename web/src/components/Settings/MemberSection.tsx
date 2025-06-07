@@ -143,7 +143,7 @@ const MemberSection = observer(() => {
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.member-section.create-a-member")}</p>
-      <div className="w-auto flex flex-col justify-start items-start gap-2 border rounded-md py-2 px-3 dark:border-zinc-700">
+      <div className="w-auto flex flex-col justify-start items-start gap-2 border border-zinc-200 rounded-md py-2 px-3 dark:border-zinc-700">
         <div className="flex flex-col justify-start items-start gap-1">
           <span>{t("common.username")}</span>
           <Input
@@ -181,7 +181,7 @@ const MemberSection = observer(() => {
         <div className="title-text">{t("setting.member-list")}</div>
       </div>
       <div className="w-full overflow-x-auto">
-        <div className="inline-block min-w-full align-middle border rounded-lg dark:border-zinc-600">
+        <div className="inline-block min-w-full align-middle border border-zinc-200 rounded-lg dark:border-zinc-600">
           <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
             <thead>
               <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-400">

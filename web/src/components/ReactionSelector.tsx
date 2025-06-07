@@ -58,7 +58,10 @@ const ReactionSelector = observer((props: Props) => {
     <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
       <MenuButton slots={{ root: "div" }}>
         <span
-          className={cn("h-7 w-7 flex justify-center items-center rounded-full border dark:border-zinc-700 hover:opacity-70", className)}
+          className={cn(
+            "h-7 w-7 flex justify-center items-center rounded-full border border-zinc-200 dark:border-zinc-700 hover:opacity-70",
+            className,
+          )}
         >
           <SmilePlusIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
         </span>

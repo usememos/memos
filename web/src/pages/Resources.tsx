@@ -111,7 +111,7 @@ const Resources = observer(() => {
                             {resources.map((resource) => {
                               return (
                                 <div key={resource.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-                                  <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
+                                  <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-zinc-200 dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
                                     <ResourceIcon resource={resource} strokeWidth={0.5} />
                                   </div>
                                   <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
@@ -143,7 +143,7 @@ const Resources = observer(() => {
                             {unusedResources.map((resource) => {
                               return (
                                 <div key={resource.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-                                  <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
+                                  <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-zinc-200 dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
                                     <ResourceIcon resource={resource} strokeWidth={0.5} />
                                   </div>
                                   <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">

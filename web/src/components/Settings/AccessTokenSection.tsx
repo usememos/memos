@@ -73,7 +73,7 @@ const AccessTokenSection = () => {
         </div>
         <div className="w-full mt-2 flow-root">
           <div className="overflow-x-auto">
-            <div className="inline-block min-w-full border rounded-lg align-middle dark:border-zinc-600">
+            <div className="inline-block min-w-full border border-zinc-200 rounded-lg align-middle dark:border-zinc-600">
               <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
                 <thead>
                   <tr>

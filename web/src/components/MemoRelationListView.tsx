@@ -29,7 +29,7 @@ const MemoRelationListView = (props: Props) => {
   }
 
   return (
-    <div className="relative flex flex-col justify-start items-start w-full px-2 pt-2 pb-1.5 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700">
+    <div className="relative flex flex-col justify-start items-start w-full px-2 pt-2 pb-1.5 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700">
       <div className="w-full flex flex-row justify-start items-center mb-1 gap-3 opacity-60">
         {referencingMemoList.length > 0 && (
           <button
@@ -71,7 +71,7 @@ const MemoRelationListView = (props: Props) => {
                   from: parentPage,
                 }}
               >
-                <span className="text-xs opacity-60 leading-4 border font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
+                <span className="text-xs opacity-60 leading-4 border border-zinc-200 font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
                   {memo.uid.slice(0, 6)}
                 </span>
                 <span className="truncate">{memo.snippet}</span>
@@ -93,7 +93,7 @@ const MemoRelationListView = (props: Props) => {
                   from: parentPage,
                 }}
               >
-                <span className="text-xs opacity-60 leading-4 border font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
+                <span className="text-xs opacity-60 leading-4 border border-zinc-200 font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
                   {memo.uid.slice(0, 6)}
                 </span>
                 <span className="truncate">{memo.snippet}</span>
