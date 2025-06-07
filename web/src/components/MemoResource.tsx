@@ -21,7 +21,7 @@ const MemoResource: React.FC<Props> = (props: Props) => {
         <audio src={resourceUrl} controls></audio>
       ) : (
         <>
-          <ResourceIcon className="!w-4 !h-4 mr-1" resource={resource} />
+          <ResourceIcon className="w-4! h-4! mr-1" resource={resource} />
           <span className="text-sm max-w-[256px] truncate cursor-pointer" onClick={handlePreviewBtnClick}>
             {resource.filename}
           </span>

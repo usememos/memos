@@ -87,7 +87,7 @@ const MemoContent = observer((props: Props) => {
         <div
           ref={memoContentContainerRef}
           className={cn(
-            "relative w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
+            "relative w-full max-w-full break-words text-base leading-snug space-y-2 whitespace-pre-wrap",
             showCompactMode == "ALL" && "line-clamp-6 max-h-60",
             contentClassName,
           )}
@@ -104,7 +104,7 @@ const MemoContent = observer((props: Props) => {
             return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
           })}
           {showCompactMode == "ALL" && (
-            <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-b from-transparent dark:to-zinc-800 to-white pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-full h-12 bg-linear-to-b from-transparent dark:to-zinc-800 to-white pointer-events-none"></div>
           )}
         </div>
         {showCompactMode != undefined && (

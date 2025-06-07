@@ -23,7 +23,7 @@ const HomeSidebarDrawer = () => {
 
   return (
     <>
-      <Button variant="plain" className="!bg-transparent px-2" onClick={toggleDrawer(true)}>
+      <Button variant="plain" className="bg-transparent! px-2" onClick={toggleDrawer(true)}>
         <MenuIcon className="w-6 h-auto dark:text-gray-400" />
       </Button>
       <Drawer anchor="right" size="sm" open={open} onClose={toggleDrawer(false)}>

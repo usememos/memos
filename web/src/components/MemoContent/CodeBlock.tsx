@@ -25,7 +25,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   if (formatedLanguage === SpecialLanguage.HTML) {
     return (
       <div
-        className="w-full overflow-auto !my-2"
+        className="w-full overflow-auto my-2!"
         dangerouslySetInnerHTML={{
           __html: content,
         }}

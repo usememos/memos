@@ -191,7 +191,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
 export default function showPreviewImageDialog(imgUrls: string[] | string, initialIndex?: number): void {
   generateDialog(
     {
-      className: "preview-image-dialog p-0 z-[1001]",
+      className: "preview-image-dialog p-0 z-1001",
       dialogName: "preview-image-dialog",
     },
     PreviewImageDialog,

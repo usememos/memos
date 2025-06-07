@@ -73,7 +73,7 @@ const ResourceIcon = (props: Props) => {
   };
 
   return (
-    <div onClick={previewResource} className={cn(className, "max-w-[4rem] opacity-50")}>
+    <div onClick={previewResource} className={cn(className, "max-w-16 opacity-50")}>
       {getResourceIcon()}
     </div>
   );

@@ -6,7 +6,7 @@ interface Props extends BaseProps {
 }
 
 const HorizontalRule: React.FC<Props> = () => {
-  return <Divider className="!my-3" />;
+  return <Divider className="my-3!" />;
 };
 
 export default HorizontalRule;

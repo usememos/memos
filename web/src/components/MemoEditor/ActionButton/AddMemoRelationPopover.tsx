@@ -162,7 +162,7 @@ const AddMemoRelationPopover = (props: Props) => {
             )}
             renderTags={(memos) =>
               memos.map((memo) => (
-                <Chip key={memo.name} className="!max-w-full !rounded" variant="outlined" color="neutral">
+                <Chip key={memo.name} className="max-w-full! rounded!" variant="outlined" color="neutral">
                   <div className="w-full flex flex-col justify-start items-start">
                     <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
                     <span className="w-full text-sm leading-5 truncate">{memo.content}</span>

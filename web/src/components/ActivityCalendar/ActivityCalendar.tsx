@@ -9,10 +9,10 @@ import { useTranslate } from "@/utils/i18n";
 
 const getCellOpacity = (ratio: number): string => {
   if (ratio === 0) return "";
-  if (ratio > 0.75) return "bg-primary-darker/90 text-gray-100 dark:bg-primary-lighter/80";
-  if (ratio > 0.5) return "bg-primary-darker/70 text-gray-100 dark:bg-primary-lighter/60";
-  if (ratio > 0.25) return "bg-primary/70 text-gray-100 dark:bg-primary-lighter/40";
-  return "bg-primary/50 text-gray-100 dark:bg-primary-lighter/20";
+  if (ratio > 0.75) return "bg-green-700/90 text-gray-50 dark:bg-green-400/80";
+  if (ratio > 0.5) return "bg-green-700/70 text-gray-100 dark:bg-green-400/60";
+  if (ratio > 0.25) return "bg-green-700/70 text-gray-100 dark:bg-green-400/40";
+  return "bg-green-700/50 text-gray-100 dark:bg-green-400/20";
 };
 
 const CalendarCell = memo(
@@ -65,8 +65,6 @@ const CalendarCell = memo(
     );
   },
 );
-
-CalendarCell.displayName = "CalendarCell";
 
 export const ActivityCalendar = memo(
   observer((props: ActivityCalendarProps) => {

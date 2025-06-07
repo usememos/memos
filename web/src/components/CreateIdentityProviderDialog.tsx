@@ -252,7 +252,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
       <div className="flex flex-col justify-start items-start w-80">
         {isCreating && (
           <>
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               {t("common.type")}
             </Typography>
             <Select className="w-full mb-4" value={type} onChange={(_, e) => setType(e ?? type)}>
@@ -272,10 +272,10 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
                 </Option>
               ))}
             </Select>
-            <Divider className="!my-2" />
+            <Divider className="my-2!" />
           </>
         )}
-        <Typography className="!mb-1" level="body-md">
+        <Typography className="mb-1!" level="body-md">
           {t("common.name")}
           <span className="text-red-600">*</span>
         </Typography>
@@ -291,7 +291,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
           }
           fullWidth
         />
-        <Typography className="!mb-1" level="body-md">
+        <Typography className="mb-1!" level="body-md">
           {t("setting.sso-section.identifier-filter")}
         </Typography>
         <Input
@@ -306,15 +306,15 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
           }
           fullWidth
         />
-        <Divider className="!my-2" />
+        <Divider className="my-2!" />
         {type === "OAUTH2" && (
           <>
             {isCreating && (
-              <p className="border rounded-md p-2 text-sm w-full mb-2 break-all">
+              <p className="border border-zinc-100 dark:border-zinc-700 rounded-md p-2 text-sm w-full mb-2 break-all">
                 {t("setting.sso-section.redirect-url")}: {absolutifyLink("/auth/callback")}
               </p>
             )}
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               {t("setting.sso-section.client-id")}
               <span className="text-red-600">*</span>
             </Typography>
@@ -325,7 +325,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               onChange={(e) => setPartialOAuth2Config({ clientId: e.target.value })}
               fullWidth
             />
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               {t("setting.sso-section.client-secret")}
               <span className="text-red-600">*</span>
             </Typography>
@@ -336,7 +336,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               onChange={(e) => setPartialOAuth2Config({ clientSecret: e.target.value })}
               fullWidth
             />
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               {t("setting.sso-section.authorization-endpoint")}
               <span className="text-red-600">*</span>
             </Typography>
@@ -347,7 +347,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               onChange={(e) => setPartialOAuth2Config({ authUrl: e.target.value })}
               fullWidth
             />
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               {t("setting.sso-section.token-endpoint")}
               <span className="text-red-600">*</span>
             </Typography>
@@ -358,7 +358,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               onChange={(e) => setPartialOAuth2Config({ tokenUrl: e.target.value })}
               fullWidth
             />
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               {t("setting.sso-section.user-endpoint")}
               <span className="text-red-600">*</span>
             </Typography>
@@ -369,7 +369,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               onChange={(e) => setPartialOAuth2Config({ userInfoUrl: e.target.value })}
               fullWidth
             />
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               {t("setting.sso-section.scopes")}
               <span className="text-red-600">*</span>
             </Typography>
@@ -380,8 +380,8 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               onChange={(e) => setOAuth2Scopes(e.target.value)}
               fullWidth
             />
-            <Divider className="!my-2" />
-            <Typography className="!mb-1" level="body-md">
+            <Divider className="my-2!" />
+            <Typography className="mb-1!" level="body-md">
               {t("setting.sso-section.identifier")}
               <span className="text-red-600">*</span>
             </Typography>
@@ -394,7 +394,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               }
               fullWidth
             />
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               {t("setting.sso-section.display-name")}
             </Typography>
             <Input
@@ -406,7 +406,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               }
               fullWidth
             />
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               {t("common.email")}
             </Typography>
             <Input
@@ -418,7 +418,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               }
               fullWidth
             />
-            <Typography className="!mb-1" level="body-md">
+            <Typography className="mb-1!" level="body-md">
               Avatar URL
             </Typography>
             <Input

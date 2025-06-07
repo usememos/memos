@@ -45,7 +45,7 @@ const PreferencesSection = observer(() => {
       <div className="w-full flex flex-row justify-between items-center">
         <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>
         <Select
-          className="!min-w-fit"
+          className="min-w-fit!"
           value={setting.memoVisibility}
           startDecorator={<VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />}
           onChange={(_, visibility) => {
@@ -64,7 +64,7 @@ const PreferencesSection = observer(() => {
         </Select>
       </div>
 
-      <Divider className="!my-3" />
+      <Divider className="my-3!" />
 
       <WebhookSection />
     </div>

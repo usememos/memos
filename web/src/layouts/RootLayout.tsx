@@ -48,14 +48,14 @@ const RootLayout = observer(() => {
       {sm && (
         <div
           className={cn(
-            "group flex flex-col justify-start items-start fixed top-0 left-0 select-none border-r dark:border-zinc-800 h-full bg-zinc-100 dark:bg-zinc-800 dark:bg-opacity-40",
+            "group flex flex-col justify-start items-start fixed top-0 left-0 select-none border-r border-zinc-200 dark:border-zinc-800 h-full bg-zinc-100 dark:bg-zinc-800 dark:bg-opacity-40",
             "w-16 px-2",
           )}
         >
           <Navigation collapsed={true} />
         </div>
       )}
-      <main className="w-full h-auto flex-grow shrink flex flex-col justify-start items-center">
+      <main className="w-full h-auto grow shrink flex flex-col justify-start items-center">
         <Suspense fallback={<Loading />}>
           <Outlet />
         </Suspense>

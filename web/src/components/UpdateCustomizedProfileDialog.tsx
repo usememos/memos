@@ -111,9 +111,9 @@ const UpdateCustomizedProfileDialog = ({ destroy }: Props) => {
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.description")}</p>
         <Textarea rows={3} fullWidth value={customProfile.description} onChange={handleDescriptionChanged} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.locale")}</p>
-        <LocaleSelect className="!w-full" value={customProfile.locale} onChange={handleLocaleSelectChange} />
+        <LocaleSelect className="w-full!" value={customProfile.locale} onChange={handleLocaleSelectChange} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.appearance")}</p>
-        <AppearanceSelect className="!w-full" value={customProfile.appearance as Appearance} onChange={handleAppearanceSelectChange} />
+        <AppearanceSelect className="w-full!" value={customProfile.appearance as Appearance} onChange={handleAppearanceSelectChange} />
         <div className="mt-4 w-full flex flex-row justify-between items-center space-x-2">
           <div className="flex flex-row justify-start items-center">
             <Button variant="outlined" onClick={handleRestoreButtonClick}>

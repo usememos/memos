@@ -32,7 +32,7 @@ const AppearanceSelect: FC<Props> = (props: Props) => {
 
   return (
     <Select
-      className={`!min-w-[10rem] w-auto whitespace-nowrap ${className ?? ""}`}
+      className={`min-w-40! w-auto whitespace-nowrap ${className ?? ""}`}
       value={value}
       onChange={(_, appearance) => {
         if (appearance) {

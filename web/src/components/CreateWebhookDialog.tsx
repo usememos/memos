@@ -102,7 +102,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
-      <div className="flex flex-col justify-start items-start !w-80">
+      <div className="flex flex-col justify-start items-start w-80!">
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <span className="mb-2">
             {t("setting.webhook-section.create-dialog.title")} <span className="text-red-600">*</span>

@@ -118,7 +118,7 @@ const MemoDetail = observer(() => {
             <h2 id="comments" className="sr-only">
               {t("memo.comment.self")}
             </h2>
-            <div className="relative mx-auto flex-grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
+            <div className="relative mx-auto grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
               {comments.length === 0 ? (
                 showCreateCommentButton && (
                   <div className="w-full flex flex-row justify-center items-center py-6">

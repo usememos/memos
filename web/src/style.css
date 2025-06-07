@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --default-transition-duration: 150ms;
+}
+
+@variant dark (&:is(.dark *));

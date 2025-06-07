@@ -1,8 +1,8 @@
-import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
 import { codeInspectorPlugin } from "code-inspector-plugin";
 import { resolve } from "path";
 import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
 
 let devProxyServer = "http://localhost:8081";
 if (process.env.DEV_PROXY_SERVER && process.env.DEV_PROXY_SERVER.length > 0) {
@@ -14,9 +14,7 @@ if (process.env.DEV_PROXY_SERVER && process.env.DEV_PROXY_SERVER.length > 0) {
 export default defineConfig({
   plugins: [
     react(),
-    legacy({
-      targets: ["defaults", "not IE 11"],
-    }),
+    tailwindcss(),
     codeInspectorPlugin({
       bundler: "vite",
     }),

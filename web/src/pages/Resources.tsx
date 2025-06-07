@@ -76,7 +76,7 @@ const Resources = observer(() => {
             </p>
             <div>
               <Input
-                className="max-w-[8rem]"
+                className="max-w-32"
                 placeholder={t("common.search")}
                 startDecorator={<SearchIcon className="w-4 h-auto" />}
                 value={state.searchQuery}

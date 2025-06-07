@@ -145,7 +145,7 @@ const WorkspaceSection = observer(() => {
       <div className="w-full flex flex-row justify-between items-center">
         <span className="truncate">{t("setting.workspace-section.week-start-day")}</span>
         <Select
-          className="!min-w-fit"
+          className="min-w-fit!"
           value={workspaceGeneralSetting.weekStartDayOffset}
           onChange={(_, weekStartDayOffset) => {
             updatePartialSetting({ weekStartDayOffset: weekStartDayOffset || 0 });

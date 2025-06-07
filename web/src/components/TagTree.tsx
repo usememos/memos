@@ -112,7 +112,7 @@ const TagItemContainer = observer((props: TagItemContainerProps) => {
       <div className="relative flex flex-row justify-between items-center w-full leading-6 py-0 mt-px rounded-lg text-sm select-none shrink-0">
         <div
           className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-gray-600 dark:text-gray-400 ${
-            isActive && "!text-blue-600"
+            isActive && "text-blue-600!"
           }`}
         >
           <div className="shrink-0">
@@ -136,7 +136,7 @@ const TagItemContainer = observer((props: TagItemContainerProps) => {
       {hasSubTags ? (
         <div
           className={`w-[calc(100%-0.5rem)] flex flex-col justify-start items-start h-auto ml-2 pl-2 border-l-2 border-l-gray-200 dark:border-l-zinc-800 ${
-            !showSubTags && "!hidden"
+            !showSubTags && "hidden!"
           }`}
         >
           {tag.subTags.map((st, idx) => (
