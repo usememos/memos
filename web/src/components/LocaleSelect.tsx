@@ -18,7 +18,7 @@ const LocaleSelect: FC<Props> = (props: Props) => {
 
   return (
     <Select
-      className={`!min-w-[10rem] w-auto whitespace-nowrap ${className ?? ""}`}
+      className={`min-w-40! w-auto whitespace-nowrap ${className ?? ""}`}
       startDecorator={<GlobeIcon className="w-4 h-auto" />}
       value={value}
       onChange={(_, value) => handleSelectChange(value as Locale)}
@@ -33,7 +33,7 @@ const LocaleSelect: FC<Props> = (props: Props) => {
               </Option>
             );
           }
-        } catch (error) {
+        } catch {
           // do nth
         }
 

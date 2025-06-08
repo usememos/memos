@@ -28,7 +28,7 @@ const MemoDetailSidebarDrawer = ({ memo, parentPage }: Props) => {
 
   return (
     <>
-      <Button variant="plain" className="!bg-transparent px-2" onClick={toggleDrawer(true)}>
+      <Button variant="plain" className="bg-transparent! px-2" onClick={toggleDrawer(true)}>
         <GanttChartIcon className="w-5 h-auto dark:text-gray-400" />
       </Button>
       <Drawer anchor="right" size="sm" open={open} onClose={toggleDrawer(false)}>

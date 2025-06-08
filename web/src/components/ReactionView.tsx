@@ -1,7 +1,8 @@
 import { Tooltip } from "@mui/joy";
+import { observer } from "mobx-react-lite";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -28,10 +29,9 @@ const stringifyUsers = (users: User[], reactionType: string): string => {
   );
 };
 
-const ReactionView = (props: Props) => {
+const ReactionView = observer((props: Props) => {
   const { memo, reactionType, users } = props;
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
   const hasReaction = users.some((user) => currentUser && user.username === currentUser.username);
   const readonly = memo.state === State.ARCHIVED;
 
@@ -58,7 +58,7 @@ const ReactionView = (props: Props) => {
           await memoServiceClient.deleteMemoReaction({ id: reaction.id });
         }
       }
-    } catch (error) {
+    } catch {
       // Skip error.
     }
     await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
@@ -68,7 +68,7 @@ const ReactionView = (props: Props) => {
     <Tooltip title={stringifyUsers(users, reactionType)} placement="top">
       <div
         className={cn(
-          "h-7 border px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1 dark:border-zinc-700",
+          "h-7 border border-zinc-200 px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1 dark:border-zinc-700",
           "text-sm text-gray-600 dark:text-gray-400",
           currentUser && !readonly && "cursor-pointer",
           hasReaction && "bg-blue-100 border-blue-200 dark:bg-zinc-900",
@@ -80,6 +80,6 @@ const ReactionView = (props: Props) => {
       </div>
     </Tooltip>
   );
-};
+});
 
 export default ReactionView;

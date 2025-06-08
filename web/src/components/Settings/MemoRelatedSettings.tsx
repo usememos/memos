@@ -1,18 +1,19 @@
-import { Switch, Chip, ChipDelete } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
+import { Chip, ChipDelete } from "@mui/joy";
+import { Button, Input, Switch } from "@usememos/mui";
 import { isEqual, uniq } from "lodash-es";
 import { CheckIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { workspaceSettingNamePrefix } from "@/store/v1";
+import { workspaceSettingNamePrefix } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
+import { WorkspaceSettingKey } from "@/store/v2/workspace";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
-const MemoRelatedSettings = () => {
+const MemoRelatedSettings = observer(() => {
   const t = useTranslate();
-  const originalSetting = workspaceStore.state.memoRelatedSetting;
+  const [originalSetting, setOriginalSetting] = useState<WorkspaceMemoRelatedSetting>(workspaceStore.state.memoRelatedSetting);
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
   const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
@@ -54,12 +55,12 @@ const MemoRelatedSettings = () => {
         name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
         memoRelatedSetting,
       });
+      setOriginalSetting(memoRelatedSetting);
+      toast.success(t("message.update-succeed"));
     } catch (error: any) {
       toast.error(error.details);
       console.error(error);
-      return;
     }
-    toast.success(t("message.update-succeed"));
   };
 
   return (
@@ -94,13 +95,6 @@ const MemoRelatedSettings = () => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.memo-related-settings.enable-memo-location")}</span>
-        <Switch
-          checked={memoRelatedSetting.enableLocation}
-          onChange={(event) => updatePartialSetting({ enableLocation: event.target.checked })}
-        />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.enable-double-click-to-edit")}</span>
         <Switch
           checked={memoRelatedSetting.enableDoubleClickEdit}
@@ -129,7 +123,7 @@ const MemoRelatedSettings = () => {
           {memoRelatedSetting.reactions.map((reactionType) => {
             return (
               <Chip
-                className="!h-8"
+                className="h-8!"
                 key={reactionType}
                 variant="outlined"
                 size="lg"
@@ -144,9 +138,8 @@ const MemoRelatedSettings = () => {
             );
           })}
           <Input
-            className="w-32 !rounded-full !pl-3"
+            className="w-32 rounded-full! pl-1!"
             placeholder={t("common.input")}
-            size="sm"
             value={editingReaction}
             onChange={(event) => setEditingReaction(event.target.value.trim())}
             endDecorator={
@@ -170,7 +163,7 @@ const MemoRelatedSettings = () => {
           {memoRelatedSetting.nsfwTags.map((nsfwTag) => {
             return (
               <Chip
-                className="!h-8"
+                className="h-8!"
                 key={nsfwTag}
                 variant="outlined"
                 size="lg"
@@ -185,9 +178,8 @@ const MemoRelatedSettings = () => {
             );
           })}
           <Input
-            className="w-32 !rounded-full !pl-3"
+            className="w-32 rounded-full! pl-1!"
             placeholder={t("common.input")}
-            size="sm"
             value={editingNsfwTag}
             onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
             endDecorator={
@@ -206,6 +198,6 @@ const MemoRelatedSettings = () => {
       </div>
     </div>
   );
-};
+});
 
 export default MemoRelatedSettings;

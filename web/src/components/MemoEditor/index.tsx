@@ -1,10 +1,9 @@
-import { Select, Option, Divider } from "@mui/joy";
 import { Button } from "@usememos/mui";
+import copy from "copy-to-clipboard";
 import { isEqual } from "lodash-es";
 import { LoaderIcon, SendIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import DatePicker from "react-datepicker";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
@@ -13,26 +12,27 @@ import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore, useResourceStore } from "@/store/v1";
-import { userStore, workspaceStore } from "@/store/v2";
+import { extractMemoIdFromName } from "@/store/common";
+import { memoStore, resourceStore, userStore, workspaceStore } from "@/store/v2";
 import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
+import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
-import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
-import VisibilityIcon from "../VisibilityIcon";
+import { convertVisibilityFromString } from "@/utils/memo";
+import DateTimeInput from "../DateTimeInput";
 import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import LocationSelector from "./ActionButton/LocationSelector";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
 import RecordAudioButton from "./ActionButton/RecordAudioButton";
 import TagSelector from "./ActionButton/TagSelector";
 import UploadResourceButton from "./ActionButton/UploadResourceButton";
+import VisibilitySelector from "./ActionButton/VisibilitySelector";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
-import "react-datepicker/dist/react-datepicker.css";
 
 export interface Props {
   className?: string;
@@ -55,14 +55,13 @@ interface State {
   isUploadingResource: boolean;
   isRequesting: boolean;
   isComposing: boolean;
+  isDraggingFile: boolean;
 }
 
 const MemoEditor = observer((props: Props) => {
   const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
-  const memoStore = useMemoStore();
-  const resourceStore = useResourceStore();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
     memoVisibility: Visibility.PRIVATE,
@@ -72,9 +71,12 @@ const MemoEditor = observer((props: Props) => {
     isUploadingResource: false,
     isRequesting: false,
     isComposing: false,
+    isDraggingFile: false,
   });
-  const [displayTime, setDisplayTime] = useState<Date | undefined>();
+  const [createTime, setCreateTime] = useState<Date | undefined>();
+  const [updateTime, setUpdateTime] = useState<Date | undefined>();
   const [hasContent, setHasContent] = useState<boolean>(false);
+  const [isVisibilitySelectorOpen, setIsVisibilitySelectorOpen] = useState(false);
   const editorRef = useRef<EditorRefActions>(null);
   const userSetting = userStore.state.userSetting as UserSetting;
   const contentCacheKey = `${currentUser.name}-${cacheKey || ""}`;
@@ -97,16 +99,20 @@ const MemoEditor = observer((props: Props) => {
     }
   }, [autoFocus]);
 
-  useEffect(() => {
-    let visibility = userSetting.memoVisibility;
-    if (workspaceMemoRelatedSetting.disallowPublicVisibility && visibility === "PUBLIC") {
-      visibility = "PRIVATE";
+  useAsyncEffect(async () => {
+    let visibility = convertVisibilityFromString(userSetting.memoVisibility);
+    if (workspaceMemoRelatedSetting.disallowPublicVisibility && visibility === Visibility.PUBLIC) {
+      visibility = Visibility.PROTECTED;
+    }
+    if (parentMemoName) {
+      const parentMemo = await memoStore.getOrFetchMemoByName(parentMemoName);
+      visibility = parentMemo.visibility;
     }
     setState((prevState) => ({
       ...prevState,
       memoVisibility: convertVisibilityFromString(visibility),
     }));
-  }, [userSetting.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
+  }, [parentMemoName, userSetting.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
 
   useAsyncEffect(async () => {
     if (!memoName) {
@@ -116,7 +122,8 @@ const MemoEditor = observer((props: Props) => {
     const memo = await memoStore.getOrFetchMemoByName(memoName);
     if (memo) {
       handleEditorFocus();
-      setDisplayTime(memo.displayTime);
+      setCreateTime(memo.createTime);
+      setUpdateTime(memo.updateTime);
       setState((prevState) => ({
         ...prevState,
         memoVisibility: memo.visibility,
@@ -223,6 +230,12 @@ const MemoEditor = observer((props: Props) => {
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
+      setState((state) => {
+        return {
+          ...state,
+          isUploadingResource: false,
+        };
+      });
     }
   };
 
@@ -254,8 +267,34 @@ const MemoEditor = observer((props: Props) => {
   const handleDropEvent = async (event: React.DragEvent) => {
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
       event.preventDefault();
+      setState((prevState) => ({
+        ...prevState,
+        isDraggingFile: false,
+      }));
+
       await uploadMultiFiles(event.dataTransfer.files);
     }
+  };
+
+  const handleDragOver = (event: React.DragEvent) => {
+    if (event.dataTransfer && event.dataTransfer.types.includes("Files")) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+      if (!state.isDraggingFile) {
+        setState((prevState) => ({
+          ...prevState,
+          isDraggingFile: true,
+        }));
+      }
+    }
+  };
+
+  const handleDragLeave = (event: React.DragEvent) => {
+    event.preventDefault();
+    setState((prevState) => ({
+      ...prevState,
+      isDraggingFile: false,
+    }));
   };
 
   const handlePasteEvent = async (event: React.ClipboardEvent) => {
@@ -326,9 +365,13 @@ const MemoEditor = observer((props: Props) => {
           if (["content", "resources", "relations", "location"].some((key) => updateMask.has(key))) {
             updateMask.add("update_time");
           }
-          if (!isEqual(displayTime, prevMemo.displayTime)) {
-            updateMask.add("display_time");
-            memoPatch.displayTime = displayTime;
+          if (createTime && !isEqual(createTime, prevMemo.createTime)) {
+            updateMask.add("create_time");
+            memoPatch.createTime = createTime;
+          }
+          if (updateTime && !isEqual(updateTime, prevMemo.updateTime)) {
+            updateMask.add("update_time");
+            memoPatch.updateTime = updateTime;
           }
           if (updateMask.size === 0) {
             toast.error("No changes detected");
@@ -385,6 +428,7 @@ const MemoEditor = observer((props: Props) => {
         resourceList: [],
         relationList: [],
         location: undefined,
+        isDraggingFile: false,
       };
     });
   };
@@ -435,77 +479,45 @@ const MemoEditor = observer((props: Props) => {
       }}
     >
       <div
-        className={`${
-          className ?? ""
-        } relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-800 px-4 pt-4 rounded-lg border border-gray-200 dark:border-zinc-700`}
+        className={cn(
+          "group relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-800 px-4 pt-3 pb-2 rounded-lg border",
+          state.isDraggingFile
+            ? "border-dashed border-gray-400 dark:border-primary-400 cursor-copy"
+            : "border-gray-200 dark:border-zinc-700 cursor-auto",
+          className,
+        )}
         tabIndex={0}
         onKeyDown={handleKeyDown}
         onDrop={handleDropEvent}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
         onFocus={handleEditorFocus}
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
       >
-        {memoName && displayTime && (
-          <DatePicker
-            selected={displayTime}
-            onChange={(date) => date && setDisplayTime(date)}
-            showTimeSelect
-            showMonthDropdown
-            showYearDropdown
-            yearDropdownItemNumber={5}
-            dateFormatCalendar=" "
-            customInput={<span className="cursor-pointer text-sm text-gray-400 dark:text-gray-500">{displayTime.toLocaleString()}</span>}
-            calendarClassName="ml-24 sm:ml-44"
-          />
-        )}
         <Editor ref={editorRef} {...editorConfig} />
         <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
-        <div className="relative w-full flex flex-row justify-between items-center pt-2" onFocus={(e) => e.stopPropagation()}>
-          <div className="flex flex-row justify-start items-center opacity-80 dark:opacity-60 -space-x-1">
+        <div className="relative w-full flex flex-row justify-between items-center py-1" onFocus={(e) => e.stopPropagation()}>
+          <div className="flex flex-row justify-start items-center opacity-80 dark:opacity-60 space-x-2">
+            <RecordAudioButton />
             <TagSelector editorRef={editorRef} />
             <MarkdownMenu editorRef={editorRef} />
-            <UploadResourceButton />
-            <RecordAudioButton />
+            <UploadResourceButton isUploadingResource={state.isUploadingResource} />
             <AddMemoRelationPopover editorRef={editorRef} />
-            {workspaceMemoRelatedSetting.enableLocation && (
-              <LocationSelector
-                location={state.location}
-                onChange={(location) =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    location,
-                  }))
-                }
-              />
-            )}
+            <LocationSelector
+              location={state.location}
+              onChange={(location) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  location,
+                }))
+              }
+            />
           </div>
-        </div>
-        <Divider className="!mt-2 opacity-40" />
-        <div className="w-full flex flex-row justify-between items-center py-3 gap-2 overflow-auto dark:border-t-zinc-500">
-          <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
-            <Select
-              className="!text-sm"
-              variant="plain"
-              size="md"
-              value={state.memoVisibility}
-              startDecorator={<VisibilityIcon visibility={state.memoVisibility} />}
-              onChange={(_, visibility) => {
-                if (visibility) {
-                  handleMemoVisibilityChange(visibility);
-                }
-              }}
-            >
-              {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC].map((item) => (
-                <Option key={item} value={item} className="whitespace-nowrap !text-sm">
-                  {t(`memo.visibility.${convertVisibilityToString(item).toLowerCase()}` as any)}
-                </Option>
-              ))}
-            </Select>
-          </div>
-          <div className="shrink-0 flex flex-row justify-end items-center gap-2">
+          <div className="shrink-0 -mr-1 flex flex-row justify-end items-center">
             {props.onCancel && (
-              <Button variant="plain" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
+              <Button variant="plain" className="opacity-60" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
                 {t("common.cancel")}
               </Button>
             )}
@@ -515,7 +527,52 @@ const MemoEditor = observer((props: Props) => {
             </Button>
           </div>
         </div>
+        <div
+          className={cn(
+            "absolute right-1 top-1 opacity-60",
+            "invisible group-focus-within:visible group-hover:visible hover:visible focus-within:visible",
+            (isVisibilitySelectorOpen || memoName) && "visible",
+          )}
+          onFocus={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <VisibilitySelector
+            value={state.memoVisibility}
+            onChange={handleMemoVisibilityChange}
+            onOpenChange={setIsVisibilitySelectorOpen}
+          />
+        </div>
       </div>
+
+      {/* Show memo metadata if memoName is provided */}
+      {memoName && (
+        <div className="w-full -mt-1 mb-4 text-xs leading-5 px-4 opacity-60 font-mono text-gray-500 dark:text-zinc-500">
+          <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 items-center">
+            {!isEqual(createTime, updateTime) && updateTime && (
+              <>
+                <span className="text-left">Updated</span>
+                <DateTimeInput value={updateTime} onChange={setUpdateTime} />
+              </>
+            )}
+            {createTime && (
+              <>
+                <span className="text-left">Created</span>
+                <DateTimeInput value={createTime} onChange={setCreateTime} />
+              </>
+            )}
+            <span className="text-left">ID</span>
+            <span
+              className="px-1 border border-transparent cursor-default"
+              onClick={() => {
+                copy(extractMemoIdFromName(memoName));
+                toast.success(t("message.copied"));
+              }}
+            >
+              {extractMemoIdFromName(memoName)}
+            </span>
+          </div>
+        </div>
+      )}
     </MemoEditorContext.Provider>
   );
 });

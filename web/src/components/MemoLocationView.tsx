@@ -24,7 +24,7 @@ const MemoLocationView: React.FC<Props> = (props: Props) => {
         </p>
       </PopoverTrigger>
       <PopoverContent align="start">
-        <div className="min-w-80 sm:w-128 flex flex-col justify-start items-start">
+        <div className="min-w-80 sm:w-lg flex flex-col justify-start items-start">
           <LeafletMap latlng={new LatLng(location.latitude, location.longitude)} readonly={true} />
         </div>
       </PopoverContent>

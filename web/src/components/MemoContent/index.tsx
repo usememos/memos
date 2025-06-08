@@ -1,6 +1,7 @@
+import { observer } from "mobx-react-lite";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore } from "@/store/v1";
+import { memoStore } from "@/store/v2";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -29,11 +30,10 @@ interface Props {
 
 type ContentCompactView = "ALL" | "SNIPPET";
 
-const MemoContent: React.FC<Props> = (props: Props) => {
+const MemoContent = observer((props: Props) => {
   const { className, contentClassName, nodes, memoName, embeddedMemos, onClick, onDoubleClick } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<ContentCompactView | undefined>(undefined);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
@@ -87,7 +87,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         <div
           ref={memoContentContainerRef}
           className={cn(
-            "relative w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
+            "relative w-full max-w-full break-words text-base leading-snug space-y-2 whitespace-pre-wrap",
             showCompactMode == "ALL" && "line-clamp-6 max-h-60",
             contentClassName,
           )}
@@ -104,7 +104,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
             return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
           })}
           {showCompactMode == "ALL" && (
-            <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-b from-transparent dark:to-zinc-800 to-white pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-full h-12 bg-linear-to-b from-transparent dark:to-zinc-800 to-white pointer-events-none"></div>
           )}
         </div>
         {showCompactMode != undefined && (
@@ -122,6 +122,6 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       </div>
     </RendererContext.Provider>
   );
-};
+});
 
 export default memo(MemoContent);

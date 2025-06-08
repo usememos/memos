@@ -54,7 +54,7 @@ const BaseDialog = observer((props: Props) => {
   return (
     <div
       className={cn(
-        "fixed top-0 left-0 flex flex-col justify-start items-center w-full h-full pt-16 pb-8 px-4 z-1000 overflow-x-hidden overflow-y-scroll bg-transparent transition-all hide-scrollbar bg-black bg-opacity-60",
+        "fixed top-0 left-0 flex flex-col justify-start items-center w-full h-full pt-16 pb-8 px-4 z-1000 overflow-x-hidden overflow-y-scroll transition-all hide-scrollbar bg-black/60",
         className,
       )}
       onMouseDown={handleSpaceClicked}

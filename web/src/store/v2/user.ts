@@ -1,8 +1,10 @@
 import { uniqueId } from "lodash-es";
 import { makeAutoObservable } from "mobx";
-import { authServiceClient, inboxServiceClient, userServiceClient } from "@/grpcweb";
+import { authServiceClient, inboxServiceClient, shortcutServiceClient, userServiceClient } from "@/grpcweb";
 import { Inbox } from "@/types/proto/api/v1/inbox_service";
-import { Shortcut, User, UserSetting, UserStats } from "@/types/proto/api/v1/user_service";
+import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
+import { User, UserSetting, UserStats } from "@/types/proto/api/v1/user_service";
+import { findNearestMatchedLanguage } from "@/utils/i18n";
 import workspaceStore from "./workspace";
 
 class LocalState {
@@ -24,6 +26,13 @@ class LocalState {
       }
     }
     return tagCount;
+  }
+
+  get currentUserStats() {
+    if (!this.currentUser) {
+      return undefined;
+    }
+    return this.userStatsByName[this.currentUser];
   }
 
   constructor() {
@@ -130,7 +139,7 @@ const userStore = (() => {
       return;
     }
 
-    const { shortcuts } = await userServiceClient.listShortcuts({ parent: state.currentUser });
+    const { shortcuts } = await shortcutServiceClient.listShortcuts({ parent: state.currentUser });
     state.setPartial({
       shortcuts,
     });
@@ -171,7 +180,9 @@ const userStore = (() => {
       userStatsByName[user] = userStats;
     }
     state.setPartial({
-      userStatsByName,
+      userStatsByName: {
+        ...userStatsByName,
+      },
     });
   };
 
@@ -214,7 +225,11 @@ export const initialUserStore = async () => {
       appearance: userSetting.appearance,
     });
   } catch {
-    // Do nothing.
+    // find the nearest matched lang based on the `navigator.language` if the user is unauthenticated or settings retrieval fails.
+    const locale = findNearestMatchedLanguage(navigator.language);
+    workspaceStore.state.setPartial({
+      locale: locale,
+    });
   }
 };
 

@@ -26,23 +26,49 @@ func NewRunner(store *store.Store) *Runner {
 
 // RunOnce rebuilds the payload of all memos.
 func (r *Runner) RunOnce(ctx context.Context) {
-	memos, err := r.Store.ListMemos(ctx, &store.FindMemo{})
-	if err != nil {
-		slog.Error("failed to list memos", "err", err)
-		return
-	}
+	// Process memos in batches to avoid loading all memos into memory at once
+	const batchSize = 100
+	offset := 0
+	processed := 0
 
-	for _, memo := range memos {
-		if err := RebuildMemoPayload(memo); err != nil {
-			slog.Error("failed to rebuild memo payload", "err", err)
-			continue
+	for {
+		limit := batchSize
+		memos, err := r.Store.ListMemos(ctx, &store.FindMemo{
+			Limit:  &limit,
+			Offset: &offset,
+		})
+		if err != nil {
+			slog.Error("failed to list memos", "err", err)
+			return
 		}
-		if err := r.Store.UpdateMemo(ctx, &store.UpdateMemo{
-			ID:      memo.ID,
-			Payload: memo.Payload,
-		}); err != nil {
-			slog.Error("failed to update memo", "err", err)
+
+		// Break if no more memos
+		if len(memos) == 0 {
+			break
 		}
+
+		// Process batch
+		batchSuccessCount := 0
+		for _, memo := range memos {
+			if err := RebuildMemoPayload(memo); err != nil {
+				slog.Error("failed to rebuild memo payload", "err", err, "memoID", memo.ID)
+				continue
+			}
+			if err := r.Store.UpdateMemo(ctx, &store.UpdateMemo{
+				ID:      memo.ID,
+				Payload: memo.Payload,
+			}); err != nil {
+				slog.Error("failed to update memo", "err", err, "memoID", memo.ID)
+				continue
+			}
+			batchSuccessCount++
+		}
+
+		processed += len(memos)
+		slog.Info("Processed memo batch", "batchSize", len(memos), "successCount", batchSuccessCount, "totalProcessed", processed)
+
+		// Move to next batch
+		offset += len(memos)
 	}
 }
 

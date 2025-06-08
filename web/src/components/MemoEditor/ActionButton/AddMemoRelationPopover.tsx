@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractMemoIdFromName } from "@/store/v1";
+import { extractMemoIdFromName } from "@/store/common";
 import { Memo, MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
@@ -129,8 +129,8 @@ const AddMemoRelationPopover = (props: Props) => {
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger className="w-9 relative">
-        <Button className="flex items-center justify-center" size="sm" variant="plain" asChild>
+      <PopoverTrigger className="relative">
+        <Button className="flex items-center justify-center p-0" variant="plain" asChild>
           <LinkIcon className="w-5 h-5 mx-auto p-0" />
         </Button>
       </PopoverTrigger>
@@ -162,7 +162,7 @@ const AddMemoRelationPopover = (props: Props) => {
             )}
             renderTags={(memos) =>
               memos.map((memo) => (
-                <Chip key={memo.name} className="!max-w-full !rounded" variant="outlined" color="neutral">
+                <Chip key={memo.name} className="max-w-full! rounded!" variant="outlined" color="neutral">
                   <div className="w-full flex flex-col justify-start items-start">
                     <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
                     <span className="w-full text-sm leading-5 truncate">{memo.content}</span>
@@ -174,7 +174,7 @@ const AddMemoRelationPopover = (props: Props) => {
           />
           <div className="mt-2 w-full flex flex-row justify-end items-center gap-2">
             <Checkbox size="sm" label={"Embed"} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
-            <Button size="sm" color="primary" onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
+            <Button color="primary" onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
               {t("common.add")}
             </Button>
           </div>

@@ -6,13 +6,12 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
-import { useMemoFilterStore } from "@/store/v1";
 import { viewStore, userStore } from "@/store/v2";
+import memoFilterStore from "@/store/v2/memoFilter";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
@@ -23,7 +22,6 @@ const UserProfile = observer(() => {
   const params = useParams();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
-  const memoFilterStore = useMemoFilterStore();
 
   useEffect(() => {
     const username = params.username;
@@ -78,7 +76,7 @@ const UserProfile = observer(() => {
 
   return (
     <section className="w-full max-w-3xl mx-auto min-h-full flex flex-col justify-start items-center pb-8">
-      <div className="w-full px-4 sm:px-6 flex flex-col justify-start items-center">
+      <div className="w-full flex flex-col justify-start items-center max-w-2xl">
         {!loadingState.isLoading &&
           (user ? (
             <>
@@ -89,7 +87,7 @@ const UserProfile = observer(() => {
                 </Button>
               </div>
               <div className="w-full flex flex-col justify-start items-start pt-4 pb-8 px-3">
-                <UserAvatar className="!w-16 !h-16 drop-shadow rounded-3xl" avatarUrl={user?.avatarUrl} />
+                <UserAvatar className="w-16! h-16! drop-shadow rounded-3xl" avatarUrl={user?.avatarUrl} />
                 <div className="mt-2 w-auto max-w-[calc(100%-6rem)] flex flex-col justify-center items-start">
                   <p className="w-full text-3xl text-black leading-tight font-medium opacity-80 dark:text-gray-200 truncate">
                     {user.nickname || user.username}
@@ -99,7 +97,6 @@ const UserProfile = observer(() => {
                   </p>
                 </div>
               </div>
-              <MemoFilters />
               <PagedMemoList
                 renderer={(memo: Memo) => (
                   <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />

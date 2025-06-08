@@ -11,6 +11,7 @@ tags:
   - name: MarkdownService
   - name: ResourceService
   - name: MemoService
+  - name: ShortcutService
   - name: WebhookService
   - name: WorkspaceService
   - name: WorkspaceSettingService
@@ -21,7 +22,7 @@ produces:
 paths:
   /api/v1/auth/signin:
     post:
-      summary: SignIn signs in the user with the given username and password.
+      summary: SignIn signs in the user.
       operationId: AuthService_SignIn
       responses:
         "200":
@@ -33,13 +34,29 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: username
+        - name: passwordCredentials.username
           description: The username to sign in with.
           in: query
           required: false
           type: string
-        - name: password
+        - name: passwordCredentials.password
           description: The password to sign in with.
+          in: query
+          required: false
+          type: string
+        - name: ssoCredentials.idpId
+          description: The ID of the SSO provider.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: ssoCredentials.code
+          description: The code to sign in with.
+          in: query
+          required: false
+          type: string
+        - name: ssoCredentials.redirectUri
+          description: The redirect URI.
           in: query
           required: false
           type: string
@@ -48,38 +65,6 @@ paths:
           in: query
           required: false
           type: boolean
-      tags:
-        - AuthService
-  /api/v1/auth/signin/sso:
-    post:
-      summary: SignInWithSSO signs in the user with the given SSO code.
-      operationId: AuthService_SignInWithSSO
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1User'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: idpId
-          description: The ID of the SSO provider.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: code
-          description: The code to sign in with.
-          in: query
-          required: false
-          type: string
-        - name: redirectUri
-          description: The redirect URI.
-          in: query
-          required: false
-          type: string
       tags:
         - AuthService
   /api/v1/auth/signout:
@@ -1536,7 +1521,7 @@ paths:
   /api/v1/{parent}/shortcuts:
     get:
       summary: ListShortcuts returns a list of shortcuts for a user.
-      operationId: UserService_ListShortcuts
+      operationId: ShortcutService_ListShortcuts
       responses:
         "200":
           description: A successful response.
@@ -1554,10 +1539,10 @@ paths:
           type: string
           pattern: users/[^/]+
       tags:
-        - UserService
+        - ShortcutService
     post:
       summary: CreateShortcut creates a new shortcut for a user.
-      operationId: UserService_CreateShortcut
+      operationId: ShortcutService_CreateShortcut
       responses:
         "200":
           description: A successful response.
@@ -1584,11 +1569,11 @@ paths:
           required: false
           type: boolean
       tags:
-        - UserService
+        - ShortcutService
   /api/v1/{parent}/shortcuts/{id}:
     delete:
       summary: DeleteShortcut deletes a shortcut for a user.
-      operationId: UserService_DeleteShortcut
+      operationId: ShortcutService_DeleteShortcut
       responses:
         "200":
           description: A successful response.
@@ -1612,11 +1597,11 @@ paths:
           required: true
           type: string
       tags:
-        - UserService
+        - ShortcutService
   /api/v1/{parent}/shortcuts/{shortcut.id}:
     patch:
       summary: UpdateShortcut updates a shortcut for a user.
-      operationId: UserService_UpdateShortcut
+      operationId: ShortcutService_UpdateShortcut
       responses:
         "200":
           description: A successful response.
@@ -1648,7 +1633,7 @@ paths:
               filter:
                 type: string
       tags:
-        - UserService
+        - ShortcutService
   /api/v1/{parent}/tags/{tag}:
     delete:
       summary: DeleteMemoTag deletes a tag for a memo.
@@ -2101,6 +2086,8 @@ definitions:
         type: string
       email:
         type: string
+      avatarUrl:
+        type: string
   apiv1IdentityProvider:
     type: object
     properties:
@@ -2322,9 +2309,6 @@ definitions:
       enableComment:
         type: boolean
         description: enable_comment enables comment.
-      enableLocation:
-        type: boolean
-        description: enable_location enables setting location for memo.
       reactions:
         type: array
         items:
@@ -2697,8 +2681,11 @@ definitions:
     properties:
       symbol:
         type: string
-      content:
-        type: string
+      children:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Node'
   v1LineBreakNode:
     type: object
   v1LinkMetadata:
@@ -3040,6 +3027,15 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Node'
+  v1PasswordCredentials:
+    type: object
+    properties:
+      username:
+        type: string
+        description: The username to sign in with.
+      password:
+        type: string
+        description: The password to sign in with.
   v1Reaction:
     type: object
     properties:
@@ -3106,6 +3102,19 @@ definitions:
     properties:
       markdown:
         type: string
+  v1SSOCredentials:
+    type: object
+    properties:
+      idpId:
+        type: integer
+        format: int32
+        description: The ID of the SSO provider.
+      code:
+        type: string
+        description: The code to sign in with.
+      redirectUri:
+        type: string
+        description: The redirect URI.
   v1SpoilerNode:
     type: object
     properties:
@@ -3272,6 +3281,14 @@ definitions:
         title: |-
           The count of tags.
           Format: "tag1": 1, "tag2": 2
+      pinnedMemos:
+        type: array
+        items:
+          type: string
+        description: The pinned memos of the user.
+      totalMemoCount:
+        type: integer
+        format: int32
   v1Visibility:
     type: string
     enum:

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -62,4 +63,18 @@ func Post(requestPayload *v1pb.WebhookRequestPayload) error {
 	}
 
 	return nil
+}
+
+// PostAsync posts the message to webhook endpoint asynchronously.
+// It spawns a new goroutine to handle the request and does not wait for the response.
+func PostAsync(requestPayload *v1pb.WebhookRequestPayload) {
+	go func() {
+		if err := Post(requestPayload); err != nil {
+			// Since we're in a goroutine, we can only log the error
+			slog.Warn("Failed to dispatch webhook asynchronously",
+				slog.String("url", requestPayload.Url),
+				slog.String("activityType", requestPayload.ActivityType),
+				slog.Any("err", err))
+		}
+	}()
 }

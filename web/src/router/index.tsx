@@ -85,14 +85,6 @@ const router = createBrowserRouter([
                 element: <Home />,
               },
               {
-                path: Routes.EXPLORE,
-                element: (
-                  <Suspense fallback={<Loading />}>
-                    <Explore />
-                  </Suspense>
-                ),
-              },
-              {
                 path: Routes.ARCHIVED,
                 element: (
                   <Suspense fallback={<Loading />}>
@@ -109,6 +101,14 @@ const router = createBrowserRouter([
                 ),
               },
             ],
+          },
+          {
+            path: Routes.EXPLORE,
+            element: (
+              <Suspense fallback={<Loading />}>
+                <Explore />
+              </Suspense>
+            ),
           },
           {
             path: Routes.RESOURCES,

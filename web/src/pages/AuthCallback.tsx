@@ -1,5 +1,6 @@
 import { last } from "lodash-es";
 import { LoaderIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -13,7 +14,7 @@ interface State {
   errorMessage: string;
 }
 
-const AuthCallback = () => {
+const AuthCallback = observer(() => {
   const navigateTo = useNavigateTo();
   const [searchParams] = useSearchParams();
   const [state, setState] = useState<State>({
@@ -45,10 +46,12 @@ const AuthCallback = () => {
     const redirectUri = absolutifyLink("/auth/callback");
     (async () => {
       try {
-        await authServiceClient.signInWithSSO({
-          idpId: identityProviderId,
-          code,
-          redirectUri,
+        await authServiceClient.signIn({
+          ssoCredentials: {
+            idpId: identityProviderId,
+            code,
+            redirectUri,
+          },
         });
         setState({
           loading: false,
@@ -75,6 +78,6 @@ const AuthCallback = () => {
       )}
     </div>
   );
-};
+});
 
 export default AuthCallback;

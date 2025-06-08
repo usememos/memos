@@ -22,6 +22,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/storage/s3"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -71,7 +72,7 @@ func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateR
 	}
 	create.Size = int64(size)
 	create.Blob = request.Resource.Content
-	if err := SaveResourceBlob(ctx, s.Store, create); err != nil {
+	if err := SaveResourceBlob(ctx, s.Profile, s.Store, create); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to save resource blob: %v", err)
 	}
 
@@ -188,6 +189,12 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 	if strings.HasPrefix(contentType, "text/") {
 		contentType += "; charset=utf-8"
 	}
+	// Prevent XSS attacks by serving potentially unsafe files with a content type that prevents script execution.
+	if strings.EqualFold(contentType, "image/svg+xml") ||
+		strings.EqualFold(contentType, "text/html") ||
+		strings.EqualFold(contentType, "application/xhtml+xml") {
+		contentType = "application/octet-stream"
+	}
 
 	return &httpbody.HttpBody{
 		ContentType: contentType,
@@ -280,8 +287,8 @@ func (s *APIV1Service) convertResourceFromStore(ctx context.Context, resource *s
 }
 
 // SaveResourceBlob save the blob of resource based on the storage config.
-func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resource) error {
-	workspaceStorageSetting, err := s.GetWorkspaceStorageSetting(ctx)
+func SaveResourceBlob(ctx context.Context, profile *profile.Profile, stores *store.Store, create *store.Resource) error {
+	workspaceStorageSetting, err := stores.GetWorkspaceStorageSetting(ctx)
 	if err != nil {
 		return errors.Wrap(err, "Failed to find workspace storage setting")
 	}
@@ -302,7 +309,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		// Ensure the directory exists.
 		osPath := filepath.FromSlash(internalPath)
 		if !filepath.IsAbs(osPath) {
-			osPath = filepath.Join(s.Profile.Data, osPath)
+			osPath = filepath.Join(profile.Data, osPath)
 		}
 		dir := filepath.Dir(osPath)
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {

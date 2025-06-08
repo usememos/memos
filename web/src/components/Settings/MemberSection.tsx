@@ -2,6 +2,7 @@ import { Dropdown, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/jo
 import { Button, Input } from "@usememos/mui";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
@@ -10,13 +11,13 @@ import { userStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
+import showCreateUserDialog from "../CreateUserDialog";
 
 interface LocalState {
   creatingUser: User;
 }
 
-const MemberSection = () => {
+const MemberSection = observer(() => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<LocalState>({
@@ -106,10 +107,6 @@ const MemberSection = () => {
     });
   };
 
-  const handleChangePasswordClick = (user: User) => {
-    showChangeMemberPasswordDialog(user);
-  };
-
   const handleArchiveUserClick = async (user: User) => {
     const confirmed = window.confirm(t("setting.member-section.archive-warning", { username: user.nickname }));
     if (confirmed) {
@@ -146,7 +143,7 @@ const MemberSection = () => {
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.member-section.create-a-member")}</p>
-      <div className="w-auto flex flex-col justify-start items-start gap-2 border rounded-md py-2 px-3 dark:border-zinc-700">
+      <div className="w-auto flex flex-col justify-start items-start gap-2 border border-zinc-200 rounded-md py-2 px-3 dark:border-zinc-700">
         <div className="flex flex-col justify-start items-start gap-1">
           <span>{t("common.username")}</span>
           <Input
@@ -184,7 +181,7 @@ const MemberSection = () => {
         <div className="title-text">{t("setting.member-list")}</div>
       </div>
       <div className="w-full overflow-x-auto">
-        <div className="inline-block min-w-full align-middle border rounded-lg dark:border-zinc-600">
+        <div className="inline-block min-w-full align-middle border border-zinc-200 rounded-lg dark:border-zinc-600">
           <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
             <thead>
               <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-400">
@@ -222,9 +219,7 @@ const MemberSection = () => {
                           <MoreVerticalIcon className="w-4 h-auto" />
                         </MenuButton>
                         <Menu placement="bottom-end" size="sm">
-                          <MenuItem onClick={() => handleChangePasswordClick(user)}>
-                            {t("setting.account-section.change-password")}
-                          </MenuItem>
+                          <MenuItem onClick={() => showCreateUserDialog(user, () => fetchUsers())}>{t("common.update")}</MenuItem>
                           {user.state === State.NORMAL ? (
                             <MenuItem onClick={() => handleArchiveUserClick(user)}>{t("setting.member-section.archive-member")}</MenuItem>
                           ) : (
@@ -245,6 +240,6 @@ const MemberSection = () => {
       </div>
     </div>
   );
-};
+});
 
 export default MemberSection;

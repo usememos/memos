@@ -69,11 +69,11 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
         <p>
           {t("setting.account-section.change-password")} ({user.nickname})
         </p>
-        <Button size="sm" variant="plain" onClick={handleCloseBtnClick}>
+        <Button variant="plain" onClick={handleCloseBtnClick}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
-      <div className="flex flex-col justify-start items-start !w-80">
+      <div className="flex flex-col justify-start items-start w-80!">
         <p className="text-sm mb-1">{t("auth.new-password")}</p>
         <Input
           className="w-full"

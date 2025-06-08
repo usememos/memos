@@ -1,18 +1,22 @@
 import { Button } from "@usememos/mui";
-import { PaperclipIcon } from "lucide-react";
+import { LoaderIcon, PaperclipIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useContext, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { useResourceStore } from "@/store/v1";
+import { resourceStore } from "@/store/v2";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { MemoEditorContext } from "../types";
+
+interface Props {
+  isUploadingResource?: boolean;
+}
 
 interface State {
   uploadingFlag: boolean;
 }
 
-const UploadResourceButton = () => {
+const UploadResourceButton = observer((props: Props) => {
   const context = useContext(MemoEditorContext);
-  const resourceStore = useResourceStore();
   const [state, setState] = useState<State>({
     uploadingFlag: false,
   });
@@ -65,13 +69,15 @@ const UploadResourceButton = () => {
     });
   };
 
+  const isUploading = state.uploadingFlag || props.isUploadingResource;
+
   return (
-    <Button className="relative" size="sm" variant="plain" disabled={state.uploadingFlag}>
-      <PaperclipIcon className="w-5 h-5 mx-auto" />
+    <Button className="relative p-0" variant="plain" disabled={isUploading}>
+      {isUploading ? <LoaderIcon className="w-5 h-5 animate-spin" /> : <PaperclipIcon className="w-5 h-5" />}
       <input
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         ref={fileInputRef}
-        disabled={state.uploadingFlag}
+        disabled={isUploading}
         onChange={handleFileInputChange}
         type="file"
         id="files"
@@ -80,6 +86,6 @@ const UploadResourceButton = () => {
       />
     </Button>
   );
-};
+});
 
 export default UploadResourceButton;

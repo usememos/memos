@@ -20,8 +20,8 @@
     "change": "Alterar",
     "clear": "Limpar",
     "close": "Fechar",
-    "confirm": "Confirmar",
     "collapse": "Recolher",
+    "confirm": "Confirmar",
     "create": "Criar",
     "database": "Base de dados",
     "days": "Dias",
@@ -96,8 +96,14 @@
     "memo-comment": "{{user}} deixou um comentário no seu {{memo}}.",
     "version-update": "A nova versão {{version}} está agora disponível!"
   },
+  "markdown": {
+    "checkbox": "Caixa de seleção",
+    "code-block": "Bloco de código",
+    "content-syntax": "Sintaxe de conteúdo"
+  },
   "memo": {
     "archived-at": "Arquivado em",
+    "code": "Código",
     "comment": {
       "self": "Comentários",
       "write-a-comment": "Escreva um comentário"
@@ -105,21 +111,20 @@
     "copy-link": "Copiar link",
     "count-memos-in-date": "{{count}} memos em {{date}}",
     "delete-confirm": "Tem a certeza de que quer eliminar este memo? ESTA AÇÃO É IRREVERSÍVEL",
+    "links": "Links",
     "load-more": "Carregar mais",
     "no-archived-memos": "Não existem memos arquivados.",
     "search-placeholder": "Pesquisar memos",
-    "show-more": "Mostrar mais",
     "show-less": "Mostrar menos",
+    "show-more": "Mostrar mais",
+    "to-do": "Tarefas",
     "view-detail": "Ver detalhes",
     "visibility": {
       "disabled": "Memos públicos estão desativados",
       "private": "Privado",
       "protected": "Protegido",
       "public": "Público"
-    },
-    "links": "Links",
-    "to-do": "Tarefas",
-    "code": "Código"
+    }
   },
   "message": {
     "archived-successfully": "Arquivado com sucesso",
@@ -181,6 +186,11 @@
     "go-to-home": "Ir para a Página Inicial"
   },
   "setting": {
+    "access-token-section": {
+      "description": "Uma lista de todos os tokens de acesso para a sua conta.",
+      "title": "Tokens de Acesso",
+      "token": "Token"
+    },
     "account-section": {
       "change-password": "Alterar palavra-passe",
       "email-note": "Opcional",
@@ -208,6 +218,15 @@
       "delete-member": "Eliminar Membro",
       "delete-warning": "Tem a certeza de que deseja eliminar {{username}}? ESTA AÇÃO É IRREVERSÍVEL"
     },
+    "memo-related": "Memo",
+    "memo-related-settings": {
+      "content-lenght-limit": "Limite de comprimento do conteúdo (Bytes)",
+      "enable-link-preview": "Ativar pré-visualização de links",
+      "enable-memo-comments": "Ativar comentários em memos",
+      "enable-memo-location": "Ativar localização em memos",
+      "reactions": "Reações",
+      "title": "Definições relacionadas com memos"
+    },
     "my-account": "A Minha Conta",
     "preference": "Preferências",
     "preference-section": {
@@ -228,17 +247,17 @@
       "display-name": "Nome de Exibição",
       "identifier": "Identificador",
       "identifier-filter": "Filtro de Identificador",
+      "no-sso-found": "Nenhum SSO encontrado.",
       "redirect-url": "URL de Redirecionamento",
       "scopes": "Âmbitos",
+      "single-sign-on": "A configurar o Single Sign-On (SSO) para autenticação.",
       "sso-created": "SSO {{name}} criado",
       "sso-list": "Lista de SSO",
       "sso-updated": "SSO {{name}} atualizado",
       "template": "Modelo",
       "token-endpoint": "Ponto de Token",
       "update-sso": "Atualizar SSO",
-      "user-endpoint": "Ponto do Utilizador",
-      "no-sso-found": "Nenhum SSO encontrado.",
-      "single-sign-on": "A configurar o Single Sign-On (SSO) para autenticação."
+      "user-endpoint": "Ponto do Utilizador"
     },
     "storage": "Armazenamento",
     "storage-section": {
@@ -288,11 +307,11 @@
         "locale": "Localização do Servidor",
         "title": "Personalizar Servidor"
       },
+      "disable-markdown-shortcuts-in-editor": "Desativar atalhos Markdown",
       "disable-password-login": "Desativar login por palavra-passe",
       "disable-password-login-final-warning": "Escreva \"CONFIRM\" se tiver a certeza.",
       "disable-password-login-warning": "Isto desativará o login para todos. Deve ter cuidado ao remover um provedor de identidade",
       "disable-public-memos": "Desativar memos públicos",
-      "disable-markdown-shortcuts-in-editor": "Desativar atalhos Markdown",
       "display-with-updated-time": "Exibir com hora atualizada",
       "enable-auto-compact": "Ativar compactação automática",
       "enable-double-click-to-edit": "Ativar duplo clique para editar",
@@ -302,38 +321,22 @@
       "max-upload-size-hint": "32 MiB é recomendado.",
       "server-name": "Nome do Servidor"
     },
-    "memo-related": "Memo",
-    "access-token-section": {
-      "title": "Tokens de Acesso",
-      "description": "Uma lista de todos os tokens de acesso para a sua conta.",
-      "created-at": "Criado Em",
-      "expires-at": "Expira Em",
-      "token": "Token"
-    },
+    "version": "Versão",
     "webhook-section": {
+      "no-webhooks-found": "Nenhum webhook encontrado.",
       "title": "Webhooks",
-      "url": "Url",
-      "no-webhooks-found": "Nenhum webhook encontrado."
+      "url": "Url"
     },
     "workspace-section": {
-      "disallow-user-registration": "Desativar registo de utilizadores",
-      "disallow-password-auth": "Desativar autenticação por palavra-passe",
-      "disallow-change-username": "Desativar alteração de nome de utilizador",
       "disallow-change-nickname": "Desativar alteração de nome ou apelido",
-      "week-start-day": "Dia de início da semana",
+      "disallow-change-username": "Desativar alteração de nome de utilizador",
+      "disallow-password-auth": "Desativar autenticação por palavra-passe",
+      "disallow-user-registration": "Desativar registo de utilizadores",
+      "monday": "Segunda-feira",
       "saturday": "Sábado",
       "sunday": "Domingo",
-      "monday": "Segunda-feira"            
-    },
-    "memo-related-settings": {
-      "title": "Definições relacionadas com memos",
-      "enable-link-preview": "Ativar pré-visualização de links",
-      "enable-memo-comments": "Ativar comentários em memos",
-      "enable-memo-location": "Ativar localização em memos",
-      "content-lenght-limit": "Limite de comprimento do conteúdo (Bytes)",
-      "reactions": "Reações"
-    },
-    "version": "Versão"
+      "week-start-day": "Dia de início da semana"
+    }
   },
   "tag": {
     "all-tags": "Todas as Etiquetas",
@@ -342,10 +345,5 @@
     "delete-confirm": "Tem a certeza que quer eliminar esta etiqueta? Memos associados serão arquivados.",
     "delete-tag": "Eliminar Etiqueta",
     "no-tag-found": "Nenhuma etiqueta encontrada"
-  },
-  "markdown": {
-    "code-block": "Bloco de código",
-    "checkbox": "Caixa de seleção",
-    "content-syntax": "Sintaxe de conteúdo"
   }
 }

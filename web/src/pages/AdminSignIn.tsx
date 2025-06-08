@@ -1,12 +1,13 @@
+import { observer } from "mobx-react-lite";
 import AuthFooter from "@/components/AuthFooter";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
 import { workspaceStore } from "@/store/v2";
 
-const AdminSignIn = () => {
+const AdminSignIn = observer(() => {
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
 
   return (
-    <div className="py-4 sm:py-8 w-80 max-w-full min-h-[100svh] mx-auto flex flex-col justify-start items-center">
+    <div className="py-4 sm:py-8 w-80 max-w-full min-h-svh mx-auto flex flex-col justify-start items-center">
       <div className="w-full py-4 grow flex flex-col justify-center items-center">
         <div className="w-full flex flex-row justify-center items-center mb-6">
           <img className="h-14 w-auto rounded-full shadow" src={workspaceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
@@ -20,6 +21,6 @@ const AdminSignIn = () => {
       <AuthFooter />
     </div>
   );
-};
+});
 
 export default AdminSignIn;

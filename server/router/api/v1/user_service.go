@@ -20,7 +20,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/internal/base"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -122,7 +122,7 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 	if currentUser.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	if !util.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
+	if !base.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 	}
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
@@ -145,11 +145,9 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 }
 
 func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserRequest) (*v1pb.User, error) {
-	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
+	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
-
 	userID, err := ExtractUserIDFromName(request.User.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -158,11 +156,10 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
+	// Check permission.
+	// Only allow admin or self to update user.
 	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
-		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
 
 	user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
@@ -178,12 +175,16 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		ID:        user.ID,
 		UpdatedTs: &currentTs,
 	}
+	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
+	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "username" {
 			if workspaceGeneralSetting.DisallowChangeUsername {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change username")
 			}
-			if !util.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
+			if !base.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 			}
 			update.Username = &request.User.Username
@@ -199,6 +200,10 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		} else if field == "description" {
 			update.Description = &request.User.Description
 		} else if field == "role" {
+			// Only allow admin to update role.
+			if currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
+				return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+			}
 			role := convertUserRoleToStore(request.User.Role)
 			update.Role = &role
 		} else if field == "password" {
@@ -537,7 +542,13 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 	}
 	// Use the avatar URL instead of raw base64 image data to reduce the response size.
 	if user.AvatarURL != "" {
-		userpb.AvatarUrl = fmt.Sprintf("/file/%s/avatar", userpb.Name)
+		// Check if avatar url is base64 format.
+		_, _, err := extractImageInfo(user.AvatarURL)
+		if err == nil {
+			userpb.AvatarUrl = fmt.Sprintf("/file/%s/avatar", userpb.Name)
+		} else {
+			userpb.AvatarUrl = user.AvatarURL
+		}
 	}
 	return userpb
 }

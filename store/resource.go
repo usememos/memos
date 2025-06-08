@@ -8,7 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/plugin/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -67,13 +67,24 @@ type DeleteResource struct {
 }
 
 func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {
-	if !util.UIDMatcher.MatchString(create.UID) {
+	if !base.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
 	return s.driver.CreateResource(ctx, create)
 }
 
 func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resource, error) {
+	// Set default limits to prevent loading too many resources at once
+	if find.Limit == nil && find.GetBlob {
+		// When fetching blobs, we should be especially careful with limits
+		defaultLimit := 10
+		find.Limit = &defaultLimit
+	} else if find.Limit == nil {
+		// Even without blobs, let's default to a reasonable limit
+		defaultLimit := 100
+		find.Limit = &defaultLimit
+	}
+
 	return s.driver.ListResources(ctx, find)
 }
 
@@ -91,7 +102,7 @@ func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource,
 }
 
 func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) error {
-	if update.UID != nil && !util.UIDMatcher.MatchString(*update.UID) {
+	if update.UID != nil && !base.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
 	}
 	return s.driver.UpdateResource(ctx, update)
@@ -103,14 +114,14 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 		return errors.Wrap(err, "failed to get resource")
 	}
 	if resource == nil {
-		return errors.Wrap(nil, "resource not found")
+		return errors.New("resource not found")
 	}
 
 	if resource.StorageType == storepb.ResourceStorageType_LOCAL {
 		if err := func() error {
 			p := filepath.FromSlash(resource.Reference)
 			if !filepath.IsAbs(p) {
-				p = filepath.Join(s.Profile.Data, p)
+				p = filepath.Join(s.profile.Data, p)
 			}
 			err := os.Remove(p)
 			if err != nil {

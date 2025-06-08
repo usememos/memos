@@ -1,5 +1,6 @@
 import { Button } from "@usememos/mui";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -11,20 +12,20 @@ import MobileHeader from "@/components/MobileHeader";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { memoNamePrefix, useMemoStore } from "@/store/v1";
+import { memoNamePrefix } from "@/store/common";
+import { memoStore } from "@/store/v2";
 import { workspaceStore } from "@/store/v2";
 import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
-const MemoDetail = () => {
+const MemoDetail = observer(() => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
   const params = useParams();
   const navigateTo = useNavigateTo();
   const { state: locationState } = useLocation();
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
   const uid = params.uid;
   const memoName = `${memoNamePrefix}${uid}`;
   const memo = memoStore.getMemoByName(memoName);
@@ -92,7 +93,7 @@ const MemoDetail = () => {
           {parentMemo && (
             <div className="w-auto inline-block mb-2">
               <Link
-                className="px-3 py-1 border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
+                className="px-3 py-1 border border-zinc-200 rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
                 to={`/${parentMemo.name}`}
                 state={locationState}
                 viewTransition
@@ -117,7 +118,7 @@ const MemoDetail = () => {
             <h2 id="comments" className="sr-only">
               {t("memo.comment.self")}
             </h2>
-            <div className="relative mx-auto flex-grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
+            <div className="relative mx-auto grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
               {comments.length === 0 ? (
                 showCreateCommentButton && (
                   <div className="w-full flex flex-row justify-center items-center py-6">
@@ -175,6 +176,6 @@ const MemoDetail = () => {
       </div>
     </section>
   );
-};
+});
 
 export default MemoDetail;

@@ -63,8 +63,8 @@ const MarkdownMenu = (props: Props) => {
   return (
     <Dropdown>
       <MenuButton slots={{ root: "div" }}>
-        <Button size="sm" variant="plain">
-          <SquareSlashIcon className="w-5 h-5 mx-auto" />
+        <Button variant="plain" className="p-0">
+          <SquareSlashIcon className="w-5 h-5" />
         </Button>
       </MenuButton>
       <Menu className="text-sm" size="sm" placement="bottom-start">

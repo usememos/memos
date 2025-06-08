@@ -13,13 +13,9 @@ service AuthService {
   rpc GetAuthStatus(GetAuthStatusRequest) returns (User) {
     option (google.api.http) = {post: "/api/v1/auth/status"};
   }
-  // SignIn signs in the user with the given username and password.
+  // SignIn signs in the user.
   rpc SignIn(SignInRequest) returns (User) {
     option (google.api.http) = {post: "/api/v1/auth/signin"};
-  }
-  // SignInWithSSO signs in the user with the given SSO code.
-  rpc SignInWithSSO(SignInWithSSORequest) returns (User) {
-    option (google.api.http) = {post: "/api/v1/auth/signin/sso"};
   }
   // SignUp signs up the user with the given username and password.
   rpc SignUp(SignUpRequest) returns (User) {
@@ -38,15 +34,26 @@ message GetAuthStatusResponse {
 }
 
 message SignInRequest {
-  // The username to sign in with.
-  string username = 1;
-  // The password to sign in with.
-  string password = 2;
+  // Provide one authentication method (username/password or SSO).
+  oneof method {
+    // Username and password authentication method.
+    PasswordCredentials password_credentials = 1;
+
+    // SSO provider authentication method.
+    SSOCredentials sso_credentials = 2;
+  }
   // Whether the session should never expire.
   bool never_expire = 3;
 }
 
-message SignInWithSSORequest {
+message PasswordCredentials {
+  // The username to sign in with.
+  string username = 1;
+  // The password to sign in with.
+  string password = 2;
+}
+
+message SSOCredentials {
   // The ID of the SSO provider.
   int32 idp_id = 1;
   // The code to sign in with.

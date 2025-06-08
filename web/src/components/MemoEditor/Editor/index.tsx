@@ -192,8 +192,21 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       } else if (lastNode.type === NodeType.ORDERED_LIST_ITEM) {
         const { number } = lastNode.orderedListItemNode as OrderedListItemNode;
         insertText += `${Number(number) + 1}. `;
+      } else if (lastNode.type === NodeType.TABLE) {
+        const columns = lastNode.tableNode?.header.length;
+        if (!columns) {
+          return;
+        }
+
+        insertText += "| ";
+        for (let i = 1; i < columns; i++) {
+          insertText += " | ";
+        }
+        insertText += " |";
       }
+
       if (insertText) {
+        // Insert the text at the current cursor position.
         editorActions.insertText(insertText);
       }
     }
@@ -204,8 +217,8 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       className={cn("flex flex-col justify-start items-start relative w-full h-auto max-h-[50vh] bg-inherit dark:text-gray-300", className)}
     >
       <textarea
-        className="w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap word-break"
-        rows={1}
+        className="w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap break-words"
+        rows={2}
         placeholder={placeholder}
         ref={editorRef}
         onPaste={onPaste}

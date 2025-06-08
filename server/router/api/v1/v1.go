@@ -11,20 +11,24 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
+	"github.com/usememos/memos/internal/profile"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
-	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
 
 type APIV1Service struct {
+	grpc_health_v1.UnimplementedHealthServer
+
 	v1pb.UnimplementedWorkspaceServiceServer
 	v1pb.UnimplementedWorkspaceSettingServiceServer
 	v1pb.UnimplementedAuthServiceServer
 	v1pb.UnimplementedUserServiceServer
 	v1pb.UnimplementedMemoServiceServer
 	v1pb.UnimplementedResourceServiceServer
+	v1pb.UnimplementedShortcutServiceServer
 	v1pb.UnimplementedInboxServiceServer
 	v1pb.UnimplementedActivityServiceServer
 	v1pb.UnimplementedWebhookServiceServer
@@ -46,12 +50,14 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		Store:      store,
 		grpcServer: grpcServer,
 	}
+	grpc_health_v1.RegisterHealthServer(grpcServer, apiv1Service)
 	v1pb.RegisterWorkspaceServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterWorkspaceSettingServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterAuthServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterUserServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterMemoServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterResourceServiceServer(grpcServer, apiv1Service)
+	v1pb.RegisterShortcutServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterInboxServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterActivityServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterWebhookServiceServer(grpcServer, apiv1Service)
@@ -63,8 +69,14 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 
 // RegisterGateway registers the gRPC-Gateway with the given Echo instance.
 func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
+	var target string
+	if len(s.Profile.UNIXSock) == 0 {
+		target = fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port)
+	} else {
+		target = fmt.Sprintf("unix:%s", s.Profile.UNIXSock)
+	}
 	conn, err := grpc.NewClient(
-		fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port),
+		target,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(math.MaxInt32)),
 	)
@@ -89,6 +101,9 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	if err := v1pb.RegisterResourceServiceHandler(ctx, gwMux, conn); err != nil {
+		return err
+	}
+	if err := v1pb.RegisterShortcutServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
 	if err := v1pb.RegisterInboxServiceHandler(ctx, gwMux, conn); err != nil {

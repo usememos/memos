@@ -43,14 +43,14 @@ const TagSelector = observer((props: Props) => {
   return (
     <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
       <MenuButton slots={{ root: "div" }}>
-        <Button size="sm" variant="plain">
-          <HashIcon className="w-5 h-5 mx-auto" />
+        <Button variant="plain" className="p-0">
+          <HashIcon className="w-5 h-5" />
         </Button>
       </MenuButton>
       <Menu className="relative" component="div" size="sm" placement="bottom-start">
         <div ref={containerRef}>
           {tags.length > 0 ? (
-            <div className="flex flex-row justify-start items-start flex-wrap px-3 py-1 max-w-[12rem] h-auto max-h-48 overflow-y-auto gap-x-2 gap-y-1">
+            <div className="flex flex-row justify-start items-start flex-wrap px-3 py-1 max-w-48 h-auto max-h-48 overflow-y-auto gap-x-2 gap-y-1">
               {tags.map((tag) => {
                 return (
                   <div

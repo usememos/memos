@@ -79,6 +79,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("`memo`.`visibility` IN (%s)", strings.Join(placeholder, ",")))
 	}
+	if v := find.Pinned; v != nil {
+		where, args = append(where, "`memo`.`pinned` = ?"), append(args, *v)
+	}
 	if v := find.PayloadFind; v != nil {
 		if v.Raw != nil {
 			where, args = append(where, "`memo`.`payload` = ?"), append(args, *v.Raw)
@@ -123,20 +126,19 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		where = append(where, "`parent_id` IS NULL")
 	}
 
-	orderBy := []string{}
-	if find.OrderByPinned {
-		orderBy = append(orderBy, "`pinned` DESC")
-	}
 	order := "DESC"
 	if find.OrderByTimeAsc {
 		order = "ASC"
+	}
+	orderBy := []string{}
+	if find.OrderByPinned {
+		orderBy = append(orderBy, "`pinned` DESC")
 	}
 	if find.OrderByUpdatedTs {
 		orderBy = append(orderBy, "`updated_ts` "+order)
 	} else {
 		orderBy = append(orderBy, "`created_ts` "+order)
 	}
-	orderBy = append(orderBy, "`id` "+order)
 	fields := []string{
 		"`memo`.`id` AS `id`",
 		"`memo`.`uid` AS `uid`",

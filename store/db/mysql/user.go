@@ -32,7 +32,7 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 		return nil, err
 	}
 	if len(list) != 1 {
-		return nil, errors.Wrapf(nil, "unexpected user count: %d", len(list))
+		return nil, errors.Errorf("unexpected user count: %d", len(list))
 	}
 
 	return list[0], nil
@@ -63,6 +63,9 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	}
 	if v := update.Description; v != nil {
 		set, args = append(set, "`description` = ?"), append(args, *v)
+	}
+	if v := update.Role; v != nil {
+		set, args = append(set, "`role` = ?"), append(args, *v)
 	}
 	args = append(args, update.ID)
 
@@ -142,7 +145,7 @@ func (d *DB) GetUser(ctx context.Context, find *store.FindUser) (*store.User, er
 		return nil, err
 	}
 	if len(list) != 1 {
-		return nil, errors.Wrapf(nil, "unexpected user count: %d", len(list))
+		return nil, errors.Errorf("unexpected user count: %d", len(list))
 	}
 	return list[0], nil
 }

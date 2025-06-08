@@ -103,15 +103,13 @@
     "copy-link": "คัดลอกลิงก์",
     "count-memos-in-date": "{{count}} บันทึกช่วยจำใน {{date}}",
     "delete-confirm": "คุณแน่ใจหรือไม่ ว่าต้องการลบบันทึกนี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
-    "delete-memo": "ลบบันทึกช่วยจำ",
-    "embed": "ฝังตัว",
-    "fetch-more": "คลิกเพื่อเรียกข้อมูลเพิ่มเติม",
-    "fetching-data": "กำลังเรียกข้อมูล…",
     "links": "ลิงก์",
     "no-archived-memos": "ไม่มีบันทึกช่วยจำที่ถูกเก็บถาวร",
+    "remove-completed-task-list-items": "ลบที่ทำแล้ว",
+    "remove-completed-task-list-items-confirm": "คุณแน่ใจว่าจะลบรายการที่ทำแล้วทั้งหมดหรือไม่? (การกระทำนี้ไม่สามารถย้อนกลับได้)",
     "search-placeholder": "ค้นหาบันทึกช่วยจำ",
-    "show-more": "แสดงเพิ่มเติม",
     "show-less": "แสดงน้อยลง",
+    "show-more": "แสดงเพิ่มเติม",
     "to-do": "สิ่งที่ต้องทำ",
     "view-detail": "ดูรายละเอียด",
     "visibility": {
@@ -119,9 +117,7 @@
       "private": "ส่วนตัว",
       "protected": "พื้นที่ทำงาน",
       "public": "สาธารณะ"
-    },
-    "remove-completed-task-list-items": "ลบที่ทำแล้ว",
-    "remove-completed-task-list-items-confirm": "คุณแน่ใจว่าจะลบรายการที่ทำแล้วทั้งหมดหรือไม่? (การกระทำนี้ไม่สามารถย้อนกลับได้)"
+    }
   },
   "message": {
     "archived-successfully": "เก็บถาวรเรียบร้อยแล้ว",
@@ -135,11 +131,11 @@
     "no-data": "ไม่พบข้อมูล",
     "password-changed": "เปลี่ยนรหัสผ่านแล้ว",
     "password-not-match": "รหัสผ่านไม่ตรงกัน",
+    "remove-completed-task-list-items-successfully": "ลบเรียบร้อย!",
     "restored-successfully": "กู้คืนเรียบร้อยแล้ว",
     "succeed-copy-link": "คัดลอกลิงก์เรียบร้อยแล้ว",
     "update-succeed": "อัปเดตเรียบร้อยแล้ว",
-    "user-not-found": "ไม่พบผู้ใช้งาน",
-    "remove-completed-task-list-items-successfully": "ลบเรียบร้อย!"
+    "user-not-found": "ไม่พบผู้ใช้งาน"
   },
   "reference": {
     "add-references": "เพิ่มข้อมูลอ้างอิง",
@@ -301,8 +297,8 @@
       "enable-password-login-warning": "สิ่งนี้จะเปิดใช้งานการเข้าสู่ระบบด้วยรหัสผ่านสำหรับผู้ใช้ทุกคน ดำเนินการต่อหากคุณต้องการให้ผู้ใช้สามารถเข้าสู่ระบบโดยใช้ทั้ง SSO และรหัสผ่าน",
       "max-upload-size": "ขนาดการอัปโหลดสูงสุด (MiB)",
       "max-upload-size-hint": "ค่าที่แนะนำคือ 32 MiB",
-      "server-name": "ชื่อเซิร์ฟเวอร์",
-      "removed-completed-task-list-items": "เปิดใช้งานการลบรายการที่ทำแล้ว"
+      "removed-completed-task-list-items": "เปิดใช้งานการลบรายการที่ทำแล้ว",
+      "server-name": "ชื่อเซิร์ฟเวอร์"
     }
   },
   "tag": {
@@ -312,8 +308,5 @@
     "delete-confirm": "คุณแน่ใจหรือว่าจะลบแท็กนี้? บันทึกที่เกี่ยวข้องทั้งหมดจะถูกเก็บถาวร",
     "delete-tag": "ลบแท็ก",
     "no-tag-found": "ไม่พบแท็ก"
-  },
-  "timeline": {
-    "title": "ไทม์ไลน์"
   }
 }

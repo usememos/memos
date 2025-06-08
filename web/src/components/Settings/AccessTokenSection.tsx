@@ -73,7 +73,7 @@ const AccessTokenSection = () => {
         </div>
         <div className="w-full mt-2 flow-root">
           <div className="overflow-x-auto">
-            <div className="inline-block min-w-full border rounded-lg align-middle dark:border-zinc-600">
+            <div className="inline-block min-w-full border border-zinc-200 rounded-lg align-middle dark:border-zinc-600">
               <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
                 <thead>
                   <tr>
@@ -99,7 +99,7 @@ const AccessTokenSection = () => {
                     <tr key={userAccessToken.accessToken}>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400 flex flex-row justify-start items-center gap-x-1">
                         <span className="font-mono">{getFormatedAccessToken(userAccessToken.accessToken)}</span>
-                        <Button variant="plain" size="sm" onClick={() => copyAccessToken(userAccessToken.accessToken)}>
+                        <Button variant="plain" onClick={() => copyAccessToken(userAccessToken.accessToken)}>
                           <ClipboardIcon className="w-4 h-auto text-gray-400" />
                         </Button>
                       </td>
@@ -115,7 +115,6 @@ const AccessTokenSection = () => {
                       <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm">
                         <Button
                           variant="plain"
-                          size="sm"
                           onClick={() => {
                             handleDeleteAccessToken(userAccessToken.accessToken);
                           }}

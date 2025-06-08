@@ -86,7 +86,11 @@ const TagSuggestions = observer(({ editorRef, editorActions }: Props) => {
 
     const caretCordinates = getCaretCoordinates(editor, index);
     caretCordinates.top -= editor.scrollTop;
-    isActive ? setPosition(caretCordinates) : hide();
+    if (isActive) {
+      setPosition(caretCordinates);
+    } else {
+      hide();
+    }
   };
 
   const listenersAreRegisteredRef = useRef(false);
@@ -104,7 +108,7 @@ const TagSuggestions = observer(({ editorRef, editorActions }: Props) => {
   if (!isVisibleRef.current || !position) return null;
   return (
     <div
-      className="z-20 p-1 mt-1 -ml-2 absolute max-w-[12rem] gap-px rounded font-mono flex flex-col justify-start items-start overflow-auto shadow bg-zinc-100 dark:bg-zinc-700"
+      className="z-20 p-1 mt-1 -ml-2 absolute max-w-48 gap-px rounded font-mono flex flex-col justify-start items-start overflow-auto shadow bg-zinc-100 dark:bg-zinc-700"
       style={{ left: position.left, top: position.top + position.height }}
     >
       {suggestionsRef.current.map((tag, i) => (

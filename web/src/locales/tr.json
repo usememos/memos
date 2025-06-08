@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "Bloglar",
+    "description": "Gizlilik öncelikli, hafif bir not alma servisi. Harika düşüncelerinizi kolayca yakalayın ve paylaşın.",
+    "documents": "Belgeler",
+    "github-repository": "GitHub Deposu",
+    "official-website": "Resmi Web Sitesi"
+  },
   "auth": {
     "create-your-account": "Hesabınızı oluşturun",
     "host-tip": "Site Yöneticisi olarak kayıt oluyorsunuz.",
@@ -20,8 +27,8 @@
     "change": "Değiştir",
     "clear": "Temizle",
     "close": "Kapat",
-    "confirm": "Onayla",
     "collapse": "Daralt",
+    "confirm": "Onayla",
     "create": "Oluştur",
     "database": "Veritabanı",
     "day": "Gün",
@@ -35,8 +42,8 @@
     "file": "Dosya",
     "filter": "Filtrele",
     "home": "Ana Sayfa",
-    "in": "İçinde",
     "image": "Görsel",
+    "in": "İçinde",
     "inbox": "Gelen Kutusu",
     "language": "Dil",
     "learn-more": "Daha fazla bilgi",
@@ -65,6 +72,7 @@
     "select": "Seç",
     "settings": "Ayarlar",
     "share": "Paylaş",
+    "shortcuts": "Kısayollar",
     "sign-in": "Giriş yap",
     "sign-in-with": "{{provider}} ile giriş yap",
     "sign-out": "Çıkış yap",
@@ -79,8 +87,7 @@
     "username": "Kullanıcı adı",
     "version": "Sürüm",
     "visibility": "Görünürlük",
-    "yourself": "Kendiniz",
-    "shortcuts": "Kısayollar"
+    "yourself": "Kendiniz"
   },
   "days": {
     "fri": "Cum",
@@ -100,8 +107,14 @@
     "memo-comment": "{{user}} {{memo}} notunuza yorum yaptı.",
     "version-update": "Yeni sürüm {{version}} kullanıma hazır!"
   },
+  "markdown": {
+    "checkbox": "Onay kutusu",
+    "code-block": "Kod bloğu",
+    "content-syntax": "İçerik sözdizimi"
+  },
   "memo": {
     "archived-at": "Arşivlenme tarihi",
+    "code": "Kod",
     "comment": {
       "self": "Yorumlar",
       "write-a-comment": "Yorum yaz"
@@ -109,51 +122,50 @@
     "copy-link": "Bağlantıyı Kopyala",
     "count-memos-in-date": "{{date}} tarihinde {{count}} {{memos}}",
     "delete-confirm": "Bu notu silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
+    "direction": "Yön",
+    "direction-asc": "Artan",
+    "direction-desc": "Azalan",
+    "display-time": "Görüntüleme Zamanı",
+    "filters": "Filtreler",
+    "links": "Bağlantılar",
     "load-more": "Daha fazla yükle",
     "no-archived-memos": "Arşivlenmiş not yok.",
+    "no-memos": "Not yok.",
+    "order-by": "Sıralama Ölçütü",
+    "remove-completed-task-list-items": "Tamamlananları kaldır",
+    "remove-completed-task-list-items-confirm": "Tamamlanan tüm görevleri kaldırmak istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
     "search-placeholder": "Notlarda ara",
-    "show-more": "Daha fazla göster",
     "show-less": "Daha az göster",
+    "show-more": "Daha fazla göster",
+    "to-do": "Yapılacaklar",
     "view-detail": "Detayları Görüntüle",
     "visibility": {
       "disabled": "Herkese açık notlar devre dışı",
       "private": "Özel",
       "protected": "Çalışma Alanı",
       "public": "Herkese Açık"
-    },
-    "links": "Bağlantılar",
-    "to-do": "Yapılacaklar",
-    "code": "Kod",
-    "remove-completed-task-list-items": "Tamamlananları kaldır",
-    "remove-completed-task-list-items-confirm": "Tamamlanan tüm görevleri kaldırmak istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
-    "filters": "Filtreler",
-    "order-by": "Sıralama Ölçütü",
-    "display-time": "Görüntüleme Zamanı",
-    "direction": "Yön",
-    "direction-desc": "Azalan",
-    "direction-asc": "Artan",
-    "no-memos": "Not yok."
+    }
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",
     "change-memo-created-time": "Not oluşturma zamanını değiştir",
     "copied": "Kopyalandı",
     "deleted-successfully": "Başarıyla silindi",
+    "description-is-required": "Açıklama gerekli",
+    "failed-to-embed-memo": "Not gömme işlemi başarısız",
     "fill-all": "Lütfen tüm alanları doldurun.",
+    "fill-all-required-fields": "Lütfen tüm gerekli alanları doldurun",
     "maximum-upload-size-is": "Maksimum yükleme boyutu {{size}} MiB",
     "memo-not-found": "Not bulunamadı.",
     "new-password-not-match": "Yeni şifreler eşleşmiyor.",
     "no-data": "Veri bulunamadı.",
     "password-changed": "Şifre Değiştirildi",
     "password-not-match": "Şifreler eşleşmiyor.",
+    "remove-completed-task-list-items-successfully": "Kaldırma işlemi başarılı",
     "restored-successfully": "Başarıyla geri yüklendi",
     "succeed-copy-link": "Bağlantı başarıyla kopyalandı.",
     "update-succeed": "Güncelleme başarılı",
-    "user-not-found": "Kullanıcı bulunamadı",
-    "remove-completed-task-list-items-successfully": "Kaldırma işlemi başarılı",
-    "failed-to-embed-memo": "Not gömme işlemi başarısız",
-    "description-is-required": "Açıklama gerekli",
-    "fill-all-required-fields": "Lütfen tüm gerekli alanları doldurun"
+    "user-not-found": "Kullanıcı bulunamadı"
   },
   "reference": {
     "add-references": "Referans ekle",
@@ -198,6 +210,24 @@
     "go-to-home": "Ana Sayfaya Git"
   },
   "setting": {
+    "access-token-section": {
+      "access-token-copied-to-clipboard": "Erişim tokeni panoya kopyalandı",
+      "access-token-deletion": "{{accessToken}} erişim tokenini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ.",
+      "create-dialog": {
+        "create-access-token": "Erişim Tokeni Oluştur",
+        "created-at": "Oluşturulma Tarihi",
+        "description": "Açıklama",
+        "duration-1m": "1 Ay",
+        "duration-8h": "8 Saat",
+        "duration-never": "Asla",
+        "expiration": "Son Kullanma Tarihi",
+        "expires-at": "Sona Erme Tarihi",
+        "some-description": "Bir açıklama..."
+      },
+      "description": "Hesabınız için tüm erişim tokenlerinin listesi.",
+      "title": "Erişim Tokenleri",
+      "token": "Token"
+    },
     "account-section": {
       "change-password": "Şifre değiştir",
       "email-note": "İsteğe bağlı",
@@ -225,6 +255,15 @@
       "delete-member": "Üyeyi Sil",
       "delete-warning": "{{username}} kullanıcısını silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ"
     },
+    "memo-related": "Not",
+    "memo-related-settings": {
+      "content-lenght-limit": "İçerik uzunluğu sınırı (Bayt)",
+      "enable-link-preview": "Bağlantı önizlemeyi etkinleştir",
+      "enable-memo-comments": "Not yorumlarını etkinleştir",
+      "enable-memo-location": "Not konumunu etkinleştir",
+      "reactions": "Tepkiler",
+      "title": "Not ile ilgili ayarlar"
+    },
     "my-account": "Hesabım",
     "preference": "Tercihler",
     "preference-section": {
@@ -245,17 +284,17 @@
       "display-name": "Görünen Ad",
       "identifier": "Tanımlayıcı",
       "identifier-filter": "Tanımlayıcı Filtresi",
+      "no-sso-found": "SSO bulunamadı.",
       "redirect-url": "Yönlendirme URL'si",
       "scopes": "Kapsamlar",
+      "single-sign-on": "Kimlik Doğrulama için Tek Oturum Açma (SSO) Yapılandırması",
       "sso-created": "SSO {{name}} oluşturuldu",
       "sso-list": "SSO Listesi",
       "sso-updated": "SSO {{name}} güncellendi",
       "template": "Şablon",
       "token-endpoint": "Token uç noktası",
       "update-sso": "SSO'yu Güncelle",
-      "user-endpoint": "Kullanıcı uç noktası",
-      "no-sso-found": "SSO bulunamadı.",
-      "single-sign-on": "Kimlik Doğrulama için Tek Oturum Açma (SSO) Yapılandırması"
+      "user-endpoint": "Kullanıcı uç noktası"
     },
     "storage": "Depolama",
     "storage-section": {
@@ -305,11 +344,11 @@
         "locale": "Sunucu Yerel Ayarı",
         "title": "Sunucuyu Özelleştir"
       },
+      "disable-markdown-shortcuts-in-editor": "Editörde Markdown kısayollarını devre dışı bırak",
       "disable-password-login": "Şifre ile girişi devre dışı bırak",
       "disable-password-login-final-warning": "Ne yaptığınızı biliyorsanız lütfen \"CONFIRM\" yazın.",
       "disable-password-login-warning": "Bu, tüm kullanıcılar için şifre ile girişi devre dışı bırakacaktır. Yapılandırılmış kimlik sağlayıcılarınız başarısız olursa, veritabanında bu ayarı geri almadan giriş yapmak mümkün olmayacaktır. Ayrıca bir kimlik sağlayıcıyı kaldırırken çok dikkatli olmanız gerekecektir",
       "disable-public-memos": "Herkese açık notları devre dışı bırak",
-      "disable-markdown-shortcuts-in-editor": "Editörde Markdown kısayollarını devre dışı bırak",
       "display-with-updated-time": "Güncellenme zamanıyla görüntüle",
       "enable-auto-compact": "Otomatik sıkıştırmayı etkinleştir",
       "enable-double-click-to-edit": "Düzenlemek için çift tıklamayı etkinleştir",
@@ -317,62 +356,34 @@
       "enable-password-login-warning": "Bu, tüm kullanıcılar için şifre ile girişi etkinleştirecektir. Yalnızca kullanıcıların hem SSO hem de şifre kullanarak giriş yapmasını istiyorsanız devam edin",
       "max-upload-size": "Maksimum yükleme boyutu (MiB)",
       "max-upload-size-hint": "Önerilen değer 32 MiB'dir.",
-      "server-name": "Sunucu Adı",
-      "removed-completed-task-list-items": "Tamamlanan görev listesi öğelerinin kaldırılmasını etkinleştir"
+      "removed-completed-task-list-items": "Tamamlanan görev listesi öğelerinin kaldırılmasını etkinleştir",
+      "server-name": "Sunucu Adı"
     },
-    "memo-related": "Not",
-    "access-token-section": {
-      "title": "Erişim Tokenleri",
-      "description": "Hesabınız için tüm erişim tokenlerinin listesi.",
-      "token": "Token",
-      "access-token-deletion": "{{accessToken}} erişim tokenini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ.",
-      "access-token-copied-to-clipboard": "Erişim tokeni panoya kopyalandı",
-      "create-dialog": {
-        "create-access-token": "Erişim Tokeni Oluştur",
-        "description": "Açıklama",
-        "some-description": "Bir açıklama...",
-        "expiration": "Son Kullanma Tarihi",
-        "created-at": "Oluşturulma Tarihi",
-        "expires-at": "Sona Erme Tarihi",
-        "duration-never": "Asla",
-        "duration-8h": "8 Saat",
-        "duration-1m": "1 Ay"
-      }
-    },
+    "version": "Sürüm",
     "webhook-section": {
-      "title": "Webhook'lar",
-      "url": "URL",
-      "no-webhooks-found": "Webhook bulunamadı.",
       "create-dialog": {
+        "an-easy-to-remember-name": "Hatırlaması kolay bir isim",
         "create-webhook": "Webhook oluştur",
         "edit-webhook": "Webhook düzenle",
-        "an-easy-to-remember-name": "Hatırlaması kolay bir isim",
-        "title": "Başlık",
         "payload-url": "Payload URL'si",
+        "title": "Başlık",
         "url-example-post-receive": "https://example.com/postreceive"
-      }
+      },
+      "no-webhooks-found": "Webhook bulunamadı.",
+      "title": "Webhook'lar",
+      "url": "URL"
     },
     "workspace-section": {
-      "disallow-user-registration": "Kullanıcı kaydını yasakla",
-      "disallow-password-auth": "Şifre ile kimlik doğrulamayı yasakla",
-      "disallow-change-username": "Kullanıcı adı değiştirmeyi yasakla",
       "disallow-change-nickname": "Takma ad değiştirmeyi yasakla",
-      "week-start-day": "Haftanın başlangıç günü",
+      "disallow-change-username": "Kullanıcı adı değiştirmeyi yasakla",
+      "disallow-password-auth": "Şifre ile kimlik doğrulamayı yasakla",
+      "disallow-user-registration": "Kullanıcı kaydını yasakla",
+      "monday": "Pazartesi",
       "saturday": "Cumartesi",
       "sunday": "Pazar",
-      "monday": "Pazartesi"
-    },
-    "memo-related-settings": {
-      "title": "Not ile ilgili ayarlar",
-      "enable-link-preview": "Bağlantı önizlemeyi etkinleştir",
-      "enable-memo-comments": "Not yorumlarını etkinleştir",
-      "enable-memo-location": "Not konumunu etkinleştir",
-      "content-lenght-limit": "İçerik uzunluğu sınırı (Bayt)",
-      "reactions": "Tepkiler"
-    },
-    "version": "Sürüm"
+      "week-start-day": "Haftanın başlangıç günü"
+    }
   },
-  "shortcut": {},
   "tag": {
     "all-tags": "Tüm Etiketler",
     "create-tag": "Etiket Oluştur",
@@ -380,17 +391,5 @@
     "delete-confirm": "Bu etiketi silmek istediğinizden emin misiniz? İlgili tüm notlar arşivlenecektir.",
     "delete-tag": "Etiketi Sil",
     "no-tag-found": "Etiket bulunamadı"
-  },
-  "markdown": {
-    "code-block": "Kod bloğu",
-    "checkbox": "Onay kutusu",
-    "content-syntax": "İçerik sözdizimi"
-  },
-  "about": {
-    "description": "Gizlilik öncelikli, hafif bir not alma servisi. Harika düşüncelerinizi kolayca yakalayın ve paylaşın.",
-    "github-repository": "GitHub Deposu",
-    "official-website": "Resmi Web Sitesi",
-    "blogs": "Bloglar",
-    "documents": "Belgeler"
   }
 }

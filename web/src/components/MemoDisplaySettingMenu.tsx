@@ -24,7 +24,7 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
       <PopoverContent align="end" alignOffset={-12} sideOffset={14}>
         <div className="flex flex-col gap-2">
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3">{t("memo.direction")}</span>
+            <span className="text-sm shrink-0 mr-3 dark:text-zinc-400">{t("memo.direction")}</span>
             <Select
               value={viewStore.state.orderByTimeAsc}
               onChange={(_, value) =>
@@ -38,7 +38,7 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
             </Select>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3">{t("memo.masonry-view")}</span>
+            <span className="text-sm shrink-0 mr-3 dark:text-zinc-400">{t("common.layout")}</span>
             <Select
               value={viewStore.state.layout}
               onChange={(_, value) =>
@@ -47,8 +47,8 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
                 })
               }
             >
-              <Option value={"LIST"}>{"List"}</Option>
-              <Option value={"MASONRY"}>{"Masonry"}</Option>
+              <Option value={"LIST"}>{t("memo.list")}</Option>
+              <Option value={"MASONRY"}>{t("memo.masonry")}</Option>
             </Select>
           </div>
         </div>

@@ -11,12 +11,12 @@ import {
   TrashIcon,
   SquareCheckIcon,
 } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { markdownServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useMemoStore } from "@/store/v1";
-import { userStore } from "@/store/v2";
+import { memoStore, userStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
@@ -43,15 +43,15 @@ const checkHasCompletedTaskList = (memo: Memo) => {
   return false;
 };
 
-const MemoActionMenu = (props: Props) => {
+const MemoActionMenu = observer((props: Props) => {
   const { memo, readonly } = props;
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
-  const memoStore = useMemoStore();
-  const isArchived = memo.state === State.ARCHIVED;
   const hasCompletedTaskList = checkHasCompletedTaskList(memo);
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
+  const isComment = Boolean(memo.parent);
+  const isArchived = memo.state === State.ARCHIVED;
 
   const memoUpdatedCallback = () => {
     // Refresh user stats.
@@ -77,7 +77,7 @@ const MemoActionMenu = (props: Props) => {
           ["pinned"],
         );
       }
-    } catch (error) {
+    } catch {
       // do nth
     }
   };
@@ -108,7 +108,7 @@ const MemoActionMenu = (props: Props) => {
     }
 
     if (isInMemoDetailPage) {
-      memo.state === State.ARCHIVED ? navigateTo("/") : navigateTo("/archived");
+      navigateTo(memo.state === State.ARCHIVED ? "/" : "/archived");
     }
     memoUpdatedCallback();
   };
@@ -172,10 +172,12 @@ const MemoActionMenu = (props: Props) => {
       <Menu className="text-sm" size="sm" placement="bottom-end">
         {!readonly && !isArchived && (
           <>
-            <MenuItem onClick={handleTogglePinMemoBtnClick}>
-              {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
-              {memo.pinned ? t("common.unpin") : t("common.pin")}
-            </MenuItem>
+            {!isComment && (
+              <MenuItem onClick={handleTogglePinMemoBtnClick}>
+                {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
+                {memo.pinned ? t("common.unpin") : t("common.pin")}
+              </MenuItem>
+            )}
             <MenuItem onClick={handleEditMemoClick}>
               <Edit3Icon className="w-4 h-auto" />
               {t("common.edit")}
@@ -190,16 +192,18 @@ const MemoActionMenu = (props: Props) => {
         )}
         {!readonly && (
           <>
-            {!isArchived && hasCompletedTaskList && (
+            {!isArchived && !isComment && hasCompletedTaskList && (
               <MenuItem color="warning" onClick={handleRemoveCompletedTaskListItemsClick}>
                 <SquareCheckIcon className="w-4 h-auto" />
                 {t("memo.remove-completed-task-list-items")}
               </MenuItem>
             )}
-            <MenuItem color="warning" onClick={handleToggleMemoStatusClick}>
-              {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
-              {isArchived ? t("common.restore") : t("common.archive")}
-            </MenuItem>
+            {!isComment && (
+              <MenuItem color="warning" onClick={handleToggleMemoStatusClick}>
+                {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
+                {isArchived ? t("common.restore") : t("common.archive")}
+              </MenuItem>
+            )}
             <MenuItem color="danger" onClick={handleDeleteMemoClick}>
               <TrashIcon className="w-4 h-auto" />
               {t("common.delete")}
@@ -209,6 +213,6 @@ const MemoActionMenu = (props: Props) => {
       </Menu>
     </Dropdown>
   );
-};
+});
 
 export default MemoActionMenu;

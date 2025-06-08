@@ -1,11 +1,12 @@
-import { Dropdown, Menu, MenuButton, MenuItem, Switch } from "@mui/joy";
+import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Switch } from "@usememos/mui";
 import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
-import { useMemoFilterStore } from "@/store/v1";
 import { userStore } from "@/store/v2";
+import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import showRenameTagDialog from "../RenameTagDialog";
@@ -18,16 +19,15 @@ interface Props {
 
 const TagsSection = observer((props: Props) => {
   const t = useTranslate();
-  const memoFilterStore = useMemoFilterStore();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
   const tags = Object.entries(userStore.state.tagCount)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
 
   const handleTagClick = (tag: string) => {
-    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter) => filter.value === tag);
+    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
     if (isActive) {
-      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === tag);
+      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag);
     } else {
       memoFilterStore.addFilter({
         factor: "tagSearch",
@@ -58,7 +58,7 @@ const TagsSection = observer((props: Props) => {
             </PopoverTrigger>
             <PopoverContent align="end" alignOffset={-12}>
               <div className="w-auto flex flex-row justify-between items-center gap-2">
-                <span className="text-sm shrink-0">{t("common.tree-mode")}</span>
+                <span className="text-sm shrink-0 dark:text-zinc-400">{t("common.tree-mode")}</span>
                 <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />
               </div>
             </PopoverContent>
@@ -106,7 +106,7 @@ const TagsSection = observer((props: Props) => {
         )
       ) : (
         !props.readonly && (
-          <div className="p-2 border border-dashed dark:border-zinc-800 rounded-md flex flex-row justify-start items-start gap-1 text-gray-400 dark:text-gray-500">
+          <div className="p-2 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-md flex flex-row justify-start items-start gap-1 text-gray-400 dark:text-gray-500">
             <TagsIcon />
             <p className="mt-0.5 text-sm leading-snug italic">{t("tag.create-tags-guide")}</p>
           </div>

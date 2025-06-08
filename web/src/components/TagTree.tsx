@@ -1,7 +1,8 @@
 import { ChevronRightIcon, HashIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
-import { useMemoFilterStore } from "@/store/v1";
+import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
 
 interface Tag {
   key: string;
@@ -83,17 +84,16 @@ interface TagItemContainerProps {
   tag: Tag;
 }
 
-const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
+const TagItemContainer = observer((props: TagItemContainerProps) => {
   const { tag } = props;
-  const memoFilterStore = useMemoFilterStore();
   const tagFilters = memoFilterStore.getFiltersByFactor("tagSearch");
-  const isActive = tagFilters.some((f) => f.value === tag.text);
+  const isActive = tagFilters.some((f: MemoFilter) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
   const [showSubTags, toggleSubTags] = useToggle(false);
 
   const handleTagClick = () => {
     if (isActive) {
-      memoFilterStore.removeFilter((f) => f.factor === "tagSearch" && f.value === tag.text);
+      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag.text);
     } else {
       memoFilterStore.addFilter({
         factor: "tagSearch",
@@ -112,7 +112,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       <div className="relative flex flex-row justify-between items-center w-full leading-6 py-0 mt-px rounded-lg text-sm select-none shrink-0">
         <div
           className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-gray-600 dark:text-gray-400 ${
-            isActive && "!text-blue-600"
+            isActive && "text-blue-600!"
           }`}
         >
           <div className="shrink-0">
@@ -136,7 +136,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       {hasSubTags ? (
         <div
           className={`w-[calc(100%-0.5rem)] flex flex-col justify-start items-start h-auto ml-2 pl-2 border-l-2 border-l-gray-200 dark:border-l-zinc-800 ${
-            !showSubTags && "!hidden"
+            !showSubTags && "hidden!"
           }`}
         >
           {tag.subTags.map((st, idx) => (
@@ -146,6 +146,6 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       ) : null}
     </>
   );
-};
+});
 
 export default TagTree;

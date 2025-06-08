@@ -14,8 +14,8 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/usememos/memos/internal/version"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/version"
 )
 
 //go:embed migration
@@ -39,7 +39,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 		return errors.Wrap(err, "failed to pre-migrate")
 	}
 
-	if s.Profile.Mode == "prod" {
+	if s.profile.Mode == "prod" {
 		migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
 		if err != nil {
 			return errors.Wrap(err, "failed to find migration history")
@@ -107,7 +107,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 				return errors.Wrap(err, "failed to update current schema version")
 			}
 		}
-	} else if s.Profile.Mode == "demo" {
+	} else if s.profile.Mode == "demo" {
 		// In demo mode, we should seed the database.
 		if err := s.seed(ctx); err != nil {
 			return errors.Wrap(err, "failed to seed")
@@ -157,7 +157,7 @@ func (s *Store) preMigrate(ctx context.Context) error {
 			return errors.Wrap(err, "failed to update current schema version")
 		}
 	}
-	if s.Profile.Mode == "prod" {
+	if s.profile.Mode == "prod" {
 		if err := s.normalizedMigrationHistoryList(ctx); err != nil {
 			return errors.Wrap(err, "failed to normalize migration history list")
 		}
@@ -166,16 +166,16 @@ func (s *Store) preMigrate(ctx context.Context) error {
 }
 
 func (s *Store) getMigrationBasePath() string {
-	return fmt.Sprintf("migration/%s/", s.Profile.Driver)
+	return fmt.Sprintf("migration/%s/", s.profile.Driver)
 }
 
 func (s *Store) getSeedBasePath() string {
-	return fmt.Sprintf("seed/%s/", s.Profile.Driver)
+	return fmt.Sprintf("seed/%s/", s.profile.Driver)
 }
 
 func (s *Store) seed(ctx context.Context) error {
 	// Only seed for SQLite.
-	if s.Profile.Driver != "sqlite" {
+	if s.profile.Driver != "sqlite" {
 		slog.Warn("seed is only supported for SQLite")
 		return nil
 	}
@@ -207,7 +207,7 @@ func (s *Store) seed(ctx context.Context) error {
 }
 
 func (s *Store) GetCurrentSchemaVersion() (string, error) {
-	currentVersion := version.GetCurrentVersion(s.Profile.Mode)
+	currentVersion := version.GetCurrentVersion(s.profile.Mode)
 	minorVersion := version.GetMinorVersion(currentVersion)
 	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s%s/*.sql", s.getMigrationBasePath(), minorVersion))
 	if err != nil {

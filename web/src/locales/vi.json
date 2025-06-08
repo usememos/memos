@@ -20,8 +20,8 @@
     "change": "Thay đổi",
     "clear": "Xóa",
     "close": "Đóng",
-    "confirm": "Xác nhận",
     "collapse": "Thu gọn",
+    "confirm": "Xác nhận",
     "create": "Tạo",
     "database": "Cơ sở dữ liệu",
     "days": "Ngày",
@@ -96,8 +96,14 @@
     "memo-comment": "{{user}} đã bình luận về {{memo}} của bạn.",
     "version-update": "Phiên bản mới {{version}} đã có sẵn!"
   },
+  "markdown": {
+    "checkbox": "Hộp kiểm",
+    "code-block": "Khối mã",
+    "content-syntax": "Cú pháp nội dung"
+  },
   "memo": {
     "archived-at": "Đã lưu trữ lúc",
+    "code": "Mã",
     "comment": {
       "self": "Bình luận",
       "write-a-comment": "Viết bình luận"
@@ -105,23 +111,22 @@
     "copy-link": "Sao chép liên kết",
     "count-memos-in-date": "{{count}} ghi chú trong {{date}}",
     "delete-confirm": "Bạn có chắc chắn muốn xóa ghi chú này không? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
+    "links": "Liên kết",
     "load-more": "Tải thêm",
     "no-archived-memos": "Không có ghi chú nào được lưu trữ.",
+    "remove-completed-task-list-items": "Xóa đã hoàn thành",
+    "remove-completed-task-list-items-confirm": "Bạn có chắc chắn muốn xóa tất cả các mục đã hoàn thành không? (Hành động này không thể đảo ngược)",
     "search-placeholder": "Tìm kiếm ghi chú",
-    "show-more": "Hiển thị thêm",
     "show-less": "Hiển thị ít hơn",
+    "show-more": "Hiển thị thêm",
+    "to-do": "Việc cần làm",
     "view-detail": "Xem chi tiết",
     "visibility": {
       "disabled": "Ghi chú công khai đã bị vô hiệu hóa",
       "private": "Riêng tư",
       "protected": "Không gian làm việc",
       "public": "Công khai"
-    },
-    "links": "Liên kết",
-    "to-do": "Việc cần làm",
-    "code": "Mã",
-    "remove-completed-task-list-items": "Xóa đã hoàn thành",
-    "remove-completed-task-list-items-confirm": "Bạn có chắc chắn muốn xóa tất cả các mục đã hoàn thành không? (Hành động này không thể đảo ngược)"
+    }
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",
@@ -144,8 +149,7 @@
     "add-references": "Thêm tham chiếu",
     "embedded-usage": "Sử dụng như nội dung nhúng",
     "no-memos-found": "Không tìm thấy ghi chú",
-    "search-placeholder": "Tìm kiếm nội dung",
-    "remove-completed-task-list-items-successfully": "Xóa thành công!"
+    "search-placeholder": "Tìm kiếm nội dung"
   },
   "resource": {
     "clear": "Xóa",
@@ -184,6 +188,11 @@
     "go-to-home": "Về trang chủ"
   },
   "setting": {
+    "access-token-section": {
+      "description": "Danh sách tất cả token truy cập cho tài khoản của bạn.",
+      "title": "Token truy cập",
+      "token": "Token"
+    },
     "account-section": {
       "change-password": "Đổi mật khẩu",
       "email-note": "Tùy chọn",
@@ -211,6 +220,15 @@
       "delete-member": "Xóa thành viên",
       "delete-warning": "Bạn có chắc chắn muốn xóa {{username}}? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC"
     },
+    "memo-related": "Ghi chú",
+    "memo-related-settings": {
+      "content-lenght-limit": "Giới hạn độ dài nội dung (Byte)",
+      "enable-link-preview": "Bật xem trước liên kết",
+      "enable-memo-comments": "Bật bình luận ghi chú",
+      "enable-memo-location": "Bật vị trí ghi chú",
+      "reactions": "Phản ứng",
+      "title": "Cài đặt liên quan đến ghi chú"
+    },
     "my-account": "Tài khoản của tôi",
     "preference": "Tùy chỉnh",
     "preference-section": {
@@ -231,17 +249,17 @@
       "display-name": "Tên hiển thị",
       "identifier": "Định danh",
       "identifier-filter": "Bộ lọc định danh",
+      "no-sso-found": "Không tìm thấy SSO nào.",
       "redirect-url": "URL chuyển hướng",
       "scopes": "Phạm vi",
+      "single-sign-on": "Cấu hình Single Sign-On (SSO) cho xác thực",
       "sso-created": "SSO {{name}} đã được tạo",
       "sso-list": "Danh sách SSO",
       "sso-updated": "SSO {{name}} đã được cập nhật",
       "template": "Mẫu",
       "token-endpoint": "Điểm cuối token",
       "update-sso": "Cập nhật SSO",
-      "user-endpoint": "Điểm cuối người dùng",
-      "no-sso-found": "Không tìm thấy SSO nào.",
-      "single-sign-on": "Cấu hình Single Sign-On (SSO) cho xác thực"
+      "user-endpoint": "Điểm cuối người dùng"
     },
     "storage": "Lưu trữ",
     "storage-section": {
@@ -291,11 +309,11 @@
         "locale": "Ngôn ngữ máy chủ",
         "title": "Tùy chỉnh máy chủ"
       },
+      "disable-markdown-shortcuts-in-editor": "Vô hiệu hóa phím tắt Markdown trong trình soạn thảo",
       "disable-password-login": "Vô hiệu hóa đăng nhập bằng mật khẩu",
       "disable-password-login-final-warning": "Vui lòng nhập \"CONFIRM\" nếu bạn biết mình đang làm gì.",
       "disable-password-login-warning": "Điều này sẽ vô hiệu hóa đăng nhập bằng mật khẩu cho tất cả người dùng. Không thể đăng nhập nếu không hoàn tác cài đặt này trong cơ sở dữ liệu khi nhà cung cấp danh tính đã cấu hình gặp sự cố. Bạn cũng cần phải thật cẩn thận khi xóa nhà cung cấp danh tính",
       "disable-public-memos": "Vô hiệu hóa ghi chú công khai",
-      "disable-markdown-shortcuts-in-editor": "Vô hiệu hóa phím tắt Markdown trong trình soạn thảo",
       "display-with-updated-time": "Hiển thị với thời gian cập nhật",
       "enable-auto-compact": "Bật tự động nén",
       "enable-double-click-to-edit": "Bật nhấp đúp để chỉnh sửa",
@@ -303,41 +321,25 @@
       "enable-password-login-warning": "Điều này sẽ bật đăng nhập bằng mật khẩu cho tất cả người dùng. Chỉ tiếp tục nếu bạn muốn người dùng có thể đăng nhập bằng cả SSO và mật khẩu",
       "max-upload-size": "Kích thước tải lên tối đa (MiB)",
       "max-upload-size-hint": "Giá trị đề xuất là 32 MiB.",
-      "server-name": "Tên máy chủ",
-      "removed-completed-task-list-items": "Kích hoạt xóa đã hoàn thành"
+      "removed-completed-task-list-items": "Kích hoạt xóa đã hoàn thành",
+      "server-name": "Tên máy chủ"
     },
-    "memo-related": "Ghi chú",
-    "access-token-section": {
-      "title": "Token truy cập",
-      "description": "Danh sách tất cả token truy cập cho tài khoản của bạn.",
-      "created-at": "Được tạo lúc",
-      "expires-at": "Hết hạn lúc",
-      "token": "Token"
-    },
+    "version": "Phiên bản",
     "webhook-section": {
+      "no-webhooks-found": "Không tìm thấy webhook nào.",
       "title": "Webhook",
-      "url": "Url",
-      "no-webhooks-found": "Không tìm thấy webhook nào."
+      "url": "Url"
     },
     "workspace-section": {
-      "disallow-user-registration": "Không cho phép đăng ký người dùng",
-      "disallow-password-auth": "Không cho phép xác thực bằng mật khẩu",
-      "disallow-change-username": "Không cho phép đổi tên người dùng",
       "disallow-change-nickname": "Không cho phép đổi biệt danh",
-      "week-start-day": "Ngày bắt đầu tuần",
+      "disallow-change-username": "Không cho phép đổi tên người dùng",
+      "disallow-password-auth": "Không cho phép xác thực bằng mật khẩu",
+      "disallow-user-registration": "Không cho phép đăng ký người dùng",
+      "monday": "Thứ hai",
       "saturday": "Thứ bảy",
       "sunday": "Chủ nhật",
-      "monday": "Thứ hai"
-    },
-    "memo-related-settings": {
-      "title": "Cài đặt liên quan đến ghi chú",
-      "enable-link-preview": "Bật xem trước liên kết",
-      "enable-memo-comments": "Bật bình luận ghi chú",
-      "enable-memo-location": "Bật vị trí ghi chú",
-      "content-lenght-limit": "Giới hạn độ dài nội dung (Byte)",
-      "reactions": "Phản ứng"
-    },
-    "version": "Phiên bản"
+      "week-start-day": "Ngày bắt đầu tuần"
+    }
   },
   "tag": {
     "all-tags": "Tất cả thẻ",
@@ -346,10 +348,5 @@
     "delete-confirm": "Bạn có chắc chắn muốn xóa thẻ này không? Tất cả các ghi chú liên quan sẽ được lưu trữ.",
     "delete-tag": "Xóa thẻ",
     "no-tag-found": "Không tìm thấy thẻ"
-  },
-  "markdown": {
-    "code-block": "Khối mã",
-    "checkbox": "Hộp kiểm",
-    "content-syntax": "Cú pháp nội dung"
   }
 }

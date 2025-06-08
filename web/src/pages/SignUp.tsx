@@ -1,5 +1,6 @@
 import { Button, Input } from "@usememos/mui";
 import { LoaderIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -12,7 +13,7 @@ import { workspaceStore } from "@/store/v2";
 import { initialUserStore } from "@/store/v2/user";
 import { useTranslate } from "@/utils/i18n";
 
-const SignUp = () => {
+const SignUp = observer(() => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const actionBtnLoadingState = useLoading(false);
@@ -57,7 +58,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="py-4 sm:py-8 w-80 max-w-full min-h-[100svh] mx-auto flex flex-col justify-start items-center">
+    <div className="py-4 sm:py-8 w-80 max-w-full min-h-svh mx-auto flex flex-col justify-start items-center">
       <div className="w-full py-4 grow flex flex-col justify-center items-center">
         <div className="w-full flex flex-row justify-center items-center mb-6">
           <img className="h-14 w-auto rounded-full shadow" src={workspaceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
@@ -135,6 +136,6 @@ const SignUp = () => {
       <AuthFooter />
     </div>
   );
-};
+});
 
 export default SignUp;
