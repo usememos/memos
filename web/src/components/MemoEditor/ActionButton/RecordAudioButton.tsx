@@ -2,7 +2,7 @@ import { Button } from "@usememos/mui";
 import { MicIcon, StopCircleIcon } from "lucide-react";
 import { useCallback, useContext, useState } from "react";
 import toast from "react-hot-toast";
-import { useResourceStore } from "@/store/v1";
+import { resourceStore } from "@/store/v2";
 import { Resource } from "@/types/proto/api/v1/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import { MemoEditorContext } from "../types";
@@ -10,7 +10,6 @@ import { MemoEditorContext } from "../types";
 const RecordAudioButton = () => {
   const t = useTranslate();
   const context = useContext(MemoEditorContext);
-  const resourceStore = useResourceStore();
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
 
