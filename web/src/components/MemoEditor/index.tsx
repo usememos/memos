@@ -476,6 +476,7 @@ const MemoEditor = observer((props: Props) => {
           }));
         },
         memoName,
+        editorRef,
       }}
     >
       <div
