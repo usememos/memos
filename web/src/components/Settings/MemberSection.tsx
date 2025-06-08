@@ -1,4 +1,4 @@
-import { Dropdown, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/joy";
+import { Radio, RadioGroup } from "@mui/joy";
 import { Button, Input } from "@usememos/mui";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon } from "lucide-react";
@@ -12,6 +12,7 @@ import { State } from "@/types/proto/api/v1/common";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateUserDialog from "../CreateUserDialog";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
 
 interface LocalState {
   creatingUser: User;
@@ -214,22 +215,46 @@ const MemberSection = observer(() => {
                     {currentUser?.name === user.name ? (
                       <span>{t("common.yourself")}</span>
                     ) : (
-                      <Dropdown>
-                        <MenuButton size="sm">
-                          <MoreVerticalIcon className="w-4 h-auto" />
-                        </MenuButton>
-                        <Menu placement="bottom-end" size="sm">
-                          <MenuItem onClick={() => showCreateUserDialog(user, () => fetchUsers())}>{t("common.update")}</MenuItem>
-                          {user.state === State.NORMAL ? (
-                            <MenuItem onClick={() => handleArchiveUserClick(user)}>{t("setting.member-section.archive-member")}</MenuItem>
-                          ) : (
-                            <>
-                              <MenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</MenuItem>
-                              <MenuItem onClick={() => handleDeleteUserClick(user)}>{t("setting.member-section.delete-member")}</MenuItem>
-                            </>
-                          )}
-                        </Menu>
-                      </Dropdown>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button className="flex items-center justify-center p-1 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded">
+                            <MoreVerticalIcon className="w-4 h-auto" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent align="end" sideOffset={2}>
+                          <div className="flex flex-col gap-0.5 text-sm">
+                            <button
+                              onClick={() => showCreateUserDialog(user, () => fetchUsers())}
+                              className="flex items-center gap-2 px-2 py-1.5 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                            >
+                              {t("common.update")}
+                            </button>
+                            {user.state === State.NORMAL ? (
+                              <button
+                                onClick={() => handleArchiveUserClick(user)}
+                                className="flex items-center gap-2 px-2 py-1.5 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                              >
+                                {t("setting.member-section.archive-member")}
+                              </button>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => handleRestoreUserClick(user)}
+                                  className="flex items-center gap-2 px-2 py-1.5 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                                >
+                                  {t("common.restore")}
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteUserClick(user)}
+                                  className="flex items-center gap-2 px-2 py-1.5 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                                >
+                                  {t("setting.member-section.delete-member")}
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     )}
                   </td>
                 </tr>

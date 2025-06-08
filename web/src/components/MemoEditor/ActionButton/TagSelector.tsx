@@ -1,4 +1,3 @@
-import { Dropdown, Menu, MenuButton } from "@mui/joy";
 import { Button } from "@usememos/mui";
 import { HashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -7,6 +6,7 @@ import useClickAway from "react-use/lib/useClickAway";
 import OverflowTip from "@/components/kit/OverflowTip";
 import { userStore } from "@/store/v2";
 import { useTranslate } from "@/utils/i18n";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/Popover";
 import { EditorRefActions } from "../Editor";
 
 interface Props {
@@ -41,13 +41,13 @@ const TagSelector = observer((props: Props) => {
   };
 
   return (
-    <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
-      <MenuButton slots={{ root: "div" }}>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
         <Button variant="plain" className="p-0">
           <HashIcon className="w-5 h-5" />
         </Button>
-      </MenuButton>
-      <Menu className="relative" component="div" size="sm" placement="bottom-start">
+      </PopoverTrigger>
+      <PopoverContent align="start" sideOffset={2}>
         <div ref={containerRef}>
           {tags.length > 0 ? (
             <div className="flex flex-row justify-start items-start flex-wrap px-3 py-1 max-w-48 h-auto max-h-48 overflow-y-auto gap-x-2 gap-y-1">
@@ -69,8 +69,8 @@ const TagSelector = observer((props: Props) => {
             </p>
           )}
         </div>
-      </Menu>
-    </Dropdown>
+      </PopoverContent>
+    </Popover>
   );
 });
 

@@ -1,4 +1,3 @@
-import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { Switch } from "@usememos/mui";
 import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -75,24 +74,32 @@ const TagsSection = observer((props: Props) => {
                 key={tag}
                 className="shrink-0 w-auto max-w-full text-sm rounded-md leading-6 flex flex-row justify-start items-center select-none hover:opacity-80 text-gray-600 dark:text-gray-400 dark:border-zinc-800"
               >
-                <Dropdown>
-                  <MenuButton slots={{ root: "div" }}>
-                    <div className="shrink-0 group">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div className="shrink-0 group cursor-pointer">
                       <HashIcon className="group-hover:hidden w-4 h-auto shrink-0 opacity-40" />
                       <MoreVerticalIcon className="hidden group-hover:block w-4 h-auto shrink-0 opacity-60" />
                     </div>
-                  </MenuButton>
-                  <Menu size="sm" placement="bottom-start">
-                    <MenuItem onClick={() => showRenameTagDialog({ tag: tag })}>
-                      <Edit3Icon className="w-4 h-auto" />
-                      {t("common.rename")}
-                    </MenuItem>
-                    <MenuItem color="danger" onClick={() => handleDeleteTag(tag)}>
-                      <TrashIcon className="w-4 h-auto" />
-                      {t("common.delete")}
-                    </MenuItem>
-                  </Menu>
-                </Dropdown>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" sideOffset={2}>
+                    <div className="flex flex-col gap-0.5">
+                      <button
+                        onClick={() => showRenameTagDialog({ tag: tag })}
+                        className="flex items-center gap-1 px-2 py-1 text-sm text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                      >
+                        <Edit3Icon className="w-4 h-auto" />
+                        {t("common.rename")}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTag(tag)}
+                        className="flex items-center gap-1 px-2 py-1 text-sm text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                      >
+                        <TrashIcon className="w-4 h-auto" />
+                        {t("common.delete")}
+                      </button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <div
                   className={cn("inline-flex flex-nowrap ml-0.5 gap-0.5 cursor-pointer max-w-[calc(100%-16px)]")}
                   onClick={() => handleTagClick(tag)}

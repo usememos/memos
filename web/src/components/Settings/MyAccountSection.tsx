@@ -1,4 +1,3 @@
-import { Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import { Button } from "@usememos/mui";
 import { MoreVerticalIcon, PenLineIcon } from "lucide-react";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -6,6 +5,7 @@ import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
 import AccessTokenSection from "./AccessTokenSection";
 
 const MyAccountSection = () => {
@@ -30,16 +30,21 @@ const MyAccountSection = () => {
           <PenLineIcon className="w-4 h-4 mx-auto mr-1" />
           {t("common.edit")}
         </Button>
-        <Dropdown>
-          <MenuButton slots={{ root: "div" }}>
+        <Popover>
+          <PopoverTrigger asChild>
             <Button variant="outlined">
               <MoreVerticalIcon className="w-4 h-4 mx-auto" />
             </Button>
-          </MenuButton>
-          <Menu className="text-sm" size="sm" placement="bottom">
-            <MenuItem onClick={() => showChangeMemberPasswordDialog(user)}>{t("setting.account-section.change-password")}</MenuItem>
-          </Menu>
-        </Dropdown>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="text-sm p-1">
+            <button
+              onClick={() => showChangeMemberPasswordDialog(user)}
+              className="w-full flex items-center gap-2 px-2 py-1 text-left text-sm hover:bg-gray-100 rounded-md"
+            >
+              {t("setting.account-section.change-password")}
+            </button>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <AccessTokenSection />
