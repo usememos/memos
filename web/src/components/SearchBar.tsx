@@ -17,8 +17,9 @@ const SearchBar = observer(() => {
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (queryText !== "") {
-        const words = queryText.split(" ");
+      const trimmedText = queryText.trim();
+      if (trimmedText !== "") {
+        const words = trimmedText.split(/\s+/);
         words.forEach((word) => {
           memoFilterStore.addFilter({
             factor: "contentSearch",
