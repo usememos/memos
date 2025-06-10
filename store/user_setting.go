@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -103,6 +104,34 @@ func (s *Store) GetUserAccessTokens(ctx context.Context, userID int32) ([]*store
 
 	accessTokensUserSetting := userSetting.GetAccessTokens()
 	return accessTokensUserSetting.AccessTokens, nil
+}
+
+func (s *Store) UpdateTokenUsage(ctx context.Context, userID int32, accessToken string) error {
+	accessTokens, err := s.GetUserAccessTokens(ctx, userID)
+	if err != nil {
+		return err
+	}
+	for _, item := range accessTokens {
+		if item.AccessToken == accessToken {
+			now := time.Now().Format(time.RFC3339)
+			item.LastUsedAt = &now
+			_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
+				UserId: userID,
+				Key:    storepb.UserSettingKey_ACCESS_TOKENS,
+				Value: &storepb.UserSetting_AccessTokens{
+					AccessTokens: &storepb.AccessTokensUserSetting{
+						AccessTokens: accessTokens,
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			break
+		}
+	}
+
+	return nil
 }
 
 // RemoveUserAccessToken remove the access token of the user.

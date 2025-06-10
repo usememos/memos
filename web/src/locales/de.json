@@ -190,9 +190,21 @@
   },
   "setting": {
     "access-token-section": {
+      "create-dialog": {
+        "create-access-token": "Zugangstoken erstellen",
+        "created-at": "Erstellt am",
+        "description": "Beschreibung",
+        "duration-1m": "1 Monat",
+        "duration-8h": "8 Stunden",
+        "duration-never": "Niemals",
+        "expiration": "Ablaufdatum",
+        "expires-at": "Läuft ab am",
+        "some-description": "Eine Beschreibung..."
+      },
       "description": "Liste aller Zugangstoken für deinen Benutzer.",
       "title": "Zugangstoken",
-      "token": "Token"
+      "token": "Token",
+      "last-used-at": "Zuletzt benutzt"
     },
     "account-section": {
       "change-password": "Passwort ändern",

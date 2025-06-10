@@ -249,7 +249,8 @@
       },
       "description": "A list of all access tokens for your account.",
       "title": "Access Tokens",
-      "token": "Token"
+      "token": "Token",
+      "last-used-at": "Last used"
     },
     "account-section": {
       "change-password": "Change password",

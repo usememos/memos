@@ -126,6 +126,11 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessToken str
 		return "", status.Errorf(codes.Unauthenticated, "invalid access token")
 	}
 
+	err = in.Store.UpdateTokenUsage(ctx, userID, accessToken)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to update user access token usage")
+	}
+
 	return user.Username, nil
 }
 

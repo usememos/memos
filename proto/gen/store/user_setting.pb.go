@@ -324,7 +324,9 @@ type AccessTokensUserSetting_AccessToken struct {
 	// Including expiration time, issuer, etc.
 	AccessToken string `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
 	// A description for the access token.
-	Description   string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// The last time the access token has been used. Can be null
+	LastUsedAt    *string `protobuf:"bytes,3,opt,name=last_used_at,json=lastUsedAt,proto3,oneof" json:"last_used_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -369,6 +371,13 @@ func (x *AccessTokensUserSetting_AccessToken) GetAccessToken() string {
 func (x *AccessTokensUserSetting_AccessToken) GetDescription() string {
 	if x != nil {
 		return x.Description
+	}
+	return ""
+}
+
+func (x *AccessTokensUserSetting_AccessToken) GetLastUsedAt() string {
+	if x != nil && x.LastUsedAt != nil {
+		return *x.LastUsedAt
 	}
 	return ""
 }
@@ -448,12 +457,15 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"appearance\x12)\n" +
 	"\x0fmemo_visibility\x18\x06 \x01(\tH\x00R\x0ememoVisibility\x12A\n" +
 	"\tshortcuts\x18\a \x01(\v2!.memos.store.ShortcutsUserSettingH\x00R\tshortcutsB\a\n" +
-	"\x05value\"\xc4\x01\n" +
+	"\x05value\"\xfd\x01\n" +
 	"\x17AccessTokensUserSetting\x12U\n" +
-	"\raccess_tokens\x18\x01 \x03(\v20.memos.store.AccessTokensUserSetting.AccessTokenR\faccessTokens\x1aR\n" +
+	"\raccess_tokens\x18\x01 \x03(\v20.memos.store.AccessTokensUserSetting.AccessTokenR\faccessTokens\x1a\x8a\x01\n" +
 	"\vAccessToken\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\"\xaa\x01\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12%\n" +
+	"\flast_used_at\x18\x03 \x01(\tH\x00R\n" +
+	"lastUsedAt\x88\x01\x01B\x0f\n" +
+	"\r_last_used_at\"\xaa\x01\n" +
 	"\x14ShortcutsUserSetting\x12H\n" +
 	"\tshortcuts\x18\x01 \x03(\v2*.memos.store.ShortcutsUserSetting.ShortcutR\tshortcuts\x1aH\n" +
 	"\bShortcut\x12\x0e\n" +
@@ -518,6 +530,7 @@ func file_store_user_setting_proto_init() {
 		(*UserSetting_MemoVisibility)(nil),
 		(*UserSetting_Shortcuts)(nil),
 	}
+	file_store_user_setting_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

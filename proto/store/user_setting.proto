@@ -37,6 +37,8 @@ message AccessTokensUserSetting {
     string access_token = 1;
     // A description for the access token.
     string description = 2;
+    // The last time the access token has been used. Can be null
+    optional string last_used_at = 3;
   }
   repeated AccessToken access_tokens = 1;
 }
