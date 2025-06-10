@@ -225,14 +225,14 @@ const MemberSection = observer(() => {
                           <div className="flex flex-col gap-0.5 text-sm">
                             <button
                               onClick={() => showCreateUserDialog(user, () => fetchUsers())}
-                              className="flex items-center gap-2 px-2 py-1.5 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                              className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                             >
                               {t("common.update")}
                             </button>
                             {user.state === State.NORMAL ? (
                               <button
                                 onClick={() => handleArchiveUserClick(user)}
-                                className="flex items-center gap-2 px-2 py-1.5 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                                className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                               >
                                 {t("setting.member-section.archive-member")}
                               </button>
@@ -240,13 +240,13 @@ const MemberSection = observer(() => {
                               <>
                                 <button
                                   onClick={() => handleRestoreUserClick(user)}
-                                  className="flex items-center gap-2 px-2 py-1.5 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                                  className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                                 >
                                   {t("common.restore")}
                                 </button>
                                 <button
                                   onClick={() => handleDeleteUserClick(user)}
-                                  className="flex items-center gap-2 px-2 py-1.5 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                                  className="flex items-center gap-2 px-2 py-1 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                                 >
                                   {t("setting.member-section.delete-member")}
                                 </button>

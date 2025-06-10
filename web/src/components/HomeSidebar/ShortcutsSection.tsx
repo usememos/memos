@@ -61,18 +61,18 @@ const ShortcutsSection = observer(() => {
                 <PopoverTrigger asChild>
                   <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-40 cursor-pointer hover:opacity-70" />
                 </PopoverTrigger>
-                <PopoverContent align="start" sideOffset={2}>
-                  <div className="flex flex-col gap-0.5">
+                <PopoverContent align="end" alignOffset={-12}>
+                  <div className="flex flex-col text-sm gap-0.5">
                     <button
                       onClick={() => showCreateShortcutDialog({ shortcut })}
-                      className="flex items-center gap-1 px-2 py-1 text-sm text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                      className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                     >
                       <Edit3Icon className="w-4 h-auto" />
                       {t("common.edit")}
                     </button>
                     <button
                       onClick={() => handleDeleteShortcut(shortcut)}
-                      className="flex items-center gap-1 px-2 py-1 text-sm text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                      className="flex items-center gap-2 px-2 py-1 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                     >
                       <TrashIcon className="w-4 h-auto" />
                       {t("common.delete")}

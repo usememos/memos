@@ -69,24 +69,26 @@ const MarkdownMenu = (props: Props) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="text-sm p-1">
-        <button
-          onClick={handleCodeBlockClick}
-          className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-gray-100 rounded-md"
-        >
-          <Code2Icon className="w-4 h-auto" />
-          <span>{t("markdown.code-block")}</span>
-        </button>
-        <button
-          onClick={handleCheckboxClick}
-          className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-gray-100 rounded-md"
-        >
-          <CheckSquareIcon className="w-4 h-auto" />
-          <span>{t("markdown.checkbox")}</span>
-        </button>
-        <div className="-mt-0.5 pl-2">
-          <Link fontSize={12} href="https://www.usememos.com/docs/getting-started/content-syntax" target="_blank">
-            {t("markdown.content-syntax")}
-          </Link>
+        <div className="flex flex-col text-sm gap-0.5">
+          <button
+            onClick={handleCodeBlockClick}
+            className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
+          >
+            <Code2Icon className="w-4 h-auto" />
+            <span>{t("markdown.code-block")}</span>
+          </button>
+          <button
+            onClick={handleCheckboxClick}
+            className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
+          >
+            <CheckSquareIcon className="w-4 h-auto" />
+            <span>{t("markdown.checkbox")}</span>
+          </button>
+          <div className="pl-2">
+            <Link fontSize={12} href="https://www.usememos.com/docs/getting-started/content-syntax" target="_blank">
+              {t("markdown.content-syntax")}
+            </Link>
+          </div>
         </div>
       </PopoverContent>
     </Popover>

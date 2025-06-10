@@ -176,7 +176,7 @@ const MemoActionMenu = observer((props: Props) => {
               {!isComment && (
                 <button
                   onClick={handleTogglePinMemoBtnClick}
-                  className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                  className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                 >
                   {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
                   {memo.pinned ? t("common.unpin") : t("common.pin")}
@@ -184,7 +184,7 @@ const MemoActionMenu = observer((props: Props) => {
               )}
               <button
                 onClick={handleEditMemoClick}
-                className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
               >
                 <Edit3Icon className="w-4 h-auto" />
                 {t("common.edit")}
@@ -194,7 +194,7 @@ const MemoActionMenu = observer((props: Props) => {
           {!isArchived && (
             <button
               onClick={handleCopyLink}
-              className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+              className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
             >
               <CopyIcon className="w-4 h-auto" />
               {t("memo.copy-link")}
@@ -205,7 +205,7 @@ const MemoActionMenu = observer((props: Props) => {
               {!isArchived && !isComment && hasCompletedTaskList && (
                 <button
                   onClick={handleRemoveCompletedTaskListItemsClick}
-                  className="flex items-center gap-2 px-2 py-1 text-left text-amber-600 dark:text-amber-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                  className="flex items-center gap-2 px-2 py-1 text-left text-amber-600 dark:text-amber-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                 >
                   <SquareCheckIcon className="w-4 h-auto" />
                   {t("memo.remove-completed-task-list-items")}
@@ -214,7 +214,7 @@ const MemoActionMenu = observer((props: Props) => {
               {!isComment && (
                 <button
                   onClick={handleToggleMemoStatusClick}
-                  className="flex items-center gap-2 px-2 py-1 text-left text-amber-600 dark:text-amber-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                  className="flex items-center gap-2 px-2 py-1 text-left text-amber-600 dark:text-amber-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                 >
                   {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
                   {isArchived ? t("common.restore") : t("common.archive")}
@@ -222,7 +222,7 @@ const MemoActionMenu = observer((props: Props) => {
               )}
               <button
                 onClick={handleDeleteMemoClick}
-                className="flex items-center gap-2 px-2 py-1 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                className="flex items-center gap-2 px-2 py-1 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
               >
                 <TrashIcon className="w-4 h-auto" />
                 {t("common.delete")}

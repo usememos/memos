@@ -71,13 +71,13 @@ const SSOSection = () => {
                 <div className="flex flex-col gap-0.5 text-sm">
                   <button
                     onClick={() => showCreateIdentityProviderDialog(identityProvider, fetchIdentityProviderList)}
-                    className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                    className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                   >
                     {t("common.edit")}
                   </button>
                   <button
                     onClick={() => handleDeleteIdentityProvider(identityProvider)}
-                    className="flex items-center gap-2 px-2 py-1 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                    className="flex items-center gap-2 px-2 py-1 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                   >
                     {t("common.delete")}
                   </button>

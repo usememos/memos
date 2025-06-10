@@ -56,7 +56,7 @@ const TagsSection = observer((props: Props) => {
               <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-60" />
             </PopoverTrigger>
             <PopoverContent align="end" alignOffset={-12}>
-              <div className="w-auto flex flex-row justify-between items-center gap-2">
+              <div className="w-auto flex flex-row justify-between items-center gap-2 p-1">
                 <span className="text-sm shrink-0 dark:text-zinc-400">{t("common.tree-mode")}</span>
                 <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />
               </div>
@@ -82,17 +82,17 @@ const TagsSection = observer((props: Props) => {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent align="start" sideOffset={2}>
-                    <div className="flex flex-col gap-0.5">
+                    <div className="flex flex-col text-sm gap-0.5">
                       <button
                         onClick={() => showRenameTagDialog({ tag: tag })}
-                        className="flex items-center gap-1 px-2 py-1 text-sm text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                        className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                       >
                         <Edit3Icon className="w-4 h-auto" />
                         {t("common.rename")}
                       </button>
                       <button
                         onClick={() => handleDeleteTag(tag)}
-                        className="flex items-center gap-1 px-2 py-1 text-sm text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded transition-colors"
+                        className="flex items-center gap-2 px-2 py-1 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
                       >
                         <TrashIcon className="w-4 h-auto" />
                         {t("common.delete")}
