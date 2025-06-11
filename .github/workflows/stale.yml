@@ -1,4 +1,4 @@
-name: Close Stale Issues
+name: Stale
 
 on:
   schedule:

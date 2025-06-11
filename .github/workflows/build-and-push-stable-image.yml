@@ -1,4 +1,4 @@
-name: Build and Push Stable Docker Image
+name: Build and Push Stable Image
 
 on:
   push:
