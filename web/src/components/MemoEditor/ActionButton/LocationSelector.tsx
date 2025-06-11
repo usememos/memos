@@ -105,7 +105,7 @@ const LocationSelector = (props: Props) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent align="center">
-        <div className="min-w-80 sm:w-lg flex flex-col justify-start items-start">
+        <div className="min-w-80 sm:w-lg p-1 flex flex-col justify-start items-start">
           <LeafletMap key={JSON.stringify(state.initilized)} latlng={state.position} onChange={onPositionChanged} />
           <div className="mt-2 w-full flex flex-row justify-between items-center gap-2">
             <div className="flex flex-row items-center justify-start gap-2">

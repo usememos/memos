@@ -135,7 +135,7 @@ const AddMemoRelationPopover = (props: Props) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent align="center">
-        <div className="w-[16rem] flex flex-col justify-start items-start">
+        <div className="w-[16rem] p-1 flex flex-col justify-start items-start">
           <Autocomplete
             className="w-full"
             size="md"
@@ -148,7 +148,7 @@ const AddMemoRelationPopover = (props: Props) => {
             inputValue={searchText}
             value={selectedMemos}
             multiple
-            onInputChange={(_, value) => setSearchText(value.trim())}
+            onInputChange={(_, value) => setSearchText(value.trimStart())}
             getOptionKey={(memo) => memo.name}
             getOptionLabel={(memo) => memo.content}
             isOptionEqualToValue={(memo, value) => memo.name === value.name}
