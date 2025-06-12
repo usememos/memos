@@ -373,7 +373,7 @@ const MemoEditor = observer((props: Props) => {
             memoPatch.updateTime = updateTime;
           }
           if (updateMask.size === 0) {
-            toast.error("No changes detected");
+            toast.error(t("editor.no-changes-detected"));
             if (onCancel) {
               onCancel();
             }
