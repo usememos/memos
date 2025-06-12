@@ -108,7 +108,8 @@
   "editor": {
     "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",
-    "save": "保存"
+    "save": "保存",
+    "no-changes-detected": "未检测到更改"
   },
   "filters": {
     "has-code": "有代码",
