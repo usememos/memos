@@ -112,7 +112,8 @@
   "editor": {
     "add-your-comment-here": "Add your comment here...",
     "any-thoughts": "Any thoughts...",
-    "save": "Save"
+    "save": "Save",
+    "no-changes-detected": "No changes detected"
   },
   "filters": {
     "has-code": "hasCode",
