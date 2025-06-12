@@ -3256,6 +3256,9 @@ definitions:
       expiresAt:
         type: string
         format: date-time
+      lastUsedAt:
+        type: string
+        format: date-time
   v1UserStats:
     type: object
     properties:
