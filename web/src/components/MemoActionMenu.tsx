@@ -60,23 +60,13 @@ const MemoActionMenu = observer((props: Props) => {
 
   const handleTogglePinMemoBtnClick = async () => {
     try {
-      if (memo.pinned) {
-        await memoStore.updateMemo(
-          {
-            name: memo.name,
-            pinned: false,
-          },
-          ["pinned"],
-        );
-      } else {
-        await memoStore.updateMemo(
-          {
-            name: memo.name,
-            pinned: true,
-          },
-          ["pinned"],
-        );
-      }
+      await memoStore.updateMemo(
+        {
+          name: memo.name,
+          pinned: !memo.pinned,
+        },
+        ["pinned"],
+      );
     } catch {
       // do nth
     }
@@ -173,15 +163,13 @@ const MemoActionMenu = observer((props: Props) => {
         <div className="flex flex-col text-sm gap-0.5">
           {!readonly && !isArchived && (
             <>
-              {!isComment && (
-                <button
-                  onClick={handleTogglePinMemoBtnClick}
-                  className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
-                >
-                  {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
-                  {memo.pinned ? t("common.unpin") : t("common.pin")}
-                </button>
-              )}
+              <button
+                onClick={handleTogglePinMemoBtnClick}
+                className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
+              >
+                {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
+                {memo.pinned ? t("common.unpin") : t("common.pin")}
+              </button>
               <button
                 onClick={handleEditMemoClick}
                 className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
@@ -202,7 +190,7 @@ const MemoActionMenu = observer((props: Props) => {
           )}
           {!readonly && (
             <>
-              {!isArchived && !isComment && hasCompletedTaskList && (
+              {!isArchived && hasCompletedTaskList && (
                 <button
                   onClick={handleRemoveCompletedTaskListItemsClick}
                   className="flex items-center gap-2 px-2 py-1 text-left text-amber-600 dark:text-amber-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
