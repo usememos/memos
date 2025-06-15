@@ -236,6 +236,7 @@ message UserAccessToken {
   string description = 2;
   google.protobuf.Timestamp issued_at = 3;
   google.protobuf.Timestamp expires_at = 4;
+  google.protobuf.Timestamp last_used_at = 5;
 }
 
 message ListUserAccessTokensRequest {
