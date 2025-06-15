@@ -15,6 +15,8 @@ type Driver interface {
 	GetDB() *sql.DB
 	Close() error
 
+	IsInitialized(ctx context.Context) (bool, error)
+
 	// MigrationHistory model related methods.
 	FindMigrationHistoryList(ctx context.Context, find *FindMigrationHistory) ([]*MigrationHistory, error)
 	UpsertMigrationHistory(ctx context.Context, upsert *UpsertMigrationHistory) (*MigrationHistory, error)
