@@ -4,6 +4,8 @@ package memos.api.v1;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 
@@ -14,18 +16,22 @@ service IdentityProviderService {
   rpc ListIdentityProviders(ListIdentityProvidersRequest) returns (ListIdentityProvidersResponse) {
     option (google.api.http) = {get: "/api/v1/identityProviders"};
   }
+
   // GetIdentityProvider gets an identity provider.
   rpc GetIdentityProvider(GetIdentityProviderRequest) returns (IdentityProvider) {
     option (google.api.http) = {get: "/api/v1/{name=identityProviders/*}"};
     option (google.api.method_signature) = "name";
   }
+
   // CreateIdentityProvider creates an identity provider.
   rpc CreateIdentityProvider(CreateIdentityProviderRequest) returns (IdentityProvider) {
     option (google.api.http) = {
       post: "/api/v1/identityProviders"
       body: "identity_provider"
     };
+    option (google.api.method_signature) = "identity_provider";
   }
+
   // UpdateIdentityProvider updates an identity provider.
   rpc UpdateIdentityProvider(UpdateIdentityProviderRequest) returns (IdentityProvider) {
     option (google.api.http) = {
@@ -34,6 +40,7 @@ service IdentityProviderService {
     };
     option (google.api.method_signature) = "identity_provider,update_mask";
   }
+
   // DeleteIdentityProvider deletes an identity provider.
   rpc DeleteIdentityProvider(DeleteIdentityProviderRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{name=identityProviders/*}"};
@@ -42,21 +49,37 @@ service IdentityProviderService {
 }
 
 message IdentityProvider {
-  // The name of the identityProvider.
-  // Format: identityProviders/{id}, id is the system generated auto-incremented id.
-  string name = 1;
+  option (google.api.resource) = {
+    type: "memos.api.v1/IdentityProvider"
+    pattern: "identityProviders/{idp}"
+    name_field: "name"
+    singular: "identityProvider"
+    plural: "identityProviders"
+  };
+
+  // The resource name of the identity provider.
+  // Format: identityProviders/{idp}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Output only. The system generated unique identifier.
+  string uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Required. The type of the identity provider.
+  Type type = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The display title of the identity provider.
+  string title = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Filter applied to user identifiers.
+  string identifier_filter = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Required. Configuration for the identity provider.
+  IdentityProviderConfig config = 6 [(google.api.field_behavior) = REQUIRED];
 
   enum Type {
     TYPE_UNSPECIFIED = 0;
     OAUTH2 = 1;
   }
-  Type type = 2;
-
-  string title = 3;
-
-  string identifier_filter = 4;
-
-  IdentityProviderConfig config = 5;
 }
 
 message IdentityProviderConfig {
@@ -82,32 +105,54 @@ message OAuth2Config {
   FieldMapping field_mapping = 7;
 }
 
-message ListIdentityProvidersRequest {}
+message ListIdentityProvidersRequest {
+  // Optional. The maximum number of identity providers to return.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token for pagination.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
 
 message ListIdentityProvidersResponse {
+  // The list of identity providers.
   repeated IdentityProvider identity_providers = 1;
+
+  // A token for the next page of results.
+  string next_page_token = 2;
 }
 
 message GetIdentityProviderRequest {
-  // The name of the identityProvider to get.
-  string name = 1;
+  // Required. The resource name of the identity provider to get.
+  // Format: identityProviders/{idp}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
+  ];
 }
 
 message CreateIdentityProviderRequest {
-  // The identityProvider to create.
-  IdentityProvider identity_provider = 1;
+  // Required. The identity provider to create.
+  IdentityProvider identity_provider = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The ID to use for the identity provider, which will become the final component of the resource name.
+  // If not provided, the system will generate one.
+  string identity_provider_id = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message UpdateIdentityProviderRequest {
-  // The identityProvider to update.
-  IdentityProvider identity_provider = 1;
+  // Required. The identity provider to update.
+  IdentityProvider identity_provider = 1 [(google.api.field_behavior) = REQUIRED];
 
-  // The update mask applies to the resource. Only the top level fields of
+  // Required. The update mask applies to the resource. Only the top level fields of
   // IdentityProvider are supported.
-  google.protobuf.FieldMask update_mask = 2;
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message DeleteIdentityProviderRequest {
-  // The name of the identityProvider to delete.
-  string name = 1;
+  // Required. The resource name of the identity provider to delete.
+  // Format: identityProviders/{idp}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
+  ];
 }

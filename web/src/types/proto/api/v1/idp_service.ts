@@ -13,13 +13,19 @@ export const protobufPackage = "memos.api.v1";
 
 export interface IdentityProvider {
   /**
-   * The name of the identityProvider.
-   * Format: identityProviders/{id}, id is the system generated auto-incremented id.
+   * The resource name of the identity provider.
+   * Format: identityProviders/{idp}
    */
   name: string;
+  /** Output only. The system generated unique identifier. */
+  uid: string;
+  /** Required. The type of the identity provider. */
   type: IdentityProvider_Type;
+  /** Required. The display title of the identity provider. */
   title: string;
+  /** Optional. Filter applied to user identifiers. */
   identifierFilter: string;
+  /** Required. Configuration for the identity provider. */
   config?: IdentityProviderConfig | undefined;
 }
 
@@ -78,41 +84,68 @@ export interface OAuth2Config {
 }
 
 export interface ListIdentityProvidersRequest {
+  /** Optional. The maximum number of identity providers to return. */
+  pageSize: number;
+  /** Optional. A page token for pagination. */
+  pageToken: string;
 }
 
 export interface ListIdentityProvidersResponse {
+  /** The list of identity providers. */
   identityProviders: IdentityProvider[];
+  /** A token for the next page of results. */
+  nextPageToken: string;
 }
 
 export interface GetIdentityProviderRequest {
-  /** The name of the identityProvider to get. */
+  /**
+   * Required. The resource name of the identity provider to get.
+   * Format: identityProviders/{idp}
+   */
   name: string;
 }
 
 export interface CreateIdentityProviderRequest {
-  /** The identityProvider to create. */
-  identityProvider?: IdentityProvider | undefined;
-}
-
-export interface UpdateIdentityProviderRequest {
-  /** The identityProvider to update. */
+  /** Required. The identity provider to create. */
   identityProvider?:
     | IdentityProvider
     | undefined;
   /**
-   * The update mask applies to the resource. Only the top level fields of
+   * Optional. The ID to use for the identity provider, which will become the final component of the resource name.
+   * If not provided, the system will generate one.
+   */
+  identityProviderId: string;
+}
+
+export interface UpdateIdentityProviderRequest {
+  /** Required. The identity provider to update. */
+  identityProvider?:
+    | IdentityProvider
+    | undefined;
+  /**
+   * Required. The update mask applies to the resource. Only the top level fields of
    * IdentityProvider are supported.
    */
   updateMask?: string[] | undefined;
 }
 
 export interface DeleteIdentityProviderRequest {
-  /** The name of the identityProvider to delete. */
+  /**
+   * Required. The resource name of the identity provider to delete.
+   * Format: identityProviders/{idp}
+   */
   name: string;
 }
 
 function createBaseIdentityProvider(): IdentityProvider {
-  return { name: "", type: IdentityProvider_Type.TYPE_UNSPECIFIED, title: "", identifierFilter: "", config: undefined };
+  return {
+    name: "",
+    uid: "",
+    type: IdentityProvider_Type.TYPE_UNSPECIFIED,
+    title: "",
+    identifierFilter: "",
+    config: undefined,
+  };
 }
 
 export const IdentityProvider: MessageFns<IdentityProvider> = {
@@ -120,17 +153,20 @@ export const IdentityProvider: MessageFns<IdentityProvider> = {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
+    if (message.uid !== "") {
+      writer.uint32(18).string(message.uid);
+    }
     if (message.type !== IdentityProvider_Type.TYPE_UNSPECIFIED) {
-      writer.uint32(16).int32(identityProvider_TypeToNumber(message.type));
+      writer.uint32(24).int32(identityProvider_TypeToNumber(message.type));
     }
     if (message.title !== "") {
-      writer.uint32(26).string(message.title);
+      writer.uint32(34).string(message.title);
     }
     if (message.identifierFilter !== "") {
-      writer.uint32(34).string(message.identifierFilter);
+      writer.uint32(42).string(message.identifierFilter);
     }
     if (message.config !== undefined) {
-      IdentityProviderConfig.encode(message.config, writer.uint32(42).fork()).join();
+      IdentityProviderConfig.encode(message.config, writer.uint32(50).fork()).join();
     }
     return writer;
   },
@@ -151,19 +187,19 @@ export const IdentityProvider: MessageFns<IdentityProvider> = {
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.uid = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
             break;
           }
 
           message.type = identityProvider_TypeFromJSON(reader.int32());
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.title = reader.string();
           continue;
         }
         case 4: {
@@ -171,11 +207,19 @@ export const IdentityProvider: MessageFns<IdentityProvider> = {
             break;
           }
 
-          message.identifierFilter = reader.string();
+          message.title = reader.string();
           continue;
         }
         case 5: {
           if (tag !== 42) {
+            break;
+          }
+
+          message.identifierFilter = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
             break;
           }
 
@@ -197,6 +241,7 @@ export const IdentityProvider: MessageFns<IdentityProvider> = {
   fromPartial(object: DeepPartial<IdentityProvider>): IdentityProvider {
     const message = createBaseIdentityProvider();
     message.name = object.name ?? "";
+    message.uid = object.uid ?? "";
     message.type = object.type ?? IdentityProvider_Type.TYPE_UNSPECIFIED;
     message.title = object.title ?? "";
     message.identifierFilter = object.identifierFilter ?? "";
@@ -466,11 +511,17 @@ export const OAuth2Config: MessageFns<OAuth2Config> = {
 };
 
 function createBaseListIdentityProvidersRequest(): ListIdentityProvidersRequest {
-  return {};
+  return { pageSize: 0, pageToken: "" };
 }
 
 export const ListIdentityProvidersRequest: MessageFns<ListIdentityProvidersRequest> = {
-  encode(_: ListIdentityProvidersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(message: ListIdentityProvidersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.pageSize !== 0) {
+      writer.uint32(8).int32(message.pageSize);
+    }
+    if (message.pageToken !== "") {
+      writer.uint32(18).string(message.pageToken);
+    }
     return writer;
   },
 
@@ -481,6 +532,22 @@ export const ListIdentityProvidersRequest: MessageFns<ListIdentityProvidersReque
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.pageSize = reader.int32();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.pageToken = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -493,20 +560,25 @@ export const ListIdentityProvidersRequest: MessageFns<ListIdentityProvidersReque
   create(base?: DeepPartial<ListIdentityProvidersRequest>): ListIdentityProvidersRequest {
     return ListIdentityProvidersRequest.fromPartial(base ?? {});
   },
-  fromPartial(_: DeepPartial<ListIdentityProvidersRequest>): ListIdentityProvidersRequest {
+  fromPartial(object: DeepPartial<ListIdentityProvidersRequest>): ListIdentityProvidersRequest {
     const message = createBaseListIdentityProvidersRequest();
+    message.pageSize = object.pageSize ?? 0;
+    message.pageToken = object.pageToken ?? "";
     return message;
   },
 };
 
 function createBaseListIdentityProvidersResponse(): ListIdentityProvidersResponse {
-  return { identityProviders: [] };
+  return { identityProviders: [], nextPageToken: "" };
 }
 
 export const ListIdentityProvidersResponse: MessageFns<ListIdentityProvidersResponse> = {
   encode(message: ListIdentityProvidersResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.identityProviders) {
       IdentityProvider.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.nextPageToken !== "") {
+      writer.uint32(18).string(message.nextPageToken);
     }
     return writer;
   },
@@ -526,6 +598,14 @@ export const ListIdentityProvidersResponse: MessageFns<ListIdentityProvidersResp
           message.identityProviders.push(IdentityProvider.decode(reader, reader.uint32()));
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.nextPageToken = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -541,6 +621,7 @@ export const ListIdentityProvidersResponse: MessageFns<ListIdentityProvidersResp
   fromPartial(object: DeepPartial<ListIdentityProvidersResponse>): ListIdentityProvidersResponse {
     const message = createBaseListIdentityProvidersResponse();
     message.identityProviders = object.identityProviders?.map((e) => IdentityProvider.fromPartial(e)) || [];
+    message.nextPageToken = object.nextPageToken ?? "";
     return message;
   },
 };
@@ -592,13 +673,16 @@ export const GetIdentityProviderRequest: MessageFns<GetIdentityProviderRequest> 
 };
 
 function createBaseCreateIdentityProviderRequest(): CreateIdentityProviderRequest {
-  return { identityProvider: undefined };
+  return { identityProvider: undefined, identityProviderId: "" };
 }
 
 export const CreateIdentityProviderRequest: MessageFns<CreateIdentityProviderRequest> = {
   encode(message: CreateIdentityProviderRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.identityProvider !== undefined) {
       IdentityProvider.encode(message.identityProvider, writer.uint32(10).fork()).join();
+    }
+    if (message.identityProviderId !== "") {
+      writer.uint32(18).string(message.identityProviderId);
     }
     return writer;
   },
@@ -618,6 +702,14 @@ export const CreateIdentityProviderRequest: MessageFns<CreateIdentityProviderReq
           message.identityProvider = IdentityProvider.decode(reader, reader.uint32());
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.identityProviderId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -635,6 +727,7 @@ export const CreateIdentityProviderRequest: MessageFns<CreateIdentityProviderReq
     message.identityProvider = (object.identityProvider !== undefined && object.identityProvider !== null)
       ? IdentityProvider.fromPartial(object.identityProvider)
       : undefined;
+    message.identityProviderId = object.identityProviderId ?? "";
     return message;
   },
 };
@@ -857,6 +950,9 @@ export const IdentityProviderServiceDefinition = {
       responseStream: false,
       options: {
         _unknownFields: {
+          8410: [
+            new Uint8Array([17, 105, 100, 101, 110, 116, 105, 116, 121, 95, 112, 114, 111, 118, 105, 100, 101, 114]),
+          ],
           578365826: [
             new Uint8Array([
               46,

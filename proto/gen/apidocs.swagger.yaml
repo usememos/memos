@@ -136,6 +136,18 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: Optional. The maximum number of identity providers to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Optional. A page token for pagination.
+          in: query
+          required: false
+          type: string
       tags:
         - IdentityProviderService
     post:
@@ -152,11 +164,20 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: identityProvider
-          description: The identityProvider to create.
+          description: Required. The identity provider to create.
           in: body
           required: true
           schema:
             $ref: '#/definitions/apiv1IdentityProvider'
+            required:
+              - identityProvider
+        - name: identityProviderId
+          description: |-
+            Optional. The ID to use for the identity provider, which will become the final component of the resource name.
+            If not provided, the system will generate one.
+          in: query
+          required: false
+          type: string
       tags:
         - IdentityProviderService
   /api/v1/inboxes:
@@ -722,28 +743,41 @@ paths:
       parameters:
         - name: identityProvider.name
           description: |-
-            The name of the identityProvider.
-            Format: identityProviders/{id}, id is the system generated auto-incremented id.
+            The resource name of the identity provider.
+            Format: identityProviders/{idp}
           in: path
           required: true
           type: string
           pattern: identityProviders/[^/]+
         - name: identityProvider
-          description: The identityProvider to update.
+          description: Required. The identity provider to update.
           in: body
           required: true
           schema:
             type: object
             properties:
+              uid:
+                type: string
+                description: Output only. The system generated unique identifier.
+                readOnly: true
               type:
                 $ref: '#/definitions/apiv1IdentityProviderType'
+                description: Required. The type of the identity provider.
               title:
                 type: string
+                description: Required. The display title of the identity provider.
               identifierFilter:
                 type: string
+                description: Optional. Filter applied to user identifiers.
               config:
                 $ref: '#/definitions/apiv1IdentityProviderConfig'
-            title: The identityProvider to update.
+                description: Required. Configuration for the identity provider.
+            title: Required. The identity provider to update.
+            required:
+              - type
+              - title
+              - config
+              - identityProvider
       tags:
         - IdentityProviderService
   /api/v1/{inbox.name}:
@@ -965,7 +999,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
-          description: The name of the identityProvider to get.
+          description: |-
+            Required. The resource name of the identity provider to get.
+            Format: identityProviders/{idp}
           in: path
           required: true
           type: string
@@ -987,7 +1023,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
-          description: The name of the identityProvider to delete.
+          description: |-
+            Required. The resource name of the identity provider to delete.
+            Format: identityProviders/{idp}
           in: path
           required: true
           type: string
@@ -2394,17 +2432,29 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          The name of the identityProvider.
-          Format: identityProviders/{id}, id is the system generated auto-incremented id.
+        title: |-
+          The resource name of the identity provider.
+          Format: identityProviders/{idp}
+      uid:
+        type: string
+        description: Output only. The system generated unique identifier.
+        readOnly: true
       type:
         $ref: '#/definitions/apiv1IdentityProviderType'
+        description: Required. The type of the identity provider.
       title:
         type: string
+        description: Required. The display title of the identity provider.
       identifierFilter:
         type: string
+        description: Optional. Filter applied to user identifiers.
       config:
         $ref: '#/definitions/apiv1IdentityProviderConfig'
+        description: Required. Configuration for the identity provider.
+    required:
+      - type
+      - title
+      - config
   apiv1IdentityProviderConfig:
     type: object
     properties:
@@ -3036,6 +3086,10 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/apiv1IdentityProvider'
+        description: The list of identity providers.
+      nextPageToken:
+        type: string
+        description: A token for the next page of results.
   v1ListInboxesResponse:
     type: object
     properties:
