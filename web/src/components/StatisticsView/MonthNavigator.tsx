@@ -16,7 +16,7 @@ export const MonthNavigator = ({ visibleMonth, onMonthChange }: MonthNavigatorPr
 
   return (
     <div className="w-full mb-1 flex flex-row justify-between items-center gap-1">
-      <span className="relative text-sm dark:text-gray-400">
+      <span className="relative text-sm text-gray-500 dark:text-gray-400">
         {currentMonth.toLocaleString(i18n.language, { year: "numeric", month: "long" })}
       </span>
       <div className="flex justify-end items-center shrink-0 gap-1">

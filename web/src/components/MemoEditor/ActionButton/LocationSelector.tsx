@@ -115,9 +115,9 @@ const LocationSelector = (props: Props) => {
                 size="sm"
                 startDecorator={
                   state.position && (
-                    <span className="text-xs opacity-60">
+                    <div className="text-xs leading-6 opacity-60">
                       [{state.position.lat.toFixed(2)}, {state.position.lng.toFixed(2)}]
-                    </span>
+                    </div>
                   )
                 }
                 disabled={!state.position}
