@@ -452,6 +452,45 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: |-
+            Optional. The maximum number of users to return.
+            The service may return fewer than this value.
+            If unspecified, at most 50 users will be returned.
+            The maximum value is 1000; values above 1000 will be coerced to 1000.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: |-
+            Optional. A page token, received from a previous `ListUsers` call.
+            Provide this to retrieve the subsequent page.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Optional. Filter to apply to the list results.
+            Example: "state=ACTIVE" or "role=USER" or "email:@example.com"
+            Supported operators: =, !=, <, <=, >, >=, :
+            Supported fields: username, email, role, state, create_time, update_time
+          in: query
+          required: false
+          type: string
+        - name: orderBy
+          description: |-
+            Optional. The order to sort results by.
+            Example: "create_time desc" or "username asc"
+          in: query
+          required: false
+          type: string
+        - name: showDeleted
+          description: Optional. If true, show deleted users in the response.
+          in: query
+          required: false
+          type: boolean
       tags:
         - UserService
     post:
@@ -468,15 +507,70 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: user
+          description: Required. The user to create.
           in: body
           required: true
           schema:
             $ref: '#/definitions/v1User'
+            required:
+              - user
+        - name: userId
+          description: |-
+            Optional. The user ID to use for this user.
+            If empty, a unique ID will be generated.
+            Must match the pattern [a-z0-9-]+
+          in: query
+          required: false
+          type: string
+        - name: validateOnly
+          description: Optional. If set, validate the request but don't actually create the user.
+          in: query
+          required: false
+          type: boolean
+        - name: requestId
+          description: |-
+            Optional. An idempotency token that can be used to ensure that multiple
+            requests to create a user have the same result.
+          in: query
+          required: false
+          type: string
       tags:
         - UserService
-  /api/v1/users/-/stats:
-    post:
-      summary: ListAllUserStats returns all user stats.
+  /api/v1/users:search:
+    get:
+      summary: SearchUsers searches for users based on query.
+      operationId: UserService_SearchUsers
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1SearchUsersResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: query
+          description: Required. The search query.
+          in: query
+          required: true
+          type: string
+        - name: pageSize
+          description: Optional. The maximum number of users to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Optional. A page token for pagination.
+          in: query
+          required: false
+          type: string
+      tags:
+        - UserService
+  /api/v1/users:stats:
+    get:
+      summary: ListAllUserStats returns statistics for all users.
       operationId: UserService_ListAllUserStats
       responses:
         "200":
@@ -487,24 +581,15 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
-      tags:
-        - UserService
-  /api/v1/users:username:
-    get:
-      summary: GetUserByUsername gets a user by username.
-      operationId: UserService_GetUserByUsername
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1User'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: username
-          description: The username of the user.
+        - name: pageSize
+          description: Optional. The maximum number of user stats to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Optional. A page token for pagination.
           in: query
           required: false
           type: string
@@ -914,16 +999,25 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_1
-          description: The name of the user.
+          description: |-
+            Required. The resource name of the user.
+            Format: users/{user}
           in: path
           required: true
           type: string
           pattern: users/[^/]+
+        - name: readMask
+          description: |-
+            Optional. The fields to return in the response.
+            If not specified, all fields are returned.
+          in: query
+          required: false
+          type: string
       tags:
         - UserService
     delete:
-      summary: DeleteIdentityProvider deletes an identity provider.
-      operationId: IdentityProviderService_DeleteIdentityProvider
+      summary: DeleteUserAccessToken deletes an access token.
+      operationId: UserService_DeleteUserAccessToken
       responses:
         "200":
           description: A successful response.
@@ -936,13 +1030,15 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_1
-          description: The name of the identityProvider to delete.
+          description: |-
+            Required. The resource name of the access token to delete.
+            Format: users/{user}/accessTokens/{access_token}
           in: path
           required: true
           type: string
-          pattern: identityProviders/[^/]+
+          pattern: users/[^/]+/accessTokens/[^/]+
       tags:
-        - IdentityProviderService
+        - UserService
   /api/v1/{name_2}:
     get:
       summary: GetIdentityProvider gets an identity provider.
@@ -966,8 +1062,8 @@ paths:
       tags:
         - IdentityProviderService
     delete:
-      summary: DeleteInbox deletes an inbox.
-      operationId: InboxService_DeleteInbox
+      summary: DeleteIdentityProvider deletes an identity provider.
+      operationId: IdentityProviderService_DeleteIdentityProvider
       responses:
         "200":
           description: A successful response.
@@ -980,13 +1076,13 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
-          description: The name of the inbox to delete.
+          description: The name of the identityProvider to delete.
           in: path
           required: true
           type: string
-          pattern: inboxes/[^/]+
+          pattern: identityProviders/[^/]+
       tags:
-        - InboxService
+        - IdentityProviderService
   /api/v1/{name_3}:
     get:
       summary: GetResource returns a resource by name.
@@ -1010,8 +1106,8 @@ paths:
       tags:
         - ResourceService
     delete:
-      summary: DeleteResource deletes a resource by name.
-      operationId: ResourceService_DeleteResource
+      summary: DeleteInbox deletes an inbox.
+      operationId: InboxService_DeleteInbox
       responses:
         "200":
           description: A successful response.
@@ -1024,13 +1120,13 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_3
-          description: The name of the resource.
+          description: The name of the inbox to delete.
           in: path
           required: true
           type: string
-          pattern: resources/[^/]+
+          pattern: inboxes/[^/]+
       tags:
-        - ResourceService
+        - InboxService
   /api/v1/{name_4}:
     get:
       summary: GetMemo gets a memo.
@@ -1054,6 +1150,29 @@ paths:
       tags:
         - MemoService
     delete:
+      summary: DeleteResource deletes a resource by name.
+      operationId: ResourceService_DeleteResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_4
+          description: The name of the resource.
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+
+      tags:
+        - ResourceService
+  /api/v1/{name_5}:
+    delete:
       summary: DeleteMemo deletes a memo.
       operationId: MemoService_DeleteMemo
       responses:
@@ -1067,7 +1186,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_4
+        - name: name_5
           description: The name of the memo.
           in: path
           required: true
@@ -1114,87 +1233,42 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: The name of the user.
+          description: |-
+            Required. The resource name of the user to delete.
+            Format: users/{user}
           in: path
           required: true
           type: string
           pattern: users/[^/]+
+        - name: force
+          description: Optional. If set to true, the user will be deleted even if they have associated data.
+          in: query
+          required: false
+          type: boolean
       tags:
         - UserService
-  /api/v1/{name}/access_tokens:
+  /api/v1/{name}/avatar:
     get:
-      summary: ListUserAccessTokens returns a list of access tokens for a user.
-      operationId: UserService_ListUserAccessTokens
+      summary: GetUserAvatar gets the avatar of a user.
+      operationId: UserService_GetUserAvatar
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1ListUserAccessTokensResponse'
+            $ref: '#/definitions/apiHttpBody'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: The name of the user.
+          description: |-
+            Required. The resource name of the user.
+            Format: users/{user}
           in: path
           required: true
           type: string
           pattern: users/[^/]+
-      tags:
-        - UserService
-    post:
-      summary: CreateUserAccessToken creates a new access token for a user.
-      operationId: UserService_CreateUserAccessToken
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1UserAccessToken'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: The name of the user.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UserServiceCreateUserAccessTokenBody'
-      tags:
-        - UserService
-  /api/v1/{name}/access_tokens/{accessToken}:
-    delete:
-      summary: DeleteUserAccessToken deletes an access token for a user.
-      operationId: UserService_DeleteUserAccessToken
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            type: object
-            properties: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: The name of the user.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-        - name: accessToken
-          description: access_token is the access token to delete.
-          in: path
-          required: true
-          type: string
       tags:
         - UserService
   /api/v1/{name}/comments:
@@ -1392,9 +1466,9 @@ paths:
             $ref: '#/definitions/MemoServiceSetMemoResourcesBody'
       tags:
         - MemoService
-  /api/v1/{name}/setting:
+  /api/v1/{name}:getSetting:
     get:
-      summary: GetUserSetting gets the setting of a user.
+      summary: GetUserSetting returns the user setting.
       operationId: UserService_GetUserSetting
       responses:
         "200":
@@ -1407,16 +1481,18 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: The name of the user.
+          description: |-
+            Required. The resource name of the user.
+            Format: users/{user}
           in: path
           required: true
           type: string
           pattern: users/[^/]+
       tags:
         - UserService
-  /api/v1/{name}/stats:
+  /api/v1/{name}:getStats:
     get:
-      summary: GetUserStats returns the stats of a user.
+      summary: GetUserStats returns statistics for a specific user.
       operationId: UserService_GetUserStats
       responses:
         "200":
@@ -1429,11 +1505,84 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: The name of the user.
+          description: |-
+            Required. The resource name of the user.
+            Format: users/{user}
           in: path
           required: true
           type: string
           pattern: users/[^/]+
+      tags:
+        - UserService
+  /api/v1/{parent}/accessTokens:
+    get:
+      summary: ListUserAccessTokens returns a list of access tokens for a user.
+      operationId: UserService_ListUserAccessTokens
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListUserAccessTokensResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            Required. The parent resource whose access tokens will be listed.
+            Format: users/{user}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: pageSize
+          description: Optional. The maximum number of access tokens to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Optional. A page token for pagination.
+          in: query
+          required: false
+          type: string
+      tags:
+        - UserService
+    post:
+      summary: CreateUserAccessToken creates a new access token for a user.
+      operationId: UserService_CreateUserAccessToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1UserAccessToken'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            Required. The parent resource where this access token will be created.
+            Format: users/{user}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: accessToken
+          description: Required. The access token to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1UserAccessToken'
+            required:
+              - accessToken
+        - name: accessTokenId
+          description: Optional. The access token ID to use.
+          in: query
+          required: false
+          type: string
       tags:
         - UserService
   /api/v1/{parent}/memos:
@@ -1746,9 +1895,9 @@ paths:
                 description: The related memo. Refer to `Memo.name`.
       tags:
         - ResourceService
-  /api/v1/{setting.name}:
+  /api/v1/{setting.name}:updateSetting:
     patch:
-      summary: UpdateUserSetting updates the setting of a user.
+      summary: UpdateUserSetting updates the user setting.
       operationId: UserService_UpdateUserSetting
       responses:
         "200":
@@ -1761,12 +1910,15 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: setting.name
-          description: The name of the user.
+          description: |-
+            The resource name of the user whose setting this is.
+            Format: users/{user}
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/setting
+          pattern: users/[^/]+
         - name: setting
+          description: Required. The user setting to update.
           in: body
           required: true
           schema:
@@ -1781,6 +1933,7 @@ paths:
               memoVisibility:
                 type: string
                 description: The default visibility of the memo.
+            title: Required. The user setting to update.
             required:
               - setting
       tags:
@@ -1801,77 +1954,72 @@ paths:
       parameters:
         - name: user.name
           description: |-
-            The name of the user.
-            Format: users/{id}, id is the system generated auto-incremented id.
+            The resource name of the user.
+            Format: users/{user}
           in: path
           required: true
           type: string
           pattern: users/[^/]+
         - name: user
+          description: Required. The user to update.
           in: body
           required: true
           schema:
             type: object
             properties:
+              uid:
+                type: string
+                description: Output only. The system generated unique identifier.
+                readOnly: true
               role:
                 $ref: '#/definitions/UserRole'
+                description: The role of the user.
               username:
                 type: string
+                description: Required. The unique username for login.
               email:
                 type: string
-              nickname:
+                description: Optional. The email address of the user.
+              displayName:
                 type: string
+                description: Optional. The display name of the user.
               avatarUrl:
                 type: string
+                description: Optional. The avatar URL of the user.
               description:
                 type: string
+                description: Optional. The description of the user.
               password:
                 type: string
+                description: Input only. The password for the user.
               state:
                 $ref: '#/definitions/v1State'
+                description: The state of the user.
               createTime:
                 type: string
                 format: date-time
+                description: Output only. The creation timestamp.
                 readOnly: true
               updateTime:
                 type: string
                 format: date-time
+                description: Output only. The last update timestamp.
                 readOnly: true
+              etag:
+                type: string
+                description: Output only. The etag for this resource.
+                readOnly: true
+            title: Required. The user to update.
             required:
+              - role
+              - username
+              - state
               - user
-      tags:
-        - UserService
-  /file/{name}/avatar:
-    get:
-      summary: GetUserAvatarBinary gets the avatar of a user.
-      operationId: UserService_GetUserAvatarBinary
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/apiHttpBody'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: The name of the user.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-        - name: httpBody.contentType
-          description: The HTTP Content-Type header value specifying the content type of the body.
+        - name: allowMissing
+          description: Optional. If set to true, allows updating sensitive fields.
           in: query
           required: false
-          type: string
-        - name: httpBody.data
-          description: The HTTP request/response body as raw binary.
-          in: query
-          required: false
-          type: string
-          format: byte
+          type: boolean
       tags:
         - UserService
   /file/{name}/{filename}:
@@ -1959,14 +2107,13 @@ definitions:
       - ADMIN
       - USER
     default: ROLE_UNSPECIFIED
-  UserServiceCreateUserAccessTokenBody:
-    type: object
-    properties:
-      description:
-        type: string
-      expiresAt:
-        type: string
-        format: date-time
+    description: |-
+      User role enumeration.
+
+       - ROLE_UNSPECIFIED: Unspecified role.
+       - HOST: Host role with full system access.
+       - ADMIN: Admin role with administrative privileges.
+       - USER: Regular user role.
   UserStatsMemoTypeStats:
     type: object
     properties:
@@ -1982,6 +2129,7 @@ definitions:
       undoCount:
         type: integer
         format: int32
+    description: Memo type statistics.
   WorkspaceStorageSettingS3Config:
     type: object
     properties:
@@ -2233,7 +2381,9 @@ definitions:
     properties:
       name:
         type: string
-        description: The name of the user.
+        title: |-
+          The resource name of the user whose setting this is.
+          Format: users/{user}
       locale:
         type: string
         description: The preferred locale of the user.
@@ -2243,6 +2393,7 @@ definitions:
       memoVisibility:
         type: string
         description: The default visibility of the memo.
+    title: User settings message
   apiv1WorkspaceCustomProfile:
     type: object
     properties:
@@ -2715,6 +2866,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1UserStats'
+        description: The list of user statistics.
+      nextPageToken:
+        type: string
+        description: A token for the next page of results.
+      totalSize:
+        type: integer
+        format: int32
+        description: The total count of user statistics.
   v1ListIdentityProvidersResponse:
     type: object
     properties:
@@ -2818,6 +2977,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1UserAccessToken'
+        description: The list of access tokens.
+      nextPageToken:
+        type: string
+        description: A token for the next page of results.
+      totalSize:
+        type: integer
+        format: int32
+        description: The total count of access tokens.
   v1ListUsersResponse:
     type: object
     properties:
@@ -2826,6 +2993,16 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1User'
+        description: The list of users.
+      nextPageToken:
+        type: string
+        description: |-
+          A token that can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
+      totalSize:
+        type: integer
+        format: int32
+        description: The total count of users (may be approximate).
   v1ListWebhooksResponse:
     type: object
     properties:
@@ -3115,6 +3292,22 @@ definitions:
       redirectUri:
         type: string
         description: The redirect URI.
+  v1SearchUsersResponse:
+    type: object
+    properties:
+      users:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1User'
+        description: The list of users matching the search query.
+      nextPageToken:
+        type: string
+        description: A token for the next page of results.
+      totalSize:
+        type: integer
+        format: int32
+        description: The total count of matching users.
   v1SpoilerNode:
     type: object
     properties:
@@ -3215,61 +3408,94 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          The name of the user.
-          Format: users/{id}, id is the system generated auto-incremented id.
+        title: |-
+          The resource name of the user.
+          Format: users/{user}
+      uid:
+        type: string
+        description: Output only. The system generated unique identifier.
         readOnly: true
       role:
         $ref: '#/definitions/UserRole'
+        description: The role of the user.
       username:
         type: string
+        description: Required. The unique username for login.
       email:
         type: string
-      nickname:
+        description: Optional. The email address of the user.
+      displayName:
         type: string
+        description: Optional. The display name of the user.
       avatarUrl:
         type: string
+        description: Optional. The avatar URL of the user.
       description:
         type: string
+        description: Optional. The description of the user.
       password:
         type: string
+        description: Input only. The password for the user.
       state:
         $ref: '#/definitions/v1State'
+        description: The state of the user.
       createTime:
         type: string
         format: date-time
+        description: Output only. The creation timestamp.
         readOnly: true
       updateTime:
         type: string
         format: date-time
+        description: Output only. The last update timestamp.
         readOnly: true
+      etag:
+        type: string
+        description: Output only. The etag for this resource.
+        readOnly: true
+    required:
+      - role
+      - username
+      - state
   v1UserAccessToken:
     type: object
     properties:
+      name:
+        type: string
+        title: |-
+          The resource name of the access token.
+          Format: users/{user}/accessTokens/{access_token}
       accessToken:
         type: string
+        description: Output only. The access token value.
+        readOnly: true
       description:
         type: string
+        description: The description of the access token.
       issuedAt:
         type: string
         format: date-time
+        description: Output only. The issued timestamp.
+        readOnly: true
       expiresAt:
         type: string
         format: date-time
+        description: Optional. The expiration timestamp.
+    title: User access token message
   v1UserStats:
     type: object
     properties:
       name:
         type: string
-        description: The name of the user.
+        title: |-
+          The resource name of the user whose stats these are.
+          Format: users/{user}
       memoDisplayTimestamps:
         type: array
         items:
           type: string
           format: date-time
-        description: |-
-          The timestamps when the memos were displayed.
-          We should return raw data to the client, and let the client format the data with the user's timezone.
+        description: The timestamps when the memos were displayed.
       memoTypeStats:
         $ref: '#/definitions/UserStatsMemoTypeStats'
         description: The stats of memo types.
@@ -3278,9 +3504,7 @@ definitions:
         additionalProperties:
           type: integer
           format: int32
-        title: |-
-          The count of tags.
-          Format: "tag1": 1, "tag2": 2
+        description: The count of tags.
       pinnedMemos:
         type: array
         items:
@@ -3289,6 +3513,8 @@ definitions:
       totalMemoCount:
         type: integer
         format: int32
+        description: Total memo count.
+    title: User statistics messages
   v1Visibility:
     type: string
     enum:

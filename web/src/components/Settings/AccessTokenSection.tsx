@@ -10,8 +10,8 @@ import { useTranslate } from "@/utils/i18n";
 import showCreateAccessTokenDialog from "../CreateAccessTokenDialog";
 import LearnMore from "../LearnMore";
 
-const listAccessTokens = async (name: string) => {
-  const { accessTokens } = await userServiceClient.listUserAccessTokens({ name });
+const listAccessTokens = async (parent: string) => {
+  const { accessTokens } = await userServiceClient.listUserAccessTokens({ parent });
   return accessTokens.sort((a, b) => (b.issuedAt?.getTime() ?? 0) - (a.issuedAt?.getTime() ?? 0));
 };
 
@@ -36,12 +36,12 @@ const AccessTokenSection = () => {
     toast.success(t("setting.access-token-section.access-token-copied-to-clipboard"));
   };
 
-  const handleDeleteAccessToken = async (accessToken: string) => {
-    const formatedAccessToken = getFormatedAccessToken(accessToken);
+  const handleDeleteAccessToken = async (userAccessToken: UserAccessToken) => {
+    const formatedAccessToken = getFormatedAccessToken(userAccessToken.accessToken);
     const confirmed = window.confirm(t("setting.access-token-section.access-token-deletion", { accessToken: formatedAccessToken }));
     if (confirmed) {
-      await userServiceClient.deleteUserAccessToken({ name: currentUser.name, accessToken: accessToken });
-      setUserAccessTokens(userAccessTokens.filter((token) => token.accessToken !== accessToken));
+      await userServiceClient.deleteUserAccessToken({ name: userAccessToken.name });
+      setUserAccessTokens(userAccessTokens.filter((token) => token.accessToken !== userAccessToken.accessToken));
     }
   };
 
@@ -116,7 +116,7 @@ const AccessTokenSection = () => {
                         <Button
                           variant="plain"
                           onClick={() => {
-                            handleDeleteAccessToken(userAccessToken.accessToken);
+                            handleDeleteAccessToken(userAccessToken);
                           }}
                         >
                           <TrashIcon className="text-red-600 w-4 h-auto" />

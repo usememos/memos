@@ -244,8 +244,7 @@ func (s *APIV1Service) SignOut(ctx context.Context, _ *v1pb.SignOutRequest) (*em
 		user, _ := s.GetCurrentUser(ctx)
 		if user != nil {
 			if _, err := s.DeleteUserAccessToken(ctx, &v1pb.DeleteUserAccessTokenRequest{
-				Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
-				AccessToken: accessToken,
+				Name: fmt.Sprintf("%s%d/accessTokens/%s", UserNamePrefix, user.ID, accessToken),
 			}); err != nil {
 				slog.Error("failed to delete access token", "error", err)
 			}

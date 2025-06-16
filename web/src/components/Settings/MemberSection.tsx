@@ -109,7 +109,7 @@ const MemberSection = observer(() => {
   };
 
   const handleArchiveUserClick = async (user: User) => {
-    const confirmed = window.confirm(t("setting.member-section.archive-warning", { username: user.nickname }));
+    const confirmed = window.confirm(t("setting.member-section.archive-warning", { username: user.displayName }));
     if (confirmed) {
       await userServiceClient.updateUser({
         user: {
@@ -134,7 +134,7 @@ const MemberSection = observer(() => {
   };
 
   const handleDeleteUserClick = async (user: User) => {
-    const confirmed = window.confirm(t("setting.member-section.delete-warning", { username: user.nickname }));
+    const confirmed = window.confirm(t("setting.member-section.delete-warning", { username: user.displayName }));
     if (confirmed) {
       await userStore.deleteUser(user.name);
       fetchUsers();
@@ -209,7 +209,7 @@ const MemberSection = observer(() => {
                     <span className="ml-1 italic">{user.state === State.ARCHIVED && "(Archived)"}</span>
                   </td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{stringifyUserRole(user.role)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{user.nickname}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{user.displayName}</td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{user.email}</td>
                   <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium flex justify-end">
                     {currentUser?.name === user.name ? (

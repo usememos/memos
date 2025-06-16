@@ -71,9 +71,15 @@ const userStore = (() => {
         return userMap[name];
       }
     }
-    const user = await userServiceClient.getUserByUsername({
-      username,
+    // Use search instead of the deprecated getUserByUsername
+    const { users } = await userServiceClient.searchUsers({
+      query: username,
+      pageSize: 10,
     });
+    const user = users.find((u) => u.username === username);
+    if (!user) {
+      throw new Error(`User with username ${username} not found`);
+    }
     state.setPartial({
       userMapByName: {
         ...userMap,
@@ -122,8 +128,16 @@ const userStore = (() => {
   };
 
   const updateUserSetting = async (userSetting: Partial<UserSetting>, updateMask: string[]) => {
+    if (!state.currentUser) {
+      throw new Error("No current user");
+    }
+    // Ensure the setting has the proper resource name
+    const settingWithName = {
+      ...userSetting,
+      name: `${state.currentUser}/setting`,
+    };
     const updatedUserSetting = await userServiceClient.updateUserSetting({
-      setting: userSetting,
+      setting: settingWithName,
       updateMask: updateMask,
     });
     state.setPartial({
@@ -181,6 +195,7 @@ const userStore = (() => {
     }
     state.setPartial({
       userStatsByName: {
+        ...state.userStatsByName,
         ...userStatsByName,
       },
     });
@@ -210,7 +225,7 @@ const userStore = (() => {
 export const initialUserStore = async () => {
   try {
     const currentUser = await authServiceClient.getAuthStatus({});
-    const userSetting = await userServiceClient.getUserSetting({});
+    const userSetting = await userServiceClient.getUserSetting({ name: currentUser.name });
     userStore.state.setPartial({
       currentUser: currentUser.name,
       userSetting: UserSetting.fromPartial({

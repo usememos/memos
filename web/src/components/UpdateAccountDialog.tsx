@@ -16,7 +16,7 @@ type Props = DialogProps;
 interface State {
   avatarUrl: string;
   username: string;
-  nickname: string;
+  displayName: string;
   email: string;
   description: string;
 }
@@ -27,7 +27,7 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
   const [state, setState] = useState<State>({
     avatarUrl: currentUser.avatarUrl,
     username: currentUser.username,
-    nickname: currentUser.nickname,
+    displayName: currentUser.displayName,
     email: currentUser.email,
     description: currentUser.description,
   });
@@ -66,9 +66,9 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
     }
   };
 
-  const handleNicknameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDisplayNameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPartialState({
-      nickname: e.target.value as string,
+      displayName: e.target.value as string,
     });
   };
 
@@ -107,8 +107,8 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
       if (!isEqual(currentUser.username, state.username)) {
         updateMask.push("username");
       }
-      if (!isEqual(currentUser.nickname, state.nickname)) {
-        updateMask.push("nickname");
+      if (!isEqual(currentUser.displayName, state.displayName)) {
+        updateMask.push("display_name");
       }
       if (!isEqual(currentUser.email, state.email)) {
         updateMask.push("email");
@@ -123,7 +123,7 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
         UserPb.fromPartial({
           name: currentUser.name,
           username: state.username,
-          nickname: state.nickname,
+          displayName: state.displayName,
           email: state.email,
           avatarUrl: state.avatarUrl,
           description: state.description,
@@ -180,8 +180,8 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
         </p>
         <Input
           className="w-full"
-          value={state.nickname}
-          onChange={handleNicknameChanged}
+          value={state.displayName}
+          onChange={handleDisplayNameChanged}
           disabled={workspaceGeneralSetting.disallowChangeNickname}
         />
         <p className="text-sm">

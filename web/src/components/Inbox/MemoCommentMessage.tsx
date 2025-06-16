@@ -109,7 +109,7 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
               onClick={handleNavigateToMemo}
             >
               {t("inbox.memo-comment", {
-                user: sender?.nickname || sender?.username,
+                user: sender?.displayName || sender?.username,
                 memo: relatedMemo?.name,
                 interpolation: { escapeValue: false },
               })}
