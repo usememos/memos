@@ -186,7 +186,8 @@
     "restored-successfully": "Restored successfully",
     "succeed-copy-link": "Link copied successfully.",
     "update-succeed": "Update succeeded",
-    "user-not-found": "User not found"
+    "user-not-found": "User not found",
+    "microphone-not-available": "Cannot access microphone"
   },
   "reference": {
     "add-references": "Add references",
