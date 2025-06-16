@@ -3,7 +3,6 @@ import { Edit3Icon, MoreVerticalIcon, TrashIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { shortcutServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { userStore } from "@/store/v2";
 import memoFilterStore from "@/store/v2/memoFilter";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
@@ -14,9 +13,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
 
 const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
 
+// Helper function to extract shortcut ID from resource name
+// Format: users/{user}/shortcuts/{shortcut}
+const getShortcutId = (name: string): string => {
+  const parts = name.split("/");
+  return parts.length === 4 ? parts[3] : "";
+};
+
 const ShortcutsSection = observer(() => {
   const t = useTranslate();
-  const user = useCurrentUser();
   const shortcuts = userStore.state.shortcuts;
 
   useAsyncEffect(async () => {
@@ -26,7 +31,7 @@ const ShortcutsSection = observer(() => {
   const handleDeleteShortcut = async (shortcut: Shortcut) => {
     const confirmed = window.confirm("Are you sure you want to delete this shortcut?");
     if (confirmed) {
-      await shortcutServiceClient.deleteShortcut({ parent: user.name, id: shortcut.id });
+      await shortcutServiceClient.deleteShortcut({ name: shortcut.name });
       await userStore.fetchShortcuts();
     }
   };
@@ -41,18 +46,19 @@ const ShortcutsSection = observer(() => {
       </div>
       <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
         {shortcuts.map((shortcut) => {
+          const shortcutId = getShortcutId(shortcut.name);
           const maybeEmoji = shortcut.title.split(" ")[0];
           const emoji = emojiRegex.test(maybeEmoji) ? maybeEmoji : undefined;
           const title = emoji ? shortcut.title.replace(emoji, "") : shortcut.title;
-          const selected = memoFilterStore.shortcut === shortcut.id;
+          const selected = memoFilterStore.shortcut === shortcutId;
           return (
             <div
-              key={shortcut.id}
+              key={shortcutId}
               className="shrink-0 w-full text-sm rounded-md leading-6 flex flex-row justify-between items-center select-none gap-2 text-gray-600 dark:text-gray-400 dark:border-zinc-800"
             >
               <span
                 className={cn("truncate cursor-pointer dark:opacity-80", selected && "text-primary font-medium")}
-                onClick={() => (selected ? memoFilterStore.setShortcut(undefined) : memoFilterStore.setShortcut(shortcut.id))}
+                onClick={() => (selected ? memoFilterStore.setShortcut(undefined) : memoFilterStore.setShortcut(shortcutId))}
               >
                 {emoji && <span className="text-base mr-1">{emoji}</span>}
                 {title.trim()}

@@ -1084,13 +1084,13 @@ paths:
         - ResourceService
   /api/v1/{name_5}:
     get:
-      summary: GetWebhook gets a webhook by name.
-      operationId: WebhookService_GetWebhook
+      summary: GetShortcut gets a shortcut by name.
+      operationId: ShortcutService_GetShortcut
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Webhook'
+            $ref: '#/definitions/apiv1Shortcut'
         default:
           description: An unexpected error response.
           schema:
@@ -1098,21 +1098,14 @@ paths:
       parameters:
         - name: name_5
           description: |-
-            Required. The resource name of the webhook.
-            Format: webhooks/{webhook}
+            Required. The resource name of the shortcut to retrieve.
+            Format: users/{user}/shortcuts/{shortcut}
           in: path
           required: true
           type: string
-          pattern: webhooks/[^/]+
-        - name: readMask
-          description: |-
-            Optional. The fields to return in the response.
-            If not specified, all fields are returned.
-          in: query
-          required: false
-          type: string
+          pattern: users/[^/]+/shortcuts/[^/]+
       tags:
-        - WebhookService
+        - ShortcutService
     delete:
       summary: DeleteMemo deletes a memo.
       operationId: MemoService_DeleteMemo
@@ -1137,6 +1130,61 @@ paths:
         - MemoService
   /api/v1/{name_6}:
     get:
+      summary: GetWebhook gets a webhook by name.
+      operationId: WebhookService_GetWebhook
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Webhook'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_6
+          description: |-
+            Required. The resource name of the webhook.
+            Format: webhooks/{webhook}
+          in: path
+          required: true
+          type: string
+          pattern: webhooks/[^/]+
+        - name: readMask
+          description: |-
+            Optional. The fields to return in the response.
+            If not specified, all fields are returned.
+          in: query
+          required: false
+          type: string
+      tags:
+        - WebhookService
+    delete:
+      summary: DeleteShortcut deletes a shortcut for a user.
+      operationId: ShortcutService_DeleteShortcut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_6
+          description: |-
+            Required. The resource name of the shortcut to delete.
+            Format: users/{user}/shortcuts/{shortcut}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/shortcuts/[^/]+
+      tags:
+        - ShortcutService
+  /api/v1/{name_7}:
+    get:
       summary: Gets a workspace setting.
       operationId: WorkspaceService_GetWorkspaceSetting
       responses:
@@ -1149,7 +1197,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_6
+        - name: name_7
           description: |-
             The resource name of the workspace setting.
             Format: workspace/settings/{setting}
@@ -1173,7 +1221,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_6
+        - name: name_7
           description: |-
             Required. The resource name of the webhook to delete.
             Format: webhooks/{webhook}
@@ -1676,11 +1724,24 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: The name of the user.
+          description: |-
+            Required. The parent resource where shortcuts are listed.
+            Format: users/{user}
           in: path
           required: true
           type: string
           pattern: users/[^/]+
+        - name: pageSize
+          description: Optional. The maximum number of shortcuts to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Optional. A page token for pagination.
+          in: query
+          required: false
+          type: string
       tags:
         - ShortcutService
     post:
@@ -1697,84 +1758,26 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: parent
-          description: The name of the user.
+          description: |-
+            Required. The parent resource where this shortcut will be created.
+            Format: users/{user}
           in: path
           required: true
           type: string
           pattern: users/[^/]+
         - name: shortcut
+          description: Required. The shortcut to create.
           in: body
           required: true
           schema:
             $ref: '#/definitions/apiv1Shortcut'
+            required:
+              - shortcut
         - name: validateOnly
+          description: Optional. If set, validate the request, but do not actually create the shortcut.
           in: query
           required: false
           type: boolean
-      tags:
-        - ShortcutService
-  /api/v1/{parent}/shortcuts/{id}:
-    delete:
-      summary: DeleteShortcut deletes a shortcut for a user.
-      operationId: ShortcutService_DeleteShortcut
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            type: object
-            properties: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: parent
-          description: The name of the user.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-        - name: id
-          description: The id of the shortcut.
-          in: path
-          required: true
-          type: string
-      tags:
-        - ShortcutService
-  /api/v1/{parent}/shortcuts/{shortcut.id}:
-    patch:
-      summary: UpdateShortcut updates a shortcut for a user.
-      operationId: ShortcutService_UpdateShortcut
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/apiv1Shortcut'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: parent
-          description: The name of the user.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-        - name: shortcut.id
-          in: path
-          required: true
-          type: string
-        - name: shortcut
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              title:
-                type: string
-              filter:
-                type: string
       tags:
         - ShortcutService
   /api/v1/{parent}/tags/{tag}:
@@ -1972,6 +1975,47 @@ paths:
               - setting
       tags:
         - UserService
+  /api/v1/{shortcut.name}:
+    patch:
+      summary: UpdateShortcut updates a shortcut for a user.
+      operationId: ShortcutService_UpdateShortcut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiv1Shortcut'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: shortcut.name
+          description: |-
+            The resource name of the shortcut.
+            Format: users/{user}/shortcuts/{shortcut}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/shortcuts/[^/]+
+        - name: shortcut
+          description: Required. The shortcut resource which replaces the resource on the server.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                description: The title of the shortcut.
+              filter:
+                type: string
+                description: The filter expression for the shortcut.
+            title: Required. The shortcut resource which replaces the resource on the server.
+            required:
+              - title
+              - shortcut
+      tags:
+        - ShortcutService
   /api/v1/{user.name}:
     patch:
       summary: UpdateUser updates a user.
@@ -2479,12 +2523,19 @@ definitions:
   apiv1Shortcut:
     type: object
     properties:
-      id:
+      name:
         type: string
+        title: |-
+          The resource name of the shortcut.
+          Format: users/{user}/shortcuts/{shortcut}
       title:
         type: string
+        description: The title of the shortcut.
       filter:
         type: string
+        description: The filter expression for the shortcut.
+    required:
+      - title
   apiv1UserSetting:
     type: object
     properties:
@@ -3072,6 +3123,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/apiv1Shortcut'
+        description: The list of shortcuts.
+      nextPageToken:
+        type: string
+        description: A token for the next page of results.
+      totalSize:
+        type: integer
+        format: int32
+        description: The total count of shortcuts.
   v1ListUserAccessTokensResponse:
     type: object
     properties:

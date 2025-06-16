@@ -8,7 +8,6 @@ import useLoading from "@/hooks/useLoading";
 import { userStore } from "@/store/v2";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { useTranslate } from "@/utils/i18n";
-import { generateUUID } from "@/utils/uuid";
 import { generateDialog } from "./Dialog";
 
 interface Props extends DialogProps {
@@ -20,7 +19,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
   const user = useCurrentUser();
   const [shortcut, setShortcut] = useState<Shortcut>({
-    id: props.shortcut?.id || "",
+    name: props.shortcut?.name || "",
     title: props.shortcut?.title || "",
     filter: props.shortcut?.filter || "",
   });
@@ -46,13 +45,20 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
         await shortcutServiceClient.createShortcut({
           parent: user.name,
           shortcut: {
-            ...shortcut,
-            id: generateUUID(),
+            name: "", // Will be set by server
+            title: shortcut.title,
+            filter: shortcut.filter,
           },
         });
         toast.success("Create shortcut successfully");
       } else {
-        await shortcutServiceClient.updateShortcut({ parent: user.name, shortcut, updateMask: ["title", "filter"] });
+        await shortcutServiceClient.updateShortcut({
+          shortcut: {
+            ...shortcut,
+            name: props.shortcut!.name, // Keep the original resource name
+          },
+          updateMask: ["title", "filter"],
+        });
         toast.success("Update shortcut successfully");
       }
       // Refresh shortcuts.

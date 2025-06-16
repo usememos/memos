@@ -25,10 +25,14 @@ const (
 )
 
 type Shortcut struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Filter        string                 `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The resource name of the shortcut.
+	// Format: users/{user}/shortcuts/{shortcut}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// The title of the shortcut.
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// The filter expression for the shortcut.
+	Filter        string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -63,9 +67,9 @@ func (*Shortcut) Descriptor() ([]byte, []int) {
 	return file_api_v1_shortcut_service_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Shortcut) GetId() string {
+func (x *Shortcut) GetName() string {
 	if x != nil {
-		return x.Id
+		return x.Name
 	}
 	return ""
 }
@@ -86,8 +90,13 @@ func (x *Shortcut) GetFilter() string {
 
 type ListShortcutsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the user.
-	Parent        string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The parent resource where shortcuts are listed.
+	// Format: users/{user}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. The maximum number of shortcuts to return.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token for pagination.
+	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -129,9 +138,28 @@ func (x *ListShortcutsRequest) GetParent() string {
 	return ""
 }
 
+func (x *ListShortcutsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListShortcutsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
 type ListShortcutsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Shortcuts     []*Shortcut            `protobuf:"bytes,1,rep,name=shortcuts,proto3" json:"shortcuts,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of shortcuts.
+	Shortcuts []*Shortcut `protobuf:"bytes,1,rep,name=shortcuts,proto3" json:"shortcuts,omitempty"`
+	// A token for the next page of results.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// The total count of shortcuts.
+	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -173,19 +201,82 @@ func (x *ListShortcutsResponse) GetShortcuts() []*Shortcut {
 	return nil
 }
 
+func (x *ListShortcutsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListShortcutsResponse) GetTotalSize() int32 {
+	if x != nil {
+		return x.TotalSize
+	}
+	return 0
+}
+
+type GetShortcutRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the shortcut to retrieve.
+	// Format: users/{user}/shortcuts/{shortcut}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetShortcutRequest) Reset() {
+	*x = GetShortcutRequest{}
+	mi := &file_api_v1_shortcut_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetShortcutRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetShortcutRequest) ProtoMessage() {}
+
+func (x *GetShortcutRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_shortcut_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetShortcutRequest.ProtoReflect.Descriptor instead.
+func (*GetShortcutRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_shortcut_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetShortcutRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 type CreateShortcutRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the user.
-	Parent        string    `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	Shortcut      *Shortcut `protobuf:"bytes,2,opt,name=shortcut,proto3" json:"shortcut,omitempty"`
-	ValidateOnly  bool      `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	// Required. The parent resource where this shortcut will be created.
+	// Format: users/{user}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The shortcut to create.
+	Shortcut *Shortcut `protobuf:"bytes,2,opt,name=shortcut,proto3" json:"shortcut,omitempty"`
+	// Optional. If set, validate the request, but do not actually create the shortcut.
+	ValidateOnly  bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateShortcutRequest) Reset() {
 	*x = CreateShortcutRequest{}
-	mi := &file_api_v1_shortcut_service_proto_msgTypes[3]
+	mi := &file_api_v1_shortcut_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -197,7 +288,7 @@ func (x *CreateShortcutRequest) String() string {
 func (*CreateShortcutRequest) ProtoMessage() {}
 
 func (x *CreateShortcutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_shortcut_service_proto_msgTypes[3]
+	mi := &file_api_v1_shortcut_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -210,7 +301,7 @@ func (x *CreateShortcutRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateShortcutRequest.ProtoReflect.Descriptor instead.
 func (*CreateShortcutRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_shortcut_service_proto_rawDescGZIP(), []int{3}
+	return file_api_v1_shortcut_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateShortcutRequest) GetParent() string {
@@ -236,17 +327,17 @@ func (x *CreateShortcutRequest) GetValidateOnly() bool {
 
 type UpdateShortcutRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the user.
-	Parent        string                 `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	Shortcut      *Shortcut              `protobuf:"bytes,2,opt,name=shortcut,proto3" json:"shortcut,omitempty"`
-	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Required. The shortcut resource which replaces the resource on the server.
+	Shortcut *Shortcut `protobuf:"bytes,1,opt,name=shortcut,proto3" json:"shortcut,omitempty"`
+	// Optional. The list of fields to update.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateShortcutRequest) Reset() {
 	*x = UpdateShortcutRequest{}
-	mi := &file_api_v1_shortcut_service_proto_msgTypes[4]
+	mi := &file_api_v1_shortcut_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -258,7 +349,7 @@ func (x *UpdateShortcutRequest) String() string {
 func (*UpdateShortcutRequest) ProtoMessage() {}
 
 func (x *UpdateShortcutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_shortcut_service_proto_msgTypes[4]
+	mi := &file_api_v1_shortcut_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -271,14 +362,7 @@ func (x *UpdateShortcutRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateShortcutRequest.ProtoReflect.Descriptor instead.
 func (*UpdateShortcutRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_shortcut_service_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *UpdateShortcutRequest) GetParent() string {
-	if x != nil {
-		return x.Parent
-	}
-	return ""
+	return file_api_v1_shortcut_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *UpdateShortcutRequest) GetShortcut() *Shortcut {
@@ -297,17 +381,16 @@ func (x *UpdateShortcutRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 
 type DeleteShortcutRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the user.
-	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The id of the shortcut.
-	Id            string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	// Required. The resource name of the shortcut to delete.
+	// Format: users/{user}/shortcuts/{shortcut}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteShortcutRequest) Reset() {
 	*x = DeleteShortcutRequest{}
-	mi := &file_api_v1_shortcut_service_proto_msgTypes[5]
+	mi := &file_api_v1_shortcut_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -319,7 +402,7 @@ func (x *DeleteShortcutRequest) String() string {
 func (*DeleteShortcutRequest) ProtoMessage() {}
 
 func (x *DeleteShortcutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_shortcut_service_proto_msgTypes[5]
+	mi := &file_api_v1_shortcut_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -332,19 +415,12 @@ func (x *DeleteShortcutRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteShortcutRequest.ProtoReflect.Descriptor instead.
 func (*DeleteShortcutRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_shortcut_service_proto_rawDescGZIP(), []int{5}
+	return file_api_v1_shortcut_service_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *DeleteShortcutRequest) GetParent() string {
+func (x *DeleteShortcutRequest) GetName() string {
 	if x != nil {
-		return x.Parent
-	}
-	return ""
-}
-
-func (x *DeleteShortcutRequest) GetId() string {
-	if x != nil {
-		return x.Id
+		return x.Name
 	}
 	return ""
 }
@@ -353,32 +429,42 @@ var File_api_v1_shortcut_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_shortcut_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/shortcut_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"H\n" +
-	"\bShortcut\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
-	"\x06filter\x18\x03 \x01(\tR\x06filter\".\n" +
-	"\x14ListShortcutsRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\"M\n" +
+	"\x1dapi/v1/shortcut_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xaf\x01\n" +
+	"\bShortcut\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12\x1b\n" +
+	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter:R\xeaAO\n" +
+	"\x15memos.api.v1/Shortcut\x12!users/{user}/shortcuts/{shortcut}*\tshortcuts2\bshortcut\"\x93\x01\n" +
+	"\x14ListShortcutsRequest\x125\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api.v1/ShortcutR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x94\x01\n" +
 	"\x15ListShortcutsResponse\x124\n" +
-	"\tshortcuts\x18\x01 \x03(\v2\x16.memos.api.v1.ShortcutR\tshortcuts\"\x88\x01\n" +
-	"\x15CreateShortcutRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\x122\n" +
-	"\bshortcut\x18\x02 \x01(\v2\x16.memos.api.v1.ShortcutR\bshortcut\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\xa0\x01\n" +
-	"\x15UpdateShortcutRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\x122\n" +
-	"\bshortcut\x18\x02 \x01(\v2\x16.memos.api.v1.ShortcutR\bshortcut\x12;\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"?\n" +
-	"\x15DeleteShortcutRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\x12\x0e\n" +
-	"\x02id\x18\x02 \x01(\tR\x02id2\xf8\x04\n" +
+	"\tshortcuts\x18\x01 \x03(\v2\x16.memos.api.v1.ShortcutR\tshortcuts\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
+	"\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"G\n" +
+	"\x12GetShortcutRequest\x121\n" +
+	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
+	"\x15memos.api.v1/ShortcutR\x04name\"\xb1\x01\n" +
+	"\x15CreateShortcutRequest\x125\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api.v1/ShortcutR\x06parent\x127\n" +
+	"\bshortcut\x18\x02 \x01(\v2\x16.memos.api.v1.ShortcutB\x03\xe0A\x02R\bshortcut\x12(\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x92\x01\n" +
+	"\x15UpdateShortcutRequest\x127\n" +
+	"\bshortcut\x18\x01 \x01(\v2\x16.memos.api.v1.ShortcutB\x03\xe0A\x02R\bshortcut\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\"J\n" +
+	"\x15DeleteShortcutRequest\x121\n" +
+	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
+	"\x15memos.api.v1/ShortcutR\x04name2\xde\x05\n" +
 	"\x0fShortcutService\x12\x8d\x01\n" +
-	"\rListShortcuts\x12\".memos.api.v1.ListShortcutsRequest\x1a#.memos.api.v1.ListShortcutsResponse\"3\xdaA\x06parent\x82\xd3\xe4\x93\x02$\x12\"/api/v1/{parent=users/*}/shortcuts\x12\x95\x01\n" +
-	"\x0eCreateShortcut\x12#.memos.api.v1.CreateShortcutRequest\x1a\x16.memos.api.v1.Shortcut\"F\xdaA\x0fparent,shortcut\x82\xd3\xe4\x93\x02.:\bshortcut\"\"/api/v1/{parent=users/*}/shortcuts\x12\xaf\x01\n" +
-	"\x0eUpdateShortcut\x12#.memos.api.v1.UpdateShortcutRequest\x1a\x16.memos.api.v1.Shortcut\"`\xdaA\x1bparent,shortcut,update_mask\x82\xd3\xe4\x93\x02<:\bshortcut20/api/v1/{parent=users/*}/shortcuts/{shortcut.id}\x12\x8a\x01\n" +
-	"\x0eDeleteShortcut\x12#.memos.api.v1.DeleteShortcutRequest\x1a\x16.google.protobuf.Empty\";\xdaA\tparent,id\x82\xd3\xe4\x93\x02)*'/api/v1/{parent=users/*}/shortcuts/{id}B\xac\x01\n" +
+	"\rListShortcuts\x12\".memos.api.v1.ListShortcutsRequest\x1a#.memos.api.v1.ListShortcutsResponse\"3\xdaA\x06parent\x82\xd3\xe4\x93\x02$\x12\"/api/v1/{parent=users/*}/shortcuts\x12z\n" +
+	"\vGetShortcut\x12 .memos.api.v1.GetShortcutRequest\x1a\x16.memos.api.v1.Shortcut\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$\x12\"/api/v1/{name=users/*/shortcuts/*}\x12\x95\x01\n" +
+	"\x0eCreateShortcut\x12#.memos.api.v1.CreateShortcutRequest\x1a\x16.memos.api.v1.Shortcut\"F\xdaA\x0fparent,shortcut\x82\xd3\xe4\x93\x02.:\bshortcut\"\"/api/v1/{parent=users/*}/shortcuts\x12\xa3\x01\n" +
+	"\x0eUpdateShortcut\x12#.memos.api.v1.UpdateShortcutRequest\x1a\x16.memos.api.v1.Shortcut\"T\xdaA\x14shortcut,update_mask\x82\xd3\xe4\x93\x027:\bshortcut2+/api/v1/{shortcut.name=users/*/shortcuts/*}\x12\x80\x01\n" +
+	"\x0eDeleteShortcut\x12#.memos.api.v1.DeleteShortcutRequest\x1a\x16.google.protobuf.Empty\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$*\"/api/v1/{name=users/*/shortcuts/*}B\xac\x01\n" +
 	"\x10com.memos.api.v1B\x14ShortcutServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (
@@ -393,32 +479,35 @@ func file_api_v1_shortcut_service_proto_rawDescGZIP() []byte {
 	return file_api_v1_shortcut_service_proto_rawDescData
 }
 
-var file_api_v1_shortcut_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_api_v1_shortcut_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_api_v1_shortcut_service_proto_goTypes = []any{
 	(*Shortcut)(nil),              // 0: memos.api.v1.Shortcut
 	(*ListShortcutsRequest)(nil),  // 1: memos.api.v1.ListShortcutsRequest
 	(*ListShortcutsResponse)(nil), // 2: memos.api.v1.ListShortcutsResponse
-	(*CreateShortcutRequest)(nil), // 3: memos.api.v1.CreateShortcutRequest
-	(*UpdateShortcutRequest)(nil), // 4: memos.api.v1.UpdateShortcutRequest
-	(*DeleteShortcutRequest)(nil), // 5: memos.api.v1.DeleteShortcutRequest
-	(*fieldmaskpb.FieldMask)(nil), // 6: google.protobuf.FieldMask
-	(*emptypb.Empty)(nil),         // 7: google.protobuf.Empty
+	(*GetShortcutRequest)(nil),    // 3: memos.api.v1.GetShortcutRequest
+	(*CreateShortcutRequest)(nil), // 4: memos.api.v1.CreateShortcutRequest
+	(*UpdateShortcutRequest)(nil), // 5: memos.api.v1.UpdateShortcutRequest
+	(*DeleteShortcutRequest)(nil), // 6: memos.api.v1.DeleteShortcutRequest
+	(*fieldmaskpb.FieldMask)(nil), // 7: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),         // 8: google.protobuf.Empty
 }
 var file_api_v1_shortcut_service_proto_depIdxs = []int32{
 	0, // 0: memos.api.v1.ListShortcutsResponse.shortcuts:type_name -> memos.api.v1.Shortcut
 	0, // 1: memos.api.v1.CreateShortcutRequest.shortcut:type_name -> memos.api.v1.Shortcut
 	0, // 2: memos.api.v1.UpdateShortcutRequest.shortcut:type_name -> memos.api.v1.Shortcut
-	6, // 3: memos.api.v1.UpdateShortcutRequest.update_mask:type_name -> google.protobuf.FieldMask
+	7, // 3: memos.api.v1.UpdateShortcutRequest.update_mask:type_name -> google.protobuf.FieldMask
 	1, // 4: memos.api.v1.ShortcutService.ListShortcuts:input_type -> memos.api.v1.ListShortcutsRequest
-	3, // 5: memos.api.v1.ShortcutService.CreateShortcut:input_type -> memos.api.v1.CreateShortcutRequest
-	4, // 6: memos.api.v1.ShortcutService.UpdateShortcut:input_type -> memos.api.v1.UpdateShortcutRequest
-	5, // 7: memos.api.v1.ShortcutService.DeleteShortcut:input_type -> memos.api.v1.DeleteShortcutRequest
-	2, // 8: memos.api.v1.ShortcutService.ListShortcuts:output_type -> memos.api.v1.ListShortcutsResponse
-	0, // 9: memos.api.v1.ShortcutService.CreateShortcut:output_type -> memos.api.v1.Shortcut
-	0, // 10: memos.api.v1.ShortcutService.UpdateShortcut:output_type -> memos.api.v1.Shortcut
-	7, // 11: memos.api.v1.ShortcutService.DeleteShortcut:output_type -> google.protobuf.Empty
-	8, // [8:12] is the sub-list for method output_type
-	4, // [4:8] is the sub-list for method input_type
+	3, // 5: memos.api.v1.ShortcutService.GetShortcut:input_type -> memos.api.v1.GetShortcutRequest
+	4, // 6: memos.api.v1.ShortcutService.CreateShortcut:input_type -> memos.api.v1.CreateShortcutRequest
+	5, // 7: memos.api.v1.ShortcutService.UpdateShortcut:input_type -> memos.api.v1.UpdateShortcutRequest
+	6, // 8: memos.api.v1.ShortcutService.DeleteShortcut:input_type -> memos.api.v1.DeleteShortcutRequest
+	2, // 9: memos.api.v1.ShortcutService.ListShortcuts:output_type -> memos.api.v1.ListShortcutsResponse
+	0, // 10: memos.api.v1.ShortcutService.GetShortcut:output_type -> memos.api.v1.Shortcut
+	0, // 11: memos.api.v1.ShortcutService.CreateShortcut:output_type -> memos.api.v1.Shortcut
+	0, // 12: memos.api.v1.ShortcutService.UpdateShortcut:output_type -> memos.api.v1.Shortcut
+	8, // 13: memos.api.v1.ShortcutService.DeleteShortcut:output_type -> google.protobuf.Empty
+	9, // [9:14] is the sub-list for method output_type
+	4, // [4:9] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
 	4, // [4:4] is the sub-list for extension extendee
 	0, // [0:4] is the sub-list for field type_name
@@ -435,7 +524,7 @@ func file_api_v1_shortcut_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_shortcut_service_proto_rawDesc), len(file_api_v1_shortcut_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
