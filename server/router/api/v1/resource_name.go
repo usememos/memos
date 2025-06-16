@@ -17,6 +17,7 @@ const (
 	InboxNamePrefix            = "inboxes/"
 	IdentityProviderNamePrefix = "identityProviders/"
 	ActivityNamePrefix         = "activities/"
+	WebhookNamePrefix          = "webhooks/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -114,6 +115,19 @@ func ExtractActivityIDFromName(name string) (int32, error) {
 	id, err := util.ConvertStringToInt32(tokens[0])
 	if err != nil {
 		return 0, errors.Errorf("invalid activity ID %q", tokens[0])
+	}
+	return id, nil
+}
+
+// ExtractWebhookIDFromName returns the webhook ID from a resource name.
+func ExtractWebhookIDFromName(name string) (int32, error) {
+	tokens, err := GetNameParentTokens(name, WebhookNamePrefix)
+	if err != nil {
+		return 0, err
+	}
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid webhook ID %q", tokens[0])
 	}
 	return id, nil
 }

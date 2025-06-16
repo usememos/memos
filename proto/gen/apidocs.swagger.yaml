@@ -609,11 +609,44 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: creator
-          description: The name of the creator.
+        - name: pageSize
+          description: |-
+            Optional. The maximum number of webhooks to return.
+            The service may return fewer than this value.
+            If unspecified, at most 50 webhooks will be returned.
+            The maximum value is 1000; values above 1000 will be coerced to 1000.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: |-
+            Optional. A page token, received from a previous `ListWebhooks` call.
+            Provide this to retrieve the subsequent page.
           in: query
           required: false
           type: string
+        - name: filter
+          description: |-
+            Optional. Filter to apply to the list results.
+            Example: "state=ACTIVE" or "creator=users/123"
+            Supported operators: =, !=, <, <=, >, >=, :
+            Supported fields: display_name, url, creator, state, create_time, update_time
+          in: query
+          required: false
+          type: string
+        - name: orderBy
+          description: |-
+            Optional. The order to sort results by.
+            Example: "create_time desc" or "display_name asc"
+          in: query
+          required: false
+          type: string
+        - name: showDeleted
+          description: Optional. If true, show deleted webhooks in the response.
+          in: query
+          required: false
+          type: boolean
       tags:
         - WebhookService
     post:
@@ -629,93 +662,34 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1CreateWebhookRequest'
-      tags:
-        - WebhookService
-  /api/v1/webhooks/{id}:
-    get:
-      summary: GetWebhook returns a webhook by id.
-      operationId: WebhookService_GetWebhook
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Webhook'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - WebhookService
-    delete:
-      summary: DeleteWebhook deletes a webhook by id.
-      operationId: WebhookService_DeleteWebhook
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            type: object
-            properties: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: integer
-          format: int32
-      tags:
-        - WebhookService
-  /api/v1/webhooks/{webhook.id}:
-    patch:
-      summary: UpdateWebhook updates a webhook.
-      operationId: WebhookService_UpdateWebhook
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Webhook'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: webhook.id
-          in: path
-          required: true
-          type: integer
-          format: int32
         - name: webhook
+          description: Required. The webhook to create.
           in: body
           required: true
           schema:
-            type: object
-            properties:
-              creator:
-                type: string
-                description: The name of the creator.
-              createTime:
-                type: string
-                format: date-time
-              updateTime:
-                type: string
-                format: date-time
-              name:
-                type: string
-              url:
-                type: string
+            $ref: '#/definitions/v1Webhook'
+            required:
+              - webhook
+        - name: webhookId
+          description: |-
+            Optional. The webhook ID to use for this webhook.
+            If empty, a unique ID will be generated.
+            Must match the pattern [a-z0-9-]+
+          in: query
+          required: false
+          type: string
+        - name: validateOnly
+          description: Optional. If set, validate the request but don't actually create the webhook.
+          in: query
+          required: false
+          type: boolean
+        - name: requestId
+          description: |-
+            Optional. An idempotency token that can be used to ensure that multiple
+            requests to create a webhook have the same result.
+          in: query
+          required: false
+          type: string
       tags:
         - WebhookService
   /api/v1/workspace/profile:
@@ -1172,6 +1146,36 @@ paths:
       tags:
         - ResourceService
   /api/v1/{name_5}:
+    get:
+      summary: GetWebhook gets a webhook by name.
+      operationId: WebhookService_GetWebhook
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Webhook'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_5
+          description: |-
+            Required. The resource name of the webhook.
+            Format: webhooks/{webhook}
+          in: path
+          required: true
+          type: string
+          pattern: webhooks/[^/]+
+        - name: readMask
+          description: |-
+            Optional. The fields to return in the response.
+            If not specified, all fields are returned.
+          in: query
+          required: false
+          type: string
+      tags:
+        - WebhookService
     delete:
       summary: DeleteMemo deletes a memo.
       operationId: MemoService_DeleteMemo
@@ -1194,6 +1198,36 @@ paths:
           pattern: memos/[^/]+
       tags:
         - MemoService
+  /api/v1/{name_6}:
+    delete:
+      summary: DeleteWebhook deletes a webhook.
+      operationId: WebhookService_DeleteWebhook
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_6
+          description: |-
+            Required. The resource name of the webhook to delete.
+            Format: webhooks/{webhook}
+          in: path
+          required: true
+          type: string
+          pattern: webhooks/[^/]+
+        - name: force
+          description: Optional. If set to true, the webhook will be deleted even if it has associated data.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - WebhookService
   /api/v1/{name}:
     get:
       summary: GetActivity returns the activity with the given id.
@@ -2022,6 +2056,81 @@ paths:
           type: boolean
       tags:
         - UserService
+  /api/v1/{webhook.name}:
+    patch:
+      summary: UpdateWebhook updates a webhook.
+      operationId: WebhookService_UpdateWebhook
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Webhook'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: webhook.name
+          description: |-
+            The resource name of the webhook.
+            Format: webhooks/{webhook}
+          in: path
+          required: true
+          type: string
+          pattern: webhooks/[^/]+
+        - name: webhook
+          description: Required. The webhook to update.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Output only. The system generated unique identifier.
+                readOnly: true
+              displayName:
+                type: string
+                description: Required. The display name of the webhook.
+              url:
+                type: string
+                description: Required. The target URL for the webhook.
+              creator:
+                type: string
+                title: |-
+                  Output only. The resource name of the creator.
+                  Format: users/{user}
+                readOnly: true
+              state:
+                $ref: '#/definitions/v1State'
+                description: The state of the webhook.
+              createTime:
+                type: string
+                format: date-time
+                description: Output only. The creation timestamp.
+                readOnly: true
+              updateTime:
+                type: string
+                format: date-time
+                description: Output only. The last update timestamp.
+                readOnly: true
+              etag:
+                type: string
+                description: Output only. The etag for this resource.
+                readOnly: true
+            title: Required. The webhook to update.
+            required:
+              - displayName
+              - url
+              - state
+              - webhook
+        - name: allowMissing
+          description: Optional. If set to true, allows updating sensitive fields.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - WebhookService
   /file/{name}/{filename}:
     get:
       summary: GetResourceBinary returns a resource binary by name.
@@ -2726,13 +2835,6 @@ definitions:
     properties:
       content:
         type: string
-  v1CreateWebhookRequest:
-    type: object
-    properties:
-      name:
-        type: string
-      url:
-        type: string
   v1Direction:
     type: string
     enum:
@@ -3011,6 +3113,16 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Webhook'
+        description: The list of webhooks.
+      nextPageToken:
+        type: string
+        description: |-
+          A token that can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
+      totalSize:
+        type: integer
+        format: int32
+        description: The total count of webhooks (may be approximate).
   v1MathBlockNode:
     type: object
     properties:
@@ -3526,22 +3638,48 @@ definitions:
   v1Webhook:
     type: object
     properties:
-      id:
-        type: integer
-        format: int32
+      name:
+        type: string
+        title: |-
+          The resource name of the webhook.
+          Format: webhooks/{webhook}
+      uid:
+        type: string
+        description: Output only. The system generated unique identifier.
+        readOnly: true
+      displayName:
+        type: string
+        description: Required. The display name of the webhook.
+      url:
+        type: string
+        description: Required. The target URL for the webhook.
       creator:
         type: string
-        description: The name of the creator.
+        title: |-
+          Output only. The resource name of the creator.
+          Format: users/{user}
+        readOnly: true
+      state:
+        $ref: '#/definitions/v1State'
+        description: The state of the webhook.
       createTime:
         type: string
         format: date-time
+        description: Output only. The creation timestamp.
+        readOnly: true
       updateTime:
         type: string
         format: date-time
-      name:
+        description: Output only. The last update timestamp.
+        readOnly: true
+      etag:
         type: string
-      url:
-        type: string
+        description: Output only. The etag for this resource.
+        readOnly: true
+    required:
+      - displayName
+      - url
+      - state
   v1WorkspaceProfile:
     type: object
     properties:
