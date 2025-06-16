@@ -258,7 +258,7 @@ func (s *Store) normalizeMigrationHistoryList(ctx context.Context) error {
 		versions = append(versions, migrationHistory.Version)
 	}
 	if len(versions) == 0 {
-		return errors.Errorf("no migration history found")
+		return nil
 	}
 	sort.Sort(version.SortVersion(versions))
 	latestVersion := versions[len(versions)-1]
@@ -309,7 +309,7 @@ func (s *Store) migrateSchemaVersionToSetting(ctx context.Context) error {
 		versions = append(versions, migrationHistory.Version)
 	}
 	if len(versions) == 0 {
-		return errors.Errorf("no migration history found")
+		return nil
 	}
 	sort.Sort(version.SortVersion(versions))
 	latestVersion := versions[len(versions)-1]
