@@ -22,16 +22,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Workspace profile message containing basic workspace information.
 type WorkspaceProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of instance owner.
 	// Format: users/{user}
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	// version is the current version of instance
+	// Version is the current version of instance.
 	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	// mode is the instance mode (e.g. "prod", "dev" or "demo").
+	// Mode is the instance mode (e.g. "prod", "dev" or "demo").
 	Mode string `protobuf:"bytes,3,opt,name=mode,proto3" json:"mode,omitempty"`
-	// instance_url is the URL of the instance.
+	// Instance URL is the URL of the instance.
 	InstanceUrl   string `protobuf:"bytes,6,opt,name=instance_url,json=instanceUrl,proto3" json:"instance_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -95,6 +96,7 @@ func (x *WorkspaceProfile) GetInstanceUrl() string {
 	return ""
 }
 
+// Request for workspace profile.
 type GetWorkspaceProfileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields

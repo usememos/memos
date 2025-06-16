@@ -11,6 +11,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// GetWorkspaceProfile returns the workspace profile.
 func (s *APIV1Service) GetWorkspaceProfile(ctx context.Context, _ *v1pb.GetWorkspaceProfileRequest) (*v1pb.WorkspaceProfile, error) {
 	workspaceProfile := &v1pb.WorkspaceProfile{
 		Version:     s.Profile.Version,

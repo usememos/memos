@@ -9,20 +9,22 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
 export const protobufPackage = "memos.api.v1";
 
+/** Workspace profile message containing basic workspace information. */
 export interface WorkspaceProfile {
   /**
    * The name of instance owner.
    * Format: users/{user}
    */
   owner: string;
-  /** version is the current version of instance */
+  /** Version is the current version of instance. */
   version: string;
-  /** mode is the instance mode (e.g. "prod", "dev" or "demo"). */
+  /** Mode is the instance mode (e.g. "prod", "dev" or "demo"). */
   mode: string;
-  /** instance_url is the URL of the instance. */
+  /** Instance URL is the URL of the instance. */
   instanceUrl: string;
 }
 
+/** Request for workspace profile. */
 export interface GetWorkspaceProfileRequest {
 }
 
@@ -147,7 +149,7 @@ export const WorkspaceServiceDefinition = {
   name: "WorkspaceService",
   fullName: "memos.api.v1.WorkspaceService",
   methods: {
-    /** GetWorkspaceProfile returns the workspace profile. */
+    /** Gets the workspace profile. */
     getWorkspaceProfile: {
       name: "GetWorkspaceProfile",
       requestType: GetWorkspaceProfileRequest,

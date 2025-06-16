@@ -7,22 +7,27 @@ import "google/api/annotations.proto";
 option go_package = "gen/api/v1";
 
 service WorkspaceService {
-  // GetWorkspaceProfile returns the workspace profile.
+  // Gets the workspace profile.
   rpc GetWorkspaceProfile(GetWorkspaceProfileRequest) returns (WorkspaceProfile) {
     option (google.api.http) = {get: "/api/v1/workspace/profile"};
   }
 }
 
+// Workspace profile message containing basic workspace information.
 message WorkspaceProfile {
   // The name of instance owner.
   // Format: users/{user}
   string owner = 1;
-  // version is the current version of instance
+
+  // Version is the current version of instance.
   string version = 2;
-  // mode is the instance mode (e.g. "prod", "dev" or "demo").
+
+  // Mode is the instance mode (e.g. "prod", "dev" or "demo").
   string mode = 3;
-  // instance_url is the URL of the instance.
+
+  // Instance URL is the URL of the instance.
   string instance_url = 6;
 }
 
+// Request for workspace profile.
 message GetWorkspaceProfileRequest {}

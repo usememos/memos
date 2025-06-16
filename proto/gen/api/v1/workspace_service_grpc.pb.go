@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WorkspaceServiceClient interface {
-	// GetWorkspaceProfile returns the workspace profile.
+	// Gets the workspace profile.
 	GetWorkspaceProfile(ctx context.Context, in *GetWorkspaceProfileRequest, opts ...grpc.CallOption) (*WorkspaceProfile, error)
 }
 
@@ -52,7 +52,7 @@ func (c *workspaceServiceClient) GetWorkspaceProfile(ctx context.Context, in *Ge
 // All implementations must embed UnimplementedWorkspaceServiceServer
 // for forward compatibility.
 type WorkspaceServiceServer interface {
-	// GetWorkspaceProfile returns the workspace profile.
+	// Gets the workspace profile.
 	GetWorkspaceProfile(context.Context, *GetWorkspaceProfileRequest) (*WorkspaceProfile, error)
 	mustEmbedUnimplementedWorkspaceServiceServer()
 }

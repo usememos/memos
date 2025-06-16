@@ -694,7 +694,7 @@ paths:
         - WebhookService
   /api/v1/workspace/profile:
     get:
-      summary: GetWorkspaceProfile returns the workspace profile.
+      summary: Gets the workspace profile.
       operationId: WorkspaceService_GetWorkspaceProfile
       responses:
         "200":
@@ -3690,10 +3690,11 @@ definitions:
           Format: users/{user}
       version:
         type: string
-        title: version is the current version of instance
+        description: Version is the current version of instance.
       mode:
         type: string
-        description: mode is the instance mode (e.g. "prod", "dev" or "demo").
+        description: Mode is the instance mode (e.g. "prod", "dev" or "demo").
       instanceUrl:
         type: string
-        description: instance_url is the URL of the instance.
+        description: Instance URL is the URL of the instance.
+    description: Workspace profile message containing basic workspace information.
