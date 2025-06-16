@@ -24,7 +24,6 @@ import (
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/rss"
-	"github.com/usememos/memos/server/runner/memopayload"
 	"github.com/usememos/memos/server/runner/s3presign"
 	"github.com/usememos/memos/store"
 )
@@ -193,11 +192,6 @@ func (s *Server) StartBackgroundRunners(ctx context.Context) {
 	// Create and start S3 presign runner
 	s3presignRunner := s3presign.NewRunner(s.Store)
 	s3presignRunner.RunOnce(ctx)
-
-	// Create and start memo payload runner just once
-	memopayloadRunner := memopayload.NewRunner(s.Store)
-	// Rebuild all memos' payload after server starts.
-	memopayloadRunner.RunOnce(ctx)
 
 	// Start continuous S3 presign runner
 	go func() {
