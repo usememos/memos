@@ -14,7 +14,6 @@ tags:
   - name: ShortcutService
   - name: WebhookService
   - name: WorkspaceService
-  - name: WorkspaceSettingService
 consumes:
   - application/json
 produces:
@@ -707,68 +706,6 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - WorkspaceService
-  /api/v1/workspace/{name}:
-    get:
-      summary: GetWorkspaceSetting returns the setting by name.
-      operationId: WorkspaceSettingService_GetWorkspaceSetting
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/apiv1WorkspaceSetting'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The resource name of the workspace setting.
-            Format: settings/{setting}
-          in: path
-          required: true
-          type: string
-          pattern: settings/[^/]+
-      tags:
-        - WorkspaceSettingService
-  /api/v1/workspace/{setting.name}:
-    patch:
-      summary: SetWorkspaceSetting updates the setting.
-      operationId: WorkspaceSettingService_SetWorkspaceSetting
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/apiv1WorkspaceSetting'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: setting.name
-          description: |-
-            name is the name of the setting.
-            Format: settings/{setting}
-          in: path
-          required: true
-          type: string
-          pattern: settings/[^/]+
-        - name: setting
-          description: setting is the setting to update.
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              generalSetting:
-                $ref: '#/definitions/apiv1WorkspaceGeneralSetting'
-              storageSetting:
-                $ref: '#/definitions/apiv1WorkspaceStorageSetting'
-              memoRelatedSetting:
-                $ref: '#/definitions/apiv1WorkspaceMemoRelatedSetting'
-            title: setting is the setting to update.
-      tags:
-        - WorkspaceSettingService
   /api/v1/{identityProvider.name}:
     patch:
       summary: UpdateIdentityProvider updates an identity provider.
@@ -1199,6 +1136,29 @@ paths:
       tags:
         - MemoService
   /api/v1/{name_6}:
+    get:
+      summary: Gets a workspace setting.
+      operationId: WorkspaceService_GetWorkspaceSetting
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiv1WorkspaceSetting'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_6
+          description: |-
+            The resource name of the workspace setting.
+            Format: workspace/settings/{setting}
+          in: path
+          required: true
+          type: string
+          pattern: workspace/settings/[^/]+
+      tags:
+        - WorkspaceService
     delete:
       summary: DeleteWebhook deletes a webhook.
       operationId: WebhookService_DeleteWebhook
@@ -1929,6 +1889,46 @@ paths:
                 description: The related memo. Refer to `Memo.name`.
       tags:
         - ResourceService
+  /api/v1/{setting.name}:
+    patch:
+      summary: Updates a workspace setting.
+      operationId: WorkspaceService_UpdateWorkspaceSetting
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiv1WorkspaceSetting'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: setting.name
+          description: |-
+            The name of the workspace setting.
+            Format: workspace/settings/{setting}
+          in: path
+          required: true
+          type: string
+          pattern: workspace/settings/[^/]+
+        - name: setting
+          description: The workspace setting resource which replaces the resource on the server.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              generalSetting:
+                $ref: '#/definitions/apiv1WorkspaceGeneralSetting'
+              storageSetting:
+                $ref: '#/definitions/apiv1WorkspaceStorageSetting'
+              memoRelatedSetting:
+                $ref: '#/definitions/apiv1WorkspaceMemoRelatedSetting'
+            title: The workspace setting resource which replaces the resource on the server.
+            required:
+              - setting
+      tags:
+        - WorkspaceService
   /api/v1/{setting.name}:updateSetting:
     patch:
       summary: UpdateUserSetting updates the user setting.
@@ -2591,14 +2591,15 @@ definitions:
       name:
         type: string
         title: |-
-          name is the name of the setting.
-          Format: settings/{setting}
+          The name of the workspace setting.
+          Format: workspace/settings/{setting}
       generalSetting:
         $ref: '#/definitions/apiv1WorkspaceGeneralSetting'
       storageSetting:
         $ref: '#/definitions/apiv1WorkspaceStorageSetting'
       memoRelatedSetting:
         $ref: '#/definitions/apiv1WorkspaceMemoRelatedSetting'
+    description: A workspace setting resource.
   apiv1WorkspaceStorageSetting:
     type: object
     properties:

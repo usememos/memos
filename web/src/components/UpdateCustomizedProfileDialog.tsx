@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
 import { WorkspaceSettingKey } from "@/store/v2/workspace";
-import { WorkspaceCustomProfile } from "@/types/proto/api/v1/workspace_setting_service";
+import { WorkspaceCustomProfile } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "./AppearanceSelect";
 import { generateDialog } from "./Dialog";

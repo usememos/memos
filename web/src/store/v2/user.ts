@@ -134,7 +134,7 @@ const userStore = (() => {
     // Ensure the setting has the proper resource name
     const settingWithName = {
       ...userSetting,
-      name: `${state.currentUser}/setting`,
+      name: state.currentUser,
     };
     const updatedUserSetting = await userServiceClient.updateUserSetting({
       setting: settingWithName,

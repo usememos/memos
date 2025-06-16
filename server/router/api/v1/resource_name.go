@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	WorkspaceSettingNamePrefix = "settings/"
+	WorkspaceSettingNamePrefix = "workspace/settings/"
 	UserNamePrefix             = "users/"
 	MemoNamePrefix             = "memos/"
 	ResourceNamePrefix         = "resources/"
@@ -41,11 +41,22 @@ func GetNameParentTokens(name string, tokenPrefixes ...string) ([]string, error)
 }
 
 func ExtractWorkspaceSettingKeyFromName(name string) (string, error) {
-	tokens, err := GetNameParentTokens(name, WorkspaceSettingNamePrefix)
-	if err != nil {
-		return "", err
+	const prefix = "workspace/settings/"
+	if !strings.HasPrefix(name, prefix) {
+		return "", errors.Errorf("invalid workspace setting name: expected prefix %q, got %q", prefix, name)
 	}
-	return tokens[0], nil
+
+	settingKey := strings.TrimPrefix(name, prefix)
+	if settingKey == "" {
+		return "", errors.Errorf("invalid workspace setting name: empty setting key in %q", name)
+	}
+
+	// Ensure there are no additional path segments
+	if strings.Contains(settingKey, "/") {
+		return "", errors.Errorf("invalid workspace setting name: setting key cannot contain '/' in %q", name)
+	}
+
+	return settingKey, nil
 }
 
 // ExtractUserIDFromName returns the uid from a resource name.

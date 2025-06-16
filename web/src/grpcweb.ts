@@ -10,7 +10,6 @@ import { ShortcutServiceDefinition } from "./types/proto/api/v1/shortcut_service
 import { UserServiceDefinition } from "./types/proto/api/v1/user_service";
 import { WebhookServiceDefinition } from "./types/proto/api/v1/webhook_service";
 import { WorkspaceServiceDefinition } from "./types/proto/api/v1/workspace_service";
-import { WorkspaceSettingServiceDefinition } from "./types/proto/api/v1/workspace_setting_service";
 
 const channel = createChannel(
   window.location.origin,
@@ -22,8 +21,6 @@ const channel = createChannel(
 const clientFactory = createClientFactory();
 
 export const workspaceServiceClient = clientFactory.create(WorkspaceServiceDefinition, channel);
-
-export const workspaceSettingServiceClient = clientFactory.create(WorkspaceSettingServiceDefinition, channel);
 
 export const authServiceClient = clientFactory.create(AuthServiceDefinition, channel);
 

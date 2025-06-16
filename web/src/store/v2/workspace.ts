@@ -1,8 +1,8 @@
 import { uniqBy } from "lodash-es";
 import { makeAutoObservable } from "mobx";
-import { workspaceServiceClient, workspaceSettingServiceClient } from "@/grpcweb";
+import { workspaceServiceClient } from "@/grpcweb";
 import { WorkspaceProfile } from "@/types/proto/api/v1/workspace_service";
-import { WorkspaceGeneralSetting, WorkspaceMemoRelatedSetting, WorkspaceSetting } from "@/types/proto/api/v1/workspace_setting_service";
+import { WorkspaceGeneralSetting, WorkspaceMemoRelatedSetting, WorkspaceSetting } from "@/types/proto/api/v1/workspace_service";
 import { isValidateLocale } from "@/utils/i18n";
 import { workspaceSettingNamePrefix } from "../common";
 
@@ -60,14 +60,14 @@ const workspaceStore = (() => {
   const state = new LocalState();
 
   const fetchWorkspaceSetting = async (settingKey: WorkspaceSettingKey) => {
-    const setting = await workspaceSettingServiceClient.getWorkspaceSetting({ name: `${workspaceSettingNamePrefix}${settingKey}` });
+    const setting = await workspaceServiceClient.getWorkspaceSetting({ name: `${workspaceSettingNamePrefix}${settingKey}` });
     state.setPartial({
       settings: uniqBy([setting, ...state.settings], "name"),
     });
   };
 
   const upsertWorkspaceSetting = async (setting: WorkspaceSetting) => {
-    await workspaceSettingServiceClient.setWorkspaceSetting({ setting });
+    await workspaceServiceClient.updateWorkspaceSetting({ setting });
     state.setPartial({
       settings: uniqBy([setting, ...state.settings], "name"),
     });

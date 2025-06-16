@@ -341,7 +341,7 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUser
 	}
 
 	userSettingMessage := getDefaultUserSetting()
-	userSettingMessage.Name = fmt.Sprintf("users/%d/setting", userID)
+	userSettingMessage.Name = fmt.Sprintf("users/%d", userID)
 
 	for _, setting := range userSettings {
 		if setting.Key == storepb.UserSettingKey_LOCALE {
@@ -357,12 +357,7 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUser
 
 func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.UpdateUserSettingRequest) (*v1pb.UserSetting, error) {
 	// Extract user ID from the setting resource name
-	parts := strings.Split(request.Setting.Name, "/")
-	if len(parts) != 3 || parts[0] != "users" || parts[2] != "setting" {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid setting name format: %s", request.Setting.Name)
-	}
-
-	userID, err := ExtractUserIDFromName(fmt.Sprintf("users/%s", parts[1]))
+	userID, err := ExtractUserIDFromName(request.Setting.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
