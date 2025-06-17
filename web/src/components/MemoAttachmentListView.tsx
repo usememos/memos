@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { cn } from "@/utils";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
-import MemoResource from "./MemoResource";
+import MemoAttachment from "./MemoAttachment";
 import showPreviewImageDialog from "./PreviewImageDialog";
 
 const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[] }) => {
@@ -78,7 +78,7 @@ const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[
     return (
       <div className="w-full flex flex-row justify-start overflow-auto gap-2">
         {otherAttachments.map((attachment) => (
-          <MemoResource key={attachment.name} resource={attachment} />
+          <MemoAttachment key={attachment.name} attachment={attachment} />
         ))}
       </div>
     );

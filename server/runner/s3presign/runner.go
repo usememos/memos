@@ -49,33 +49,33 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 		return
 	}
 
-	s3StorageType := storepb.ResourceStorageType_S3
-	// Limit resources to a reasonable batch size
+	s3StorageType := storepb.AttachmentStorageType_S3
+	// Limit attachments to a reasonable batch size
 	const batchSize = 100
 	offset := 0
 
 	for {
 		limit := batchSize
-		resources, err := r.Store.ListResources(ctx, &store.FindResource{
+		attachments, err := r.Store.ListAttachments(ctx, &store.FindAttachment{
 			GetBlob:     false,
 			StorageType: &s3StorageType,
 			Limit:       &limit,
 			Offset:      &offset,
 		})
 		if err != nil {
-			slog.Error("Failed to list resources for presigning", "error", err)
+			slog.Error("Failed to list attachments for presigning", "error", err)
 			return
 		}
 
-		// Break if no more resources
-		if len(resources) == 0 {
+		// Break if no more attachments
+		if len(attachments) == 0 {
 			break
 		}
 
-		// Process batch of resources
+		// Process batch of attachments
 		presignCount := 0
-		for _, resource := range resources {
-			s3ObjectPayload := resource.Payload.GetS3Object()
+		for _, attachment := range attachments {
+			s3ObjectPayload := attachment.Payload.GetS3Object()
 			if s3ObjectPayload == nil {
 				continue
 			}
@@ -105,30 +105,30 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 
 			presignURL, err := s3Client.PresignGetObject(ctx, s3ObjectPayload.Key)
 			if err != nil {
-				slog.Error("Failed to presign URL", "error", err, "resourceID", resource.ID)
+				slog.Error("Failed to presign URL", "error", err, "attachmentID", attachment.ID)
 				continue
 			}
 
 			s3ObjectPayload.S3Config = s3Config
 			s3ObjectPayload.LastPresignedTime = timestamppb.New(time.Now())
-			if err := r.Store.UpdateResource(ctx, &store.UpdateResource{
-				ID:        resource.ID,
+			if err := r.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
+				ID:        attachment.ID,
 				Reference: &presignURL,
-				Payload: &storepb.ResourcePayload{
-					Payload: &storepb.ResourcePayload_S3Object_{
+				Payload: &storepb.AttachmentPayload{
+					Payload: &storepb.AttachmentPayload_S3Object_{
 						S3Object: s3ObjectPayload,
 					},
 				},
 			}); err != nil {
-				slog.Error("Failed to update resource", "error", err, "resourceID", resource.ID)
+				slog.Error("Failed to update attachment", "error", err, "attachmentID", attachment.ID)
 				continue
 			}
 			presignCount++
 		}
 
-		slog.Info("Presigned batch of S3 resources", "batchSize", len(resources), "presigned", presignCount)
+		slog.Info("Presigned batch of S3 attachments", "batchSize", len(attachments), "presigned", presignCount)
 
 		// Move to next batch
-		offset += len(resources)
+		offset += len(attachments)
 	}
 }

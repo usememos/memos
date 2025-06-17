@@ -17,15 +17,15 @@ import showPreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
 
 interface Props {
-  resource: Attachment;
+  attachment: Attachment;
   className?: string;
   strokeWidth?: number;
 }
 
-const ResourceIcon = (props: Props) => {
-  const { resource } = props;
-  const resourceType = getAttachmentType(resource);
-  const resourceUrl = getAttachmentUrl(resource);
+const AttachmentIcon = (props: Props) => {
+  const { attachment } = props;
+  const resourceType = getAttachmentType(attachment);
+  const resourceUrl = getAttachmentUrl(attachment);
   const className = cn("w-full h-auto", props.className);
   const strokeWidth = props.strokeWidth;
 
@@ -38,7 +38,7 @@ const ResourceIcon = (props: Props) => {
       <SquareDiv className={cn(className, "flex items-center justify-center overflow-clip")}>
         <img
           className="min-w-full min-h-full object-cover"
-          src={resource.externalLink ? resourceUrl : resourceUrl + "?thumbnail=true"}
+          src={attachment.externalLink ? resourceUrl : resourceUrl + "?thumbnail=true"}
           onClick={() => showPreviewImageDialog(resourceUrl)}
           decoding="async"
           loading="lazy"
@@ -47,7 +47,7 @@ const ResourceIcon = (props: Props) => {
     );
   }
 
-  const getResourceIcon = () => {
+  const getAttachmentIcon = () => {
     switch (resourceType) {
       case "video/*":
         return <FileVideo2Icon strokeWidth={strokeWidth} className="w-full h-auto" />;
@@ -74,9 +74,9 @@ const ResourceIcon = (props: Props) => {
 
   return (
     <div onClick={previewResource} className={cn(className, "max-w-16 opacity-50")}>
-      {getResourceIcon()}
+      {getAttachmentIcon()}
     </div>
   );
 };
 
-export default React.memo(ResourceIcon);
+export default React.memo(AttachmentIcon);

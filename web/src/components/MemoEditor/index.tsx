@@ -25,7 +25,7 @@ import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import LocationSelector from "./ActionButton/LocationSelector";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
 import TagSelector from "./ActionButton/TagSelector";
-import UploadResourceButton from "./ActionButton/UploadResourceButton";
+import UploadAttachmentButton from "./ActionButton/UploadAttachmentButton";
 import VisibilitySelector from "./ActionButton/VisibilitySelector";
 import AttachmentListView from "./AttachmentListView";
 import Editor, { EditorRefActions } from "./Editor";
@@ -51,7 +51,7 @@ interface State {
   attachmentList: Attachment[];
   relationList: MemoRelation[];
   location: Location | undefined;
-  isUploadingResource: boolean;
+  isUploadingAttachment: boolean;
   isRequesting: boolean;
   isComposing: boolean;
   isDraggingFile: boolean;
@@ -67,7 +67,7 @@ const MemoEditor = observer((props: Props) => {
     attachmentList: [],
     relationList: [],
     location: undefined,
-    isUploadingResource: false,
+    isUploadingAttachment: false,
     isRequesting: false,
     isComposing: false,
     isDraggingFile: false,
@@ -203,7 +203,7 @@ const MemoEditor = observer((props: Props) => {
     setState((state) => {
       return {
         ...state,
-        isUploadingResource: true,
+        isUploadingAttachment: true,
       };
     });
 
@@ -223,7 +223,7 @@ const MemoEditor = observer((props: Props) => {
       setState((state) => {
         return {
           ...state,
-          isUploadingResource: false,
+          isUploadingAttachment: false,
         };
       });
       return attachment;
@@ -233,7 +233,7 @@ const MemoEditor = observer((props: Props) => {
       setState((state) => {
         return {
           ...state,
-          isUploadingResource: false,
+          isUploadingAttachment: false,
         };
       });
     }
@@ -456,7 +456,7 @@ const MemoEditor = observer((props: Props) => {
     [i18n.language],
   );
 
-  const allowSave = (hasContent || state.attachmentList.length > 0) && !state.isUploadingResource && !state.isRequesting;
+  const allowSave = (hasContent || state.attachmentList.length > 0) && !state.isUploadingAttachment && !state.isRequesting;
 
   return (
     <MemoEditorContext.Provider
@@ -502,7 +502,7 @@ const MemoEditor = observer((props: Props) => {
           <div className="flex flex-row justify-start items-center opacity-80 dark:opacity-60 space-x-2">
             <TagSelector editorRef={editorRef} />
             <MarkdownMenu editorRef={editorRef} />
-            <UploadResourceButton isUploadingResource={state.isUploadingResource} />
+            <UploadAttachmentButton isUploading={state.isUploadingAttachment} />
             <AddMemoRelationPopover editorRef={editorRef} />
             <LocationSelector
               location={state.location}

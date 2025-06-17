@@ -2,7 +2,7 @@ import { DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSens
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { XIcon } from "lucide-react";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
-import ResourceIcon from "../ResourceIcon";
+import AttachmentIcon from "../AttachmentIcon";
 import SortableItem from "./SortableItem";
 
 interface Props {
@@ -41,7 +41,7 @@ const AttachmentListView = (props: Props) => {
                   className="max-w-full w-auto flex flex-row justify-start items-center flex-nowrap gap-x-1 bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded hover:shadow-sm text-gray-500 dark:text-gray-400"
                 >
                   <SortableItem id={attachment.name} className="flex flex-row justify-start items-center gap-x-1">
-                    <ResourceIcon resource={attachment} className="w-4! h-4! opacity-100!" />
+                    <AttachmentIcon attachment={attachment} className="w-4! h-4! opacity-100!" />
                     <span className="text-sm max-w-32 truncate">{attachment.filename}</span>
                   </SortableItem>
                   <button className="shrink-0" onClick={() => handleDeleteAttachment(attachment.name)}>

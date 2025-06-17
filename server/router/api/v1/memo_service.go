@@ -399,14 +399,14 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		return nil, status.Errorf(codes.Internal, "failed to delete memo relations")
 	}
 
-	// Delete related resources.
-	resources, err := s.Store.ListResources(ctx, &store.FindResource{MemoID: &memo.ID})
+	// Delete related attachments.
+	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{MemoID: &memo.ID})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list resources")
+		return nil, status.Errorf(codes.Internal, "failed to list attachments")
 	}
-	for _, resource := range resources {
-		if err := s.Store.DeleteResource(ctx, &store.DeleteResource{ID: resource.ID}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to delete resource")
+	for _, attachment := range attachments {
+		if err := s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{ID: attachment.ID}); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to delete attachment")
 		}
 	}
 

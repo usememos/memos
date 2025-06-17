@@ -22,54 +22,54 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
-	resources, err := s.Store.ListResources(ctx, &store.FindResource{
+	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
 		MemoID: &memo.ID,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list resources")
+		return nil, status.Errorf(codes.Internal, "failed to list attachments")
 	}
 
-	// Delete resources that are not in the request.
-	for _, resource := range resources {
+	// Delete attachments that are not in the request.
+	for _, attachment := range attachments {
 		found := false
-		for _, requestResource := range request.Attachments {
-			requestResourceUID, err := ExtractAttachmentUIDFromName(requestResource.Name)
+		for _, requestAttachment := range request.Attachments {
+			requestAttachmentUID, err := ExtractAttachmentUIDFromName(requestAttachment.Name)
 			if err != nil {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid attachment name: %v", err)
 			}
-			if resource.UID == requestResourceUID {
+			if attachment.UID == requestAttachmentUID {
 				found = true
 				break
 			}
 		}
 		if !found {
-			if err = s.Store.DeleteResource(ctx, &store.DeleteResource{
-				ID:     int32(resource.ID),
+			if err = s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{
+				ID:     int32(attachment.ID),
 				MemoID: &memo.ID,
 			}); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to delete resource")
+				return nil, status.Errorf(codes.Internal, "failed to delete attachment")
 			}
 		}
 	}
 
 	slices.Reverse(request.Attachments)
-	// Update resources' memo_id in the request.
-	for index, resource := range request.Attachments {
-		resourceUID, err := ExtractAttachmentUIDFromName(resource.Name)
+	// Update attachments' memo_id in the request.
+	for index, attachment := range request.Attachments {
+		attachmentUID, err := ExtractAttachmentUIDFromName(attachment.Name)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid attachment name: %v", err)
 		}
-		tempResource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &resourceUID})
+		tempAttachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to get attachment: %v", err)
 		}
 		updatedTs := time.Now().Unix() + int64(index)
-		if err := s.Store.UpdateResource(ctx, &store.UpdateResource{
-			ID:        tempResource.ID,
+		if err := s.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
+			ID:        tempAttachment.ID,
 			MemoID:    &memo.ID,
 			UpdatedTs: &updatedTs,
 		}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to update resource: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to update attachment: %v", err)
 		}
 	}
 
@@ -85,18 +85,18 @@ func (s *APIV1Service) ListMemoAttachments(ctx context.Context, request *v1pb.Li
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
 	}
-	resources, err := s.Store.ListResources(ctx, &store.FindResource{
+	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
 		MemoID: &memo.ID,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list attachments: %v", err)
 	}
 
 	response := &v1pb.ListMemoAttachmentsResponse{
 		Attachments: []*v1pb.Attachment{},
 	}
-	for _, resource := range resources {
-		response.Attachments = append(response.Attachments, s.convertAttachmentFromStore(ctx, resource))
+	for _, attachment := range attachments {
+		response.Attachments = append(response.Attachments, s.convertAttachmentFromStore(ctx, attachment))
 	}
 	return response, nil
 }

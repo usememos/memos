@@ -10,10 +10,10 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func TestResourceStore(t *testing.T) {
+func TestAttachmentStore(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
-	_, err := ts.CreateResource(ctx, &store.Resource{
+	_, err := ts.CreateAttachment(ctx, &store.Attachment{
 		UID:       shortuuid.New(),
 		CreatorID: 101,
 		Filename:  "test.epub",
@@ -25,39 +25,39 @@ func TestResourceStore(t *testing.T) {
 
 	correctFilename := "test.epub"
 	incorrectFilename := "test.png"
-	resource, err := ts.GetResource(ctx, &store.FindResource{
+	attachment, err := ts.GetAttachment(ctx, &store.FindAttachment{
 		Filename: &correctFilename,
 	})
 	require.NoError(t, err)
-	require.Equal(t, correctFilename, resource.Filename)
-	require.Equal(t, int32(1), resource.ID)
+	require.Equal(t, correctFilename, attachment.Filename)
+	require.Equal(t, int32(1), attachment.ID)
 
-	notFoundResource, err := ts.GetResource(ctx, &store.FindResource{
+	notFoundAttachment, err := ts.GetAttachment(ctx, &store.FindAttachment{
 		Filename: &incorrectFilename,
 	})
 	require.NoError(t, err)
-	require.Nil(t, notFoundResource)
+	require.Nil(t, notFoundAttachment)
 
 	var correctCreatorID int32 = 101
 	var incorrectCreatorID int32 = 102
-	_, err = ts.GetResource(ctx, &store.FindResource{
+	_, err = ts.GetAttachment(ctx, &store.FindAttachment{
 		CreatorID: &correctCreatorID,
 	})
 	require.NoError(t, err)
 
-	notFoundResource, err = ts.GetResource(ctx, &store.FindResource{
+	notFoundAttachment, err = ts.GetAttachment(ctx, &store.FindAttachment{
 		CreatorID: &incorrectCreatorID,
 	})
 	require.NoError(t, err)
-	require.Nil(t, notFoundResource)
+	require.Nil(t, notFoundAttachment)
 
-	err = ts.DeleteResource(ctx, &store.DeleteResource{
+	err = ts.DeleteAttachment(ctx, &store.DeleteAttachment{
 		ID: 1,
 	})
 	require.NoError(t, err)
-	err = ts.DeleteResource(ctx, &store.DeleteResource{
+	err = ts.DeleteAttachment(ctx, &store.DeleteAttachment{
 		ID: 2,
 	})
-	require.ErrorContains(t, err, "resource not found")
+	require.ErrorContains(t, err, "attachment not found")
 	ts.Close()
 }

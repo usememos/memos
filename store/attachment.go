@@ -13,10 +13,10 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
-type Resource struct {
-	// ID is the system generated unique identifier for the resource.
+type Attachment struct {
+	// ID is the system generated unique identifier for the attachment.
 	ID int32
-	// UID is the user defined unique identifier for the resource.
+	// UID is the user defined unique identifier for the attachment.
 	UID string
 
 	// Standard fields
@@ -29,15 +29,15 @@ type Resource struct {
 	Blob        []byte
 	Type        string
 	Size        int64
-	StorageType storepb.ResourceStorageType
+	StorageType storepb.AttachmentStorageType
 	Reference   string
-	Payload     *storepb.ResourcePayload
+	Payload     *storepb.AttachmentPayload
 
 	// The related memo ID.
 	MemoID *int32
 }
 
-type FindResource struct {
+type FindAttachment struct {
 	GetBlob        bool
 	ID             *int32
 	UID            *string
@@ -46,35 +46,35 @@ type FindResource struct {
 	FilenameSearch *string
 	MemoID         *int32
 	HasRelatedMemo bool
-	StorageType    *storepb.ResourceStorageType
+	StorageType    *storepb.AttachmentStorageType
 	Limit          *int
 	Offset         *int
 }
 
-type UpdateResource struct {
+type UpdateAttachment struct {
 	ID        int32
 	UID       *string
 	UpdatedTs *int64
 	Filename  *string
 	MemoID    *int32
 	Reference *string
-	Payload   *storepb.ResourcePayload
+	Payload   *storepb.AttachmentPayload
 }
 
-type DeleteResource struct {
+type DeleteAttachment struct {
 	ID     int32
 	MemoID *int32
 }
 
-func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {
+func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error) {
 	if !base.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
-	return s.driver.CreateResource(ctx, create)
+	return s.driver.CreateAttachment(ctx, create)
 }
 
-func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resource, error) {
-	// Set default limits to prevent loading too many resources at once
+func (s *Store) ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error) {
+	// Set default limits to prevent loading too many attachments at once
 	if find.Limit == nil && find.GetBlob {
 		// When fetching blobs, we should be especially careful with limits
 		defaultLimit := 10
@@ -85,41 +85,41 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 		find.Limit = &defaultLimit
 	}
 
-	return s.driver.ListResources(ctx, find)
+	return s.driver.ListAttachments(ctx, find)
 }
 
-func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource, error) {
-	resources, err := s.ListResources(ctx, find)
+func (s *Store) GetAttachment(ctx context.Context, find *FindAttachment) (*Attachment, error) {
+	attachments, err := s.ListAttachments(ctx, find)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(resources) == 0 {
+	if len(attachments) == 0 {
 		return nil, nil
 	}
 
-	return resources[0], nil
+	return attachments[0], nil
 }
 
-func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) error {
+func (s *Store) UpdateAttachment(ctx context.Context, update *UpdateAttachment) error {
 	if update.UID != nil && !base.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
 	}
-	return s.driver.UpdateResource(ctx, update)
+	return s.driver.UpdateAttachment(ctx, update)
 }
 
-func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) error {
-	resource, err := s.GetResource(ctx, &FindResource{ID: &delete.ID})
+func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) error {
+	attachment, err := s.GetAttachment(ctx, &FindAttachment{ID: &delete.ID})
 	if err != nil {
-		return errors.Wrap(err, "failed to get resource")
+		return errors.Wrap(err, "failed to get attachment")
 	}
-	if resource == nil {
-		return errors.New("resource not found")
+	if attachment == nil {
+		return errors.New("attachment not found")
 	}
 
-	if resource.StorageType == storepb.ResourceStorageType_LOCAL {
+	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
 		if err := func() error {
-			p := filepath.FromSlash(resource.Reference)
+			p := filepath.FromSlash(attachment.Reference)
 			if !filepath.IsAbs(p) {
 				p = filepath.Join(s.profile.Data, p)
 			}
@@ -131,9 +131,9 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 		}(); err != nil {
 			return errors.Wrap(err, "failed to delete local file")
 		}
-	} else if resource.StorageType == storepb.ResourceStorageType_S3 {
+	} else if attachment.StorageType == storepb.AttachmentStorageType_S3 {
 		if err := func() error {
-			s3ObjectPayload := resource.Payload.GetS3Object()
+			s3ObjectPayload := attachment.Payload.GetS3Object()
 			if s3ObjectPayload == nil {
 				return errors.Errorf("No s3 object found")
 			}
@@ -162,5 +162,5 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 		}
 	}
 
-	return s.driver.DeleteResource(ctx, delete)
+	return s.driver.DeleteAttachment(ctx, delete)
 }

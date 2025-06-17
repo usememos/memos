@@ -7,17 +7,17 @@ import "store/workspace_setting.proto";
 
 option go_package = "gen/store";
 
-enum ResourceStorageType {
-  RESOURCE_STORAGE_TYPE_UNSPECIFIED = 0;
-  // Resource is stored locally. AKA, local file system.
+enum AttachmentStorageType {
+  ATTACHMENT_STORAGE_TYPE_UNSPECIFIED = 0;
+  // Attachment is stored locally. AKA, local file system.
   LOCAL = 1;
-  // Resource is stored in S3.
+  // Attachment is stored in S3.
   S3 = 2;
-  // Resource is stored in an external storage. The reference is a URL.
+  // Attachment is stored in an external storage. The reference is a URL.
   EXTERNAL = 3;
 }
 
-message ResourcePayload {
+message AttachmentPayload {
   oneof payload {
     S3Object s3_object = 1;
   }

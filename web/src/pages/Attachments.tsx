@@ -5,9 +5,9 @@ import { includes } from "lodash-es";
 import { PaperclipIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import AttachmentIcon from "@/components/AttachmentIcon";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
-import ResourceIcon from "@/components/ResourceIcon";
 import { attachmentServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
@@ -112,7 +112,7 @@ const Attachments = observer(() => {
                               return (
                                 <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
                                   <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-zinc-200 dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-                                    <ResourceIcon resource={attachment} strokeWidth={0.5} />
+                                    <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
                                   </div>
                                   <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
                                     <p className="text-xs shrink text-gray-400 truncate">{attachment.filename}</p>
@@ -144,7 +144,7 @@ const Attachments = observer(() => {
                               return (
                                 <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
                                   <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-zinc-200 dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-                                    <ResourceIcon resource={attachment} strokeWidth={0.5} />
+                                    <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
                                   </div>
                                   <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
                                     <p className="text-xs shrink text-gray-400 truncate">{attachment.filename}</p>

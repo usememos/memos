@@ -13,17 +13,17 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store.Resource, error) {
+func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*store.Attachment, error) {
 	fields := []string{"uid", "filename", "blob", "type", "size", "creator_id", "memo_id", "storage_type", "reference", "payload"}
 	storageType := ""
-	if create.StorageType != storepb.ResourceStorageType_RESOURCE_STORAGE_TYPE_UNSPECIFIED {
+	if create.StorageType != storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED {
 		storageType = create.StorageType.String()
 	}
 	payloadString := "{}"
 	if create.Payload != nil {
 		bytes, err := protojson.Marshal(create.Payload)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to marshal resource payload")
+			return nil, errors.Wrap(err, "failed to marshal attachment payload")
 		}
 		payloadString = string(bytes)
 	}
@@ -36,7 +36,7 @@ func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store
 	return create, nil
 }
 
-func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*store.Resource, error) {
+func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([]*store.Attachment, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
@@ -89,43 +89,43 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	}
 	defer rows.Close()
 
-	list := make([]*store.Resource, 0)
+	list := make([]*store.Attachment, 0)
 	for rows.Next() {
-		resource := store.Resource{}
+		attachment := store.Attachment{}
 		var memoID sql.NullInt32
 		var storageType string
 		var payloadBytes []byte
 		dests := []any{
-			&resource.ID,
-			&resource.UID,
-			&resource.Filename,
-			&resource.Type,
-			&resource.Size,
-			&resource.CreatorID,
-			&resource.CreatedTs,
-			&resource.UpdatedTs,
+			&attachment.ID,
+			&attachment.UID,
+			&attachment.Filename,
+			&attachment.Type,
+			&attachment.Size,
+			&attachment.CreatorID,
+			&attachment.CreatedTs,
+			&attachment.UpdatedTs,
 			&memoID,
 			&storageType,
-			&resource.Reference,
+			&attachment.Reference,
 			&payloadBytes,
 		}
 		if find.GetBlob {
-			dests = append(dests, &resource.Blob)
+			dests = append(dests, &attachment.Blob)
 		}
 		if err := rows.Scan(dests...); err != nil {
 			return nil, err
 		}
 
 		if memoID.Valid {
-			resource.MemoID = &memoID.Int32
+			attachment.MemoID = &memoID.Int32
 		}
-		resource.StorageType = storepb.ResourceStorageType(storepb.ResourceStorageType_value[storageType])
-		payload := &storepb.ResourcePayload{}
+		attachment.StorageType = storepb.AttachmentStorageType(storepb.AttachmentStorageType_value[storageType])
+		payload := &storepb.AttachmentPayload{}
 		if err := protojsonUnmarshaler.Unmarshal(payloadBytes, payload); err != nil {
 			return nil, err
 		}
-		resource.Payload = payload
-		list = append(list, &resource)
+		attachment.Payload = payload
+		list = append(list, &attachment)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -135,7 +135,7 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	return list, nil
 }
 
-func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) error {
+func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachment) error {
 	set, args := []string{}, []any{}
 
 	if v := update.UID; v != nil {
@@ -156,7 +156,7 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) e
 	if v := update.Payload; v != nil {
 		bytes, err := protojson.Marshal(v)
 		if err != nil {
-			return errors.Wrap(err, "failed to marshal resource payload")
+			return errors.Wrap(err, "failed to marshal attachment payload")
 		}
 		set, args = append(set, "payload = "+placeholder(len(args)+1)), append(args, string(bytes))
 	}
@@ -173,7 +173,7 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) e
 	return nil
 }
 
-func (d *DB) DeleteResource(ctx context.Context, delete *store.DeleteResource) error {
+func (d *DB) DeleteAttachment(ctx context.Context, delete *store.DeleteAttachment) error {
 	stmt := `DELETE FROM resource WHERE id = $1`
 	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
 	if err != nil {

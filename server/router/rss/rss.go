@@ -124,22 +124,22 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 			Created:     time.Unix(memo.CreatedTs, 0),
 			Id:          link.Href,
 		}
-		resources, err := s.Store.ListResources(ctx, &store.FindResource{
+		attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
 			MemoID: &memo.ID,
 		})
 		if err != nil {
 			return "", err
 		}
-		if len(resources) > 0 {
-			resource := resources[0]
+		if len(attachments) > 0 {
+			attachment := attachments[0]
 			enclosure := feeds.Enclosure{}
-			if resource.StorageType == storepb.ResourceStorageType_EXTERNAL || resource.StorageType == storepb.ResourceStorageType_S3 {
-				enclosure.Url = resource.Reference
+			if attachment.StorageType == storepb.AttachmentStorageType_EXTERNAL || attachment.StorageType == storepb.AttachmentStorageType_S3 {
+				enclosure.Url = attachment.Reference
 			} else {
-				enclosure.Url = fmt.Sprintf("%s/file/attachments/%s/%s", baseURL, resource.UID, resource.Filename)
+				enclosure.Url = fmt.Sprintf("%s/file/attachments/%s/%s", baseURL, attachment.UID, attachment.Filename)
 			}
-			enclosure.Length = strconv.Itoa(int(resource.Size))
-			enclosure.Type = resource.Type
+			enclosure.Length = strconv.Itoa(int(attachment.Size))
+			enclosure.Type = attachment.Type
 			feed.Items[i].Enclosure = &enclosure
 		}
 	}
