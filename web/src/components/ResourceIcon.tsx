@@ -10,22 +10,22 @@ import {
   SheetIcon,
 } from "lucide-react";
 import React from "react";
-import { Resource } from "@/types/proto/api/v1/resource_service";
+import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { cn } from "@/utils";
-import { getResourceType, getResourceUrl } from "@/utils/resource";
+import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
 
 interface Props {
-  resource: Resource;
+  resource: Attachment;
   className?: string;
   strokeWidth?: number;
 }
 
 const ResourceIcon = (props: Props) => {
   const { resource } = props;
-  const resourceType = getResourceType(resource);
-  const resourceUrl = getResourceUrl(resource);
+  const resourceType = getAttachmentType(resource);
+  const resourceUrl = getAttachmentUrl(resource);
   const className = cn("w-full h-auto", props.className);
   const strokeWidth = props.strokeWidth;
 

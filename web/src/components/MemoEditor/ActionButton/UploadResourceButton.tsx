@@ -3,8 +3,8 @@ import { LoaderIcon, PaperclipIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useContext, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { resourceStore } from "@/store/v2";
-import { Resource } from "@/types/proto/api/v1/resource_service";
+import { attachmentStore } from "@/store/v2";
+import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { MemoEditorContext } from "../types";
 
 interface Props {
@@ -37,7 +37,7 @@ const UploadResourceButton = observer((props: Props) => {
       };
     });
 
-    const createdResourceList: Resource[] = [];
+    const createdAttachmentList: Attachment[] = [];
     try {
       if (!fileInputRef.current || !fileInputRef.current.files) {
         return;
@@ -45,22 +45,23 @@ const UploadResourceButton = observer((props: Props) => {
       for (const file of fileInputRef.current.files) {
         const { name: filename, size, type } = file;
         const buffer = new Uint8Array(await file.arrayBuffer());
-        const resource = await resourceStore.createResource({
-          resource: Resource.fromPartial({
+        const attachment = await attachmentStore.createAttachment({
+          attachment: Attachment.fromPartial({
             filename,
             size,
             type,
             content: buffer,
           }),
+          attachmentId: "",
         });
-        createdResourceList.push(resource);
+        createdAttachmentList.push(attachment);
       }
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
     }
 
-    context.setResourceList([...context.resourceList, ...createdResourceList]);
+    context.setAttachmentList([...context.attachmentList, ...createdAttachmentList]);
     setState((state) => {
       return {
         ...state,

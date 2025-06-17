@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package memos.api.v1;
 
+import "api/v1/attachment_service.proto";
 import "api/v1/common.proto";
 import "api/v1/markdown_service.proto";
 import "api/v1/reaction_service.proto";
-import "api/v1/resource_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
@@ -59,17 +59,17 @@ service MemoService {
   rpc DeleteMemoTag(DeleteMemoTagRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{parent=memos/*}/tags/{tag}"};
   }
-  // SetMemoResources sets resources for a memo.
-  rpc SetMemoResources(SetMemoResourcesRequest) returns (google.protobuf.Empty) {
+  // SetMemoAttachments sets attachments for a memo.
+  rpc SetMemoAttachments(SetMemoAttachmentsRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      patch: "/api/v1/{name=memos/*}/resources"
+      patch: "/api/v1/{name=memos/*}/attachments"
       body: "*"
     };
     option (google.api.method_signature) = "name";
   }
-  // ListMemoResources lists resources for a memo.
-  rpc ListMemoResources(ListMemoResourcesRequest) returns (ListMemoResourcesResponse) {
-    option (google.api.http) = {get: "/api/v1/{name=memos/*}/resources"};
+  // ListMemoAttachments lists attachments for a memo.
+  rpc ListMemoAttachments(ListMemoAttachmentsRequest) returns (ListMemoAttachmentsResponse) {
+    option (google.api.http) = {get: "/api/v1/{name=memos/*}/attachments"};
     option (google.api.method_signature) = "name";
   }
   // SetMemoRelations sets relations for a memo.
@@ -157,7 +157,7 @@ message Memo {
 
   bool pinned = 12;
 
-  repeated Resource resources = 14;
+  repeated Attachment attachments = 14;
 
   repeated MemoRelation relations = 15;
 
@@ -269,20 +269,20 @@ message DeleteMemoTagRequest {
   bool delete_related_memos = 3;
 }
 
-message SetMemoResourcesRequest {
+message SetMemoAttachmentsRequest {
   // The name of the memo.
   string name = 1;
 
-  repeated Resource resources = 2;
+  repeated Attachment attachments = 2;
 }
 
-message ListMemoResourcesRequest {
+message ListMemoAttachmentsRequest {
   // The name of the memo.
   string name = 1;
 }
 
-message ListMemoResourcesResponse {
-  repeated Resource resources = 1;
+message ListMemoAttachmentsResponse {
+  repeated Attachment attachments = 1;
 }
 
 message MemoRelation {

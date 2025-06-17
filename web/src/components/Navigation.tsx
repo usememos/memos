@@ -48,10 +48,10 @@ const Navigation = observer((props: Props) => {
     title: t("common.explore"),
     icon: <EarthIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
-  const resourcesNavLink: NavLinkItem = {
-    id: "header-resources",
-    path: Routes.RESOURCES,
-    title: t("common.resources"),
+  const attachmentsNavLink: NavLinkItem = {
+    id: "header-attachments",
+    path: Routes.ATTACHMENTS,
+    title: t("common.attachments"),
     icon: <PaperclipIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
   const signInNavLink: NavLinkItem = {
@@ -61,7 +61,7 @@ const Navigation = observer((props: Props) => {
     icon: <UserCircleIcon className="w-6 h-auto opacity-70 shrink-0" />,
   };
 
-  const navLinks: NavLinkItem[] = currentUser ? [homeNavLink, exploreNavLink, resourcesNavLink] : [exploreNavLink, signInNavLink];
+  const navLinks: NavLinkItem[] = currentUser ? [homeNavLink, exploreNavLink, attachmentsNavLink] : [exploreNavLink, signInNavLink];
 
   return (
     <header

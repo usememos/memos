@@ -13,7 +13,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMemoResourcesRequest) (*emptypb.Empty, error) {
+func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.SetMemoAttachmentsRequest) (*emptypb.Empty, error) {
 	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
@@ -32,10 +32,10 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 	// Delete resources that are not in the request.
 	for _, resource := range resources {
 		found := false
-		for _, requestResource := range request.Resources {
-			requestResourceUID, err := ExtractResourceUIDFromName(requestResource.Name)
+		for _, requestResource := range request.Attachments {
+			requestResourceUID, err := ExtractAttachmentUIDFromName(requestResource.Name)
 			if err != nil {
-				return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
+				return nil, status.Errorf(codes.InvalidArgument, "invalid attachment name: %v", err)
 			}
 			if resource.UID == requestResourceUID {
 				found = true
@@ -52,12 +52,12 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 		}
 	}
 
-	slices.Reverse(request.Resources)
+	slices.Reverse(request.Attachments)
 	// Update resources' memo_id in the request.
-	for index, resource := range request.Resources {
-		resourceUID, err := ExtractResourceUIDFromName(resource.Name)
+	for index, resource := range request.Attachments {
+		resourceUID, err := ExtractAttachmentUIDFromName(resource.Name)
 		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
+			return nil, status.Errorf(codes.InvalidArgument, "invalid attachment name: %v", err)
 		}
 		tempResource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &resourceUID})
 		if err != nil {
@@ -76,7 +76,7 @@ func (s *APIV1Service) SetMemoResources(ctx context.Context, request *v1pb.SetMe
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) ListMemoResources(ctx context.Context, request *v1pb.ListMemoResourcesRequest) (*v1pb.ListMemoResourcesResponse, error) {
+func (s *APIV1Service) ListMemoAttachments(ctx context.Context, request *v1pb.ListMemoAttachmentsRequest) (*v1pb.ListMemoAttachmentsResponse, error) {
 	memoUID, err := ExtractMemoUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
@@ -92,11 +92,11 @@ func (s *APIV1Service) ListMemoResources(ctx context.Context, request *v1pb.List
 		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)
 	}
 
-	response := &v1pb.ListMemoResourcesResponse{
-		Resources: []*v1pb.Resource{},
+	response := &v1pb.ListMemoAttachmentsResponse{
+		Attachments: []*v1pb.Attachment{},
 	}
 	for _, resource := range resources {
-		response.Resources = append(response.Resources, s.convertResourceFromStore(ctx, resource))
+		response.Attachments = append(response.Attachments, s.convertAttachmentFromStore(ctx, resource))
 	}
 	return response, nil
 }

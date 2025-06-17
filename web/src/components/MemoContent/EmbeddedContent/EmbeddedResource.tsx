@@ -1,8 +1,8 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import MemoResourceListView from "@/components/MemoResourceListView";
+import MemoAttachmentListView from "@/components/MemoAttachmentListView";
 import useLoading from "@/hooks/useLoading";
-import { resourceStore } from "@/store/v2";
+import { attachmentStore } from "@/store/v2";
 import { cn } from "@/utils";
 import Error from "./Error";
 
@@ -38,23 +38,23 @@ const getAdditionalClassNameWithParams = (params: URLSearchParams) => {
 
 const EmbeddedResource = observer(({ resourceId: uid, params: paramsStr }: Props) => {
   const loadingState = useLoading();
-  const resource = resourceStore.getResourceByName(uid);
+  const attachment = attachmentStore.getAttachmentByName(uid);
   const params = new URLSearchParams(paramsStr);
 
   useEffect(() => {
-    resourceStore.fetchResourceByName(`resources/${uid}`).finally(() => loadingState.setFinish());
+    attachmentStore.fetchAttachmentByName(`attachments/${uid}`).finally(() => loadingState.setFinish());
   }, [uid]);
 
   if (loadingState.isLoading) {
     return null;
   }
-  if (!resource) {
-    return <Error message={`Resource not found: ${uid}`} />;
+  if (!attachment) {
+    return <Error message={`Attachment not found: ${uid}`} />;
   }
 
   return (
     <div className={cn("max-w-full", getAdditionalClassNameWithParams(params))}>
-      <MemoResourceListView resources={[resource]} />
+      <MemoAttachmentListView attachments={[attachment]} />
     </div>
   );
 });

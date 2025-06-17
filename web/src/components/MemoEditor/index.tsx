@@ -13,9 +13,9 @@ import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { extractMemoIdFromName } from "@/store/common";
-import { memoStore, resourceStore, userStore, workspaceStore } from "@/store/v2";
+import { memoStore, attachmentStore, userStore, workspaceStore } from "@/store/v2";
+import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
-import { Resource } from "@/types/proto/api/v1/resource_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -27,9 +27,9 @@ import MarkdownMenu from "./ActionButton/MarkdownMenu";
 import TagSelector from "./ActionButton/TagSelector";
 import UploadResourceButton from "./ActionButton/UploadResourceButton";
 import VisibilitySelector from "./ActionButton/VisibilitySelector";
+import AttachmentListView from "./AttachmentListView";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
-import ResourceListView from "./ResourceListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
 
@@ -48,7 +48,7 @@ export interface Props {
 
 interface State {
   memoVisibility: Visibility;
-  resourceList: Resource[];
+  attachmentList: Attachment[];
   relationList: MemoRelation[];
   location: Location | undefined;
   isUploadingResource: boolean;
@@ -64,7 +64,7 @@ const MemoEditor = observer((props: Props) => {
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
     memoVisibility: Visibility.PRIVATE,
-    resourceList: [],
+    attachmentList: [],
     relationList: [],
     location: undefined,
     isUploadingResource: false,
@@ -126,7 +126,7 @@ const MemoEditor = observer((props: Props) => {
       setState((prevState) => ({
         ...prevState,
         memoVisibility: memo.visibility,
-        resourceList: memo.resources,
+        attachmentList: memo.attachments,
         relationList: memo.relations,
         location: memo.location,
       }));
@@ -185,10 +185,10 @@ const MemoEditor = observer((props: Props) => {
     }));
   };
 
-  const handleSetResourceList = (resourceList: Resource[]) => {
+  const handleSetAttachmentList = (attachmentList: Attachment[]) => {
     setState((prevState) => ({
       ...prevState,
-      resourceList,
+      attachmentList,
     }));
   };
 
@@ -211,13 +211,14 @@ const MemoEditor = observer((props: Props) => {
     const buffer = new Uint8Array(await file.arrayBuffer());
 
     try {
-      const resource = await resourceStore.createResource({
-        resource: Resource.fromPartial({
+      const attachment = await attachmentStore.createAttachment({
+        attachment: Attachment.fromPartial({
           filename,
           size,
           type,
           content: buffer,
         }),
+        attachmentId: "",
       });
       setState((state) => {
         return {
@@ -225,7 +226,7 @@ const MemoEditor = observer((props: Props) => {
           isUploadingResource: false,
         };
       });
-      return resource;
+      return attachment;
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
@@ -239,15 +240,15 @@ const MemoEditor = observer((props: Props) => {
   };
 
   const uploadMultiFiles = async (files: FileList) => {
-    const uploadedResourceList: Resource[] = [];
+    const uploadedAttachmentList: Attachment[] = [];
     for (const file of files) {
-      const resource = await handleUploadResource(file);
-      if (resource) {
-        uploadedResourceList.push(resource);
+      const attachment = await handleUploadResource(file);
+      if (attachment) {
+        uploadedAttachmentList.push(attachment);
         if (memoName) {
-          await resourceStore.updateResource({
-            resource: Resource.fromPartial({
-              name: resource.name,
+          await attachmentStore.updateAttachment({
+            attachment: Attachment.fromPartial({
+              name: attachment.name,
               memo: memoName,
             }),
             updateMask: ["memo"],
@@ -255,10 +256,10 @@ const MemoEditor = observer((props: Props) => {
         }
       }
     }
-    if (uploadedResourceList.length > 0) {
+    if (uploadedAttachmentList.length > 0) {
       setState((prevState) => ({
         ...prevState,
-        resourceList: [...prevState.resourceList, ...uploadedResourceList],
+        attachmentList: [...prevState.attachmentList, ...uploadedAttachmentList],
       }));
     }
   };
@@ -349,9 +350,9 @@ const MemoEditor = observer((props: Props) => {
             updateMask.add("visibility");
             memoPatch.visibility = state.memoVisibility;
           }
-          if (!isEqual(state.resourceList, prevMemo.resources)) {
-            updateMask.add("resources");
-            memoPatch.resources = state.resourceList;
+          if (!isEqual(state.attachmentList, prevMemo.attachments)) {
+            updateMask.add("attachments");
+            memoPatch.attachments = state.attachmentList;
           }
           if (!isEqual(state.relationList, prevMemo.relations)) {
             updateMask.add("relations");
@@ -361,7 +362,7 @@ const MemoEditor = observer((props: Props) => {
             updateMask.add("location");
             memoPatch.location = state.location;
           }
-          if (["content", "resources", "relations", "location"].some((key) => updateMask.has(key))) {
+          if (["content", "attachments", "relations", "location"].some((key) => updateMask.has(key))) {
             updateMask.add("update_time");
           }
           if (createTime && !isEqual(createTime, prevMemo.createTime)) {
@@ -391,7 +392,7 @@ const MemoEditor = observer((props: Props) => {
               memo: Memo.fromPartial({
                 content,
                 visibility: state.memoVisibility,
-                resources: state.resourceList,
+                attachments: state.attachmentList,
                 relations: state.relationList,
                 location: state.location,
               }),
@@ -402,7 +403,7 @@ const MemoEditor = observer((props: Props) => {
                 comment: {
                   content,
                   visibility: state.memoVisibility,
-                  resources: state.resourceList,
+                  attachments: state.attachmentList,
                   relations: state.relationList,
                   location: state.location,
                 },
@@ -424,7 +425,7 @@ const MemoEditor = observer((props: Props) => {
       return {
         ...state,
         isRequesting: false,
-        resourceList: [],
+        attachmentList: [],
         relationList: [],
         location: undefined,
         isDraggingFile: false,
@@ -455,17 +456,17 @@ const MemoEditor = observer((props: Props) => {
     [i18n.language],
   );
 
-  const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
+  const allowSave = (hasContent || state.attachmentList.length > 0) && !state.isUploadingResource && !state.isRequesting;
 
   return (
     <MemoEditorContext.Provider
       value={{
-        resourceList: state.resourceList,
+        attachmentList: state.attachmentList,
         relationList: state.relationList,
-        setResourceList: (resourceList: Resource[]) => {
+        setAttachmentList: (attachmentList: Attachment[]) => {
           setState((prevState) => ({
             ...prevState,
-            resourceList,
+            attachmentList,
           }));
         },
         setRelationList: (relationList: MemoRelation[]) => {
@@ -495,7 +496,7 @@ const MemoEditor = observer((props: Props) => {
         onCompositionEnd={handleCompositionEnd}
       >
         <Editor ref={editorRef} {...editorConfig} />
-        <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
+        <AttachmentListView attachmentList={state.attachmentList} setAttachmentList={handleSetAttachmentList} />
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
         <div className="relative w-full flex flex-row justify-between items-center py-1" onFocus={(e) => e.stopPropagation()}>
           <div className="flex flex-row justify-start items-center opacity-80 dark:opacity-60 space-x-2">

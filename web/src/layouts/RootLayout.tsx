@@ -26,7 +26,9 @@ const RootLayout = observer(() => {
       if (workspaceStore.state.memoRelatedSetting.disallowPublicVisibility) {
         window.location.href = Routes.AUTH;
         return;
-      } else if (([Routes.ROOT, Routes.RESOURCES, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(location.pathname)) {
+      } else if (
+        ([Routes.ROOT, Routes.ATTACHMENTS, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(location.pathname)
+      ) {
         window.location.href = Routes.EXPLORE;
         return;
       }

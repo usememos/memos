@@ -45,24 +45,41 @@ var SupportedThumbnailMimeTypes = []string{
 	"image/jpeg",
 }
 
-func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateResourceRequest) (*v1pb.Resource, error) {
+func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.CreateAttachmentRequest) (*v1pb.Attachment, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 
+	// Validate required fields
+	if request.Attachment == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "attachment is required")
+	}
+	if request.Attachment.Filename == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "filename is required")
+	}
+	if request.Attachment.Type == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "type is required")
+	}
+
+	// Use provided attachment_id or generate a new one
+	attachmentUID := request.AttachmentId
+	if attachmentUID == "" {
+		attachmentUID = shortuuid.New()
+	}
+
 	create := &store.Resource{
-		UID:       shortuuid.New(),
+		UID:       attachmentUID,
 		CreatorID: user.ID,
-		Filename:  request.Resource.Filename,
-		Type:      request.Resource.Type,
+		Filename:  request.Attachment.Filename,
+		Type:      request.Attachment.Type,
 	}
 
 	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get workspace storage setting: %v", err)
 	}
-	size := binary.Size(request.Resource.Content)
+	size := binary.Size(request.Attachment.Content)
 	uploadSizeLimit := int(workspaceStorageSetting.UploadSizeLimitMb) * MebiByte
 	if uploadSizeLimit == 0 {
 		uploadSizeLimit = MaxUploadBufferSizeBytes
@@ -71,19 +88,23 @@ func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateR
 		return nil, status.Errorf(codes.InvalidArgument, "file size exceeds the limit")
 	}
 	create.Size = int64(size)
-	create.Blob = request.Resource.Content
+	create.Blob = request.Attachment.Content
+
 	if err := SaveResourceBlob(ctx, s.Profile, s.Store, create); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to save resource blob: %v", err)
 	}
 
-	if request.Resource.Memo != nil {
-		memoUID, err := ExtractMemoUIDFromName(*request.Resource.Memo)
+	if request.Attachment.Memo != nil {
+		memoUID, err := ExtractMemoUIDFromName(*request.Attachment.Memo)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 		}
 		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to find memo: %v", err)
+		}
+		if memo == nil {
+			return nil, status.Errorf(codes.NotFound, "memo not found: %s", *request.Attachment.Memo)
 		}
 		create.MemoID = &memo.ID
 	}
@@ -92,57 +113,116 @@ func (s *APIV1Service) CreateResource(ctx context.Context, request *v1pb.CreateR
 		return nil, status.Errorf(codes.Internal, "failed to create resource: %v", err)
 	}
 
-	return s.convertResourceFromStore(ctx, resource), nil
+	return s.convertAttachmentFromStore(ctx, resource), nil
 }
 
-func (s *APIV1Service) ListResources(ctx context.Context, _ *v1pb.ListResourcesRequest) (*v1pb.ListResourcesResponse, error) {
+func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAttachmentsRequest) (*v1pb.ListAttachmentsResponse, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
-	resources, err := s.Store.ListResources(ctx, &store.FindResource{
+
+	// Set default page size
+	pageSize := int(request.PageSize)
+	if pageSize <= 0 {
+		pageSize = 50
+	}
+	if pageSize > 1000 {
+		pageSize = 1000
+	}
+
+	// Parse page token for offset
+	offset := 0
+	if request.PageToken != "" {
+		// Simple implementation: page token is the offset as string
+		// In production, you might want to use encrypted tokens
+		if parsed, err := fmt.Sscanf(request.PageToken, "%d", &offset); err != nil || parsed != 1 {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token")
+		}
+	}
+
+	findResource := &store.FindResource{
 		CreatorID: &user.ID,
-	})
+		Limit:     &pageSize,
+		Offset:    &offset,
+	}
+
+	// Basic filter support for common cases
+	if request.Filter != "" {
+		// Simple filter parsing - can be enhanced later
+		// For now, support basic type filtering: "type=image/png"
+		if strings.HasPrefix(request.Filter, "type=") {
+			filterType := strings.TrimPrefix(request.Filter, "type=")
+			// Create a temporary struct to hold type filter
+			// Since FindResource doesn't have Type field, we'll apply this post-query
+			_ = filterType // We'll filter after getting results
+		}
+	}
+
+	resources, err := s.Store.ListResources(ctx, findResource)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)
 	}
 
-	response := &v1pb.ListResourcesResponse{}
-	for _, resource := range resources {
-		response.Resources = append(response.Resources, s.convertResourceFromStore(ctx, resource))
+	// Apply type filter if specified
+	if request.Filter != "" && strings.HasPrefix(request.Filter, "type=") {
+		filterType := strings.TrimPrefix(request.Filter, "type=")
+		filteredResources := make([]*store.Resource, 0)
+		for _, resource := range resources {
+			if resource.Type == filterType {
+				filteredResources = append(filteredResources, resource)
+			}
+		}
+		resources = filteredResources
 	}
+
+	response := &v1pb.ListAttachmentsResponse{}
+
+	for _, resource := range resources {
+		response.Attachments = append(response.Attachments, s.convertAttachmentFromStore(ctx, resource))
+	}
+
+	// For simplicity, set total size to the number of returned resources
+	// In a full implementation, you'd want a separate count query
+	response.TotalSize = int32(len(response.Attachments))
+
+	// Set next page token if we got the full page size (indicating there might be more)
+	if len(resources) == pageSize {
+		response.NextPageToken = fmt.Sprintf("%d", offset+pageSize)
+	}
+
 	return response, nil
 }
 
-func (s *APIV1Service) GetResource(ctx context.Context, request *v1pb.GetResourceRequest) (*v1pb.Resource, error) {
-	resourceUID, err := ExtractResourceUIDFromName(request.Name)
+func (s *APIV1Service) GetAttachment(ctx context.Context, request *v1pb.GetAttachmentRequest) (*v1pb.Attachment, error) {
+	attachmentUID, err := ExtractAttachmentUIDFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid attachment id: %v", err)
 	}
-	resource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &resourceUID})
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &attachmentUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
 	}
 	if resource == nil {
-		return nil, status.Errorf(codes.NotFound, "resource not found")
+		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
-	return s.convertResourceFromStore(ctx, resource), nil
+	return s.convertAttachmentFromStore(ctx, resource), nil
 }
 
-func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetResourceBinaryRequest) (*httpbody.HttpBody, error) {
-	resourceUID, err := ExtractResourceUIDFromName(request.Name)
+func (s *APIV1Service) GetAttachmentBinary(ctx context.Context, request *v1pb.GetAttachmentBinaryRequest) (*httpbody.HttpBody, error) {
+	attachmentUID, err := ExtractAttachmentUIDFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid attachment id: %v", err)
 	}
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
 		GetBlob: true,
-		UID:     &resourceUID,
+		UID:     &attachmentUID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
 	}
 	if resource == nil {
-		return nil, status.Errorf(codes.NotFound, "resource not found")
+		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
 	// Check the related memo visibility.
 	if resource.MemoID != nil {
@@ -202,15 +282,15 @@ func (s *APIV1Service) GetResourceBinary(ctx context.Context, request *v1pb.GetR
 	}, nil
 }
 
-func (s *APIV1Service) UpdateResource(ctx context.Context, request *v1pb.UpdateResourceRequest) (*v1pb.Resource, error) {
-	resourceUID, err := ExtractResourceUIDFromName(request.Resource.Name)
+func (s *APIV1Service) UpdateAttachment(ctx context.Context, request *v1pb.UpdateAttachmentRequest) (*v1pb.Attachment, error) {
+	attachmentUID, err := ExtractAttachmentUIDFromName(request.Attachment.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid attachment id: %v", err)
 	}
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
-	resource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &resourceUID})
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{UID: &attachmentUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get resource: %v", err)
 	}
@@ -222,36 +302,36 @@ func (s *APIV1Service) UpdateResource(ctx context.Context, request *v1pb.UpdateR
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "filename" {
-			update.Filename = &request.Resource.Filename
+			update.Filename = &request.Attachment.Filename
 		}
 	}
 
 	if err := s.Store.UpdateResource(ctx, update); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update resource: %v", err)
 	}
-	return s.GetResource(ctx, &v1pb.GetResourceRequest{
-		Name: request.Resource.Name,
+	return s.GetAttachment(ctx, &v1pb.GetAttachmentRequest{
+		Name: request.Attachment.Name,
 	})
 }
 
-func (s *APIV1Service) DeleteResource(ctx context.Context, request *v1pb.DeleteResourceRequest) (*emptypb.Empty, error) {
-	resourceUID, err := ExtractResourceUIDFromName(request.Name)
+func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.DeleteAttachmentRequest) (*emptypb.Empty, error) {
+	attachmentUID, err := ExtractAttachmentUIDFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid resource id: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid attachment id: %v", err)
 	}
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
-		UID:       &resourceUID,
+		UID:       &attachmentUID,
 		CreatorID: &user.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to find resource: %v", err)
 	}
 	if resource == nil {
-		return nil, status.Errorf(codes.NotFound, "resource not found")
+		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
 	// Delete the resource from the database.
 	if err := s.Store.DeleteResource(ctx, &store.DeleteResource{
@@ -262,16 +342,16 @@ func (s *APIV1Service) DeleteResource(ctx context.Context, request *v1pb.DeleteR
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) convertResourceFromStore(ctx context.Context, resource *store.Resource) *v1pb.Resource {
-	resourceMessage := &v1pb.Resource{
-		Name:       fmt.Sprintf("%s%s", ResourceNamePrefix, resource.UID),
+func (s *APIV1Service) convertAttachmentFromStore(ctx context.Context, resource *store.Resource) *v1pb.Attachment {
+	attachmentMessage := &v1pb.Attachment{
+		Name:       fmt.Sprintf("%s%s", AttachmentNamePrefix, resource.UID),
 		CreateTime: timestamppb.New(time.Unix(resource.CreatedTs, 0)),
 		Filename:   resource.Filename,
 		Type:       resource.Type,
 		Size:       resource.Size,
 	}
 	if resource.StorageType == storepb.ResourceStorageType_EXTERNAL || resource.StorageType == storepb.ResourceStorageType_S3 {
-		resourceMessage.ExternalLink = resource.Reference
+		attachmentMessage.ExternalLink = resource.Reference
 	}
 	if resource.MemoID != nil {
 		memo, _ := s.Store.GetMemo(ctx, &store.FindMemo{
@@ -279,11 +359,11 @@ func (s *APIV1Service) convertResourceFromStore(ctx context.Context, resource *s
 		})
 		if memo != nil {
 			memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
-			resourceMessage.Memo = &memoName
+			attachmentMessage.Memo = &memoName
 		}
 	}
 
-	return resourceMessage
+	return attachmentMessage
 }
 
 // SaveResourceBlob save the blob of resource based on the storage config.

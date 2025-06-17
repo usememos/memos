@@ -8,17 +8,17 @@ import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
 import ResourceIcon from "@/components/ResourceIcon";
-import { resourceServiceClient } from "@/grpcweb";
+import { attachmentServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
 import { memoStore } from "@/store/v2";
-import { Resource } from "@/types/proto/api/v1/resource_service";
+import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { useTranslate } from "@/utils/i18n";
 
-function groupResourcesByDate(resources: Resource[]) {
-  const grouped = new Map<string, Resource[]>();
-  resources
+function groupAttachmentsByDate(attachments: Attachment[]) {
+  const grouped = new Map<string, Attachment[]>();
+  attachments
     .sort((a, b) => dayjs(b.createTime).unix() - dayjs(a.createTime).unix())
     .forEach((item) => {
       const monthStr = dayjs(item.createTime).format("YYYY-MM");
@@ -34,33 +34,33 @@ interface State {
   searchQuery: string;
 }
 
-const Resources = observer(() => {
+const Attachments = observer(() => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
   const loadingState = useLoading();
   const [state, setState] = useState<State>({
     searchQuery: "",
   });
-  const [resources, setResources] = useState<Resource[]>([]);
-  const filteredResources = resources.filter((resource) => includes(resource.filename, state.searchQuery));
-  const groupedResources = groupResourcesByDate(filteredResources.filter((resource) => resource.memo));
-  const unusedResources = filteredResources.filter((resource) => !resource.memo);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const filteredAttachments = attachments.filter((attachment) => includes(attachment.filename, state.searchQuery));
+  const groupedAttachments = groupAttachmentsByDate(filteredAttachments.filter((attachment) => attachment.memo));
+  const unusedAttachments = filteredAttachments.filter((attachment) => !attachment.memo);
 
   useEffect(() => {
-    resourceServiceClient.listResources({}).then(({ resources }) => {
-      setResources(resources);
+    attachmentServiceClient.listAttachments({}).then(({ attachments }) => {
+      setAttachments(attachments);
       loadingState.setFinish();
-      Promise.all(resources.map((resource) => (resource.memo ? memoStore.getOrFetchMemoByName(resource.memo) : null)));
+      Promise.all(attachments.map((attachment) => (attachment.memo ? memoStore.getOrFetchMemoByName(attachment.memo) : null)));
     });
   }, []);
 
-  const handleDeleteUnusedResources = async () => {
-    const confirmed = window.confirm("Are you sure to delete all unused resources? This action cannot be undone.");
+  const handleDeleteUnusedAttachments = async () => {
+    const confirmed = window.confirm("Are you sure to delete all unused attachments? This action cannot be undone.");
     if (confirmed) {
-      for (const resource of unusedResources) {
-        await resourceServiceClient.deleteResource({ name: resource.name });
+      for (const attachment of unusedAttachments) {
+        await attachmentServiceClient.deleteAttachment({ name: attachment.name });
       }
-      setResources(resources.filter((resource) => resource.memo));
+      setAttachments(attachments.filter((attachment) => attachment.memo));
     }
   };
 
@@ -72,7 +72,7 @@ const Resources = observer(() => {
           <div className="relative w-full flex flex-row justify-between items-center">
             <p className="py-1 flex flex-row justify-start items-center select-none opacity-80">
               <PaperclipIcon className="w-6 h-auto mr-1 opacity-80" />
-              <span className="text-lg">{t("common.resources")}</span>
+              <span className="text-lg">{t("common.attachments")}</span>
             </p>
             <div>
               <Input
@@ -91,14 +91,14 @@ const Resources = observer(() => {
               </div>
             ) : (
               <>
-                {filteredResources.length === 0 ? (
+                {filteredAttachments.length === 0 ? (
                   <div className="w-full mt-8 mb-8 flex flex-col justify-center items-center italic">
                     <Empty />
                     <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
                   </div>
                 ) : (
                   <div className={"w-full h-auto px-2 flex flex-col justify-start items-start gap-y-8"}>
-                    {Array.from(groupedResources.entries()).map(([monthStr, resources]) => {
+                    {Array.from(groupedAttachments.entries()).map(([monthStr, attachments]) => {
                       return (
                         <div key={monthStr} className="w-full flex flex-row justify-start items-start">
                           <div className="w-16 sm:w-24 pt-4 sm:pl-4 flex flex-col justify-start items-start">
@@ -108,14 +108,14 @@ const Resources = observer(() => {
                             </span>
                           </div>
                           <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
-                            {resources.map((resource) => {
+                            {attachments.map((attachment) => {
                               return (
-                                <div key={resource.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
+                                <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
                                   <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-zinc-200 dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-                                    <ResourceIcon resource={resource} strokeWidth={0.5} />
+                                    <ResourceIcon resource={attachment} strokeWidth={0.5} />
                                   </div>
                                   <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
-                                    <p className="text-xs shrink text-gray-400 truncate">{resource.filename}</p>
+                                    <p className="text-xs shrink text-gray-400 truncate">{attachment.filename}</p>
                                   </div>
                                 </div>
                               );
@@ -125,7 +125,7 @@ const Resources = observer(() => {
                       );
                     })}
 
-                    {unusedResources.length > 0 && (
+                    {unusedAttachments.length > 0 && (
                       <>
                         <Divider />
                         <div className="w-full flex flex-row justify-start items-start">
@@ -133,21 +133,21 @@ const Resources = observer(() => {
                           <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                             <div className="w-full flex flex-row justify-start items-center gap-2">
                               <span className="text-gray-600 dark:text-gray-400">{t("resource.unused-resources")}</span>
-                              <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedResources.length})</span>
+                              <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedAttachments.length})</span>
                               <Tooltip title="Delete all" placement="top">
-                                <Button variant="plain" onClick={handleDeleteUnusedResources}>
+                                <Button variant="plain" onClick={handleDeleteUnusedAttachments}>
                                   <TrashIcon className="w-4 h-auto opacity-60" />
                                 </Button>
                               </Tooltip>
                             </div>
-                            {unusedResources.map((resource) => {
+                            {unusedAttachments.map((attachment) => {
                               return (
-                                <div key={resource.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
+                                <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
                                   <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-zinc-200 dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-                                    <ResourceIcon resource={resource} strokeWidth={0.5} />
+                                    <ResourceIcon resource={attachment} strokeWidth={0.5} />
                                   </div>
                                   <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
-                                    <p className="text-xs shrink text-gray-400 truncate">{resource.filename}</p>
+                                    <p className="text-xs shrink text-gray-400 truncate">{attachment.filename}</p>
                                   </div>
                                 </div>
                               );
@@ -167,4 +167,4 @@ const Resources = observer(() => {
   );
 });
 
-export default Resources;
+export default Attachments;

@@ -13,7 +13,7 @@ const (
 	WorkspaceSettingNamePrefix = "workspace/settings/"
 	UserNamePrefix             = "users/"
 	MemoNamePrefix             = "memos/"
-	ResourceNamePrefix         = "resources/"
+	AttachmentNamePrefix       = "attachments/"
 	InboxNamePrefix            = "inboxes/"
 	IdentityProviderNamePrefix = "identityProviders/"
 	ActivityNamePrefix         = "activities/"
@@ -83,9 +83,9 @@ func ExtractMemoUIDFromName(name string) (string, error) {
 	return id, nil
 }
 
-// ExtractResourceUIDFromName returns the resource UID from a resource name.
-func ExtractResourceUIDFromName(name string) (string, error) {
-	tokens, err := GetNameParentTokens(name, ResourceNamePrefix)
+// ExtractAttachmentUIDFromName returns the attachment UID from a resource name.
+func ExtractAttachmentUIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, AttachmentNamePrefix)
 	if err != nil {
 		return "", err
 	}

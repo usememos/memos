@@ -4,12 +4,12 @@ info:
   version: version not set
 tags:
   - name: ActivityService
+  - name: AttachmentService
   - name: UserService
   - name: AuthService
   - name: IdentityProviderService
   - name: InboxService
   - name: MarkdownService
-  - name: ResourceService
   - name: MemoService
   - name: ShortcutService
   - name: WebhookService
@@ -52,6 +52,85 @@ paths:
           type: string
       tags:
         - ActivityService
+  /api/v1/attachments:
+    get:
+      summary: ListAttachments lists all attachments.
+      operationId: AttachmentService_ListAttachments
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListAttachmentsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: |-
+            Optional. The maximum number of attachments to return.
+            The service may return fewer than this value.
+            If unspecified, at most 50 attachments will be returned.
+            The maximum value is 1000; values above 1000 will be coerced to 1000.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: |-
+            Optional. A page token, received from a previous `ListAttachments` call.
+            Provide this to retrieve the subsequent page.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Optional. Filter to apply to the list results.
+            Example: "type=image/png" or "filename:*.jpg"
+            Supported operators: =, !=, <, <=, >, >=, :
+            Supported fields: filename, type, size, create_time, memo
+          in: query
+          required: false
+          type: string
+        - name: orderBy
+          description: |-
+            Optional. The order to sort results by.
+            Example: "create_time desc" or "filename asc"
+          in: query
+          required: false
+          type: string
+      tags:
+        - AttachmentService
+    post:
+      summary: CreateAttachment creates a new attachment.
+      operationId: AttachmentService_CreateAttachment
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Attachment'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: attachment
+          description: Required. The attachment to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1Attachment'
+            required:
+              - attachment
+        - name: attachmentId
+          description: |-
+            Optional. The attachment ID to use for this attachment.
+            If empty, a unique ID will be generated.
+          in: query
+          required: false
+          type: string
+      tags:
+        - AttachmentService
   /api/v1/auth/signin:
     post:
       summary: SignIn signs in the user.
@@ -457,41 +536,6 @@ paths:
           format: int32
       tags:
         - MemoService
-  /api/v1/resources:
-    get:
-      summary: ListResources lists all resources.
-      operationId: ResourceService_ListResources
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1ListResourcesResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      tags:
-        - ResourceService
-    post:
-      summary: CreateResource creates a new resource.
-      operationId: ResourceService_CreateResource
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Resource'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: resource
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1Resource'
-      tags:
-        - ResourceService
   /api/v1/users:
     get:
       summary: ListUsers returns a list of users.
@@ -760,6 +804,70 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - WorkspaceService
+  /api/v1/{attachment.name}:
+    patch:
+      summary: UpdateAttachment updates a attachment.
+      operationId: AttachmentService_UpdateAttachment
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Attachment'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: attachment.name
+          description: |-
+            The name of the attachment.
+            Format: attachments/{attachment}
+          in: path
+          required: true
+          type: string
+          pattern: attachments/[^/]+
+        - name: attachment
+          description: Required. The attachment which replaces the attachment on the server.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              createTime:
+                type: string
+                format: date-time
+                description: Output only. The creation timestamp.
+                readOnly: true
+              filename:
+                type: string
+                description: The filename of the attachment.
+              content:
+                type: string
+                format: byte
+                description: Input only. The content of the attachment.
+              externalLink:
+                type: string
+                description: Optional. The external link of the attachment.
+              type:
+                type: string
+                description: The MIME type of the attachment.
+              size:
+                type: string
+                format: int64
+                description: Output only. The size of the attachment in bytes.
+                readOnly: true
+              memo:
+                type: string
+                title: |-
+                  Optional. The related memo. Refer to `Memo.name`.
+                  Format: memos/{memo}
+            title: Required. The attachment which replaces the attachment on the server.
+            required:
+              - filename
+              - type
+              - attachment
+      tags:
+        - AttachmentService
   /api/v1/{identityProvider.name}:
     patch:
       summary: UpdateIdentityProvider updates an identity provider.
@@ -923,11 +1031,11 @@ paths:
                 readOnly: true
               pinned:
                 type: boolean
-              resources:
+              attachments:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/v1Resource'
+                  $ref: '#/definitions/v1Attachment'
               relations:
                 type: array
                 items:
@@ -964,6 +1072,59 @@ paths:
         - MemoService
   /api/v1/{name_1}:
     get:
+      summary: GetAttachment returns a attachment by name.
+      operationId: AttachmentService_GetAttachment
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Attachment'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            Required. The attachment name of the attachment to retrieve.
+            Format: attachments/{attachment}
+          in: path
+          required: true
+          type: string
+          pattern: attachments/[^/]+
+      tags:
+        - AttachmentService
+    delete:
+      summary: DeleteUser deletes a user.
+      operationId: UserService_DeleteUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            Required. The resource name of the user to delete.
+            Format: users/{user}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: force
+          description: Optional. If set to true, the user will be deleted even if they have associated data.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - UserService
+  /api/v1/{name_2}:
+    get:
       summary: GetUser gets a user by name.
       operationId: UserService_GetUser
       responses:
@@ -976,7 +1137,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_1
+        - name: name_2
           description: |-
             Required. The resource name of the user.
             Format: users/{user}
@@ -1007,7 +1168,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_1
+        - name: name_2
           description: |-
             Required. The resource name of the access token to delete.
             Format: users/{user}/accessTokens/{access_token}
@@ -1017,7 +1178,7 @@ paths:
           pattern: users/[^/]+/accessTokens/[^/]+
       tags:
         - UserService
-  /api/v1/{name_2}:
+  /api/v1/{name_3}:
     get:
       summary: GetIdentityProvider gets an identity provider.
       operationId: IdentityProviderService_GetIdentityProvider
@@ -1031,7 +1192,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_2
+        - name: name_3
           description: |-
             Required. The resource name of the identity provider to get.
             Format: identityProviders/{idp}
@@ -1055,7 +1216,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_2
+        - name: name_3
           description: |-
             Required. The resource name of the identity provider to delete.
             Format: identityProviders/{idp}
@@ -1065,50 +1226,6 @@ paths:
           pattern: identityProviders/[^/]+
       tags:
         - IdentityProviderService
-  /api/v1/{name_3}:
-    get:
-      summary: GetResource returns a resource by name.
-      operationId: ResourceService_GetResource
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Resource'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name_3
-          description: The name of the resource.
-          in: path
-          required: true
-          type: string
-          pattern: resources/[^/]+
-      tags:
-        - ResourceService
-    delete:
-      summary: DeleteInbox deletes an inbox.
-      operationId: InboxService_DeleteInbox
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            type: object
-            properties: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name_3
-          description: The name of the inbox to delete.
-          in: path
-          required: true
-          type: string
-          pattern: inboxes/[^/]+
-      tags:
-        - InboxService
   /api/v1/{name_4}:
     get:
       summary: GetMemo gets a memo.
@@ -1132,8 +1249,8 @@ paths:
       tags:
         - MemoService
     delete:
-      summary: DeleteResource deletes a resource by name.
-      operationId: ResourceService_DeleteResource
+      summary: DeleteInbox deletes an inbox.
+      operationId: InboxService_DeleteInbox
       responses:
         "200":
           description: A successful response.
@@ -1146,13 +1263,13 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_4
-          description: The name of the resource.
+          description: The name of the inbox to delete.
           in: path
           required: true
           type: string
-          pattern: resources/[^/]+
+          pattern: inboxes/[^/]+
       tags:
-        - ResourceService
+        - InboxService
   /api/v1/{name_5}:
     get:
       summary: GetShortcut gets a shortcut by name.
@@ -1332,8 +1449,8 @@ paths:
       tags:
         - ActivityService
     delete:
-      summary: DeleteUser deletes a user.
-      operationId: UserService_DeleteUser
+      summary: DeleteAttachment deletes a attachment by name.
+      operationId: AttachmentService_DeleteAttachment
       responses:
         "200":
           description: A successful response.
@@ -1347,19 +1464,63 @@ paths:
       parameters:
         - name: name
           description: |-
-            Required. The resource name of the user to delete.
-            Format: users/{user}
+            Required. The attachment name of the attachment to delete.
+            Format: attachments/{attachment}
           in: path
           required: true
           type: string
-          pattern: users/[^/]+
-        - name: force
-          description: Optional. If set to true, the user will be deleted even if they have associated data.
-          in: query
-          required: false
-          type: boolean
+          pattern: attachments/[^/]+
       tags:
-        - UserService
+        - AttachmentService
+  /api/v1/{name}/attachments:
+    get:
+      summary: ListMemoAttachments lists attachments for a memo.
+      operationId: MemoService_ListMemoAttachments
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListMemoAttachmentsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: The name of the memo.
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+      tags:
+        - MemoService
+    patch:
+      summary: SetMemoAttachments sets attachments for a memo.
+      operationId: MemoService_SetMemoAttachments
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: The name of the memo.
+          in: path
+          required: true
+          type: string
+          pattern: memos/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemoServiceSetMemoAttachmentsBody'
+      tags:
+        - MemoService
   /api/v1/{name}/avatar:
     get:
       summary: GetUserAvatar gets the avatar of a user.
@@ -1528,55 +1689,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/MemoServiceSetMemoRelationsBody'
-      tags:
-        - MemoService
-  /api/v1/{name}/resources:
-    get:
-      summary: ListMemoResources lists resources for a memo.
-      operationId: MemoService_ListMemoResources
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1ListMemoResourcesResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: The name of the memo.
-          in: path
-          required: true
-          type: string
-          pattern: memos/[^/]+
-      tags:
-        - MemoService
-    patch:
-      summary: SetMemoResources sets resources for a memo.
-      operationId: MemoService_SetMemoResources
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            type: object
-            properties: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: The name of the memo.
-          in: path
-          required: true
-          type: string
-          pattern: memos/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/MemoServiceSetMemoResourcesBody'
       tags:
         - MemoService
   /api/v1/{name}:getSetting:
@@ -1914,55 +2026,6 @@ paths:
             $ref: '#/definitions/MemoServiceRenameMemoTagBody'
       tags:
         - MemoService
-  /api/v1/{resource.name}:
-    patch:
-      summary: UpdateResource updates a resource.
-      operationId: ResourceService_UpdateResource
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Resource'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: resource.name
-          description: |-
-            The name of the resource.
-            Format: resources/{resource}, resource is the user defined if or uuid.
-          in: path
-          required: true
-          type: string
-          pattern: resources/[^/]+
-        - name: resource
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              createTime:
-                type: string
-                format: date-time
-                readOnly: true
-              filename:
-                type: string
-              content:
-                type: string
-                format: byte
-              externalLink:
-                type: string
-              type:
-                type: string
-              size:
-                type: string
-                format: int64
-              memo:
-                type: string
-                description: The related memo. Refer to `Memo.name`.
-      tags:
-        - ResourceService
   /api/v1/{setting.name}:
     patch:
       summary: Updates a workspace setting.
@@ -2248,8 +2311,8 @@ paths:
         - WebhookService
   /file/{name}/{filename}:
     get:
-      summary: GetResourceBinary returns a resource binary by name.
-      operationId: ResourceService_GetResourceBinary
+      summary: GetAttachmentBinary returns a attachment binary by name.
+      operationId: AttachmentService_GetAttachmentBinary
       responses:
         "200":
           description: A successful response.
@@ -2261,23 +2324,25 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: The name of the resource.
+          description: |-
+            Required. The attachment name of the attachment.
+            Format: attachments/{attachment}
           in: path
           required: true
           type: string
-          pattern: resources/[^/]+
+          pattern: attachments/[^/]+
         - name: filename
-          description: The filename of the resource. Mainly used for downloading.
+          description: The filename of the attachment. Mainly used for downloading.
           in: path
           required: true
           type: string
         - name: thumbnail
-          description: A flag indicating if the thumbnail version of the resource should be returned
+          description: Optional. A flag indicating if the thumbnail version of the attachment should be returned.
           in: query
           required: false
           type: boolean
       tags:
-        - ResourceService
+        - AttachmentService
 definitions:
   ActivityLevel:
     type: string
@@ -2309,6 +2374,14 @@ definitions:
         type: string
       newTag:
         type: string
+  MemoServiceSetMemoAttachmentsBody:
+    type: object
+    properties:
+      attachments:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Attachment'
   MemoServiceSetMemoRelationsBody:
     type: object
     properties:
@@ -2317,14 +2390,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1MemoRelation'
-  MemoServiceSetMemoResourcesBody:
-    type: object
-    properties:
-      resources:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Resource'
   MemoServiceUpsertMemoReactionBody:
     type: object
     properties:
@@ -2570,11 +2635,11 @@ definitions:
         readOnly: true
       pinned:
         type: boolean
-      resources:
+      attachments:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1Resource'
+          $ref: '#/definitions/v1Attachment'
       relations:
         type: array
         items:
@@ -2961,6 +3026,45 @@ definitions:
        - TYPE_UNSPECIFIED: Unspecified type.
        - TYPE_MEMO_COMMENT: Memo comment activity.
        - TYPE_VERSION_UPDATE: Version update activity.
+  v1Attachment:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the attachment.
+          Format: attachments/{attachment}
+      createTime:
+        type: string
+        format: date-time
+        description: Output only. The creation timestamp.
+        readOnly: true
+      filename:
+        type: string
+        description: The filename of the attachment.
+      content:
+        type: string
+        format: byte
+        description: Input only. The content of the attachment.
+      externalLink:
+        type: string
+        description: Optional. The external link of the attachment.
+      type:
+        type: string
+        description: The MIME type of the attachment.
+      size:
+        type: string
+        format: int64
+        description: Output only. The size of the attachment in bytes.
+        readOnly: true
+      memo:
+        type: string
+        title: |-
+          Optional. The related memo. Refer to `Memo.name`.
+          Format: memos/{memo}
+    required:
+      - filename
+      - type
   v1AutoLinkNode:
     type: object
     properties:
@@ -3161,6 +3265,24 @@ definitions:
         type: integer
         format: int32
         description: The total count of user statistics.
+  v1ListAttachmentsResponse:
+    type: object
+    properties:
+      attachments:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Attachment'
+        description: The list of attachments.
+      nextPageToken:
+        type: string
+        description: |-
+          A token that can be sent as `page_token` to retrieve the next page.
+          If this field is omitted, there are no subsequent pages.
+      totalSize:
+        type: integer
+        format: int32
+        description: The total count of attachments (may be approximate).
   v1ListIdentityProvidersResponse:
     type: object
     properties:
@@ -3186,6 +3308,14 @@ definitions:
         description: |-
           A token, which can be sent as `page_token` to retrieve the next page.
           If this field is omitted, there are no subsequent pages.
+  v1ListMemoAttachmentsResponse:
+    type: object
+    properties:
+      attachments:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Attachment'
   v1ListMemoCommentsResponse:
     type: object
     properties:
@@ -3210,14 +3340,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1MemoRelation'
-  v1ListMemoResourcesResponse:
-    type: object
-    properties:
-      resources:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Resource'
   v1ListMemosResponse:
     type: object
     properties:
@@ -3244,14 +3366,6 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Node'
-  v1ListResourcesResponse:
-    type: object
-    properties:
-      resources:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1Resource'
   v1ListShortcutsResponse:
     type: object
     properties:
@@ -3547,34 +3661,6 @@ definitions:
         type: string
       params:
         type: string
-  v1Resource:
-    type: object
-    properties:
-      name:
-        type: string
-        description: |-
-          The name of the resource.
-          Format: resources/{resource}, resource is the user defined if or uuid.
-        readOnly: true
-      createTime:
-        type: string
-        format: date-time
-        readOnly: true
-      filename:
-        type: string
-      content:
-        type: string
-        format: byte
-      externalLink:
-        type: string
-      type:
-        type: string
-      size:
-        type: string
-        format: int64
-      memo:
-        type: string
-        description: The related memo. Refer to `Memo.name`.
   v1RestoreMarkdownNodesRequest:
     type: object
     properties:

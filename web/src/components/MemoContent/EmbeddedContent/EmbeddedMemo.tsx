@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import MemoResourceListView from "@/components/MemoResourceListView";
+import MemoAttachmentListView from "@/components/MemoAttachmentListView";
 import useLoading from "@/hooks/useLoading";
 import { extractMemoIdFromName } from "@/store/common";
 import { memoStore } from "@/store/v2";
@@ -54,7 +54,7 @@ const EmbeddedMemo = observer(({ resourceId: uid, params: paramsStr }: Props) =>
         nodes={memo.nodes}
         embeddedMemos={context.embeddedMemos}
       />
-      <MemoResourceListView resources={memo.resources} />
+      <MemoAttachmentListView attachments={memo.attachments} />
     </>
   );
   if (inlineMode) {

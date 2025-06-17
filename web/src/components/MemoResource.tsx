@@ -1,15 +1,15 @@
-import { Resource } from "@/types/proto/api/v1/resource_service";
-import { getResourceUrl } from "@/utils/resource";
+import { Attachment } from "@/types/proto/api/v1/attachment_service";
+import { getAttachmentUrl } from "@/utils/attachment";
 import ResourceIcon from "./ResourceIcon";
 
 interface Props {
-  resource: Resource;
+  resource: Attachment;
   className?: string;
 }
 
 const MemoResource: React.FC<Props> = (props: Props) => {
   const { className, resource } = props;
-  const resourceUrl = getResourceUrl(resource);
+  const resourceUrl = getAttachmentUrl(resource);
 
   const handlePreviewBtnClick = () => {
     window.open(resourceUrl);

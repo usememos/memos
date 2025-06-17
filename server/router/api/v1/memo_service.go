@@ -63,13 +63,13 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if err != nil {
 		return nil, err
 	}
-	if len(request.Memo.Resources) > 0 {
-		_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{
-			Name:      fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
-			Resources: request.Memo.Resources,
+	if len(request.Memo.Attachments) > 0 {
+		_, err := s.SetMemoAttachments(ctx, &v1pb.SetMemoAttachmentsRequest{
+			Name:        fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
+			Attachments: request.Memo.Attachments,
 		})
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to set memo resources")
+			return nil, errors.Wrap(err, "failed to set memo attachments")
 		}
 	}
 	if len(request.Memo.Relations) > 0 {
@@ -318,13 +318,13 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			payload := memo.Payload
 			payload.Location = convertLocationToStore(request.Memo.Location)
 			update.Payload = payload
-		} else if path == "resources" {
-			_, err := s.SetMemoResources(ctx, &v1pb.SetMemoResourcesRequest{
-				Name:      request.Memo.Name,
-				Resources: request.Memo.Resources,
+		} else if path == "attachments" {
+			_, err := s.SetMemoAttachments(ctx, &v1pb.SetMemoAttachmentsRequest{
+				Name:        request.Memo.Name,
+				Attachments: request.Memo.Attachments,
 			})
 			if err != nil {
-				return nil, errors.Wrap(err, "failed to set memo resources")
+				return nil, errors.Wrap(err, "failed to set memo attachments")
 			}
 		} else if path == "relations" {
 			_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{

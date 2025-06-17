@@ -1,50 +1,50 @@
 import { DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { XIcon } from "lucide-react";
-import { Resource } from "@/types/proto/api/v1/resource_service";
+import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import ResourceIcon from "../ResourceIcon";
 import SortableItem from "./SortableItem";
 
 interface Props {
-  resourceList: Resource[];
-  setResourceList: (resourceList: Resource[]) => void;
+  attachmentList: Attachment[];
+  setAttachmentList: (attachmentList: Attachment[]) => void;
 }
 
-const ResourceListView = (props: Props) => {
-  const { resourceList, setResourceList } = props;
+const AttachmentListView = (props: Props) => {
+  const { attachmentList, setAttachmentList } = props;
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
-  const handleDeleteResource = async (name: string) => {
-    setResourceList(resourceList.filter((resource) => resource.name !== name));
+  const handleDeleteAttachment = async (name: string) => {
+    setAttachmentList(attachmentList.filter((attachment) => attachment.name !== name));
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = resourceList.findIndex((resource) => resource.name === active.id);
-      const newIndex = resourceList.findIndex((resource) => resource.name === over.id);
+      const oldIndex = attachmentList.findIndex((attachment) => attachment.name === active.id);
+      const newIndex = attachmentList.findIndex((attachment) => attachment.name === over.id);
 
-      setResourceList(arrayMove(resourceList, oldIndex, newIndex));
+      setAttachmentList(arrayMove(attachmentList, oldIndex, newIndex));
     }
   };
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={resourceList.map((resource) => resource.name)} strategy={verticalListSortingStrategy}>
-        {resourceList.length > 0 && (
+      <SortableContext items={attachmentList.map((attachment) => attachment.name)} strategy={verticalListSortingStrategy}>
+        {attachmentList.length > 0 && (
           <div className="w-full flex flex-row justify-start flex-wrap gap-2 mt-2 max-h-[50vh] overflow-y-auto">
-            {resourceList.map((resource) => {
+            {attachmentList.map((attachment) => {
               return (
                 <div
-                  key={resource.name}
+                  key={attachment.name}
                   className="max-w-full w-auto flex flex-row justify-start items-center flex-nowrap gap-x-1 bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded hover:shadow-sm text-gray-500 dark:text-gray-400"
                 >
-                  <SortableItem id={resource.name} className="flex flex-row justify-start items-center gap-x-1">
-                    <ResourceIcon resource={resource} className="w-4! h-4! opacity-100!" />
-                    <span className="text-sm max-w-32 truncate">{resource.filename}</span>
+                  <SortableItem id={attachment.name} className="flex flex-row justify-start items-center gap-x-1">
+                    <ResourceIcon resource={attachment} className="w-4! h-4! opacity-100!" />
+                    <span className="text-sm max-w-32 truncate">{attachment.filename}</span>
                   </SortableItem>
-                  <button className="shrink-0" onClick={() => handleDeleteResource(resource.name)}>
+                  <button className="shrink-0" onClick={() => handleDeleteAttachment(attachment.name)}>
                     <XIcon className="w-4 h-auto cursor-pointer opacity-60 hover:opacity-100" />
                   </button>
                 </div>
@@ -57,4 +57,4 @@ const ResourceListView = (props: Props) => {
   );
 };
 
-export default ResourceListView;
+export default AttachmentListView;

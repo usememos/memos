@@ -73,7 +73,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		return c.String(http.StatusOK, "Service ready.")
 	})
 
-	// Serve frontend resources.
+	// Serve frontend static files.
 	frontend.NewFrontendService(profile, store).Serve(ctx, echoServer)
 
 	rootGroup := echoServer.Group("")
@@ -82,7 +82,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
 	grpcServer := grpc.NewServer(
-		// Override the maximum receiving message size to math.MaxInt32 for uploading large resources.
+		// Override the maximum receiving message size to math.MaxInt32 for uploading large attachments.
 		grpc.MaxRecvMsgSize(math.MaxInt32),
 		grpc.ChainUnaryInterceptor(
 			apiv1.NewLoggerInterceptor().LoggerInterceptor,

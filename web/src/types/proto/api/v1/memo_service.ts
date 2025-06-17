@@ -9,10 +9,10 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Empty } from "../../google/protobuf/empty";
 import { FieldMask } from "../../google/protobuf/field_mask";
 import { Timestamp } from "../../google/protobuf/timestamp";
+import { Attachment } from "./attachment_service";
 import { Direction, directionFromJSON, directionToNumber, State, stateFromJSON, stateToNumber } from "./common";
 import { Node } from "./markdown_service";
 import { Reaction } from "./reaction_service";
-import { Resource } from "./resource_service";
 
 export const protobufPackage = "memos.api.v1";
 
@@ -81,7 +81,7 @@ export interface Memo {
   visibility: Visibility;
   tags: string[];
   pinned: boolean;
-  resources: Resource[];
+  attachments: Attachment[];
   relations: MemoRelation[];
   reactions: Reaction[];
   property?:
@@ -206,19 +206,19 @@ export interface DeleteMemoTagRequest {
   deleteRelatedMemos: boolean;
 }
 
-export interface SetMemoResourcesRequest {
+export interface SetMemoAttachmentsRequest {
   /** The name of the memo. */
   name: string;
-  resources: Resource[];
+  attachments: Attachment[];
 }
 
-export interface ListMemoResourcesRequest {
+export interface ListMemoAttachmentsRequest {
   /** The name of the memo. */
   name: string;
 }
 
-export interface ListMemoResourcesResponse {
-  resources: Resource[];
+export interface ListMemoAttachmentsResponse {
+  attachments: Attachment[];
 }
 
 export interface MemoRelation {
@@ -344,7 +344,7 @@ function createBaseMemo(): Memo {
     visibility: Visibility.VISIBILITY_UNSPECIFIED,
     tags: [],
     pinned: false,
-    resources: [],
+    attachments: [],
     relations: [],
     reactions: [],
     property: undefined,
@@ -389,8 +389,8 @@ export const Memo: MessageFns<Memo> = {
     if (message.pinned !== false) {
       writer.uint32(96).bool(message.pinned);
     }
-    for (const v of message.resources) {
-      Resource.encode(v!, writer.uint32(114).fork()).join();
+    for (const v of message.attachments) {
+      Attachment.encode(v!, writer.uint32(114).fork()).join();
     }
     for (const v of message.relations) {
       MemoRelation.encode(v!, writer.uint32(122).fork()).join();
@@ -513,7 +513,7 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.resources.push(Resource.decode(reader, reader.uint32()));
+          message.attachments.push(Attachment.decode(reader, reader.uint32()));
           continue;
         }
         case 15: {
@@ -589,7 +589,7 @@ export const Memo: MessageFns<Memo> = {
     message.visibility = object.visibility ?? Visibility.VISIBILITY_UNSPECIFIED;
     message.tags = object.tags?.map((e) => e) || [];
     message.pinned = object.pinned ?? false;
-    message.resources = object.resources?.map((e) => Resource.fromPartial(e)) || [];
+    message.attachments = object.attachments?.map((e) => Attachment.fromPartial(e)) || [];
     message.relations = object.relations?.map((e) => MemoRelation.fromPartial(e)) || [];
     message.reactions = object.reactions?.map((e) => Reaction.fromPartial(e)) || [];
     message.property = (object.property !== undefined && object.property !== null)
@@ -1289,25 +1289,25 @@ export const DeleteMemoTagRequest: MessageFns<DeleteMemoTagRequest> = {
   },
 };
 
-function createBaseSetMemoResourcesRequest(): SetMemoResourcesRequest {
-  return { name: "", resources: [] };
+function createBaseSetMemoAttachmentsRequest(): SetMemoAttachmentsRequest {
+  return { name: "", attachments: [] };
 }
 
-export const SetMemoResourcesRequest: MessageFns<SetMemoResourcesRequest> = {
-  encode(message: SetMemoResourcesRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const SetMemoAttachmentsRequest: MessageFns<SetMemoAttachmentsRequest> = {
+  encode(message: SetMemoAttachmentsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
-    for (const v of message.resources) {
-      Resource.encode(v!, writer.uint32(18).fork()).join();
+    for (const v of message.attachments) {
+      Attachment.encode(v!, writer.uint32(18).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): SetMemoResourcesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): SetMemoAttachmentsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSetMemoResourcesRequest();
+    const message = createBaseSetMemoAttachmentsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1324,7 +1324,7 @@ export const SetMemoResourcesRequest: MessageFns<SetMemoResourcesRequest> = {
             break;
           }
 
-          message.resources.push(Resource.decode(reader, reader.uint32()));
+          message.attachments.push(Attachment.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -1336,33 +1336,33 @@ export const SetMemoResourcesRequest: MessageFns<SetMemoResourcesRequest> = {
     return message;
   },
 
-  create(base?: DeepPartial<SetMemoResourcesRequest>): SetMemoResourcesRequest {
-    return SetMemoResourcesRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<SetMemoAttachmentsRequest>): SetMemoAttachmentsRequest {
+    return SetMemoAttachmentsRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<SetMemoResourcesRequest>): SetMemoResourcesRequest {
-    const message = createBaseSetMemoResourcesRequest();
+  fromPartial(object: DeepPartial<SetMemoAttachmentsRequest>): SetMemoAttachmentsRequest {
+    const message = createBaseSetMemoAttachmentsRequest();
     message.name = object.name ?? "";
-    message.resources = object.resources?.map((e) => Resource.fromPartial(e)) || [];
+    message.attachments = object.attachments?.map((e) => Attachment.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBaseListMemoResourcesRequest(): ListMemoResourcesRequest {
+function createBaseListMemoAttachmentsRequest(): ListMemoAttachmentsRequest {
   return { name: "" };
 }
 
-export const ListMemoResourcesRequest: MessageFns<ListMemoResourcesRequest> = {
-  encode(message: ListMemoResourcesRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const ListMemoAttachmentsRequest: MessageFns<ListMemoAttachmentsRequest> = {
+  encode(message: ListMemoAttachmentsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): ListMemoResourcesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): ListMemoAttachmentsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseListMemoResourcesRequest();
+    const message = createBaseListMemoAttachmentsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1383,32 +1383,32 @@ export const ListMemoResourcesRequest: MessageFns<ListMemoResourcesRequest> = {
     return message;
   },
 
-  create(base?: DeepPartial<ListMemoResourcesRequest>): ListMemoResourcesRequest {
-    return ListMemoResourcesRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<ListMemoAttachmentsRequest>): ListMemoAttachmentsRequest {
+    return ListMemoAttachmentsRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<ListMemoResourcesRequest>): ListMemoResourcesRequest {
-    const message = createBaseListMemoResourcesRequest();
+  fromPartial(object: DeepPartial<ListMemoAttachmentsRequest>): ListMemoAttachmentsRequest {
+    const message = createBaseListMemoAttachmentsRequest();
     message.name = object.name ?? "";
     return message;
   },
 };
 
-function createBaseListMemoResourcesResponse(): ListMemoResourcesResponse {
-  return { resources: [] };
+function createBaseListMemoAttachmentsResponse(): ListMemoAttachmentsResponse {
+  return { attachments: [] };
 }
 
-export const ListMemoResourcesResponse: MessageFns<ListMemoResourcesResponse> = {
-  encode(message: ListMemoResourcesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.resources) {
-      Resource.encode(v!, writer.uint32(10).fork()).join();
+export const ListMemoAttachmentsResponse: MessageFns<ListMemoAttachmentsResponse> = {
+  encode(message: ListMemoAttachmentsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.attachments) {
+      Attachment.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): ListMemoResourcesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): ListMemoAttachmentsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseListMemoResourcesResponse();
+    const message = createBaseListMemoAttachmentsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1417,7 +1417,7 @@ export const ListMemoResourcesResponse: MessageFns<ListMemoResourcesResponse> = 
             break;
           }
 
-          message.resources.push(Resource.decode(reader, reader.uint32()));
+          message.attachments.push(Attachment.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -1429,12 +1429,12 @@ export const ListMemoResourcesResponse: MessageFns<ListMemoResourcesResponse> = 
     return message;
   },
 
-  create(base?: DeepPartial<ListMemoResourcesResponse>): ListMemoResourcesResponse {
-    return ListMemoResourcesResponse.fromPartial(base ?? {});
+  create(base?: DeepPartial<ListMemoAttachmentsResponse>): ListMemoAttachmentsResponse {
+    return ListMemoAttachmentsResponse.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<ListMemoResourcesResponse>): ListMemoResourcesResponse {
-    const message = createBaseListMemoResourcesResponse();
-    message.resources = object.resources?.map((e) => Resource.fromPartial(e)) || [];
+  fromPartial(object: DeepPartial<ListMemoAttachmentsResponse>): ListMemoAttachmentsResponse {
+    const message = createBaseListMemoAttachmentsResponse();
+    message.attachments = object.attachments?.map((e) => Attachment.fromPartial(e)) || [];
     return message;
   },
 };
@@ -2441,10 +2441,10 @@ export const MemoServiceDefinition = {
         },
       },
     },
-    /** SetMemoResources sets resources for a memo. */
-    setMemoResources: {
-      name: "SetMemoResources",
-      requestType: SetMemoResourcesRequest,
+    /** SetMemoAttachments sets attachments for a memo. */
+    setMemoAttachments: {
+      name: "SetMemoAttachments",
+      requestType: SetMemoAttachmentsRequest,
       requestStream: false,
       responseType: Empty,
       responseStream: false,
@@ -2453,12 +2453,12 @@ export const MemoServiceDefinition = {
           8410: [new Uint8Array([4, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              37,
+              39,
               58,
               1,
               42,
               50,
-              32,
+              34,
               47,
               97,
               112,
@@ -2482,35 +2482,37 @@ export const MemoServiceDefinition = {
               42,
               125,
               47,
-              114,
-              101,
-              115,
-              111,
-              117,
-              114,
+              97,
+              116,
+              116,
+              97,
               99,
+              104,
+              109,
               101,
+              110,
+              116,
               115,
             ]),
           ],
         },
       },
     },
-    /** ListMemoResources lists resources for a memo. */
-    listMemoResources: {
-      name: "ListMemoResources",
-      requestType: ListMemoResourcesRequest,
+    /** ListMemoAttachments lists attachments for a memo. */
+    listMemoAttachments: {
+      name: "ListMemoAttachments",
+      requestType: ListMemoAttachmentsRequest,
       requestStream: false,
-      responseType: ListMemoResourcesResponse,
+      responseType: ListMemoAttachmentsResponse,
       responseStream: false,
       options: {
         _unknownFields: {
           8410: [new Uint8Array([4, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              34,
+              36,
               18,
-              32,
+              34,
               47,
               97,
               112,
@@ -2534,14 +2536,16 @@ export const MemoServiceDefinition = {
               42,
               125,
               47,
-              114,
-              101,
-              115,
-              111,
-              117,
-              114,
+              97,
+              116,
+              116,
+              97,
               99,
+              104,
+              109,
               101,
+              110,
+              116,
               115,
             ]),
           ],
