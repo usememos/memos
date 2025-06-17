@@ -290,16 +290,22 @@ func (s *APIV1Service) DeleteShortcut(ctx context.Context, request *v1pb.DeleteS
 		return nil, err
 	}
 	if userSetting == nil {
-		return &emptypb.Empty{}, nil
+		return nil, status.Errorf(codes.NotFound, "shortcut not found")
 	}
 
 	shortcutsUserSetting := userSetting.GetShortcuts()
 	shortcuts := shortcutsUserSetting.GetShortcuts()
 	newShortcuts := make([]*storepb.ShortcutsUserSetting_Shortcut, 0, len(shortcuts))
+	found := false
 	for _, shortcut := range shortcuts {
 		if shortcut.GetId() != shortcutID {
 			newShortcuts = append(newShortcuts, shortcut)
+		} else {
+			found = true
 		}
+	}
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "shortcut not found")
 	}
 	shortcutsUserSetting.Shortcuts = newShortcuts
 	userSetting.Value = &storepb.UserSetting_Shortcuts{

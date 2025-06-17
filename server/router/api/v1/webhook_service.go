@@ -21,8 +21,23 @@ func (s *APIV1Service) CreateWebhook(ctx context.Context, request *v1pb.CreateWe
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 
-	// TODO: Handle webhook_id, validate_only, and request_id fields
+
+// Only host users can create webhooks
+if !isSuperUser(currentUser) {
+return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+}
+
+// Validate required fields
+if request.Webhook == nil {
+return nil, status.Errorf(codes.InvalidArgument, "webhook is required")
+}
+if strings.TrimSpace(request.Webhook.Url) == "" {
+return nil, status.Errorf(codes.InvalidArgument, "webhook URL is required")
+}	// TODO: Handle webhook_id, validate_only, and request_id fields
 	if request.ValidateOnly {
 		// Perform validation checks without actually creating the webhook
 		return &v1pb.Webhook{
@@ -48,6 +63,9 @@ func (s *APIV1Service) ListWebhooks(ctx context.Context, _ *v1pb.ListWebhooksReq
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
 	// TODO: Implement proper filtering, ordering, and pagination
@@ -78,6 +96,9 @@ func (s *APIV1Service) GetWebhook(ctx context.Context, request *v1pb.GetWebhookR
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
 	webhook, err := s.Store.GetWebhook(ctx, &store.FindWebhook{
@@ -111,6 +132,9 @@ func (s *APIV1Service) UpdateWebhook(ctx context.Context, request *v1pb.UpdateWe
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
 	// Check if webhook exists and user has permission
@@ -159,6 +183,9 @@ func (s *APIV1Service) DeleteWebhook(ctx context.Context, request *v1pb.DeleteWe
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
 	// Check if webhook exists and user has permission

@@ -5,13 +5,14 @@ import (
 	"testing"
 
 	"github.com/usememos/memos/internal/profile"
+	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/store"
 	teststore "github.com/usememos/memos/store/test"
 )
 
 // TestService holds the test service setup for API v1 services.
 type TestService struct {
-	Service *APIV1Service
+	Service *apiv1.APIV1Service
 	Store   *store.Store
 	Profile *profile.Profile
 	Secret  string
@@ -35,7 +36,7 @@ func NewTestService(t *testing.T) *TestService {
 
 	// Create APIV1Service with nil grpcServer since we're testing direct calls
 	secret := "test-secret"
-	service := &APIV1Service{
+	service := &apiv1.APIV1Service{
 		Secret:  secret,
 		Profile: testProfile,
 		Store:   testStore,
@@ -52,8 +53,7 @@ func NewTestService(t *testing.T) *TestService {
 // Cleanup clears caches and closes resources after test.
 func (ts *TestService) Cleanup() {
 	ts.Store.Close()
-	// Clear the global owner cache for test isolation
-	ownerCache = nil
+	// Note: Owner cache is package-level in parent package, cannot clear from test package
 }
 
 // CreateHostUser creates a host user for testing.
@@ -76,6 +76,6 @@ func (ts *TestService) CreateRegularUser(ctx context.Context, username string) (
 
 // CreateUserContext creates a context with the given username for authentication.
 func (ts *TestService) CreateUserContext(ctx context.Context, username string) context.Context {
-	_ = ts                                                 // Silence unused receiver warning - method is part of TestService interface
-	return context.WithValue(ctx, ContextKey(0), username) // usernameContextKey = 0
+	// Use the real context key from the parent package
+	return apiv1.CreateTestUserContext(ctx, username)
 }
