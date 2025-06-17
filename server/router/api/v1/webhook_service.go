@@ -25,19 +25,20 @@ func (s *APIV1Service) CreateWebhook(ctx context.Context, request *v1pb.CreateWe
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
+	// Only host users can create webhooks
+	if !isSuperUser(currentUser) {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
 
-// Only host users can create webhooks
-if !isSuperUser(currentUser) {
-return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-}
+	// Validate required fields
+	if request.Webhook == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "webhook is required")
+	}
+	if strings.TrimSpace(request.Webhook.Url) == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "webhook URL is required")
+	}
 
-// Validate required fields
-if request.Webhook == nil {
-return nil, status.Errorf(codes.InvalidArgument, "webhook is required")
-}
-if strings.TrimSpace(request.Webhook.Url) == "" {
-return nil, status.Errorf(codes.InvalidArgument, "webhook URL is required")
-}	// TODO: Handle webhook_id, validate_only, and request_id fields
+	// TODO: Handle webhook_id, validate_only, and request_id fields
 	if request.ValidateOnly {
 		// Perform validation checks without actually creating the webhook
 		return &v1pb.Webhook{
