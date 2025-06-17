@@ -19,6 +19,39 @@ consumes:
 produces:
   - application/json
 paths:
+  /api/v1/activities:
+    get:
+      summary: ListActivities returns a list of activities.
+      operationId: ActivityService_ListActivities
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListActivitiesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: |-
+            The maximum number of activities to return.
+            The service may return fewer than this value.
+            If unspecified, at most 100 activities will be returned.
+            The maximum value is 1000; values above 1000 will be coerced to 1000.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: |-
+            A page token, received from a previous `ListActivities` call.
+            Provide this to retrieve the subsequent page.
+          in: query
+          required: false
+          type: string
+      tags:
+        - ActivityService
   /api/v1/auth/signin:
     post:
       summary: SignIn signs in the user.
@@ -2246,6 +2279,21 @@ paths:
       tags:
         - ResourceService
 definitions:
+  ActivityLevel:
+    type: string
+    enum:
+      - LEVEL_UNSPECIFIED
+      - LEVEL_INFO
+      - LEVEL_WARN
+      - LEVEL_ERROR
+    default: LEVEL_UNSPECIFIED
+    description: |-
+      Activity levels.
+
+       - LEVEL_UNSPECIFIED: Unspecified level.
+       - LEVEL_INFO: Info level.
+       - LEVEL_WARN: Warn level.
+       - LEVEL_ERROR: Error level.
   ListNodeKind:
     type: string
     enum:
@@ -2404,18 +2452,21 @@ definitions:
     properties:
       memo:
         type: string
-        description: |-
+        title: |-
           The memo name of comment.
-          Refer to `Memo.name`.
+          Format: memos/{memo}
       relatedMemo:
         type: string
-        description: The name of related memo.
+        title: |-
+          The name of related memo.
+          Format: memos/{memo}
     description: ActivityMemoCommentPayload represents the payload of a memo comment activity.
   apiv1ActivityPayload:
     type: object
     properties:
       memoComment:
         $ref: '#/definitions/apiv1ActivityMemoCommentPayload'
+        description: Memo comment activity payload.
   apiv1FieldMapping:
     type: object
     properties:
@@ -2879,12 +2930,15 @@ definitions:
         title: |-
           The name of the creator.
           Format: users/{user}
+        readOnly: true
       type:
-        type: string
+        $ref: '#/definitions/v1ActivityType'
         description: The type of the activity.
+        readOnly: true
       level:
-        type: string
+        $ref: '#/definitions/ActivityLevel'
         description: The level of the activity.
+        readOnly: true
       createTime:
         type: string
         format: date-time
@@ -2893,6 +2947,20 @@ definitions:
       payload:
         $ref: '#/definitions/apiv1ActivityPayload'
         description: The payload of the activity.
+        readOnly: true
+  v1ActivityType:
+    type: string
+    enum:
+      - TYPE_UNSPECIFIED
+      - TYPE_MEMO_COMMENT
+      - TYPE_VERSION_UPDATE
+    default: TYPE_UNSPECIFIED
+    description: |-
+      Activity types.
+
+       - TYPE_UNSPECIFIED: Unspecified type.
+       - TYPE_MEMO_COMMENT: Memo comment activity.
+       - TYPE_VERSION_UPDATE: Version update activity.
   v1AutoLinkNode:
     type: object
     properties:
@@ -3062,6 +3130,21 @@ definitions:
           $ref: '#/definitions/v1Node'
       url:
         type: string
+  v1ListActivitiesResponse:
+    type: object
+    properties:
+      activities:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Activity'
+        description: The activities.
+      nextPageToken:
+        type: string
+        description: |-
+          A token to retrieve the next page of results.
+          Pass this value in the page_token field in the subsequent call to `ListActivities`
+          method to retrieve the next page of results.
   v1ListAllUserStatsResponse:
     type: object
     properties:

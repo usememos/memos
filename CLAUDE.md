@@ -102,7 +102,7 @@ sh ./scripts/build.sh
 cd web && pnpm build
 
 # Protocol buffer generation
-buf generate
+cd proto && buf generate
 
 # Linting
 golangci-lint run --timeout=3m

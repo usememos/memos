@@ -19,13 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ActivityService_GetActivity_FullMethodName = "/memos.api.v1.ActivityService/GetActivity"
+	ActivityService_ListActivities_FullMethodName = "/memos.api.v1.ActivityService/ListActivities"
+	ActivityService_GetActivity_FullMethodName    = "/memos.api.v1.ActivityService/GetActivity"
 )
 
 // ActivityServiceClient is the client API for ActivityService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActivityServiceClient interface {
+	// ListActivities returns a list of activities.
+	ListActivities(ctx context.Context, in *ListActivitiesRequest, opts ...grpc.CallOption) (*ListActivitiesResponse, error)
 	// GetActivity returns the activity with the given id.
 	GetActivity(ctx context.Context, in *GetActivityRequest, opts ...grpc.CallOption) (*Activity, error)
 }
@@ -36,6 +39,16 @@ type activityServiceClient struct {
 
 func NewActivityServiceClient(cc grpc.ClientConnInterface) ActivityServiceClient {
 	return &activityServiceClient{cc}
+}
+
+func (c *activityServiceClient) ListActivities(ctx context.Context, in *ListActivitiesRequest, opts ...grpc.CallOption) (*ListActivitiesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListActivitiesResponse)
+	err := c.cc.Invoke(ctx, ActivityService_ListActivities_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *activityServiceClient) GetActivity(ctx context.Context, in *GetActivityRequest, opts ...grpc.CallOption) (*Activity, error) {
@@ -52,6 +65,8 @@ func (c *activityServiceClient) GetActivity(ctx context.Context, in *GetActivity
 // All implementations must embed UnimplementedActivityServiceServer
 // for forward compatibility.
 type ActivityServiceServer interface {
+	// ListActivities returns a list of activities.
+	ListActivities(context.Context, *ListActivitiesRequest) (*ListActivitiesResponse, error)
 	// GetActivity returns the activity with the given id.
 	GetActivity(context.Context, *GetActivityRequest) (*Activity, error)
 	mustEmbedUnimplementedActivityServiceServer()
@@ -64,6 +79,9 @@ type ActivityServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedActivityServiceServer struct{}
 
+func (UnimplementedActivityServiceServer) ListActivities(context.Context, *ListActivitiesRequest) (*ListActivitiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListActivities not implemented")
+}
 func (UnimplementedActivityServiceServer) GetActivity(context.Context, *GetActivityRequest) (*Activity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActivity not implemented")
 }
@@ -86,6 +104,24 @@ func RegisterActivityServiceServer(s grpc.ServiceRegistrar, srv ActivityServiceS
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&ActivityService_ServiceDesc, srv)
+}
+
+func _ActivityService_ListActivities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListActivitiesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ActivityServiceServer).ListActivities(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ActivityService_ListActivities_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActivityServiceServer).ListActivities(ctx, req.(*ListActivitiesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ActivityService_GetActivity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -113,6 +149,10 @@ var ActivityService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "memos.api.v1.ActivityService",
 	HandlerType: (*ActivityServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ListActivities",
+			Handler:    _ActivityService_ListActivities_Handler,
+		},
 		{
 			MethodName: "GetActivity",
 			Handler:    _ActivityService_GetActivity_Handler,
