@@ -24,6 +24,7 @@ import DateTimeInput from "../DateTimeInput";
 import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import LocationSelector from "./ActionButton/LocationSelector";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
+import RecordAudioButton from "./ActionButton/RecordAudioButton";
 import TagSelector from "./ActionButton/TagSelector";
 import UploadResourceButton from "./ActionButton/UploadResourceButton";
 import VisibilitySelector from "./ActionButton/VisibilitySelector";
@@ -475,6 +476,7 @@ const MemoEditor = observer((props: Props) => {
           }));
         },
         memoName,
+        editorRef,
       }}
     >
       <div
@@ -499,6 +501,7 @@ const MemoEditor = observer((props: Props) => {
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
         <div className="relative w-full flex flex-row justify-between items-center py-1" onFocus={(e) => e.stopPropagation()}>
           <div className="flex flex-row justify-start items-center opacity-80 dark:opacity-60 space-x-2">
+            <RecordAudioButton />
             <TagSelector editorRef={editorRef} />
             <MarkdownMenu editorRef={editorRef} />
             <UploadResourceButton isUploadingResource={state.isUploadingResource} />

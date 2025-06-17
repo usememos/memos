@@ -178,7 +178,8 @@
     "restored-successfully": "恢复成功",
     "succeed-copy-link": "复制链接到剪贴板成功。",
     "update-succeed": "更新成功",
-    "user-not-found": "未找到该用户"
+    "user-not-found": "未找到该用户",
+    "microphone-not-available": "无法访问麦克风"
   },
   "reference": {
     "add-references": "添加引用",
