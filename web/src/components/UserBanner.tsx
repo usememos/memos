@@ -40,7 +40,7 @@ const UserBanner = (props: Props) => {
             )}
             {!collapsed && (
               <span className="ml-2 text-lg font-medium text-slate-800 dark:text-gray-300 grow truncate">
-                {currentUser.nickname || currentUser.username}
+                {currentUser.displayName || currentUser.username}
               </span>
             )}
           </div>

@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/go-sql-driver/mysql"
@@ -45,6 +46,15 @@ func (d *DB) GetDB() *sql.DB {
 
 func (d *DB) Close() error {
 	return d.db.Close()
+}
+
+func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
+	var exists bool
+	err := d.db.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE TABLE_NAME = 'memo' AND TABLE_TYPE = 'BASE TABLE')").Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "failed to check if database is initialized")
+	}
+	return exists, nil
 }
 
 func mergeDSN(baseDSN string) (string, error) {

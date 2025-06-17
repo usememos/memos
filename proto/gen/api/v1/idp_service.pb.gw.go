@@ -35,12 +35,20 @@ var (
 	_ = metadata.Join
 )
 
+var filter_IdentityProviderService_ListIdentityProviders_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+
 func request_IdentityProviderService_ListIdentityProviders_0(ctx context.Context, marshaler runtime.Marshaler, client IdentityProviderServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq ListIdentityProvidersRequest
 		metadata runtime.ServerMetadata
 	)
 	io.Copy(io.Discard, req.Body)
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_IdentityProviderService_ListIdentityProviders_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 	msg, err := client.ListIdentityProviders(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -50,6 +58,12 @@ func local_request_IdentityProviderService_ListIdentityProviders_0(ctx context.C
 		protoReq ListIdentityProvidersRequest
 		metadata runtime.ServerMetadata
 	)
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_IdentityProviderService_ListIdentityProviders_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 	msg, err := server.ListIdentityProviders(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -91,12 +105,20 @@ func local_request_IdentityProviderService_GetIdentityProvider_0(ctx context.Con
 	return msg, metadata, err
 }
 
+var filter_IdentityProviderService_CreateIdentityProvider_0 = &utilities.DoubleArray{Encoding: map[string]int{"identity_provider": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+
 func request_IdentityProviderService_CreateIdentityProvider_0(ctx context.Context, marshaler runtime.Marshaler, client IdentityProviderServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq CreateIdentityProviderRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.IdentityProvider); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_IdentityProviderService_CreateIdentityProvider_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := client.CreateIdentityProvider(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -109,6 +131,12 @@ func local_request_IdentityProviderService_CreateIdentityProvider_0(ctx context.
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.IdentityProvider); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_IdentityProviderService_CreateIdentityProvider_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := server.CreateIdentityProvider(ctx, &protoReq)

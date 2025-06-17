@@ -2,8 +2,7 @@ package v1
 
 var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v1.WorkspaceService/GetWorkspaceProfile":          true,
-	"/memos.api.v1.WorkspaceSettingService/GetWorkspaceSetting":   true,
-	"/memos.api.v1.WorkspaceSettingService/ListWorkspaceSettings": true,
+	"/memos.api.v1.WorkspaceService/GetWorkspaceSetting":          true,
 	"/memos.api.v1.IdentityProviderService/GetIdentityProvider":   true,
 	"/memos.api.v1.IdentityProviderService/ListIdentityProviders": true,
 	"/memos.api.v1.AuthService/GetAuthStatus":                     true,
@@ -12,8 +11,7 @@ var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v1.AuthService/SignOut":                           true,
 	"/memos.api.v1.AuthService/SignUp":                            true,
 	"/memos.api.v1.UserService/GetUser":                           true,
-	"/memos.api.v1.UserService/GetUserByUsername":                 true,
-	"/memos.api.v1.UserService/GetUserAvatarBinary":               true,
+	"/memos.api.v1.UserService/GetUserAvatar":                     true,
 	"/memos.api.v1.UserService/GetUserStats":                      true,
 	"/memos.api.v1.UserService/ListAllUserStats":                  true,
 	"/memos.api.v1.UserService/SearchUsers":                       true,
@@ -29,8 +27,8 @@ func isUnauthorizeAllowedMethod(fullMethodName string) bool {
 }
 
 var allowedMethodsOnlyForAdmin = map[string]bool{
-	"/memos.api.v1.UserService/CreateUser":                      true,
-	"/memos.api.v1.WorkspaceSettingService/SetWorkspaceSetting": true,
+	"/memos.api.v1.UserService/CreateUser":                  true,
+	"/memos.api.v1.WorkspaceService/UpdateWorkspaceSetting": true,
 }
 
 // isOnlyForAdminAllowedMethod returns true if the method is allowed to be called only by admin.

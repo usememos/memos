@@ -16,26 +16,49 @@ export const protobufPackage = "memos.api.v1";
 
 export interface User {
   /**
-   * The name of the user.
-   * Format: users/{id}, id is the system generated auto-incremented id.
+   * The resource name of the user.
+   * Format: users/{user}
    */
   name: string;
+  /** Output only. The system generated unique identifier. */
+  uid: string;
+  /** The role of the user. */
   role: User_Role;
+  /** Required. The unique username for login. */
   username: string;
+  /** Optional. The email address of the user. */
   email: string;
-  nickname: string;
+  /** Optional. The display name of the user. */
+  displayName: string;
+  /** Optional. The avatar URL of the user. */
   avatarUrl: string;
+  /** Optional. The description of the user. */
   description: string;
+  /** Input only. The password for the user. */
   password: string;
+  /** The state of the user. */
   state: State;
-  createTime?: Date | undefined;
-  updateTime?: Date | undefined;
+  /** Output only. The creation timestamp. */
+  createTime?:
+    | Date
+    | undefined;
+  /** Output only. The last update timestamp. */
+  updateTime?:
+    | Date
+    | undefined;
+  /** Output only. The etag for this resource. */
+  etag: string;
 }
 
+/** User role enumeration. */
 export enum User_Role {
+  /** ROLE_UNSPECIFIED - Unspecified role. */
   ROLE_UNSPECIFIED = "ROLE_UNSPECIFIED",
+  /** HOST - Host role with full system access. */
   HOST = "HOST",
+  /** ADMIN - Admin role with administrative privileges. */
   ADMIN = "ADMIN",
+  /** USER - Regular user role. */
   USER = "USER",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
@@ -78,62 +101,146 @@ export function user_RoleToNumber(object: User_Role): number {
 }
 
 export interface ListUsersRequest {
+  /**
+   * Optional. The maximum number of users to return.
+   * The service may return fewer than this value.
+   * If unspecified, at most 50 users will be returned.
+   * The maximum value is 1000; values above 1000 will be coerced to 1000.
+   */
+  pageSize: number;
+  /**
+   * Optional. A page token, received from a previous `ListUsers` call.
+   * Provide this to retrieve the subsequent page.
+   */
+  pageToken: string;
+  /**
+   * Optional. Filter to apply to the list results.
+   * Example: "state=ACTIVE" or "role=USER" or "email:@example.com"
+   * Supported operators: =, !=, <, <=, >, >=, :
+   * Supported fields: username, email, role, state, create_time, update_time
+   */
+  filter: string;
+  /**
+   * Optional. The order to sort results by.
+   * Example: "create_time desc" or "username asc"
+   */
+  orderBy: string;
+  /** Optional. If true, show deleted users in the response. */
+  showDeleted: boolean;
 }
 
 export interface ListUsersResponse {
+  /** The list of users. */
   users: User[];
+  /**
+   * A token that can be sent as `page_token` to retrieve the next page.
+   * If this field is omitted, there are no subsequent pages.
+   */
+  nextPageToken: string;
+  /** The total count of users (may be approximate). */
+  totalSize: number;
 }
 
 export interface GetUserRequest {
-  /** The name of the user. */
+  /**
+   * Required. The resource name of the user.
+   * Format: users/{user}
+   */
   name: string;
-}
-
-export interface GetUserByUsernameRequest {
-  /** The username of the user. */
-  username: string;
-}
-
-export interface GetUserAvatarBinaryRequest {
-  /** The name of the user. */
-  name: string;
-  /** The raw HTTP body is bound to this field. */
-  httpBody?: HttpBody | undefined;
+  /**
+   * Optional. The fields to return in the response.
+   * If not specified, all fields are returned.
+   */
+  readMask?: string[] | undefined;
 }
 
 export interface CreateUserRequest {
-  user?: User | undefined;
+  /** Required. The user to create. */
+  user?:
+    | User
+    | undefined;
+  /**
+   * Optional. The user ID to use for this user.
+   * If empty, a unique ID will be generated.
+   * Must match the pattern [a-z0-9-]+
+   */
+  userId: string;
+  /** Optional. If set, validate the request but don't actually create the user. */
+  validateOnly: boolean;
+  /**
+   * Optional. An idempotency token that can be used to ensure that multiple
+   * requests to create a user have the same result.
+   */
+  requestId: string;
 }
 
 export interface UpdateUserRequest {
-  user?: User | undefined;
-  updateMask?: string[] | undefined;
+  /** Required. The user to update. */
+  user?:
+    | User
+    | undefined;
+  /** Required. The list of fields to update. */
+  updateMask?:
+    | string[]
+    | undefined;
+  /** Optional. If set to true, allows updating sensitive fields. */
+  allowMissing: boolean;
 }
 
 export interface DeleteUserRequest {
-  /** The name of the user. */
+  /**
+   * Required. The resource name of the user to delete.
+   * Format: users/{user}
+   */
+  name: string;
+  /** Optional. If set to true, the user will be deleted even if they have associated data. */
+  force: boolean;
+}
+
+export interface SearchUsersRequest {
+  /** Required. The search query. */
+  query: string;
+  /** Optional. The maximum number of users to return. */
+  pageSize: number;
+  /** Optional. A page token for pagination. */
+  pageToken: string;
+}
+
+export interface SearchUsersResponse {
+  /** The list of users matching the search query. */
+  users: User[];
+  /** A token for the next page of results. */
+  nextPageToken: string;
+  /** The total count of matching users. */
+  totalSize: number;
+}
+
+export interface GetUserAvatarRequest {
+  /**
+   * Required. The resource name of the user.
+   * Format: users/{user}
+   */
   name: string;
 }
 
+/** User statistics messages */
 export interface UserStats {
-  /** The name of the user. */
-  name: string;
   /**
-   * The timestamps when the memos were displayed.
-   * We should return raw data to the client, and let the client format the data with the user's timezone.
+   * The resource name of the user whose stats these are.
+   * Format: users/{user}
    */
+  name: string;
+  /** The timestamps when the memos were displayed. */
   memoDisplayTimestamps: Date[];
   /** The stats of memo types. */
   memoTypeStats?:
     | UserStats_MemoTypeStats
     | undefined;
-  /**
-   * The count of tags.
-   * Format: "tag1": 1, "tag2": 2
-   */
+  /** The count of tags. */
   tagCount: { [key: string]: number };
   /** The pinned memos of the user. */
   pinnedMemos: string[];
+  /** Total memo count. */
   totalMemoCount: number;
 }
 
@@ -142,6 +249,7 @@ export interface UserStats_TagCountEntry {
   value: number;
 }
 
+/** Memo type statistics. */
 export interface UserStats_MemoTypeStats {
   linkCount: number;
   codeCount: number;
@@ -149,20 +257,20 @@ export interface UserStats_MemoTypeStats {
   undoCount: number;
 }
 
-export interface ListAllUserStatsRequest {
-}
-
-export interface ListAllUserStatsResponse {
-  userStats: UserStats[];
-}
-
 export interface GetUserStatsRequest {
-  /** The name of the user. */
+  /**
+   * Required. The resource name of the user.
+   * Format: users/{user}
+   */
   name: string;
 }
 
+/** User settings message */
 export interface UserSetting {
-  /** The name of the user. */
+  /**
+   * The resource name of the user whose setting this is.
+   * Format: users/{user}
+   */
   name: string;
   /** The preferred locale of the user. */
   locale: string;
@@ -173,58 +281,115 @@ export interface UserSetting {
 }
 
 export interface GetUserSettingRequest {
-  /** The name of the user. */
+  /**
+   * Required. The resource name of the user.
+   * Format: users/{user}
+   */
   name: string;
 }
 
 export interface UpdateUserSettingRequest {
-  setting?: UserSetting | undefined;
+  /** Required. The user setting to update. */
+  setting?:
+    | UserSetting
+    | undefined;
+  /** Required. The list of fields to update. */
   updateMask?: string[] | undefined;
 }
 
+/** User access token message */
 export interface UserAccessToken {
+  /**
+   * The resource name of the access token.
+   * Format: users/{user}/accessTokens/{access_token}
+   */
+  name: string;
+  /** Output only. The access token value. */
   accessToken: string;
+  /** The description of the access token. */
   description: string;
-  issuedAt?: Date | undefined;
+  /** Output only. The issued timestamp. */
+  issuedAt?:
+    | Date
+    | undefined;
+  /** Optional. The expiration timestamp. */
   expiresAt?: Date | undefined;
 }
 
 export interface ListUserAccessTokensRequest {
-  /** The name of the user. */
-  name: string;
+  /**
+   * Required. The parent resource whose access tokens will be listed.
+   * Format: users/{user}
+   */
+  parent: string;
+  /** Optional. The maximum number of access tokens to return. */
+  pageSize: number;
+  /** Optional. A page token for pagination. */
+  pageToken: string;
 }
 
 export interface ListUserAccessTokensResponse {
+  /** The list of access tokens. */
   accessTokens: UserAccessToken[];
+  /** A token for the next page of results. */
+  nextPageToken: string;
+  /** The total count of access tokens. */
+  totalSize: number;
 }
 
 export interface CreateUserAccessTokenRequest {
-  /** The name of the user. */
-  name: string;
-  description: string;
-  expiresAt?: Date | undefined;
+  /**
+   * Required. The parent resource where this access token will be created.
+   * Format: users/{user}
+   */
+  parent: string;
+  /** Required. The access token to create. */
+  accessToken?:
+    | UserAccessToken
+    | undefined;
+  /** Optional. The access token ID to use. */
+  accessTokenId: string;
 }
 
 export interface DeleteUserAccessTokenRequest {
-  /** The name of the user. */
+  /**
+   * Required. The resource name of the access token to delete.
+   * Format: users/{user}/accessTokens/{access_token}
+   */
   name: string;
-  /** access_token is the access token to delete. */
-  accessToken: string;
+}
+
+export interface ListAllUserStatsRequest {
+  /** Optional. The maximum number of user stats to return. */
+  pageSize: number;
+  /** Optional. A page token for pagination. */
+  pageToken: string;
+}
+
+export interface ListAllUserStatsResponse {
+  /** The list of user statistics. */
+  userStats: UserStats[];
+  /** A token for the next page of results. */
+  nextPageToken: string;
+  /** The total count of user statistics. */
+  totalSize: number;
 }
 
 function createBaseUser(): User {
   return {
     name: "",
+    uid: "",
     role: User_Role.ROLE_UNSPECIFIED,
     username: "",
     email: "",
-    nickname: "",
+    displayName: "",
     avatarUrl: "",
     description: "",
     password: "",
     state: State.STATE_UNSPECIFIED,
     createTime: undefined,
     updateTime: undefined,
+    etag: "",
   };
 }
 
@@ -232,6 +397,9 @@ export const User: MessageFns<User> = {
   encode(message: User, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
+    }
+    if (message.uid !== "") {
+      writer.uint32(18).string(message.uid);
     }
     if (message.role !== User_Role.ROLE_UNSPECIFIED) {
       writer.uint32(24).int32(user_RoleToNumber(message.role));
@@ -242,8 +410,8 @@ export const User: MessageFns<User> = {
     if (message.email !== "") {
       writer.uint32(42).string(message.email);
     }
-    if (message.nickname !== "") {
-      writer.uint32(50).string(message.nickname);
+    if (message.displayName !== "") {
+      writer.uint32(50).string(message.displayName);
     }
     if (message.avatarUrl !== "") {
       writer.uint32(58).string(message.avatarUrl);
@@ -263,6 +431,9 @@ export const User: MessageFns<User> = {
     if (message.updateTime !== undefined) {
       Timestamp.encode(toTimestamp(message.updateTime), writer.uint32(98).fork()).join();
     }
+    if (message.etag !== "") {
+      writer.uint32(106).string(message.etag);
+    }
     return writer;
   },
 
@@ -279,6 +450,14 @@ export const User: MessageFns<User> = {
           }
 
           message.name = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.uid = reader.string();
           continue;
         }
         case 3: {
@@ -310,7 +489,7 @@ export const User: MessageFns<User> = {
             break;
           }
 
-          message.nickname = reader.string();
+          message.displayName = reader.string();
           continue;
         }
         case 7: {
@@ -361,6 +540,14 @@ export const User: MessageFns<User> = {
           message.updateTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
+        case 13: {
+          if (tag !== 106) {
+            break;
+          }
+
+          message.etag = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -376,26 +563,43 @@ export const User: MessageFns<User> = {
   fromPartial(object: DeepPartial<User>): User {
     const message = createBaseUser();
     message.name = object.name ?? "";
+    message.uid = object.uid ?? "";
     message.role = object.role ?? User_Role.ROLE_UNSPECIFIED;
     message.username = object.username ?? "";
     message.email = object.email ?? "";
-    message.nickname = object.nickname ?? "";
+    message.displayName = object.displayName ?? "";
     message.avatarUrl = object.avatarUrl ?? "";
     message.description = object.description ?? "";
     message.password = object.password ?? "";
     message.state = object.state ?? State.STATE_UNSPECIFIED;
     message.createTime = object.createTime ?? undefined;
     message.updateTime = object.updateTime ?? undefined;
+    message.etag = object.etag ?? "";
     return message;
   },
 };
 
 function createBaseListUsersRequest(): ListUsersRequest {
-  return {};
+  return { pageSize: 0, pageToken: "", filter: "", orderBy: "", showDeleted: false };
 }
 
 export const ListUsersRequest: MessageFns<ListUsersRequest> = {
-  encode(_: ListUsersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(message: ListUsersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.pageSize !== 0) {
+      writer.uint32(8).int32(message.pageSize);
+    }
+    if (message.pageToken !== "") {
+      writer.uint32(18).string(message.pageToken);
+    }
+    if (message.filter !== "") {
+      writer.uint32(26).string(message.filter);
+    }
+    if (message.orderBy !== "") {
+      writer.uint32(34).string(message.orderBy);
+    }
+    if (message.showDeleted !== false) {
+      writer.uint32(40).bool(message.showDeleted);
+    }
     return writer;
   },
 
@@ -406,6 +610,46 @@ export const ListUsersRequest: MessageFns<ListUsersRequest> = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.pageSize = reader.int32();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.pageToken = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.filter = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.orderBy = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.showDeleted = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -418,20 +662,31 @@ export const ListUsersRequest: MessageFns<ListUsersRequest> = {
   create(base?: DeepPartial<ListUsersRequest>): ListUsersRequest {
     return ListUsersRequest.fromPartial(base ?? {});
   },
-  fromPartial(_: DeepPartial<ListUsersRequest>): ListUsersRequest {
+  fromPartial(object: DeepPartial<ListUsersRequest>): ListUsersRequest {
     const message = createBaseListUsersRequest();
+    message.pageSize = object.pageSize ?? 0;
+    message.pageToken = object.pageToken ?? "";
+    message.filter = object.filter ?? "";
+    message.orderBy = object.orderBy ?? "";
+    message.showDeleted = object.showDeleted ?? false;
     return message;
   },
 };
 
 function createBaseListUsersResponse(): ListUsersResponse {
-  return { users: [] };
+  return { users: [], nextPageToken: "", totalSize: 0 };
 }
 
 export const ListUsersResponse: MessageFns<ListUsersResponse> = {
   encode(message: ListUsersResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.users) {
       User.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.nextPageToken !== "") {
+      writer.uint32(18).string(message.nextPageToken);
+    }
+    if (message.totalSize !== 0) {
+      writer.uint32(24).int32(message.totalSize);
     }
     return writer;
   },
@@ -451,6 +706,22 @@ export const ListUsersResponse: MessageFns<ListUsersResponse> = {
           message.users.push(User.decode(reader, reader.uint32()));
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.nextPageToken = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.totalSize = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -466,18 +737,23 @@ export const ListUsersResponse: MessageFns<ListUsersResponse> = {
   fromPartial(object: DeepPartial<ListUsersResponse>): ListUsersResponse {
     const message = createBaseListUsersResponse();
     message.users = object.users?.map((e) => User.fromPartial(e)) || [];
+    message.nextPageToken = object.nextPageToken ?? "";
+    message.totalSize = object.totalSize ?? 0;
     return message;
   },
 };
 
 function createBaseGetUserRequest(): GetUserRequest {
-  return { name: "" };
+  return { name: "", readMask: undefined };
 }
 
 export const GetUserRequest: MessageFns<GetUserRequest> = {
   encode(message: GetUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
+    }
+    if (message.readMask !== undefined) {
+      FieldMask.encode(FieldMask.wrap(message.readMask), writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -497,6 +773,14 @@ export const GetUserRequest: MessageFns<GetUserRequest> = {
           message.name = reader.string();
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.readMask = FieldMask.unwrap(FieldMask.decode(reader, reader.uint32()));
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -512,124 +796,28 @@ export const GetUserRequest: MessageFns<GetUserRequest> = {
   fromPartial(object: DeepPartial<GetUserRequest>): GetUserRequest {
     const message = createBaseGetUserRequest();
     message.name = object.name ?? "";
-    return message;
-  },
-};
-
-function createBaseGetUserByUsernameRequest(): GetUserByUsernameRequest {
-  return { username: "" };
-}
-
-export const GetUserByUsernameRequest: MessageFns<GetUserByUsernameRequest> = {
-  encode(message: GetUserByUsernameRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.username !== "") {
-      writer.uint32(10).string(message.username);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetUserByUsernameRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetUserByUsernameRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.username = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<GetUserByUsernameRequest>): GetUserByUsernameRequest {
-    return GetUserByUsernameRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<GetUserByUsernameRequest>): GetUserByUsernameRequest {
-    const message = createBaseGetUserByUsernameRequest();
-    message.username = object.username ?? "";
-    return message;
-  },
-};
-
-function createBaseGetUserAvatarBinaryRequest(): GetUserAvatarBinaryRequest {
-  return { name: "", httpBody: undefined };
-}
-
-export const GetUserAvatarBinaryRequest: MessageFns<GetUserAvatarBinaryRequest> = {
-  encode(message: GetUserAvatarBinaryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
-    }
-    if (message.httpBody !== undefined) {
-      HttpBody.encode(message.httpBody, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetUserAvatarBinaryRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetUserAvatarBinaryRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.httpBody = HttpBody.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<GetUserAvatarBinaryRequest>): GetUserAvatarBinaryRequest {
-    return GetUserAvatarBinaryRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<GetUserAvatarBinaryRequest>): GetUserAvatarBinaryRequest {
-    const message = createBaseGetUserAvatarBinaryRequest();
-    message.name = object.name ?? "";
-    message.httpBody = (object.httpBody !== undefined && object.httpBody !== null)
-      ? HttpBody.fromPartial(object.httpBody)
-      : undefined;
+    message.readMask = object.readMask ?? undefined;
     return message;
   },
 };
 
 function createBaseCreateUserRequest(): CreateUserRequest {
-  return { user: undefined };
+  return { user: undefined, userId: "", validateOnly: false, requestId: "" };
 }
 
 export const CreateUserRequest: MessageFns<CreateUserRequest> = {
   encode(message: CreateUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    if (message.userId !== "") {
+      writer.uint32(18).string(message.userId);
+    }
+    if (message.validateOnly !== false) {
+      writer.uint32(24).bool(message.validateOnly);
+    }
+    if (message.requestId !== "") {
+      writer.uint32(34).string(message.requestId);
     }
     return writer;
   },
@@ -649,6 +837,30 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
           message.user = User.decode(reader, reader.uint32());
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.validateOnly = reader.bool();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.requestId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -664,12 +876,15 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
   fromPartial(object: DeepPartial<CreateUserRequest>): CreateUserRequest {
     const message = createBaseCreateUserRequest();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.userId = object.userId ?? "";
+    message.validateOnly = object.validateOnly ?? false;
+    message.requestId = object.requestId ?? "";
     return message;
   },
 };
 
 function createBaseUpdateUserRequest(): UpdateUserRequest {
-  return { user: undefined, updateMask: undefined };
+  return { user: undefined, updateMask: undefined, allowMissing: false };
 }
 
 export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
@@ -679,6 +894,9 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
     }
     if (message.updateMask !== undefined) {
       FieldMask.encode(FieldMask.wrap(message.updateMask), writer.uint32(18).fork()).join();
+    }
+    if (message.allowMissing !== false) {
+      writer.uint32(24).bool(message.allowMissing);
     }
     return writer;
   },
@@ -706,6 +924,14 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
           message.updateMask = FieldMask.unwrap(FieldMask.decode(reader, reader.uint32()));
           continue;
         }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.allowMissing = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -722,18 +948,22 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
     const message = createBaseUpdateUserRequest();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     message.updateMask = object.updateMask ?? undefined;
+    message.allowMissing = object.allowMissing ?? false;
     return message;
   },
 };
 
 function createBaseDeleteUserRequest(): DeleteUserRequest {
-  return { name: "" };
+  return { name: "", force: false };
 }
 
 export const DeleteUserRequest: MessageFns<DeleteUserRequest> = {
   encode(message: DeleteUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
+    }
+    if (message.force !== false) {
+      writer.uint32(16).bool(message.force);
     }
     return writer;
   },
@@ -742,6 +972,201 @@ export const DeleteUserRequest: MessageFns<DeleteUserRequest> = {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteUserRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.force = reader.bool();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<DeleteUserRequest>): DeleteUserRequest {
+    return DeleteUserRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DeleteUserRequest>): DeleteUserRequest {
+    const message = createBaseDeleteUserRequest();
+    message.name = object.name ?? "";
+    message.force = object.force ?? false;
+    return message;
+  },
+};
+
+function createBaseSearchUsersRequest(): SearchUsersRequest {
+  return { query: "", pageSize: 0, pageToken: "" };
+}
+
+export const SearchUsersRequest: MessageFns<SearchUsersRequest> = {
+  encode(message: SearchUsersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.query !== "") {
+      writer.uint32(10).string(message.query);
+    }
+    if (message.pageSize !== 0) {
+      writer.uint32(16).int32(message.pageSize);
+    }
+    if (message.pageToken !== "") {
+      writer.uint32(26).string(message.pageToken);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SearchUsersRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSearchUsersRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.query = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.pageSize = reader.int32();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.pageToken = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<SearchUsersRequest>): SearchUsersRequest {
+    return SearchUsersRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<SearchUsersRequest>): SearchUsersRequest {
+    const message = createBaseSearchUsersRequest();
+    message.query = object.query ?? "";
+    message.pageSize = object.pageSize ?? 0;
+    message.pageToken = object.pageToken ?? "";
+    return message;
+  },
+};
+
+function createBaseSearchUsersResponse(): SearchUsersResponse {
+  return { users: [], nextPageToken: "", totalSize: 0 };
+}
+
+export const SearchUsersResponse: MessageFns<SearchUsersResponse> = {
+  encode(message: SearchUsersResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.users) {
+      User.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.nextPageToken !== "") {
+      writer.uint32(18).string(message.nextPageToken);
+    }
+    if (message.totalSize !== 0) {
+      writer.uint32(24).int32(message.totalSize);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SearchUsersResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSearchUsersResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.users.push(User.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.nextPageToken = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.totalSize = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<SearchUsersResponse>): SearchUsersResponse {
+    return SearchUsersResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<SearchUsersResponse>): SearchUsersResponse {
+    const message = createBaseSearchUsersResponse();
+    message.users = object.users?.map((e) => User.fromPartial(e)) || [];
+    message.nextPageToken = object.nextPageToken ?? "";
+    message.totalSize = object.totalSize ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetUserAvatarRequest(): GetUserAvatarRequest {
+  return { name: "" };
+}
+
+export const GetUserAvatarRequest: MessageFns<GetUserAvatarRequest> = {
+  encode(message: GetUserAvatarRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetUserAvatarRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserAvatarRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -762,11 +1187,11 @@ export const DeleteUserRequest: MessageFns<DeleteUserRequest> = {
     return message;
   },
 
-  create(base?: DeepPartial<DeleteUserRequest>): DeleteUserRequest {
-    return DeleteUserRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<GetUserAvatarRequest>): GetUserAvatarRequest {
+    return GetUserAvatarRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<DeleteUserRequest>): DeleteUserRequest {
-    const message = createBaseDeleteUserRequest();
+  fromPartial(object: DeepPartial<GetUserAvatarRequest>): GetUserAvatarRequest {
+    const message = createBaseGetUserAvatarRequest();
     message.name = object.name ?? "";
     return message;
   },
@@ -1035,86 +1460,6 @@ export const UserStats_MemoTypeStats: MessageFns<UserStats_MemoTypeStats> = {
   },
 };
 
-function createBaseListAllUserStatsRequest(): ListAllUserStatsRequest {
-  return {};
-}
-
-export const ListAllUserStatsRequest: MessageFns<ListAllUserStatsRequest> = {
-  encode(_: ListAllUserStatsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ListAllUserStatsRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseListAllUserStatsRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<ListAllUserStatsRequest>): ListAllUserStatsRequest {
-    return ListAllUserStatsRequest.fromPartial(base ?? {});
-  },
-  fromPartial(_: DeepPartial<ListAllUserStatsRequest>): ListAllUserStatsRequest {
-    const message = createBaseListAllUserStatsRequest();
-    return message;
-  },
-};
-
-function createBaseListAllUserStatsResponse(): ListAllUserStatsResponse {
-  return { userStats: [] };
-}
-
-export const ListAllUserStatsResponse: MessageFns<ListAllUserStatsResponse> = {
-  encode(message: ListAllUserStatsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.userStats) {
-      UserStats.encode(v!, writer.uint32(10).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ListAllUserStatsResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseListAllUserStatsResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.userStats.push(UserStats.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<ListAllUserStatsResponse>): ListAllUserStatsResponse {
-    return ListAllUserStatsResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<ListAllUserStatsResponse>): ListAllUserStatsResponse {
-    const message = createBaseListAllUserStatsResponse();
-    message.userStats = object.userStats?.map((e) => UserStats.fromPartial(e)) || [];
-    return message;
-  },
-};
-
 function createBaseGetUserStatsRequest(): GetUserStatsRequest {
   return { name: "" };
 }
@@ -1350,22 +1695,25 @@ export const UpdateUserSettingRequest: MessageFns<UpdateUserSettingRequest> = {
 };
 
 function createBaseUserAccessToken(): UserAccessToken {
-  return { accessToken: "", description: "", issuedAt: undefined, expiresAt: undefined };
+  return { name: "", accessToken: "", description: "", issuedAt: undefined, expiresAt: undefined };
 }
 
 export const UserAccessToken: MessageFns<UserAccessToken> = {
   encode(message: UserAccessToken, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
     if (message.accessToken !== "") {
-      writer.uint32(10).string(message.accessToken);
+      writer.uint32(18).string(message.accessToken);
     }
     if (message.description !== "") {
-      writer.uint32(18).string(message.description);
+      writer.uint32(26).string(message.description);
     }
     if (message.issuedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.issuedAt), writer.uint32(26).fork()).join();
+      Timestamp.encode(toTimestamp(message.issuedAt), writer.uint32(34).fork()).join();
     }
     if (message.expiresAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.expiresAt), writer.uint32(34).fork()).join();
+      Timestamp.encode(toTimestamp(message.expiresAt), writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -1382,7 +1730,7 @@ export const UserAccessToken: MessageFns<UserAccessToken> = {
             break;
           }
 
-          message.accessToken = reader.string();
+          message.name = reader.string();
           continue;
         }
         case 2: {
@@ -1390,7 +1738,7 @@ export const UserAccessToken: MessageFns<UserAccessToken> = {
             break;
           }
 
-          message.description = reader.string();
+          message.accessToken = reader.string();
           continue;
         }
         case 3: {
@@ -1398,11 +1746,19 @@ export const UserAccessToken: MessageFns<UserAccessToken> = {
             break;
           }
 
-          message.issuedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.description = reader.string();
           continue;
         }
         case 4: {
           if (tag !== 34) {
+            break;
+          }
+
+          message.issuedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
             break;
           }
 
@@ -1423,6 +1779,7 @@ export const UserAccessToken: MessageFns<UserAccessToken> = {
   },
   fromPartial(object: DeepPartial<UserAccessToken>): UserAccessToken {
     const message = createBaseUserAccessToken();
+    message.name = object.name ?? "";
     message.accessToken = object.accessToken ?? "";
     message.description = object.description ?? "";
     message.issuedAt = object.issuedAt ?? undefined;
@@ -1432,13 +1789,19 @@ export const UserAccessToken: MessageFns<UserAccessToken> = {
 };
 
 function createBaseListUserAccessTokensRequest(): ListUserAccessTokensRequest {
-  return { name: "" };
+  return { parent: "", pageSize: 0, pageToken: "" };
 }
 
 export const ListUserAccessTokensRequest: MessageFns<ListUserAccessTokensRequest> = {
   encode(message: ListUserAccessTokensRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
+    if (message.parent !== "") {
+      writer.uint32(10).string(message.parent);
+    }
+    if (message.pageSize !== 0) {
+      writer.uint32(16).int32(message.pageSize);
+    }
+    if (message.pageToken !== "") {
+      writer.uint32(26).string(message.pageToken);
     }
     return writer;
   },
@@ -1455,7 +1818,23 @@ export const ListUserAccessTokensRequest: MessageFns<ListUserAccessTokensRequest
             break;
           }
 
-          message.name = reader.string();
+          message.parent = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.pageSize = reader.int32();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.pageToken = reader.string();
           continue;
         }
       }
@@ -1472,19 +1851,27 @@ export const ListUserAccessTokensRequest: MessageFns<ListUserAccessTokensRequest
   },
   fromPartial(object: DeepPartial<ListUserAccessTokensRequest>): ListUserAccessTokensRequest {
     const message = createBaseListUserAccessTokensRequest();
-    message.name = object.name ?? "";
+    message.parent = object.parent ?? "";
+    message.pageSize = object.pageSize ?? 0;
+    message.pageToken = object.pageToken ?? "";
     return message;
   },
 };
 
 function createBaseListUserAccessTokensResponse(): ListUserAccessTokensResponse {
-  return { accessTokens: [] };
+  return { accessTokens: [], nextPageToken: "", totalSize: 0 };
 }
 
 export const ListUserAccessTokensResponse: MessageFns<ListUserAccessTokensResponse> = {
   encode(message: ListUserAccessTokensResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.accessTokens) {
       UserAccessToken.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.nextPageToken !== "") {
+      writer.uint32(18).string(message.nextPageToken);
+    }
+    if (message.totalSize !== 0) {
+      writer.uint32(24).int32(message.totalSize);
     }
     return writer;
   },
@@ -1504,6 +1891,22 @@ export const ListUserAccessTokensResponse: MessageFns<ListUserAccessTokensRespon
           message.accessTokens.push(UserAccessToken.decode(reader, reader.uint32()));
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.nextPageToken = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.totalSize = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1519,24 +1922,26 @@ export const ListUserAccessTokensResponse: MessageFns<ListUserAccessTokensRespon
   fromPartial(object: DeepPartial<ListUserAccessTokensResponse>): ListUserAccessTokensResponse {
     const message = createBaseListUserAccessTokensResponse();
     message.accessTokens = object.accessTokens?.map((e) => UserAccessToken.fromPartial(e)) || [];
+    message.nextPageToken = object.nextPageToken ?? "";
+    message.totalSize = object.totalSize ?? 0;
     return message;
   },
 };
 
 function createBaseCreateUserAccessTokenRequest(): CreateUserAccessTokenRequest {
-  return { name: "", description: "", expiresAt: undefined };
+  return { parent: "", accessToken: undefined, accessTokenId: "" };
 }
 
 export const CreateUserAccessTokenRequest: MessageFns<CreateUserAccessTokenRequest> = {
   encode(message: CreateUserAccessTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
+    if (message.parent !== "") {
+      writer.uint32(10).string(message.parent);
     }
-    if (message.description !== "") {
-      writer.uint32(18).string(message.description);
+    if (message.accessToken !== undefined) {
+      UserAccessToken.encode(message.accessToken, writer.uint32(18).fork()).join();
     }
-    if (message.expiresAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.expiresAt), writer.uint32(26).fork()).join();
+    if (message.accessTokenId !== "") {
+      writer.uint32(26).string(message.accessTokenId);
     }
     return writer;
   },
@@ -1553,7 +1958,7 @@ export const CreateUserAccessTokenRequest: MessageFns<CreateUserAccessTokenReque
             break;
           }
 
-          message.name = reader.string();
+          message.parent = reader.string();
           continue;
         }
         case 2: {
@@ -1561,7 +1966,7 @@ export const CreateUserAccessTokenRequest: MessageFns<CreateUserAccessTokenReque
             break;
           }
 
-          message.description = reader.string();
+          message.accessToken = UserAccessToken.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -1569,7 +1974,7 @@ export const CreateUserAccessTokenRequest: MessageFns<CreateUserAccessTokenReque
             break;
           }
 
-          message.expiresAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.accessTokenId = reader.string();
           continue;
         }
       }
@@ -1586,24 +1991,23 @@ export const CreateUserAccessTokenRequest: MessageFns<CreateUserAccessTokenReque
   },
   fromPartial(object: DeepPartial<CreateUserAccessTokenRequest>): CreateUserAccessTokenRequest {
     const message = createBaseCreateUserAccessTokenRequest();
-    message.name = object.name ?? "";
-    message.description = object.description ?? "";
-    message.expiresAt = object.expiresAt ?? undefined;
+    message.parent = object.parent ?? "";
+    message.accessToken = (object.accessToken !== undefined && object.accessToken !== null)
+      ? UserAccessToken.fromPartial(object.accessToken)
+      : undefined;
+    message.accessTokenId = object.accessTokenId ?? "";
     return message;
   },
 };
 
 function createBaseDeleteUserAccessTokenRequest(): DeleteUserAccessTokenRequest {
-  return { name: "", accessToken: "" };
+  return { name: "" };
 }
 
 export const DeleteUserAccessTokenRequest: MessageFns<DeleteUserAccessTokenRequest> = {
   encode(message: DeleteUserAccessTokenRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
-    }
-    if (message.accessToken !== "") {
-      writer.uint32(18).string(message.accessToken);
     }
     return writer;
   },
@@ -1623,14 +2027,6 @@ export const DeleteUserAccessTokenRequest: MessageFns<DeleteUserAccessTokenReque
           message.name = reader.string();
           continue;
         }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.accessToken = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1646,7 +2042,134 @@ export const DeleteUserAccessTokenRequest: MessageFns<DeleteUserAccessTokenReque
   fromPartial(object: DeepPartial<DeleteUserAccessTokenRequest>): DeleteUserAccessTokenRequest {
     const message = createBaseDeleteUserAccessTokenRequest();
     message.name = object.name ?? "";
-    message.accessToken = object.accessToken ?? "";
+    return message;
+  },
+};
+
+function createBaseListAllUserStatsRequest(): ListAllUserStatsRequest {
+  return { pageSize: 0, pageToken: "" };
+}
+
+export const ListAllUserStatsRequest: MessageFns<ListAllUserStatsRequest> = {
+  encode(message: ListAllUserStatsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.pageSize !== 0) {
+      writer.uint32(8).int32(message.pageSize);
+    }
+    if (message.pageToken !== "") {
+      writer.uint32(18).string(message.pageToken);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListAllUserStatsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListAllUserStatsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.pageSize = reader.int32();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.pageToken = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<ListAllUserStatsRequest>): ListAllUserStatsRequest {
+    return ListAllUserStatsRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ListAllUserStatsRequest>): ListAllUserStatsRequest {
+    const message = createBaseListAllUserStatsRequest();
+    message.pageSize = object.pageSize ?? 0;
+    message.pageToken = object.pageToken ?? "";
+    return message;
+  },
+};
+
+function createBaseListAllUserStatsResponse(): ListAllUserStatsResponse {
+  return { userStats: [], nextPageToken: "", totalSize: 0 };
+}
+
+export const ListAllUserStatsResponse: MessageFns<ListAllUserStatsResponse> = {
+  encode(message: ListAllUserStatsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.userStats) {
+      UserStats.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.nextPageToken !== "") {
+      writer.uint32(18).string(message.nextPageToken);
+    }
+    if (message.totalSize !== 0) {
+      writer.uint32(24).int32(message.totalSize);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListAllUserStatsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListAllUserStatsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userStats.push(UserStats.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.nextPageToken = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.totalSize = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<ListAllUserStatsResponse>): ListAllUserStatsResponse {
+    return ListAllUserStatsResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ListAllUserStatsResponse>): ListAllUserStatsResponse {
+    const message = createBaseListAllUserStatsResponse();
+    message.userStats = object.userStats?.map((e) => UserStats.fromPartial(e)) || [];
+    message.nextPageToken = object.nextPageToken ?? "";
+    message.totalSize = object.totalSize ?? 0;
     return message;
   },
 };
@@ -1706,95 +2229,6 @@ export const UserServiceDefinition = {
               47,
               42,
               125,
-            ]),
-          ],
-        },
-      },
-    },
-    /** GetUserByUsername gets a user by username. */
-    getUserByUsername: {
-      name: "GetUserByUsername",
-      requestType: GetUserByUsernameRequest,
-      requestStream: false,
-      responseType: User,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          8410: [new Uint8Array([8, 117, 115, 101, 114, 110, 97, 109, 101])],
-          578365826: [
-            new Uint8Array([
-              24,
-              18,
-              22,
-              47,
-              97,
-              112,
-              105,
-              47,
-              118,
-              49,
-              47,
-              117,
-              115,
-              101,
-              114,
-              115,
-              58,
-              117,
-              115,
-              101,
-              114,
-              110,
-              97,
-              109,
-              101,
-            ]),
-          ],
-        },
-      },
-    },
-    /** GetUserAvatarBinary gets the avatar of a user. */
-    getUserAvatarBinary: {
-      name: "GetUserAvatarBinary",
-      requestType: GetUserAvatarBinaryRequest,
-      requestStream: false,
-      responseType: HttpBody,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          8410: [new Uint8Array([4, 110, 97, 109, 101])],
-          578365826: [
-            new Uint8Array([
-              29,
-              18,
-              27,
-              47,
-              102,
-              105,
-              108,
-              101,
-              47,
-              123,
-              110,
-              97,
-              109,
-              101,
-              61,
-              117,
-              115,
-              101,
-              114,
-              115,
-              47,
-              42,
-              125,
-              47,
-              97,
-              118,
-              97,
-              116,
-              97,
-              114,
             ]),
           ],
         },
@@ -1934,20 +2368,21 @@ export const UserServiceDefinition = {
         },
       },
     },
-    /** ListAllUserStats returns all user stats. */
-    listAllUserStats: {
-      name: "ListAllUserStats",
-      requestType: ListAllUserStatsRequest,
+    /** SearchUsers searches for users based on query. */
+    searchUsers: {
+      name: "SearchUsers",
+      requestType: SearchUsersRequest,
       requestStream: false,
-      responseType: ListAllUserStatsResponse,
+      responseType: SearchUsersResponse,
       responseStream: false,
       options: {
         _unknownFields: {
+          8410: [new Uint8Array([5, 113, 117, 101, 114, 121])],
           578365826: [
             new Uint8Array([
-              23,
-              34,
-              21,
+              22,
+              18,
+              20,
               47,
               97,
               112,
@@ -1961,9 +2396,95 @@ export const UserServiceDefinition = {
               101,
               114,
               115,
+              58,
+              115,
+              101,
+              97,
+              114,
+              99,
+              104,
+            ]),
+          ],
+        },
+      },
+    },
+    /** GetUserAvatar gets the avatar of a user. */
+    getUserAvatar: {
+      name: "GetUserAvatar",
+      requestType: GetUserAvatarRequest,
+      requestStream: false,
+      responseType: HttpBody,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          8410: [new Uint8Array([4, 110, 97, 109, 101])],
+          578365826: [
+            new Uint8Array([
+              31,
+              18,
+              29,
               47,
-              45,
+              97,
+              112,
+              105,
               47,
+              118,
+              49,
+              47,
+              123,
+              110,
+              97,
+              109,
+              101,
+              61,
+              117,
+              115,
+              101,
+              114,
+              115,
+              47,
+              42,
+              125,
+              47,
+              97,
+              118,
+              97,
+              116,
+              97,
+              114,
+            ]),
+          ],
+        },
+      },
+    },
+    /** ListAllUserStats returns statistics for all users. */
+    listAllUserStats: {
+      name: "ListAllUserStats",
+      requestType: ListAllUserStatsRequest,
+      requestStream: false,
+      responseType: ListAllUserStatsResponse,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          578365826: [
+            new Uint8Array([
+              21,
+              18,
+              19,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              117,
+              115,
+              101,
+              114,
+              115,
+              58,
               115,
               116,
               97,
@@ -1974,7 +2495,7 @@ export const UserServiceDefinition = {
         },
       },
     },
-    /** GetUserStats returns the stats of a user. */
+    /** GetUserStats returns statistics for a specific user. */
     getUserStats: {
       name: "GetUserStats",
       requestType: GetUserStatsRequest,
@@ -1986,9 +2507,9 @@ export const UserServiceDefinition = {
           8410: [new Uint8Array([4, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              30,
+              33,
               18,
-              28,
+              31,
               47,
               97,
               112,
@@ -2011,8 +2532,11 @@ export const UserServiceDefinition = {
               47,
               42,
               125,
-              47,
-              115,
+              58,
+              103,
+              101,
+              116,
+              83,
               116,
               97,
               116,
@@ -2022,7 +2546,7 @@ export const UserServiceDefinition = {
         },
       },
     },
-    /** GetUserSetting gets the setting of a user. */
+    /** GetUserSetting returns the user setting. */
     getUserSetting: {
       name: "GetUserSetting",
       requestType: GetUserSettingRequest,
@@ -2034,9 +2558,9 @@ export const UserServiceDefinition = {
           8410: [new Uint8Array([4, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              32,
+              35,
               18,
-              30,
+              33,
               47,
               97,
               112,
@@ -2059,8 +2583,11 @@ export const UserServiceDefinition = {
               47,
               42,
               125,
-              47,
-              115,
+              58,
+              103,
+              101,
+              116,
+              83,
               101,
               116,
               116,
@@ -2072,7 +2599,7 @@ export const UserServiceDefinition = {
         },
       },
     },
-    /** UpdateUserSetting updates the setting of a user. */
+    /** UpdateUserSetting updates the user setting. */
     updateUserSetting: {
       name: "UpdateUserSetting",
       requestType: UpdateUserSettingRequest,
@@ -2107,7 +2634,7 @@ export const UserServiceDefinition = {
           ],
           578365826: [
             new Uint8Array([
-              49,
+              55,
               58,
               7,
               115,
@@ -2118,7 +2645,7 @@ export const UserServiceDefinition = {
               110,
               103,
               50,
-              38,
+              44,
               47,
               97,
               112,
@@ -2148,15 +2675,21 @@ export const UserServiceDefinition = {
               115,
               47,
               42,
-              47,
-              115,
+              125,
+              58,
+              117,
+              112,
+              100,
+              97,
+              116,
+              101,
+              83,
               101,
               116,
               116,
               105,
               110,
               103,
-              125,
             ]),
           ],
         },
@@ -2171,12 +2704,12 @@ export const UserServiceDefinition = {
       responseStream: false,
       options: {
         _unknownFields: {
-          8410: [new Uint8Array([4, 110, 97, 109, 101])],
+          8410: [new Uint8Array([6, 112, 97, 114, 101, 110, 116])],
           578365826: [
             new Uint8Array([
-              38,
+              39,
               18,
-              36,
+              37,
               47,
               97,
               112,
@@ -2186,10 +2719,12 @@ export const UserServiceDefinition = {
               49,
               47,
               123,
-              110,
+              112,
               97,
-              109,
+              114,
               101,
+              110,
+              116,
               61,
               117,
               115,
@@ -2206,8 +2741,7 @@ export const UserServiceDefinition = {
               101,
               115,
               115,
-              95,
-              116,
+              84,
               111,
               107,
               101,
@@ -2227,15 +2761,49 @@ export const UserServiceDefinition = {
       responseStream: false,
       options: {
         _unknownFields: {
-          8410: [new Uint8Array([4, 110, 97, 109, 101])],
+          8410: [
+            new Uint8Array([
+              19,
+              112,
+              97,
+              114,
+              101,
+              110,
+              116,
+              44,
+              97,
+              99,
+              99,
+              101,
+              115,
+              115,
+              95,
+              116,
+              111,
+              107,
+              101,
+              110,
+            ]),
+          ],
           578365826: [
             new Uint8Array([
-              41,
+              53,
               58,
-              1,
-              42,
+              12,
+              97,
+              99,
+              99,
+              101,
+              115,
+              115,
+              95,
+              116,
+              111,
+              107,
+              101,
+              110,
               34,
-              36,
+              37,
               47,
               97,
               112,
@@ -2245,10 +2813,12 @@ export const UserServiceDefinition = {
               49,
               47,
               123,
-              110,
+              112,
               97,
-              109,
+              114,
               101,
+              110,
+              116,
               61,
               117,
               115,
@@ -2265,8 +2835,7 @@ export const UserServiceDefinition = {
               101,
               115,
               115,
-              95,
-              116,
+              84,
               111,
               107,
               101,
@@ -2277,7 +2846,7 @@ export const UserServiceDefinition = {
         },
       },
     },
-    /** DeleteUserAccessToken deletes an access token for a user. */
+    /** DeleteUserAccessToken deletes an access token. */
     deleteUserAccessToken: {
       name: "DeleteUserAccessToken",
       requestType: DeleteUserAccessTokenRequest,
@@ -2286,12 +2855,12 @@ export const UserServiceDefinition = {
       responseStream: false,
       options: {
         _unknownFields: {
-          8410: [new Uint8Array([17, 110, 97, 109, 101, 44, 97, 99, 99, 101, 115, 115, 95, 116, 111, 107, 101, 110])],
+          8410: [new Uint8Array([4, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              53,
+              39,
               42,
-              51,
+              37,
               47,
               97,
               112,
@@ -2313,7 +2882,6 @@ export const UserServiceDefinition = {
               115,
               47,
               42,
-              125,
               47,
               97,
               99,
@@ -2321,27 +2889,14 @@ export const UserServiceDefinition = {
               101,
               115,
               115,
-              95,
-              116,
+              84,
               111,
               107,
               101,
               110,
               115,
               47,
-              123,
-              97,
-              99,
-              99,
-              101,
-              115,
-              115,
-              95,
-              116,
-              111,
-              107,
-              101,
-              110,
+              42,
               125,
             ]),
           ],

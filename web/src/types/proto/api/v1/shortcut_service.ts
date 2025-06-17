@@ -12,49 +12,85 @@ import { FieldMask } from "../../google/protobuf/field_mask";
 export const protobufPackage = "memos.api.v1";
 
 export interface Shortcut {
-  id: string;
+  /**
+   * The resource name of the shortcut.
+   * Format: users/{user}/shortcuts/{shortcut}
+   */
+  name: string;
+  /** The title of the shortcut. */
   title: string;
+  /** The filter expression for the shortcut. */
   filter: string;
 }
 
 export interface ListShortcutsRequest {
-  /** The name of the user. */
+  /**
+   * Required. The parent resource where shortcuts are listed.
+   * Format: users/{user}
+   */
   parent: string;
+  /** Optional. The maximum number of shortcuts to return. */
+  pageSize: number;
+  /** Optional. A page token for pagination. */
+  pageToken: string;
 }
 
 export interface ListShortcutsResponse {
+  /** The list of shortcuts. */
   shortcuts: Shortcut[];
+  /** A token for the next page of results. */
+  nextPageToken: string;
+  /** The total count of shortcuts. */
+  totalSize: number;
+}
+
+export interface GetShortcutRequest {
+  /**
+   * Required. The resource name of the shortcut to retrieve.
+   * Format: users/{user}/shortcuts/{shortcut}
+   */
+  name: string;
 }
 
 export interface CreateShortcutRequest {
-  /** The name of the user. */
+  /**
+   * Required. The parent resource where this shortcut will be created.
+   * Format: users/{user}
+   */
   parent: string;
-  shortcut?: Shortcut | undefined;
+  /** Required. The shortcut to create. */
+  shortcut?:
+    | Shortcut
+    | undefined;
+  /** Optional. If set, validate the request, but do not actually create the shortcut. */
   validateOnly: boolean;
 }
 
 export interface UpdateShortcutRequest {
-  /** The name of the user. */
-  parent: string;
-  shortcut?: Shortcut | undefined;
+  /** Required. The shortcut resource which replaces the resource on the server. */
+  shortcut?:
+    | Shortcut
+    | undefined;
+  /** Optional. The list of fields to update. */
   updateMask?: string[] | undefined;
 }
 
 export interface DeleteShortcutRequest {
-  /** The name of the user. */
-  parent: string;
-  /** The id of the shortcut. */
-  id: string;
+  /**
+   * Required. The resource name of the shortcut to delete.
+   * Format: users/{user}/shortcuts/{shortcut}
+   */
+  name: string;
 }
 
 function createBaseShortcut(): Shortcut {
-  return { id: "", title: "", filter: "" };
+  return { name: "", title: "", filter: "" };
 }
 
 export const Shortcut: MessageFns<Shortcut> = {
   encode(message: Shortcut, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
     }
     if (message.title !== "") {
       writer.uint32(18).string(message.title);
@@ -77,7 +113,7 @@ export const Shortcut: MessageFns<Shortcut> = {
             break;
           }
 
-          message.id = reader.string();
+          message.name = reader.string();
           continue;
         }
         case 2: {
@@ -110,7 +146,7 @@ export const Shortcut: MessageFns<Shortcut> = {
   },
   fromPartial(object: DeepPartial<Shortcut>): Shortcut {
     const message = createBaseShortcut();
-    message.id = object.id ?? "";
+    message.name = object.name ?? "";
     message.title = object.title ?? "";
     message.filter = object.filter ?? "";
     return message;
@@ -118,13 +154,19 @@ export const Shortcut: MessageFns<Shortcut> = {
 };
 
 function createBaseListShortcutsRequest(): ListShortcutsRequest {
-  return { parent: "" };
+  return { parent: "", pageSize: 0, pageToken: "" };
 }
 
 export const ListShortcutsRequest: MessageFns<ListShortcutsRequest> = {
   encode(message: ListShortcutsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.parent !== "") {
       writer.uint32(10).string(message.parent);
+    }
+    if (message.pageSize !== 0) {
+      writer.uint32(16).int32(message.pageSize);
+    }
+    if (message.pageToken !== "") {
+      writer.uint32(26).string(message.pageToken);
     }
     return writer;
   },
@@ -144,6 +186,22 @@ export const ListShortcutsRequest: MessageFns<ListShortcutsRequest> = {
           message.parent = reader.string();
           continue;
         }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.pageSize = reader.int32();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.pageToken = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -159,18 +217,26 @@ export const ListShortcutsRequest: MessageFns<ListShortcutsRequest> = {
   fromPartial(object: DeepPartial<ListShortcutsRequest>): ListShortcutsRequest {
     const message = createBaseListShortcutsRequest();
     message.parent = object.parent ?? "";
+    message.pageSize = object.pageSize ?? 0;
+    message.pageToken = object.pageToken ?? "";
     return message;
   },
 };
 
 function createBaseListShortcutsResponse(): ListShortcutsResponse {
-  return { shortcuts: [] };
+  return { shortcuts: [], nextPageToken: "", totalSize: 0 };
 }
 
 export const ListShortcutsResponse: MessageFns<ListShortcutsResponse> = {
   encode(message: ListShortcutsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.shortcuts) {
       Shortcut.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.nextPageToken !== "") {
+      writer.uint32(18).string(message.nextPageToken);
+    }
+    if (message.totalSize !== 0) {
+      writer.uint32(24).int32(message.totalSize);
     }
     return writer;
   },
@@ -190,6 +256,22 @@ export const ListShortcutsResponse: MessageFns<ListShortcutsResponse> = {
           message.shortcuts.push(Shortcut.decode(reader, reader.uint32()));
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.nextPageToken = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.totalSize = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -205,6 +287,54 @@ export const ListShortcutsResponse: MessageFns<ListShortcutsResponse> = {
   fromPartial(object: DeepPartial<ListShortcutsResponse>): ListShortcutsResponse {
     const message = createBaseListShortcutsResponse();
     message.shortcuts = object.shortcuts?.map((e) => Shortcut.fromPartial(e)) || [];
+    message.nextPageToken = object.nextPageToken ?? "";
+    message.totalSize = object.totalSize ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetShortcutRequest(): GetShortcutRequest {
+  return { name: "" };
+}
+
+export const GetShortcutRequest: MessageFns<GetShortcutRequest> = {
+  encode(message: GetShortcutRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetShortcutRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetShortcutRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<GetShortcutRequest>): GetShortcutRequest {
+    return GetShortcutRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<GetShortcutRequest>): GetShortcutRequest {
+    const message = createBaseGetShortcutRequest();
+    message.name = object.name ?? "";
     return message;
   },
 };
@@ -282,19 +412,16 @@ export const CreateShortcutRequest: MessageFns<CreateShortcutRequest> = {
 };
 
 function createBaseUpdateShortcutRequest(): UpdateShortcutRequest {
-  return { parent: "", shortcut: undefined, updateMask: undefined };
+  return { shortcut: undefined, updateMask: undefined };
 }
 
 export const UpdateShortcutRequest: MessageFns<UpdateShortcutRequest> = {
   encode(message: UpdateShortcutRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.parent !== "") {
-      writer.uint32(10).string(message.parent);
-    }
     if (message.shortcut !== undefined) {
-      Shortcut.encode(message.shortcut, writer.uint32(18).fork()).join();
+      Shortcut.encode(message.shortcut, writer.uint32(10).fork()).join();
     }
     if (message.updateMask !== undefined) {
-      FieldMask.encode(FieldMask.wrap(message.updateMask), writer.uint32(26).fork()).join();
+      FieldMask.encode(FieldMask.wrap(message.updateMask), writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -311,19 +438,11 @@ export const UpdateShortcutRequest: MessageFns<UpdateShortcutRequest> = {
             break;
           }
 
-          message.parent = reader.string();
+          message.shortcut = Shortcut.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
           if (tag !== 18) {
-            break;
-          }
-
-          message.shortcut = Shortcut.decode(reader, reader.uint32());
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
             break;
           }
 
@@ -344,7 +463,6 @@ export const UpdateShortcutRequest: MessageFns<UpdateShortcutRequest> = {
   },
   fromPartial(object: DeepPartial<UpdateShortcutRequest>): UpdateShortcutRequest {
     const message = createBaseUpdateShortcutRequest();
-    message.parent = object.parent ?? "";
     message.shortcut = (object.shortcut !== undefined && object.shortcut !== null)
       ? Shortcut.fromPartial(object.shortcut)
       : undefined;
@@ -354,16 +472,13 @@ export const UpdateShortcutRequest: MessageFns<UpdateShortcutRequest> = {
 };
 
 function createBaseDeleteShortcutRequest(): DeleteShortcutRequest {
-  return { parent: "", id: "" };
+  return { name: "" };
 }
 
 export const DeleteShortcutRequest: MessageFns<DeleteShortcutRequest> = {
   encode(message: DeleteShortcutRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.parent !== "") {
-      writer.uint32(10).string(message.parent);
-    }
-    if (message.id !== "") {
-      writer.uint32(18).string(message.id);
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
     }
     return writer;
   },
@@ -380,15 +495,7 @@ export const DeleteShortcutRequest: MessageFns<DeleteShortcutRequest> = {
             break;
           }
 
-          message.parent = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.id = reader.string();
+          message.name = reader.string();
           continue;
         }
       }
@@ -405,8 +512,7 @@ export const DeleteShortcutRequest: MessageFns<DeleteShortcutRequest> = {
   },
   fromPartial(object: DeepPartial<DeleteShortcutRequest>): DeleteShortcutRequest {
     const message = createBaseDeleteShortcutRequest();
-    message.parent = object.parent ?? "";
-    message.id = object.id ?? "";
+    message.name = object.name ?? "";
     return message;
   },
 };
@@ -465,6 +571,60 @@ export const ShortcutServiceDefinition = {
               117,
               116,
               115,
+            ]),
+          ],
+        },
+      },
+    },
+    /** GetShortcut gets a shortcut by name. */
+    getShortcut: {
+      name: "GetShortcut",
+      requestType: GetShortcutRequest,
+      requestStream: false,
+      responseType: Shortcut,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          8410: [new Uint8Array([4, 110, 97, 109, 101])],
+          578365826: [
+            new Uint8Array([
+              36,
+              18,
+              34,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              123,
+              110,
+              97,
+              109,
+              101,
+              61,
+              117,
+              115,
+              101,
+              114,
+              115,
+              47,
+              42,
+              47,
+              115,
+              104,
+              111,
+              114,
+              116,
+              99,
+              117,
+              116,
+              115,
+              47,
+              42,
+              125,
             ]),
           ],
         },
@@ -545,14 +705,7 @@ export const ShortcutServiceDefinition = {
         _unknownFields: {
           8410: [
             new Uint8Array([
-              27,
-              112,
-              97,
-              114,
-              101,
-              110,
-              116,
-              44,
+              20,
               115,
               104,
               111,
@@ -577,7 +730,7 @@ export const ShortcutServiceDefinition = {
           ],
           578365826: [
             new Uint8Array([
-              60,
+              55,
               58,
               8,
               115,
@@ -589,7 +742,7 @@ export const ShortcutServiceDefinition = {
               117,
               116,
               50,
-              48,
+              43,
               47,
               97,
               112,
@@ -597,33 +750,6 @@ export const ShortcutServiceDefinition = {
               47,
               118,
               49,
-              47,
-              123,
-              112,
-              97,
-              114,
-              101,
-              110,
-              116,
-              61,
-              117,
-              115,
-              101,
-              114,
-              115,
-              47,
-              42,
-              125,
-              47,
-              115,
-              104,
-              111,
-              114,
-              116,
-              99,
-              117,
-              116,
-              115,
               47,
               123,
               115,
@@ -635,8 +761,30 @@ export const ShortcutServiceDefinition = {
               117,
               116,
               46,
-              105,
-              100,
+              110,
+              97,
+              109,
+              101,
+              61,
+              117,
+              115,
+              101,
+              114,
+              115,
+              47,
+              42,
+              47,
+              115,
+              104,
+              111,
+              114,
+              116,
+              99,
+              117,
+              116,
+              115,
+              47,
+              42,
               125,
             ]),
           ],
@@ -652,12 +800,12 @@ export const ShortcutServiceDefinition = {
       responseStream: false,
       options: {
         _unknownFields: {
-          8410: [new Uint8Array([9, 112, 97, 114, 101, 110, 116, 44, 105, 100])],
+          8410: [new Uint8Array([4, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              41,
+              36,
               42,
-              39,
+              34,
               47,
               97,
               112,
@@ -667,12 +815,10 @@ export const ShortcutServiceDefinition = {
               49,
               47,
               123,
-              112,
-              97,
-              114,
-              101,
               110,
-              116,
+              97,
+              109,
+              101,
               61,
               117,
               115,
@@ -681,7 +827,6 @@ export const ShortcutServiceDefinition = {
               115,
               47,
               42,
-              125,
               47,
               115,
               104,
@@ -693,9 +838,7 @@ export const ShortcutServiceDefinition = {
               116,
               115,
               47,
-              123,
-              105,
-              100,
+              42,
               125,
             ]),
           ],

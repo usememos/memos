@@ -1,6 +1,7 @@
 package sqlite
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/pkg/errors"
@@ -56,4 +57,14 @@ func (d *DB) GetDB() *sql.DB {
 
 func (d *DB) Close() error {
 	return d.db.Close()
+}
+
+func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
+	// Check if the database is initialized by checking if the memo table exists.
+	var exists bool
+	err := d.db.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='memo')").Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "failed to check if database is initialized")
+	}
+	return exists, nil
 }

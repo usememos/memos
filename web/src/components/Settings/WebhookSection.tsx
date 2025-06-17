@@ -3,39 +3,35 @@ import { ExternalLinkIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { webhookServiceClient } from "@/grpcweb";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { Webhook } from "@/types/proto/api/v1/webhook_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateWebhookDialog from "../CreateWebhookDialog";
 
-const listWebhooks = async (user: string) => {
-  const { webhooks } = await webhookServiceClient.listWebhooks({
-    creator: user,
-  });
+const listWebhooks = async () => {
+  const { webhooks } = await webhookServiceClient.listWebhooks({});
   return webhooks;
 };
 
 const WebhookSection = () => {
   const t = useTranslate();
-  const currentUser = useCurrentUser();
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
 
   useEffect(() => {
-    listWebhooks(currentUser.name).then((webhooks) => {
+    listWebhooks().then((webhooks) => {
       setWebhooks(webhooks);
     });
   }, []);
 
   const handleCreateAccessTokenDialogConfirm = async () => {
-    const webhooks = await listWebhooks(currentUser.name);
+    const webhooks = await listWebhooks();
     setWebhooks(webhooks);
   };
 
   const handleDeleteWebhook = async (webhook: Webhook) => {
-    const confirmed = window.confirm(`Are you sure to delete webhook \`${webhook.name}\`? You cannot undo this action.`);
+    const confirmed = window.confirm(`Are you sure to delete webhook \`${webhook.displayName}\`? You cannot undo this action.`);
     if (confirmed) {
-      await webhookServiceClient.deleteWebhook({ id: webhook.id });
-      setWebhooks(webhooks.filter((item) => item.id !== webhook.id));
+      await webhookServiceClient.deleteWebhook({ name: webhook.name });
+      setWebhooks(webhooks.filter((item) => item.name !== webhook.name));
     }
   };
 
@@ -77,8 +73,8 @@ const WebhookSection = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
                 {webhooks.map((webhook) => (
-                  <tr key={webhook.id}>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400">{webhook.name}</td>
+                  <tr key={webhook.name}>
+                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400">{webhook.displayName}</td>
                     <td className="max-w-[200px] px-3 py-2 text-sm text-gray-900 dark:text-gray-400 truncate" title={webhook.url}>
                       {webhook.url}
                     </td>

@@ -9,9 +9,16 @@ import memoFilterStore from "@/store/v2/memoFilter";
 import { Direction, State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 
+// Helper function to extract shortcut ID from resource name
+// Format: users/{user}/shortcuts/{shortcut}
+const getShortcutId = (name: string): string => {
+  const parts = name.split("/");
+  return parts.length === 4 ? parts[3] : "";
+};
+
 const Home = observer(() => {
   const user = useCurrentUser();
-  const selectedShortcut = userStore.state.shortcuts.find((shortcut) => shortcut.id === memoFilterStore.shortcut);
+  const selectedShortcut = userStore.state.shortcuts.find((shortcut) => getShortcutId(shortcut.name) === memoFilterStore.shortcut);
 
   const memoListFilter = useMemo(() => {
     const conditions = [];

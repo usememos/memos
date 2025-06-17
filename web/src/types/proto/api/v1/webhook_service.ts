@@ -9,82 +9,199 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Empty } from "../../google/protobuf/empty";
 import { FieldMask } from "../../google/protobuf/field_mask";
 import { Timestamp } from "../../google/protobuf/timestamp";
+import { State, stateFromJSON, stateToNumber } from "./common";
 import { Memo } from "./memo_service";
 
 export const protobufPackage = "memos.api.v1";
 
 export interface Webhook {
-  id: number;
-  /** The name of the creator. */
-  creator: string;
-  createTime?: Date | undefined;
-  updateTime?: Date | undefined;
-  name: string;
-  url: string;
-}
-
-export interface CreateWebhookRequest {
-  name: string;
-  url: string;
-}
-
-export interface GetWebhookRequest {
-  id: number;
-}
-
-export interface ListWebhooksRequest {
-  /** The name of the creator. */
-  creator: string;
-}
-
-export interface ListWebhooksResponse {
-  webhooks: Webhook[];
-}
-
-export interface UpdateWebhookRequest {
-  webhook?: Webhook | undefined;
-  updateMask?: string[] | undefined;
-}
-
-export interface DeleteWebhookRequest {
-  id: number;
-}
-
-export interface WebhookRequestPayload {
-  url: string;
-  activityType: string;
   /**
-   * The name of the creator.
+   * The resource name of the webhook.
+   * Format: webhooks/{webhook}
+   */
+  name: string;
+  /** Output only. The system generated unique identifier. */
+  uid: string;
+  /** Required. The display name of the webhook. */
+  displayName: string;
+  /** Required. The target URL for the webhook. */
+  url: string;
+  /**
+   * Output only. The resource name of the creator.
    * Format: users/{user}
    */
   creator: string;
-  createTime?: Date | undefined;
+  /** The state of the webhook. */
+  state: State;
+  /** Output only. The creation timestamp. */
+  createTime?:
+    | Date
+    | undefined;
+  /** Output only. The last update timestamp. */
+  updateTime?:
+    | Date
+    | undefined;
+  /** Output only. The etag for this resource. */
+  etag: string;
+}
+
+export interface ListWebhooksRequest {
+  /**
+   * Optional. The maximum number of webhooks to return.
+   * The service may return fewer than this value.
+   * If unspecified, at most 50 webhooks will be returned.
+   * The maximum value is 1000; values above 1000 will be coerced to 1000.
+   */
+  pageSize: number;
+  /**
+   * Optional. A page token, received from a previous `ListWebhooks` call.
+   * Provide this to retrieve the subsequent page.
+   */
+  pageToken: string;
+  /**
+   * Optional. Filter to apply to the list results.
+   * Example: "state=ACTIVE" or "creator=users/123"
+   * Supported operators: =, !=, <, <=, >, >=, :
+   * Supported fields: display_name, url, creator, state, create_time, update_time
+   */
+  filter: string;
+  /**
+   * Optional. The order to sort results by.
+   * Example: "create_time desc" or "display_name asc"
+   */
+  orderBy: string;
+  /** Optional. If true, show deleted webhooks in the response. */
+  showDeleted: boolean;
+}
+
+export interface ListWebhooksResponse {
+  /** The list of webhooks. */
+  webhooks: Webhook[];
+  /**
+   * A token that can be sent as `page_token` to retrieve the next page.
+   * If this field is omitted, there are no subsequent pages.
+   */
+  nextPageToken: string;
+  /** The total count of webhooks (may be approximate). */
+  totalSize: number;
+}
+
+export interface GetWebhookRequest {
+  /**
+   * Required. The resource name of the webhook.
+   * Format: webhooks/{webhook}
+   */
+  name: string;
+  /**
+   * Optional. The fields to return in the response.
+   * If not specified, all fields are returned.
+   */
+  readMask?: string[] | undefined;
+}
+
+export interface CreateWebhookRequest {
+  /** Required. The webhook to create. */
+  webhook?:
+    | Webhook
+    | undefined;
+  /**
+   * Optional. The webhook ID to use for this webhook.
+   * If empty, a unique ID will be generated.
+   * Must match the pattern [a-z0-9-]+
+   */
+  webhookId: string;
+  /** Optional. If set, validate the request but don't actually create the webhook. */
+  validateOnly: boolean;
+  /**
+   * Optional. An idempotency token that can be used to ensure that multiple
+   * requests to create a webhook have the same result.
+   */
+  requestId: string;
+}
+
+export interface UpdateWebhookRequest {
+  /** Required. The webhook to update. */
+  webhook?:
+    | Webhook
+    | undefined;
+  /** Required. The list of fields to update. */
+  updateMask?:
+    | string[]
+    | undefined;
+  /** Optional. If set to true, allows updating sensitive fields. */
+  allowMissing: boolean;
+}
+
+export interface DeleteWebhookRequest {
+  /**
+   * Required. The resource name of the webhook to delete.
+   * Format: webhooks/{webhook}
+   */
+  name: string;
+  /** Optional. If set to true, the webhook will be deleted even if it has associated data. */
+  force: boolean;
+}
+
+export interface WebhookRequestPayload {
+  /** The target URL for the webhook request. */
+  url: string;
+  /** The type of activity that triggered this webhook. */
+  activityType: string;
+  /**
+   * The resource name of the creator.
+   * Format: users/{user}
+   */
+  creator: string;
+  /** The creation timestamp of the activity. */
+  createTime?:
+    | Date
+    | undefined;
+  /** The memo that triggered this webhook (if applicable). */
   memo?: Memo | undefined;
 }
 
 function createBaseWebhook(): Webhook {
-  return { id: 0, creator: "", createTime: undefined, updateTime: undefined, name: "", url: "" };
+  return {
+    name: "",
+    uid: "",
+    displayName: "",
+    url: "",
+    creator: "",
+    state: State.STATE_UNSPECIFIED,
+    createTime: undefined,
+    updateTime: undefined,
+    etag: "",
+  };
 }
 
 export const Webhook: MessageFns<Webhook> = {
   encode(message: Webhook, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
-    }
-    if (message.creator !== "") {
-      writer.uint32(18).string(message.creator);
-    }
-    if (message.createTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(26).fork()).join();
-    }
-    if (message.updateTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.updateTime), writer.uint32(34).fork()).join();
-    }
     if (message.name !== "") {
-      writer.uint32(42).string(message.name);
+      writer.uint32(10).string(message.name);
+    }
+    if (message.uid !== "") {
+      writer.uint32(18).string(message.uid);
+    }
+    if (message.displayName !== "") {
+      writer.uint32(26).string(message.displayName);
     }
     if (message.url !== "") {
-      writer.uint32(50).string(message.url);
+      writer.uint32(34).string(message.url);
+    }
+    if (message.creator !== "") {
+      writer.uint32(42).string(message.creator);
+    }
+    if (message.state !== State.STATE_UNSPECIFIED) {
+      writer.uint32(48).int32(stateToNumber(message.state));
+    }
+    if (message.createTime !== undefined) {
+      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(58).fork()).join();
+    }
+    if (message.updateTime !== undefined) {
+      Timestamp.encode(toTimestamp(message.updateTime), writer.uint32(66).fork()).join();
+    }
+    if (message.etag !== "") {
+      writer.uint32(74).string(message.etag);
     }
     return writer;
   },
@@ -93,100 +210,6 @@ export const Webhook: MessageFns<Webhook> = {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWebhook();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.id = reader.int32();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.creator = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.updateTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.url = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<Webhook>): Webhook {
-    return Webhook.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<Webhook>): Webhook {
-    const message = createBaseWebhook();
-    message.id = object.id ?? 0;
-    message.creator = object.creator ?? "";
-    message.createTime = object.createTime ?? undefined;
-    message.updateTime = object.updateTime ?? undefined;
-    message.name = object.name ?? "";
-    message.url = object.url ?? "";
-    return message;
-  },
-};
-
-function createBaseCreateWebhookRequest(): CreateWebhookRequest {
-  return { name: "", url: "" };
-}
-
-export const CreateWebhookRequest: MessageFns<CreateWebhookRequest> = {
-  encode(message: CreateWebhookRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
-    }
-    if (message.url !== "") {
-      writer.uint32(18).string(message.url);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): CreateWebhookRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreateWebhookRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -203,54 +226,63 @@ export const CreateWebhookRequest: MessageFns<CreateWebhookRequest> = {
             break;
           }
 
-          message.url = reader.string();
+          message.uid = reader.string();
           continue;
         }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<CreateWebhookRequest>): CreateWebhookRequest {
-    return CreateWebhookRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<CreateWebhookRequest>): CreateWebhookRequest {
-    const message = createBaseCreateWebhookRequest();
-    message.name = object.name ?? "";
-    message.url = object.url ?? "";
-    return message;
-  },
-};
-
-function createBaseGetWebhookRequest(): GetWebhookRequest {
-  return { id: 0 };
-}
-
-export const GetWebhookRequest: MessageFns<GetWebhookRequest> = {
-  encode(message: GetWebhookRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetWebhookRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetWebhookRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
+        case 3: {
+          if (tag !== 26) {
             break;
           }
 
-          message.id = reader.int32();
+          message.displayName = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.creator = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.state = stateFromJSON(reader.int32());
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.updateTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 9: {
+          if (tag !== 74) {
+            break;
+          }
+
+          message.etag = reader.string();
           continue;
         }
       }
@@ -262,24 +294,44 @@ export const GetWebhookRequest: MessageFns<GetWebhookRequest> = {
     return message;
   },
 
-  create(base?: DeepPartial<GetWebhookRequest>): GetWebhookRequest {
-    return GetWebhookRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<Webhook>): Webhook {
+    return Webhook.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<GetWebhookRequest>): GetWebhookRequest {
-    const message = createBaseGetWebhookRequest();
-    message.id = object.id ?? 0;
+  fromPartial(object: DeepPartial<Webhook>): Webhook {
+    const message = createBaseWebhook();
+    message.name = object.name ?? "";
+    message.uid = object.uid ?? "";
+    message.displayName = object.displayName ?? "";
+    message.url = object.url ?? "";
+    message.creator = object.creator ?? "";
+    message.state = object.state ?? State.STATE_UNSPECIFIED;
+    message.createTime = object.createTime ?? undefined;
+    message.updateTime = object.updateTime ?? undefined;
+    message.etag = object.etag ?? "";
     return message;
   },
 };
 
 function createBaseListWebhooksRequest(): ListWebhooksRequest {
-  return { creator: "" };
+  return { pageSize: 0, pageToken: "", filter: "", orderBy: "", showDeleted: false };
 }
 
 export const ListWebhooksRequest: MessageFns<ListWebhooksRequest> = {
   encode(message: ListWebhooksRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.creator !== "") {
-      writer.uint32(18).string(message.creator);
+    if (message.pageSize !== 0) {
+      writer.uint32(8).int32(message.pageSize);
+    }
+    if (message.pageToken !== "") {
+      writer.uint32(18).string(message.pageToken);
+    }
+    if (message.filter !== "") {
+      writer.uint32(26).string(message.filter);
+    }
+    if (message.orderBy !== "") {
+      writer.uint32(34).string(message.orderBy);
+    }
+    if (message.showDeleted !== false) {
+      writer.uint32(40).bool(message.showDeleted);
     }
     return writer;
   },
@@ -291,12 +343,44 @@ export const ListWebhooksRequest: MessageFns<ListWebhooksRequest> = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.pageSize = reader.int32();
+          continue;
+        }
         case 2: {
           if (tag !== 18) {
             break;
           }
 
-          message.creator = reader.string();
+          message.pageToken = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.filter = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.orderBy = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.showDeleted = reader.bool();
           continue;
         }
       }
@@ -313,19 +397,29 @@ export const ListWebhooksRequest: MessageFns<ListWebhooksRequest> = {
   },
   fromPartial(object: DeepPartial<ListWebhooksRequest>): ListWebhooksRequest {
     const message = createBaseListWebhooksRequest();
-    message.creator = object.creator ?? "";
+    message.pageSize = object.pageSize ?? 0;
+    message.pageToken = object.pageToken ?? "";
+    message.filter = object.filter ?? "";
+    message.orderBy = object.orderBy ?? "";
+    message.showDeleted = object.showDeleted ?? false;
     return message;
   },
 };
 
 function createBaseListWebhooksResponse(): ListWebhooksResponse {
-  return { webhooks: [] };
+  return { webhooks: [], nextPageToken: "", totalSize: 0 };
 }
 
 export const ListWebhooksResponse: MessageFns<ListWebhooksResponse> = {
   encode(message: ListWebhooksResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.webhooks) {
       Webhook.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.nextPageToken !== "") {
+      writer.uint32(18).string(message.nextPageToken);
+    }
+    if (message.totalSize !== 0) {
+      writer.uint32(24).int32(message.totalSize);
     }
     return writer;
   },
@@ -345,6 +439,22 @@ export const ListWebhooksResponse: MessageFns<ListWebhooksResponse> = {
           message.webhooks.push(Webhook.decode(reader, reader.uint32()));
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.nextPageToken = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.totalSize = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -360,12 +470,156 @@ export const ListWebhooksResponse: MessageFns<ListWebhooksResponse> = {
   fromPartial(object: DeepPartial<ListWebhooksResponse>): ListWebhooksResponse {
     const message = createBaseListWebhooksResponse();
     message.webhooks = object.webhooks?.map((e) => Webhook.fromPartial(e)) || [];
+    message.nextPageToken = object.nextPageToken ?? "";
+    message.totalSize = object.totalSize ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetWebhookRequest(): GetWebhookRequest {
+  return { name: "", readMask: undefined };
+}
+
+export const GetWebhookRequest: MessageFns<GetWebhookRequest> = {
+  encode(message: GetWebhookRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.readMask !== undefined) {
+      FieldMask.encode(FieldMask.wrap(message.readMask), writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetWebhookRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetWebhookRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.readMask = FieldMask.unwrap(FieldMask.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<GetWebhookRequest>): GetWebhookRequest {
+    return GetWebhookRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<GetWebhookRequest>): GetWebhookRequest {
+    const message = createBaseGetWebhookRequest();
+    message.name = object.name ?? "";
+    message.readMask = object.readMask ?? undefined;
+    return message;
+  },
+};
+
+function createBaseCreateWebhookRequest(): CreateWebhookRequest {
+  return { webhook: undefined, webhookId: "", validateOnly: false, requestId: "" };
+}
+
+export const CreateWebhookRequest: MessageFns<CreateWebhookRequest> = {
+  encode(message: CreateWebhookRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.webhook !== undefined) {
+      Webhook.encode(message.webhook, writer.uint32(10).fork()).join();
+    }
+    if (message.webhookId !== "") {
+      writer.uint32(18).string(message.webhookId);
+    }
+    if (message.validateOnly !== false) {
+      writer.uint32(24).bool(message.validateOnly);
+    }
+    if (message.requestId !== "") {
+      writer.uint32(34).string(message.requestId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateWebhookRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateWebhookRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.webhook = Webhook.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.webhookId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.validateOnly = reader.bool();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.requestId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<CreateWebhookRequest>): CreateWebhookRequest {
+    return CreateWebhookRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<CreateWebhookRequest>): CreateWebhookRequest {
+    const message = createBaseCreateWebhookRequest();
+    message.webhook = (object.webhook !== undefined && object.webhook !== null)
+      ? Webhook.fromPartial(object.webhook)
+      : undefined;
+    message.webhookId = object.webhookId ?? "";
+    message.validateOnly = object.validateOnly ?? false;
+    message.requestId = object.requestId ?? "";
     return message;
   },
 };
 
 function createBaseUpdateWebhookRequest(): UpdateWebhookRequest {
-  return { webhook: undefined, updateMask: undefined };
+  return { webhook: undefined, updateMask: undefined, allowMissing: false };
 }
 
 export const UpdateWebhookRequest: MessageFns<UpdateWebhookRequest> = {
@@ -375,6 +629,9 @@ export const UpdateWebhookRequest: MessageFns<UpdateWebhookRequest> = {
     }
     if (message.updateMask !== undefined) {
       FieldMask.encode(FieldMask.wrap(message.updateMask), writer.uint32(18).fork()).join();
+    }
+    if (message.allowMissing !== false) {
+      writer.uint32(24).bool(message.allowMissing);
     }
     return writer;
   },
@@ -402,6 +659,14 @@ export const UpdateWebhookRequest: MessageFns<UpdateWebhookRequest> = {
           message.updateMask = FieldMask.unwrap(FieldMask.decode(reader, reader.uint32()));
           continue;
         }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.allowMissing = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -420,18 +685,22 @@ export const UpdateWebhookRequest: MessageFns<UpdateWebhookRequest> = {
       ? Webhook.fromPartial(object.webhook)
       : undefined;
     message.updateMask = object.updateMask ?? undefined;
+    message.allowMissing = object.allowMissing ?? false;
     return message;
   },
 };
 
 function createBaseDeleteWebhookRequest(): DeleteWebhookRequest {
-  return { id: 0 };
+  return { name: "", force: false };
 }
 
 export const DeleteWebhookRequest: MessageFns<DeleteWebhookRequest> = {
   encode(message: DeleteWebhookRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.force !== false) {
+      writer.uint32(16).bool(message.force);
     }
     return writer;
   },
@@ -444,11 +713,19 @@ export const DeleteWebhookRequest: MessageFns<DeleteWebhookRequest> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.id = reader.int32();
+          message.name = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.force = reader.bool();
           continue;
         }
       }
@@ -465,7 +742,8 @@ export const DeleteWebhookRequest: MessageFns<DeleteWebhookRequest> = {
   },
   fromPartial(object: DeepPartial<DeleteWebhookRequest>): DeleteWebhookRequest {
     const message = createBaseDeleteWebhookRequest();
-    message.id = object.id ?? 0;
+    message.name = object.name ?? "";
+    message.force = object.force ?? false;
     return message;
   },
 };
@@ -569,6 +847,66 @@ export const WebhookServiceDefinition = {
   name: "WebhookService",
   fullName: "memos.api.v1.WebhookService",
   methods: {
+    /** ListWebhooks returns a list of webhooks. */
+    listWebhooks: {
+      name: "ListWebhooks",
+      requestType: ListWebhooksRequest,
+      requestStream: false,
+      responseType: ListWebhooksResponse,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          578365826: [
+            new Uint8Array([18, 18, 16, 47, 97, 112, 105, 47, 118, 49, 47, 119, 101, 98, 104, 111, 111, 107, 115]),
+          ],
+        },
+      },
+    },
+    /** GetWebhook gets a webhook by name. */
+    getWebhook: {
+      name: "GetWebhook",
+      requestType: GetWebhookRequest,
+      requestStream: false,
+      responseType: Webhook,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          8410: [new Uint8Array([4, 110, 97, 109, 101])],
+          578365826: [
+            new Uint8Array([
+              27,
+              18,
+              25,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              123,
+              110,
+              97,
+              109,
+              101,
+              61,
+              119,
+              101,
+              98,
+              104,
+              111,
+              111,
+              107,
+              115,
+              47,
+              42,
+              125,
+            ]),
+          ],
+        },
+      },
+    },
     /** CreateWebhook creates a new webhook. */
     createWebhook: {
       name: "CreateWebhook",
@@ -578,12 +916,19 @@ export const WebhookServiceDefinition = {
       responseStream: false,
       options: {
         _unknownFields: {
+          8410: [new Uint8Array([7, 119, 101, 98, 104, 111, 111, 107])],
           578365826: [
             new Uint8Array([
-              21,
+              27,
               58,
-              1,
-              42,
+              7,
+              119,
+              101,
+              98,
+              104,
+              111,
+              111,
+              107,
               34,
               16,
               47,
@@ -603,62 +948,6 @@ export const WebhookServiceDefinition = {
               107,
               115,
             ]),
-          ],
-        },
-      },
-    },
-    /** GetWebhook returns a webhook by id. */
-    getWebhook: {
-      name: "GetWebhook",
-      requestType: GetWebhookRequest,
-      requestStream: false,
-      responseType: Webhook,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          8410: [new Uint8Array([2, 105, 100])],
-          578365826: [
-            new Uint8Array([
-              23,
-              18,
-              21,
-              47,
-              97,
-              112,
-              105,
-              47,
-              118,
-              49,
-              47,
-              119,
-              101,
-              98,
-              104,
-              111,
-              111,
-              107,
-              115,
-              47,
-              123,
-              105,
-              100,
-              125,
-            ]),
-          ],
-        },
-      },
-    },
-    /** ListWebhooks returns a list of webhooks. */
-    listWebhooks: {
-      name: "ListWebhooks",
-      requestType: ListWebhooksRequest,
-      requestStream: false,
-      responseType: ListWebhooksResponse,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          578365826: [
-            new Uint8Array([18, 18, 16, 47, 97, 112, 105, 47, 118, 49, 47, 119, 101, 98, 104, 111, 111, 107, 115]),
           ],
         },
       },
@@ -698,7 +987,7 @@ export const WebhookServiceDefinition = {
           ],
           578365826: [
             new Uint8Array([
-              40,
+              44,
               58,
               7,
               119,
@@ -709,7 +998,7 @@ export const WebhookServiceDefinition = {
               111,
               107,
               50,
-              29,
+              33,
               47,
               97,
               112,
@@ -717,15 +1006,6 @@ export const WebhookServiceDefinition = {
               47,
               118,
               49,
-              47,
-              119,
-              101,
-              98,
-              104,
-              111,
-              111,
-              107,
-              115,
               47,
               123,
               119,
@@ -736,37 +1016,11 @@ export const WebhookServiceDefinition = {
               111,
               107,
               46,
-              105,
-              100,
-              125,
-            ]),
-          ],
-        },
-      },
-    },
-    /** DeleteWebhook deletes a webhook by id. */
-    deleteWebhook: {
-      name: "DeleteWebhook",
-      requestType: DeleteWebhookRequest,
-      requestStream: false,
-      responseType: Empty,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          8410: [new Uint8Array([2, 105, 100])],
-          578365826: [
-            new Uint8Array([
-              23,
-              42,
-              21,
-              47,
+              110,
               97,
-              112,
-              105,
-              47,
-              118,
-              49,
-              47,
+              109,
+              101,
+              61,
               119,
               101,
               98,
@@ -776,9 +1030,52 @@ export const WebhookServiceDefinition = {
               107,
               115,
               47,
-              123,
+              42,
+              125,
+            ]),
+          ],
+        },
+      },
+    },
+    /** DeleteWebhook deletes a webhook. */
+    deleteWebhook: {
+      name: "DeleteWebhook",
+      requestType: DeleteWebhookRequest,
+      requestStream: false,
+      responseType: Empty,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          8410: [new Uint8Array([4, 110, 97, 109, 101])],
+          578365826: [
+            new Uint8Array([
+              27,
+              42,
+              25,
+              47,
+              97,
+              112,
               105,
-              100,
+              47,
+              118,
+              49,
+              47,
+              123,
+              110,
+              97,
+              109,
+              101,
+              61,
+              119,
+              101,
+              98,
+              104,
+              111,
+              111,
+              107,
+              115,
+              47,
+              42,
               125,
             ]),
           ],

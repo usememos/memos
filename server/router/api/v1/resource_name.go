@@ -10,13 +10,14 @@ import (
 )
 
 const (
-	WorkspaceSettingNamePrefix = "settings/"
+	WorkspaceSettingNamePrefix = "workspace/settings/"
 	UserNamePrefix             = "users/"
 	MemoNamePrefix             = "memos/"
 	ResourceNamePrefix         = "resources/"
 	InboxNamePrefix            = "inboxes/"
 	IdentityProviderNamePrefix = "identityProviders/"
 	ActivityNamePrefix         = "activities/"
+	WebhookNamePrefix          = "webhooks/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -40,11 +41,22 @@ func GetNameParentTokens(name string, tokenPrefixes ...string) ([]string, error)
 }
 
 func ExtractWorkspaceSettingKeyFromName(name string) (string, error) {
-	tokens, err := GetNameParentTokens(name, WorkspaceSettingNamePrefix)
-	if err != nil {
-		return "", err
+	const prefix = "workspace/settings/"
+	if !strings.HasPrefix(name, prefix) {
+		return "", errors.Errorf("invalid workspace setting name: expected prefix %q, got %q", prefix, name)
 	}
-	return tokens[0], nil
+
+	settingKey := strings.TrimPrefix(name, prefix)
+	if settingKey == "" {
+		return "", errors.Errorf("invalid workspace setting name: empty setting key in %q", name)
+	}
+
+	// Ensure there are no additional path segments
+	if strings.Contains(settingKey, "/") {
+		return "", errors.Errorf("invalid workspace setting name: setting key cannot contain '/' in %q", name)
+	}
+
+	return settingKey, nil
 }
 
 // ExtractUserIDFromName returns the uid from a resource name.
@@ -114,6 +126,19 @@ func ExtractActivityIDFromName(name string) (int32, error) {
 	id, err := util.ConvertStringToInt32(tokens[0])
 	if err != nil {
 		return 0, errors.Errorf("invalid activity ID %q", tokens[0])
+	}
+	return id, nil
+}
+
+// ExtractWebhookIDFromName returns the webhook ID from a resource name.
+func ExtractWebhookIDFromName(name string) (int32, error) {
+	tokens, err := GetNameParentTokens(name, WebhookNamePrefix)
+	if err != nil {
+		return 0, err
+	}
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid webhook ID %q", tokens[0])
 	}
 	return id, nil
 }

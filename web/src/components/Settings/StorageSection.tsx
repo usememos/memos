@@ -13,7 +13,7 @@ import {
   WorkspaceStorageSetting,
   WorkspaceStorageSetting_S3Config,
   WorkspaceStorageSetting_StorageType,
-} from "@/types/proto/api/v1/workspace_setting_service";
+} from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 
 const StorageSection = observer(() => {

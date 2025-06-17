@@ -8,34 +8,34 @@ import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 
 interface Props extends DialogProps {
-  webhookId?: number;
+  webhookName?: string;
   onConfirm: () => void;
 }
 
 interface State {
-  name: string;
+  displayName: string;
   url: string;
 }
 
 const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
-  const { webhookId, destroy, onConfirm } = props;
+  const { webhookName, destroy, onConfirm } = props;
   const t = useTranslate();
   const [state, setState] = useState({
-    name: "",
+    displayName: "",
     url: "",
   });
   const requestState = useLoading(false);
-  const isCreating = webhookId === undefined;
+  const isCreating = webhookName === undefined;
 
   useEffect(() => {
-    if (webhookId) {
+    if (webhookName) {
       webhookServiceClient
         .getWebhook({
-          id: webhookId,
+          name: webhookName,
         })
         .then((webhook) => {
           setState({
-            name: webhook.name,
+            displayName: webhook.displayName,
             url: webhook.url,
           });
         });
@@ -51,7 +51,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
 
   const handleTitleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPartialState({
-      name: e.target.value,
+      displayName: e.target.value,
     });
   };
 
@@ -62,7 +62,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleSaveBtnClick = async () => {
-    if (!state.name || !state.url) {
+    if (!state.displayName || !state.url) {
       toast.error(t("message.fill-all-required-fields"));
       return;
     }
@@ -70,17 +70,19 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
     try {
       if (isCreating) {
         await webhookServiceClient.createWebhook({
-          name: state.name,
-          url: state.url,
+          webhook: {
+            displayName: state.displayName,
+            url: state.url,
+          },
         });
       } else {
         await webhookServiceClient.updateWebhook({
           webhook: {
-            id: webhookId,
-            name: state.name,
+            name: webhookName,
+            displayName: state.displayName,
             url: state.url,
           },
-          updateMask: ["name", "url"],
+          updateMask: ["display_name", "url"],
         });
       }
 
@@ -112,7 +114,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
               className="w-full"
               type="text"
               placeholder={t("setting.webhook-section.create-dialog.an-easy-to-remember-name")}
-              value={state.name}
+              value={state.displayName}
               onChange={handleTitleInputChange}
             />
           </div>

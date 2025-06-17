@@ -19,7 +19,7 @@ const MyAccountSection = () => {
         <UserAvatar className="mr-2 shrink-0 w-10 h-10" avatarUrl={user.avatarUrl} />
         <div className="max-w-[calc(100%-3rem)] flex flex-col justify-center items-start">
           <p className="w-full">
-            <span className="text-xl leading-tight font-medium">{user.nickname}</span>
+            <span className="text-xl leading-tight font-medium">{user.displayName}</span>
             <span className="ml-1 text-base leading-tight text-gray-500 dark:text-gray-400">({user.username})</span>
           </p>
           <p className="w-4/5 leading-tight text-sm truncate">{user.description}</p>

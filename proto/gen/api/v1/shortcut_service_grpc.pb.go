@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	ShortcutService_ListShortcuts_FullMethodName  = "/memos.api.v1.ShortcutService/ListShortcuts"
+	ShortcutService_GetShortcut_FullMethodName    = "/memos.api.v1.ShortcutService/GetShortcut"
 	ShortcutService_CreateShortcut_FullMethodName = "/memos.api.v1.ShortcutService/CreateShortcut"
 	ShortcutService_UpdateShortcut_FullMethodName = "/memos.api.v1.ShortcutService/UpdateShortcut"
 	ShortcutService_DeleteShortcut_FullMethodName = "/memos.api.v1.ShortcutService/DeleteShortcut"
@@ -32,6 +33,8 @@ const (
 type ShortcutServiceClient interface {
 	// ListShortcuts returns a list of shortcuts for a user.
 	ListShortcuts(ctx context.Context, in *ListShortcutsRequest, opts ...grpc.CallOption) (*ListShortcutsResponse, error)
+	// GetShortcut gets a shortcut by name.
+	GetShortcut(ctx context.Context, in *GetShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error)
 	// CreateShortcut creates a new shortcut for a user.
 	CreateShortcut(ctx context.Context, in *CreateShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error)
 	// UpdateShortcut updates a shortcut for a user.
@@ -52,6 +55,16 @@ func (c *shortcutServiceClient) ListShortcuts(ctx context.Context, in *ListShort
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListShortcutsResponse)
 	err := c.cc.Invoke(ctx, ShortcutService_ListShortcuts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *shortcutServiceClient) GetShortcut(ctx context.Context, in *GetShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Shortcut)
+	err := c.cc.Invoke(ctx, ShortcutService_GetShortcut_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,6 +107,8 @@ func (c *shortcutServiceClient) DeleteShortcut(ctx context.Context, in *DeleteSh
 type ShortcutServiceServer interface {
 	// ListShortcuts returns a list of shortcuts for a user.
 	ListShortcuts(context.Context, *ListShortcutsRequest) (*ListShortcutsResponse, error)
+	// GetShortcut gets a shortcut by name.
+	GetShortcut(context.Context, *GetShortcutRequest) (*Shortcut, error)
 	// CreateShortcut creates a new shortcut for a user.
 	CreateShortcut(context.Context, *CreateShortcutRequest) (*Shortcut, error)
 	// UpdateShortcut updates a shortcut for a user.
@@ -112,6 +127,9 @@ type UnimplementedShortcutServiceServer struct{}
 
 func (UnimplementedShortcutServiceServer) ListShortcuts(context.Context, *ListShortcutsRequest) (*ListShortcutsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListShortcuts not implemented")
+}
+func (UnimplementedShortcutServiceServer) GetShortcut(context.Context, *GetShortcutRequest) (*Shortcut, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetShortcut not implemented")
 }
 func (UnimplementedShortcutServiceServer) CreateShortcut(context.Context, *CreateShortcutRequest) (*Shortcut, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateShortcut not implemented")
@@ -157,6 +175,24 @@ func _ShortcutService_ListShortcuts_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ShortcutServiceServer).ListShortcuts(ctx, req.(*ListShortcutsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ShortcutService_GetShortcut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetShortcutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShortcutServiceServer).GetShortcut(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ShortcutService_GetShortcut_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShortcutServiceServer).GetShortcut(ctx, req.(*GetShortcutRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -225,6 +261,10 @@ var ShortcutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListShortcuts",
 			Handler:    _ShortcutService_ListShortcuts_Handler,
+		},
+		{
+			MethodName: "GetShortcut",
+			Handler:    _ShortcutService_GetShortcut_Handler,
 		},
 		{
 			MethodName: "CreateShortcut",
