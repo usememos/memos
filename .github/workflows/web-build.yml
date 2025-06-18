@@ -1,51 +1,61 @@
 # .github/workflows/web-build.yml
-name: Memos Web Build
+name: Memos Web Production Build
 
 on:
   push:
     branches: [ "main" ]
-    paths: 
+    paths:
       - 'web/**'
-      - '.github/workflows/web-build.yml'
+  pull_request:
+    paths:
+      - 'web/**'
   workflow_dispatch:
+
+env:
+  NODE_VERSION: 20
+  YARN_VERSION: 3.6.3
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    env:
-      NODE_VERSION: '20'
-      WORKING_DIRECTORY: 'web'
+    timeout-minutes: 15
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        fetch-depth: 2
+        persist-credentials: false
 
-    - name: Set up Node.js ${{ env.NODE_VERSION }}
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'yarn'
 
-    - name: Install dependencies
-      working-directory: ${{ env.WORKING_DIRECTORY }}
-      run: |
-        yarn install --pure-lockfile --network-timeout 300000
-        yarn cache list
+    - name: Install Yarn
+      run: npm install -g yarn@${{ env.YARN_VERSION }}
 
-    - name: Build production assets
-      working-directory: ${{ env.WORKING_DIRECTORY }}
+    - name: Install dependencies
+      working-directory: web
       run: |
-        yarn build
+        yarn set version ${{ env.YARN_VERSION }}
+        yarn config set network-timeout 600000 -g
+        yarn install --immutable --inline-builds
+        echo "Dependencies installed successfully"
+
+    - name: Build production bundle
+      working-directory: web
+      run: |
+        yarn build --mode production
+        echo "Build completed. Directory contents:"
         ls -lh dist/
 
     - name: Upload artifact
+      if: success()
       uses: actions/upload-artifact@v4
       with:
-        name: memos-web-build
-        path: ${{ env.WORKING_DIRECTORY }}/dist/
-        retention-days: 5
-        if-no-files-found: error
+        name: memos-web-assets
+        path: web/dist/**/*
+        retention-days: 3
+        compression-level: 9
