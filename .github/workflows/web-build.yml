@@ -1,4 +1,4 @@
-# 创建文件路径: .github/workflows/web-build.yml
+# 更新路径: .github/workflows/web-build.yml
 name: Build Web Assets
 
 on:
@@ -8,30 +8,40 @@ on:
     paths:
       - 'web/**'
       - '.github/workflows/web-build.yml'
+  workflow_dispatch: # 添加手动触发选项
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15 # 设置超时时间
     
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20' # 更新到Node.js 20
+        cache: 'yarn' # 添加自动缓存
     
     - name: Install dependencies
       working-directory: web
-      run: npm install -g yarn && yarn install
+      run: yarn install --frozen-lockfile
     
     - name: Build production assets
       working-directory: web
       run: yarn build
     
-    - name: Archive production build
-      uses: actions/upload-artifact@v3
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4 # 使用最新版本v4
       with:
         name: web-build
         path: web/dist/
-        retention-days: 5
+        retention-days: 7 # 延长保留天数
+        compression-level: 6 # 优化压缩级别
+        if-no-files-found: error # 如果没找到文件则报错
+
+    - name: Show artifact size
+      run: |
+        echo "Build directory contents:"
+        du -sh web/dist/*
