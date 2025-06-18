@@ -36,7 +36,7 @@ const getAdditionalClassNameWithParams = (params: URLSearchParams) => {
   return additionalClassNames.join(" ");
 };
 
-const EmbeddedResource = observer(({ resourceId: uid, params: paramsStr }: Props) => {
+const EmbeddedAttachment = observer(({ resourceId: uid, params: paramsStr }: Props) => {
   const loadingState = useLoading();
   const attachment = attachmentStore.getAttachmentByName(uid);
   const params = new URLSearchParams(paramsStr);
@@ -59,4 +59,4 @@ const EmbeddedResource = observer(({ resourceId: uid, params: paramsStr }: Props
   );
 });
 
-export default EmbeddedResource;
+export default EmbeddedAttachment;
