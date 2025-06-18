@@ -25,12 +25,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Status enumeration for inbox notifications.
 type Inbox_Status int32
 
 const (
+	// Unspecified status.
 	Inbox_STATUS_UNSPECIFIED Inbox_Status = 0
-	Inbox_UNREAD             Inbox_Status = 1
-	Inbox_ARCHIVED           Inbox_Status = 2
+	// The notification is unread.
+	Inbox_UNREAD Inbox_Status = 1
+	// The notification is archived.
+	Inbox_ARCHIVED Inbox_Status = 2
 )
 
 // Enum value maps for Inbox_Status.
@@ -74,12 +78,16 @@ func (Inbox_Status) EnumDescriptor() ([]byte, []int) {
 	return file_api_v1_inbox_service_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// Type enumeration for inbox notifications.
 type Inbox_Type int32
 
 const (
+	// Unspecified type.
 	Inbox_TYPE_UNSPECIFIED Inbox_Type = 0
-	Inbox_MEMO_COMMENT     Inbox_Type = 1
-	Inbox_VERSION_UPDATE   Inbox_Type = 2
+	// Memo comment notification.
+	Inbox_MEMO_COMMENT Inbox_Type = 1
+	// Version update notification.
+	Inbox_VERSION_UPDATE Inbox_Type = 2
 )
 
 // Enum value maps for Inbox_Type.
@@ -125,17 +133,23 @@ func (Inbox_Type) EnumDescriptor() ([]byte, []int) {
 
 type Inbox struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the inbox.
-	// Format: inboxes/{id}, id is the system generated auto-incremented id.
+	// The resource name of the inbox.
+	// Format: inboxes/{inbox}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// The sender of the inbox notification.
 	// Format: users/{user}
 	Sender string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
+	// The receiver of the inbox notification.
 	// Format: users/{user}
-	Receiver      string                 `protobuf:"bytes,3,opt,name=receiver,proto3" json:"receiver,omitempty"`
-	Status        Inbox_Status           `protobuf:"varint,4,opt,name=status,proto3,enum=memos.api.v1.Inbox_Status" json:"status,omitempty"`
-	CreateTime    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	Type          Inbox_Type             `protobuf:"varint,6,opt,name=type,proto3,enum=memos.api.v1.Inbox_Type" json:"type,omitempty"`
-	ActivityId    *int32                 `protobuf:"varint,7,opt,name=activity_id,json=activityId,proto3,oneof" json:"activity_id,omitempty"`
+	Receiver string `protobuf:"bytes,3,opt,name=receiver,proto3" json:"receiver,omitempty"`
+	// The status of the inbox notification.
+	Status Inbox_Status `protobuf:"varint,4,opt,name=status,proto3,enum=memos.api.v1.Inbox_Status" json:"status,omitempty"`
+	// Output only. The creation timestamp.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// The type of the inbox notification.
+	Type Inbox_Type `protobuf:"varint,6,opt,name=type,proto3,enum=memos.api.v1.Inbox_Type" json:"type,omitempty"`
+	// Optional. The activity ID associated with this inbox notification.
+	ActivityId    *int32 `protobuf:"varint,7,opt,name=activity_id,json=activityId,proto3,oneof" json:"activity_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -221,12 +235,25 @@ func (x *Inbox) GetActivityId() int32 {
 
 type ListInboxesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent resource whose inboxes will be listed.
 	// Format: users/{user}
-	User string `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	// The maximum number of inbox to return.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. The maximum number of inboxes to return.
+	// The service may return fewer than this value.
+	// If unspecified, at most 50 inboxes will be returned.
+	// The maximum value is 1000; values above 1000 will be coerced to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token, received from a previous `ListInboxes` call.
 	// Provide this to retrieve the subsequent page.
-	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. Filter to apply to the list results.
+	// Example: "status=UNREAD" or "type=MEMO_COMMENT"
+	// Supported operators: =, !=
+	// Supported fields: status, type, sender, create_time
+	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. The order to sort results by.
+	// Example: "create_time desc" or "status asc"
+	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -261,9 +288,9 @@ func (*ListInboxesRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_inbox_service_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *ListInboxesRequest) GetUser() string {
+func (x *ListInboxesRequest) GetParent() string {
 	if x != nil {
-		return x.User
+		return x.Parent
 	}
 	return ""
 }
@@ -282,12 +309,29 @@ func (x *ListInboxesRequest) GetPageToken() string {
 	return ""
 }
 
+func (x *ListInboxesRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *ListInboxesRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
 type ListInboxesResponse struct {
-	state   protoimpl.MessageState `protogen:"open.v1"`
-	Inboxes []*Inbox               `protobuf:"bytes,1,rep,name=inboxes,proto3" json:"inboxes,omitempty"`
-	// A token, which can be sent as `page_token` to retrieve the next page.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of inboxes.
+	Inboxes []*Inbox `protobuf:"bytes,1,rep,name=inboxes,proto3" json:"inboxes,omitempty"`
+	// A token that can be sent as `page_token` to retrieve the next page.
 	// If this field is omitted, there are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// The total count of inboxes (may be approximate).
+	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -336,10 +380,21 @@ func (x *ListInboxesResponse) GetNextPageToken() string {
 	return ""
 }
 
+func (x *ListInboxesResponse) GetTotalSize() int32 {
+	if x != nil {
+		return x.TotalSize
+	}
+	return 0
+}
+
 type UpdateInboxRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Inbox         *Inbox                 `protobuf:"bytes,1,opt,name=inbox,proto3" json:"inbox,omitempty"`
-	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The inbox to update.
+	Inbox *Inbox `protobuf:"bytes,1,opt,name=inbox,proto3" json:"inbox,omitempty"`
+	// Required. The list of fields to update.
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Optional. If set to true, allows updating missing fields.
+	AllowMissing  bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -388,9 +443,17 @@ func (x *UpdateInboxRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+func (x *UpdateInboxRequest) GetAllowMissing() bool {
+	if x != nil {
+		return x.AllowMissing
+	}
+	return false
+}
+
 type DeleteInboxRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the inbox to delete.
+	// Required. The resource name of the inbox to delete.
+	// Format: inboxes/{inbox}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -437,16 +500,16 @@ var File_api_v1_inbox_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_inbox_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1aapi/v1/inbox_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa4\x03\n" +
-	"\x05Inbox\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
-	"\x06sender\x18\x02 \x01(\tR\x06sender\x12\x1a\n" +
-	"\breceiver\x18\x03 \x01(\tR\breceiver\x122\n" +
-	"\x06status\x18\x04 \x01(\x0e2\x1a.memos.api.v1.Inbox.StatusR\x06status\x12;\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\x12,\n" +
-	"\x04type\x18\x06 \x01(\x0e2\x18.memos.api.v1.Inbox.TypeR\x04type\x12$\n" +
-	"\vactivity_id\x18\a \x01(\x05H\x00R\n" +
+	"\x1aapi/v1/inbox_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x87\x04\n" +
+	"\x05Inbox\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1b\n" +
+	"\x06sender\x18\x02 \x01(\tB\x03\xe0A\x03R\x06sender\x12\x1f\n" +
+	"\breceiver\x18\x03 \x01(\tB\x03\xe0A\x03R\breceiver\x127\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x1a.memos.api.v1.Inbox.StatusB\x03\xe0A\x01R\x06status\x12@\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x121\n" +
+	"\x04type\x18\x06 \x01(\x0e2\x18.memos.api.v1.Inbox.TypeB\x03\xe0A\x03R\x04type\x12)\n" +
+	"\vactivity_id\x18\a \x01(\x05B\x03\xe0A\x01H\x00R\n" +
 	"activityId\x88\x01\x01\":\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\n" +
@@ -456,24 +519,32 @@ const file_api_v1_inbox_service_proto_rawDesc = "" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fMEMO_COMMENT\x10\x01\x12\x12\n" +
-	"\x0eVERSION_UPDATE\x10\x02B\x0e\n" +
-	"\f_activity_id\"d\n" +
-	"\x12ListInboxesRequest\x12\x12\n" +
-	"\x04user\x18\x01 \x01(\tR\x04user\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x0eVERSION_UPDATE\x10\x02:>\xeaA;\n" +
+	"\x12memos.api.v1/Inbox\x12\x0finboxes/{inbox}\x1a\x04name*\ainboxes2\x05inboxB\x0e\n" +
+	"\f_activity_id\"\xca\x01\n" +
+	"\x12ListInboxesRequest\x121\n" +
+	"\x06parent\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
+	"\x11memos.api.v1/UserR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"l\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x8b\x01\n" +
 	"\x13ListInboxesResponse\x12-\n" +
 	"\ainboxes\x18\x01 \x03(\v2\x13.memos.api.v1.InboxR\ainboxes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"|\n" +
-	"\x12UpdateInboxRequest\x12)\n" +
-	"\x05inbox\x18\x01 \x01(\v2\x13.memos.api.v1.InboxR\x05inbox\x12;\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"(\n" +
-	"\x12DeleteInboxRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name2\xf7\x02\n" +
-	"\fInboxService\x12k\n" +
-	"\vListInboxes\x12 .memos.api.v1.ListInboxesRequest\x1a!.memos.api.v1.ListInboxesResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/v1/inboxes\x12\x87\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
+	"\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xb0\x01\n" +
+	"\x12UpdateInboxRequest\x12.\n" +
+	"\x05inbox\x18\x01 \x01(\v2\x13.memos.api.v1.InboxB\x03\xe0A\x02R\x05inbox\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"updateMask\x12(\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\"D\n" +
+	"\x12DeleteInboxRequest\x12.\n" +
+	"\x04name\x18\x01 \x01(\tB\x1a\xe0A\x02\xfaA\x14\n" +
+	"\x12memos.api.v1/InboxR\x04name2\x92\x03\n" +
+	"\fInboxService\x12\x85\x01\n" +
+	"\vListInboxes\x12 .memos.api.v1.ListInboxesRequest\x1a!.memos.api.v1.ListInboxesResponse\"1\xdaA\x06parent\x82\xd3\xe4\x93\x02\"\x12 /api/v1/{parent=users/*}/inboxes\x12\x87\x01\n" +
 	"\vUpdateInbox\x12 .memos.api.v1.UpdateInboxRequest\x1a\x13.memos.api.v1.Inbox\"A\xdaA\x11inbox,update_mask\x82\xd3\xe4\x93\x02':\x05inbox2\x1e/api/v1/{inbox.name=inboxes/*}\x12p\n" +
 	"\vDeleteInbox\x12 .memos.api.v1.DeleteInboxRequest\x1a\x16.google.protobuf.Empty\"'\xdaA\x04name\x82\xd3\xe4\x93\x02\x1a*\x18/api/v1/{name=inboxes/*}B\xa9\x01\n" +
 	"\x10com.memos.api.v1B\x11InboxServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"

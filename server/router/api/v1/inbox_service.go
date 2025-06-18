@@ -15,9 +15,27 @@ import (
 )
 
 func (s *APIV1Service) ListInboxes(ctx context.Context, request *v1pb.ListInboxesRequest) (*v1pb.ListInboxesResponse, error) {
-	user, err := s.GetCurrentUser(ctx)
+	// Extract user ID from parent resource name
+	userID, err := ExtractUserIDFromName(request.Parent)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user")
+		return nil, status.Errorf(codes.InvalidArgument, "invalid parent name %q: %v", request.Parent, err)
+	}
+
+	// Get current user for authorization
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user")
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
+	// Check if current user can access the requested user's inboxes
+	if currentUser.ID != userID {
+		// Only allow hosts and admins to access other users' inboxes
+		if currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+			return nil, status.Errorf(codes.PermissionDenied, "cannot access inboxes for user %q", request.Parent)
+		}
 	}
 
 	var limit, offset int
@@ -34,15 +52,20 @@ func (s *APIV1Service) ListInboxes(ctx context.Context, request *v1pb.ListInboxe
 	if limit <= 0 {
 		limit = DefaultPageSize
 	}
+	if limit > MaxPageSize {
+		limit = MaxPageSize
+	}
 	limitPlusOne := limit + 1
 
-	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
-		ReceiverID: &user.ID,
+	findInbox := &store.FindInbox{
+		ReceiverID: &userID,
 		Limit:      &limitPlusOne,
 		Offset:     &offset,
-	})
+	}
+
+	inboxes, err := s.Store.ListInboxes(ctx, findInbox)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list inbox: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list inboxes: %v", err)
 	}
 
 	inboxMessages := []*v1pb.Inbox{}
@@ -51,7 +74,7 @@ func (s *APIV1Service) ListInboxes(ctx context.Context, request *v1pb.ListInboxe
 		inboxes = inboxes[:limit]
 		nextPageToken, err = getPageToken(limit, offset+limit)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to get next page token: %v", err)
 		}
 	}
 	for _, inbox := range inboxes {
@@ -65,6 +88,7 @@ func (s *APIV1Service) ListInboxes(ctx context.Context, request *v1pb.ListInboxe
 	response := &v1pb.ListInboxesResponse{
 		Inboxes:       inboxMessages,
 		NextPageToken: nextPageToken,
+		TotalSize:     int32(len(inboxMessages)), // For now, use actual returned count
 	}
 	return response, nil
 }
@@ -76,17 +100,46 @@ func (s *APIV1Service) UpdateInbox(ctx context.Context, request *v1pb.UpdateInbo
 
 	inboxID, err := ExtractInboxIDFromName(request.Inbox.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid inbox name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid inbox name %q: %v", request.Inbox.Name, err)
 	}
+
+	// Get current user for authorization
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user")
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
+	// Get the existing inbox to verify ownership
+	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
+		ID: &inboxID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get inbox: %v", err)
+	}
+	if len(inboxes) == 0 {
+		return nil, status.Errorf(codes.NotFound, "inbox %q not found", request.Inbox.Name)
+	}
+	existingInbox := inboxes[0]
+
+	// Check if current user can update this inbox (must be the receiver)
+	if currentUser.ID != existingInbox.ReceiverID {
+		return nil, status.Errorf(codes.PermissionDenied, "cannot update inbox for another user")
+	}
+
 	update := &store.UpdateInbox{
 		ID: inboxID,
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "status" {
 			if request.Inbox.Status == v1pb.Inbox_STATUS_UNSPECIFIED {
-				return nil, status.Errorf(codes.InvalidArgument, "status is required")
+				return nil, status.Errorf(codes.InvalidArgument, "status cannot be unspecified")
 			}
 			update.Status = convertInboxStatusToStore(request.Inbox.Status)
+		} else {
+			return nil, status.Errorf(codes.InvalidArgument, "unsupported field in update mask: %q", field)
 		}
 	}
 
@@ -101,13 +154,39 @@ func (s *APIV1Service) UpdateInbox(ctx context.Context, request *v1pb.UpdateInbo
 func (s *APIV1Service) DeleteInbox(ctx context.Context, request *v1pb.DeleteInboxRequest) (*emptypb.Empty, error) {
 	inboxID, err := ExtractInboxIDFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid inbox name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid inbox name %q: %v", request.Name, err)
+	}
+
+	// Get current user for authorization
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user")
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
+	// Get the existing inbox to verify ownership
+	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
+		ID: &inboxID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get inbox: %v", err)
+	}
+	if len(inboxes) == 0 {
+		return nil, status.Errorf(codes.NotFound, "inbox %q not found", request.Name)
+	}
+	existingInbox := inboxes[0]
+
+	// Check if current user can delete this inbox (must be the receiver)
+	if currentUser.ID != existingInbox.ReceiverID {
+		return nil, status.Errorf(codes.PermissionDenied, "cannot delete inbox for another user")
 	}
 
 	if err := s.Store.DeleteInbox(ctx, &store.DeleteInbox{
 		ID: inboxID,
 	}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update inbox: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to delete inbox: %v", err)
 	}
 	return &emptypb.Empty{}, nil
 }

@@ -160,7 +160,14 @@ const userStore = (() => {
   };
 
   const fetchInboxes = async () => {
-    const { inboxes } = await inboxServiceClient.listInboxes({});
+    if (!state.currentUser) {
+      throw new Error("No current user available");
+    }
+
+    const { inboxes } = await inboxServiceClient.listInboxes({
+      parent: state.currentUser,
+    });
+
     state.setPartial({
       inboxes,
     });

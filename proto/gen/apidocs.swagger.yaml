@@ -292,38 +292,6 @@ paths:
           type: string
       tags:
         - IdentityProviderService
-  /api/v1/inboxes:
-    get:
-      summary: ListInboxes lists inboxes for a user.
-      operationId: InboxService_ListInboxes
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1ListInboxesResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user
-          description: 'Format: users/{user}'
-          in: query
-          required: false
-          type: string
-        - name: pageSize
-          description: The maximum number of inbox to return.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Provide this to retrieve the subsequent page.
-          in: query
-          required: false
-          type: string
-      tags:
-        - InboxService
   /api/v1/markdown/link:metadata:
     get:
       summary: GetLinkMetadata returns metadata for a given link.
@@ -937,13 +905,14 @@ paths:
       parameters:
         - name: inbox.name
           description: |-
-            The name of the inbox.
-            Format: inboxes/{id}, id is the system generated auto-incremented id.
+            The resource name of the inbox.
+            Format: inboxes/{inbox}
           in: path
           required: true
           type: string
           pattern: inboxes/[^/]+
         - name: inbox
+          description: Required. The inbox to update.
           in: body
           required: true
           schema:
@@ -951,20 +920,40 @@ paths:
             properties:
               sender:
                 type: string
-                title: 'Format: users/{user}'
+                title: |-
+                  The sender of the inbox notification.
+                  Format: users/{user}
+                readOnly: true
               receiver:
                 type: string
-                title: 'Format: users/{user}'
+                title: |-
+                  The receiver of the inbox notification.
+                  Format: users/{user}
+                readOnly: true
               status:
                 $ref: '#/definitions/v1InboxStatus'
+                description: The status of the inbox notification.
               createTime:
                 type: string
                 format: date-time
+                description: Output only. The creation timestamp.
+                readOnly: true
               type:
                 $ref: '#/definitions/v1InboxType'
+                description: The type of the inbox notification.
+                readOnly: true
               activityId:
                 type: integer
                 format: int32
+                description: Optional. The activity ID associated with this inbox notification.
+            title: Required. The inbox to update.
+            required:
+              - inbox
+        - name: allowMissing
+          description: Optional. If set to true, allows updating missing fields.
+          in: query
+          required: false
+          type: boolean
       tags:
         - InboxService
   /api/v1/{memo.name}:
@@ -1263,7 +1252,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_4
-          description: The name of the inbox to delete.
+          description: |-
+            Required. The resource name of the inbox to delete.
+            Format: inboxes/{inbox}
           in: path
           required: true
           type: string
@@ -1810,6 +1801,63 @@ paths:
           type: string
       tags:
         - UserService
+  /api/v1/{parent}/inboxes:
+    get:
+      summary: ListInboxes lists inboxes for a user.
+      operationId: InboxService_ListInboxes
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListInboxesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            Required. The parent resource whose inboxes will be listed.
+            Format: users/{user}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: pageSize
+          description: |-
+            Optional. The maximum number of inboxes to return.
+            The service may return fewer than this value.
+            If unspecified, at most 50 inboxes will be returned.
+            The maximum value is 1000; values above 1000 will be coerced to 1000.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: |-
+            Optional. A page token, received from a previous `ListInboxes` call.
+            Provide this to retrieve the subsequent page.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Optional. Filter to apply to the list results.
+            Example: "status=UNREAD" or "type=MEMO_COMMENT"
+            Supported operators: =, !=
+            Supported fields: status, type, sender, create_time
+          in: query
+          required: false
+          type: string
+        - name: orderBy
+          description: |-
+            Optional. The order to sort results by.
+            Example: "create_time desc" or "status asc"
+          in: query
+          required: false
+          type: string
+      tags:
+        - InboxService
   /api/v1/{parent}/memos:
     get:
       summary: ListMemos lists memos with pagination and filter.
@@ -3170,25 +3218,37 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          The name of the inbox.
-          Format: inboxes/{id}, id is the system generated auto-incremented id.
+        title: |-
+          The resource name of the inbox.
+          Format: inboxes/{inbox}
       sender:
         type: string
-        title: 'Format: users/{user}'
+        title: |-
+          The sender of the inbox notification.
+          Format: users/{user}
+        readOnly: true
       receiver:
         type: string
-        title: 'Format: users/{user}'
+        title: |-
+          The receiver of the inbox notification.
+          Format: users/{user}
+        readOnly: true
       status:
         $ref: '#/definitions/v1InboxStatus'
+        description: The status of the inbox notification.
       createTime:
         type: string
         format: date-time
+        description: Output only. The creation timestamp.
+        readOnly: true
       type:
         $ref: '#/definitions/v1InboxType'
+        description: The type of the inbox notification.
+        readOnly: true
       activityId:
         type: integer
         format: int32
+        description: Optional. The activity ID associated with this inbox notification.
   v1InboxStatus:
     type: string
     enum:
@@ -3196,6 +3256,12 @@ definitions:
       - UNREAD
       - ARCHIVED
     default: STATUS_UNSPECIFIED
+    description: |-
+      Status enumeration for inbox notifications.
+
+       - STATUS_UNSPECIFIED: Unspecified status.
+       - UNREAD: The notification is unread.
+       - ARCHIVED: The notification is archived.
   v1InboxType:
     type: string
     enum:
@@ -3203,6 +3269,12 @@ definitions:
       - MEMO_COMMENT
       - VERSION_UPDATE
     default: TYPE_UNSPECIFIED
+    description: |-
+      Type enumeration for inbox notifications.
+
+       - TYPE_UNSPECIFIED: Unspecified type.
+       - MEMO_COMMENT: Memo comment notification.
+       - VERSION_UPDATE: Version update notification.
   v1ItalicNode:
     type: object
     properties:
@@ -3303,11 +3375,16 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Inbox'
+        description: The list of inboxes.
       nextPageToken:
         type: string
         description: |-
-          A token, which can be sent as `page_token` to retrieve the next page.
+          A token that can be sent as `page_token` to retrieve the next page.
           If this field is omitted, there are no subsequent pages.
+      totalSize:
+        type: integer
+        format: int32
+        description: The total count of inboxes (may be approximate).
   v1ListMemoAttachmentsResponse:
     type: object
     properties:

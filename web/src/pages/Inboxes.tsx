@@ -13,14 +13,23 @@ import { useTranslate } from "@/utils/i18n";
 const Inboxes = observer(() => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
+
   const inboxes = sortBy(userStore.state.inboxes, (inbox) => {
     if (inbox.status === Inbox_Status.UNREAD) return 0;
     if (inbox.status === Inbox_Status.ARCHIVED) return 1;
     return 2;
   });
 
+  const fetchInboxes = async () => {
+    try {
+      await userStore.fetchInboxes();
+    } catch (error) {
+      console.error("Failed to fetch inboxes:", error);
+    }
+  };
+
   useEffect(() => {
-    userStore.fetchInboxes();
+    fetchInboxes();
   }, []);
 
   return (

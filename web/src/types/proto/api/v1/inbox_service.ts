@@ -14,23 +14,39 @@ export const protobufPackage = "memos.api.v1";
 
 export interface Inbox {
   /**
-   * The name of the inbox.
-   * Format: inboxes/{id}, id is the system generated auto-incremented id.
+   * The resource name of the inbox.
+   * Format: inboxes/{inbox}
    */
   name: string;
-  /** Format: users/{user} */
+  /**
+   * The sender of the inbox notification.
+   * Format: users/{user}
+   */
   sender: string;
-  /** Format: users/{user} */
+  /**
+   * The receiver of the inbox notification.
+   * Format: users/{user}
+   */
   receiver: string;
+  /** The status of the inbox notification. */
   status: Inbox_Status;
-  createTime?: Date | undefined;
+  /** Output only. The creation timestamp. */
+  createTime?:
+    | Date
+    | undefined;
+  /** The type of the inbox notification. */
   type: Inbox_Type;
+  /** Optional. The activity ID associated with this inbox notification. */
   activityId?: number | undefined;
 }
 
+/** Status enumeration for inbox notifications. */
 export enum Inbox_Status {
+  /** STATUS_UNSPECIFIED - Unspecified status. */
   STATUS_UNSPECIFIED = "STATUS_UNSPECIFIED",
+  /** UNREAD - The notification is unread. */
   UNREAD = "UNREAD",
+  /** ARCHIVED - The notification is archived. */
   ARCHIVED = "ARCHIVED",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
@@ -67,9 +83,13 @@ export function inbox_StatusToNumber(object: Inbox_Status): number {
   }
 }
 
+/** Type enumeration for inbox notifications. */
 export enum Inbox_Type {
+  /** TYPE_UNSPECIFIED - Unspecified type. */
   TYPE_UNSPECIFIED = "TYPE_UNSPECIFIED",
+  /** MEMO_COMMENT - Memo comment notification. */
   MEMO_COMMENT = "MEMO_COMMENT",
+  /** VERSION_UPDATE - Version update notification. */
   VERSION_UPDATE = "VERSION_UPDATE",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
@@ -107,30 +127,67 @@ export function inbox_TypeToNumber(object: Inbox_Type): number {
 }
 
 export interface ListInboxesRequest {
-  /** Format: users/{user} */
-  user: string;
-  /** The maximum number of inbox to return. */
+  /**
+   * Required. The parent resource whose inboxes will be listed.
+   * Format: users/{user}
+   */
+  parent: string;
+  /**
+   * Optional. The maximum number of inboxes to return.
+   * The service may return fewer than this value.
+   * If unspecified, at most 50 inboxes will be returned.
+   * The maximum value is 1000; values above 1000 will be coerced to 1000.
+   */
   pageSize: number;
-  /** Provide this to retrieve the subsequent page. */
+  /**
+   * Optional. A page token, received from a previous `ListInboxes` call.
+   * Provide this to retrieve the subsequent page.
+   */
   pageToken: string;
+  /**
+   * Optional. Filter to apply to the list results.
+   * Example: "status=UNREAD" or "type=MEMO_COMMENT"
+   * Supported operators: =, !=
+   * Supported fields: status, type, sender, create_time
+   */
+  filter: string;
+  /**
+   * Optional. The order to sort results by.
+   * Example: "create_time desc" or "status asc"
+   */
+  orderBy: string;
 }
 
 export interface ListInboxesResponse {
+  /** The list of inboxes. */
   inboxes: Inbox[];
   /**
-   * A token, which can be sent as `page_token` to retrieve the next page.
+   * A token that can be sent as `page_token` to retrieve the next page.
    * If this field is omitted, there are no subsequent pages.
    */
   nextPageToken: string;
+  /** The total count of inboxes (may be approximate). */
+  totalSize: number;
 }
 
 export interface UpdateInboxRequest {
-  inbox?: Inbox | undefined;
-  updateMask?: string[] | undefined;
+  /** Required. The inbox to update. */
+  inbox?:
+    | Inbox
+    | undefined;
+  /** Required. The list of fields to update. */
+  updateMask?:
+    | string[]
+    | undefined;
+  /** Optional. If set to true, allows updating missing fields. */
+  allowMissing: boolean;
 }
 
 export interface DeleteInboxRequest {
-  /** The name of the inbox to delete. */
+  /**
+   * Required. The resource name of the inbox to delete.
+   * Format: inboxes/{inbox}
+   */
   name: string;
 }
 
@@ -261,19 +318,25 @@ export const Inbox: MessageFns<Inbox> = {
 };
 
 function createBaseListInboxesRequest(): ListInboxesRequest {
-  return { user: "", pageSize: 0, pageToken: "" };
+  return { parent: "", pageSize: 0, pageToken: "", filter: "", orderBy: "" };
 }
 
 export const ListInboxesRequest: MessageFns<ListInboxesRequest> = {
   encode(message: ListInboxesRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.user !== "") {
-      writer.uint32(10).string(message.user);
+    if (message.parent !== "") {
+      writer.uint32(10).string(message.parent);
     }
     if (message.pageSize !== 0) {
       writer.uint32(16).int32(message.pageSize);
     }
     if (message.pageToken !== "") {
       writer.uint32(26).string(message.pageToken);
+    }
+    if (message.filter !== "") {
+      writer.uint32(34).string(message.filter);
+    }
+    if (message.orderBy !== "") {
+      writer.uint32(42).string(message.orderBy);
     }
     return writer;
   },
@@ -290,7 +353,7 @@ export const ListInboxesRequest: MessageFns<ListInboxesRequest> = {
             break;
           }
 
-          message.user = reader.string();
+          message.parent = reader.string();
           continue;
         }
         case 2: {
@@ -309,6 +372,22 @@ export const ListInboxesRequest: MessageFns<ListInboxesRequest> = {
           message.pageToken = reader.string();
           continue;
         }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.filter = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.orderBy = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -323,15 +402,17 @@ export const ListInboxesRequest: MessageFns<ListInboxesRequest> = {
   },
   fromPartial(object: DeepPartial<ListInboxesRequest>): ListInboxesRequest {
     const message = createBaseListInboxesRequest();
-    message.user = object.user ?? "";
+    message.parent = object.parent ?? "";
     message.pageSize = object.pageSize ?? 0;
     message.pageToken = object.pageToken ?? "";
+    message.filter = object.filter ?? "";
+    message.orderBy = object.orderBy ?? "";
     return message;
   },
 };
 
 function createBaseListInboxesResponse(): ListInboxesResponse {
-  return { inboxes: [], nextPageToken: "" };
+  return { inboxes: [], nextPageToken: "", totalSize: 0 };
 }
 
 export const ListInboxesResponse: MessageFns<ListInboxesResponse> = {
@@ -341,6 +422,9 @@ export const ListInboxesResponse: MessageFns<ListInboxesResponse> = {
     }
     if (message.nextPageToken !== "") {
       writer.uint32(18).string(message.nextPageToken);
+    }
+    if (message.totalSize !== 0) {
+      writer.uint32(24).int32(message.totalSize);
     }
     return writer;
   },
@@ -368,6 +452,14 @@ export const ListInboxesResponse: MessageFns<ListInboxesResponse> = {
           message.nextPageToken = reader.string();
           continue;
         }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.totalSize = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -384,12 +476,13 @@ export const ListInboxesResponse: MessageFns<ListInboxesResponse> = {
     const message = createBaseListInboxesResponse();
     message.inboxes = object.inboxes?.map((e) => Inbox.fromPartial(e)) || [];
     message.nextPageToken = object.nextPageToken ?? "";
+    message.totalSize = object.totalSize ?? 0;
     return message;
   },
 };
 
 function createBaseUpdateInboxRequest(): UpdateInboxRequest {
-  return { inbox: undefined, updateMask: undefined };
+  return { inbox: undefined, updateMask: undefined, allowMissing: false };
 }
 
 export const UpdateInboxRequest: MessageFns<UpdateInboxRequest> = {
@@ -399,6 +492,9 @@ export const UpdateInboxRequest: MessageFns<UpdateInboxRequest> = {
     }
     if (message.updateMask !== undefined) {
       FieldMask.encode(FieldMask.wrap(message.updateMask), writer.uint32(18).fork()).join();
+    }
+    if (message.allowMissing !== false) {
+      writer.uint32(24).bool(message.allowMissing);
     }
     return writer;
   },
@@ -426,6 +522,14 @@ export const UpdateInboxRequest: MessageFns<UpdateInboxRequest> = {
           message.updateMask = FieldMask.unwrap(FieldMask.decode(reader, reader.uint32()));
           continue;
         }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.allowMissing = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -442,6 +546,7 @@ export const UpdateInboxRequest: MessageFns<UpdateInboxRequest> = {
     const message = createBaseUpdateInboxRequest();
     message.inbox = (object.inbox !== undefined && object.inbox !== null) ? Inbox.fromPartial(object.inbox) : undefined;
     message.updateMask = object.updateMask ?? undefined;
+    message.allowMissing = object.allowMissing ?? false;
     return message;
   },
 };
@@ -506,8 +611,45 @@ export const InboxServiceDefinition = {
       responseStream: false,
       options: {
         _unknownFields: {
+          8410: [new Uint8Array([6, 112, 97, 114, 101, 110, 116])],
           578365826: [
-            new Uint8Array([17, 18, 15, 47, 97, 112, 105, 47, 118, 49, 47, 105, 110, 98, 111, 120, 101, 115]),
+            new Uint8Array([
+              34,
+              18,
+              32,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              123,
+              112,
+              97,
+              114,
+              101,
+              110,
+              116,
+              61,
+              117,
+              115,
+              101,
+              114,
+              115,
+              47,
+              42,
+              125,
+              47,
+              105,
+              110,
+              98,
+              111,
+              120,
+              101,
+              115,
+            ]),
           ],
         },
       },
