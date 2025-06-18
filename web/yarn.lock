@@ -1,4 +1,4 @@
-name: Memos Web Build (Verified Working)
+name: Memos Web Production Build (Fixed)
 
 on:
   push:
@@ -14,53 +14,59 @@ jobs:
     timeout-minutes: 15
 
     steps:
-    - name: Checkout repository (full depth)
+    # 深度检出包含完整历史记录
+    - name: Checkout repository (full history)
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # 获取完整提交历史以确保检出所有文件
+        fetch-depth: 0  # 关键修复：获取完整提交历史
+        path: 'repo'    # 指定检出目录
 
-    - name: Verify lockfile existence
+    # 确认目录结构
+    - name: Verify repository structure
       run: |
-        echo "Checking for yarn.lock in web directory..."
-        if [ ! -f "web/yarn.lock" ]; then
-          echo "::error::yarn.lock not found in web directory!"
-          echo "Current directory contents:"
-          ls -la
-          echo "Web directory contents:"
-          ls -la web/
+        echo "Current directory: $(pwd)"
+        echo "Repository contents:"
+        ls -la repo/
+        echo "Web directory contents:"
+        ls -la repo/web/
+        if [ ! -f "repo/web/yarn.lock" ]; then
+          echo "::error::yarn.lock missing in repo/web directory!"
           exit 1
-        else
-          echo "yarn.lock found successfully"
         fi
 
-    - name: Setup Node.js 20
+    # 设置工作目录环境变量
+    - name: Setup environment
+      run: echo "WORKSPACE=$(pwd)/repo" >> $GITHUB_ENV
+
+    # Node.js 环境设置（明确指向锁定文件）
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
         cache: 'yarn'
-        cache-dependency-path: 'web/yarn.lock'  # 明确指定缓存路径
+        cache-dependency-path: '${{ env.WORKSPACE }}/web/yarn.lock'
 
-    - name: Install Yarn
-      run: npm install -g yarn@3.6.3
-
-    - name: Install dependencies (strict mode)
-      working-directory: web
+    # 安装依赖（严格模式）
+    - name: Install dependencies
+      working-directory: ${{ env.WORKSPACE }}/web
       run: |
-        yarn install --immutable --immutable-cache --check-cache
-        echo "Lockfile integrity verified"
+        yarn set version 3.6.3
+        yarn config set enableImmutableInstalls true
+        yarn install --immutable
+        echo "Lockfile validation passed"
 
+    # 生产环境构建
     - name: Build production assets
-      working-directory: web
+      working-directory: ${{ env.WORKSPACE }}/web
       run: |
         yarn build
-        echo "Build output:"
+        echo "Build output size:"
         du -sh dist/
-        find dist/ -type f | xargs ls -lh
 
+    # 上传制品
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: memos-web-build
-        path: web/dist/
+        name: memos-web-assets
+        path: ${{ env.WORKSPACE }}/web/dist/*
         retention-days: 3
-        compression-level: 6
