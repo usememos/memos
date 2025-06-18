@@ -14,6 +14,7 @@ const (
 	UserNamePrefix             = "users/"
 	MemoNamePrefix             = "memos/"
 	AttachmentNamePrefix       = "attachments/"
+	ReactionNamePrefix         = "reactions/"
 	InboxNamePrefix            = "inboxes/"
 	IdentityProviderNamePrefix = "identityProviders/"
 	ActivityNamePrefix         = "activities/"
@@ -90,6 +91,20 @@ func ExtractAttachmentUIDFromName(name string) (string, error) {
 		return "", err
 	}
 	id := tokens[0]
+	return id, nil
+}
+
+// ExtractReactionIDFromName returns the reaction ID from a resource name.
+// e.g., "reactions/123" -> 123.
+func ExtractReactionIDFromName(name string) (int32, error) {
+	tokens, err := GetNameParentTokens(name, ReactionNamePrefix)
+	if err != nil {
+		return 0, err
+	}
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid reaction ID %q", tokens[0])
+	}
 	return id, nil
 }
 

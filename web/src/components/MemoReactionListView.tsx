@@ -5,7 +5,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { userStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { Reaction } from "@/types/proto/api/v1/reaction_service";
+import { Reaction } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import ReactionSelector from "./ReactionSelector";
 import ReactionView from "./ReactionView";

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -99,8 +100,12 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		// Exclude comments by default.
 		ExcludeComments: true,
 	}
-	if err := s.buildMemoFindWithFilter(ctx, memoFind, request.OldFilter); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+	// Handle deprecated old_filter for backward compatibility
+	if request.OldFilter != "" && request.Filter == "" {
+		//nolint:staticcheck // SA1019: Using deprecated field for backward compatibility
+		if err := s.buildMemoFindWithFilter(ctx, memoFind, request.OldFilter); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
+		}
 	}
 	if request.Parent != "" && request.Parent != "users/-" {
 		userID, err := ExtractUserIDFromName(request.Parent)
@@ -117,9 +122,17 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		state := store.Normal
 		memoFind.RowStatus = &state
 	}
-	if request.Direction == v1pb.Direction_ASC {
-		memoFind.OrderByTimeAsc = true
+
+	// Parse order_by field (replaces the old sort and direction fields)
+	if request.OrderBy != "" {
+		if err := s.parseMemoOrderBy(request.OrderBy, memoFind); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid order_by: %v", err)
+		}
+	} else {
+		// Default ordering by display_time desc
+		memoFind.OrderByTimeAsc = false
 	}
+
 	if request.Filter != "" {
 		if err := s.validateFilter(ctx, request.Filter); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
@@ -738,4 +751,39 @@ func substring(s string, length int) string {
 	}
 
 	return s[:byteIndex]
+}
+
+// parseMemoOrderBy parses the order_by field and sets the appropriate ordering in memoFind.
+func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) error {
+	// Parse order_by field like "display_time desc" or "create_time asc"
+	parts := strings.Fields(strings.TrimSpace(orderBy))
+	if len(parts) == 0 {
+		return errors.New("empty order_by")
+	}
+
+	field := parts[0]
+	direction := "desc" // default
+	if len(parts) > 1 {
+		direction = strings.ToLower(parts[1])
+		if direction != "asc" && direction != "desc" {
+			return errors.Errorf("invalid order direction: %s, must be 'asc' or 'desc'", parts[1])
+		}
+	}
+
+	switch field {
+	case "display_time":
+		memoFind.OrderByTimeAsc = direction == "asc"
+	case "create_time":
+		memoFind.OrderByTimeAsc = direction == "asc"
+	case "update_time":
+		memoFind.OrderByUpdatedTs = true
+		memoFind.OrderByTimeAsc = direction == "asc"
+	case "name":
+		// For ordering by memo name/id - not commonly used but supported
+		memoFind.OrderByTimeAsc = direction == "asc"
+	default:
+		return errors.Errorf("unsupported order field: %s, supported fields are: display_time, create_time, update_time, name", field)
+	}
+
+	return nil
 }

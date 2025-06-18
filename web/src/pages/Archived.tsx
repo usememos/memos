@@ -6,7 +6,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { viewStore } from "@/store/v2";
 import memoFilterStore from "@/store/v2/memoFilter";
-import { Direction, State } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 
 const Archived = observer(() => {
@@ -46,7 +46,7 @@ const Archived = observer(() => {
       }
       owner={user.name}
       state={State.ARCHIVED}
-      direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+      orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
       oldFilter={memoListFilter}
     />
   );

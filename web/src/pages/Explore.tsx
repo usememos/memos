@@ -5,7 +5,7 @@ import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { viewStore } from "@/store/v2";
-import { Direction, State } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 
 const Explore = observer(() => {
@@ -26,7 +26,7 @@ const Explore = observer(() => {
                   : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
               )
           }
-          direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+          orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
         />
       </div>
     </section>

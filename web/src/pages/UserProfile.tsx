@@ -12,7 +12,7 @@ import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
 import { viewStore, userStore } from "@/store/v2";
 import memoFilterStore from "@/store/v2/memoFilter";
-import { Direction, State } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -112,7 +112,7 @@ const UserProfile = observer(() => {
                     .sort((a, b) => Number(b.pinned) - Number(a.pinned))
                 }
                 owner={user.name}
-                direction={viewStore.state.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+                orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
                 oldFilter={memoListFilter}
               />
             </>

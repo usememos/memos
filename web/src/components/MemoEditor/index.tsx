@@ -396,6 +396,10 @@ const MemoEditor = observer((props: Props) => {
                 relations: state.relationList,
                 location: state.location,
               }),
+              // Optional fields can be omitted
+              memoId: "",
+              validateOnly: false,
+              requestId: "",
             })
           : memoServiceClient
               .createMemoComment({
