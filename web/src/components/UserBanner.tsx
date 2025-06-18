@@ -19,7 +19,7 @@ const UserBanner = (props: Props) => {
   const currentUser = useCurrentUser();
 
   const handleSignOut = async () => {
-    await authServiceClient.signOut({});
+    await authServiceClient.deleteSession({});
     window.location.href = Routes.AUTH;
   };
 

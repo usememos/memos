@@ -3,68 +3,88 @@ syntax = "proto3";
 package memos.api.v1;
 
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 
 option go_package = "gen/api/v1";
 
 service MarkdownService {
   // ParseMarkdown parses the given markdown content and returns a list of nodes.
+  // This is a utility method that transforms markdown text into structured nodes.
   rpc ParseMarkdown(ParseMarkdownRequest) returns (ParseMarkdownResponse) {
     option (google.api.http) = {
       post: "/api/v1/markdown:parse"
       body: "*"
     };
   }
+
   // RestoreMarkdownNodes restores the given nodes to markdown content.
+  // This is the inverse operation of ParseMarkdown.
   rpc RestoreMarkdownNodes(RestoreMarkdownNodesRequest) returns (RestoreMarkdownNodesResponse) {
     option (google.api.http) = {
-      post: "/api/v1/markdown/node:restore"
+      post: "/api/v1/markdown:restore"
       body: "*"
     };
   }
+
   // StringifyMarkdownNodes stringify the given nodes to plain text content.
+  // This removes all markdown formatting and returns plain text.
   rpc StringifyMarkdownNodes(StringifyMarkdownNodesRequest) returns (StringifyMarkdownNodesResponse) {
     option (google.api.http) = {
-      post: "/api/v1/markdown/node:stringify"
+      post: "/api/v1/markdown:stringify"
       body: "*"
     };
   }
+
   // GetLinkMetadata returns metadata for a given link.
+  // This is useful for generating link previews.
   rpc GetLinkMetadata(GetLinkMetadataRequest) returns (LinkMetadata) {
-    option (google.api.http) = {get: "/api/v1/markdown/link:metadata"};
+    option (google.api.http) = {get: "/api/v1/markdown/links:getMetadata"};
   }
 }
 
 message ParseMarkdownRequest {
-  string markdown = 1;
+  // The markdown content to parse.
+  string markdown = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ParseMarkdownResponse {
+  // The parsed markdown nodes.
   repeated Node nodes = 1;
 }
 
 message RestoreMarkdownNodesRequest {
-  repeated Node nodes = 1;
+  // The nodes to restore to markdown content.
+  repeated Node nodes = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message RestoreMarkdownNodesResponse {
+  // The restored markdown content.
   string markdown = 1;
 }
 
 message StringifyMarkdownNodesRequest {
-  repeated Node nodes = 1;
+  // The nodes to stringify to plain text.
+  repeated Node nodes = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message StringifyMarkdownNodesResponse {
+  // The plain text content.
   string plain_text = 1;
 }
 
 message GetLinkMetadataRequest {
-  string link = 1;
+  // The link URL to get metadata for.
+  string link = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message LinkMetadata {
+  // The title of the linked page.
   string title = 1;
+
+  // The description of the linked page.
   string description = 2;
+
+  // The URL of the preview image for the linked page.
   string image = 3;
 }
 
@@ -218,7 +238,10 @@ message TableNode {
 }
 
 message EmbeddedContentNode {
+  // The resource name of the embedded content.
   string resource_name = 1;
+
+  // Additional parameters for the embedded content.
   string params = 2;
 }
 
@@ -289,7 +312,10 @@ message SuperscriptNode {
 }
 
 message ReferencedContentNode {
+  // The resource name of the referenced content.
   string resource_name = 1;
+
+  // Additional parameters for the referenced content.
   string params = 2;
 }
 

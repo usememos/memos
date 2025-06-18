@@ -213,8 +213,9 @@ func (ListNode_Kind) EnumDescriptor() ([]byte, []int) {
 }
 
 type ParseMarkdownRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Markdown      string                 `protobuf:"bytes,1,opt,name=markdown,proto3" json:"markdown,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The markdown content to parse.
+	Markdown      string `protobuf:"bytes,1,opt,name=markdown,proto3" json:"markdown,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -257,8 +258,9 @@ func (x *ParseMarkdownRequest) GetMarkdown() string {
 }
 
 type ParseMarkdownResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Nodes         []*Node                `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The parsed markdown nodes.
+	Nodes         []*Node `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -301,8 +303,9 @@ func (x *ParseMarkdownResponse) GetNodes() []*Node {
 }
 
 type RestoreMarkdownNodesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Nodes         []*Node                `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The nodes to restore to markdown content.
+	Nodes         []*Node `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -345,8 +348,9 @@ func (x *RestoreMarkdownNodesRequest) GetNodes() []*Node {
 }
 
 type RestoreMarkdownNodesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Markdown      string                 `protobuf:"bytes,1,opt,name=markdown,proto3" json:"markdown,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The restored markdown content.
+	Markdown      string `protobuf:"bytes,1,opt,name=markdown,proto3" json:"markdown,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -389,8 +393,9 @@ func (x *RestoreMarkdownNodesResponse) GetMarkdown() string {
 }
 
 type StringifyMarkdownNodesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Nodes         []*Node                `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The nodes to stringify to plain text.
+	Nodes         []*Node `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -433,8 +438,9 @@ func (x *StringifyMarkdownNodesRequest) GetNodes() []*Node {
 }
 
 type StringifyMarkdownNodesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PlainText     string                 `protobuf:"bytes,1,opt,name=plain_text,json=plainText,proto3" json:"plain_text,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The plain text content.
+	PlainText     string `protobuf:"bytes,1,opt,name=plain_text,json=plainText,proto3" json:"plain_text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -477,8 +483,9 @@ func (x *StringifyMarkdownNodesResponse) GetPlainText() string {
 }
 
 type GetLinkMetadataRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Link          string                 `protobuf:"bytes,1,opt,name=link,proto3" json:"link,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The link URL to get metadata for.
+	Link          string `protobuf:"bytes,1,opt,name=link,proto3" json:"link,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -521,10 +528,13 @@ func (x *GetLinkMetadataRequest) GetLink() string {
 }
 
 type LinkMetadata struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Image         string                 `protobuf:"bytes,3,opt,name=image,proto3" json:"image,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The title of the linked page.
+	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	// The description of the linked page.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// The URL of the preview image for the linked page.
+	Image         string `protobuf:"bytes,3,opt,name=image,proto3" json:"image,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1761,9 +1771,11 @@ func (x *TableNode) GetRows() []*TableNode_Row {
 }
 
 type EmbeddedContentNode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ResourceName  string                 `protobuf:"bytes,1,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
-	Params        string                 `protobuf:"bytes,2,opt,name=params,proto3" json:"params,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The resource name of the embedded content.
+	ResourceName string `protobuf:"bytes,1,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
+	// Additional parameters for the embedded content.
+	Params        string `protobuf:"bytes,2,opt,name=params,proto3" json:"params,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2521,9 +2533,11 @@ func (x *SuperscriptNode) GetContent() string {
 }
 
 type ReferencedContentNode struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ResourceName  string                 `protobuf:"bytes,1,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
-	Params        string                 `protobuf:"bytes,2,opt,name=params,proto3" json:"params,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The resource name of the referenced content.
+	ResourceName string `protobuf:"bytes,1,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
+	// Additional parameters for the referenced content.
+	Params        string `protobuf:"bytes,2,opt,name=params,proto3" json:"params,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2716,22 +2730,22 @@ var File_api_v1_markdown_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_markdown_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/markdown_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\"2\n" +
-	"\x14ParseMarkdownRequest\x12\x1a\n" +
-	"\bmarkdown\x18\x01 \x01(\tR\bmarkdown\"A\n" +
+	"\x1dapi/v1/markdown_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"7\n" +
+	"\x14ParseMarkdownRequest\x12\x1f\n" +
+	"\bmarkdown\x18\x01 \x01(\tB\x03\xe0A\x02R\bmarkdown\"A\n" +
 	"\x15ParseMarkdownResponse\x12(\n" +
-	"\x05nodes\x18\x01 \x03(\v2\x12.memos.api.v1.NodeR\x05nodes\"G\n" +
-	"\x1bRestoreMarkdownNodesRequest\x12(\n" +
-	"\x05nodes\x18\x01 \x03(\v2\x12.memos.api.v1.NodeR\x05nodes\":\n" +
+	"\x05nodes\x18\x01 \x03(\v2\x12.memos.api.v1.NodeR\x05nodes\"L\n" +
+	"\x1bRestoreMarkdownNodesRequest\x12-\n" +
+	"\x05nodes\x18\x01 \x03(\v2\x12.memos.api.v1.NodeB\x03\xe0A\x02R\x05nodes\":\n" +
 	"\x1cRestoreMarkdownNodesResponse\x12\x1a\n" +
-	"\bmarkdown\x18\x01 \x01(\tR\bmarkdown\"I\n" +
-	"\x1dStringifyMarkdownNodesRequest\x12(\n" +
-	"\x05nodes\x18\x01 \x03(\v2\x12.memos.api.v1.NodeR\x05nodes\"?\n" +
+	"\bmarkdown\x18\x01 \x01(\tR\bmarkdown\"N\n" +
+	"\x1dStringifyMarkdownNodesRequest\x12-\n" +
+	"\x05nodes\x18\x01 \x03(\v2\x12.memos.api.v1.NodeB\x03\xe0A\x02R\x05nodes\"?\n" +
 	"\x1eStringifyMarkdownNodesResponse\x12\x1d\n" +
 	"\n" +
-	"plain_text\x18\x01 \x01(\tR\tplainText\",\n" +
-	"\x16GetLinkMetadataRequest\x12\x12\n" +
-	"\x04link\x18\x01 \x01(\tR\x04link\"\\\n" +
+	"plain_text\x18\x01 \x01(\tR\tplainText\"1\n" +
+	"\x16GetLinkMetadataRequest\x12\x17\n" +
+	"\x04link\x18\x01 \x01(\tB\x03\xe0A\x02R\x04link\"\\\n" +
 	"\fLinkMetadata\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x14\n" +
@@ -2907,12 +2921,12 @@ const file_api_v1_markdown_service_proto_rawDesc = "" +
 	"\vSUPERSCRIPT\x10A\x12\x16\n" +
 	"\x12REFERENCED_CONTENT\x10B\x12\v\n" +
 	"\aSPOILER\x10C\x12\x10\n" +
-	"\fHTML_ELEMENT\x10D2\xc7\x04\n" +
+	"\fHTML_ELEMENT\x10D2\xc1\x04\n" +
 	"\x0fMarkdownService\x12{\n" +
-	"\rParseMarkdown\x12\".memos.api.v1.ParseMarkdownRequest\x1a#.memos.api.v1.ParseMarkdownResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/api/v1/markdown:parse\x12\x97\x01\n" +
-	"\x14RestoreMarkdownNodes\x12).memos.api.v1.RestoreMarkdownNodesRequest\x1a*.memos.api.v1.RestoreMarkdownNodesResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/api/v1/markdown/node:restore\x12\x9f\x01\n" +
-	"\x16StringifyMarkdownNodes\x12+.memos.api.v1.StringifyMarkdownNodesRequest\x1a,.memos.api.v1.StringifyMarkdownNodesResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/api/v1/markdown/node:stringify\x12{\n" +
-	"\x0fGetLinkMetadata\x12$.memos.api.v1.GetLinkMetadataRequest\x1a\x1a.memos.api.v1.LinkMetadata\"&\x82\xd3\xe4\x93\x02 \x12\x1e/api/v1/markdown/link:metadataB\xac\x01\n" +
+	"\rParseMarkdown\x12\".memos.api.v1.ParseMarkdownRequest\x1a#.memos.api.v1.ParseMarkdownResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/api/v1/markdown:parse\x12\x92\x01\n" +
+	"\x14RestoreMarkdownNodes\x12).memos.api.v1.RestoreMarkdownNodesRequest\x1a*.memos.api.v1.RestoreMarkdownNodesResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/api/v1/markdown:restore\x12\x9a\x01\n" +
+	"\x16StringifyMarkdownNodes\x12+.memos.api.v1.StringifyMarkdownNodesRequest\x1a,.memos.api.v1.StringifyMarkdownNodesResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/api/v1/markdown:stringify\x12\x7f\n" +
+	"\x0fGetLinkMetadata\x12$.memos.api.v1.GetLinkMetadataRequest\x1a\x1a.memos.api.v1.LinkMetadata\"*\x82\xd3\xe4\x93\x02$\x12\"/api/v1/markdown/links:getMetadataB\xac\x01\n" +
 	"\x10com.memos.api.v1B\x14MarkdownServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (

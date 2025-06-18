@@ -46,7 +46,7 @@ const AuthCallback = observer(() => {
     const redirectUri = absolutifyLink("/auth/callback");
     (async () => {
       try {
-        await authServiceClient.signIn({
+        await authServiceClient.createSession({
           ssoCredentials: {
             idpId: identityProviderId,
             code,

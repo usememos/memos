@@ -131,10 +131,12 @@ paths:
           type: string
       tags:
         - AttachmentService
-  /api/v1/auth/signin:
+  /api/v1/auth/sessions:
     post:
-      summary: SignIn signs in the user.
-      operationId: AuthService_SignIn
+      summary: |-
+        CreateSession authenticates a user and creates a new session.
+        Returns the authenticated user information upon successful authentication.
+      operationId: AuthService_CreateSession
       responses:
         "200":
           description: A successful response.
@@ -145,43 +147,19 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: passwordCredentials.username
-          description: The username to sign in with.
-          in: query
-          required: false
-          type: string
-        - name: passwordCredentials.password
-          description: The password to sign in with.
-          in: query
-          required: false
-          type: string
-        - name: ssoCredentials.idpId
-          description: The ID of the SSO provider.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: ssoCredentials.code
-          description: The code to sign in with.
-          in: query
-          required: false
-          type: string
-        - name: ssoCredentials.redirectUri
-          description: The redirect URI.
-          in: query
-          required: false
-          type: string
-        - name: neverExpire
-          description: Whether the session should never expire.
-          in: query
-          required: false
-          type: boolean
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1CreateSessionRequest'
       tags:
         - AuthService
-  /api/v1/auth/signout:
-    post:
-      summary: SignOut signs out the user.
-      operationId: AuthService_SignOut
+  /api/v1/auth/sessions/current:
+    delete:
+      summary: |-
+        DeleteSession terminates the current user session.
+        This is an idempotent operation that invalidates the user's authentication.
+      operationId: AuthService_DeleteSession
       responses:
         "200":
           description: A successful response.
@@ -194,35 +172,11 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - AuthService
-  /api/v1/auth/signup:
-    post:
-      summary: SignUp signs up the user with the given username and password.
-      operationId: AuthService_SignUp
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1User'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: username
-          description: The username to sign up with.
-          in: query
-          required: false
-          type: string
-        - name: password
-          description: The password to sign up with.
-          in: query
-          required: false
-          type: string
-      tags:
-        - AuthService
   /api/v1/auth/status:
-    post:
-      summary: GetAuthStatus returns the current auth status of the user.
+    get:
+      summary: |-
+        GetAuthStatus returns the current authentication status of the user.
+        This method is idempotent and safe, suitable for checking authentication state.
       operationId: AuthService_GetAuthStatus
       responses:
         "200":
@@ -233,6 +187,29 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - AuthService
+  /api/v1/auth/users:
+    post:
+      summary: |-
+        RegisterUser creates a new user account with username and password.
+        Returns the newly created user information upon successful registration.
+      operationId: AuthService_RegisterUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1User'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1RegisterUserRequest'
       tags:
         - AuthService
   /api/v1/identityProviders:
@@ -292,9 +269,11 @@ paths:
           type: string
       tags:
         - IdentityProviderService
-  /api/v1/markdown/link:metadata:
+  /api/v1/markdown/links:getMetadata:
     get:
-      summary: GetLinkMetadata returns metadata for a given link.
+      summary: |-
+        GetLinkMetadata returns metadata for a given link.
+        This is useful for generating link previews.
       operationId: MarkdownService_GetLinkMetadata
       responses:
         "200":
@@ -307,14 +286,40 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: link
+          description: The link URL to get metadata for.
           in: query
-          required: false
+          required: true
           type: string
       tags:
         - MarkdownService
-  /api/v1/markdown/node:restore:
+  /api/v1/markdown:parse:
     post:
-      summary: RestoreMarkdownNodes restores the given nodes to markdown content.
+      summary: |-
+        ParseMarkdown parses the given markdown content and returns a list of nodes.
+        This is a utility method that transforms markdown text into structured nodes.
+      operationId: MarkdownService_ParseMarkdown
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ParseMarkdownResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1ParseMarkdownRequest'
+      tags:
+        - MarkdownService
+  /api/v1/markdown:restore:
+    post:
+      summary: |-
+        RestoreMarkdownNodes restores the given nodes to markdown content.
+        This is the inverse operation of ParseMarkdown.
       operationId: MarkdownService_RestoreMarkdownNodes
       responses:
         "200":
@@ -333,9 +338,11 @@ paths:
             $ref: '#/definitions/v1RestoreMarkdownNodesRequest'
       tags:
         - MarkdownService
-  /api/v1/markdown/node:stringify:
+  /api/v1/markdown:stringify:
     post:
-      summary: StringifyMarkdownNodes stringify the given nodes to plain text content.
+      summary: |-
+        StringifyMarkdownNodes stringify the given nodes to plain text content.
+        This removes all markdown formatting and returns plain text.
       operationId: MarkdownService_StringifyMarkdownNodes
       responses:
         "200":
@@ -352,27 +359,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/v1StringifyMarkdownNodesRequest'
-      tags:
-        - MarkdownService
-  /api/v1/markdown:parse:
-    post:
-      summary: ParseMarkdown parses the given markdown content and returns a list of nodes.
-      operationId: MarkdownService_ParseMarkdown
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1ParseMarkdownResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1ParseMarkdownRequest'
       tags:
         - MarkdownService
   /api/v1/memos:
@@ -3324,13 +3310,29 @@ definitions:
     properties:
       content:
         type: string
+  v1CreateSessionRequest:
+    type: object
+    properties:
+      passwordCredentials:
+        $ref: '#/definitions/v1PasswordCredentials'
+        description: Username and password authentication method.
+      ssoCredentials:
+        $ref: '#/definitions/v1SSOCredentials'
+        description: SSO provider authentication method.
+      neverExpire:
+        type: boolean
+        description: |-
+          Whether the session should never expire.
+          Optional field that defaults to false for security.
   v1EmbeddedContentNode:
     type: object
     properties:
       resourceName:
         type: string
+        description: The resource name of the embedded content.
       params:
         type: string
+        description: Additional parameters for the embedded content.
   v1EscapingCharacterNode:
     type: object
     properties:
@@ -3452,10 +3454,13 @@ definitions:
     properties:
       title:
         type: string
+        description: The title of the linked page.
       description:
         type: string
+        description: The description of the linked page.
       image:
         type: string
+        description: The URL of the preview image for the linked page.
   v1LinkNode:
     type: object
     properties:
@@ -3906,6 +3911,9 @@ definitions:
     properties:
       markdown:
         type: string
+        description: The markdown content to parse.
+    required:
+      - markdown
   v1ParseMarkdownResponse:
     type: object
     properties:
@@ -3914,15 +3922,23 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Node'
+        description: The parsed markdown nodes.
   v1PasswordCredentials:
     type: object
     properties:
       username:
         type: string
-        description: The username to sign in with.
+        description: |-
+          The username to sign in with.
+          Required field for password-based authentication.
       password:
         type: string
-        description: The password to sign in with.
+        description: |-
+          The password to sign in with.
+          Required field for password-based authentication.
+    required:
+      - username
+      - password
   v1Reaction:
     type: object
     properties:
@@ -3964,8 +3980,26 @@ definitions:
     properties:
       resourceName:
         type: string
+        description: The resource name of the referenced content.
       params:
         type: string
+        description: Additional parameters for the referenced content.
+  v1RegisterUserRequest:
+    type: object
+    properties:
+      username:
+        type: string
+        description: |-
+          The username to sign up with.
+          Required field that must be unique across the system.
+      password:
+        type: string
+        description: |-
+          The password to sign up with.
+          Required field that should meet security requirements.
+    required:
+      - username
+      - password
   v1RestoreMarkdownNodesRequest:
     type: object
     properties:
@@ -3974,24 +4008,38 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Node'
+        description: The nodes to restore to markdown content.
+    required:
+      - nodes
   v1RestoreMarkdownNodesResponse:
     type: object
     properties:
       markdown:
         type: string
+        description: The restored markdown content.
   v1SSOCredentials:
     type: object
     properties:
       idpId:
         type: integer
         format: int32
-        description: The ID of the SSO provider.
+        description: |-
+          The ID of the SSO provider.
+          Required field to identify the SSO provider.
       code:
         type: string
-        description: The code to sign in with.
+        description: |-
+          The authorization code from the SSO provider.
+          Required field for completing the SSO flow.
       redirectUri:
         type: string
-        description: The redirect URI.
+        description: |-
+          The redirect URI used in the SSO flow.
+          Required field for security validation.
+    required:
+      - idpId
+      - code
+      - redirectUri
   v1SearchUsersResponse:
     type: object
     properties:
@@ -4033,11 +4081,15 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Node'
+        description: The nodes to stringify to plain text.
+    required:
+      - nodes
   v1StringifyMarkdownNodesResponse:
     type: object
     properties:
       plainText:
         type: string
+        description: The plain text content.
   v1SubscriptNode:
     type: object
     properties:
