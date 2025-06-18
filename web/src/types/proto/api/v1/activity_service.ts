@@ -37,10 +37,10 @@ export interface Activity {
 export enum Activity_Type {
   /** TYPE_UNSPECIFIED - Unspecified type. */
   TYPE_UNSPECIFIED = "TYPE_UNSPECIFIED",
-  /** TYPE_MEMO_COMMENT - Memo comment activity. */
-  TYPE_MEMO_COMMENT = "TYPE_MEMO_COMMENT",
-  /** TYPE_VERSION_UPDATE - Version update activity. */
-  TYPE_VERSION_UPDATE = "TYPE_VERSION_UPDATE",
+  /** MEMO_COMMENT - Memo comment activity. */
+  MEMO_COMMENT = "MEMO_COMMENT",
+  /** VERSION_UPDATE - Version update activity. */
+  VERSION_UPDATE = "VERSION_UPDATE",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
 
@@ -50,11 +50,11 @@ export function activity_TypeFromJSON(object: any): Activity_Type {
     case "TYPE_UNSPECIFIED":
       return Activity_Type.TYPE_UNSPECIFIED;
     case 1:
-    case "TYPE_MEMO_COMMENT":
-      return Activity_Type.TYPE_MEMO_COMMENT;
+    case "MEMO_COMMENT":
+      return Activity_Type.MEMO_COMMENT;
     case 2:
-    case "TYPE_VERSION_UPDATE":
-      return Activity_Type.TYPE_VERSION_UPDATE;
+    case "VERSION_UPDATE":
+      return Activity_Type.VERSION_UPDATE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -66,9 +66,9 @@ export function activity_TypeToNumber(object: Activity_Type): number {
   switch (object) {
     case Activity_Type.TYPE_UNSPECIFIED:
       return 0;
-    case Activity_Type.TYPE_MEMO_COMMENT:
+    case Activity_Type.MEMO_COMMENT:
       return 1;
-    case Activity_Type.TYPE_VERSION_UPDATE:
+    case Activity_Type.VERSION_UPDATE:
       return 2;
     case Activity_Type.UNRECOGNIZED:
     default:
@@ -80,12 +80,12 @@ export function activity_TypeToNumber(object: Activity_Type): number {
 export enum Activity_Level {
   /** LEVEL_UNSPECIFIED - Unspecified level. */
   LEVEL_UNSPECIFIED = "LEVEL_UNSPECIFIED",
-  /** LEVEL_INFO - Info level. */
-  LEVEL_INFO = "LEVEL_INFO",
-  /** LEVEL_WARN - Warn level. */
-  LEVEL_WARN = "LEVEL_WARN",
-  /** LEVEL_ERROR - Error level. */
-  LEVEL_ERROR = "LEVEL_ERROR",
+  /** INFO - Info level. */
+  INFO = "INFO",
+  /** WARN - Warn level. */
+  WARN = "WARN",
+  /** ERROR - Error level. */
+  ERROR = "ERROR",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
 
@@ -95,14 +95,14 @@ export function activity_LevelFromJSON(object: any): Activity_Level {
     case "LEVEL_UNSPECIFIED":
       return Activity_Level.LEVEL_UNSPECIFIED;
     case 1:
-    case "LEVEL_INFO":
-      return Activity_Level.LEVEL_INFO;
+    case "INFO":
+      return Activity_Level.INFO;
     case 2:
-    case "LEVEL_WARN":
-      return Activity_Level.LEVEL_WARN;
+    case "WARN":
+      return Activity_Level.WARN;
     case 3:
-    case "LEVEL_ERROR":
-      return Activity_Level.LEVEL_ERROR;
+    case "ERROR":
+      return Activity_Level.ERROR;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -114,11 +114,11 @@ export function activity_LevelToNumber(object: Activity_Level): number {
   switch (object) {
     case Activity_Level.LEVEL_UNSPECIFIED:
       return 0;
-    case Activity_Level.LEVEL_INFO:
+    case Activity_Level.INFO:
       return 1;
-    case Activity_Level.LEVEL_WARN:
+    case Activity_Level.WARN:
       return 2;
-    case Activity_Level.LEVEL_ERROR:
+    case Activity_Level.ERROR:
       return 3;
     case Activity_Level.UNRECOGNIZED:
     default:

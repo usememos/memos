@@ -74,7 +74,7 @@ func (s *APIV1Service) convertActivityFromStore(ctx context.Context, activity *s
 	var activityType v1pb.Activity_Type
 	switch activity.Type {
 	case store.ActivityTypeMemoComment:
-		activityType = v1pb.Activity_TYPE_MEMO_COMMENT
+		activityType = v1pb.Activity_MEMO_COMMENT
 	default:
 		activityType = v1pb.Activity_TYPE_UNSPECIFIED
 	}
@@ -83,7 +83,7 @@ func (s *APIV1Service) convertActivityFromStore(ctx context.Context, activity *s
 	var activityLevel v1pb.Activity_Level
 	switch activity.Level {
 	case store.ActivityLevelInfo:
-		activityLevel = v1pb.Activity_LEVEL_INFO
+		activityLevel = v1pb.Activity_INFO
 	default:
 		activityLevel = v1pb.Activity_LEVEL_UNSPECIFIED
 	}

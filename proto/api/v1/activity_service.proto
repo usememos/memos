@@ -60,9 +60,9 @@ message Activity {
     // Unspecified type.
     TYPE_UNSPECIFIED = 0;
     // Memo comment activity.
-    TYPE_MEMO_COMMENT = 1;
+    MEMO_COMMENT = 1;
     // Version update activity.
-    TYPE_VERSION_UPDATE = 2;
+    VERSION_UPDATE = 2;
   }
 
   // Activity levels.
@@ -70,11 +70,11 @@ message Activity {
     // Unspecified level.
     LEVEL_UNSPECIFIED = 0;
     // Info level.
-    LEVEL_INFO = 1;
+    INFO = 1;
     // Warn level.
-    LEVEL_WARN = 2;
+    WARN = 2;
     // Error level.
-    LEVEL_ERROR = 3;
+    ERROR = 3;
   }
 }
 

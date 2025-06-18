@@ -30,22 +30,22 @@ const (
 	// Unspecified type.
 	Activity_TYPE_UNSPECIFIED Activity_Type = 0
 	// Memo comment activity.
-	Activity_TYPE_MEMO_COMMENT Activity_Type = 1
+	Activity_MEMO_COMMENT Activity_Type = 1
 	// Version update activity.
-	Activity_TYPE_VERSION_UPDATE Activity_Type = 2
+	Activity_VERSION_UPDATE Activity_Type = 2
 )
 
 // Enum value maps for Activity_Type.
 var (
 	Activity_Type_name = map[int32]string{
 		0: "TYPE_UNSPECIFIED",
-		1: "TYPE_MEMO_COMMENT",
-		2: "TYPE_VERSION_UPDATE",
+		1: "MEMO_COMMENT",
+		2: "VERSION_UPDATE",
 	}
 	Activity_Type_value = map[string]int32{
-		"TYPE_UNSPECIFIED":    0,
-		"TYPE_MEMO_COMMENT":   1,
-		"TYPE_VERSION_UPDATE": 2,
+		"TYPE_UNSPECIFIED": 0,
+		"MEMO_COMMENT":     1,
+		"VERSION_UPDATE":   2,
 	}
 )
 
@@ -83,26 +83,26 @@ const (
 	// Unspecified level.
 	Activity_LEVEL_UNSPECIFIED Activity_Level = 0
 	// Info level.
-	Activity_LEVEL_INFO Activity_Level = 1
+	Activity_INFO Activity_Level = 1
 	// Warn level.
-	Activity_LEVEL_WARN Activity_Level = 2
+	Activity_WARN Activity_Level = 2
 	// Error level.
-	Activity_LEVEL_ERROR Activity_Level = 3
+	Activity_ERROR Activity_Level = 3
 )
 
 // Enum value maps for Activity_Level.
 var (
 	Activity_Level_name = map[int32]string{
 		0: "LEVEL_UNSPECIFIED",
-		1: "LEVEL_INFO",
-		2: "LEVEL_WARN",
-		3: "LEVEL_ERROR",
+		1: "INFO",
+		2: "WARN",
+		3: "ERROR",
 	}
 	Activity_Level_value = map[string]int32{
 		"LEVEL_UNSPECIFIED": 0,
-		"LEVEL_INFO":        1,
-		"LEVEL_WARN":        2,
-		"LEVEL_ERROR":       3,
+		"INFO":              1,
+		"WARN":              2,
+		"ERROR":             3,
 	}
 )
 
@@ -513,7 +513,7 @@ var File_api_v1_activity_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_activity_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/activity_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa2\x04\n" +
+	"\x1dapi/v1/activity_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x86\x04\n" +
 	"\bActivity\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x1d\n" +
 	"\acreator\x18\x02 \x01(\tB\x03\xe0A\x03R\acreator\x124\n" +
@@ -521,18 +521,16 @@ const file_api_v1_activity_service_proto_rawDesc = "" +
 	"\x05level\x18\x04 \x01(\x0e2\x1c.memos.api.v1.Activity.LevelB\x03\xe0A\x03R\x05level\x12@\n" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12<\n" +
-	"\apayload\x18\x06 \x01(\v2\x1d.memos.api.v1.ActivityPayloadB\x03\xe0A\x03R\apayload\"L\n" +
+	"\apayload\x18\x06 \x01(\v2\x1d.memos.api.v1.ActivityPayloadB\x03\xe0A\x03R\apayload\"B\n" +
 	"\x04Type\x12\x14\n" +
-	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
-	"\x11TYPE_MEMO_COMMENT\x10\x01\x12\x17\n" +
-	"\x13TYPE_VERSION_UPDATE\x10\x02\"O\n" +
+	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
+	"\fMEMO_COMMENT\x10\x01\x12\x12\n" +
+	"\x0eVERSION_UPDATE\x10\x02\"=\n" +
 	"\x05Level\x12\x15\n" +
-	"\x11LEVEL_UNSPECIFIED\x10\x00\x12\x0e\n" +
-	"\n" +
-	"LEVEL_INFO\x10\x01\x12\x0e\n" +
-	"\n" +
-	"LEVEL_WARN\x10\x02\x12\x0f\n" +
-	"\vLEVEL_ERROR\x10\x03:M\xeaAJ\n" +
+	"\x11LEVEL_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04INFO\x10\x01\x12\b\n" +
+	"\x04WARN\x10\x02\x12\t\n" +
+	"\x05ERROR\x10\x03:M\xeaAJ\n" +
 	"\x15memos.api.v1/Activity\x12\x15activities/{activity}\x1a\x04name*\n" +
 	"activities2\bactivity\"k\n" +
 	"\x0fActivityPayload\x12M\n" +

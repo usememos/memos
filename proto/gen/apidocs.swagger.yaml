@@ -2513,17 +2513,17 @@ definitions:
     type: string
     enum:
       - LEVEL_UNSPECIFIED
-      - LEVEL_INFO
-      - LEVEL_WARN
-      - LEVEL_ERROR
+      - INFO
+      - WARN
+      - ERROR
     default: LEVEL_UNSPECIFIED
     description: |-
       Activity levels.
 
        - LEVEL_UNSPECIFIED: Unspecified level.
-       - LEVEL_INFO: Info level.
-       - LEVEL_WARN: Warn level.
-       - LEVEL_ERROR: Error level.
+       - INFO: Info level.
+       - WARN: Warn level.
+       - ERROR: Error level.
   ListNodeKind:
     type: string
     enum:
@@ -3218,15 +3218,15 @@ definitions:
     type: string
     enum:
       - TYPE_UNSPECIFIED
-      - TYPE_MEMO_COMMENT
-      - TYPE_VERSION_UPDATE
+      - MEMO_COMMENT
+      - VERSION_UPDATE
     default: TYPE_UNSPECIFIED
     description: |-
       Activity types.
 
        - TYPE_UNSPECIFIED: Unspecified type.
-       - TYPE_MEMO_COMMENT: Memo comment activity.
-       - TYPE_VERSION_UPDATE: Version update activity.
+       - MEMO_COMMENT: Memo comment activity.
+       - VERSION_UPDATE: Version update activity.
   v1Attachment:
     type: object
     properties:
