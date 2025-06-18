@@ -125,23 +125,29 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 			displayTs = memo.UpdatedTs
 		}
 		displayTimestamps = append(displayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))
-
-		// Count different memo types based on content
-		if memo.Payload != nil && memo.Payload.Property != nil {
-			if memo.Payload.Property.HasLink {
-				linkCount++
+		// Count different memo types based on content.
+		if memo.Payload != nil {
+			for _, tag := range memo.Payload.Tags {
+				if tagCount[tag] == 0 {
+					tagCount[tag] = 1
+				}
+				tagCount[tag]++
 			}
-			if memo.Payload.Property.HasCode {
-				codeCount++
-			}
-			if memo.Payload.Property.HasTaskList {
-				todoCount++
-			}
-			if memo.Payload.Property.HasIncompleteTasks {
-				undoCount++
+			if memo.Payload.Property != nil {
+				if memo.Payload.Property.HasLink {
+					linkCount++
+				}
+				if memo.Payload.Property.HasCode {
+					codeCount++
+				}
+				if memo.Payload.Property.HasTaskList {
+					todoCount++
+				}
+				if memo.Payload.Property.HasIncompleteTasks {
+					undoCount++
+				}
 			}
 		}
-
 		if memo.Pinned {
 			pinnedMemos = append(pinnedMemos, fmt.Sprintf("users/%d/memos/%d", userID, memo.ID))
 		}
