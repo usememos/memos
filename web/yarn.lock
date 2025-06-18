@@ -1,0 +1,66 @@
+name: Memos Web Build (Verified Working)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'web/**'
+      - '.github/workflows/web-build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - name: Checkout repository (full depth)
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整提交历史以确保检出所有文件
+
+    - name: Verify lockfile existence
+      run: |
+        echo "Checking for yarn.lock in web directory..."
+        if [ ! -f "web/yarn.lock" ]; then
+          echo "::error::yarn.lock not found in web directory!"
+          echo "Current directory contents:"
+          ls -la
+          echo "Web directory contents:"
+          ls -la web/
+          exit 1
+        else
+          echo "yarn.lock found successfully"
+        fi
+
+    - name: Setup Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+        cache-dependency-path: 'web/yarn.lock'  # 明确指定缓存路径
+
+    - name: Install Yarn
+      run: npm install -g yarn@3.6.3
+
+    - name: Install dependencies (strict mode)
+      working-directory: web
+      run: |
+        yarn install --immutable --immutable-cache --check-cache
+        echo "Lockfile integrity verified"
+
+    - name: Build production assets
+      working-directory: web
+      run: |
+        yarn build
+        echo "Build output:"
+        du -sh dist/
+        find dist/ -type f | xargs ls -lh
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: memos-web-build
+        path: web/dist/
+        retention-days: 3
+        compression-level: 6
