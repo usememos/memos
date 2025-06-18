@@ -1,47 +1,51 @@
-# 更新路径: .github/workflows/web-build.yml
-name: Build Web Assets
+# .github/workflows/web-build.yml
+name: Memos Web Build
 
 on:
   push:
-    branches: 
-      - main
-    paths:
+    branches: [ "main" ]
+    paths: 
       - 'web/**'
       - '.github/workflows/web-build.yml'
-  workflow_dispatch: # 添加手动触发选项
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15 # 设置超时时间
-    
+    timeout-minutes: 10
+
+    env:
+      NODE_VERSION: '20'
+      WORKING_DIRECTORY: 'web'
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v4
       with:
-        node-version: '20' # 更新到Node.js 20
-        cache: 'yarn' # 添加自动缓存
-    
-    - name: Install dependencies
-      working-directory: web
-      run: yarn install --frozen-lockfile
-    
-    - name: Build production assets
-      working-directory: web
-      run: yarn build
-    
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4 # 使用最新版本v4
-      with:
-        name: web-build
-        path: web/dist/
-        retention-days: 7 # 延长保留天数
-        compression-level: 6 # 优化压缩级别
-        if-no-files-found: error # 如果没找到文件则报错
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'yarn'
 
-    - name: Show artifact size
+    - name: Install dependencies
+      working-directory: ${{ env.WORKING_DIRECTORY }}
       run: |
-        echo "Build directory contents:"
-        du -sh web/dist/*
+        yarn install --pure-lockfile --network-timeout 300000
+        yarn cache list
+
+    - name: Build production assets
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        yarn build
+        ls -lh dist/
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: memos-web-build
+        path: ${{ env.WORKING_DIRECTORY }}/dist/
+        retention-days: 5
+        if-no-files-found: error
