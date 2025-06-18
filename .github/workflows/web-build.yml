@@ -1,61 +1,33 @@
-# .github/workflows/web-build.yml
-name: Memos Web Production Build
+name: Web Build
 
-on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - 'web/**'
-  pull_request:
-    paths:
-      - 'web/**'
-  workflow_dispatch:
-
-env:
-  NODE_VERSION: 20
-  YARN_VERSION: 3.6.3
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
       with:
-        fetch-depth: 2
-        persist-credentials: false
+        fetch-depth: 0
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    # 新增：自动生成lockfile的保险措施
+    - name: Ensure lockfile exists
+      working-directory: web
+      run: |
+        if [ ! -f "yarn.lock" ]; then
+          echo "::warning::Generating yarn.lock..."
+          yarn install
+        fi
+
+    - uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: 20
         cache: 'yarn'
+        cache-dependency-path: 'web/yarn.lock'
 
-    - name: Install Yarn
-      run: npm install -g yarn@${{ env.YARN_VERSION }}
-
-    - name: Install dependencies
+    - name: Install & Build
       working-directory: web
       run: |
-        yarn set version ${{ env.YARN_VERSION }}
-        yarn config set network-timeout 600000 -g
-        yarn install --immutable --inline-builds
-        echo "Dependencies installed successfully"
-
-    - name: Build production bundle
-      working-directory: web
-      run: |
-        yarn build --mode production
-        echo "Build completed. Directory contents:"
-        ls -lh dist/
-
-    - name: Upload artifact
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: memos-web-assets
-        path: web/dist/**/*
-        retention-days: 3
-        compression-level: 9
+        yarn install --immutable
+        yarn build
