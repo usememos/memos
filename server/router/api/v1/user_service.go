@@ -438,9 +438,9 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 	}
 
 	accessTokens := []*v1pb.UserAccessToken{}
-	for _, userAccessToken := range userAccessTokens {
+	for _, token := range userAccessTokens {
 		claims := &ClaimsMessage{}
-		_, err := jwt.ParseWithClaims(userAccessToken.AccessToken, claims, func(t *jwt.Token) (any, error) {
+		_, err := jwt.ParseWithClaims(token.AccessToken, claims, func(t *jwt.Token) (any, error) {
 			if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 				return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
 			}
@@ -457,13 +457,20 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 		}
 
 		accessTokenResponse := &v1pb.UserAccessToken{
-			Name:        fmt.Sprintf("users/%d/accessTokens/%s", userID, userAccessToken.AccessToken),
-			AccessToken: userAccessToken.AccessToken,
-			Description: userAccessToken.Description,
+			Name:        fmt.Sprintf("users/%d/accessTokens/%s", userID, token.AccessToken),
+			AccessToken: token.AccessToken,
+			Description: token.Description,
 			IssuedAt:    timestamppb.New(claims.IssuedAt.Time),
 		}
 		if claims.ExpiresAt != nil {
 			accessTokenResponse.ExpiresAt = timestamppb.New(claims.ExpiresAt.Time)
+		}
+		if token.LastUsedAt != nil {
+			lastUsedAt, err := time.Parse(time.RFC3339, *token.LastUsedAt)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to parse last used at: %v", err)
+			}
+			accessTokenResponse.LastUsedAt = timestamppb.New(lastUsedAt)
 		}
 		accessTokens = append(accessTokens, accessTokenResponse)
 	}

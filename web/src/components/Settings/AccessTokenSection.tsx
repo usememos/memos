@@ -49,6 +49,14 @@ const AccessTokenSection = () => {
     return `${accessToken.slice(0, 4)}****${accessToken.slice(-4)}`;
   };
 
+  const getRelativeDateOrFallback = (date: Date | undefined, fallback: string) => {
+    return date !== undefined ? (
+      <relative-time datetime={date.toISOString()} format="auto"></relative-time>
+    ) : (
+      <span>{fallback.toLocaleLowerCase()}</span>
+    );
+  };
+
   return (
     <div className="mt-6 w-full flex flex-col justify-start items-start space-y-4">
       <div className="w-full">
@@ -84,6 +92,9 @@ const AccessTokenSection = () => {
                       {t("common.description")}
                     </th>
                     <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
+                      {t("setting.access-token-section.last-used-at")}
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
                       {t("setting.access-token-section.create-dialog.created-at")}
                     </th>
                     <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
@@ -105,6 +116,12 @@ const AccessTokenSection = () => {
                       </td>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-400">
                         {userAccessToken.description}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                        {getRelativeDateOrFallback(
+                          userAccessToken.lastUsedAt,
+                          t("setting.access-token-section.create-dialog.duration-never"),
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
                         {userAccessToken.issuedAt?.toLocaleString()}

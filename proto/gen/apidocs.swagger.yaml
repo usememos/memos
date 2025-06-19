@@ -4233,6 +4233,9 @@ definitions:
         type: string
         format: date-time
         description: Optional. The expiration timestamp.
+      lastUsedAt:
+        type: string
+        format: date-time
     title: User access token message
   v1UserStats:
     type: object

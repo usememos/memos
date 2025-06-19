@@ -314,6 +314,7 @@ export interface UserAccessToken {
     | undefined;
   /** Optional. The expiration timestamp. */
   expiresAt?: Date | undefined;
+  lastUsedAt?: Date | undefined;
 }
 
 export interface ListUserAccessTokensRequest {
@@ -1695,7 +1696,14 @@ export const UpdateUserSettingRequest: MessageFns<UpdateUserSettingRequest> = {
 };
 
 function createBaseUserAccessToken(): UserAccessToken {
-  return { name: "", accessToken: "", description: "", issuedAt: undefined, expiresAt: undefined };
+  return {
+    name: "",
+    accessToken: "",
+    description: "",
+    issuedAt: undefined,
+    expiresAt: undefined,
+    lastUsedAt: undefined,
+  };
 }
 
 export const UserAccessToken: MessageFns<UserAccessToken> = {
@@ -1714,6 +1722,9 @@ export const UserAccessToken: MessageFns<UserAccessToken> = {
     }
     if (message.expiresAt !== undefined) {
       Timestamp.encode(toTimestamp(message.expiresAt), writer.uint32(42).fork()).join();
+    }
+    if (message.lastUsedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.lastUsedAt), writer.uint32(50).fork()).join();
     }
     return writer;
   },
@@ -1765,6 +1776,14 @@ export const UserAccessToken: MessageFns<UserAccessToken> = {
           message.expiresAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.lastUsedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1784,6 +1803,7 @@ export const UserAccessToken: MessageFns<UserAccessToken> = {
     message.description = object.description ?? "";
     message.issuedAt = object.issuedAt ?? undefined;
     message.expiresAt = object.expiresAt ?? undefined;
+    message.lastUsedAt = object.lastUsedAt ?? undefined;
     return message;
   },
 };

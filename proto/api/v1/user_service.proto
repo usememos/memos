@@ -406,6 +406,7 @@ message UserAccessToken {
 
   // Optional. The expiration timestamp.
   google.protobuf.Timestamp expires_at = 5 [(google.api.field_behavior) = OPTIONAL];
+  google.protobuf.Timestamp last_used_at = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListUserAccessTokensRequest {
