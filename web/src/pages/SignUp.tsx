@@ -47,7 +47,7 @@ const SignUp = observer(() => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await authServiceClient.registerUser({ username, password });
+      await authServiceClient.signUp({ username, password });
       await initialUserStore();
       navigateTo("/");
     } catch (error: any) {

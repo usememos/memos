@@ -23,26 +23,26 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type GetAuthStatusRequest struct {
+type GetCurrentSessionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetAuthStatusRequest) Reset() {
-	*x = GetAuthStatusRequest{}
+func (x *GetCurrentSessionRequest) Reset() {
+	*x = GetCurrentSessionRequest{}
 	mi := &file_api_v1_auth_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetAuthStatusRequest) String() string {
+func (x *GetCurrentSessionRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetAuthStatusRequest) ProtoMessage() {}
+func (*GetCurrentSessionRequest) ProtoMessage() {}
 
-func (x *GetAuthStatusRequest) ProtoReflect() protoreflect.Message {
+func (x *GetCurrentSessionRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v1_auth_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -54,32 +54,32 @@ func (x *GetAuthStatusRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetAuthStatusRequest.ProtoReflect.Descriptor instead.
-func (*GetAuthStatusRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetCurrentSessionRequest.ProtoReflect.Descriptor instead.
+func (*GetCurrentSessionRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{0}
 }
 
-type GetAuthStatusResponse struct {
+type GetCurrentSessionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetAuthStatusResponse) Reset() {
-	*x = GetAuthStatusResponse{}
+func (x *GetCurrentSessionResponse) Reset() {
+	*x = GetCurrentSessionResponse{}
 	mi := &file_api_v1_auth_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetAuthStatusResponse) String() string {
+func (x *GetCurrentSessionResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetAuthStatusResponse) ProtoMessage() {}
+func (*GetCurrentSessionResponse) ProtoMessage() {}
 
-func (x *GetAuthStatusResponse) ProtoReflect() protoreflect.Message {
+func (x *GetCurrentSessionResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v1_auth_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -91,12 +91,12 @@ func (x *GetAuthStatusResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetAuthStatusResponse.ProtoReflect.Descriptor instead.
-func (*GetAuthStatusResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetCurrentSessionResponse.ProtoReflect.Descriptor instead.
+func (*GetCurrentSessionResponse) Descriptor() ([]byte, []int) {
 	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetAuthStatusResponse) GetUser() *User {
+func (x *GetCurrentSessionResponse) GetUser() *User {
 	if x != nil {
 		return x.User
 	}
@@ -322,62 +322,6 @@ func (x *SSOCredentials) GetRedirectUri() string {
 	return ""
 }
 
-type RegisterUserRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The username to sign up with.
-	// Required field that must be unique across the system.
-	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	// The password to sign up with.
-	// Required field that should meet security requirements.
-	Password      string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RegisterUserRequest) Reset() {
-	*x = RegisterUserRequest{}
-	mi := &file_api_v1_auth_service_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RegisterUserRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RegisterUserRequest) ProtoMessage() {}
-
-func (x *RegisterUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_auth_service_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RegisterUserRequest.ProtoReflect.Descriptor instead.
-func (*RegisterUserRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *RegisterUserRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *RegisterUserRequest) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
 type DeleteSessionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -386,7 +330,7 @@ type DeleteSessionRequest struct {
 
 func (x *DeleteSessionRequest) Reset() {
 	*x = DeleteSessionRequest{}
-	mi := &file_api_v1_auth_service_proto_msgTypes[6]
+	mi := &file_api_v1_auth_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -398,7 +342,7 @@ func (x *DeleteSessionRequest) String() string {
 func (*DeleteSessionRequest) ProtoMessage() {}
 
 func (x *DeleteSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_auth_service_proto_msgTypes[6]
+	mi := &file_api_v1_auth_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -411,16 +355,72 @@ func (x *DeleteSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSessionRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSessionRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{5}
+}
+
+type SignUpRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The username to sign up with.
+	// Required field that must be unique across the system.
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	// The password to sign up with.
+	// Required field that should meet security requirements.
+	Password      string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SignUpRequest) Reset() {
+	*x = SignUpRequest{}
+	mi := &file_api_v1_auth_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SignUpRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignUpRequest) ProtoMessage() {}
+
+func (x *SignUpRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_auth_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignUpRequest.ProtoReflect.Descriptor instead.
+func (*SignUpRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *SignUpRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *SignUpRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
 }
 
 var File_api_v1_auth_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_auth_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19api/v1/auth_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x16\n" +
-	"\x14GetAuthStatusRequest\"?\n" +
-	"\x15GetAuthStatusResponse\x12&\n" +
+	"\x19api/v1/auth_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x1a\n" +
+	"\x18GetCurrentSessionRequest\"C\n" +
+	"\x19GetCurrentSessionResponse\x12&\n" +
 	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\"\xe9\x01\n" +
 	"\x14CreateSessionRequest\x12V\n" +
 	"\x14password_credentials\x18\x01 \x01(\v2!.memos.api.v1.PasswordCredentialsH\x00R\x13passwordCredentials\x12G\n" +
@@ -433,16 +433,16 @@ const file_api_v1_auth_service_proto_rawDesc = "" +
 	"\x0eSSOCredentials\x12\x1a\n" +
 	"\x06idp_id\x18\x01 \x01(\x05B\x03\xe0A\x02R\x05idpId\x12\x17\n" +
 	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\x12&\n" +
-	"\fredirect_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\vredirectUri\"W\n" +
-	"\x13RegisterUserRequest\x12\x1f\n" +
+	"\fredirect_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\vredirectUri\"\x16\n" +
+	"\x14DeleteSessionRequest\"Q\n" +
+	"\rSignUpRequest\x12\x1f\n" +
 	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\"\x16\n" +
-	"\x14DeleteSessionRequest2\xb8\x03\n" +
-	"\vAuthService\x12d\n" +
-	"\rGetAuthStatus\x12\".memos.api.v1.GetAuthStatusRequest\x1a\x12.memos.api.v1.User\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/auth/status\x12i\n" +
-	"\rCreateSession\x12\".memos.api.v1.CreateSessionRequest\x1a\x12.memos.api.v1.User\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/auth/sessions\x12d\n" +
-	"\fRegisterUser\x12!.memos.api.v1.RegisterUserRequest\x1a\x12.memos.api.v1.User\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/auth/users\x12r\n" +
-	"\rDeleteSession\x12\".memos.api.v1.DeleteSessionRequest\x1a\x16.google.protobuf.Empty\"%\x82\xd3\xe4\x93\x02\x1f*\x1d/api/v1/auth/sessions/currentB\xa8\x01\n" +
+	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword2\xbf\x03\n" +
+	"\vAuthService\x12v\n" +
+	"\x11GetCurrentSession\x12&.memos.api.v1.GetCurrentSessionRequest\x1a\x12.memos.api.v1.User\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/v1/auth/sessions/current\x12i\n" +
+	"\rCreateSession\x12\".memos.api.v1.CreateSessionRequest\x1a\x12.memos.api.v1.User\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/auth/sessions\x12r\n" +
+	"\rDeleteSession\x12\".memos.api.v1.DeleteSessionRequest\x1a\x16.google.protobuf.Empty\"%\x82\xd3\xe4\x93\x02\x1f*\x1d/api/v1/auth/sessions/current\x12Y\n" +
+	"\x06SignUp\x12\x1b.memos.api.v1.SignUpRequest\x1a\x12.memos.api.v1.User\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/v1/auth/signupB\xa8\x01\n" +
 	"\x10com.memos.api.v1B\x10AuthServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (
@@ -459,28 +459,28 @@ func file_api_v1_auth_service_proto_rawDescGZIP() []byte {
 
 var file_api_v1_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_api_v1_auth_service_proto_goTypes = []any{
-	(*GetAuthStatusRequest)(nil),  // 0: memos.api.v1.GetAuthStatusRequest
-	(*GetAuthStatusResponse)(nil), // 1: memos.api.v1.GetAuthStatusResponse
-	(*CreateSessionRequest)(nil),  // 2: memos.api.v1.CreateSessionRequest
-	(*PasswordCredentials)(nil),   // 3: memos.api.v1.PasswordCredentials
-	(*SSOCredentials)(nil),        // 4: memos.api.v1.SSOCredentials
-	(*RegisterUserRequest)(nil),   // 5: memos.api.v1.RegisterUserRequest
-	(*DeleteSessionRequest)(nil),  // 6: memos.api.v1.DeleteSessionRequest
-	(*User)(nil),                  // 7: memos.api.v1.User
-	(*emptypb.Empty)(nil),         // 8: google.protobuf.Empty
+	(*GetCurrentSessionRequest)(nil),  // 0: memos.api.v1.GetCurrentSessionRequest
+	(*GetCurrentSessionResponse)(nil), // 1: memos.api.v1.GetCurrentSessionResponse
+	(*CreateSessionRequest)(nil),      // 2: memos.api.v1.CreateSessionRequest
+	(*PasswordCredentials)(nil),       // 3: memos.api.v1.PasswordCredentials
+	(*SSOCredentials)(nil),            // 4: memos.api.v1.SSOCredentials
+	(*DeleteSessionRequest)(nil),      // 5: memos.api.v1.DeleteSessionRequest
+	(*SignUpRequest)(nil),             // 6: memos.api.v1.SignUpRequest
+	(*User)(nil),                      // 7: memos.api.v1.User
+	(*emptypb.Empty)(nil),             // 8: google.protobuf.Empty
 }
 var file_api_v1_auth_service_proto_depIdxs = []int32{
-	7, // 0: memos.api.v1.GetAuthStatusResponse.user:type_name -> memos.api.v1.User
+	7, // 0: memos.api.v1.GetCurrentSessionResponse.user:type_name -> memos.api.v1.User
 	3, // 1: memos.api.v1.CreateSessionRequest.password_credentials:type_name -> memos.api.v1.PasswordCredentials
 	4, // 2: memos.api.v1.CreateSessionRequest.sso_credentials:type_name -> memos.api.v1.SSOCredentials
-	0, // 3: memos.api.v1.AuthService.GetAuthStatus:input_type -> memos.api.v1.GetAuthStatusRequest
+	0, // 3: memos.api.v1.AuthService.GetCurrentSession:input_type -> memos.api.v1.GetCurrentSessionRequest
 	2, // 4: memos.api.v1.AuthService.CreateSession:input_type -> memos.api.v1.CreateSessionRequest
-	5, // 5: memos.api.v1.AuthService.RegisterUser:input_type -> memos.api.v1.RegisterUserRequest
-	6, // 6: memos.api.v1.AuthService.DeleteSession:input_type -> memos.api.v1.DeleteSessionRequest
-	7, // 7: memos.api.v1.AuthService.GetAuthStatus:output_type -> memos.api.v1.User
+	5, // 5: memos.api.v1.AuthService.DeleteSession:input_type -> memos.api.v1.DeleteSessionRequest
+	6, // 6: memos.api.v1.AuthService.SignUp:input_type -> memos.api.v1.SignUpRequest
+	7, // 7: memos.api.v1.AuthService.GetCurrentSession:output_type -> memos.api.v1.User
 	7, // 8: memos.api.v1.AuthService.CreateSession:output_type -> memos.api.v1.User
-	7, // 9: memos.api.v1.AuthService.RegisterUser:output_type -> memos.api.v1.User
-	8, // 10: memos.api.v1.AuthService.DeleteSession:output_type -> google.protobuf.Empty
+	8, // 9: memos.api.v1.AuthService.DeleteSession:output_type -> google.protobuf.Empty
+	7, // 10: memos.api.v1.AuthService.SignUp:output_type -> memos.api.v1.User
 	7, // [7:11] is the sub-list for method output_type
 	3, // [3:7] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name

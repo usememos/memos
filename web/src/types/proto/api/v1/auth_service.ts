@@ -11,10 +11,10 @@ import { User } from "./user_service";
 
 export const protobufPackage = "memos.api.v1";
 
-export interface GetAuthStatusRequest {
+export interface GetCurrentSessionRequest {
 }
 
-export interface GetAuthStatusResponse {
+export interface GetCurrentSessionResponse {
   user?: User | undefined;
 }
 
@@ -65,7 +65,10 @@ export interface SSOCredentials {
   redirectUri: string;
 }
 
-export interface RegisterUserRequest {
+export interface DeleteSessionRequest {
+}
+
+export interface SignUpRequest {
   /**
    * The username to sign up with.
    * Required field that must be unique across the system.
@@ -78,22 +81,19 @@ export interface RegisterUserRequest {
   password: string;
 }
 
-export interface DeleteSessionRequest {
-}
-
-function createBaseGetAuthStatusRequest(): GetAuthStatusRequest {
+function createBaseGetCurrentSessionRequest(): GetCurrentSessionRequest {
   return {};
 }
 
-export const GetAuthStatusRequest: MessageFns<GetAuthStatusRequest> = {
-  encode(_: GetAuthStatusRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetCurrentSessionRequest: MessageFns<GetCurrentSessionRequest> = {
+  encode(_: GetCurrentSessionRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetAuthStatusRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetCurrentSessionRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetAuthStatusRequest();
+    const message = createBaseGetCurrentSessionRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -106,31 +106,31 @@ export const GetAuthStatusRequest: MessageFns<GetAuthStatusRequest> = {
     return message;
   },
 
-  create(base?: DeepPartial<GetAuthStatusRequest>): GetAuthStatusRequest {
-    return GetAuthStatusRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<GetCurrentSessionRequest>): GetCurrentSessionRequest {
+    return GetCurrentSessionRequest.fromPartial(base ?? {});
   },
-  fromPartial(_: DeepPartial<GetAuthStatusRequest>): GetAuthStatusRequest {
-    const message = createBaseGetAuthStatusRequest();
+  fromPartial(_: DeepPartial<GetCurrentSessionRequest>): GetCurrentSessionRequest {
+    const message = createBaseGetCurrentSessionRequest();
     return message;
   },
 };
 
-function createBaseGetAuthStatusResponse(): GetAuthStatusResponse {
+function createBaseGetCurrentSessionResponse(): GetCurrentSessionResponse {
   return { user: undefined };
 }
 
-export const GetAuthStatusResponse: MessageFns<GetAuthStatusResponse> = {
-  encode(message: GetAuthStatusResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetCurrentSessionResponse: MessageFns<GetCurrentSessionResponse> = {
+  encode(message: GetCurrentSessionResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetAuthStatusResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetCurrentSessionResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetAuthStatusResponse();
+    const message = createBaseGetCurrentSessionResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -151,11 +151,11 @@ export const GetAuthStatusResponse: MessageFns<GetAuthStatusResponse> = {
     return message;
   },
 
-  create(base?: DeepPartial<GetAuthStatusResponse>): GetAuthStatusResponse {
-    return GetAuthStatusResponse.fromPartial(base ?? {});
+  create(base?: DeepPartial<GetCurrentSessionResponse>): GetCurrentSessionResponse {
+    return GetCurrentSessionResponse.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<GetAuthStatusResponse>): GetAuthStatusResponse {
-    const message = createBaseGetAuthStatusResponse();
+  fromPartial(object: DeepPartial<GetCurrentSessionResponse>): GetCurrentSessionResponse {
+    const message = createBaseGetCurrentSessionResponse();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     return message;
   },
@@ -363,64 +363,6 @@ export const SSOCredentials: MessageFns<SSOCredentials> = {
   },
 };
 
-function createBaseRegisterUserRequest(): RegisterUserRequest {
-  return { username: "", password: "" };
-}
-
-export const RegisterUserRequest: MessageFns<RegisterUserRequest> = {
-  encode(message: RegisterUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.username !== "") {
-      writer.uint32(10).string(message.username);
-    }
-    if (message.password !== "") {
-      writer.uint32(18).string(message.password);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): RegisterUserRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRegisterUserRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.username = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.password = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<RegisterUserRequest>): RegisterUserRequest {
-    return RegisterUserRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<RegisterUserRequest>): RegisterUserRequest {
-    const message = createBaseRegisterUserRequest();
-    message.username = object.username ?? "";
-    message.password = object.password ?? "";
-    return message;
-  },
-};
-
 function createBaseDeleteSessionRequest(): DeleteSessionRequest {
   return {};
 }
@@ -455,18 +397,76 @@ export const DeleteSessionRequest: MessageFns<DeleteSessionRequest> = {
   },
 };
 
+function createBaseSignUpRequest(): SignUpRequest {
+  return { username: "", password: "" };
+}
+
+export const SignUpRequest: MessageFns<SignUpRequest> = {
+  encode(message: SignUpRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.username !== "") {
+      writer.uint32(10).string(message.username);
+    }
+    if (message.password !== "") {
+      writer.uint32(18).string(message.password);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SignUpRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSignUpRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.password = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<SignUpRequest>): SignUpRequest {
+    return SignUpRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<SignUpRequest>): SignUpRequest {
+    const message = createBaseSignUpRequest();
+    message.username = object.username ?? "";
+    message.password = object.password ?? "";
+    return message;
+  },
+};
+
 export type AuthServiceDefinition = typeof AuthServiceDefinition;
 export const AuthServiceDefinition = {
   name: "AuthService",
   fullName: "memos.api.v1.AuthService",
   methods: {
     /**
-     * GetAuthStatus returns the current authentication status of the user.
-     * This method is idempotent and safe, suitable for checking authentication state.
+     * GetCurrentSession returns the current active session information.
+     * This method is idempotent and safe, suitable for checking current session state.
      */
-    getAuthStatus: {
-      name: "GetAuthStatus",
-      requestType: GetAuthStatusRequest,
+    getCurrentSession: {
+      name: "GetCurrentSession",
+      requestType: GetCurrentSessionRequest,
       requestStream: false,
       responseType: User,
       responseStream: false,
@@ -474,9 +474,9 @@ export const AuthServiceDefinition = {
         _unknownFields: {
           578365826: [
             new Uint8Array([
-              21,
+              31,
               18,
-              19,
+              29,
               47,
               97,
               112,
@@ -491,11 +491,21 @@ export const AuthServiceDefinition = {
               104,
               47,
               115,
-              116,
-              97,
-              116,
-              117,
+              101,
               115,
+              115,
+              105,
+              111,
+              110,
+              115,
+              47,
+              99,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
             ]),
           ],
         },
@@ -548,49 +558,6 @@ export const AuthServiceDefinition = {
       },
     },
     /**
-     * RegisterUser creates a new user account with username and password.
-     * Returns the newly created user information upon successful registration.
-     */
-    registerUser: {
-      name: "RegisterUser",
-      requestType: RegisterUserRequest,
-      requestStream: false,
-      responseType: User,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          578365826: [
-            new Uint8Array([
-              23,
-              58,
-              1,
-              42,
-              34,
-              18,
-              47,
-              97,
-              112,
-              105,
-              47,
-              118,
-              49,
-              47,
-              97,
-              117,
-              116,
-              104,
-              47,
-              117,
-              115,
-              101,
-              114,
-              115,
-            ]),
-          ],
-        },
-      },
-    },
-    /**
      * DeleteSession terminates the current user session.
      * This is an idempotent operation that invalidates the user's authentication.
      */
@@ -636,6 +603,50 @@ export const AuthServiceDefinition = {
               101,
               110,
               116,
+            ]),
+          ],
+        },
+      },
+    },
+    /**
+     * SignUp creates a new user account with username and password.
+     * Returns the newly created user information upon successful registration.
+     */
+    signUp: {
+      name: "SignUp",
+      requestType: SignUpRequest,
+      requestStream: false,
+      responseType: User,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          578365826: [
+            new Uint8Array([
+              24,
+              58,
+              1,
+              42,
+              34,
+              19,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              97,
+              117,
+              116,
+              104,
+              47,
+              115,
+              105,
+              103,
+              110,
+              117,
+              112,
             ]),
           ],
         },

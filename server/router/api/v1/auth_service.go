@@ -29,7 +29,7 @@ const (
 	unmatchedUsernameAndPasswordError = "unmatched username and password"
 )
 
-func (s *APIV1Service) GetAuthStatus(ctx context.Context, _ *v1pb.GetAuthStatusRequest) (*v1pb.User, error) {
+func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrentSessionRequest) (*v1pb.User, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
@@ -189,7 +189,7 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 	return nil
 }
 
-func (s *APIV1Service) RegisterUser(ctx context.Context, request *v1pb.RegisterUserRequest) (*v1pb.User, error) {
+func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) (*v1pb.User, error) {
 	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting, error: %v", err)

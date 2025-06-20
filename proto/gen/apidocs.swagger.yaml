@@ -155,6 +155,22 @@ paths:
       tags:
         - AuthService
   /api/v1/auth/sessions/current:
+    get:
+      summary: |-
+        GetCurrentSession returns the current active session information.
+        This method is idempotent and safe, suitable for checking current session state.
+      operationId: AuthService_GetCurrentSession
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1User'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - AuthService
     delete:
       summary: |-
         DeleteSession terminates the current user session.
@@ -172,29 +188,12 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - AuthService
-  /api/v1/auth/status:
-    get:
-      summary: |-
-        GetAuthStatus returns the current authentication status of the user.
-        This method is idempotent and safe, suitable for checking authentication state.
-      operationId: AuthService_GetAuthStatus
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1User'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      tags:
-        - AuthService
-  /api/v1/auth/users:
+  /api/v1/auth/signup:
     post:
       summary: |-
-        RegisterUser creates a new user account with username and password.
+        SignUp creates a new user account with username and password.
         Returns the newly created user information upon successful registration.
-      operationId: AuthService_RegisterUser
+      operationId: AuthService_SignUp
       responses:
         "200":
           description: A successful response.
@@ -209,7 +208,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1RegisterUserRequest'
+            $ref: '#/definitions/v1SignUpRequest'
       tags:
         - AuthService
   /api/v1/identityProviders:
@@ -3984,22 +3983,6 @@ definitions:
       params:
         type: string
         description: Additional parameters for the referenced content.
-  v1RegisterUserRequest:
-    type: object
-    properties:
-      username:
-        type: string
-        description: |-
-          The username to sign up with.
-          Required field that must be unique across the system.
-      password:
-        type: string
-        description: |-
-          The password to sign up with.
-          Required field that should meet security requirements.
-    required:
-      - username
-      - password
   v1RestoreMarkdownNodesRequest:
     type: object
     properties:
@@ -4056,6 +4039,22 @@ definitions:
         type: integer
         format: int32
         description: The total count of matching users.
+  v1SignUpRequest:
+    type: object
+    properties:
+      username:
+        type: string
+        description: |-
+          The username to sign up with.
+          Required field that must be unique across the system.
+      password:
+        type: string
+        description: |-
+          The password to sign up with.
+          Required field that should meet security requirements.
+    required:
+      - username
+      - password
   v1SpoilerNode:
     type: object
     properties:
