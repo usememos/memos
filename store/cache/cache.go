@@ -251,10 +251,8 @@ func (c *Cache) cleanup() {
 
 // cleanupOldest removes the oldest items if we're over the max items.
 func (c *Cache) cleanupOldest() {
-	threshold := c.config.MaxItems / 5 // Remove 20% of max items at once
-	if threshold < 1 {
-		threshold = 1
-	}
+	// Remove 20% of max items at once
+	threshold := max(c.config.MaxItems/5, 1)
 
 	currentCount := atomic.LoadInt64(&c.itemCount)
 
