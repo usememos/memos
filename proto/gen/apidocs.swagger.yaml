@@ -1193,8 +1193,8 @@ paths:
       tags:
         - IdentityProviderService
     delete:
-      summary: DeleteIdentityProvider deletes an identity provider.
-      operationId: IdentityProviderService_DeleteIdentityProvider
+      summary: RevokeUserSession revokes a specific session for a user.
+      operationId: UserService_RevokeUserSession
       responses:
         "200":
           description: A successful response.
@@ -1208,14 +1208,14 @@ paths:
       parameters:
         - name: name_3
           description: |-
-            Required. The resource name of the identity provider to delete.
-            Format: identityProviders/{idp}
+            Required. The resource name of the session to revoke.
+            Format: users/{user}/sessions/{session}
           in: path
           required: true
           type: string
-          pattern: identityProviders/[^/]+
+          pattern: users/[^/]+/sessions/[^/]+
       tags:
-        - IdentityProviderService
+        - UserService
   /api/v1/{name_4}:
     get:
       summary: GetMemo gets a memo.
@@ -1248,8 +1248,8 @@ paths:
       tags:
         - MemoService
     delete:
-      summary: DeleteInbox deletes an inbox.
-      operationId: InboxService_DeleteInbox
+      summary: DeleteIdentityProvider deletes an identity provider.
+      operationId: IdentityProviderService_DeleteIdentityProvider
       responses:
         "200":
           description: A successful response.
@@ -1263,14 +1263,14 @@ paths:
       parameters:
         - name: name_4
           description: |-
-            Required. The resource name of the inbox to delete.
-            Format: inboxes/{inbox}
+            Required. The resource name of the identity provider to delete.
+            Format: identityProviders/{idp}
           in: path
           required: true
           type: string
-          pattern: inboxes/[^/]+
+          pattern: identityProviders/[^/]+
       tags:
-        - InboxService
+        - IdentityProviderService
   /api/v1/{name_5}:
     get:
       summary: GetShortcut gets a shortcut by name.
@@ -1296,8 +1296,8 @@ paths:
       tags:
         - ShortcutService
     delete:
-      summary: DeleteMemo deletes a memo.
-      operationId: MemoService_DeleteMemo
+      summary: DeleteInbox deletes an inbox.
+      operationId: InboxService_DeleteInbox
       responses:
         "200":
           description: A successful response.
@@ -1311,19 +1311,14 @@ paths:
       parameters:
         - name: name_5
           description: |-
-            Required. The resource name of the memo to delete.
-            Format: memos/{memo}
+            Required. The resource name of the inbox to delete.
+            Format: inboxes/{inbox}
           in: path
           required: true
           type: string
-          pattern: memos/[^/]+
-        - name: force
-          description: Optional. If set to true, the memo will be deleted even if it has associated data.
-          in: query
-          required: false
-          type: boolean
+          pattern: inboxes/[^/]+
       tags:
-        - MemoService
+        - InboxService
   /api/v1/{name_6}:
     get:
       summary: GetWebhook gets a webhook by name.
@@ -1356,8 +1351,8 @@ paths:
       tags:
         - WebhookService
     delete:
-      summary: DeleteMemoReaction deletes a reaction for a memo.
-      operationId: MemoService_DeleteMemoReaction
+      summary: DeleteMemo deletes a memo.
+      operationId: MemoService_DeleteMemo
       responses:
         "200":
           description: A successful response.
@@ -1371,12 +1366,17 @@ paths:
       parameters:
         - name: name_6
           description: |-
-            Required. The resource name of the reaction to delete.
-            Format: reactions/{reaction}
+            Required. The resource name of the memo to delete.
+            Format: memos/{memo}
           in: path
           required: true
           type: string
-          pattern: reactions/[^/]+
+          pattern: memos/[^/]+
+        - name: force
+          description: Optional. If set to true, the memo will be deleted even if it has associated data.
+          in: query
+          required: false
+          type: boolean
       tags:
         - MemoService
   /api/v1/{name_7}:
@@ -1404,8 +1404,8 @@ paths:
       tags:
         - WorkspaceService
     delete:
-      summary: DeleteShortcut deletes a shortcut for a user.
-      operationId: ShortcutService_DeleteShortcut
+      summary: DeleteMemoReaction deletes a reaction for a memo.
+      operationId: MemoService_DeleteMemoReaction
       responses:
         "200":
           description: A successful response.
@@ -1419,6 +1419,31 @@ paths:
       parameters:
         - name: name_7
           description: |-
+            Required. The resource name of the reaction to delete.
+            Format: reactions/{reaction}
+          in: path
+          required: true
+          type: string
+          pattern: reactions/[^/]+
+      tags:
+        - MemoService
+  /api/v1/{name_8}:
+    delete:
+      summary: DeleteShortcut deletes a shortcut for a user.
+      operationId: ShortcutService_DeleteShortcut
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            type: object
+            properties: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_8
+          description: |-
             Required. The resource name of the shortcut to delete.
             Format: users/{user}/shortcuts/{shortcut}
           in: path
@@ -1427,7 +1452,7 @@ paths:
           pattern: users/[^/]+/shortcuts/[^/]+
       tags:
         - ShortcutService
-  /api/v1/{name_8}:
+  /api/v1/{name_9}:
     delete:
       summary: DeleteWebhook deletes a webhook.
       operationId: WebhookService_DeleteWebhook
@@ -1442,7 +1467,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: name_8
+        - name: name_9
           description: |-
             Required. The resource name of the webhook to delete.
             Format: webhooks/{webhook}
@@ -2054,6 +2079,30 @@ paths:
           type: string
       tags:
         - MemoService
+  /api/v1/{parent}/sessions:
+    get:
+      summary: ListUserSessions returns a list of active sessions for a user.
+      operationId: UserService_ListUserSessions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListUserSessionsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            Required. The resource name of the parent.
+            Format: users/{user}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - UserService
   /api/v1/{parent}/shortcuts:
     get:
       summary: ListShortcuts returns a list of shortcuts for a user.
@@ -3676,6 +3725,15 @@ definitions:
         type: integer
         format: int32
         description: The total count of access tokens.
+  v1ListUserSessionsResponse:
+    type: object
+    properties:
+      sessions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1UserSession'
+        description: The list of user sessions.
   v1ListUsersResponse:
     type: object
     properties:
@@ -4233,6 +4291,58 @@ definitions:
         format: date-time
         description: Optional. The expiration timestamp.
     title: User access token message
+  v1UserSession:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The resource name of the session.
+          Format: users/{user}/sessions/{session}
+      sessionId:
+        type: string
+        description: The session ID.
+        readOnly: true
+      createTime:
+        type: string
+        format: date-time
+        description: The timestamp when the session was created.
+        readOnly: true
+      expireTime:
+        type: string
+        format: date-time
+        description: The timestamp when the session expires.
+        readOnly: true
+      lastAccessedTime:
+        type: string
+        format: date-time
+        description: The timestamp when the session was last accessed.
+        readOnly: true
+      clientInfo:
+        $ref: '#/definitions/v1UserSessionClientInfo'
+        description: Client information associated with this session.
+        readOnly: true
+  v1UserSessionClientInfo:
+    type: object
+    properties:
+      userAgent:
+        type: string
+        description: User agent string of the client.
+      ipAddress:
+        type: string
+        description: IP address of the client.
+      deviceType:
+        type: string
+        description: Optional. Device type (e.g., "mobile", "desktop", "tablet").
+      os:
+        type: string
+        description: Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
+      browser:
+        type: string
+        description: Optional. Browser name and version (e.g., "Chrome 119.0").
+      country:
+        type: string
+        description: Optional. Geographic location (country code, e.g., "US").
   v1UserStats:
     type: object
     properties:

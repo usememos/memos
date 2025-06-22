@@ -35,6 +35,8 @@ const (
 	UserService_ListUserAccessTokens_FullMethodName  = "/memos.api.v1.UserService/ListUserAccessTokens"
 	UserService_CreateUserAccessToken_FullMethodName = "/memos.api.v1.UserService/CreateUserAccessToken"
 	UserService_DeleteUserAccessToken_FullMethodName = "/memos.api.v1.UserService/DeleteUserAccessToken"
+	UserService_ListUserSessions_FullMethodName      = "/memos.api.v1.UserService/ListUserSessions"
+	UserService_RevokeUserSession_FullMethodName     = "/memos.api.v1.UserService/RevokeUserSession"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -69,6 +71,10 @@ type UserServiceClient interface {
 	CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*UserAccessToken, error)
 	// DeleteUserAccessToken deletes an access token.
 	DeleteUserAccessToken(ctx context.Context, in *DeleteUserAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// ListUserSessions returns a list of active sessions for a user.
+	ListUserSessions(ctx context.Context, in *ListUserSessionsRequest, opts ...grpc.CallOption) (*ListUserSessionsResponse, error)
+	// RevokeUserSession revokes a specific session for a user.
+	RevokeUserSession(ctx context.Context, in *RevokeUserSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type userServiceClient struct {
@@ -219,6 +225,26 @@ func (c *userServiceClient) DeleteUserAccessToken(ctx context.Context, in *Delet
 	return out, nil
 }
 
+func (c *userServiceClient) ListUserSessions(ctx context.Context, in *ListUserSessionsRequest, opts ...grpc.CallOption) (*ListUserSessionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserSessionsResponse)
+	err := c.cc.Invoke(ctx, UserService_ListUserSessions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RevokeUserSession(ctx context.Context, in *RevokeUserSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserService_RevokeUserSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -251,6 +277,10 @@ type UserServiceServer interface {
 	CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*UserAccessToken, error)
 	// DeleteUserAccessToken deletes an access token.
 	DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error)
+	// ListUserSessions returns a list of active sessions for a user.
+	ListUserSessions(context.Context, *ListUserSessionsRequest) (*ListUserSessionsResponse, error)
+	// RevokeUserSession revokes a specific session for a user.
+	RevokeUserSession(context.Context, *RevokeUserSessionRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -302,6 +332,12 @@ func (UnimplementedUserServiceServer) CreateUserAccessToken(context.Context, *Cr
 }
 func (UnimplementedUserServiceServer) DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserAccessToken not implemented")
+}
+func (UnimplementedUserServiceServer) ListUserSessions(context.Context, *ListUserSessionsRequest) (*ListUserSessionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserSessions not implemented")
+}
+func (UnimplementedUserServiceServer) RevokeUserSession(context.Context, *RevokeUserSessionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeUserSession not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -576,6 +612,42 @@ func _UserService_DeleteUserAccessToken_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ListUserSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserSessionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListUserSessions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListUserSessions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListUserSessions(ctx, req.(*ListUserSessionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RevokeUserSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeUserSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RevokeUserSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_RevokeUserSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RevokeUserSession(ctx, req.(*RevokeUserSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -638,6 +710,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUserAccessToken",
 			Handler:    _UserService_DeleteUserAccessToken_Handler,
+		},
+		{
+			MethodName: "ListUserSessions",
+			Handler:    _UserService_ListUserSessions_Handler,
+		},
+		{
+			MethodName: "RevokeUserSession",
+			Handler:    _UserService_RevokeUserSession_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

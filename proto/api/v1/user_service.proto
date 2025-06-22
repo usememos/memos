@@ -108,6 +108,18 @@ service UserService {
     option (google.api.http) = {delete: "/api/v1/{name=users/*/accessTokens/*}"};
     option (google.api.method_signature) = "name";
   }
+
+  // ListUserSessions returns a list of active sessions for a user.
+  rpc ListUserSessions(ListUserSessionsRequest) returns (ListUserSessionsResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/sessions"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // RevokeUserSession revokes a specific session for a user.
+  rpc RevokeUserSession(RevokeUserSessionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*/sessions/*}"};
+    option (google.api.method_signature) = "name";
+  }
 }
 
 message User {
@@ -455,6 +467,76 @@ message DeleteUserAccessTokenRequest {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/UserAccessToken"}
+  ];
+}
+
+message UserSession {
+  option (google.api.resource) = {
+    type: "memos.api.v1/UserSession"
+    pattern: "users/{user}/sessions/{session}"
+    name_field: "name"
+  };
+
+  // The resource name of the session.
+  // Format: users/{user}/sessions/{session}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The session ID.
+  string session_id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The timestamp when the session was created.
+  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The timestamp when the session expires.
+  google.protobuf.Timestamp expire_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The timestamp when the session was last accessed.
+  google.protobuf.Timestamp last_accessed_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Client information associated with this session.
+  ClientInfo client_info = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  message ClientInfo {
+    // User agent string of the client.
+    string user_agent = 1;
+
+    // IP address of the client.
+    string ip_address = 2;
+
+    // Optional. Device type (e.g., "mobile", "desktop", "tablet").
+    string device_type = 3 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
+    string os = 4 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. Browser name and version (e.g., "Chrome 119.0").
+    string browser = 5 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. Geographic location (country code, e.g., "US").
+    string country = 6 [(google.api.field_behavior) = OPTIONAL];
+  }
+}
+
+message ListUserSessionsRequest {
+  // Required. The resource name of the parent.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+}
+
+message ListUserSessionsResponse {
+  // The list of user sessions.
+  repeated UserSession sessions = 1;
+}
+
+message RevokeUserSessionRequest {
+  // Required. The resource name of the session to revoke.
+  // Format: users/{user}/sessions/{session}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/UserSession"}
   ];
 }
 
