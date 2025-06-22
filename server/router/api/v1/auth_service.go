@@ -331,15 +331,18 @@ func (*APIV1Service) buildAccessTokenCookie(ctx context.Context, accessToken str
 }
 
 func (s *APIV1Service) GetCurrentUser(ctx context.Context) (*store.User, error) {
-	username, ok := ctx.Value(usernameContextKey).(string)
+	userID, ok := ctx.Value(userIDContextKey).(int32)
 	if !ok {
 		return nil, nil
 	}
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Username: &username,
+		ID: &userID,
 	})
 	if err != nil {
 		return nil, err
+	}
+	if user == nil {
+		return nil, errors.Errorf("user %d not found", userID)
 	}
 	return user, nil
 }

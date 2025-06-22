@@ -27,7 +27,7 @@ func TestListInboxes(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// List inboxes (should be empty initially)
 		req := &v1pb.ListInboxesRequest{
@@ -64,7 +64,7 @@ func TestListInboxes(t *testing.T) {
 		}
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// List inboxes with page size limit
 		req := &v1pb.ListInboxesRequest{
@@ -90,7 +90,7 @@ func TestListInboxes(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user1 context but try to list user2's inboxes
-		userCtx := ts.CreateUserContext(ctx, user1.Username)
+		userCtx := ts.CreateUserContext(ctx, user1.ID)
 
 		req := &v1pb.ListInboxesRequest{
 			Parent: fmt.Sprintf("users/%d", user2.ID),
@@ -124,7 +124,7 @@ func TestListInboxes(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set host user context and try to list regular user's inboxes
-		hostCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		hostCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		req := &v1pb.ListInboxesRequest{
 			Parent: fmt.Sprintf("users/%d", regularUser.ID),
@@ -145,7 +145,7 @@ func TestListInboxes(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.ListInboxesRequest{
 			Parent: "invalid-parent-format",
@@ -194,7 +194,7 @@ func TestUpdateInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// Update inbox status
 		req := &v1pb.UpdateInboxRequest{
@@ -236,7 +236,7 @@ func TestUpdateInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user1 context but try to update user2's inbox
-		userCtx := ts.CreateUserContext(ctx, user1.Username)
+		userCtx := ts.CreateUserContext(ctx, user1.ID)
 
 		req := &v1pb.UpdateInboxRequest{
 			Inbox: &v1pb.Inbox{
@@ -262,7 +262,7 @@ func TestUpdateInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.UpdateInboxRequest{
 			Inbox: &v1pb.Inbox{
@@ -285,7 +285,7 @@ func TestUpdateInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.UpdateInboxRequest{
 			Inbox: &v1pb.Inbox{
@@ -311,7 +311,7 @@ func TestUpdateInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.UpdateInboxRequest{
 			Inbox: &v1pb.Inbox{
@@ -351,7 +351,7 @@ func TestUpdateInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.UpdateInboxRequest{
 			Inbox: &v1pb.Inbox{
@@ -393,7 +393,7 @@ func TestDeleteInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// Delete inbox
 		req := &v1pb.DeleteInboxRequest{
@@ -434,7 +434,7 @@ func TestDeleteInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user1 context but try to delete user2's inbox
-		userCtx := ts.CreateUserContext(ctx, user1.Username)
+		userCtx := ts.CreateUserContext(ctx, user1.ID)
 
 		req := &v1pb.DeleteInboxRequest{
 			Name: fmt.Sprintf("inboxes/%d", inbox.ID),
@@ -454,7 +454,7 @@ func TestDeleteInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.DeleteInboxRequest{
 			Name: "invalid-inbox-name",
@@ -474,7 +474,7 @@ func TestDeleteInbox(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.DeleteInboxRequest{
 			Name: "inboxes/99999", // Non-existent inbox
@@ -512,7 +512,7 @@ func TestInboxCRUDComplete(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// 1. List inboxes - should have 1
 		listReq := &v1pb.ListInboxesRequest{

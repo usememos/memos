@@ -149,7 +149,7 @@ func TestGetWorkspaceSetting(t *testing.T) {
 		require.NoError(t, err)
 
 		// Add user to context
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Call GetWorkspaceSetting for storage setting
 		req := &v1pb.GetWorkspaceSettingRequest{

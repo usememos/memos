@@ -23,9 +23,8 @@ import (
 type ContextKey int
 
 const (
-	// The key name used to store username in the context
-	// user id is extracted from the jwt token subject field.
-	usernameContextKey ContextKey = iota
+	// The key name used to store user's ID in the context (for user-based auth).
+	userIDContextKey ContextKey = iota
 	// The key name used to store session ID in the context (for session-based auth).
 	sessionIDContextKey
 	// The key name used to store access token in the context (for token-based auth).
@@ -48,11 +47,6 @@ func NewGRPCAuthInterceptor(store *store.Store, secret string) *GRPCAuthIntercep
 
 // AuthenticationInterceptor is the unary interceptor for gRPC API.
 func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-	// Check if this method is in the allowlist first
-	if isUnauthorizeAllowedMethod(serverInfo.FullMethod) {
-		return handler(ctx, request)
-	}
-
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to parse metadata from incoming context")
@@ -65,21 +59,25 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 	}
 
 	// Authenticate using access token (which also validates sessions when it's from cookie)
-	username, user, err := in.authenticateByAccessToken(ctx, accessToken)
+	user, err := in.authenticateByAccessToken(ctx, accessToken)
 	if err != nil {
+		// Check if this method is in the allowlist first
+		if isUnauthorizeAllowedMethod(serverInfo.FullMethod) {
+			return handler(ctx, request)
+		}
 		return nil, err
 	}
 
 	// Check user status
 	if user.RowStatus == store.Archived {
-		return nil, errors.Errorf("user %q is archived", username)
+		return nil, errors.Errorf("user %q is archived", user.Username)
 	}
 	if isOnlyForAdminAllowedMethod(serverInfo.FullMethod) && user.Role != store.RoleHost && user.Role != store.RoleAdmin {
-		return nil, errors.Errorf("user %q is not admin", username)
+		return nil, errors.Errorf("user %q is not admin", user.Username)
 	}
 
 	// Set context values
-	ctx = context.WithValue(ctx, usernameContextKey, username)
+	ctx = context.WithValue(ctx, userIDContextKey, user.ID)
 
 	// Determine if this came from cookie (session) or header (API token)
 	if _, headerErr := getAccessTokenFromMetadata(md); headerErr != nil {
@@ -96,9 +94,9 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 }
 
 // authenticateByAccessToken authenticates a user using access token from Authorization header or cookie.
-func (in *GRPCAuthInterceptor) authenticateByAccessToken(ctx context.Context, accessToken string) (string, *store.User, error) {
+func (in *GRPCAuthInterceptor) authenticateByAccessToken(ctx context.Context, accessToken string) (*store.User, error) {
 	if accessToken == "" {
-		return "", nil, status.Errorf(codes.Unauthenticated, "access token not found")
+		return nil, status.Errorf(codes.Unauthenticated, "access token not found")
 	}
 	claims := &ClaimsMessage{}
 	_, err := jwt.ParseWithClaims(accessToken, claims, func(t *jwt.Token) (any, error) {
@@ -113,33 +111,33 @@ func (in *GRPCAuthInterceptor) authenticateByAccessToken(ctx context.Context, ac
 		return nil, status.Errorf(codes.Unauthenticated, "unexpected access token kid=%v", t.Header["kid"])
 	})
 	if err != nil {
-		return "", nil, status.Errorf(codes.Unauthenticated, "Invalid or expired access token")
+		return nil, status.Errorf(codes.Unauthenticated, "Invalid or expired access token")
 	}
 
 	// We either have a valid access token or we will attempt to generate new access token.
 	userID, err := util.ConvertStringToInt32(claims.Subject)
 	if err != nil {
-		return "", nil, errors.Wrap(err, "malformed ID in the token")
+		return nil, errors.Wrap(err, "malformed ID in the token")
 	}
 	user, err := in.Store.GetUser(ctx, &store.FindUser{
 		ID: &userID,
 	})
 	if err != nil {
-		return "", nil, errors.Wrap(err, "failed to get user")
+		return nil, errors.Wrap(err, "failed to get user")
 	}
 	if user == nil {
-		return "", nil, errors.Errorf("user %q not exists", userID)
+		return nil, errors.Errorf("user %q not exists", userID)
 	}
 	if user.RowStatus == store.Archived {
-		return "", nil, errors.Errorf("user %q is archived", userID)
+		return nil, errors.Errorf("user %q is archived", userID)
 	}
 
 	accessTokens, err := in.Store.GetUserAccessTokens(ctx, user.ID)
 	if err != nil {
-		return "", nil, errors.Wrapf(err, "failed to get user access tokens")
+		return nil, errors.Wrapf(err, "failed to get user access tokens")
 	}
 	if !validateAccessToken(accessToken, accessTokens) {
-		return "", nil, status.Errorf(codes.Unauthenticated, "invalid access token")
+		return nil, status.Errorf(codes.Unauthenticated, "invalid access token")
 	}
 
 	// For tokens that might be used as session IDs (from cookies), also validate session existence
@@ -148,7 +146,7 @@ func (in *GRPCAuthInterceptor) authenticateByAccessToken(ctx context.Context, ac
 		validateUserSession(accessToken, sessions) // Result doesn't matter for API tokens
 	}
 
-	return user.Username, user, nil
+	return user, nil
 }
 
 // updateSessionLastAccessed updates the last accessed time for a user session.
@@ -203,9 +201,6 @@ func getTokenFromMetadata(md metadata.MD) (string, error) {
 		if v, _ := request.Cookie(AccessTokenCookieName); v != nil {
 			accessToken = v.Value
 		}
-	}
-	if accessToken == "" {
-		return "", errors.New("access token not found")
 	}
 	return accessToken, nil
 }

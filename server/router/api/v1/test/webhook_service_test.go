@@ -23,7 +23,7 @@ func TestCreateWebhook(t *testing.T) {
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Create a webhook
 		req := &v1pb.CreateWebhookRequest{
@@ -72,7 +72,7 @@ func TestCreateWebhook(t *testing.T) {
 		regularUser, err := ts.CreateRegularUser(ctx, "user1")
 		require.NoError(t, err)
 
-		userCtx := ts.CreateUserContext(ctx, regularUser.Username)
+		userCtx := ts.CreateUserContext(ctx, regularUser.ID)
 
 		// Try to create webhook as regular user
 		req := &v1pb.CreateWebhookRequest{
@@ -98,7 +98,7 @@ func TestCreateWebhook(t *testing.T) {
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Try to create webhook with missing URL
 		req := &v1pb.CreateWebhookRequest{
@@ -127,7 +127,7 @@ func TestListWebhooks(t *testing.T) {
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// List webhooks
 		req := &v1pb.ListWebhooksRequest{}
@@ -147,7 +147,7 @@ func TestListWebhooks(t *testing.T) {
 		// Create host user and authenticate
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Create a webhook
 		createReq := &v1pb.CreateWebhookRequest{
@@ -196,7 +196,7 @@ func TestGetWebhook(t *testing.T) {
 		// Create host user and authenticate
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Create a webhook
 		createReq := &v1pb.CreateWebhookRequest{
@@ -230,7 +230,7 @@ func TestGetWebhook(t *testing.T) {
 		// Create host user and authenticate
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Try to get webhook with invalid name
 		req := &v1pb.GetWebhookRequest{
@@ -250,7 +250,7 @@ func TestGetWebhook(t *testing.T) {
 		// Create host user and authenticate
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Try to get non-existent webhook
 		req := &v1pb.GetWebhookRequest{
@@ -275,7 +275,7 @@ func TestUpdateWebhook(t *testing.T) {
 		// Create host user and authenticate
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Create a webhook
 		createReq := &v1pb.CreateWebhookRequest{
@@ -337,7 +337,7 @@ func TestDeleteWebhook(t *testing.T) {
 		// Create host user and authenticate
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Create a webhook
 		createReq := &v1pb.CreateWebhookRequest{
@@ -393,7 +393,7 @@ func TestDeleteWebhook(t *testing.T) {
 		// Create host user and authenticate
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, hostUser.Username)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Try to delete non-existent webhook
 		req := &v1pb.DeleteWebhookRequest{

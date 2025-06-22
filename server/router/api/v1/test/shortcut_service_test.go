@@ -23,7 +23,7 @@ func TestListShortcuts(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// List shortcuts (should be empty initially)
 		req := &v1pb.ListShortcutsRequest{
@@ -47,7 +47,7 @@ func TestListShortcuts(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user1 context but try to list user2's shortcuts
-		userCtx := ts.CreateUserContext(ctx, user1.Username)
+		userCtx := ts.CreateUserContext(ctx, user1.ID)
 
 		req := &v1pb.ListShortcutsRequest{
 			Parent: fmt.Sprintf("users/%d", user2.ID),
@@ -67,7 +67,7 @@ func TestListShortcuts(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.ListShortcutsRequest{
 			Parent: "invalid-parent-format",
@@ -104,7 +104,7 @@ func TestGetShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// First create a shortcut
 		createReq := &v1pb.CreateShortcutRequest{
@@ -142,7 +142,7 @@ func TestGetShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create shortcut as user1
-		user1Ctx := ts.CreateUserContext(ctx, user1.Username)
+		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
 		createReq := &v1pb.CreateShortcutRequest{
 			Parent: fmt.Sprintf("users/%d", user1.ID),
 			Shortcut: &v1pb.Shortcut{
@@ -155,7 +155,7 @@ func TestGetShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Try to get shortcut as user2
-		user2Ctx := ts.CreateUserContext(ctx, user2.Username)
+		user2Ctx := ts.CreateUserContext(ctx, user2.ID)
 		getReq := &v1pb.GetShortcutRequest{
 			Name: created.Name,
 		}
@@ -174,7 +174,7 @@ func TestGetShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.GetShortcutRequest{
 			Name: "invalid-shortcut-name",
@@ -194,7 +194,7 @@ func TestGetShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.GetShortcutRequest{
 			Name: fmt.Sprintf("users/%d", user.ID) + "/shortcuts/nonexistent",
@@ -218,7 +218,7 @@ func TestCreateShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.CreateShortcutRequest{
 			Parent: fmt.Sprintf("users/%d", user.ID),
@@ -257,7 +257,7 @@ func TestCreateShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user1 context but try to create shortcut for user2
-		userCtx := ts.CreateUserContext(ctx, user1.Username)
+		userCtx := ts.CreateUserContext(ctx, user1.ID)
 
 		req := &v1pb.CreateShortcutRequest{
 			Parent: fmt.Sprintf("users/%d", user2.ID),
@@ -281,7 +281,7 @@ func TestCreateShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.CreateShortcutRequest{
 			Parent: "invalid-parent",
@@ -305,7 +305,7 @@ func TestCreateShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.CreateShortcutRequest{
 			Parent: fmt.Sprintf("users/%d", user.ID),
@@ -329,7 +329,7 @@ func TestCreateShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.CreateShortcutRequest{
 			Parent: fmt.Sprintf("users/%d", user.ID),
@@ -356,7 +356,7 @@ func TestUpdateShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// Create a shortcut first
 		createReq := &v1pb.CreateShortcutRequest{
@@ -401,7 +401,7 @@ func TestUpdateShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create shortcut as user1
-		user1Ctx := ts.CreateUserContext(ctx, user1.Username)
+		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
 		createReq := &v1pb.CreateShortcutRequest{
 			Parent: fmt.Sprintf("users/%d", user1.ID),
 			Shortcut: &v1pb.Shortcut{
@@ -414,7 +414,7 @@ func TestUpdateShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Try to update shortcut as user2
-		user2Ctx := ts.CreateUserContext(ctx, user2.Username)
+		user2Ctx := ts.CreateUserContext(ctx, user2.ID)
 		updateReq := &v1pb.UpdateShortcutRequest{
 			Shortcut: &v1pb.Shortcut{
 				Name:   created.Name,
@@ -438,7 +438,7 @@ func TestUpdateShortcut(t *testing.T) {
 		// Create a user and context for authentication
 		user, err := ts.CreateRegularUser(ctx, "testuser")
 		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.UpdateShortcutRequest{
 			Shortcut: &v1pb.Shortcut{
@@ -480,7 +480,7 @@ func TestUpdateShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// Create a shortcut first
 		createReq := &v1pb.CreateShortcutRequest{
@@ -523,7 +523,7 @@ func TestDeleteShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// Create a shortcut first
 		createReq := &v1pb.CreateShortcutRequest{
@@ -575,7 +575,7 @@ func TestDeleteShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Create shortcut as user1
-		user1Ctx := ts.CreateUserContext(ctx, user1.Username)
+		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
 		createReq := &v1pb.CreateShortcutRequest{
 			Parent: fmt.Sprintf("users/%d", user1.ID),
 			Shortcut: &v1pb.Shortcut{
@@ -588,7 +588,7 @@ func TestDeleteShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Try to delete shortcut as user2
-		user2Ctx := ts.CreateUserContext(ctx, user2.Username)
+		user2Ctx := ts.CreateUserContext(ctx, user2.ID)
 		deleteReq := &v1pb.DeleteShortcutRequest{
 			Name: created.Name,
 		}
@@ -620,7 +620,7 @@ func TestDeleteShortcut(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.DeleteShortcutRequest{
 			Name: fmt.Sprintf("users/%d", user.ID) + "/shortcuts/nonexistent",
@@ -644,7 +644,7 @@ func TestShortcutFiltering(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// Test various valid filter formats
 		validFilters := []string{
@@ -681,7 +681,7 @@ func TestShortcutFiltering(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// Test various invalid filter formats
 		invalidFilters := []string{
@@ -723,7 +723,7 @@ func TestShortcutCRUDComplete(t *testing.T) {
 		require.NoError(t, err)
 
 		// Set user context
-		userCtx := ts.CreateUserContext(ctx, user.Username)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// 1. Create multiple shortcuts
 		shortcut1Req := &v1pb.CreateShortcutRequest{
