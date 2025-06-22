@@ -231,7 +231,7 @@ const userStore = (() => {
 
 export const initialUserStore = async () => {
   try {
-    const currentUser = await authServiceClient.getAuthStatus({});
+    const currentUser = await authServiceClient.getCurrentSession({});
     const userSetting = await userServiceClient.getUserSetting({ name: currentUser.name });
     userStore.state.setPartial({
       currentUser: currentUser.name,

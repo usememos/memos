@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package memos.store;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "gen/store";
 
 enum UserSettingKey {
@@ -16,6 +18,8 @@ enum UserSettingKey {
   MEMO_VISIBILITY = 4;
   // The shortcuts of the user.
   SHORTCUTS = 5;
+  // User authentication sessions.
+  SESSIONS = 6;
 }
 
 message UserSetting {
@@ -27,6 +31,7 @@ message UserSetting {
     string appearance = 5;
     string memo_visibility = 6;
     ShortcutsUserSetting shortcuts = 7;
+    SessionsUserSetting sessions = 8;
   }
 }
 
@@ -48,4 +53,36 @@ message ShortcutsUserSetting {
     string filter = 3;
   }
   repeated Shortcut shortcuts = 1;
+}
+
+message SessionsUserSetting {
+  message Session {
+    // Unique session identifier.
+    string session_id = 1;
+    // Timestamp when the session was created.
+    google.protobuf.Timestamp create_time = 2;
+    // Timestamp when the session expires.
+    google.protobuf.Timestamp expire_time = 3;
+    // Timestamp when the session was last accessed.
+    google.protobuf.Timestamp last_accessed_time = 4;
+    // Client information associated with this session.
+    ClientInfo client_info = 5;
+  }
+
+  message ClientInfo {
+    // User agent string of the client.
+    string user_agent = 1;
+    // IP address of the client.
+    string ip_address = 2;
+    // Optional. Device type (e.g., "mobile", "desktop", "tablet").
+    string device_type = 3;
+    // Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
+    string os = 4;
+    // Optional. Browser name and version (e.g., "Chrome 119.0").
+    string browser = 5;
+    // Optional. Geographic location (country code, e.g., "US").
+    string country = 6;
+  }
+
+  repeated Session sessions = 1;
 }

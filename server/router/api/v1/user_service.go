@@ -588,6 +588,108 @@ func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.
 	return &emptypb.Empty{}, nil
 }
 
+func (s *APIV1Service) ListUserSessions(ctx context.Context, request *v1pb.ListUserSessionsRequest) (*v1pb.ListUserSessionsResponse, error) {
+	userID, err := ExtractUserIDFromName(request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	}
+
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+	if currentUser.ID != userID {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	userSessions, err := s.Store.GetUserSessions(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list sessions: %v", err)
+	}
+
+	sessions := []*v1pb.UserSession{}
+	for _, userSession := range userSessions {
+		sessionResponse := &v1pb.UserSession{
+			Name:             fmt.Sprintf("users/%d/sessions/%s", userID, userSession.SessionId),
+			SessionId:        userSession.SessionId,
+			CreateTime:       userSession.CreateTime,
+			ExpireTime:       userSession.ExpireTime,
+			LastAccessedTime: userSession.LastAccessedTime,
+		}
+
+		if userSession.ClientInfo != nil {
+			sessionResponse.ClientInfo = &v1pb.UserSession_ClientInfo{
+				UserAgent:  userSession.ClientInfo.UserAgent,
+				IpAddress:  userSession.ClientInfo.IpAddress,
+				DeviceType: userSession.ClientInfo.DeviceType,
+				Os:         userSession.ClientInfo.Os,
+				Browser:    userSession.ClientInfo.Browser,
+				Country:    userSession.ClientInfo.Country,
+			}
+		}
+
+		sessions = append(sessions, sessionResponse)
+	}
+
+	// Sort by last accessed time in descending order.
+	slices.SortFunc(sessions, func(i, j *v1pb.UserSession) int {
+		return int(j.LastAccessedTime.Seconds - i.LastAccessedTime.Seconds)
+	})
+
+	response := &v1pb.ListUserSessionsResponse{
+		Sessions: sessions,
+	}
+	return response, nil
+}
+
+func (s *APIV1Service) RevokeUserSession(ctx context.Context, request *v1pb.RevokeUserSessionRequest) (*emptypb.Empty, error) {
+	// Extract user ID and session ID from the session resource name
+	// Format: users/{user}/sessions/{session}
+	parts := strings.Split(request.Name, "/")
+	if len(parts) != 4 || parts[0] != "users" || parts[2] != "sessions" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid session name format: %s", request.Name)
+	}
+
+	userID, err := ExtractUserIDFromName(fmt.Sprintf("users/%s", parts[1]))
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	}
+	sessionIDToRevoke := parts[3]
+
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+	if currentUser.ID != userID {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	if err := s.Store.RemoveUserSession(ctx, userID, sessionIDToRevoke); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to revoke session: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// UpsertUserSession adds or updates a user session.
+func (s *APIV1Service) UpsertUserSession(ctx context.Context, userID int32, sessionID string, clientInfo *storepb.SessionsUserSetting_ClientInfo) error {
+	session := &storepb.SessionsUserSetting_Session{
+		SessionId:        sessionID,
+		CreateTime:       timestamppb.Now(),
+		ExpireTime:       timestamppb.New(time.Now().Add(30 * 24 * time.Hour)), // 30 days default
+		LastAccessedTime: timestamppb.Now(),
+		ClientInfo:       clientInfo,
+	}
+
+	return s.Store.AddUserSession(ctx, userID, session)
+}
+
 func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store.User, accessToken, description string) error {
 	userAccessTokens, err := s.Store.GetUserAccessTokens(ctx, user.ID)
 	if err != nil {
@@ -598,6 +700,7 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 		Description: description,
 	}
 	userAccessTokens = append(userAccessTokens, &userAccessToken)
+
 	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
 		Key:    storepb.UserSettingKey_ACCESS_TOKENS,

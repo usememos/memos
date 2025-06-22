@@ -10,10 +10,10 @@ import "google/protobuf/empty.proto";
 option go_package = "gen/api/v1";
 
 service AuthService {
-  // GetAuthStatus returns the current authentication status of the user.
-  // This method is idempotent and safe, suitable for checking authentication state.
-  rpc GetAuthStatus(GetAuthStatusRequest) returns (User) {
-    option (google.api.http) = {get: "/api/v1/auth/status"};
+  // GetCurrentSession returns the current active session information.
+  // This method is idempotent and safe, suitable for checking current session state.
+  rpc GetCurrentSession(GetCurrentSessionRequest) returns (User) {
+    option (google.api.http) = {get: "/api/v1/auth/sessions/current"};
   }
 
   // CreateSession authenticates a user and creates a new session.
@@ -25,25 +25,25 @@ service AuthService {
     };
   }
 
-  // RegisterUser creates a new user account with username and password.
-  // Returns the newly created user information upon successful registration.
-  rpc RegisterUser(RegisterUserRequest) returns (User) {
-    option (google.api.http) = {
-      post: "/api/v1/auth/users"
-      body: "*"
-    };
-  }
-
   // DeleteSession terminates the current user session.
   // This is an idempotent operation that invalidates the user's authentication.
   rpc DeleteSession(DeleteSessionRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/auth/sessions/current"};
   }
+
+  // SignUp creates a new user account with username and password.
+  // Returns the newly created user information upon successful registration.
+  rpc SignUp(SignUpRequest) returns (User) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/signup"
+      body: "*"
+    };
+  }
 }
 
-message GetAuthStatusRequest {}
+message GetCurrentSessionRequest {}
 
-message GetAuthStatusResponse {
+message GetCurrentSessionResponse {
   User user = 1;
 }
 
@@ -87,7 +87,9 @@ message SSOCredentials {
   string redirect_uri = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
-message RegisterUserRequest {
+message DeleteSessionRequest {}
+
+message SignUpRequest {
   // The username to sign up with.
   // Required field that must be unique across the system.
   string username = 1 [(google.api.field_behavior) = REQUIRED];
@@ -96,5 +98,3 @@ message RegisterUserRequest {
   // Required field that should meet security requirements.
   string password = 2 [(google.api.field_behavior) = REQUIRED];
 }
-
-message DeleteSessionRequest {}
