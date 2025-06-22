@@ -677,7 +677,7 @@ func (s *APIV1Service) RevokeUserSession(ctx context.Context, request *v1pb.Revo
 	return &emptypb.Empty{}, nil
 }
 
-// Helper function to add or update a user session
+// UpsertUserSession adds or updates a user session.
 func (s *APIV1Service) UpsertUserSession(ctx context.Context, userID int32, sessionID string, clientInfo *storepb.SessionsUserSetting_ClientInfo) error {
 	session := &storepb.SessionsUserSetting_Session{
 		SessionId:        sessionID,

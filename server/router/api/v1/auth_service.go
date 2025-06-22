@@ -42,6 +42,15 @@ func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrent
 		}
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
 	}
+
+	// Update session last accessed time if we have a session ID
+	if sessionID, ok := ctx.Value(sessionIDContextKey).(string); ok && sessionID != "" {
+		if err := s.Store.UpdateUserSessionLastAccessed(ctx, user.ID, sessionID, timestamppb.Now()); err != nil {
+			// Log error but don't fail the request
+			slog.Error("failed to update session last accessed time", "error", err)
+		}
+	}
+
 	return convertUserFromStore(user), nil
 }
 
@@ -181,7 +190,7 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 	if err := s.trackUserSession(ctx, user.ID, accessToken, expireTime); err != nil {
 		// Log the error but don't fail the login if session tracking fails
 		// This ensures backward compatibility
-		// TODO: Add proper logging here
+		slog.Error("failed to track user session", "error", err)
 	}
 
 	cookie, err := s.buildAccessTokenCookie(ctx, accessToken, expireTime)
@@ -246,16 +255,29 @@ func (s *APIV1Service) SignUp(ctx context.Context, request *v1pb.SignUpRequest) 
 }
 
 func (s *APIV1Service) DeleteSession(ctx context.Context, _ *v1pb.DeleteSessionRequest) (*emptypb.Empty, error) {
-	accessToken, ok := ctx.Value(accessTokenContextKey).(string)
-	// Try to delete the access token from the store.
-	if ok {
-		user, _ := s.GetCurrentUser(ctx)
-		if user != nil {
-			if _, err := s.DeleteUserAccessToken(ctx, &v1pb.DeleteUserAccessTokenRequest{
-				Name: fmt.Sprintf("%s%d/accessTokens/%s", UserNamePrefix, user.ID, accessToken),
-			}); err != nil {
-				slog.Error("failed to delete access token", "error", err)
-			}
+	user, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not found")
+	}
+
+	// Check if we have a session ID (from cookie-based auth)
+	if sessionID, ok := ctx.Value(sessionIDContextKey).(string); ok && sessionID != "" {
+		// Remove session from user settings
+		if err := s.Store.RemoveUserSession(ctx, user.ID, sessionID); err != nil {
+			slog.Error("failed to remove user session", "error", err)
+		}
+	}
+
+	// Check if we have an access token (from header-based auth)
+	if accessToken, ok := ctx.Value(accessTokenContextKey).(string); ok && accessToken != "" {
+		// Delete the access token from the store
+		if _, err := s.DeleteUserAccessToken(ctx, &v1pb.DeleteUserAccessTokenRequest{
+			Name: fmt.Sprintf("%s%d/accessTokens/%s", UserNamePrefix, user.ID, accessToken),
+		}); err != nil {
+			slog.Error("failed to delete access token", "error", err)
 		}
 	}
 
@@ -322,7 +344,7 @@ func (s *APIV1Service) GetCurrentUser(ctx context.Context) (*store.User, error) 
 	return user, nil
 }
 
-// Helper function to track user session for session management
+// Helper function to track user session for session management.
 func (s *APIV1Service) trackUserSession(ctx context.Context, userID int32, sessionID string, expireTime time.Time) error {
 	// Extract client information from the context
 	clientInfo := s.extractClientInfo(ctx)
@@ -338,8 +360,8 @@ func (s *APIV1Service) trackUserSession(ctx context.Context, userID int32, sessi
 	return s.Store.AddUserSession(ctx, userID, session)
 }
 
-// Helper function to extract client information from the gRPC context
-func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsUserSetting_ClientInfo {
+// Helper function to extract client information from the gRPC context.
+func (*APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsUserSetting_ClientInfo {
 	clientInfo := &storepb.SessionsUserSetting_ClientInfo{}
 
 	// Extract user agent from metadata if available
