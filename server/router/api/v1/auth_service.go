@@ -178,15 +178,6 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 }
 
 func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) error {
-	// Generate JWT access token for API use
-	accessToken, err := GenerateAccessToken(user.Email, user.ID, expireTime, []byte(s.Secret))
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to generate access token, error: %v", err)
-	}
-	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken, "user login"); err != nil {
-		return status.Errorf(codes.Internal, "failed to upsert access token to store, error: %v", err)
-	}
-
 	// Generate unique session ID for web use
 	sessionID, err := GenerateSessionID()
 	if err != nil {
