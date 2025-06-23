@@ -1,6 +1,7 @@
 import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { Link } from "react-router-dom";
+import { extractMemoIdFromName } from "@/store/common";
 import { Memo, MemoRelation } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -65,14 +66,14 @@ const MemoRelationListView = (props: Props) => {
               <Link
                 key={memo.name}
                 className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-gray-600 dark:text-gray-400 dark:border-zinc-700 dark:bg-zinc-900 hover:underline"
-                to={`/m/${memo.uid}`}
+                to={`/${memo.name}`}
                 viewTransition
                 state={{
                   from: parentPage,
                 }}
               >
                 <span className="text-xs opacity-60 leading-4 border border-zinc-200 font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
-                  {memo.uid.slice(0, 6)}
+                  {extractMemoIdFromName(memo.name).slice(0, 6)}
                 </span>
                 <span className="truncate">{memo.snippet}</span>
               </Link>
@@ -87,14 +88,14 @@ const MemoRelationListView = (props: Props) => {
               <Link
                 key={memo.name}
                 className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-gray-600 dark:text-gray-400 dark:border-zinc-700 dark:bg-zinc-900 hover:underline"
-                to={`/m/${memo.uid}`}
+                to={`/${memo.name}`}
                 viewTransition
                 state={{
                   from: parentPage,
                 }}
               >
                 <span className="text-xs opacity-60 leading-4 border border-zinc-200 font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
-                  {memo.uid.slice(0, 6)}
+                  {extractMemoIdFromName(memo.name).slice(0, 6)}
                 </span>
                 <span className="truncate">{memo.snippet}</span>
               </Link>

@@ -12,7 +12,6 @@ import { generateDialog } from "./Dialog";
 const templateList: IdentityProvider[] = [
   {
     name: "",
-    uid: "",
     title: "GitHub",
     type: IdentityProvider_Type.OAUTH2,
     identifierFilter: "",
@@ -34,7 +33,6 @@ const templateList: IdentityProvider[] = [
   },
   {
     name: "",
-    uid: "",
     title: "GitLab",
     type: IdentityProvider_Type.OAUTH2,
     identifierFilter: "",
@@ -56,7 +54,6 @@ const templateList: IdentityProvider[] = [
   },
   {
     name: "",
-    uid: "",
     title: "Google",
     type: IdentityProvider_Type.OAUTH2,
     identifierFilter: "",
@@ -78,7 +75,6 @@ const templateList: IdentityProvider[] = [
   },
   {
     name: "",
-    uid: "",
     title: "Custom",
     type: IdentityProvider_Type.OAUTH2,
     identifierFilter: "",
