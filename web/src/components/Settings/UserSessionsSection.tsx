@@ -50,15 +50,6 @@ const UserSessionsSection = () => {
     }
   };
 
-  const formatLocation = (clientInfo: UserSession["clientInfo"]) => {
-    if (!clientInfo) return "Unknown";
-
-    const parts = [];
-    if (clientInfo.ipAddress) parts.push(clientInfo.ipAddress);
-
-    return parts.length > 0 ? parts.join(" • ") : "Unknown";
-  };
-
   const formatDeviceInfo = (clientInfo: UserSession["clientInfo"]) => {
     if (!clientInfo) return "Unknown Device";
 
@@ -97,9 +88,6 @@ const UserSessionsSection = () => {
                     <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
                       {t("setting.user-sessions-section.device")}
                     </th>
-                    <th scope="col" className="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
-                      {t("setting.user-sessions-section.location")}
-                    </th>
                     <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
                       {t("setting.user-sessions-section.last-active")}
                     </th>
@@ -130,9 +118,6 @@ const UserSessionsSection = () => {
                             <span className="text-xs text-gray-500 font-mono">{getFormattedSessionId(userSession.sessionId)}</span>
                           </div>
                         </div>
-                      </td>
-                      <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-400">
-                        {formatLocation(userSession.clientInfo)}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex items-center space-x-1">

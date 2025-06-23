@@ -110,14 +110,40 @@ func TestConvertExprToSQL(t *testing.T) {
 			want:   "`memo`.`created_ts` > ?",
 			args:   []any{time.Now().Unix() - 60*60*24},
 		},
+		{
+			filter: `size(tags) == 0`,
+			want:   "JSON_ARRAY_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) = ?",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `size(tags) > 0`,
+			want:   "JSON_ARRAY_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) > ?",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `"work" in tags`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?",
+			args:   []any{`%"work"%`},
+		},
+		{
+			filter: `size(tags) == 2`,
+			want:   "JSON_ARRAY_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) = ?",
+			args:   []any{int64(2)},
+		},
 	}
 
 	for _, tt := range tests {
 		db := &DB{}
 		parsedExpr, err := filter.Parse(tt.filter, filter.MemoFilterCELAttributes...)
+		if err != nil {
+			t.Logf("Failed to parse filter: %s, error: %v", tt.filter, err)
+		}
 		require.NoError(t, err)
 		convertCtx := filter.NewConvertContext()
 		err = db.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
+		if err != nil {
+			t.Logf("Failed to convert filter: %s, error: %v", tt.filter, err)
+		}
 		require.NoError(t, err)
 		require.Equal(t, tt.want, convertCtx.Buffer.String())
 		require.Equal(t, tt.args, convertCtx.Args)

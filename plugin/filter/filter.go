@@ -18,6 +18,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("updated_ts", cel.IntType),
 	cel.Variable("pinned", cel.BoolType),
 	cel.Variable("tag", cel.StringType),
+	cel.Variable("tags", cel.ListType(cel.StringType)),
 	cel.Variable("visibility", cel.StringType),
 	cel.Variable("has_task_list", cel.BoolType),
 	// Current timestamp function.

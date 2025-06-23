@@ -116,7 +116,6 @@ func (s *APIV1Service) DeleteIdentityProvider(ctx context.Context, request *v1pb
 func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider) *v1pb.IdentityProvider {
 	temp := &v1pb.IdentityProvider{
 		Name:             fmt.Sprintf("%s%d", IdentityProviderNamePrefix, identityProvider.Id),
-		Uid:              fmt.Sprintf("%d", identityProvider.Id),
 		Title:            identityProvider.Name,
 		IdentifierFilter: identityProvider.IdentifierFilter,
 		Type:             v1pb.IdentityProvider_Type(v1pb.IdentityProvider_Type_value[identityProvider.Type.String()]),

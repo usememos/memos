@@ -29,19 +29,11 @@ export interface ListShortcutsRequest {
    * Format: users/{user}
    */
   parent: string;
-  /** Optional. The maximum number of shortcuts to return. */
-  pageSize: number;
-  /** Optional. A page token for pagination. */
-  pageToken: string;
 }
 
 export interface ListShortcutsResponse {
   /** The list of shortcuts. */
   shortcuts: Shortcut[];
-  /** A token for the next page of results. */
-  nextPageToken: string;
-  /** The total count of shortcuts. */
-  totalSize: number;
 }
 
 export interface GetShortcutRequest {
@@ -154,19 +146,13 @@ export const Shortcut: MessageFns<Shortcut> = {
 };
 
 function createBaseListShortcutsRequest(): ListShortcutsRequest {
-  return { parent: "", pageSize: 0, pageToken: "" };
+  return { parent: "" };
 }
 
 export const ListShortcutsRequest: MessageFns<ListShortcutsRequest> = {
   encode(message: ListShortcutsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.parent !== "") {
       writer.uint32(10).string(message.parent);
-    }
-    if (message.pageSize !== 0) {
-      writer.uint32(16).int32(message.pageSize);
-    }
-    if (message.pageToken !== "") {
-      writer.uint32(26).string(message.pageToken);
     }
     return writer;
   },
@@ -186,22 +172,6 @@ export const ListShortcutsRequest: MessageFns<ListShortcutsRequest> = {
           message.parent = reader.string();
           continue;
         }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.pageSize = reader.int32();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.pageToken = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -217,26 +187,18 @@ export const ListShortcutsRequest: MessageFns<ListShortcutsRequest> = {
   fromPartial(object: DeepPartial<ListShortcutsRequest>): ListShortcutsRequest {
     const message = createBaseListShortcutsRequest();
     message.parent = object.parent ?? "";
-    message.pageSize = object.pageSize ?? 0;
-    message.pageToken = object.pageToken ?? "";
     return message;
   },
 };
 
 function createBaseListShortcutsResponse(): ListShortcutsResponse {
-  return { shortcuts: [], nextPageToken: "", totalSize: 0 };
+  return { shortcuts: [] };
 }
 
 export const ListShortcutsResponse: MessageFns<ListShortcutsResponse> = {
   encode(message: ListShortcutsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.shortcuts) {
       Shortcut.encode(v!, writer.uint32(10).fork()).join();
-    }
-    if (message.nextPageToken !== "") {
-      writer.uint32(18).string(message.nextPageToken);
-    }
-    if (message.totalSize !== 0) {
-      writer.uint32(24).int32(message.totalSize);
     }
     return writer;
   },
@@ -256,22 +218,6 @@ export const ListShortcutsResponse: MessageFns<ListShortcutsResponse> = {
           message.shortcuts.push(Shortcut.decode(reader, reader.uint32()));
           continue;
         }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.nextPageToken = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.totalSize = reader.int32();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -287,8 +233,6 @@ export const ListShortcutsResponse: MessageFns<ListShortcutsResponse> = {
   fromPartial(object: DeepPartial<ListShortcutsResponse>): ListShortcutsResponse {
     const message = createBaseListShortcutsResponse();
     message.shortcuts = object.shortcuts?.map((e) => Shortcut.fromPartial(e)) || [];
-    message.nextPageToken = object.nextPageToken ?? "";
-    message.totalSize = object.totalSize ?? 0;
     return message;
   },
 };

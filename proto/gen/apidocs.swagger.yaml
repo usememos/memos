@@ -188,29 +188,6 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - AuthService
-  /api/v1/auth/signup:
-    post:
-      summary: |-
-        SignUp creates a new user account with username and password.
-        Returns the newly created user information upon successful registration.
-      operationId: AuthService_SignUp
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1User'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1SignUpRequest'
-      tags:
-        - AuthService
   /api/v1/identityProviders:
     get:
       summary: ListIdentityProviders lists identity providers.
@@ -224,18 +201,6 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: pageSize
-          description: Optional. The maximum number of identity providers to return.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Optional. A page token for pagination.
-          in: query
-          required: false
-          type: string
       tags:
         - IdentityProviderService
     post:
@@ -650,45 +615,6 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: pageSize
-          description: |-
-            Optional. The maximum number of webhooks to return.
-            The service may return fewer than this value.
-            If unspecified, at most 50 webhooks will be returned.
-            The maximum value is 1000; values above 1000 will be coerced to 1000.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: |-
-            Optional. A page token, received from a previous `ListWebhooks` call.
-            Provide this to retrieve the subsequent page.
-          in: query
-          required: false
-          type: string
-        - name: filter
-          description: |-
-            Optional. Filter to apply to the list results.
-            Example: "state=ACTIVE" or "creator=users/123"
-            Supported operators: =, !=, <, <=, >, >=, :
-            Supported fields: display_name, url, creator, state, create_time, update_time
-          in: query
-          required: false
-          type: string
-        - name: orderBy
-          description: |-
-            Optional. The order to sort results by.
-            Example: "create_time desc" or "display_name asc"
-          in: query
-          required: false
-          type: string
-        - name: showDeleted
-          description: Optional. If true, show deleted webhooks in the response.
-          in: query
-          required: false
-          type: boolean
       tags:
         - WebhookService
     post:
@@ -725,13 +651,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: requestId
-          description: |-
-            Optional. An idempotency token that can be used to ensure that multiple
-            requests to create a webhook have the same result.
-          in: query
-          required: false
-          type: string
       tags:
         - WebhookService
   /api/v1/workspace/profile:
@@ -842,10 +761,6 @@ paths:
           schema:
             type: object
             properties:
-              uid:
-                type: string
-                description: Output only. The system generated unique identifier.
-                readOnly: true
               type:
                 $ref: '#/definitions/apiv1IdentityProviderType'
                 description: Required. The type of the identity provider.
@@ -1341,13 +1256,6 @@ paths:
           required: true
           type: string
           pattern: webhooks/[^/]+
-        - name: readMask
-          description: |-
-            Optional. The fields to return in the response.
-            If not specified, all fields are returned.
-          in: query
-          required: false
-          type: string
       tags:
         - WebhookService
     delete:
@@ -1475,11 +1383,6 @@ paths:
           required: true
           type: string
           pattern: webhooks/[^/]+
-        - name: force
-          description: Optional. If set to true, the webhook will be deleted even if it has associated data.
-          in: query
-          required: false
-          type: boolean
       tags:
         - WebhookService
   /api/v1/{name}:
@@ -2125,17 +2028,6 @@ paths:
           required: true
           type: string
           pattern: users/[^/]+
-        - name: pageSize
-          description: Optional. The maximum number of shortcuts to return.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Optional. A page token for pagination.
-          in: query
-          required: false
-          type: string
       tags:
         - ShortcutService
     post:
@@ -2392,10 +2284,6 @@ paths:
           schema:
             type: object
             properties:
-              uid:
-                type: string
-                description: Output only. The system generated unique identifier.
-                readOnly: true
               role:
                 $ref: '#/definitions/UserRole'
                 description: The role of the user.
@@ -2429,10 +2317,6 @@ paths:
                 type: string
                 format: date-time
                 description: Output only. The last update timestamp.
-                readOnly: true
-              etag:
-                type: string
-                description: Output only. The etag for this resource.
                 readOnly: true
             title: Required. The user to update.
             required:
@@ -2476,10 +2360,6 @@ paths:
           schema:
             type: object
             properties:
-              uid:
-                type: string
-                description: Output only. The system generated unique identifier.
-                readOnly: true
               displayName:
                 type: string
                 description: Required. The display name of the webhook.
@@ -2505,21 +2385,12 @@ paths:
                 format: date-time
                 description: Output only. The last update timestamp.
                 readOnly: true
-              etag:
-                type: string
-                description: Output only. The etag for this resource.
-                readOnly: true
             title: Required. The webhook to update.
             required:
               - displayName
               - url
               - state
               - webhook
-        - name: allowMissing
-          description: Optional. If set to true, allows updating sensitive fields.
-          in: query
-          required: false
-          type: boolean
       tags:
         - WebhookService
   /file/{name}/{filename}:
@@ -2572,6 +2443,47 @@ definitions:
        - INFO: Info level.
        - WARN: Warn level.
        - ERROR: Error level.
+  CreateSessionRequestPasswordCredentials:
+    type: object
+    properties:
+      username:
+        type: string
+        description: |-
+          The username to sign in with.
+          Required field for password-based authentication.
+      password:
+        type: string
+        description: |-
+          The password to sign in with.
+          Required field for password-based authentication.
+    description: Nested message for password-based authentication credentials.
+    required:
+      - username
+      - password
+  CreateSessionRequestSSOCredentials:
+    type: object
+    properties:
+      idpId:
+        type: integer
+        format: int32
+        description: |-
+          The ID of the SSO provider.
+          Required field to identify the SSO provider.
+      code:
+        type: string
+        description: |-
+          The authorization code from the SSO provider.
+          Required field for completing the SSO flow.
+      redirectUri:
+        type: string
+        description: |-
+          The redirect URI used in the SSO flow.
+          Required field for security validation.
+    description: Nested message for SSO authentication credentials.
+    required:
+      - idpId
+      - code
+      - redirectUri
   ListNodeKind:
     type: string
     enum:
@@ -2778,10 +2690,6 @@ definitions:
         title: |-
           The resource name of the identity provider.
           Format: identityProviders/{idp}
-      uid:
-        type: string
-        description: Output only. The system generated unique identifier.
-        readOnly: true
       type:
         $ref: '#/definitions/apiv1IdentityProviderType'
         description: Required. The type of the identity provider.
@@ -2809,6 +2717,7 @@ definitions:
       - TYPE_UNSPECIFIED
       - OAUTH2
     default: TYPE_UNSPECIFIED
+    description: ' - OAUTH2: OAuth2 identity provider.'
   apiv1Location:
     type: object
     properties:
@@ -3362,10 +3271,10 @@ definitions:
     type: object
     properties:
       passwordCredentials:
-        $ref: '#/definitions/v1PasswordCredentials'
+        $ref: '#/definitions/CreateSessionRequestPasswordCredentials'
         description: Username and password authentication method.
       ssoCredentials:
-        $ref: '#/definitions/v1SSOCredentials'
+        $ref: '#/definitions/CreateSessionRequestSSOCredentials'
         description: SSO provider authentication method.
       neverExpire:
         type: boolean
@@ -3577,9 +3486,6 @@ definitions:
           type: object
           $ref: '#/definitions/apiv1IdentityProvider'
         description: The list of identity providers.
-      nextPageToken:
-        type: string
-        description: A token for the next page of results.
   v1ListInboxesResponse:
     type: object
     properties:
@@ -3702,13 +3608,6 @@ definitions:
           type: object
           $ref: '#/definitions/apiv1Shortcut'
         description: The list of shortcuts.
-      nextPageToken:
-        type: string
-        description: A token for the next page of results.
-      totalSize:
-        type: integer
-        format: int32
-        description: The total count of shortcuts.
   v1ListUserAccessTokensResponse:
     type: object
     properties:
@@ -3761,15 +3660,6 @@ definitions:
           type: object
           $ref: '#/definitions/v1Webhook'
         description: The list of webhooks.
-      nextPageToken:
-        type: string
-        description: |-
-          A token that can be sent as `page_token` to retrieve the next page.
-          If this field is omitted, there are no subsequent pages.
-      totalSize:
-        type: integer
-        format: int32
-        description: The total count of webhooks (may be approximate).
   v1MathBlockNode:
     type: object
     properties:
@@ -3815,10 +3705,6 @@ definitions:
         title: |-
           The resource name of the memo.
           Format: memos/{memo}
-      uid:
-        type: string
-        description: Output only. The unique identifier of the memo.
-        readOnly: true
       snippet:
         type: string
         description: Output only. The snippet of the memo content. Plain text only.
@@ -3980,22 +3866,6 @@ definitions:
           type: object
           $ref: '#/definitions/v1Node'
         description: The parsed markdown nodes.
-  v1PasswordCredentials:
-    type: object
-    properties:
-      username:
-        type: string
-        description: |-
-          The username to sign in with.
-          Required field for password-based authentication.
-      password:
-        type: string
-        description: |-
-          The password to sign in with.
-          Required field for password-based authentication.
-    required:
-      - username
-      - password
   v1Reaction:
     type: object
     properties:
@@ -4004,10 +3874,6 @@ definitions:
         title: |-
           The resource name of the reaction.
           Format: reactions/{reaction}
-        readOnly: true
-      uid:
-        type: string
-        description: Output only. The system generated unique identifier.
         readOnly: true
       creator:
         type: string
@@ -4058,29 +3924,6 @@ definitions:
       markdown:
         type: string
         description: The restored markdown content.
-  v1SSOCredentials:
-    type: object
-    properties:
-      idpId:
-        type: integer
-        format: int32
-        description: |-
-          The ID of the SSO provider.
-          Required field to identify the SSO provider.
-      code:
-        type: string
-        description: |-
-          The authorization code from the SSO provider.
-          Required field for completing the SSO flow.
-      redirectUri:
-        type: string
-        description: |-
-          The redirect URI used in the SSO flow.
-          Required field for security validation.
-    required:
-      - idpId
-      - code
-      - redirectUri
   v1SearchUsersResponse:
     type: object
     properties:
@@ -4097,22 +3940,6 @@ definitions:
         type: integer
         format: int32
         description: The total count of matching users.
-  v1SignUpRequest:
-    type: object
-    properties:
-      username:
-        type: string
-        description: |-
-          The username to sign up with.
-          Required field that must be unique across the system.
-      password:
-        type: string
-        description: |-
-          The password to sign up with.
-          Required field that should meet security requirements.
-    required:
-      - username
-      - password
   v1SpoilerNode:
     type: object
     properties:
@@ -4220,10 +4047,6 @@ definitions:
         title: |-
           The resource name of the user.
           Format: users/{user}
-      uid:
-        type: string
-        description: Output only. The system generated unique identifier.
-        readOnly: true
       role:
         $ref: '#/definitions/UserRole'
         description: The role of the user.
@@ -4257,10 +4080,6 @@ definitions:
         type: string
         format: date-time
         description: Output only. The last update timestamp.
-        readOnly: true
-      etag:
-        type: string
-        description: Output only. The etag for this resource.
         readOnly: true
     required:
       - role
@@ -4389,10 +4208,6 @@ definitions:
         title: |-
           The resource name of the webhook.
           Format: webhooks/{webhook}
-      uid:
-        type: string
-        description: Output only. The system generated unique identifier.
-        readOnly: true
       displayName:
         type: string
         description: Required. The display name of the webhook.
@@ -4417,10 +4232,6 @@ definitions:
         type: string
         format: date-time
         description: Output only. The last update timestamp.
-        readOnly: true
-      etag:
-        type: string
-        description: Output only. The etag for this resource.
         readOnly: true
     required:
       - displayName

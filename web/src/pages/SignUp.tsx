@@ -6,11 +6,12 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import AuthFooter from "@/components/AuthFooter";
-import { authServiceClient } from "@/grpcweb";
+import { authServiceClient, userServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { workspaceStore } from "@/store/v2";
 import { initialUserStore } from "@/store/v2/user";
+import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = observer(() => {
@@ -47,7 +48,15 @@ const SignUp = observer(() => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await authServiceClient.signUp({ username, password });
+      const user = User.fromPartial({
+        username,
+        password,
+        role: User_Role.USER,
+      });
+      await userServiceClient.createUser({ user });
+      await authServiceClient.createSession({
+        passwordCredentials: { username, password },
+      });
       await initialUserStore();
       navigateTo("/");
     } catch (error: any) {

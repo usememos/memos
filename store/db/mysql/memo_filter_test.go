@@ -95,6 +95,26 @@ func TestConvertExprToSQL(t *testing.T) {
 			want:   "UNIX_TIMESTAMP(`memo`.`created_ts`) > ?",
 			args:   []any{time.Now().Unix() - 60*60*24},
 		},
+		{
+			filter: `size(tags) == 0`,
+			want:   "JSON_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) = ?",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `size(tags) > 0`,
+			want:   "JSON_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) > ?",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `"work" in tags`,
+			want:   "JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?)",
+			args:   []any{"work"},
+		},
+		{
+			filter: `size(tags) == 2`,
+			want:   "JSON_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) = ?",
+			args:   []any{int64(2)},
+		},
 	}
 
 	for _, tt := range tests {

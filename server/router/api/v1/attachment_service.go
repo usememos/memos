@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -17,7 +18,9 @@ import (
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"google.golang.org/genproto/googleapis/api/httpbody"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -274,6 +277,44 @@ func (s *APIV1Service) GetAttachmentBinary(ctx context.Context, request *v1pb.Ge
 		strings.EqualFold(contentType, "text/html") ||
 		strings.EqualFold(contentType, "application/xhtml+xml") {
 		contentType = "application/octet-stream"
+	}
+
+	// Extract range header from gRPC metadata for iOS Safari video support
+	var rangeHeader string
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		// Check for range header from gRPC-Gateway
+		if ranges := md.Get("grpcgateway-range"); len(ranges) > 0 {
+			rangeHeader = ranges[0]
+		} else if ranges := md.Get("range"); len(ranges) > 0 {
+			rangeHeader = ranges[0]
+		}
+
+		// Log for debugging iOS Safari issues
+		if userAgents := md.Get("user-agent"); len(userAgents) > 0 {
+			userAgent := userAgents[0]
+			if strings.Contains(strings.ToLower(userAgent), "safari") && rangeHeader != "" {
+				slog.Debug("Safari range request detected",
+					slog.String("range", rangeHeader),
+					slog.String("user-agent", userAgent),
+					slog.String("content-type", contentType))
+			}
+		}
+	}
+
+	// Handle range requests for video/audio streaming (iOS Safari requirement)
+	if rangeHeader != "" && (strings.HasPrefix(contentType, "video/") || strings.HasPrefix(contentType, "audio/")) {
+		return s.handleRangeRequest(ctx, blob, rangeHeader, contentType)
+	}
+
+	// Set headers for streaming support
+	if strings.HasPrefix(contentType, "video/") || strings.HasPrefix(contentType, "audio/") {
+		if err := setResponseHeaders(ctx, map[string]string{
+			"accept-ranges":  "bytes",
+			"content-length": fmt.Sprintf("%d", len(blob)),
+			"cache-control":  "public, max-age=3600", // 1 hour cache
+		}); err != nil {
+			slog.Warn("failed to set streaming headers", slog.Any("error", err))
+		}
 	}
 
 	return &httpbody.HttpBody{
@@ -550,4 +591,83 @@ func replaceFilenameWithPathTemplate(path, filename string) string {
 		return s
 	})
 	return path
+}
+
+// handleRangeRequest handles HTTP range requests for video/audio streaming (iOS Safari requirement).
+func (*APIV1Service) handleRangeRequest(ctx context.Context, data []byte, rangeHeader, contentType string) (*httpbody.HttpBody, error) {
+	// Parse "bytes=start-end"
+	if !strings.HasPrefix(rangeHeader, "bytes=") {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid range header format")
+	}
+
+	rangeSpec := strings.TrimPrefix(rangeHeader, "bytes=")
+	parts := strings.Split(rangeSpec, "-")
+	if len(parts) != 2 {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid range specification")
+	}
+
+	fileSize := int64(len(data))
+	start, end := int64(0), fileSize-1
+
+	// Parse start position
+	if parts[0] != "" {
+		if s, err := strconv.ParseInt(parts[0], 10, 64); err == nil {
+			start = s
+		} else {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid range start: %s", parts[0])
+		}
+	}
+
+	// Parse end position
+	if parts[1] != "" {
+		if e, err := strconv.ParseInt(parts[1], 10, 64); err == nil {
+			end = e
+		} else {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid range end: %s", parts[1])
+		}
+	}
+
+	// Validate range
+	if start < 0 || end >= fileSize || start > end {
+		// Set Content-Range header for 416 response
+		if err := setResponseHeaders(ctx, map[string]string{
+			"content-range": fmt.Sprintf("bytes */%d", fileSize),
+		}); err != nil {
+			slog.Warn("failed to set content-range header", slog.Any("error", err))
+		}
+		return nil, status.Errorf(codes.OutOfRange, "requested range not satisfiable")
+	}
+
+	// Set partial content headers (HTTP 206)
+	if err := setResponseHeaders(ctx, map[string]string{
+		"accept-ranges":  "bytes",
+		"content-range":  fmt.Sprintf("bytes %d-%d/%d", start, end, fileSize),
+		"content-length": fmt.Sprintf("%d", end-start+1),
+		"cache-control":  "public, max-age=3600",
+	}); err != nil {
+		slog.Warn("failed to set partial content headers", slog.Any("error", err))
+	}
+
+	// Extract the requested range
+	rangeData := data[start : end+1]
+
+	slog.Debug("serving partial content",
+		slog.Int64("start", start),
+		slog.Int64("end", end),
+		slog.Int64("total", fileSize),
+		slog.Int("chunk_size", len(rangeData)))
+
+	return &httpbody.HttpBody{
+		ContentType: contentType,
+		Data:        rangeData,
+	}, nil
+}
+
+// setResponseHeaders is a helper function to set gRPC response headers.
+func setResponseHeaders(ctx context.Context, headers map[string]string) error {
+	pairs := make([]string, 0, len(headers)*2)
+	for key, value := range headers {
+		pairs = append(pairs, key, value)
+	}
+	return grpc.SetHeader(ctx, metadata.Pairs(pairs...))
 }

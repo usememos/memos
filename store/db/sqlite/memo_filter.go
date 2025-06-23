@@ -12,6 +12,12 @@ import (
 )
 
 func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
+	return d.convertWithTemplates(ctx, expr)
+}
+
+func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
+	const dbType = filter.SQLiteTemplate
+
 	if v, ok := expr.ExprKind.(*exprv1.Expr_CallExpr); ok {
 		switch v.CallExpr.Function {
 		case "_||_", "_&&_":
@@ -21,7 +27,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if _, err := ctx.Buffer.WriteString("("); err != nil {
 				return err
 			}
-			if err := d.ConvertExprToSQL(ctx, v.CallExpr.Args[0]); err != nil {
+			if err := d.convertWithTemplates(ctx, v.CallExpr.Args[0]); err != nil {
 				return err
 			}
 			operator := "AND"
@@ -31,7 +37,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if _, err := ctx.Buffer.WriteString(fmt.Sprintf(" %s ", operator)); err != nil {
 				return err
 			}
-			if err := d.ConvertExprToSQL(ctx, v.CallExpr.Args[1]); err != nil {
+			if err := d.convertWithTemplates(ctx, v.CallExpr.Args[1]); err != nil {
 				return err
 			}
 			if _, err := ctx.Buffer.WriteString(")"); err != nil {
@@ -44,7 +50,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if _, err := ctx.Buffer.WriteString("NOT ("); err != nil {
 				return err
 			}
-			if err := d.ConvertExprToSQL(ctx, v.CallExpr.Args[0]); err != nil {
+			if err := d.convertWithTemplates(ctx, v.CallExpr.Args[0]); err != nil {
 				return err
 			}
 			if _, err := ctx.Buffer.WriteString(")"); err != nil {
@@ -54,6 +60,39 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if len(v.CallExpr.Args) != 2 {
 				return errors.Errorf("invalid number of arguments for %s", v.CallExpr.Function)
 			}
+			// Check if the left side is a function call like size(tags)
+			if leftCallExpr, ok := v.CallExpr.Args[0].ExprKind.(*exprv1.Expr_CallExpr); ok {
+				if leftCallExpr.CallExpr.Function == "size" {
+					// Handle size(tags) comparison
+					if len(leftCallExpr.CallExpr.Args) != 1 {
+						return errors.New("size function requires exactly one argument")
+					}
+					identifier, err := filter.GetIdentExprName(leftCallExpr.CallExpr.Args[0])
+					if err != nil {
+						return err
+					}
+					if identifier != "tags" {
+						return errors.Errorf("size function only supports 'tags' identifier, got: %s", identifier)
+					}
+					value, err := filter.GetExprValue(v.CallExpr.Args[1])
+					if err != nil {
+						return err
+					}
+					valueInt, ok := value.(int64)
+					if !ok {
+						return errors.New("size comparison value must be an integer")
+					}
+					operator := d.getComparisonOperator(v.CallExpr.Function)
+
+					if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?",
+						filter.GetSQL("json_array_length", dbType), operator)); err != nil {
+						return err
+					}
+					ctx.Args = append(ctx.Args, valueInt)
+					return nil
+				}
+			}
+
 			identifier, err := filter.GetIdentExprName(v.CallExpr.Args[0])
 			if err != nil {
 				return err
@@ -65,21 +104,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if err != nil {
 				return err
 			}
-			operator := "="
-			switch v.CallExpr.Function {
-			case "_==_":
-				operator = "="
-			case "_!=_":
-				operator = "!="
-			case "_<_":
-				operator = "<"
-			case "_>_":
-				operator = ">"
-			case "_<=_":
-				operator = "<="
-			case "_>=_":
-				operator = ">="
-			}
+			operator := d.getComparisonOperator(v.CallExpr.Function)
 
 			if identifier == "created_ts" || identifier == "updated_ts" {
 				valueInt, ok := value.(int64)
@@ -87,13 +112,8 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 					return errors.New("invalid integer timestamp value")
 				}
 
-				var factor string
-				if identifier == "created_ts" {
-					factor = "`memo`.`created_ts`"
-				} else if identifier == "updated_ts" {
-					factor = "`memo`.`updated_ts`"
-				}
-				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", factor, operator)); err != nil {
+				timestampSQL := fmt.Sprintf(filter.GetSQL("timestamp_field", dbType), identifier)
+				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", timestampSQL, operator)); err != nil {
 					return err
 				}
 				ctx.Args = append(ctx.Args, valueInt)
@@ -106,13 +126,13 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 					return errors.New("invalid string value")
 				}
 
-				var factor string
+				var sqlTemplate string
 				if identifier == "visibility" {
-					factor = "`memo`.`visibility`"
+					sqlTemplate = filter.GetSQL("table_prefix", dbType) + ".`visibility`"
 				} else if identifier == "content" {
-					factor = "`memo`.`content`"
+					sqlTemplate = filter.GetSQL("table_prefix", dbType) + ".`content`"
 				}
-				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", factor, operator)); err != nil {
+				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", sqlTemplate, operator)); err != nil {
 					return err
 				}
 				ctx.Args = append(ctx.Args, valueStr)
@@ -125,11 +145,8 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 					return errors.New("invalid int value")
 				}
 
-				var factor string
-				if identifier == "creator_id" {
-					factor = "`memo`.`creator_id`"
-				}
-				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", factor, operator)); err != nil {
+				sqlTemplate := filter.GetSQL("table_prefix", dbType) + ".`creator_id`"
+				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s %s ?", sqlTemplate, operator)); err != nil {
 					return err
 				}
 				ctx.Args = append(ctx.Args, valueInt)
@@ -141,12 +158,22 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 				if !ok {
 					return errors.New("invalid boolean value for has_task_list")
 				}
-				// In SQLite JSON boolean values are 1 for true and 0 for false
-				compareValue := 0
-				if valueBool {
-					compareValue = 1
+				// Use template for boolean comparison
+				var sqlTemplate string
+				if operator == "=" {
+					if valueBool {
+						sqlTemplate = filter.GetSQL("boolean_true", dbType)
+					} else {
+						sqlTemplate = filter.GetSQL("boolean_false", dbType)
+					}
+				} else { // operator == "!="
+					if valueBool {
+						sqlTemplate = filter.GetSQL("boolean_not_true", dbType)
+					} else {
+						sqlTemplate = filter.GetSQL("boolean_not_false", dbType)
+					}
 				}
-				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') %s %d", operator, compareValue)); err != nil {
+				if _, err := ctx.Buffer.WriteString(sqlTemplate); err != nil {
 					return err
 				}
 			}
@@ -154,6 +181,29 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if len(v.CallExpr.Args) != 2 {
 				return errors.Errorf("invalid number of arguments for %s", v.CallExpr.Function)
 			}
+
+			// Check if this is "element in collection" syntax
+			if identifier, err := filter.GetIdentExprName(v.CallExpr.Args[1]); err == nil {
+				// This is "element in collection" - the second argument is the collection
+				if !slices.Contains([]string{"tags"}, identifier) {
+					return errors.Errorf("invalid collection identifier for %s: %s", v.CallExpr.Function, identifier)
+				}
+
+				if identifier == "tags" {
+					// Handle "element" in tags
+					element, err := filter.GetConstValue(v.CallExpr.Args[0])
+					if err != nil {
+						return errors.Errorf("first argument must be a constant value for 'element in tags': %v", err)
+					}
+					if _, err := ctx.Buffer.WriteString(filter.GetSQL("json_contains_element", dbType)); err != nil {
+						return err
+					}
+					ctx.Args = append(ctx.Args, filter.GetParameterValue(dbType, "json_contains_element", element))
+				}
+				return nil
+			}
+
+			// Original logic for "identifier in [list]" syntax
 			identifier, err := filter.GetIdentExprName(v.CallExpr.Args[0])
 			if err != nil {
 				return err
@@ -171,27 +221,26 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 				values = append(values, value)
 			}
 			if identifier == "tag" {
-				subcodition := []string{}
+				subconditions := []string{}
 				args := []any{}
 				for _, v := range values {
-					subcodition, args = append(subcodition, "JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?"), append(args, fmt.Sprintf(`%%"%s"%%`, v))
+					subconditions = append(subconditions, filter.GetSQL("json_contains_tag", dbType))
+					args = append(args, filter.GetParameterValue(dbType, "json_contains_tag", v))
 				}
-				if len(subcodition) == 1 {
-					if _, err := ctx.Buffer.WriteString(subcodition[0]); err != nil {
+				if len(subconditions) == 1 {
+					if _, err := ctx.Buffer.WriteString(subconditions[0]); err != nil {
 						return err
 					}
 				} else {
-					if _, err := ctx.Buffer.WriteString(fmt.Sprintf("(%s)", strings.Join(subcodition, " OR "))); err != nil {
+					if _, err := ctx.Buffer.WriteString(fmt.Sprintf("(%s)", strings.Join(subconditions, " OR "))); err != nil {
 						return err
 					}
 				}
 				ctx.Args = append(ctx.Args, args...)
 			} else if identifier == "visibility" {
-				placeholder := []string{}
-				for range values {
-					placeholder = append(placeholder, "?")
-				}
-				if _, err := ctx.Buffer.WriteString(fmt.Sprintf("`memo`.`visibility` IN (%s)", strings.Join(placeholder, ","))); err != nil {
+				placeholders := filter.FormatPlaceholders(dbType, len(values), 1)
+				visibilitySQL := fmt.Sprintf(filter.GetSQL("visibility_in", dbType), strings.Join(placeholders, ","))
+				if _, err := ctx.Buffer.WriteString(visibilitySQL); err != nil {
 					return err
 				}
 				ctx.Args = append(ctx.Args, values...)
@@ -211,7 +260,7 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			if err != nil {
 				return err
 			}
-			if _, err := ctx.Buffer.WriteString("`memo`.`content` LIKE ?"); err != nil {
+			if _, err := ctx.Buffer.WriteString(filter.GetSQL("content_like", dbType)); err != nil {
 				return err
 			}
 			ctx.Args = append(ctx.Args, fmt.Sprintf("%%%s%%", arg))
@@ -222,15 +271,34 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 			return errors.Errorf("invalid identifier %s", identifier)
 		}
 		if identifier == "pinned" {
-			if _, err := ctx.Buffer.WriteString("`memo`.`pinned` IS TRUE"); err != nil {
+			if _, err := ctx.Buffer.WriteString(filter.GetSQL("table_prefix", dbType) + ".`pinned` IS TRUE"); err != nil {
 				return err
 			}
 		} else if identifier == "has_task_list" {
 			// Handle has_task_list as a standalone boolean identifier
-			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') IS TRUE"); err != nil {
+			if _, err := ctx.Buffer.WriteString(filter.GetSQL("boolean_check", dbType)); err != nil {
 				return err
 			}
 		}
 	}
 	return nil
+}
+
+func (*DB) getComparisonOperator(function string) string {
+	switch function {
+	case "_==_":
+		return "="
+	case "_!=_":
+		return "!="
+	case "_<_":
+		return "<"
+	case "_>_":
+		return ">"
+	case "_<=_":
+		return "<="
+	case "_>=_":
+		return ">="
+	default:
+		return "="
+	}
 }

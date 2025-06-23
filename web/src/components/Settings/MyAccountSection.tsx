@@ -48,8 +48,8 @@ const MyAccountSection = () => {
         </Popover>
       </div>
 
-      <AccessTokenSection />
       <UserSessionsSection />
+      <AccessTokenSection />
     </div>
   );
 };

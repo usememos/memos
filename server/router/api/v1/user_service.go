@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"crypto/md5"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -144,15 +143,36 @@ func (s *APIV1Service) GetUserAvatar(ctx context.Context, request *v1pb.GetUserA
 }
 
 func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserRequest) (*v1pb.User, error) {
-	currentUser, err := s.GetCurrentUser(ctx)
+	// Check if there are any existing host users (for first-time setup detection)
+	hostUserType := store.RoleHost
+	existedHostUsers, err := s.Store.ListUsers(ctx, &store.FindUser{
+		Role: &hostUserType,
+	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list host users: %v", err)
 	}
-	if currentUser.Role != store.RoleHost {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+
+	// Determine the role to assign and check permissions
+	var roleToAssign store.Role
+	if len(existedHostUsers) == 0 {
+		// First-time setup: create the first user as HOST (no authentication required)
+		roleToAssign = store.RoleHost
+	} else {
+		// Regular user creation: allow unauthenticated creation of normal users
+		// But if authenticated, check if user has HOST permission for any role
+		currentUser, err := s.GetCurrentUser(ctx)
+		if err == nil && currentUser != nil && currentUser.Role == store.RoleHost {
+			// Authenticated HOST user can create users with any role specified in request
+			if request.User.Role != v1pb.User_ROLE_UNSPECIFIED {
+				roleToAssign = convertUserRoleToStore(request.User.Role)
+			} else {
+				roleToAssign = store.RoleUser
+			}
+		} else {
+			// Unauthenticated or non-HOST users can only create normal users
+			roleToAssign = store.RoleUser
+		}
 	}
-	// TODO: Handle request_id for idempotency
-	// TODO: Handle user_id field if provided
 
 	if !base.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
@@ -165,7 +185,7 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 			Username:    request.User.Username,
 			Email:       request.User.Email,
 			DisplayName: request.User.DisplayName,
-			Role:        request.User.Role,
+			Role:        convertUserRoleFromStore(roleToAssign),
 		}, nil
 	}
 
@@ -176,7 +196,7 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 
 	user, err := s.Store.CreateUser(ctx, &store.User{
 		Username:     request.User.Username,
-		Role:         convertUserRoleToStore(request.User.Role),
+		Role:         roleToAssign,
 		Email:        request.User.Email,
 		Nickname:     request.User.DisplayName,
 		PasswordHash: string(passwordHash),
@@ -715,11 +735,6 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 }
 
 func convertUserFromStore(user *store.User) *v1pb.User {
-	// Generate etag based on user data
-	etagData := fmt.Sprintf("%d-%d-%s-%s-%s", user.ID, user.UpdatedTs, user.Username, user.Email, user.Nickname)
-	hash := md5.Sum([]byte(etagData))
-	etag := fmt.Sprintf("%x", hash)
-
 	userpb := &v1pb.User{
 		Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
 		State:       convertStateFromStore(user.RowStatus),
@@ -731,7 +746,6 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 		DisplayName: user.Nickname,
 		AvatarUrl:   user.AvatarURL,
 		Description: user.Description,
-		Etag:        etag,
 	}
 	// Use the avatar URL instead of raw base64 image data to reduce the response size.
 	if user.AvatarURL != "" {

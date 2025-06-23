@@ -137,12 +137,10 @@ func (s *APIV1Service) convertMemoRelationFromStore(ctx context.Context, memoRel
 	return &v1pb.MemoRelation{
 		Memo: &v1pb.MemoRelation_Memo{
 			Name:    fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
-			Uid:     memo.UID,
 			Snippet: memoSnippet,
 		},
 		RelatedMemo: &v1pb.MemoRelation_Memo{
 			Name:    fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID),
-			Uid:     relatedMemo.UID,
 			Snippet: relatedMemoSnippet,
 		},
 		Type: convertMemoRelationTypeFromStore(memoRelation.Type),

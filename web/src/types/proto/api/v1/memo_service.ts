@@ -66,8 +66,6 @@ export interface Reaction {
    * Format: reactions/{reaction}
    */
   name: string;
-  /** Output only. The system generated unique identifier. */
-  uid: string;
   /**
    * The resource name of the creator.
    * Format: users/{user}
@@ -384,8 +382,6 @@ export interface MemoRelation_Memo {
    * Format: memos/{memo}
    */
   name: string;
-  /** Output only. The unique identifier of the memo. */
-  uid: string;
   /** Output only. The snippet of the memo content. Plain text only. */
   snippet: string;
 }
@@ -498,7 +494,7 @@ export interface DeleteMemoReactionRequest {
 }
 
 function createBaseReaction(): Reaction {
-  return { name: "", uid: "", creator: "", contentId: "", reactionType: "", createTime: undefined };
+  return { name: "", creator: "", contentId: "", reactionType: "", createTime: undefined };
 }
 
 export const Reaction: MessageFns<Reaction> = {
@@ -506,20 +502,17 @@ export const Reaction: MessageFns<Reaction> = {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
-    if (message.uid !== "") {
-      writer.uint32(18).string(message.uid);
-    }
     if (message.creator !== "") {
-      writer.uint32(26).string(message.creator);
+      writer.uint32(18).string(message.creator);
     }
     if (message.contentId !== "") {
-      writer.uint32(34).string(message.contentId);
+      writer.uint32(26).string(message.contentId);
     }
     if (message.reactionType !== "") {
-      writer.uint32(42).string(message.reactionType);
+      writer.uint32(34).string(message.reactionType);
     }
     if (message.createTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(50).fork()).join();
+      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -544,7 +537,7 @@ export const Reaction: MessageFns<Reaction> = {
             break;
           }
 
-          message.uid = reader.string();
+          message.creator = reader.string();
           continue;
         }
         case 3: {
@@ -552,7 +545,7 @@ export const Reaction: MessageFns<Reaction> = {
             break;
           }
 
-          message.creator = reader.string();
+          message.contentId = reader.string();
           continue;
         }
         case 4: {
@@ -560,19 +553,11 @@ export const Reaction: MessageFns<Reaction> = {
             break;
           }
 
-          message.contentId = reader.string();
+          message.reactionType = reader.string();
           continue;
         }
         case 5: {
           if (tag !== 42) {
-            break;
-          }
-
-          message.reactionType = reader.string();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
             break;
           }
 
@@ -594,7 +579,6 @@ export const Reaction: MessageFns<Reaction> = {
   fromPartial(object: DeepPartial<Reaction>): Reaction {
     const message = createBaseReaction();
     message.name = object.name ?? "";
-    message.uid = object.uid ?? "";
     message.creator = object.creator ?? "";
     message.contentId = object.contentId ?? "";
     message.reactionType = object.reactionType ?? "";
@@ -632,55 +616,55 @@ export const Memo: MessageFns<Memo> = {
       writer.uint32(10).string(message.name);
     }
     if (message.state !== State.STATE_UNSPECIFIED) {
-      writer.uint32(24).int32(stateToNumber(message.state));
+      writer.uint32(16).int32(stateToNumber(message.state));
     }
     if (message.creator !== "") {
-      writer.uint32(34).string(message.creator);
+      writer.uint32(26).string(message.creator);
     }
     if (message.createTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(42).fork()).join();
+      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(34).fork()).join();
     }
     if (message.updateTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.updateTime), writer.uint32(50).fork()).join();
+      Timestamp.encode(toTimestamp(message.updateTime), writer.uint32(42).fork()).join();
     }
     if (message.displayTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.displayTime), writer.uint32(58).fork()).join();
+      Timestamp.encode(toTimestamp(message.displayTime), writer.uint32(50).fork()).join();
     }
     if (message.content !== "") {
-      writer.uint32(66).string(message.content);
+      writer.uint32(58).string(message.content);
     }
     for (const v of message.nodes) {
-      Node.encode(v!, writer.uint32(74).fork()).join();
+      Node.encode(v!, writer.uint32(66).fork()).join();
     }
     if (message.visibility !== Visibility.VISIBILITY_UNSPECIFIED) {
-      writer.uint32(80).int32(visibilityToNumber(message.visibility));
+      writer.uint32(72).int32(visibilityToNumber(message.visibility));
     }
     for (const v of message.tags) {
-      writer.uint32(90).string(v!);
+      writer.uint32(82).string(v!);
     }
     if (message.pinned !== false) {
-      writer.uint32(96).bool(message.pinned);
+      writer.uint32(88).bool(message.pinned);
     }
     for (const v of message.attachments) {
-      Attachment.encode(v!, writer.uint32(114).fork()).join();
+      Attachment.encode(v!, writer.uint32(98).fork()).join();
     }
     for (const v of message.relations) {
-      MemoRelation.encode(v!, writer.uint32(122).fork()).join();
+      MemoRelation.encode(v!, writer.uint32(106).fork()).join();
     }
     for (const v of message.reactions) {
-      Reaction.encode(v!, writer.uint32(130).fork()).join();
+      Reaction.encode(v!, writer.uint32(114).fork()).join();
     }
     if (message.property !== undefined) {
-      Memo_Property.encode(message.property, writer.uint32(138).fork()).join();
+      Memo_Property.encode(message.property, writer.uint32(122).fork()).join();
     }
     if (message.parent !== undefined) {
-      writer.uint32(146).string(message.parent);
+      writer.uint32(130).string(message.parent);
     }
     if (message.snippet !== "") {
-      writer.uint32(154).string(message.snippet);
+      writer.uint32(138).string(message.snippet);
     }
     if (message.location !== undefined) {
-      Location.encode(message.location, writer.uint32(162).fork()).join();
+      Location.encode(message.location, writer.uint32(146).fork()).join();
     }
     return writer;
   },
@@ -700,12 +684,20 @@ export const Memo: MessageFns<Memo> = {
           message.name = reader.string();
           continue;
         }
-        case 3: {
-          if (tag !== 24) {
+        case 2: {
+          if (tag !== 16) {
             break;
           }
 
           message.state = stateFromJSON(reader.int32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.creator = reader.string();
           continue;
         }
         case 4: {
@@ -713,7 +705,7 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.creator = reader.string();
+          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 5: {
@@ -721,7 +713,7 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.updateTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 6: {
@@ -729,7 +721,7 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.updateTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.displayTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 7: {
@@ -737,7 +729,7 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.displayTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.content = reader.string();
           continue;
         }
         case 8: {
@@ -745,39 +737,47 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.content = reader.string();
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
           message.nodes.push(Node.decode(reader, reader.uint32()));
           continue;
         }
-        case 10: {
-          if (tag !== 80) {
+        case 9: {
+          if (tag !== 72) {
             break;
           }
 
           message.visibility = visibilityFromJSON(reader.int32());
           continue;
         }
-        case 11: {
-          if (tag !== 90) {
+        case 10: {
+          if (tag !== 82) {
             break;
           }
 
           message.tags.push(reader.string());
           continue;
         }
-        case 12: {
-          if (tag !== 96) {
+        case 11: {
+          if (tag !== 88) {
             break;
           }
 
           message.pinned = reader.bool();
+          continue;
+        }
+        case 12: {
+          if (tag !== 98) {
+            break;
+          }
+
+          message.attachments.push(Attachment.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 13: {
+          if (tag !== 106) {
+            break;
+          }
+
+          message.relations.push(MemoRelation.decode(reader, reader.uint32()));
           continue;
         }
         case 14: {
@@ -785,7 +785,7 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.attachments.push(Attachment.decode(reader, reader.uint32()));
+          message.reactions.push(Reaction.decode(reader, reader.uint32()));
           continue;
         }
         case 15: {
@@ -793,7 +793,7 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.relations.push(MemoRelation.decode(reader, reader.uint32()));
+          message.property = Memo_Property.decode(reader, reader.uint32());
           continue;
         }
         case 16: {
@@ -801,7 +801,7 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.reactions.push(Reaction.decode(reader, reader.uint32()));
+          message.parent = reader.string();
           continue;
         }
         case 17: {
@@ -809,27 +809,11 @@ export const Memo: MessageFns<Memo> = {
             break;
           }
 
-          message.property = Memo_Property.decode(reader, reader.uint32());
+          message.snippet = reader.string();
           continue;
         }
         case 18: {
           if (tag !== 146) {
-            break;
-          }
-
-          message.parent = reader.string();
-          continue;
-        }
-        case 19: {
-          if (tag !== 154) {
-            break;
-          }
-
-          message.snippet = reader.string();
-          continue;
-        }
-        case 20: {
-          if (tag !== 162) {
             break;
           }
 
@@ -1918,7 +1902,7 @@ export const MemoRelation: MessageFns<MemoRelation> = {
 };
 
 function createBaseMemoRelation_Memo(): MemoRelation_Memo {
-  return { name: "", uid: "", snippet: "" };
+  return { name: "", snippet: "" };
 }
 
 export const MemoRelation_Memo: MessageFns<MemoRelation_Memo> = {
@@ -1926,11 +1910,8 @@ export const MemoRelation_Memo: MessageFns<MemoRelation_Memo> = {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
-    if (message.uid !== "") {
-      writer.uint32(18).string(message.uid);
-    }
     if (message.snippet !== "") {
-      writer.uint32(26).string(message.snippet);
+      writer.uint32(18).string(message.snippet);
     }
     return writer;
   },
@@ -1955,14 +1936,6 @@ export const MemoRelation_Memo: MessageFns<MemoRelation_Memo> = {
             break;
           }
 
-          message.uid = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
           message.snippet = reader.string();
           continue;
         }
@@ -1981,7 +1954,6 @@ export const MemoRelation_Memo: MessageFns<MemoRelation_Memo> = {
   fromPartial(object: DeepPartial<MemoRelation_Memo>): MemoRelation_Memo {
     const message = createBaseMemoRelation_Memo();
     message.name = object.name ?? "";
-    message.uid = object.uid ?? "";
     message.snippet = object.snippet ?? "";
     return message;
   },

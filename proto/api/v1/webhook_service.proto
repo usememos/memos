@@ -64,67 +64,31 @@ message Webhook {
   // Format: webhooks/{webhook}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // Output only. The system generated unique identifier.
-  string uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-
   // Required. The display name of the webhook.
-  string display_name = 3 [(google.api.field_behavior) = REQUIRED];
+  string display_name = 2 [(google.api.field_behavior) = REQUIRED];
 
   // Required. The target URL for the webhook.
-  string url = 4 [(google.api.field_behavior) = REQUIRED];
+  string url = 3 [(google.api.field_behavior) = REQUIRED];
 
   // Output only. The resource name of the creator.
   // Format: users/{user}
-  string creator = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string creator = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The state of the webhook.
-  State state = 6 [(google.api.field_behavior) = REQUIRED];
+  State state = 5 [(google.api.field_behavior) = REQUIRED];
 
   // Output only. The creation timestamp.
-  google.protobuf.Timestamp create_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp create_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. The last update timestamp.
-  google.protobuf.Timestamp update_time = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // Output only. The etag for this resource.
-  string etag = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp update_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-message ListWebhooksRequest {
-  // Optional. The maximum number of webhooks to return.
-  // The service may return fewer than this value.
-  // If unspecified, at most 50 webhooks will be returned.
-  // The maximum value is 1000; values above 1000 will be coerced to 1000.
-  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. A page token, received from a previous `ListWebhooks` call.
-  // Provide this to retrieve the subsequent page.
-  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. Filter to apply to the list results.
-  // Example: "state=ACTIVE" or "creator=users/123"
-  // Supported operators: =, !=, <, <=, >, >=, :
-  // Supported fields: display_name, url, creator, state, create_time, update_time
-  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. The order to sort results by.
-  // Example: "create_time desc" or "display_name asc"
-  string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. If true, show deleted webhooks in the response.
-  bool show_deleted = 5 [(google.api.field_behavior) = OPTIONAL];
-}
+message ListWebhooksRequest {}
 
 message ListWebhooksResponse {
   // The list of webhooks.
   repeated Webhook webhooks = 1;
-
-  // A token that can be sent as `page_token` to retrieve the next page.
-  // If this field is omitted, there are no subsequent pages.
-  string next_page_token = 2;
-
-  // The total count of webhooks (may be approximate).
-  int32 total_size = 3;
 }
 
 message GetWebhookRequest {
@@ -134,10 +98,6 @@ message GetWebhookRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Webhook"}
   ];
-
-  // Optional. The fields to return in the response.
-  // If not specified, all fields are returned.
-  google.protobuf.FieldMask read_mask = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message CreateWebhookRequest {
@@ -154,10 +114,6 @@ message CreateWebhookRequest {
 
   // Optional. If set, validate the request but don't actually create the webhook.
   bool validate_only = 3 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. An idempotency token that can be used to ensure that multiple
-  // requests to create a webhook have the same result.
-  string request_id = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message UpdateWebhookRequest {
@@ -166,9 +122,6 @@ message UpdateWebhookRequest {
 
   // Required. The list of fields to update.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // Optional. If set to true, allows updating sensitive fields.
-  bool allow_missing = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message DeleteWebhookRequest {
@@ -178,9 +131,6 @@ message DeleteWebhookRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Webhook"}
   ];
-
-  // Optional. If set to true, the webhook will be deleted even if it has associated data.
-  bool force = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message WebhookRequestPayload {

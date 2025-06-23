@@ -30,23 +30,19 @@ type Webhook struct {
 	// The resource name of the webhook.
 	// Format: webhooks/{webhook}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. The system generated unique identifier.
-	Uid string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
 	// Required. The display name of the webhook.
-	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Required. The target URL for the webhook.
-	Url string `protobuf:"bytes,4,opt,name=url,proto3" json:"url,omitempty"`
+	Url string `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
 	// Output only. The resource name of the creator.
 	// Format: users/{user}
-	Creator string `protobuf:"bytes,5,opt,name=creator,proto3" json:"creator,omitempty"`
+	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 	// The state of the webhook.
-	State State `protobuf:"varint,6,opt,name=state,proto3,enum=memos.api.v1.State" json:"state,omitempty"`
+	State State `protobuf:"varint,5,opt,name=state,proto3,enum=memos.api.v1.State" json:"state,omitempty"`
 	// Output only. The creation timestamp.
-	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The last update timestamp.
-	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Output only. The etag for this resource.
-	Etag          string `protobuf:"bytes,9,opt,name=etag,proto3" json:"etag,omitempty"`
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -84,13 +80,6 @@ func (*Webhook) Descriptor() ([]byte, []int) {
 func (x *Webhook) GetName() string {
 	if x != nil {
 		return x.Name
-	}
-	return ""
-}
-
-func (x *Webhook) GetUid() string {
-	if x != nil {
-		return x.Uid
 	}
 	return ""
 }
@@ -137,33 +126,8 @@ func (x *Webhook) GetUpdateTime() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Webhook) GetEtag() string {
-	if x != nil {
-		return x.Etag
-	}
-	return ""
-}
-
 type ListWebhooksRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. The maximum number of webhooks to return.
-	// The service may return fewer than this value.
-	// If unspecified, at most 50 webhooks will be returned.
-	// The maximum value is 1000; values above 1000 will be coerced to 1000.
-	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A page token, received from a previous `ListWebhooks` call.
-	// Provide this to retrieve the subsequent page.
-	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Optional. Filter to apply to the list results.
-	// Example: "state=ACTIVE" or "creator=users/123"
-	// Supported operators: =, !=, <, <=, >, >=, :
-	// Supported fields: display_name, url, creator, state, create_time, update_time
-	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
-	// Optional. The order to sort results by.
-	// Example: "create_time desc" or "display_name asc"
-	OrderBy string `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	// Optional. If true, show deleted webhooks in the response.
-	ShowDeleted   bool `protobuf:"varint,5,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -198,50 +162,10 @@ func (*ListWebhooksRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_webhook_service_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *ListWebhooksRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListWebhooksRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
-}
-
-func (x *ListWebhooksRequest) GetFilter() string {
-	if x != nil {
-		return x.Filter
-	}
-	return ""
-}
-
-func (x *ListWebhooksRequest) GetOrderBy() string {
-	if x != nil {
-		return x.OrderBy
-	}
-	return ""
-}
-
-func (x *ListWebhooksRequest) GetShowDeleted() bool {
-	if x != nil {
-		return x.ShowDeleted
-	}
-	return false
-}
-
 type ListWebhooksResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The list of webhooks.
-	Webhooks []*Webhook `protobuf:"bytes,1,rep,name=webhooks,proto3" json:"webhooks,omitempty"`
-	// A token that can be sent as `page_token` to retrieve the next page.
-	// If this field is omitted, there are no subsequent pages.
-	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// The total count of webhooks (may be approximate).
-	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
+	Webhooks      []*Webhook `protobuf:"bytes,1,rep,name=webhooks,proto3" json:"webhooks,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -283,28 +207,11 @@ func (x *ListWebhooksResponse) GetWebhooks() []*Webhook {
 	return nil
 }
 
-func (x *ListWebhooksResponse) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
-}
-
-func (x *ListWebhooksResponse) GetTotalSize() int32 {
-	if x != nil {
-		return x.TotalSize
-	}
-	return 0
-}
-
 type GetWebhookRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the webhook.
 	// Format: webhooks/{webhook}
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The fields to return in the response.
-	// If not specified, all fields are returned.
-	ReadMask      *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=read_mask,json=readMask,proto3" json:"read_mask,omitempty"`
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -346,13 +253,6 @@ func (x *GetWebhookRequest) GetName() string {
 	return ""
 }
 
-func (x *GetWebhookRequest) GetReadMask() *fieldmaskpb.FieldMask {
-	if x != nil {
-		return x.ReadMask
-	}
-	return nil
-}
-
 type CreateWebhookRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The webhook to create.
@@ -362,10 +262,7 @@ type CreateWebhookRequest struct {
 	// Must match the pattern [a-z0-9-]+
 	WebhookId string `protobuf:"bytes,2,opt,name=webhook_id,json=webhookId,proto3" json:"webhook_id,omitempty"`
 	// Optional. If set, validate the request but don't actually create the webhook.
-	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
-	// Optional. An idempotency token that can be used to ensure that multiple
-	// requests to create a webhook have the same result.
-	RequestId     string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	ValidateOnly  bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -421,21 +318,12 @@ func (x *CreateWebhookRequest) GetValidateOnly() bool {
 	return false
 }
 
-func (x *CreateWebhookRequest) GetRequestId() string {
-	if x != nil {
-		return x.RequestId
-	}
-	return ""
-}
-
 type UpdateWebhookRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The webhook to update.
 	Webhook *Webhook `protobuf:"bytes,1,opt,name=webhook,proto3" json:"webhook,omitempty"`
 	// Required. The list of fields to update.
-	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// Optional. If set to true, allows updating sensitive fields.
-	AllowMissing  bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -484,20 +372,11 @@ func (x *UpdateWebhookRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-func (x *UpdateWebhookRequest) GetAllowMissing() bool {
-	if x != nil {
-		return x.AllowMissing
-	}
-	return false
-}
-
 type DeleteWebhookRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the webhook to delete.
 	// Format: webhooks/{webhook}
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. If set to true, the webhook will be deleted even if it has associated data.
-	Force         bool `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -537,13 +416,6 @@ func (x *DeleteWebhookRequest) GetName() string {
 		return x.Name
 	}
 	return ""
-}
-
-func (x *DeleteWebhookRequest) GetForce() bool {
-	if x != nil {
-		return x.Force
-	}
-	return false
 }
 
 type WebhookRequestPayload struct {
@@ -632,52 +504,36 @@ var File_api_v1_webhook_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_webhook_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1capi/v1/webhook_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x19api/v1/memo_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x03\n" +
+	"\x1capi/v1/webhook_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x19api/v1/memo_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfc\x02\n" +
 	"\aWebhook\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x15\n" +
-	"\x03url\x18\x04 \x01(\tB\x03\xe0A\x02R\x03url\x12\x1d\n" +
-	"\acreator\x18\x05 \x01(\tB\x03\xe0A\x03R\acreator\x12.\n" +
-	"\x05state\x18\x06 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x15\n" +
+	"\x03url\x18\x03 \x01(\tB\x03\xe0A\x02R\x03url\x12\x1d\n" +
+	"\acreator\x18\x04 \x01(\tB\x03\xe0A\x03R\acreator\x12.\n" +
+	"\x05state\x18\x05 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x12@\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x03R\x04etag:F\xeaAC\n" +
-	"\x14memos.api.v1/Webhook\x12\x12webhooks/{webhook}\x1a\x04name*\bwebhooks2\awebhook\"\xc0\x01\n" +
-	"\x13ListWebhooksRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12&\n" +
-	"\fshow_deleted\x18\x05 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\x90\x01\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime:F\xeaAC\n" +
+	"\x14memos.api.v1/Webhook\x12\x12webhooks/{webhook}\x1a\x04name*\bwebhooks2\awebhook\"\x15\n" +
+	"\x13ListWebhooksRequest\"I\n" +
 	"\x14ListWebhooksResponse\x121\n" +
-	"\bwebhooks\x18\x01 \x03(\v2\x15.memos.api.v1.WebhookR\bwebhooks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
-	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\x83\x01\n" +
+	"\bwebhooks\x18\x01 \x03(\v2\x15.memos.api.v1.WebhookR\bwebhooks\"E\n" +
 	"\x11GetWebhookRequest\x120\n" +
 	"\x04name\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\n" +
-	"\x14memos.api.v1/WebhookR\x04name\x12<\n" +
-	"\tread_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\breadMask\"\xc1\x01\n" +
+	"\x14memos.api.v1/WebhookR\x04name\"\x9d\x01\n" +
 	"\x14CreateWebhookRequest\x127\n" +
 	"\awebhook\x18\x01 \x01(\v2\x15.memos.api.v1.WebhookB\x06\xe0A\x02\xe0A\x04R\awebhook\x12\"\n" +
 	"\n" +
 	"webhook_id\x18\x02 \x01(\tB\x03\xe0A\x01R\twebhookId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\"\n" +
-	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xb8\x01\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x8e\x01\n" +
 	"\x14UpdateWebhookRequest\x124\n" +
 	"\awebhook\x18\x01 \x01(\v2\x15.memos.api.v1.WebhookB\x03\xe0A\x02R\awebhook\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\"c\n" +
+	"updateMask\"H\n" +
 	"\x14DeleteWebhookRequest\x120\n" +
 	"\x04name\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\n" +
-	"\x14memos.api.v1/WebhookR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xfc\x01\n" +
+	"\x14memos.api.v1/WebhookR\x04name\"\xfc\x01\n" +
 	"\x15WebhookRequestPayload\x12\x15\n" +
 	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12(\n" +
 	"\ractivity_type\x18\x02 \x01(\tB\x03\xe0A\x02R\factivityType\x123\n" +
@@ -728,27 +584,26 @@ var file_api_v1_webhook_service_proto_depIdxs = []int32{
 	9,  // 1: memos.api.v1.Webhook.create_time:type_name -> google.protobuf.Timestamp
 	9,  // 2: memos.api.v1.Webhook.update_time:type_name -> google.protobuf.Timestamp
 	0,  // 3: memos.api.v1.ListWebhooksResponse.webhooks:type_name -> memos.api.v1.Webhook
-	10, // 4: memos.api.v1.GetWebhookRequest.read_mask:type_name -> google.protobuf.FieldMask
-	0,  // 5: memos.api.v1.CreateWebhookRequest.webhook:type_name -> memos.api.v1.Webhook
-	0,  // 6: memos.api.v1.UpdateWebhookRequest.webhook:type_name -> memos.api.v1.Webhook
-	10, // 7: memos.api.v1.UpdateWebhookRequest.update_mask:type_name -> google.protobuf.FieldMask
-	9,  // 8: memos.api.v1.WebhookRequestPayload.create_time:type_name -> google.protobuf.Timestamp
-	11, // 9: memos.api.v1.WebhookRequestPayload.memo:type_name -> memos.api.v1.Memo
-	1,  // 10: memos.api.v1.WebhookService.ListWebhooks:input_type -> memos.api.v1.ListWebhooksRequest
-	3,  // 11: memos.api.v1.WebhookService.GetWebhook:input_type -> memos.api.v1.GetWebhookRequest
-	4,  // 12: memos.api.v1.WebhookService.CreateWebhook:input_type -> memos.api.v1.CreateWebhookRequest
-	5,  // 13: memos.api.v1.WebhookService.UpdateWebhook:input_type -> memos.api.v1.UpdateWebhookRequest
-	6,  // 14: memos.api.v1.WebhookService.DeleteWebhook:input_type -> memos.api.v1.DeleteWebhookRequest
-	2,  // 15: memos.api.v1.WebhookService.ListWebhooks:output_type -> memos.api.v1.ListWebhooksResponse
-	0,  // 16: memos.api.v1.WebhookService.GetWebhook:output_type -> memos.api.v1.Webhook
-	0,  // 17: memos.api.v1.WebhookService.CreateWebhook:output_type -> memos.api.v1.Webhook
-	0,  // 18: memos.api.v1.WebhookService.UpdateWebhook:output_type -> memos.api.v1.Webhook
-	12, // 19: memos.api.v1.WebhookService.DeleteWebhook:output_type -> google.protobuf.Empty
-	15, // [15:20] is the sub-list for method output_type
-	10, // [10:15] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	0,  // 4: memos.api.v1.CreateWebhookRequest.webhook:type_name -> memos.api.v1.Webhook
+	0,  // 5: memos.api.v1.UpdateWebhookRequest.webhook:type_name -> memos.api.v1.Webhook
+	10, // 6: memos.api.v1.UpdateWebhookRequest.update_mask:type_name -> google.protobuf.FieldMask
+	9,  // 7: memos.api.v1.WebhookRequestPayload.create_time:type_name -> google.protobuf.Timestamp
+	11, // 8: memos.api.v1.WebhookRequestPayload.memo:type_name -> memos.api.v1.Memo
+	1,  // 9: memos.api.v1.WebhookService.ListWebhooks:input_type -> memos.api.v1.ListWebhooksRequest
+	3,  // 10: memos.api.v1.WebhookService.GetWebhook:input_type -> memos.api.v1.GetWebhookRequest
+	4,  // 11: memos.api.v1.WebhookService.CreateWebhook:input_type -> memos.api.v1.CreateWebhookRequest
+	5,  // 12: memos.api.v1.WebhookService.UpdateWebhook:input_type -> memos.api.v1.UpdateWebhookRequest
+	6,  // 13: memos.api.v1.WebhookService.DeleteWebhook:input_type -> memos.api.v1.DeleteWebhookRequest
+	2,  // 14: memos.api.v1.WebhookService.ListWebhooks:output_type -> memos.api.v1.ListWebhooksResponse
+	0,  // 15: memos.api.v1.WebhookService.GetWebhook:output_type -> memos.api.v1.Webhook
+	0,  // 16: memos.api.v1.WebhookService.CreateWebhook:output_type -> memos.api.v1.Webhook
+	0,  // 17: memos.api.v1.WebhookService.UpdateWebhook:output_type -> memos.api.v1.Webhook
+	12, // 18: memos.api.v1.WebhookService.DeleteWebhook:output_type -> google.protobuf.Empty
+	14, // [14:19] is the sub-list for method output_type
+	9,  // [9:14] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_webhook_service_proto_init() }

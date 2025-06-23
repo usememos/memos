@@ -92,11 +92,7 @@ type ListShortcutsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent resource where shortcuts are listed.
 	// Format: users/{user}
-	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of shortcuts to return.
-	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A page token for pagination.
-	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	Parent        string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -138,28 +134,10 @@ func (x *ListShortcutsRequest) GetParent() string {
 	return ""
 }
 
-func (x *ListShortcutsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListShortcutsRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
-}
-
 type ListShortcutsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The list of shortcuts.
-	Shortcuts []*Shortcut `protobuf:"bytes,1,rep,name=shortcuts,proto3" json:"shortcuts,omitempty"`
-	// A token for the next page of results.
-	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// The total count of shortcuts.
-	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
+	Shortcuts     []*Shortcut `protobuf:"bytes,1,rep,name=shortcuts,proto3" json:"shortcuts,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -199,20 +177,6 @@ func (x *ListShortcutsResponse) GetShortcuts() []*Shortcut {
 		return x.Shortcuts
 	}
 	return nil
-}
-
-func (x *ListShortcutsResponse) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
-}
-
-func (x *ListShortcutsResponse) GetTotalSize() int32 {
-	if x != nil {
-		return x.TotalSize
-	}
-	return 0
 }
 
 type GetShortcutRequest struct {
@@ -434,17 +398,11 @@ const file_api_v1_shortcut_service_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12\x1b\n" +
 	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter:R\xeaAO\n" +
-	"\x15memos.api.v1/Shortcut\x12!users/{user}/shortcuts/{shortcut}*\tshortcuts2\bshortcut\"\x93\x01\n" +
+	"\x15memos.api.v1/Shortcut\x12!users/{user}/shortcuts/{shortcut}*\tshortcuts2\bshortcut\"M\n" +
 	"\x14ListShortcutsRequest\x125\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api.v1/ShortcutR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
-	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x94\x01\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api.v1/ShortcutR\x06parent\"M\n" +
 	"\x15ListShortcutsResponse\x124\n" +
-	"\tshortcuts\x18\x01 \x03(\v2\x16.memos.api.v1.ShortcutR\tshortcuts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
-	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"G\n" +
+	"\tshortcuts\x18\x01 \x03(\v2\x16.memos.api.v1.ShortcutR\tshortcuts\"G\n" +
 	"\x12GetShortcutRequest\x121\n" +
 	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
 	"\x15memos.api.v1/ShortcutR\x04name\"\xb1\x01\n" +

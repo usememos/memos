@@ -147,25 +147,25 @@ export const Attachment: MessageFns<Attachment> = {
       writer.uint32(10).string(message.name);
     }
     if (message.createTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(26).fork()).join();
+      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(18).fork()).join();
     }
     if (message.filename !== "") {
-      writer.uint32(34).string(message.filename);
+      writer.uint32(26).string(message.filename);
     }
     if (message.content.length !== 0) {
-      writer.uint32(42).bytes(message.content);
+      writer.uint32(34).bytes(message.content);
     }
     if (message.externalLink !== "") {
-      writer.uint32(50).string(message.externalLink);
+      writer.uint32(42).string(message.externalLink);
     }
     if (message.type !== "") {
-      writer.uint32(58).string(message.type);
+      writer.uint32(50).string(message.type);
     }
     if (message.size !== 0) {
-      writer.uint32(64).int64(message.size);
+      writer.uint32(56).int64(message.size);
     }
     if (message.memo !== undefined) {
-      writer.uint32(74).string(message.memo);
+      writer.uint32(66).string(message.memo);
     }
     return writer;
   },
@@ -185,12 +185,20 @@ export const Attachment: MessageFns<Attachment> = {
           message.name = reader.string();
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
         case 3: {
           if (tag !== 26) {
             break;
           }
 
-          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.filename = reader.string();
           continue;
         }
         case 4: {
@@ -198,7 +206,7 @@ export const Attachment: MessageFns<Attachment> = {
             break;
           }
 
-          message.filename = reader.string();
+          message.content = reader.bytes();
           continue;
         }
         case 5: {
@@ -206,7 +214,7 @@ export const Attachment: MessageFns<Attachment> = {
             break;
           }
 
-          message.content = reader.bytes();
+          message.externalLink = reader.string();
           continue;
         }
         case 6: {
@@ -214,27 +222,19 @@ export const Attachment: MessageFns<Attachment> = {
             break;
           }
 
-          message.externalLink = reader.string();
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
           message.type = reader.string();
           continue;
         }
-        case 8: {
-          if (tag !== 64) {
+        case 7: {
+          if (tag !== 56) {
             break;
           }
 
           message.size = longToNumber(reader.int64());
           continue;
         }
-        case 9: {
-          if (tag !== 74) {
+        case 8: {
+          if (tag !== 66) {
             break;
           }
 

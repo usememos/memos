@@ -2,6 +2,7 @@ import { useColorScheme } from "@mui/joy";
 import { useEffect, useRef, useState } from "react";
 import ForceGraph2D, { ForceGraphMethods, LinkObject, NodeObject } from "react-force-graph-2d";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { extractMemoIdFromName } from "@/store/common";
 import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 import { cn } from "@/utils";
 import { LinkType, NodeType } from "./types";
@@ -47,7 +48,7 @@ const MemoRelationForceGraph = ({ className, memo, parentPage }: Props) => {
         cooldownTicks={0}
         nodeColor={(node) => (node.id === memo.name ? MAIN_NODE_COLOR : DEFAULT_NODE_COLOR)}
         nodeRelSize={3}
-        nodeLabel={(node) => node.memo.uid.slice(0, 6).toLowerCase()}
+        nodeLabel={(node) => extractMemoIdFromName(node.memo.name).slice(0, 6).toLowerCase()}
         linkColor={() => (mode === "light" ? "#e4e4e7" : "#3f3f46")}
         graphData={convertMemoRelationsToGraphData(memo.relations.filter((r) => r.type === MemoRelation_Type.REFERENCE))}
         onNodeClick={onNodeClick}

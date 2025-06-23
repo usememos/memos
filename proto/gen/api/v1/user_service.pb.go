@@ -88,30 +88,26 @@ type User struct {
 	// The resource name of the user.
 	// Format: users/{user}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. The system generated unique identifier.
-	Uid string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
 	// The role of the user.
-	Role User_Role `protobuf:"varint,3,opt,name=role,proto3,enum=memos.api.v1.User_Role" json:"role,omitempty"`
+	Role User_Role `protobuf:"varint,2,opt,name=role,proto3,enum=memos.api.v1.User_Role" json:"role,omitempty"`
 	// Required. The unique username for login.
-	Username string `protobuf:"bytes,4,opt,name=username,proto3" json:"username,omitempty"`
+	Username string `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
 	// Optional. The email address of the user.
-	Email string `protobuf:"bytes,5,opt,name=email,proto3" json:"email,omitempty"`
+	Email string `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
 	// Optional. The display name of the user.
-	DisplayName string `protobuf:"bytes,6,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	DisplayName string `protobuf:"bytes,5,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Optional. The avatar URL of the user.
-	AvatarUrl string `protobuf:"bytes,7,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	AvatarUrl string `protobuf:"bytes,6,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
 	// Optional. The description of the user.
-	Description string `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
+	Description string `protobuf:"bytes,7,opt,name=description,proto3" json:"description,omitempty"`
 	// Input only. The password for the user.
-	Password string `protobuf:"bytes,9,opt,name=password,proto3" json:"password,omitempty"`
+	Password string `protobuf:"bytes,8,opt,name=password,proto3" json:"password,omitempty"`
 	// The state of the user.
-	State State `protobuf:"varint,10,opt,name=state,proto3,enum=memos.api.v1.State" json:"state,omitempty"`
+	State State `protobuf:"varint,9,opt,name=state,proto3,enum=memos.api.v1.State" json:"state,omitempty"`
 	// Output only. The creation timestamp.
-	CreateTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The last update timestamp.
-	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Output only. The etag for this resource.
-	Etag          string `protobuf:"bytes,13,opt,name=etag,proto3" json:"etag,omitempty"`
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -149,13 +145,6 @@ func (*User) Descriptor() ([]byte, []int) {
 func (x *User) GetName() string {
 	if x != nil {
 		return x.Name
-	}
-	return ""
-}
-
-func (x *User) GetUid() string {
-	if x != nil {
-		return x.Uid
 	}
 	return ""
 }
@@ -228,13 +217,6 @@ func (x *User) GetUpdateTime() *timestamppb.Timestamp {
 		return x.UpdateTime
 	}
 	return nil
-}
-
-func (x *User) GetEtag() string {
-	if x != nil {
-		return x.Etag
-	}
-	return ""
 }
 
 type ListUsersRequest struct {
@@ -1942,25 +1924,23 @@ var File_api_v1_user_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_user_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19api/v1/user_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfb\x04\n" +
+	"\x19api/v1/user_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x04\n" +
 	"\x04User\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x120\n" +
-	"\x04role\x18\x03 \x01(\x0e2\x17.memos.api.v1.User.RoleB\x03\xe0A\x02R\x04role\x12\x1f\n" +
-	"\busername\x18\x04 \x01(\tB\x03\xe0A\x02R\busername\x12\x19\n" +
-	"\x05email\x18\x05 \x01(\tB\x03\xe0A\x01R\x05email\x12&\n" +
-	"\fdisplay_name\x18\x06 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x120\n" +
+	"\x04role\x18\x02 \x01(\x0e2\x17.memos.api.v1.User.RoleB\x03\xe0A\x02R\x04role\x12\x1f\n" +
+	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\x19\n" +
+	"\x05email\x18\x04 \x01(\tB\x03\xe0A\x01R\x05email\x12&\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\"\n" +
 	"\n" +
-	"avatar_url\x18\a \x01(\tB\x03\xe0A\x01R\tavatarUrl\x12%\n" +
-	"\vdescription\x18\b \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1f\n" +
-	"\bpassword\x18\t \x01(\tB\x03\xe0A\x04R\bpassword\x12.\n" +
-	"\x05state\x18\n" +
-	" \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"avatar_url\x18\x06 \x01(\tB\x03\xe0A\x01R\tavatarUrl\x12%\n" +
+	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1f\n" +
+	"\bpassword\x18\b \x01(\tB\x03\xe0A\x04R\bpassword\x12.\n" +
+	"\x05state\x18\t \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x12@\n" +
+	"\vcreate_time\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\r \x01(\tB\x03\xe0A\x03R\x04etag\";\n" +
+	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime\";\n" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04HOST\x10\x01\x12\t\n" +

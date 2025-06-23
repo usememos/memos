@@ -57,7 +57,6 @@ func TestCreateIdentityProvider(t *testing.T) {
 		require.Equal(t, "Test OAuth2 Provider", resp.Title)
 		require.Equal(t, v1pb.IdentityProvider_OAUTH2, resp.Type)
 		require.Contains(t, resp.Name, "identityProviders/")
-		require.NotEmpty(t, resp.Uid)
 		require.NotNil(t, resp.Config.GetOauth2Config())
 		require.Equal(t, "test-client-id", resp.Config.GetOauth2Config().ClientId)
 	})

@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"crypto/md5"
 	"fmt"
 	"strings"
 	"time"
@@ -79,8 +78,7 @@ func (s *APIV1Service) ListWebhooks(ctx context.Context, _ *v1pb.ListWebhooksReq
 	}
 
 	response := &v1pb.ListWebhooksResponse{
-		Webhooks:  []*v1pb.Webhook{},
-		TotalSize: int32(len(webhooks)),
+		Webhooks: []*v1pb.Webhook{},
 	}
 	for _, webhook := range webhooks {
 		response.Webhooks = append(response.Webhooks, convertWebhookFromStore(webhook))
@@ -147,10 +145,6 @@ func (s *APIV1Service) UpdateWebhook(ctx context.Context, request *v1pb.UpdateWe
 		return nil, status.Errorf(codes.Internal, "failed to get webhook: %v", err)
 	}
 	if existingWebhook == nil {
-		if request.AllowMissing {
-			// Could create webhook if missing, but for now return not found
-			return nil, status.Errorf(codes.NotFound, "webhook not found")
-		}
 		return nil, status.Errorf(codes.NotFound, "webhook not found")
 	}
 
@@ -213,19 +207,13 @@ func (s *APIV1Service) DeleteWebhook(ctx context.Context, request *v1pb.DeleteWe
 }
 
 func convertWebhookFromStore(webhook *store.Webhook) *v1pb.Webhook {
-	// Generate etag using MD5 hash of webhook data
-	etag := fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%d-%d-%s-%s",
-		webhook.ID, webhook.UpdatedTs, webhook.Name, webhook.URL))))
-
 	return &v1pb.Webhook{
 		Name:        fmt.Sprintf("webhooks/%d", webhook.ID),
-		Uid:         fmt.Sprintf("%d", webhook.ID),
 		DisplayName: webhook.Name,
 		Url:         webhook.URL,
 		Creator:     fmt.Sprintf("users/%d", webhook.CreatorID),
 		State:       v1pb.State_NORMAL, // Default to NORMAL state for webhooks
 		CreateTime:  timestamppb.New(time.Unix(webhook.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(webhook.UpdatedTs, 0)),
-		Etag:        etag,
 	}
 }

@@ -95,6 +95,26 @@ func TestRestoreExprToSQL(t *testing.T) {
 			want:   "EXTRACT(EPOCH FROM memo.created_ts) > $1",
 			args:   []any{time.Now().Unix() - 60*60*24},
 		},
+		{
+			filter: `size(tags) == 0`,
+			want:   "jsonb_array_length(COALESCE(memo.payload->'tags', '[]'::jsonb)) = $1",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `size(tags) > 0`,
+			want:   "jsonb_array_length(COALESCE(memo.payload->'tags', '[]'::jsonb)) > $1",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `"work" in tags`,
+			want:   "memo.payload->'tags' @> jsonb_build_array($1)",
+			args:   []any{"work"},
+		},
+		{
+			filter: `size(tags) == 2`,
+			want:   "jsonb_array_length(COALESCE(memo.payload->'tags', '[]'::jsonb)) = $1",
+			args:   []any{int64(2)},
+		},
 	}
 
 	for _, tt := range tests {

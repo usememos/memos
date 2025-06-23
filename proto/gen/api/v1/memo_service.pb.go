@@ -132,19 +132,17 @@ type Reaction struct {
 	// The resource name of the reaction.
 	// Format: reactions/{reaction}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. The system generated unique identifier.
-	Uid string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
 	// The resource name of the creator.
 	// Format: users/{user}
-	Creator string `protobuf:"bytes,3,opt,name=creator,proto3" json:"creator,omitempty"`
+	Creator string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
 	// The resource name of the content.
 	// For memo reactions, this should be the memo's resource name.
 	// Format: memos/{memo}
-	ContentId string `protobuf:"bytes,4,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`
+	ContentId string `protobuf:"bytes,3,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`
 	// Required. The type of reaction (e.g., "👍", "❤️", "😄").
-	ReactionType string `protobuf:"bytes,5,opt,name=reaction_type,json=reactionType,proto3" json:"reaction_type,omitempty"`
+	ReactionType string `protobuf:"bytes,4,opt,name=reaction_type,json=reactionType,proto3" json:"reaction_type,omitempty"`
 	// Output only. The creation timestamp.
-	CreateTime    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	CreateTime    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -186,13 +184,6 @@ func (x *Reaction) GetName() string {
 	return ""
 }
 
-func (x *Reaction) GetUid() string {
-	if x != nil {
-		return x.Uid
-	}
-	return ""
-}
-
 func (x *Reaction) GetCreator() string {
 	if x != nil {
 		return x.Creator
@@ -227,41 +218,41 @@ type Memo struct {
 	// Format: memos/{memo}, memo is the user defined id or uuid.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The state of the memo.
-	State State `protobuf:"varint,3,opt,name=state,proto3,enum=memos.api.v1.State" json:"state,omitempty"`
+	State State `protobuf:"varint,2,opt,name=state,proto3,enum=memos.api.v1.State" json:"state,omitempty"`
 	// The name of the creator.
 	// Format: users/{user}
-	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+	Creator string `protobuf:"bytes,3,opt,name=creator,proto3" json:"creator,omitempty"`
 	// Output only. The creation timestamp.
-	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The last update timestamp.
-	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// The display timestamp of the memo.
-	DisplayTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=display_time,json=displayTime,proto3" json:"display_time,omitempty"`
+	DisplayTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=display_time,json=displayTime,proto3" json:"display_time,omitempty"`
 	// Required. The content of the memo in Markdown format.
-	Content string `protobuf:"bytes,8,opt,name=content,proto3" json:"content,omitempty"`
+	Content string `protobuf:"bytes,7,opt,name=content,proto3" json:"content,omitempty"`
 	// Output only. The parsed nodes from the content.
-	Nodes []*Node `protobuf:"bytes,9,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	Nodes []*Node `protobuf:"bytes,8,rep,name=nodes,proto3" json:"nodes,omitempty"`
 	// The visibility of the memo.
-	Visibility Visibility `protobuf:"varint,10,opt,name=visibility,proto3,enum=memos.api.v1.Visibility" json:"visibility,omitempty"`
+	Visibility Visibility `protobuf:"varint,9,opt,name=visibility,proto3,enum=memos.api.v1.Visibility" json:"visibility,omitempty"`
 	// Output only. The tags extracted from the content.
-	Tags []string `protobuf:"bytes,11,rep,name=tags,proto3" json:"tags,omitempty"`
+	Tags []string `protobuf:"bytes,10,rep,name=tags,proto3" json:"tags,omitempty"`
 	// Whether the memo is pinned.
-	Pinned bool `protobuf:"varint,12,opt,name=pinned,proto3" json:"pinned,omitempty"`
+	Pinned bool `protobuf:"varint,11,opt,name=pinned,proto3" json:"pinned,omitempty"`
 	// Optional. The attachments of the memo.
-	Attachments []*Attachment `protobuf:"bytes,14,rep,name=attachments,proto3" json:"attachments,omitempty"`
+	Attachments []*Attachment `protobuf:"bytes,12,rep,name=attachments,proto3" json:"attachments,omitempty"`
 	// Optional. The relations of the memo.
-	Relations []*MemoRelation `protobuf:"bytes,15,rep,name=relations,proto3" json:"relations,omitempty"`
+	Relations []*MemoRelation `protobuf:"bytes,13,rep,name=relations,proto3" json:"relations,omitempty"`
 	// Output only. The reactions to the memo.
-	Reactions []*Reaction `protobuf:"bytes,16,rep,name=reactions,proto3" json:"reactions,omitempty"`
+	Reactions []*Reaction `protobuf:"bytes,14,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	// Output only. The computed properties of the memo.
-	Property *Memo_Property `protobuf:"bytes,17,opt,name=property,proto3" json:"property,omitempty"`
+	Property *Memo_Property `protobuf:"bytes,15,opt,name=property,proto3" json:"property,omitempty"`
 	// Output only. The name of the parent memo.
 	// Format: memos/{memo}
-	Parent *string `protobuf:"bytes,18,opt,name=parent,proto3,oneof" json:"parent,omitempty"`
+	Parent *string `protobuf:"bytes,16,opt,name=parent,proto3,oneof" json:"parent,omitempty"`
 	// Output only. The snippet of the memo content. Plain text only.
-	Snippet string `protobuf:"bytes,19,opt,name=snippet,proto3" json:"snippet,omitempty"`
+	Snippet string `protobuf:"bytes,17,opt,name=snippet,proto3" json:"snippet,omitempty"`
 	// Optional. The location of the memo.
-	Location      *Location `protobuf:"bytes,20,opt,name=location,proto3,oneof" json:"location,omitempty"`
+	Location      *Location `protobuf:"bytes,18,opt,name=location,proto3,oneof" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1974,10 +1965,8 @@ type MemoRelation_Memo struct {
 	// The resource name of the memo.
 	// Format: memos/{memo}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. The unique identifier of the memo.
-	Uid string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
 	// Output only. The snippet of the memo content. Plain text only.
-	Snippet       string `protobuf:"bytes,3,opt,name=snippet,proto3" json:"snippet,omitempty"`
+	Snippet       string `protobuf:"bytes,2,opt,name=snippet,proto3" json:"snippet,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2019,13 +2008,6 @@ func (x *MemoRelation_Memo) GetName() string {
 	return ""
 }
 
-func (x *MemoRelation_Memo) GetUid() string {
-	if x != nil {
-		return x.Uid
-	}
-	return ""
-}
-
 func (x *MemoRelation_Memo) GetSnippet() string {
 	if x != nil {
 		return x.Snippet
@@ -2037,45 +2019,44 @@ var File_api_v1_memo_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19api/v1/memo_service.proto\x12\fmemos.api.v1\x1a\x1fapi/v1/attachment_service.proto\x1a\x13api/v1/common.proto\x1a\x1dapi/v1/markdown_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\x02\n" +
+	"\x19api/v1/memo_service.proto\x12\fmemos.api.v1\x1a\x1fapi/v1/attachment_service.proto\x1a\x13api/v1/common.proto\x1a\x1dapi/v1/markdown_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\x02\n" +
 	"\bReaction\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x123\n" +
-	"\acreator\x18\x03 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
+	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x123\n" +
+	"\acreator\x18\x02 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
 	"\x11memos.api.v1/UserR\acreator\x128\n" +
 	"\n" +
-	"content_id\x18\x04 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
+	"content_id\x18\x03 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
 	"\x11memos.api.v1/MemoR\tcontentId\x12(\n" +
-	"\rreaction_type\x18\x05 \x01(\tB\x03\xe0A\x02R\freactionType\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\rreaction_type\x18\x04 \x01(\tB\x03\xe0A\x02R\freactionType\x12@\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime:K\xeaAH\n" +
-	"\x15memos.api.v1/Reaction\x12\x14reactions/{reaction}\x1a\x04name*\treactions2\breaction\"\x8d\t\n" +
+	"\x15memos.api.v1/Reaction\x12\x14reactions/{reaction}\x1a\x04name*\treactions2\breaction\"\x87\t\n" +
 	"\x04Memo\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12.\n" +
-	"\x05state\x18\x03 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x123\n" +
-	"\acreator\x18\x04 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
+	"\x05state\x18\x02 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x123\n" +
+	"\acreator\x18\x03 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
 	"\x11memos.api.v1/UserR\acreator\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x12B\n" +
-	"\fdisplay_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\vdisplayTime\x12\x1d\n" +
-	"\acontent\x18\b \x01(\tB\x03\xe0A\x02R\acontent\x12-\n" +
-	"\x05nodes\x18\t \x03(\v2\x12.memos.api.v1.NodeB\x03\xe0A\x03R\x05nodes\x12=\n" +
+	"\fdisplay_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\vdisplayTime\x12\x1d\n" +
+	"\acontent\x18\a \x01(\tB\x03\xe0A\x02R\acontent\x12-\n" +
+	"\x05nodes\x18\b \x03(\v2\x12.memos.api.v1.NodeB\x03\xe0A\x03R\x05nodes\x12=\n" +
 	"\n" +
-	"visibility\x18\n" +
-	" \x01(\x0e2\x18.memos.api.v1.VisibilityB\x03\xe0A\x02R\n" +
+	"visibility\x18\t \x01(\x0e2\x18.memos.api.v1.VisibilityB\x03\xe0A\x02R\n" +
 	"visibility\x12\x17\n" +
-	"\x04tags\x18\v \x03(\tB\x03\xe0A\x03R\x04tags\x12\x1b\n" +
-	"\x06pinned\x18\f \x01(\bB\x03\xe0A\x01R\x06pinned\x12?\n" +
-	"\vattachments\x18\x0e \x03(\v2\x18.memos.api.v1.AttachmentB\x03\xe0A\x01R\vattachments\x12=\n" +
-	"\trelations\x18\x0f \x03(\v2\x1a.memos.api.v1.MemoRelationB\x03\xe0A\x01R\trelations\x129\n" +
-	"\treactions\x18\x10 \x03(\v2\x16.memos.api.v1.ReactionB\x03\xe0A\x03R\treactions\x12<\n" +
-	"\bproperty\x18\x11 \x01(\v2\x1b.memos.api.v1.Memo.PropertyB\x03\xe0A\x03R\bproperty\x126\n" +
-	"\x06parent\x18\x12 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
+	"\x04tags\x18\n" +
+	" \x03(\tB\x03\xe0A\x03R\x04tags\x12\x1b\n" +
+	"\x06pinned\x18\v \x01(\bB\x03\xe0A\x01R\x06pinned\x12?\n" +
+	"\vattachments\x18\f \x03(\v2\x18.memos.api.v1.AttachmentB\x03\xe0A\x01R\vattachments\x12=\n" +
+	"\trelations\x18\r \x03(\v2\x1a.memos.api.v1.MemoRelationB\x03\xe0A\x01R\trelations\x129\n" +
+	"\treactions\x18\x0e \x03(\v2\x16.memos.api.v1.ReactionB\x03\xe0A\x03R\treactions\x12<\n" +
+	"\bproperty\x18\x0f \x01(\v2\x1b.memos.api.v1.Memo.PropertyB\x03\xe0A\x03R\bproperty\x126\n" +
+	"\x06parent\x18\x10 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
 	"\x11memos.api.v1/MemoH\x00R\x06parent\x88\x01\x01\x12\x1d\n" +
-	"\asnippet\x18\x13 \x01(\tB\x03\xe0A\x03R\asnippet\x12<\n" +
-	"\blocation\x18\x14 \x01(\v2\x16.memos.api.v1.LocationB\x03\xe0A\x01H\x01R\blocation\x88\x01\x01\x1a\x96\x01\n" +
+	"\asnippet\x18\x11 \x01(\tB\x03\xe0A\x03R\asnippet\x12<\n" +
+	"\blocation\x18\x12 \x01(\v2\x16.memos.api.v1.LocationB\x03\xe0A\x01H\x01R\blocation\x88\x01\x01\x1a\x96\x01\n" +
 	"\bProperty\x12\x19\n" +
 	"\bhas_link\x18\x01 \x01(\bR\ahasLink\x12\"\n" +
 	"\rhas_task_list\x18\x02 \x01(\bR\vhasTaskList\x12\x19\n" +
@@ -2083,7 +2064,7 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x14has_incomplete_tasks\x18\x04 \x01(\bR\x12hasIncompleteTasks:7\xeaA4\n" +
 	"\x11memos.api.v1/Memo\x12\fmemos/{memo}\x1a\x04name*\x05memos2\x04memoB\t\n" +
 	"\a_parentB\v\n" +
-	"\t_locationJ\x04\b\x02\x10\x03\"u\n" +
+	"\t_location\"u\n" +
 	"\bLocation\x12%\n" +
 	"\vplaceholder\x18\x01 \x01(\tB\x03\xe0A\x01R\vplaceholder\x12\x1f\n" +
 	"\blatitude\x18\x02 \x01(\x01B\x03\xe0A\x01R\blatitude\x12!\n" +
@@ -2148,16 +2129,15 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\vattachments\x18\x01 \x03(\v2\x18.memos.api.v1.AttachmentR\vattachments\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xf2\x02\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xdb\x02\n" +
 	"\fMemoRelation\x128\n" +
 	"\x04memo\x18\x01 \x01(\v2\x1f.memos.api.v1.MemoRelation.MemoB\x03\xe0A\x02R\x04memo\x12G\n" +
 	"\frelated_memo\x18\x02 \x01(\v2\x1f.memos.api.v1.MemoRelation.MemoB\x03\xe0A\x02R\vrelatedMemo\x128\n" +
-	"\x04type\x18\x03 \x01(\x0e2\x1f.memos.api.v1.MemoRelation.TypeB\x03\xe0A\x02R\x04type\x1ak\n" +
+	"\x04type\x18\x03 \x01(\x0e2\x1f.memos.api.v1.MemoRelation.TypeB\x03\xe0A\x02R\x04type\x1aT\n" +
 	"\x04Memo\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
-	"\x11memos.api.v1/MemoR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12\x1d\n" +
-	"\asnippet\x18\x03 \x01(\tB\x03\xe0A\x03R\asnippet\"8\n" +
+	"\x11memos.api.v1/MemoR\x04name\x12\x1d\n" +
+	"\asnippet\x18\x02 \x01(\tB\x03\xe0A\x03R\asnippet\"8\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tREFERENCE\x10\x01\x12\v\n" +
