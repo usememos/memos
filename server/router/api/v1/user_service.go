@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"crypto/md5"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -736,11 +735,6 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 }
 
 func convertUserFromStore(user *store.User) *v1pb.User {
-	// Generate etag based on user data
-	etagData := fmt.Sprintf("%d-%d-%s-%s-%s", user.ID, user.UpdatedTs, user.Username, user.Email, user.Nickname)
-	hash := md5.Sum([]byte(etagData))
-	etag := fmt.Sprintf("%x", hash)
-
 	userpb := &v1pb.User{
 		Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
 		State:       convertStateFromStore(user.RowStatus),
@@ -752,7 +746,6 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 		DisplayName: user.Nickname,
 		AvatarUrl:   user.AvatarURL,
 		Description: user.Description,
-		Etag:        etag,
 	}
 	// Use the avatar URL instead of raw base64 image data to reduce the response size.
 	if user.AvatarURL != "" {

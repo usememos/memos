@@ -849,25 +849,25 @@ export const WorkspaceMemoRelatedSetting: MessageFns<WorkspaceMemoRelatedSetting
       writer.uint32(24).int32(message.contentLengthLimit);
     }
     if (message.enableDoubleClickEdit !== false) {
-      writer.uint32(40).bool(message.enableDoubleClickEdit);
+      writer.uint32(32).bool(message.enableDoubleClickEdit);
     }
     if (message.enableLinkPreview !== false) {
-      writer.uint32(48).bool(message.enableLinkPreview);
+      writer.uint32(40).bool(message.enableLinkPreview);
     }
     if (message.enableComment !== false) {
-      writer.uint32(56).bool(message.enableComment);
+      writer.uint32(48).bool(message.enableComment);
     }
     for (const v of message.reactions) {
-      writer.uint32(82).string(v!);
+      writer.uint32(58).string(v!);
     }
     if (message.disableMarkdownShortcuts !== false) {
-      writer.uint32(88).bool(message.disableMarkdownShortcuts);
+      writer.uint32(64).bool(message.disableMarkdownShortcuts);
     }
     if (message.enableBlurNsfwContent !== false) {
-      writer.uint32(96).bool(message.enableBlurNsfwContent);
+      writer.uint32(72).bool(message.enableBlurNsfwContent);
     }
     for (const v of message.nsfwTags) {
-      writer.uint32(106).string(v!);
+      writer.uint32(82).string(v!);
     }
     return writer;
   },
@@ -903,12 +903,20 @@ export const WorkspaceMemoRelatedSetting: MessageFns<WorkspaceMemoRelatedSetting
           message.contentLengthLimit = reader.int32();
           continue;
         }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.enableDoubleClickEdit = reader.bool();
+          continue;
+        }
         case 5: {
           if (tag !== 40) {
             break;
           }
 
-          message.enableDoubleClickEdit = reader.bool();
+          message.enableLinkPreview = reader.bool();
           continue;
         }
         case 6: {
@@ -916,43 +924,35 @@ export const WorkspaceMemoRelatedSetting: MessageFns<WorkspaceMemoRelatedSetting
             break;
           }
 
-          message.enableLinkPreview = reader.bool();
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
           message.enableComment = reader.bool();
           continue;
         }
-        case 10: {
-          if (tag !== 82) {
+        case 7: {
+          if (tag !== 58) {
             break;
           }
 
           message.reactions.push(reader.string());
           continue;
         }
-        case 11: {
-          if (tag !== 88) {
+        case 8: {
+          if (tag !== 64) {
             break;
           }
 
           message.disableMarkdownShortcuts = reader.bool();
           continue;
         }
-        case 12: {
-          if (tag !== 96) {
+        case 9: {
+          if (tag !== 72) {
             break;
           }
 
           message.enableBlurNsfwContent = reader.bool();
           continue;
         }
-        case 13: {
-          if (tag !== 106) {
+        case 10: {
+          if (tag !== 82) {
             break;
           }
 

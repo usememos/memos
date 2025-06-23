@@ -819,10 +819,6 @@ paths:
           schema:
             type: object
             properties:
-              uid:
-                type: string
-                description: Output only. The system generated unique identifier.
-                readOnly: true
               type:
                 $ref: '#/definitions/apiv1IdentityProviderType'
                 description: Required. The type of the identity provider.
@@ -2369,10 +2365,6 @@ paths:
           schema:
             type: object
             properties:
-              uid:
-                type: string
-                description: Output only. The system generated unique identifier.
-                readOnly: true
               role:
                 $ref: '#/definitions/UserRole'
                 description: The role of the user.
@@ -2406,10 +2398,6 @@ paths:
                 type: string
                 format: date-time
                 description: Output only. The last update timestamp.
-                readOnly: true
-              etag:
-                type: string
-                description: Output only. The etag for this resource.
                 readOnly: true
             title: Required. The user to update.
             required:
@@ -2453,10 +2441,6 @@ paths:
           schema:
             type: object
             properties:
-              uid:
-                type: string
-                description: Output only. The system generated unique identifier.
-                readOnly: true
               displayName:
                 type: string
                 description: Required. The display name of the webhook.
@@ -2481,10 +2465,6 @@ paths:
                 type: string
                 format: date-time
                 description: Output only. The last update timestamp.
-                readOnly: true
-              etag:
-                type: string
-                description: Output only. The etag for this resource.
                 readOnly: true
             title: Required. The webhook to update.
             required:
@@ -2755,10 +2735,6 @@ definitions:
         title: |-
           The resource name of the identity provider.
           Format: identityProviders/{idp}
-      uid:
-        type: string
-        description: Output only. The system generated unique identifier.
-        readOnly: true
       type:
         $ref: '#/definitions/apiv1IdentityProviderType'
         description: Required. The type of the identity provider.
@@ -2786,6 +2762,7 @@ definitions:
       - TYPE_UNSPECIFIED
       - OAUTH2
     default: TYPE_UNSPECIFIED
+    description: ' - OAUTH2: OAuth2 identity provider.'
   apiv1Location:
     type: object
     properties:
@@ -3792,10 +3769,6 @@ definitions:
         title: |-
           The resource name of the memo.
           Format: memos/{memo}
-      uid:
-        type: string
-        description: Output only. The unique identifier of the memo.
-        readOnly: true
       snippet:
         type: string
         description: Output only. The snippet of the memo content. Plain text only.
@@ -3981,10 +3954,6 @@ definitions:
         title: |-
           The resource name of the reaction.
           Format: reactions/{reaction}
-        readOnly: true
-      uid:
-        type: string
-        description: Output only. The system generated unique identifier.
         readOnly: true
       creator:
         type: string
@@ -4181,10 +4150,6 @@ definitions:
         title: |-
           The resource name of the user.
           Format: users/{user}
-      uid:
-        type: string
-        description: Output only. The system generated unique identifier.
-        readOnly: true
       role:
         $ref: '#/definitions/UserRole'
         description: The role of the user.
@@ -4218,10 +4183,6 @@ definitions:
         type: string
         format: date-time
         description: Output only. The last update timestamp.
-        readOnly: true
-      etag:
-        type: string
-        description: Output only. The etag for this resource.
         readOnly: true
     required:
       - role
@@ -4350,10 +4311,6 @@ definitions:
         title: |-
           The resource name of the webhook.
           Format: webhooks/{webhook}
-      uid:
-        type: string
-        description: Output only. The system generated unique identifier.
-        readOnly: true
       displayName:
         type: string
         description: Required. The display name of the webhook.
@@ -4378,10 +4335,6 @@ definitions:
         type: string
         format: date-time
         description: Output only. The last update timestamp.
-        readOnly: true
-      etag:
-        type: string
-        description: Output only. The etag for this resource.
         readOnly: true
     required:
       - displayName

@@ -61,23 +61,21 @@ message IdentityProvider {
   // Format: identityProviders/{idp}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // Output only. The system generated unique identifier.
-  string uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-
   // Required. The type of the identity provider.
-  Type type = 3 [(google.api.field_behavior) = REQUIRED];
+  Type type = 2 [(google.api.field_behavior) = REQUIRED];
 
   // Required. The display title of the identity provider.
-  string title = 4 [(google.api.field_behavior) = REQUIRED];
+  string title = 3 [(google.api.field_behavior) = REQUIRED];
 
   // Optional. Filter applied to user identifiers.
-  string identifier_filter = 5 [(google.api.field_behavior) = OPTIONAL];
+  string identifier_filter = 4 [(google.api.field_behavior) = OPTIONAL];
 
   // Required. Configuration for the identity provider.
-  IdentityProviderConfig config = 6 [(google.api.field_behavior) = REQUIRED];
+  IdentityProviderConfig config = 5 [(google.api.field_behavior) = REQUIRED];
 
   enum Type {
     TYPE_UNSPECIFIED = 0;
+    // OAuth2 identity provider.
     OAUTH2 = 1;
   }
 }

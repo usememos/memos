@@ -20,8 +20,6 @@ export interface Webhook {
    * Format: webhooks/{webhook}
    */
   name: string;
-  /** Output only. The system generated unique identifier. */
-  uid: string;
   /** Required. The display name of the webhook. */
   displayName: string;
   /** Required. The target URL for the webhook. */
@@ -38,11 +36,7 @@ export interface Webhook {
     | Date
     | undefined;
   /** Output only. The last update timestamp. */
-  updateTime?:
-    | Date
-    | undefined;
-  /** Output only. The etag for this resource. */
-  etag: string;
+  updateTime?: Date | undefined;
 }
 
 export interface ListWebhooksRequest {
@@ -163,14 +157,12 @@ export interface WebhookRequestPayload {
 function createBaseWebhook(): Webhook {
   return {
     name: "",
-    uid: "",
     displayName: "",
     url: "",
     creator: "",
     state: State.STATE_UNSPECIFIED,
     createTime: undefined,
     updateTime: undefined,
-    etag: "",
   };
 }
 
@@ -179,29 +171,23 @@ export const Webhook: MessageFns<Webhook> = {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
-    if (message.uid !== "") {
-      writer.uint32(18).string(message.uid);
-    }
     if (message.displayName !== "") {
-      writer.uint32(26).string(message.displayName);
+      writer.uint32(18).string(message.displayName);
     }
     if (message.url !== "") {
-      writer.uint32(34).string(message.url);
+      writer.uint32(26).string(message.url);
     }
     if (message.creator !== "") {
-      writer.uint32(42).string(message.creator);
+      writer.uint32(34).string(message.creator);
     }
     if (message.state !== State.STATE_UNSPECIFIED) {
-      writer.uint32(48).int32(stateToNumber(message.state));
+      writer.uint32(40).int32(stateToNumber(message.state));
     }
     if (message.createTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(58).fork()).join();
+      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(50).fork()).join();
     }
     if (message.updateTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.updateTime), writer.uint32(66).fork()).join();
-    }
-    if (message.etag !== "") {
-      writer.uint32(74).string(message.etag);
+      Timestamp.encode(toTimestamp(message.updateTime), writer.uint32(58).fork()).join();
     }
     return writer;
   },
@@ -226,7 +212,7 @@ export const Webhook: MessageFns<Webhook> = {
             break;
           }
 
-          message.uid = reader.string();
+          message.displayName = reader.string();
           continue;
         }
         case 3: {
@@ -234,7 +220,7 @@ export const Webhook: MessageFns<Webhook> = {
             break;
           }
 
-          message.displayName = reader.string();
+          message.url = reader.string();
           continue;
         }
         case 4: {
@@ -242,23 +228,23 @@ export const Webhook: MessageFns<Webhook> = {
             break;
           }
 
-          message.url = reader.string();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
           message.creator = reader.string();
           continue;
         }
-        case 6: {
-          if (tag !== 48) {
+        case 5: {
+          if (tag !== 40) {
             break;
           }
 
           message.state = stateFromJSON(reader.int32());
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 7: {
@@ -266,23 +252,7 @@ export const Webhook: MessageFns<Webhook> = {
             break;
           }
 
-          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
           message.updateTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.etag = reader.string();
           continue;
         }
       }
@@ -300,14 +270,12 @@ export const Webhook: MessageFns<Webhook> = {
   fromPartial(object: DeepPartial<Webhook>): Webhook {
     const message = createBaseWebhook();
     message.name = object.name ?? "";
-    message.uid = object.uid ?? "";
     message.displayName = object.displayName ?? "";
     message.url = object.url ?? "";
     message.creator = object.creator ?? "";
     message.state = object.state ?? State.STATE_UNSPECIFIED;
     message.createTime = object.createTime ?? undefined;
     message.updateTime = object.updateTime ?? undefined;
-    message.etag = object.etag ?? "";
     return message;
   },
 };

@@ -132,8 +132,6 @@ message WorkspaceStorageSetting {
 }
 
 message WorkspaceMemoRelatedSetting {
-  reserved 4, 8;
-
   // disallow_public_visibility disallows set memo as public visibility.
   bool disallow_public_visibility = 1;
   // display_with_update_time orders and displays memo with update time.
@@ -141,19 +139,19 @@ message WorkspaceMemoRelatedSetting {
   // content_length_limit is the limit of content length. Unit is byte.
   int32 content_length_limit = 3;
   // enable_double_click_edit enables editing on double click.
-  bool enable_double_click_edit = 5;
+  bool enable_double_click_edit = 4;
   // enable_link_preview enables links preview.
-  bool enable_link_preview = 6;
+  bool enable_link_preview = 5;
   // enable_comment enables comment.
-  bool enable_comment = 7;
+  bool enable_comment = 6;
   // reactions is the list of reactions.
-  repeated string reactions = 10;
+  repeated string reactions = 7;
   // disable_markdown_shortcuts disallow the registration of markdown shortcuts.
-  bool disable_markdown_shortcuts = 11;
+  bool disable_markdown_shortcuts = 8;
   // enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
-  bool enable_blur_nsfw_content = 12;
+  bool enable_blur_nsfw_content = 9;
   // nsfw_tags is the list of tags that mark content as NSFW for blurring.
-  repeated string nsfw_tags = 13;
+  repeated string nsfw_tags = 10;
 }
 
 // Request message for GetWorkspaceSetting method.

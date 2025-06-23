@@ -28,7 +28,8 @@ type IdentityProvider_Type int32
 
 const (
 	IdentityProvider_TYPE_UNSPECIFIED IdentityProvider_Type = 0
-	IdentityProvider_OAUTH2           IdentityProvider_Type = 1
+	// OAuth2 identity provider.
+	IdentityProvider_OAUTH2 IdentityProvider_Type = 1
 )
 
 // Enum value maps for IdentityProvider_Type.
@@ -75,16 +76,14 @@ type IdentityProvider struct {
 	// The resource name of the identity provider.
 	// Format: identityProviders/{idp}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. The system generated unique identifier.
-	Uid string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
 	// Required. The type of the identity provider.
-	Type IdentityProvider_Type `protobuf:"varint,3,opt,name=type,proto3,enum=memos.api.v1.IdentityProvider_Type" json:"type,omitempty"`
+	Type IdentityProvider_Type `protobuf:"varint,2,opt,name=type,proto3,enum=memos.api.v1.IdentityProvider_Type" json:"type,omitempty"`
 	// Required. The display title of the identity provider.
-	Title string `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	Title string `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	// Optional. Filter applied to user identifiers.
-	IdentifierFilter string `protobuf:"bytes,5,opt,name=identifier_filter,json=identifierFilter,proto3" json:"identifier_filter,omitempty"`
+	IdentifierFilter string `protobuf:"bytes,4,opt,name=identifier_filter,json=identifierFilter,proto3" json:"identifier_filter,omitempty"`
 	// Required. Configuration for the identity provider.
-	Config        *IdentityProviderConfig `protobuf:"bytes,6,opt,name=config,proto3" json:"config,omitempty"`
+	Config        *IdentityProviderConfig `protobuf:"bytes,5,opt,name=config,proto3" json:"config,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -122,13 +121,6 @@ func (*IdentityProvider) Descriptor() ([]byte, []int) {
 func (x *IdentityProvider) GetName() string {
 	if x != nil {
 		return x.Name
-	}
-	return ""
-}
-
-func (x *IdentityProvider) GetUid() string {
-	if x != nil {
-		return x.Uid
 	}
 	return ""
 }
@@ -701,14 +693,13 @@ var File_api_v1_idp_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_idp_service_proto_rawDesc = "" +
 	"\n" +
-	"\x18api/v1/idp_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa2\x03\n" +
+	"\x18api/v1/idp_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x8b\x03\n" +
 	"\x10IdentityProvider\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12<\n" +
-	"\x04type\x18\x03 \x01(\x0e2#.memos.api.v1.IdentityProvider.TypeB\x03\xe0A\x02R\x04type\x12\x19\n" +
-	"\x05title\x18\x04 \x01(\tB\x03\xe0A\x02R\x05title\x120\n" +
-	"\x11identifier_filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x10identifierFilter\x12A\n" +
-	"\x06config\x18\x06 \x01(\v2$.memos.api.v1.IdentityProviderConfigB\x03\xe0A\x02R\x06config\"(\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12<\n" +
+	"\x04type\x18\x02 \x01(\x0e2#.memos.api.v1.IdentityProvider.TypeB\x03\xe0A\x02R\x04type\x12\x19\n" +
+	"\x05title\x18\x03 \x01(\tB\x03\xe0A\x02R\x05title\x120\n" +
+	"\x11identifier_filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x10identifierFilter\x12A\n" +
+	"\x06config\x18\x05 \x01(\v2$.memos.api.v1.IdentityProviderConfigB\x03\xe0A\x02R\x06config\"(\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

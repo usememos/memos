@@ -82,7 +82,6 @@ func (s *APIV1Service) convertReactionFromStore(ctx context.Context, reaction *s
 	reactionUID := fmt.Sprintf("%d", reaction.ID)
 	return &v1pb.Reaction{
 		Name:         fmt.Sprintf("%s%s", ReactionNamePrefix, reactionUID),
-		Uid:          reactionUID,
 		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
 		ContentId:    reaction.ContentID,
 		ReactionType: reaction.ReactionType,

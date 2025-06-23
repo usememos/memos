@@ -135,41 +135,35 @@ message User {
   // Format: users/{user}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // Output only. The system generated unique identifier.
-  string uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-
   // The role of the user.
-  Role role = 3 [(google.api.field_behavior) = REQUIRED];
+  Role role = 2 [(google.api.field_behavior) = REQUIRED];
 
   // Required. The unique username for login.
-  string username = 4 [(google.api.field_behavior) = REQUIRED];
+  string username = 3 [(google.api.field_behavior) = REQUIRED];
 
   // Optional. The email address of the user.
-  string email = 5 [(google.api.field_behavior) = OPTIONAL];
+  string email = 4 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The display name of the user.
-  string display_name = 6 [(google.api.field_behavior) = OPTIONAL];
+  string display_name = 5 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The avatar URL of the user.
-  string avatar_url = 7 [(google.api.field_behavior) = OPTIONAL];
+  string avatar_url = 6 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The description of the user.
-  string description = 8 [(google.api.field_behavior) = OPTIONAL];
+  string description = 7 [(google.api.field_behavior) = OPTIONAL];
 
   // Input only. The password for the user.
-  string password = 9 [(google.api.field_behavior) = INPUT_ONLY];
+  string password = 8 [(google.api.field_behavior) = INPUT_ONLY];
 
   // The state of the user.
-  State state = 10 [(google.api.field_behavior) = REQUIRED];
+  State state = 9 [(google.api.field_behavior) = REQUIRED];
 
   // Output only. The creation timestamp.
-  google.protobuf.Timestamp create_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp create_time = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. The last update timestamp.
-  google.protobuf.Timestamp update_time = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // Output only. The etag for this resource.
-  string etag = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp update_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // User role enumeration.
   enum Role {

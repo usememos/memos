@@ -17,8 +17,6 @@ export interface IdentityProvider {
    * Format: identityProviders/{idp}
    */
   name: string;
-  /** Output only. The system generated unique identifier. */
-  uid: string;
   /** Required. The type of the identity provider. */
   type: IdentityProvider_Type;
   /** Required. The display title of the identity provider. */
@@ -31,6 +29,7 @@ export interface IdentityProvider {
 
 export enum IdentityProvider_Type {
   TYPE_UNSPECIFIED = "TYPE_UNSPECIFIED",
+  /** OAUTH2 - OAuth2 identity provider. */
   OAUTH2 = "OAUTH2",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
@@ -138,14 +137,7 @@ export interface DeleteIdentityProviderRequest {
 }
 
 function createBaseIdentityProvider(): IdentityProvider {
-  return {
-    name: "",
-    uid: "",
-    type: IdentityProvider_Type.TYPE_UNSPECIFIED,
-    title: "",
-    identifierFilter: "",
-    config: undefined,
-  };
+  return { name: "", type: IdentityProvider_Type.TYPE_UNSPECIFIED, title: "", identifierFilter: "", config: undefined };
 }
 
 export const IdentityProvider: MessageFns<IdentityProvider> = {
@@ -153,20 +145,17 @@ export const IdentityProvider: MessageFns<IdentityProvider> = {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
-    if (message.uid !== "") {
-      writer.uint32(18).string(message.uid);
-    }
     if (message.type !== IdentityProvider_Type.TYPE_UNSPECIFIED) {
-      writer.uint32(24).int32(identityProvider_TypeToNumber(message.type));
+      writer.uint32(16).int32(identityProvider_TypeToNumber(message.type));
     }
     if (message.title !== "") {
-      writer.uint32(34).string(message.title);
+      writer.uint32(26).string(message.title);
     }
     if (message.identifierFilter !== "") {
-      writer.uint32(42).string(message.identifierFilter);
+      writer.uint32(34).string(message.identifierFilter);
     }
     if (message.config !== undefined) {
-      IdentityProviderConfig.encode(message.config, writer.uint32(50).fork()).join();
+      IdentityProviderConfig.encode(message.config, writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -187,19 +176,19 @@ export const IdentityProvider: MessageFns<IdentityProvider> = {
           continue;
         }
         case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.uid = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
+          if (tag !== 16) {
             break;
           }
 
           message.type = identityProvider_TypeFromJSON(reader.int32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.title = reader.string();
           continue;
         }
         case 4: {
@@ -207,19 +196,11 @@ export const IdentityProvider: MessageFns<IdentityProvider> = {
             break;
           }
 
-          message.title = reader.string();
+          message.identifierFilter = reader.string();
           continue;
         }
         case 5: {
           if (tag !== 42) {
-            break;
-          }
-
-          message.identifierFilter = reader.string();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
             break;
           }
 
@@ -241,7 +222,6 @@ export const IdentityProvider: MessageFns<IdentityProvider> = {
   fromPartial(object: DeepPartial<IdentityProvider>): IdentityProvider {
     const message = createBaseIdentityProvider();
     message.name = object.name ?? "";
-    message.uid = object.uid ?? "";
     message.type = object.type ?? IdentityProvider_Type.TYPE_UNSPECIFIED;
     message.title = object.title ?? "";
     message.identifierFilter = object.identifierFilter ?? "";
