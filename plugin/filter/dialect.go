@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// SQLDialect defines database-specific SQL generation methods
+// SQLDialect defines database-specific SQL generation methods.
 type SQLDialect interface {
 	// Basic field access
 	GetTablePrefix() string
@@ -27,7 +27,7 @@ type SQLDialect interface {
 	GetCurrentTimestamp() string
 }
 
-// DatabaseType represents the type of database
+// DatabaseType represents the type of database.
 type DatabaseType string
 
 const (
@@ -36,7 +36,7 @@ const (
 	PostgreSQL DatabaseType = "postgres"
 )
 
-// GetDialect returns the appropriate dialect for the database type
+// GetDialect returns the appropriate dialect for the database type.
 func GetDialect(dbType DatabaseType) SQLDialect {
 	switch dbType {
 	case SQLite:
@@ -50,14 +50,14 @@ func GetDialect(dbType DatabaseType) SQLDialect {
 	}
 }
 
-// SQLiteDialect implements SQLDialect for SQLite
+// SQLiteDialect implements SQLDialect for SQLite.
 type SQLiteDialect struct{}
 
-func (d *SQLiteDialect) GetTablePrefix() string {
+func (*SQLiteDialect) GetTablePrefix() string {
 	return "`memo`"
 }
 
-func (d *SQLiteDialect) GetParameterPlaceholder(index int) string {
+func (*SQLiteDialect) GetParameterPlaceholder(_ int) string {
 	return "?"
 }
 
@@ -69,15 +69,15 @@ func (d *SQLiteDialect) GetJSONArrayLength(path string) string {
 	return fmt.Sprintf("JSON_ARRAY_LENGTH(COALESCE(%s, JSON_ARRAY()))", d.GetJSONExtract(path))
 }
 
-func (d *SQLiteDialect) GetJSONContains(path, element string) string {
+func (d *SQLiteDialect) GetJSONContains(path, _ string) string {
 	return fmt.Sprintf("%s LIKE ?", d.GetJSONExtract(path))
 }
 
-func (d *SQLiteDialect) GetJSONLike(path, pattern string) string {
+func (d *SQLiteDialect) GetJSONLike(path, _ string) string {
 	return fmt.Sprintf("%s LIKE ?", d.GetJSONExtract(path))
 }
 
-func (d *SQLiteDialect) GetBooleanValue(value bool) interface{} {
+func (*SQLiteDialect) GetBooleanValue(value bool) interface{} {
 	if value {
 		return 1
 	}
@@ -96,18 +96,18 @@ func (d *SQLiteDialect) GetTimestampComparison(field string) string {
 	return fmt.Sprintf("%s.`%s`", d.GetTablePrefix(), field)
 }
 
-func (d *SQLiteDialect) GetCurrentTimestamp() string {
+func (*SQLiteDialect) GetCurrentTimestamp() string {
 	return "strftime('%s', 'now')"
 }
 
-// MySQLDialect implements SQLDialect for MySQL
+// MySQLDialect implements SQLDialect for MySQL.
 type MySQLDialect struct{}
 
-func (d *MySQLDialect) GetTablePrefix() string {
+func (*MySQLDialect) GetTablePrefix() string {
 	return "`memo`"
 }
 
-func (d *MySQLDialect) GetParameterPlaceholder(index int) string {
+func (*MySQLDialect) GetParameterPlaceholder(_ int) string {
 	return "?"
 }
 
@@ -119,15 +119,15 @@ func (d *MySQLDialect) GetJSONArrayLength(path string) string {
 	return fmt.Sprintf("JSON_LENGTH(COALESCE(%s, JSON_ARRAY()))", d.GetJSONExtract(path))
 }
 
-func (d *MySQLDialect) GetJSONContains(path, element string) string {
+func (d *MySQLDialect) GetJSONContains(path, _ string) string {
 	return fmt.Sprintf("JSON_CONTAINS(%s, ?)", d.GetJSONExtract(path))
 }
 
-func (d *MySQLDialect) GetJSONLike(path, pattern string) string {
+func (d *MySQLDialect) GetJSONLike(path, _ string) string {
 	return fmt.Sprintf("%s LIKE ?", d.GetJSONExtract(path))
 }
 
-func (d *MySQLDialect) GetBooleanValue(value bool) interface{} {
+func (*MySQLDialect) GetBooleanValue(value bool) interface{} {
 	return value
 }
 
@@ -147,18 +147,18 @@ func (d *MySQLDialect) GetTimestampComparison(field string) string {
 	return fmt.Sprintf("UNIX_TIMESTAMP(%s.`%s`)", d.GetTablePrefix(), field)
 }
 
-func (d *MySQLDialect) GetCurrentTimestamp() string {
+func (*MySQLDialect) GetCurrentTimestamp() string {
 	return "UNIX_TIMESTAMP()"
 }
 
-// PostgreSQLDialect implements SQLDialect for PostgreSQL
+// PostgreSQLDialect implements SQLDialect for PostgreSQL.
 type PostgreSQLDialect struct{}
 
-func (d *PostgreSQLDialect) GetTablePrefix() string {
+func (*PostgreSQLDialect) GetTablePrefix() string {
 	return "memo"
 }
 
-func (d *PostgreSQLDialect) GetParameterPlaceholder(index int) string {
+func (*PostgreSQLDialect) GetParameterPlaceholder(index int) string {
 	return fmt.Sprintf("$%d", index)
 }
 
@@ -181,21 +181,21 @@ func (d *PostgreSQLDialect) GetJSONArrayLength(path string) string {
 	return fmt.Sprintf("jsonb_array_length(COALESCE(%s.%s, '[]'::jsonb))", d.GetTablePrefix(), jsonPath)
 }
 
-func (d *PostgreSQLDialect) GetJSONContains(path, element string) string {
+func (d *PostgreSQLDialect) GetJSONContains(path, _ string) string {
 	jsonPath := strings.Replace(path, "$.tags", "payload->'tags'", 1)
 	return fmt.Sprintf("%s.%s @> jsonb_build_array(?)", d.GetTablePrefix(), jsonPath)
 }
 
-func (d *PostgreSQLDialect) GetJSONLike(path, pattern string) string {
+func (d *PostgreSQLDialect) GetJSONLike(path, _ string) string {
 	jsonPath := strings.Replace(path, "$.tags", "payload->'tags'", 1)
 	return fmt.Sprintf("%s.%s @> jsonb_build_array(?)", d.GetTablePrefix(), jsonPath)
 }
 
-func (d *PostgreSQLDialect) GetBooleanValue(value bool) interface{} {
+func (*PostgreSQLDialect) GetBooleanValue(value bool) interface{} {
 	return value
 }
 
-func (d *PostgreSQLDialect) GetBooleanComparison(path string, value bool) string {
+func (d *PostgreSQLDialect) GetBooleanComparison(path string, _ bool) string {
 	return fmt.Sprintf("(%s)::boolean = ?", d.GetJSONExtract(path))
 }
 
@@ -207,6 +207,6 @@ func (d *PostgreSQLDialect) GetTimestampComparison(field string) string {
 	return fmt.Sprintf("EXTRACT(EPOCH FROM %s.%s)", d.GetTablePrefix(), field)
 }
 
-func (d *PostgreSQLDialect) GetCurrentTimestamp() string {
+func (*PostgreSQLDialect) GetCurrentTimestamp() string {
 	return "EXTRACT(EPOCH FROM NOW())"
 }

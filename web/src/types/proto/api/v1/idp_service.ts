@@ -83,17 +83,11 @@ export interface OAuth2Config {
 }
 
 export interface ListIdentityProvidersRequest {
-  /** Optional. The maximum number of identity providers to return. */
-  pageSize: number;
-  /** Optional. A page token for pagination. */
-  pageToken: string;
 }
 
 export interface ListIdentityProvidersResponse {
   /** The list of identity providers. */
   identityProviders: IdentityProvider[];
-  /** A token for the next page of results. */
-  nextPageToken: string;
 }
 
 export interface GetIdentityProviderRequest {
@@ -491,17 +485,11 @@ export const OAuth2Config: MessageFns<OAuth2Config> = {
 };
 
 function createBaseListIdentityProvidersRequest(): ListIdentityProvidersRequest {
-  return { pageSize: 0, pageToken: "" };
+  return {};
 }
 
 export const ListIdentityProvidersRequest: MessageFns<ListIdentityProvidersRequest> = {
-  encode(message: ListIdentityProvidersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.pageSize !== 0) {
-      writer.uint32(8).int32(message.pageSize);
-    }
-    if (message.pageToken !== "") {
-      writer.uint32(18).string(message.pageToken);
-    }
+  encode(_: ListIdentityProvidersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     return writer;
   },
 
@@ -512,22 +500,6 @@ export const ListIdentityProvidersRequest: MessageFns<ListIdentityProvidersReque
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.pageSize = reader.int32();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.pageToken = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -540,25 +512,20 @@ export const ListIdentityProvidersRequest: MessageFns<ListIdentityProvidersReque
   create(base?: DeepPartial<ListIdentityProvidersRequest>): ListIdentityProvidersRequest {
     return ListIdentityProvidersRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<ListIdentityProvidersRequest>): ListIdentityProvidersRequest {
+  fromPartial(_: DeepPartial<ListIdentityProvidersRequest>): ListIdentityProvidersRequest {
     const message = createBaseListIdentityProvidersRequest();
-    message.pageSize = object.pageSize ?? 0;
-    message.pageToken = object.pageToken ?? "";
     return message;
   },
 };
 
 function createBaseListIdentityProvidersResponse(): ListIdentityProvidersResponse {
-  return { identityProviders: [], nextPageToken: "" };
+  return { identityProviders: [] };
 }
 
 export const ListIdentityProvidersResponse: MessageFns<ListIdentityProvidersResponse> = {
   encode(message: ListIdentityProvidersResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.identityProviders) {
       IdentityProvider.encode(v!, writer.uint32(10).fork()).join();
-    }
-    if (message.nextPageToken !== "") {
-      writer.uint32(18).string(message.nextPageToken);
     }
     return writer;
   },
@@ -578,14 +545,6 @@ export const ListIdentityProvidersResponse: MessageFns<ListIdentityProvidersResp
           message.identityProviders.push(IdentityProvider.decode(reader, reader.uint32()));
           continue;
         }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.nextPageToken = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -601,7 +560,6 @@ export const ListIdentityProvidersResponse: MessageFns<ListIdentityProvidersResp
   fromPartial(object: DeepPartial<ListIdentityProvidersResponse>): ListIdentityProvidersResponse {
     const message = createBaseListIdentityProvidersResponse();
     message.identityProviders = object.identityProviders?.map((e) => IdentityProvider.fromPartial(e)) || [];
-    message.nextPageToken = object.nextPageToken ?? "";
     return message;
   },
 };

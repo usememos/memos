@@ -18,7 +18,6 @@ func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) err
 }
 
 func (d *DB) convertWithParameterIndex(ctx *filter.ConvertContext, expr *exprv1.Expr, dbType filter.TemplateDBType, paramIndex int) (int, error) {
-
 	if v, ok := expr.ExprKind.(*exprv1.Expr_CallExpr); ok {
 		switch v.CallExpr.Function {
 		case "_||_", "_&&_":
@@ -306,7 +305,7 @@ func (d *DB) convertWithParameterIndex(ctx *filter.ConvertContext, expr *exprv1.
 	return paramIndex, nil
 }
 
-func (d *DB) getComparisonOperator(function string) string {
+func (*DB) getComparisonOperator(function string) string {
 	switch function {
 	case "_==_":
 		return "="

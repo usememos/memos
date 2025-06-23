@@ -75,23 +75,11 @@ message ListShortcutsRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {child_type: "memos.api.v1/Shortcut"}
   ];
-
-  // Optional. The maximum number of shortcuts to return.
-  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. A page token for pagination.
-  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListShortcutsResponse {
   // The list of shortcuts.
   repeated Shortcut shortcuts = 1;
-
-  // A token for the next page of results.
-  string next_page_token = 2;
-
-  // The total count of shortcuts.
-  int32 total_size = 3;
 }
 
 message GetShortcutRequest {

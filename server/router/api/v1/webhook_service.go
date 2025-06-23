@@ -78,8 +78,7 @@ func (s *APIV1Service) ListWebhooks(ctx context.Context, _ *v1pb.ListWebhooksReq
 	}
 
 	response := &v1pb.ListWebhooksResponse{
-		Webhooks:  []*v1pb.Webhook{},
-		TotalSize: int32(len(webhooks)),
+		Webhooks: []*v1pb.Webhook{},
 	}
 	for _, webhook := range webhooks {
 		response.Webhooks = append(response.Webhooks, convertWebhookFromStore(webhook))
@@ -146,10 +145,6 @@ func (s *APIV1Service) UpdateWebhook(ctx context.Context, request *v1pb.UpdateWe
 		return nil, status.Errorf(codes.Internal, "failed to get webhook: %v", err)
 	}
 	if existingWebhook == nil {
-		if request.AllowMissing {
-			// Could create webhook if missing, but for now return not found
-			return nil, status.Errorf(codes.NotFound, "webhook not found")
-		}
 		return nil, status.Errorf(codes.NotFound, "webhook not found")
 	}
 

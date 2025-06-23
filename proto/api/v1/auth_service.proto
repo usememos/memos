@@ -39,6 +39,32 @@ message GetCurrentSessionResponse {
 }
 
 message CreateSessionRequest {
+  // Nested message for password-based authentication credentials.
+  message PasswordCredentials {
+    // The username to sign in with.
+    // Required field for password-based authentication.
+    string username = 1 [(google.api.field_behavior) = REQUIRED];
+
+    // The password to sign in with.
+    // Required field for password-based authentication.
+    string password = 2 [(google.api.field_behavior) = REQUIRED];
+  }
+
+  // Nested message for SSO authentication credentials.
+  message SSOCredentials {
+    // The ID of the SSO provider.
+    // Required field to identify the SSO provider.
+    int32 idp_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+    // The authorization code from the SSO provider.
+    // Required field for completing the SSO flow.
+    string code = 2 [(google.api.field_behavior) = REQUIRED];
+
+    // The redirect URI used in the SSO flow.
+    // Required field for security validation.
+    string redirect_uri = 3 [(google.api.field_behavior) = REQUIRED];
+  }
+
   // Provide one authentication method (username/password or SSO).
   // Required field to specify the authentication method.
   oneof method {
@@ -52,30 +78,6 @@ message CreateSessionRequest {
   // Whether the session should never expire.
   // Optional field that defaults to false for security.
   bool never_expire = 3 [(google.api.field_behavior) = OPTIONAL];
-}
-
-message PasswordCredentials {
-  // The username to sign in with.
-  // Required field for password-based authentication.
-  string username = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // The password to sign in with.
-  // Required field for password-based authentication.
-  string password = 2 [(google.api.field_behavior) = REQUIRED];
-}
-
-message SSOCredentials {
-  // The ID of the SSO provider.
-  // Required field to identify the SSO provider.
-  int32 idp_id = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // The authorization code from the SSO provider.
-  // Required field for completing the SSO flow.
-  string code = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // The redirect URI used in the SSO flow.
-  // Required field for security validation.
-  string redirect_uri = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 message DeleteSessionRequest {}

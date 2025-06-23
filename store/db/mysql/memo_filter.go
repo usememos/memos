@@ -284,7 +284,7 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 	return nil
 }
 
-func (d *DB) getComparisonOperator(function string) string {
+func (*DB) getComparisonOperator(function string) string {
 	switch function {
 	case "_==_":
 		return "="

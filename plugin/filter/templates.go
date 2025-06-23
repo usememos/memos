@@ -4,14 +4,14 @@ import (
 	"fmt"
 )
 
-// SQLTemplate holds database-specific SQL fragments
+// SQLTemplate holds database-specific SQL fragments.
 type SQLTemplate struct {
 	SQLite     string
 	MySQL      string
 	PostgreSQL string
 }
 
-// TemplateDBType represents the database type for templates
+// TemplateDBType represents the database type for templates.
 type TemplateDBType string
 
 const (
@@ -20,7 +20,7 @@ const (
 	PostgreSQLTemplate TemplateDBType = "postgres"
 )
 
-// SQLTemplates contains common SQL patterns for different databases
+// SQLTemplates contains common SQL patterns for different databases.
 var SQLTemplates = map[string]SQLTemplate{
 	"json_extract": {
 		SQLite:     "JSON_EXTRACT(`memo`.`payload`, '%s')",
@@ -94,7 +94,7 @@ var SQLTemplates = map[string]SQLTemplate{
 	},
 }
 
-// GetSQL returns the appropriate SQL for the given template and database type
+// GetSQL returns the appropriate SQL for the given template and database type.
 func GetSQL(templateName string, dbType TemplateDBType) string {
 	template, exists := SQLTemplates[templateName]
 	if !exists {
@@ -113,7 +113,7 @@ func GetSQL(templateName string, dbType TemplateDBType) string {
 	}
 }
 
-// GetParameterPlaceholder returns the appropriate parameter placeholder for the database
+// GetParameterPlaceholder returns the appropriate parameter placeholder for the database.
 func GetParameterPlaceholder(dbType TemplateDBType, index int) string {
 	switch dbType {
 	case PostgreSQLTemplate:
@@ -123,7 +123,7 @@ func GetParameterPlaceholder(dbType TemplateDBType, index int) string {
 	}
 }
 
-// GetParameterValue returns the appropriate parameter value for the database
+// GetParameterValue returns the appropriate parameter value for the database.
 func GetParameterValue(dbType TemplateDBType, templateName string, value interface{}) interface{} {
 	switch templateName {
 	case "json_contains_element", "json_contains_tag":
@@ -136,7 +136,7 @@ func GetParameterValue(dbType TemplateDBType, templateName string, value interfa
 	}
 }
 
-// FormatPlaceholders formats a list of placeholders for the given database type
+// FormatPlaceholders formats a list of placeholders for the given database type.
 func FormatPlaceholders(dbType TemplateDBType, count int, startIndex int) []string {
 	placeholders := make([]string, count)
 	for i := 0; i < count; i++ {

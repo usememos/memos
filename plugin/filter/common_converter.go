@@ -9,13 +9,13 @@ import (
 	exprv1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
-// CommonSQLConverter handles the common CEL to SQL conversion logic
+// CommonSQLConverter handles the common CEL to SQL conversion logic.
 type CommonSQLConverter struct {
 	dialect    SQLDialect
 	paramIndex int
 }
 
-// NewCommonSQLConverter creates a new converter with the specified dialect
+// NewCommonSQLConverter creates a new converter with the specified dialect.
 func NewCommonSQLConverter(dialect SQLDialect) *CommonSQLConverter {
 	return &CommonSQLConverter{
 		dialect:    dialect,
@@ -23,7 +23,7 @@ func NewCommonSQLConverter(dialect SQLDialect) *CommonSQLConverter {
 	}
 }
 
-// ConvertExprToSQL converts a CEL expression to SQL using the configured dialect
+// ConvertExprToSQL converts a CEL expression to SQL using the configured dialect.
 func (c *CommonSQLConverter) ConvertExprToSQL(ctx *ConvertContext, expr *exprv1.Expr) error {
 	if v, ok := expr.ExprKind.(*exprv1.Expr_CallExpr); ok {
 		switch v.CallExpr.Function {
@@ -428,7 +428,7 @@ func (c *CommonSQLConverter) handleBooleanComparison(ctx *ConvertContext, field,
 	return nil
 }
 
-func (c *CommonSQLConverter) getComparisonOperator(function string) string {
+func (*CommonSQLConverter) getComparisonOperator(function string) string {
 	switch function {
 	case "_==_":
 		return "="

@@ -103,20 +103,11 @@ message OAuth2Config {
   FieldMapping field_mapping = 7;
 }
 
-message ListIdentityProvidersRequest {
-  // Optional. The maximum number of identity providers to return.
-  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. A page token for pagination.
-  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
-}
+message ListIdentityProvidersRequest {}
 
 message ListIdentityProvidersResponse {
   // The list of identity providers.
   repeated IdentityProvider identity_providers = 1;
-
-  // A token for the next page of results.
-  string next_page_token = 2;
 }
 
 message GetIdentityProviderRequest {

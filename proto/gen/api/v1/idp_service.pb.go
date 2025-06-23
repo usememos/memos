@@ -380,11 +380,7 @@ func (x *OAuth2Config) GetFieldMapping() *FieldMapping {
 }
 
 type ListIdentityProvidersRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. The maximum number of identity providers to return.
-	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A page token for pagination.
-	PageToken     string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -419,28 +415,12 @@ func (*ListIdentityProvidersRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_idp_service_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *ListIdentityProvidersRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListIdentityProvidersRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
-}
-
 type ListIdentityProvidersResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The list of identity providers.
 	IdentityProviders []*IdentityProvider `protobuf:"bytes,1,rep,name=identity_providers,json=identityProviders,proto3" json:"identity_providers,omitempty"`
-	// A token for the next page of results.
-	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ListIdentityProvidersResponse) Reset() {
@@ -478,13 +458,6 @@ func (x *ListIdentityProvidersResponse) GetIdentityProviders() []*IdentityProvid
 		return x.IdentityProviders
 	}
 	return nil
-}
-
-func (x *ListIdentityProvidersResponse) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
 }
 
 type GetIdentityProviderRequest struct {
@@ -723,14 +696,10 @@ const file_api_v1_idp_service_proto_rawDesc = "" +
 	"\ttoken_url\x18\x04 \x01(\tR\btokenUrl\x12\"\n" +
 	"\ruser_info_url\x18\x05 \x01(\tR\vuserInfoUrl\x12\x16\n" +
 	"\x06scopes\x18\x06 \x03(\tR\x06scopes\x12?\n" +
-	"\rfield_mapping\x18\a \x01(\v2\x1a.memos.api.v1.FieldMappingR\ffieldMapping\"d\n" +
-	"\x1cListIdentityProvidersRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x96\x01\n" +
+	"\rfield_mapping\x18\a \x01(\v2\x1a.memos.api.v1.FieldMappingR\ffieldMapping\"\x1e\n" +
+	"\x1cListIdentityProvidersRequest\"n\n" +
 	"\x1dListIdentityProvidersResponse\x12M\n" +
-	"\x12identity_providers\x18\x01 \x03(\v2\x1e.memos.api.v1.IdentityProviderR\x11identityProviders\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
+	"\x12identity_providers\x18\x01 \x03(\v2\x1e.memos.api.v1.IdentityProviderR\x11identityProviders\"W\n" +
 	"\x1aGetIdentityProviderRequest\x129\n" +
 	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
 	"\x1dmemos.api.v1/IdentityProviderR\x04name\"\xa8\x01\n" +
