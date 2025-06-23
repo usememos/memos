@@ -387,7 +387,7 @@ func (s *APIV1Service) trackUserSession(ctx context.Context, userID int32, sessi
 // - DeviceType: "mobile", "tablet", or "desktop"
 // - Os: Operating system name and version (e.g., "iOS 17.1", "Windows 10/11")
 // - Browser: Browser name and version (e.g., "Chrome 120.0.0.0")
-// - Country: Geographic location (TODO: implement with GeoIP service)
+// - Country: Geographic location (TODO: implement with GeoIP service).
 func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsUserSetting_ClientInfo {
 	clientInfo := &storepb.SessionsUserSetting_ClientInfo{}
 
@@ -412,8 +412,8 @@ func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsU
 	return clientInfo
 }
 
-// parseUserAgent extracts device type, OS, and browser information from user agent string
-func (s *APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.SessionsUserSetting_ClientInfo) {
+// parseUserAgent extracts device type, OS, and browser information from user agent string.
+func (*APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.SessionsUserSetting_ClientInfo) {
 	if userAgent == "" {
 		return
 	}
@@ -440,7 +440,7 @@ func (s *APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.Sess
 			versionStart := idx + 7
 			versionEnd := strings.Index(userAgent[versionStart:], " ")
 			if versionEnd != -1 {
-				version := strings.Replace(userAgent[versionStart:versionStart+versionEnd], "_", ".", -1)
+				version := strings.ReplaceAll(userAgent[versionStart:versionStart+versionEnd], "_", ".")
 				clientInfo.Os = "iOS " + version
 			} else {
 				clientInfo.Os = "iOS"
@@ -449,7 +449,7 @@ func (s *APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.Sess
 			versionStart := idx + 10
 			versionEnd := strings.Index(userAgent[versionStart:], " ")
 			if versionEnd != -1 {
-				version := strings.Replace(userAgent[versionStart:versionStart+versionEnd], "_", ".", -1)
+				version := strings.ReplaceAll(userAgent[versionStart:versionStart+versionEnd], "_", ".")
 				clientInfo.Os = "iOS " + version
 			} else {
 				clientInfo.Os = "iOS"
@@ -491,7 +491,7 @@ func (s *APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.Sess
 				versionEnd = strings.Index(userAgent[versionStart:], ")")
 			}
 			if versionEnd != -1 {
-				version := strings.Replace(userAgent[versionStart:versionStart+versionEnd], "_", ".", -1)
+				version := strings.ReplaceAll(userAgent[versionStart:versionStart+versionEnd], "_", ".")
 				clientInfo.Os = "macOS " + version
 			} else {
 				clientInfo.Os = "macOS"

@@ -119,7 +119,7 @@ func TestExtractClientInfo(t *testing.T) {
 	}
 }
 
-// TestClientInfoExamples demonstrates the enhanced client info extraction with various user agents
+// TestClientInfoExamples demonstrates the enhanced client info extraction with various user agents.
 func TestClientInfoExamples(t *testing.T) {
 	service := &APIV1Service{}
 

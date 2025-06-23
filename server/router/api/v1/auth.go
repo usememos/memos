@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/util"
 )
@@ -79,12 +80,12 @@ func BuildSessionCookieValue(userID int32, sessionID string) string {
 func ParseSessionCookieValue(cookieValue string) (int32, string, error) {
 	parts := strings.SplitN(cookieValue, "-", 2)
 	if len(parts) != 2 {
-		return 0, "", fmt.Errorf("invalid session cookie format")
+		return 0, "", errors.New("invalid session cookie format")
 	}
 
 	userID, err := util.ConvertStringToInt32(parts[0])
 	if err != nil {
-		return 0, "", fmt.Errorf("invalid user ID in session cookie: %v", err)
+		return 0, "", errors.Errorf("invalid user ID in session cookie: %v", err)
 	}
 
 	return userID, parts[1], nil
