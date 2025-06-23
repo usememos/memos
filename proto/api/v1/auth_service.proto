@@ -30,15 +30,6 @@ service AuthService {
   rpc DeleteSession(DeleteSessionRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/auth/sessions/current"};
   }
-
-  // SignUp creates a new user account with username and password.
-  // Returns the newly created user information upon successful registration.
-  rpc SignUp(SignUpRequest) returns (User) {
-    option (google.api.http) = {
-      post: "/api/v1/auth/signup"
-      body: "*"
-    };
-  }
 }
 
 message GetCurrentSessionRequest {}
@@ -88,13 +79,3 @@ message SSOCredentials {
 }
 
 message DeleteSessionRequest {}
-
-message SignUpRequest {
-  // The username to sign up with.
-  // Required field that must be unique across the system.
-  string username = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // The password to sign up with.
-  // Required field that should meet security requirements.
-  string password = 2 [(google.api.field_behavior) = REQUIRED];
-}

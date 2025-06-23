@@ -23,7 +23,6 @@ const (
 	AuthService_GetCurrentSession_FullMethodName = "/memos.api.v1.AuthService/GetCurrentSession"
 	AuthService_CreateSession_FullMethodName     = "/memos.api.v1.AuthService/CreateSession"
 	AuthService_DeleteSession_FullMethodName     = "/memos.api.v1.AuthService/DeleteSession"
-	AuthService_SignUp_FullMethodName            = "/memos.api.v1.AuthService/SignUp"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -39,9 +38,6 @@ type AuthServiceClient interface {
 	// DeleteSession terminates the current user session.
 	// This is an idempotent operation that invalidates the user's authentication.
 	DeleteSession(ctx context.Context, in *DeleteSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// SignUp creates a new user account with username and password.
-	// Returns the newly created user information upon successful registration.
-	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*User, error)
 }
 
 type authServiceClient struct {
@@ -82,16 +78,6 @@ func (c *authServiceClient) DeleteSession(ctx context.Context, in *DeleteSession
 	return out, nil
 }
 
-func (c *authServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*User, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(User)
-	err := c.cc.Invoke(ctx, AuthService_SignUp_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -105,9 +91,6 @@ type AuthServiceServer interface {
 	// DeleteSession terminates the current user session.
 	// This is an idempotent operation that invalidates the user's authentication.
 	DeleteSession(context.Context, *DeleteSessionRequest) (*emptypb.Empty, error)
-	// SignUp creates a new user account with username and password.
-	// Returns the newly created user information upon successful registration.
-	SignUp(context.Context, *SignUpRequest) (*User, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -126,9 +109,6 @@ func (UnimplementedAuthServiceServer) CreateSession(context.Context, *CreateSess
 }
 func (UnimplementedAuthServiceServer) DeleteSession(context.Context, *DeleteSessionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSession not implemented")
-}
-func (UnimplementedAuthServiceServer) SignUp(context.Context, *SignUpRequest) (*User, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -205,24 +185,6 @@ func _AuthService_DeleteSession_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignUpRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).SignUp(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_SignUp_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).SignUp(ctx, req.(*SignUpRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -241,10 +203,6 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteSession",
 			Handler:    _AuthService_DeleteSession_Handler,
-		},
-		{
-			MethodName: "SignUp",
-			Handler:    _AuthService_SignUp_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

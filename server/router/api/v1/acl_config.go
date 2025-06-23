@@ -7,7 +7,7 @@ var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v1.IdentityProviderService/ListIdentityProviders": true,
 	"/memos.api.v1.AuthService/CreateSession":                     true,
 	"/memos.api.v1.AuthService/GetCurrentSession":                 true,
-	"/memos.api.v1.AuthService/SignUp":                            true,
+	"/memos.api.v1.UserService/CreateUser":                        true,
 	"/memos.api.v1.UserService/GetUser":                           true,
 	"/memos.api.v1.UserService/GetUserAvatar":                     true,
 	"/memos.api.v1.UserService/GetUserStats":                      true,

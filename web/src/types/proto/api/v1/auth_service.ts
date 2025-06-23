@@ -68,19 +68,6 @@ export interface SSOCredentials {
 export interface DeleteSessionRequest {
 }
 
-export interface SignUpRequest {
-  /**
-   * The username to sign up with.
-   * Required field that must be unique across the system.
-   */
-  username: string;
-  /**
-   * The password to sign up with.
-   * Required field that should meet security requirements.
-   */
-  password: string;
-}
-
 function createBaseGetCurrentSessionRequest(): GetCurrentSessionRequest {
   return {};
 }
@@ -397,64 +384,6 @@ export const DeleteSessionRequest: MessageFns<DeleteSessionRequest> = {
   },
 };
 
-function createBaseSignUpRequest(): SignUpRequest {
-  return { username: "", password: "" };
-}
-
-export const SignUpRequest: MessageFns<SignUpRequest> = {
-  encode(message: SignUpRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.username !== "") {
-      writer.uint32(10).string(message.username);
-    }
-    if (message.password !== "") {
-      writer.uint32(18).string(message.password);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): SignUpRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSignUpRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.username = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.password = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<SignUpRequest>): SignUpRequest {
-    return SignUpRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<SignUpRequest>): SignUpRequest {
-    const message = createBaseSignUpRequest();
-    message.username = object.username ?? "";
-    message.password = object.password ?? "";
-    return message;
-  },
-};
-
 export type AuthServiceDefinition = typeof AuthServiceDefinition;
 export const AuthServiceDefinition = {
   name: "AuthService",
@@ -603,50 +532,6 @@ export const AuthServiceDefinition = {
               101,
               110,
               116,
-            ]),
-          ],
-        },
-      },
-    },
-    /**
-     * SignUp creates a new user account with username and password.
-     * Returns the newly created user information upon successful registration.
-     */
-    signUp: {
-      name: "SignUp",
-      requestType: SignUpRequest,
-      requestStream: false,
-      responseType: User,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          578365826: [
-            new Uint8Array([
-              24,
-              58,
-              1,
-              42,
-              34,
-              19,
-              47,
-              97,
-              112,
-              105,
-              47,
-              118,
-              49,
-              47,
-              97,
-              117,
-              116,
-              104,
-              47,
-              115,
-              105,
-              103,
-              110,
-              117,
-              112,
             ]),
           ],
         },

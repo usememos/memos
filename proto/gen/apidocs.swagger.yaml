@@ -188,29 +188,6 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - AuthService
-  /api/v1/auth/signup:
-    post:
-      summary: |-
-        SignUp creates a new user account with username and password.
-        Returns the newly created user information upon successful registration.
-      operationId: AuthService_SignUp
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1User'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1SignUpRequest'
-      tags:
-        - AuthService
   /api/v1/identityProviders:
     get:
       summary: ListIdentityProviders lists identity providers.
@@ -4097,22 +4074,6 @@ definitions:
         type: integer
         format: int32
         description: The total count of matching users.
-  v1SignUpRequest:
-    type: object
-    properties:
-      username:
-        type: string
-        description: |-
-          The username to sign up with.
-          Required field that must be unique across the system.
-      password:
-        type: string
-        description: |-
-          The password to sign up with.
-          Required field that should meet security requirements.
-    required:
-      - username
-      - password
   v1SpoilerNode:
     type: object
     properties:

@@ -358,62 +358,6 @@ func (*DeleteSessionRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{5}
 }
 
-type SignUpRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The username to sign up with.
-	// Required field that must be unique across the system.
-	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	// The password to sign up with.
-	// Required field that should meet security requirements.
-	Password      string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SignUpRequest) Reset() {
-	*x = SignUpRequest{}
-	mi := &file_api_v1_auth_service_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SignUpRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SignUpRequest) ProtoMessage() {}
-
-func (x *SignUpRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_auth_service_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SignUpRequest.ProtoReflect.Descriptor instead.
-func (*SignUpRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *SignUpRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *SignUpRequest) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
 var File_api_v1_auth_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_auth_service_proto_rawDesc = "" +
@@ -434,15 +378,11 @@ const file_api_v1_auth_service_proto_rawDesc = "" +
 	"\x06idp_id\x18\x01 \x01(\x05B\x03\xe0A\x02R\x05idpId\x12\x17\n" +
 	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\x12&\n" +
 	"\fredirect_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\vredirectUri\"\x16\n" +
-	"\x14DeleteSessionRequest\"Q\n" +
-	"\rSignUpRequest\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword2\xbf\x03\n" +
+	"\x14DeleteSessionRequest2\xe4\x02\n" +
 	"\vAuthService\x12v\n" +
 	"\x11GetCurrentSession\x12&.memos.api.v1.GetCurrentSessionRequest\x1a\x12.memos.api.v1.User\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/v1/auth/sessions/current\x12i\n" +
 	"\rCreateSession\x12\".memos.api.v1.CreateSessionRequest\x1a\x12.memos.api.v1.User\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/auth/sessions\x12r\n" +
-	"\rDeleteSession\x12\".memos.api.v1.DeleteSessionRequest\x1a\x16.google.protobuf.Empty\"%\x82\xd3\xe4\x93\x02\x1f*\x1d/api/v1/auth/sessions/current\x12Y\n" +
-	"\x06SignUp\x12\x1b.memos.api.v1.SignUpRequest\x1a\x12.memos.api.v1.User\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/v1/auth/signupB\xa8\x01\n" +
+	"\rDeleteSession\x12\".memos.api.v1.DeleteSessionRequest\x1a\x16.google.protobuf.Empty\"%\x82\xd3\xe4\x93\x02\x1f*\x1d/api/v1/auth/sessions/currentB\xa8\x01\n" +
 	"\x10com.memos.api.v1B\x10AuthServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (
@@ -457,7 +397,7 @@ func file_api_v1_auth_service_proto_rawDescGZIP() []byte {
 	return file_api_v1_auth_service_proto_rawDescData
 }
 
-var file_api_v1_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_api_v1_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_api_v1_auth_service_proto_goTypes = []any{
 	(*GetCurrentSessionRequest)(nil),  // 0: memos.api.v1.GetCurrentSessionRequest
 	(*GetCurrentSessionResponse)(nil), // 1: memos.api.v1.GetCurrentSessionResponse
@@ -465,24 +405,21 @@ var file_api_v1_auth_service_proto_goTypes = []any{
 	(*PasswordCredentials)(nil),       // 3: memos.api.v1.PasswordCredentials
 	(*SSOCredentials)(nil),            // 4: memos.api.v1.SSOCredentials
 	(*DeleteSessionRequest)(nil),      // 5: memos.api.v1.DeleteSessionRequest
-	(*SignUpRequest)(nil),             // 6: memos.api.v1.SignUpRequest
-	(*User)(nil),                      // 7: memos.api.v1.User
-	(*emptypb.Empty)(nil),             // 8: google.protobuf.Empty
+	(*User)(nil),                      // 6: memos.api.v1.User
+	(*emptypb.Empty)(nil),             // 7: google.protobuf.Empty
 }
 var file_api_v1_auth_service_proto_depIdxs = []int32{
-	7, // 0: memos.api.v1.GetCurrentSessionResponse.user:type_name -> memos.api.v1.User
+	6, // 0: memos.api.v1.GetCurrentSessionResponse.user:type_name -> memos.api.v1.User
 	3, // 1: memos.api.v1.CreateSessionRequest.password_credentials:type_name -> memos.api.v1.PasswordCredentials
 	4, // 2: memos.api.v1.CreateSessionRequest.sso_credentials:type_name -> memos.api.v1.SSOCredentials
 	0, // 3: memos.api.v1.AuthService.GetCurrentSession:input_type -> memos.api.v1.GetCurrentSessionRequest
 	2, // 4: memos.api.v1.AuthService.CreateSession:input_type -> memos.api.v1.CreateSessionRequest
 	5, // 5: memos.api.v1.AuthService.DeleteSession:input_type -> memos.api.v1.DeleteSessionRequest
-	6, // 6: memos.api.v1.AuthService.SignUp:input_type -> memos.api.v1.SignUpRequest
-	7, // 7: memos.api.v1.AuthService.GetCurrentSession:output_type -> memos.api.v1.User
-	7, // 8: memos.api.v1.AuthService.CreateSession:output_type -> memos.api.v1.User
-	8, // 9: memos.api.v1.AuthService.DeleteSession:output_type -> google.protobuf.Empty
-	7, // 10: memos.api.v1.AuthService.SignUp:output_type -> memos.api.v1.User
-	7, // [7:11] is the sub-list for method output_type
-	3, // [3:7] is the sub-list for method input_type
+	6, // 6: memos.api.v1.AuthService.GetCurrentSession:output_type -> memos.api.v1.User
+	6, // 7: memos.api.v1.AuthService.CreateSession:output_type -> memos.api.v1.User
+	7, // 8: memos.api.v1.AuthService.DeleteSession:output_type -> google.protobuf.Empty
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name
 	3, // [3:3] is the sub-list for extension extendee
 	0, // [0:3] is the sub-list for field type_name
@@ -504,7 +441,7 @@ func file_api_v1_auth_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_auth_service_proto_rawDesc), len(file_api_v1_auth_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
