@@ -12,13 +12,13 @@ import (
 
 type UserSetting struct {
 	UserID int32
-	Key    storepb.UserSettingKey
+	Key    storepb.UserSetting_Key
 	Value  string
 }
 
 type FindUserSetting struct {
 	UserID *int32
-	Key    storepb.UserSettingKey
+	Key    storepb.UserSetting_Key
 }
 
 func (s *Store) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
@@ -93,7 +93,7 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*sto
 func (s *Store) GetUserAccessTokens(ctx context.Context, userID int32) ([]*storepb.AccessTokensUserSetting_AccessToken, error) {
 	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
 		UserID: &userID,
-		Key:    storepb.UserSettingKey_ACCESS_TOKENS,
+		Key:    storepb.UserSetting_ACCESS_TOKENS,
 	})
 	if err != nil {
 		return nil, err
@@ -122,7 +122,7 @@ func (s *Store) RemoveUserAccessToken(ctx context.Context, userID int32, token s
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
-		Key:    storepb.UserSettingKey_ACCESS_TOKENS,
+		Key:    storepb.UserSetting_ACCESS_TOKENS,
 		Value: &storepb.UserSetting_AccessTokens{
 			AccessTokens: &storepb.AccessTokensUserSetting{
 				AccessTokens: newAccessTokens,
@@ -137,7 +137,7 @@ func (s *Store) RemoveUserAccessToken(ctx context.Context, userID int32, token s
 func (s *Store) GetUserSessions(ctx context.Context, userID int32) ([]*storepb.SessionsUserSetting_Session, error) {
 	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
 		UserID: &userID,
-		Key:    storepb.UserSettingKey_SESSIONS,
+		Key:    storepb.UserSetting_SESSIONS,
 	})
 	if err != nil {
 		return nil, err
@@ -166,7 +166,7 @@ func (s *Store) RemoveUserSession(ctx context.Context, userID int32, sessionID s
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
-		Key:    storepb.UserSettingKey_SESSIONS,
+		Key:    storepb.UserSetting_SESSIONS,
 		Value: &storepb.UserSetting_Sessions{
 			Sessions: &storepb.SessionsUserSetting{
 				Sessions: newSessions,
@@ -203,7 +203,7 @@ func (s *Store) AddUserSession(ctx context.Context, userID int32, session *store
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
-		Key:    storepb.UserSettingKey_SESSIONS,
+		Key:    storepb.UserSetting_SESSIONS,
 		Value: &storepb.UserSetting_Sessions{
 			Sessions: &storepb.SessionsUserSetting{
 				Sessions: updatedSessions,
@@ -230,7 +230,7 @@ func (s *Store) UpdateUserSessionLastAccessed(ctx context.Context, userID int32,
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
-		Key:    storepb.UserSettingKey_SESSIONS,
+		Key:    storepb.UserSetting_SESSIONS,
 		Value: &storepb.UserSetting_Sessions{
 			Sessions: &storepb.SessionsUserSetting{
 				Sessions: sessions,
@@ -248,30 +248,30 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 	}
 
 	switch raw.Key {
-	case storepb.UserSettingKey_ACCESS_TOKENS:
+	case storepb.UserSetting_ACCESS_TOKENS:
 		accessTokensUserSetting := &storepb.AccessTokensUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), accessTokensUserSetting); err != nil {
 			return nil, err
 		}
 		userSetting.Value = &storepb.UserSetting_AccessTokens{AccessTokens: accessTokensUserSetting}
-	case storepb.UserSettingKey_SESSIONS:
+	case storepb.UserSetting_SESSIONS:
 		sessionsUserSetting := &storepb.SessionsUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), sessionsUserSetting); err != nil {
 			return nil, err
 		}
 		userSetting.Value = &storepb.UserSetting_Sessions{Sessions: sessionsUserSetting}
-	case storepb.UserSettingKey_SHORTCUTS:
+	case storepb.UserSetting_SHORTCUTS:
 		shortcutsUserSetting := &storepb.ShortcutsUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), shortcutsUserSetting); err != nil {
 			return nil, err
 		}
 		userSetting.Value = &storepb.UserSetting_Shortcuts{Shortcuts: shortcutsUserSetting}
-	case storepb.UserSettingKey_LOCALE:
-		userSetting.Value = &storepb.UserSetting_Locale{Locale: raw.Value}
-	case storepb.UserSettingKey_APPEARANCE:
-		userSetting.Value = &storepb.UserSetting_Appearance{Appearance: raw.Value}
-	case storepb.UserSettingKey_MEMO_VISIBILITY:
-		userSetting.Value = &storepb.UserSetting_MemoVisibility{MemoVisibility: raw.Value}
+	case storepb.UserSetting_GENERAL:
+		generalUserSetting := &storepb.GeneralUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), generalUserSetting); err != nil {
+			return nil, err
+		}
+		userSetting.Value = &storepb.UserSetting_General{General: generalUserSetting}
 	default:
 		return nil, nil
 	}
@@ -285,33 +285,34 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 	}
 
 	switch userSetting.Key {
-	case storepb.UserSettingKey_ACCESS_TOKENS:
+	case storepb.UserSetting_ACCESS_TOKENS:
 		accessTokensUserSetting := userSetting.GetAccessTokens()
 		value, err := protojson.Marshal(accessTokensUserSetting)
 		if err != nil {
 			return nil, err
 		}
 		raw.Value = string(value)
-	case storepb.UserSettingKey_SESSIONS:
+	case storepb.UserSetting_SESSIONS:
 		sessionsUserSetting := userSetting.GetSessions()
 		value, err := protojson.Marshal(sessionsUserSetting)
 		if err != nil {
 			return nil, err
 		}
 		raw.Value = string(value)
-	case storepb.UserSettingKey_SHORTCUTS:
+	case storepb.UserSetting_SHORTCUTS:
 		shortcutsUserSetting := userSetting.GetShortcuts()
 		value, err := protojson.Marshal(shortcutsUserSetting)
 		if err != nil {
 			return nil, err
 		}
 		raw.Value = string(value)
-	case storepb.UserSettingKey_LOCALE:
-		raw.Value = userSetting.GetLocale()
-	case storepb.UserSettingKey_APPEARANCE:
-		raw.Value = userSetting.GetAppearance()
-	case storepb.UserSettingKey_MEMO_VISIBILITY:
-		raw.Value = userSetting.GetMemoVisibility()
+	case storepb.UserSetting_GENERAL:
+		generalUserSetting := userSetting.GetGeneral()
+		value, err := protojson.Marshal(generalUserSetting)
+		if err != nil {
+			return nil, err
+		}
+		raw.Value = string(value)
 	default:
 		return nil, errors.Errorf("unsupported user setting key: %v", userSetting.Key)
 	}
