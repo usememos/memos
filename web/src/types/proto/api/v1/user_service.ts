@@ -394,8 +394,6 @@ export interface UserSession_ClientInfo {
   os: string;
   /** Optional. Browser name and version (e.g., "Chrome 119.0"). */
   browser: string;
-  /** Optional. Geographic location (country code, e.g., "US"). */
-  country: string;
 }
 
 export interface ListUserSessionsRequest {
@@ -2222,7 +2220,7 @@ export const UserSession: MessageFns<UserSession> = {
 };
 
 function createBaseUserSession_ClientInfo(): UserSession_ClientInfo {
-  return { userAgent: "", ipAddress: "", deviceType: "", os: "", browser: "", country: "" };
+  return { userAgent: "", ipAddress: "", deviceType: "", os: "", browser: "" };
 }
 
 export const UserSession_ClientInfo: MessageFns<UserSession_ClientInfo> = {
@@ -2241,9 +2239,6 @@ export const UserSession_ClientInfo: MessageFns<UserSession_ClientInfo> = {
     }
     if (message.browser !== "") {
       writer.uint32(42).string(message.browser);
-    }
-    if (message.country !== "") {
-      writer.uint32(50).string(message.country);
     }
     return writer;
   },
@@ -2295,14 +2290,6 @@ export const UserSession_ClientInfo: MessageFns<UserSession_ClientInfo> = {
           message.browser = reader.string();
           continue;
         }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.country = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2322,7 +2309,6 @@ export const UserSession_ClientInfo: MessageFns<UserSession_ClientInfo> = {
     message.deviceType = object.deviceType ?? "";
     message.os = object.os ?? "";
     message.browser = object.browser ?? "";
-    message.country = object.country ?? "";
     return message;
   },
 };

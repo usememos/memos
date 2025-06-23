@@ -36,9 +36,9 @@ func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrent
 		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
 	}
 	if user == nil {
-		// Set the cookie header to expire access token.
-		if err := s.clearAccessTokenCookie(ctx); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to set grpc header: %v", err)
+		// Clear auth cookies
+		if err := s.clearAuthCookies(ctx); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to clear auth cookies: %v", err)
 		}
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
 	}
@@ -178,6 +178,7 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 }
 
 func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) error {
+	// Generate JWT access token for API use
 	accessToken, err := GenerateAccessToken(user.Email, user.ID, expireTime, []byte(s.Secret))
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to generate access token, error: %v", err)
@@ -186,19 +187,27 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 		return status.Errorf(codes.Internal, "failed to upsert access token to store, error: %v", err)
 	}
 
+	// Generate unique session ID for web use
+	sessionID, err := GenerateSessionID()
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to generate session ID, error: %v", err)
+	}
+
 	// Track session in user settings
-	if err := s.trackUserSession(ctx, user.ID, accessToken, expireTime); err != nil {
+	if err := s.trackUserSession(ctx, user.ID, sessionID, expireTime); err != nil {
 		// Log the error but don't fail the login if session tracking fails
 		// This ensures backward compatibility
 		slog.Error("failed to track user session", "error", err)
 	}
 
-	cookie, err := s.buildAccessTokenCookie(ctx, accessToken, expireTime)
+	// Set session cookie for web use (format: userID-sessionID)
+	sessionCookieValue := BuildSessionCookieValue(user.ID, sessionID)
+	sessionCookie, err := s.buildSessionCookie(ctx, sessionCookieValue, expireTime)
 	if err != nil {
-		return status.Errorf(codes.Internal, "failed to build access token cookie, error: %v", err)
+		return status.Errorf(codes.Internal, "failed to build session cookie, error: %v", err)
 	}
 	if err := grpc.SetHeader(ctx, metadata.New(map[string]string{
-		"Set-Cookie": cookie,
+		"Set-Cookie": sessionCookie,
 	})); err != nil {
 		return status.Errorf(codes.Internal, "failed to set grpc header, error: %v", err)
 	}
@@ -281,28 +290,31 @@ func (s *APIV1Service) DeleteSession(ctx context.Context, _ *v1pb.DeleteSessionR
 		}
 	}
 
-	if err := s.clearAccessTokenCookie(ctx); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to set grpc header, error: %v", err)
+	if err := s.clearAuthCookies(ctx); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to clear auth cookies, error: %v", err)
 	}
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) clearAccessTokenCookie(ctx context.Context) error {
-	cookie, err := s.buildAccessTokenCookie(ctx, "", time.Time{})
+func (s *APIV1Service) clearAuthCookies(ctx context.Context) error {
+	// Clear session cookie
+	sessionCookie, err := s.buildSessionCookie(ctx, "", time.Time{})
 	if err != nil {
-		return errors.Wrap(err, "failed to build access token cookie")
+		return errors.Wrap(err, "failed to build session cookie")
 	}
+
+	// Set both cookies in the response
 	if err := grpc.SetHeader(ctx, metadata.New(map[string]string{
-		"Set-Cookie": cookie,
+		"Set-Cookie": sessionCookie,
 	})); err != nil {
 		return errors.Wrap(err, "failed to set grpc header")
 	}
 	return nil
 }
 
-func (*APIV1Service) buildAccessTokenCookie(ctx context.Context, accessToken string, expireTime time.Time) (string, error) {
+func (*APIV1Service) buildSessionCookie(ctx context.Context, sessionCookieValue string, expireTime time.Time) (string, error) {
 	attrs := []string{
-		fmt.Sprintf("%s=%s", AccessTokenCookieName, accessToken),
+		fmt.Sprintf("%s=%s", SessionCookieName, sessionCookieValue),
 		"Path=/",
 		"HttpOnly",
 	}
@@ -364,23 +376,189 @@ func (s *APIV1Service) trackUserSession(ctx context.Context, userID int32, sessi
 }
 
 // Helper function to extract client information from the gRPC context.
-func (*APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsUserSetting_ClientInfo {
+// extractClientInfo extracts comprehensive client information from the request context.
+// This includes user agent parsing to determine device type, operating system, browser,
+// and IP address extraction. This information is used to provide detailed session
+// tracking and management capabilities in the web UI.
+//
+// Fields populated:
+// - UserAgent: Raw user agent string
+// - IpAddress: Client IP (from X-Forwarded-For or X-Real-IP headers)
+// - DeviceType: "mobile", "tablet", or "desktop"
+// - Os: Operating system name and version (e.g., "iOS 17.1", "Windows 10/11")
+// - Browser: Browser name and version (e.g., "Chrome 120.0.0.0")
+// - Country: Geographic location (TODO: implement with GeoIP service)
+func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsUserSetting_ClientInfo {
 	clientInfo := &storepb.SessionsUserSetting_ClientInfo{}
 
 	// Extract user agent from metadata if available
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		if userAgents := md.Get("user-agent"); len(userAgents) > 0 {
-			clientInfo.UserAgent = userAgents[0]
+			userAgent := userAgents[0]
+			clientInfo.UserAgent = userAgent
+
+			// Parse user agent to extract device type, OS, browser info
+			s.parseUserAgent(userAgent, clientInfo)
 		}
 		if forwardedFor := md.Get("x-forwarded-for"); len(forwardedFor) > 0 {
-			clientInfo.IpAddress = forwardedFor[0]
+			ipAddress := strings.Split(forwardedFor[0], ",")[0] // Get the first IP in case of multiple
+			ipAddress = strings.TrimSpace(ipAddress)
+			clientInfo.IpAddress = ipAddress
 		} else if realIP := md.Get("x-real-ip"); len(realIP) > 0 {
 			clientInfo.IpAddress = realIP[0]
 		}
 	}
 
-	// TODO: Parse user agent to extract device type, OS, browser info
-	// This could be done using a user agent parsing library
-
 	return clientInfo
+}
+
+// parseUserAgent extracts device type, OS, and browser information from user agent string
+func (s *APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.SessionsUserSetting_ClientInfo) {
+	if userAgent == "" {
+		return
+	}
+
+	userAgent = strings.ToLower(userAgent)
+
+	// Detect device type
+	if strings.Contains(userAgent, "ipad") {
+		clientInfo.DeviceType = "tablet"
+	} else if strings.Contains(userAgent, "mobile") || strings.Contains(userAgent, "android") ||
+		strings.Contains(userAgent, "iphone") || strings.Contains(userAgent, "ipod") ||
+		strings.Contains(userAgent, "windows phone") || strings.Contains(userAgent, "blackberry") {
+		clientInfo.DeviceType = "mobile"
+	} else if strings.Contains(userAgent, "tablet") {
+		clientInfo.DeviceType = "tablet"
+	} else {
+		clientInfo.DeviceType = "desktop"
+	}
+
+	// Detect operating system
+	if strings.Contains(userAgent, "iphone os") || strings.Contains(userAgent, "cpu os") {
+		// Extract iOS version
+		if idx := strings.Index(userAgent, "cpu os "); idx != -1 {
+			versionStart := idx + 7
+			versionEnd := strings.Index(userAgent[versionStart:], " ")
+			if versionEnd != -1 {
+				version := strings.Replace(userAgent[versionStart:versionStart+versionEnd], "_", ".", -1)
+				clientInfo.Os = "iOS " + version
+			} else {
+				clientInfo.Os = "iOS"
+			}
+		} else if idx := strings.Index(userAgent, "iphone os "); idx != -1 {
+			versionStart := idx + 10
+			versionEnd := strings.Index(userAgent[versionStart:], " ")
+			if versionEnd != -1 {
+				version := strings.Replace(userAgent[versionStart:versionStart+versionEnd], "_", ".", -1)
+				clientInfo.Os = "iOS " + version
+			} else {
+				clientInfo.Os = "iOS"
+			}
+		} else {
+			clientInfo.Os = "iOS"
+		}
+	} else if strings.Contains(userAgent, "android") {
+		// Extract Android version
+		if idx := strings.Index(userAgent, "android "); idx != -1 {
+			versionStart := idx + 8
+			versionEnd := strings.Index(userAgent[versionStart:], ";")
+			if versionEnd == -1 {
+				versionEnd = strings.Index(userAgent[versionStart:], ")")
+			}
+			if versionEnd != -1 {
+				version := userAgent[versionStart : versionStart+versionEnd]
+				clientInfo.Os = "Android " + version
+			} else {
+				clientInfo.Os = "Android"
+			}
+		} else {
+			clientInfo.Os = "Android"
+		}
+	} else if strings.Contains(userAgent, "windows nt 10.0") {
+		clientInfo.Os = "Windows 10/11"
+	} else if strings.Contains(userAgent, "windows nt 6.3") {
+		clientInfo.Os = "Windows 8.1"
+	} else if strings.Contains(userAgent, "windows nt 6.1") {
+		clientInfo.Os = "Windows 7"
+	} else if strings.Contains(userAgent, "windows") {
+		clientInfo.Os = "Windows"
+	} else if strings.Contains(userAgent, "mac os x") {
+		// Extract macOS version
+		if idx := strings.Index(userAgent, "mac os x "); idx != -1 {
+			versionStart := idx + 9
+			versionEnd := strings.Index(userAgent[versionStart:], ";")
+			if versionEnd == -1 {
+				versionEnd = strings.Index(userAgent[versionStart:], ")")
+			}
+			if versionEnd != -1 {
+				version := strings.Replace(userAgent[versionStart:versionStart+versionEnd], "_", ".", -1)
+				clientInfo.Os = "macOS " + version
+			} else {
+				clientInfo.Os = "macOS"
+			}
+		} else {
+			clientInfo.Os = "macOS"
+		}
+	} else if strings.Contains(userAgent, "linux") {
+		clientInfo.Os = "Linux"
+	} else if strings.Contains(userAgent, "cros") {
+		clientInfo.Os = "Chrome OS"
+	}
+
+	// Detect browser
+	if strings.Contains(userAgent, "edg/") {
+		// Extract Edge version
+		if idx := strings.Index(userAgent, "edg/"); idx != -1 {
+			versionStart := idx + 4
+			versionEnd := strings.Index(userAgent[versionStart:], " ")
+			if versionEnd == -1 {
+				versionEnd = len(userAgent) - versionStart
+			}
+			version := userAgent[versionStart : versionStart+versionEnd]
+			clientInfo.Browser = "Edge " + version
+		} else {
+			clientInfo.Browser = "Edge"
+		}
+	} else if strings.Contains(userAgent, "chrome/") && !strings.Contains(userAgent, "edg") {
+		// Extract Chrome version
+		if idx := strings.Index(userAgent, "chrome/"); idx != -1 {
+			versionStart := idx + 7
+			versionEnd := strings.Index(userAgent[versionStart:], " ")
+			if versionEnd == -1 {
+				versionEnd = len(userAgent) - versionStart
+			}
+			version := userAgent[versionStart : versionStart+versionEnd]
+			clientInfo.Browser = "Chrome " + version
+		} else {
+			clientInfo.Browser = "Chrome"
+		}
+	} else if strings.Contains(userAgent, "firefox/") {
+		// Extract Firefox version
+		if idx := strings.Index(userAgent, "firefox/"); idx != -1 {
+			versionStart := idx + 8
+			versionEnd := strings.Index(userAgent[versionStart:], " ")
+			if versionEnd == -1 {
+				versionEnd = len(userAgent) - versionStart
+			}
+			version := userAgent[versionStart : versionStart+versionEnd]
+			clientInfo.Browser = "Firefox " + version
+		} else {
+			clientInfo.Browser = "Firefox"
+		}
+	} else if strings.Contains(userAgent, "safari/") && !strings.Contains(userAgent, "chrome") && !strings.Contains(userAgent, "edg") {
+		// Extract Safari version
+		if idx := strings.Index(userAgent, "version/"); idx != -1 {
+			versionStart := idx + 8
+			versionEnd := strings.Index(userAgent[versionStart:], " ")
+			if versionEnd == -1 {
+				versionEnd = len(userAgent) - versionStart
+			}
+			version := userAgent[versionStart : versionStart+versionEnd]
+			clientInfo.Browser = "Safari " + version
+		} else {
+			clientInfo.Browser = "Safari"
+		}
+	} else if strings.Contains(userAgent, "opera/") || strings.Contains(userAgent, "opr/") {
+		clientInfo.Browser = "Opera"
+	}
 }

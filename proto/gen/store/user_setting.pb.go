@@ -590,9 +590,7 @@ type SessionsUserSetting_ClientInfo struct {
 	// Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
 	Os string `protobuf:"bytes,4,opt,name=os,proto3" json:"os,omitempty"`
 	// Optional. Browser name and version (e.g., "Chrome 119.0").
-	Browser string `protobuf:"bytes,5,opt,name=browser,proto3" json:"browser,omitempty"`
-	// Optional. Geographic location (country code, e.g., "US").
-	Country       string `protobuf:"bytes,6,opt,name=country,proto3" json:"country,omitempty"`
+	Browser       string `protobuf:"bytes,5,opt,name=browser,proto3" json:"browser,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -662,13 +660,6 @@ func (x *SessionsUserSetting_ClientInfo) GetBrowser() string {
 	return ""
 }
 
-func (x *SessionsUserSetting_ClientInfo) GetCountry() string {
-	if x != nil {
-		return x.Country
-	}
-	return ""
-}
-
 var File_store_user_setting_proto protoreflect.FileDescriptor
 
 const file_store_user_setting_proto_rawDesc = "" +
@@ -696,7 +687,7 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\bShortcut\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
-	"\x06filter\x18\x03 \x01(\tR\x06filter\"\xca\x04\n" +
+	"\x06filter\x18\x03 \x01(\tR\x06filter\"\xb0\x04\n" +
 	"\x13SessionsUserSetting\x12D\n" +
 	"\bsessions\x18\x01 \x03(\v2(.memos.store.SessionsUserSetting.SessionR\bsessions\x1a\xba\x02\n" +
 	"\aSession\x12\x1d\n" +
@@ -708,7 +699,7 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"expireTime\x12H\n" +
 	"\x12last_accessed_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x10lastAccessedTime\x12L\n" +
 	"\vclient_info\x18\x05 \x01(\v2+.memos.store.SessionsUserSetting.ClientInfoR\n" +
-	"clientInfo\x1a\xaf\x01\n" +
+	"clientInfo\x1a\x95\x01\n" +
 	"\n" +
 	"ClientInfo\x12\x1d\n" +
 	"\n" +
@@ -718,8 +709,7 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\vdevice_type\x18\x03 \x01(\tR\n" +
 	"deviceType\x12\x0e\n" +
 	"\x02os\x18\x04 \x01(\tR\x02os\x12\x18\n" +
-	"\abrowser\x18\x05 \x01(\tR\abrowser\x12\x18\n" +
-	"\acountry\x18\x06 \x01(\tR\acountry*\x93\x01\n" +
+	"\abrowser\x18\x05 \x01(\tR\abrowser*\x93\x01\n" +
 	"\x0eUserSettingKey\x12 \n" +
 	"\x1cUSER_SETTING_KEY_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rACCESS_TOKENS\x10\x01\x12\n" +

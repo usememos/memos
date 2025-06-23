@@ -80,8 +80,6 @@ message SessionsUserSetting {
     string os = 4;
     // Optional. Browser name and version (e.g., "Chrome 119.0").
     string browser = 5;
-    // Optional. Geographic location (country code, e.g., "US").
-    string country = 6;
   }
 
   repeated Session sessions = 1;

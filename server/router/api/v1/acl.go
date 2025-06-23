@@ -52,22 +52,38 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 		return nil, status.Errorf(codes.Unauthenticated, "failed to parse metadata from incoming context")
 	}
 
-	// Try to get access token from either Authorization header or cookie
-	accessToken, err := getTokenFromMetadata(md)
-	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "failed to get access token: %v", err)
-	}
-
-	// Authenticate using access token (which also validates sessions when it's from cookie)
-	user, err := in.authenticateByAccessToken(ctx, accessToken)
-	if err != nil {
-		// Check if this method is in the allowlist first
-		if isUnauthorizeAllowedMethod(serverInfo.FullMethod) {
-			return handler(ctx, request)
+	// Try to authenticate via session ID (from cookie) first
+	if sessionCookieValue, err := getSessionIDFromMetadata(md); err == nil && sessionCookieValue != "" {
+		user, err := in.authenticateBySession(ctx, sessionCookieValue)
+		if err == nil && user != nil {
+			// Extract just the sessionID part for context storage
+			_, sessionID, parseErr := ParseSessionCookieValue(sessionCookieValue)
+			if parseErr != nil {
+				return nil, status.Errorf(codes.Internal, "failed to parse session cookie: %v", parseErr)
+			}
+			return in.handleAuthenticatedRequest(ctx, request, serverInfo, handler, user, sessionID, "")
 		}
-		return nil, err
 	}
 
+	// Try to authenticate via JWT access token (from Authorization header)
+	if accessToken, err := getAccessTokenFromMetadata(md); err == nil && accessToken != "" {
+		user, err := in.authenticateByJWT(ctx, accessToken)
+		if err == nil && user != nil {
+			return in.handleAuthenticatedRequest(ctx, request, serverInfo, handler, user, "", accessToken)
+		}
+	}
+
+	// If no valid authentication found, check if this method is in the allowlist (public endpoints)
+	if isUnauthorizeAllowedMethod(serverInfo.FullMethod) {
+		return handler(ctx, request)
+	}
+
+	// If authentication is required but not found, reject the request
+	return nil, status.Errorf(codes.Unauthenticated, "authentication required")
+}
+
+// handleAuthenticatedRequest processes an authenticated request with the given user and auth info.
+func (in *GRPCAuthInterceptor) handleAuthenticatedRequest(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler, user *store.User, sessionID, accessToken string) (any, error) {
 	// Check user status
 	if user.RowStatus == store.Archived {
 		return nil, errors.Errorf("user %q is archived", user.Username)
@@ -79,22 +95,21 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 	// Set context values
 	ctx = context.WithValue(ctx, userIDContextKey, user.ID)
 
-	// Determine if this came from cookie (session) or header (API token)
-	if _, headerErr := getAccessTokenFromMetadata(md); headerErr != nil {
-		// Came from cookie, treat as session
-		ctx = context.WithValue(ctx, sessionIDContextKey, accessToken)
+	if sessionID != "" {
+		// Session-based authentication
+		ctx = context.WithValue(ctx, sessionIDContextKey, sessionID)
 		// Update session last accessed time
-		_ = in.updateSessionLastAccessed(ctx, user.ID, accessToken)
-	} else {
-		// Came from Authorization header, treat as API token
+		_ = in.updateSessionLastAccessed(ctx, user.ID, sessionID)
+	} else if accessToken != "" {
+		// JWT access token-based authentication
 		ctx = context.WithValue(ctx, accessTokenContextKey, accessToken)
 	}
 
 	return handler(ctx, request)
 }
 
-// authenticateByAccessToken authenticates a user using access token from Authorization header or cookie.
-func (in *GRPCAuthInterceptor) authenticateByAccessToken(ctx context.Context, accessToken string) (*store.User, error) {
+// authenticateByJWT authenticates a user using JWT access token from Authorization header.
+func (in *GRPCAuthInterceptor) authenticateByJWT(ctx context.Context, accessToken string) (*store.User, error) {
 	if accessToken == "" {
 		return nil, status.Errorf(codes.Unauthenticated, "access token not found")
 	}
@@ -114,7 +129,7 @@ func (in *GRPCAuthInterceptor) authenticateByAccessToken(ctx context.Context, ac
 		return nil, status.Errorf(codes.Unauthenticated, "Invalid or expired access token")
 	}
 
-	// We either have a valid access token or we will attempt to generate new access token.
+	// Get user from JWT claims
 	userID, err := util.ConvertStringToInt32(claims.Subject)
 	if err != nil {
 		return nil, errors.Wrap(err, "malformed ID in the token")
@@ -132,6 +147,7 @@ func (in *GRPCAuthInterceptor) authenticateByAccessToken(ctx context.Context, ac
 		return nil, errors.Errorf("user %q is archived", userID)
 	}
 
+	// Validate that this access token exists in the user's access tokens
 	accessTokens, err := in.Store.GetUserAccessTokens(ctx, user.ID)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to get user access tokens")
@@ -140,10 +156,43 @@ func (in *GRPCAuthInterceptor) authenticateByAccessToken(ctx context.Context, ac
 		return nil, status.Errorf(codes.Unauthenticated, "invalid access token")
 	}
 
-	// For tokens that might be used as session IDs (from cookies), also validate session existence
-	// This is a best-effort check - if sessions can't be retrieved or token isn't a session, that's ok
-	if sessions, err := in.Store.GetUserSessions(ctx, user.ID); err == nil {
-		validateUserSession(accessToken, sessions) // Result doesn't matter for API tokens
+	return user, nil
+}
+
+// authenticateBySession authenticates a user using session ID from cookie.
+func (in *GRPCAuthInterceptor) authenticateBySession(ctx context.Context, sessionCookieValue string) (*store.User, error) {
+	if sessionCookieValue == "" {
+		return nil, status.Errorf(codes.Unauthenticated, "session cookie value not found")
+	}
+
+	// Parse the cookie value to extract userID and sessionID
+	userID, sessionID, err := ParseSessionCookieValue(sessionCookieValue)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "invalid session cookie format: %v", err)
+	}
+
+	// Get the user directly using the userID from the cookie
+	user, err := in.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get user")
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not found")
+	}
+	if user.RowStatus == store.Archived {
+		return nil, status.Errorf(codes.Unauthenticated, "user is archived")
+	}
+
+	// Get user sessions and validate the sessionID
+	sessions, err := in.Store.GetUserSessions(ctx, userID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get user sessions")
+	}
+
+	if !validateUserSession(sessionID, sessions) {
+		return nil, status.Errorf(codes.Unauthenticated, "invalid or expired session")
 	}
 
 	return user, nil
@@ -168,6 +217,24 @@ func validateUserSession(sessionID string, userSessions []*storepb.SessionsUserS
 	return false
 }
 
+// getSessionIDFromMetadata extracts session cookie value from cookie.
+func getSessionIDFromMetadata(md metadata.MD) (string, error) {
+	// Check the cookie header for session cookie value
+	var sessionCookieValue string
+	for _, t := range append(md.Get("grpcgateway-cookie"), md.Get("cookie")...) {
+		header := http.Header{}
+		header.Add("Cookie", t)
+		request := http.Request{Header: header}
+		if v, _ := request.Cookie(SessionCookieName); v != nil {
+			sessionCookieValue = v.Value
+		}
+	}
+	if sessionCookieValue == "" {
+		return "", errors.New("session cookie not found")
+	}
+	return sessionCookieValue, nil
+}
+
 // getAccessTokenFromMetadata extracts access token from Authorization header.
 func getAccessTokenFromMetadata(md metadata.MD) (string, error) {
 	// Check the HTTP request Authorization header.
@@ -180,29 +247,6 @@ func getAccessTokenFromMetadata(md metadata.MD) (string, error) {
 		return "", errors.New("authorization header format must be Bearer {token}")
 	}
 	return authHeaderParts[1], nil
-}
-
-func getTokenFromMetadata(md metadata.MD) (string, error) {
-	// Check the HTTP request header first.
-	authorizationHeaders := md.Get("Authorization")
-	if len(authorizationHeaders) > 0 {
-		authHeaderParts := strings.Fields(authorizationHeaders[0])
-		if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
-			return "", errors.New("authorization header format must be Bearer {token}")
-		}
-		return authHeaderParts[1], nil
-	}
-	// Check the cookie header.
-	var accessToken string
-	for _, t := range append(md.Get("grpcgateway-cookie"), md.Get("cookie")...) {
-		header := http.Header{}
-		header.Add("Cookie", t)
-		request := http.Request{Header: header}
-		if v, _ := request.Cookie(AccessTokenCookieName); v != nil {
-			accessToken = v.Value
-		}
-	}
-	return accessToken, nil
 }
 
 func validateAccessToken(accessTokenString string, userAccessTokens []*storepb.AccessTokensUserSetting_AccessToken) bool {

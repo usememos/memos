@@ -4340,9 +4340,6 @@ definitions:
       browser:
         type: string
         description: Optional. Browser name and version (e.g., "Chrome 119.0").
-      country:
-        type: string
-        description: Optional. Geographic location (country code, e.g., "US").
   v1UserStats:
     type: object
     properties:

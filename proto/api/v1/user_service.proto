@@ -511,9 +511,6 @@ message UserSession {
 
     // Optional. Browser name and version (e.g., "Chrome 119.0").
     string browser = 5 [(google.api.field_behavior) = OPTIONAL];
-
-    // Optional. Geographic location (country code, e.g., "US").
-    string country = 6 [(google.api.field_behavior) = OPTIONAL];
   }
 }
 

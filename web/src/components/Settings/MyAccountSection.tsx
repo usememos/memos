@@ -7,6 +7,7 @@ import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
 import AccessTokenSection from "./AccessTokenSection";
+import UserSessionsSection from "./UserSessionsSection";
 
 const MyAccountSection = () => {
   const t = useTranslate();
@@ -48,6 +49,7 @@ const MyAccountSection = () => {
       </div>
 
       <AccessTokenSection />
+      <UserSessionsSection />
     </div>
   );
 };

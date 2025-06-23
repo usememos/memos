@@ -1868,9 +1868,7 @@ type UserSession_ClientInfo struct {
 	// Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
 	Os string `protobuf:"bytes,4,opt,name=os,proto3" json:"os,omitempty"`
 	// Optional. Browser name and version (e.g., "Chrome 119.0").
-	Browser string `protobuf:"bytes,5,opt,name=browser,proto3" json:"browser,omitempty"`
-	// Optional. Geographic location (country code, e.g., "US").
-	Country       string `protobuf:"bytes,6,opt,name=country,proto3" json:"country,omitempty"`
+	Browser       string `protobuf:"bytes,5,opt,name=browser,proto3" json:"browser,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1936,13 +1934,6 @@ func (x *UserSession_ClientInfo) GetOs() string {
 func (x *UserSession_ClientInfo) GetBrowser() string {
 	if x != nil {
 		return x.Browser
-	}
-	return ""
-}
-
-func (x *UserSession_ClientInfo) GetCountry() string {
-	if x != nil {
-		return x.Country
 	}
 	return ""
 }
@@ -2084,7 +2075,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x0faccess_token_id\x18\x03 \x01(\tB\x03\xe0A\x01R\raccessTokenId\"X\n" +
 	"\x1cDeleteUserAccessTokenRequest\x128\n" +
 	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cmemos.api.v1/UserAccessTokenR\x04name\"\xf5\x04\n" +
+	"\x1cmemos.api.v1/UserAccessTokenR\x04name\"\xd6\x04\n" +
 	"\vUserSession\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
 	"\n" +
@@ -2095,7 +2086,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"expireTime\x12M\n" +
 	"\x12last_accessed_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x10lastAccessedTime\x12J\n" +
 	"\vclient_info\x18\x06 \x01(\v2$.memos.api.v1.UserSession.ClientInfoB\x03\xe0A\x03R\n" +
-	"clientInfo\x1a\xc3\x01\n" +
+	"clientInfo\x1a\xa4\x01\n" +
 	"\n" +
 	"ClientInfo\x12\x1d\n" +
 	"\n" +
@@ -2105,8 +2096,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\vdevice_type\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
 	"deviceType\x12\x13\n" +
 	"\x02os\x18\x04 \x01(\tB\x03\xe0A\x01R\x02os\x12\x1d\n" +
-	"\abrowser\x18\x05 \x01(\tB\x03\xe0A\x01R\abrowser\x12\x1d\n" +
-	"\acountry\x18\x06 \x01(\tB\x03\xe0A\x01R\acountry:D\xeaAA\n" +
+	"\abrowser\x18\x05 \x01(\tB\x03\xe0A\x01R\abrowser:D\xeaAA\n" +
 	"\x18memos.api.v1/UserSession\x12\x1fusers/{user}/sessions/{session}\x1a\x04name\"L\n" +
 	"\x17ListUserSessionsRequest\x121\n" +
 	"\x06parent\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +

@@ -627,7 +627,6 @@ func (s *APIV1Service) ListUserSessions(ctx context.Context, request *v1pb.ListU
 				DeviceType: userSession.ClientInfo.DeviceType,
 				Os:         userSession.ClientInfo.Os,
 				Browser:    userSession.ClientInfo.Browser,
-				Country:    userSession.ClientInfo.Country,
 			}
 		}
 
