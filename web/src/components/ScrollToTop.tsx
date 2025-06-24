@@ -6,15 +6,22 @@ interface ScrollToTopProps {
   className?: string;
   style?: React.CSSProperties;
   enabled?: boolean;
+  scrollContainerRef: React.RefObject<HTMLDivElement>;
 }
 
-const ScrollToTop = ({ className, style, enabled = true }: ScrollToTopProps) => {
+const ScrollToTop = ({ className, style, enabled = true, scrollContainerRef }: ScrollToTopProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+
     const handleScroll = () => {
-      const shouldBeVisible = window.scrollY > 400;
+      if (!scrollContainer) {
+        return;
+      }
+
+      const shouldBeVisible = scrollContainer.scrollTop > 400;
       if (shouldBeVisible !== isVisible) {
         if (shouldBeVisible) {
           setShouldRender(true);
@@ -26,14 +33,17 @@ const ScrollToTop = ({ className, style, enabled = true }: ScrollToTopProps) => 
       }
     };
 
-    if (enabled) {
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
+    if (enabled && scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll);
+      return () => scrollContainer.removeEventListener("scroll", handleScroll);
     }
   }, [enabled, isVisible]);
 
   const scrollToTop = () => {
-    window.scrollTo({
+    if (!scrollContainerRef.current) {
+      return;
+    }
+    scrollContainerRef.current.scrollTo({
       top: 0,
       behavior: "smooth",
     });

@@ -67,28 +67,26 @@ const Home = () => {
             <HomeSidebar className="py-6" />
           </div>
         )}
-        <div className="flex-1 flex gap-4 px-4 sm:px-6 sm:pt-3 md:pt-6 h-full">
-          <div className="w-1/2 flex flex-col h-full overflow-auto">
+        <div className="flex-1 flex gap-4 px-4 sm:px-6 sm:pt-3 md:pt-6 h-full overflow-x-hidden">
+          <div className="lg:w-1/2 flex-grow flex flex-col h-full overflow-auto">
             <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
             <MemoFilters />
-            <div className="flex flex-col justify-start items-start overflow-scroll">
-              <PagedMemoList
-                renderer={(memo: Memo) => (
-                  <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned showExport compact />
-                )}
-                listSort={(memos: Memo[]) =>
-                  memos
-                    .filter((memo) => memo.rowStatus === RowStatus.ACTIVE && (lg ? !memo.pinned : true))
-                    .sort((a, b) =>
-                      memoFilterStore.orderByTimeAsc
-                        ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
-                        : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
-                    )
-                    .sort((a, b) => Number(b.pinned) - Number(a.pinned))
-                }
-                filter={memoListFilter}
-              />
-            </div>
+            <PagedMemoList
+              renderer={(memo: Memo) => (
+                <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned showExport compact />
+              )}
+              listSort={(memos: Memo[]) =>
+                memos
+                  .filter((memo) => memo.rowStatus === RowStatus.ACTIVE && (lg ? !memo.pinned : true))
+                  .sort((a, b) =>
+                    memoFilterStore.orderByTimeAsc
+                      ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
+                      : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
+                  )
+                  .sort((a, b) => Number(b.pinned) - Number(a.pinned))
+              }
+              filter={memoListFilter}
+            />
           </div>
           {lg && (
             <div className="w-1/2 flex flex-col h-full overflow-auto">

@@ -81,7 +81,7 @@ const PagedMemoList = (props: Props) => {
   }, [props.filter, props.pageSize]);
 
   const children = (
-    <div ref={containerRef} className="flex flex-col justify-start items-start w-full max-w-full">
+    <div ref={containerRef} className="flex flex-col justify-start items-start w-full max-w-full overflow-scroll">
       {sortedMemoList.map((memo) => props.renderer(memo))}
       {state.isRequesting && (
         <div className="w-full flex flex-row justify-center items-center my-4">
@@ -102,7 +102,12 @@ const PagedMemoList = (props: Props) => {
           <p className="mt-2 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
         </div>
       )}
-      <ScrollToTop enabled={shouldShowScrollToTop} className="fixed bottom-6" style={{ right: `calc(1rem + ${containerRightOffset}px)` }} />
+      <ScrollToTop
+        enabled={shouldShowScrollToTop}
+        className="fixed bottom-6"
+        style={{ right: `calc(1rem + ${containerRightOffset}px)` }}
+        scrollContainerRef={containerRef}
+      />
     </div>
   );
 
