@@ -17,17 +17,19 @@ message UserSetting {
     ACCESS_TOKENS = 3;
     // The shortcuts of the user.
     SHORTCUTS = 4;
+    // The webhooks of the user.
+    WEBHOOKS = 5;
   }
 
   int32 user_id = 1;
 
   Key key = 2;
-
   oneof value {
     GeneralUserSetting general = 3;
     SessionsUserSetting sessions = 4;
     AccessTokensUserSetting access_tokens = 5;
     ShortcutsUserSetting shortcuts = 6;
+    WebhooksUserSetting webhooks = 7;
   }
 }
 
@@ -88,4 +90,16 @@ message ShortcutsUserSetting {
     string filter = 3;
   }
   repeated Shortcut shortcuts = 1;
+}
+
+message WebhooksUserSetting {
+  message Webhook {
+    // Unique identifier for the webhook
+    string id = 1;
+    // Descriptive title for the webhook
+    string title = 2;
+    // The webhook URL endpoint
+    string url = 3;
+  }
+  repeated Webhook webhooks = 1;
 }

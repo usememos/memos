@@ -18,7 +18,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -689,9 +688,7 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 	if err != nil {
 		return status.Errorf(codes.InvalidArgument, "invalid memo creator")
 	}
-	webhooks, err := s.Store.ListWebhooks(ctx, &store.FindWebhook{
-		CreatorID: &creatorID,
-	})
+	webhooks, err := s.Store.GetUserWebhooks(ctx, creatorID)
 	if err != nil {
 		return err
 	}
@@ -701,7 +698,7 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 			return errors.Wrap(err, "failed to convert memo to webhook payload")
 		}
 		payload.ActivityType = activityType
-		payload.Url = hook.URL
+		payload.Url = hook.Url
 
 		// Use asynchronous webhook dispatch
 		webhook.PostAsync(payload)
@@ -709,15 +706,14 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 	return nil
 }
 
-func convertMemoToWebhookPayload(memo *v1pb.Memo) (*v1pb.WebhookRequestPayload, error) {
+func convertMemoToWebhookPayload(memo *v1pb.Memo) (*webhook.WebhookRequestPayload, error) {
 	creatorID, err := ExtractUserIDFromName(memo.Creator)
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid memo creator")
 	}
-	return &v1pb.WebhookRequestPayload{
-		Creator:    fmt.Sprintf("%s%d", UserNamePrefix, creatorID),
-		CreateTime: timestamppb.New(time.Now()),
-		Memo:       memo,
+	return &webhook.WebhookRequestPayload{
+		Creator: fmt.Sprintf("%s%d", UserNamePrefix, creatorID),
+		Memo:    memo,
 	}, nil
 }
 

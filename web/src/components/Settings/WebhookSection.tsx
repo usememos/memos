@@ -3,26 +3,31 @@ import { ExternalLinkIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { webhookServiceClient } from "@/grpcweb";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { Webhook } from "@/types/proto/api/v1/webhook_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateWebhookDialog from "../CreateWebhookDialog";
 
-const listWebhooks = async () => {
-  const { webhooks } = await webhookServiceClient.listWebhooks({});
-  return webhooks;
-};
-
 const WebhookSection = () => {
   const t = useTranslate();
+  const currentUser = useCurrentUser();
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
+
+  const listWebhooks = async () => {
+    if (!currentUser) return [];
+    const { webhooks } = await webhookServiceClient.listWebhooks({
+      parent: currentUser.name,
+    });
+    return webhooks;
+  };
 
   useEffect(() => {
     listWebhooks().then((webhooks) => {
       setWebhooks(webhooks);
     });
-  }, []);
+  }, [currentUser]);
 
-  const handleCreateAccessTokenDialogConfirm = async () => {
+  const handleCreateWebhookDialogConfirm = async () => {
     const webhooks = await listWebhooks();
     setWebhooks(webhooks);
   };
@@ -47,7 +52,7 @@ const WebhookSection = () => {
           <Button
             color="primary"
             onClick={() => {
-              showCreateWebhookDialog(handleCreateAccessTokenDialogConfirm);
+              showCreateWebhookDialog(handleCreateWebhookDialogConfirm);
             }}
           >
             {t("common.create")}

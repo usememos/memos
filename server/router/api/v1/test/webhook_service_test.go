@@ -13,7 +13,6 @@ import (
 
 func TestCreateWebhook(t *testing.T) {
 	ctx := context.Background()
-
 	t.Run("CreateWebhook with host user", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
@@ -27,6 +26,7 @@ func TestCreateWebhook(t *testing.T) {
 
 		// Create a webhook
 		req := &v1pb.CreateWebhookRequest{
+			Parent: fmt.Sprintf("users/%d", hostUser.ID),
 			Webhook: &v1pb.Webhook{
 				DisplayName: "Test Webhook",
 				Url:         "https://example.com/webhook",
@@ -41,16 +41,16 @@ func TestCreateWebhook(t *testing.T) {
 		require.Equal(t, "Test Webhook", resp.DisplayName)
 		require.Equal(t, "https://example.com/webhook", resp.Url)
 		require.Contains(t, resp.Name, "webhooks/")
-		require.Equal(t, fmt.Sprintf("users/%d", hostUser.ID), resp.Creator)
+		require.Contains(t, resp.Name, fmt.Sprintf("users/%d", hostUser.ID))
 	})
 
 	t.Run("CreateWebhook fails without authentication", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
-
 		// Try to create webhook without authentication
 		req := &v1pb.CreateWebhookRequest{
+			Parent: "users/1", // Dummy parent since we don't have a real user
 			Webhook: &v1pb.Webhook{
 				DisplayName: "Test Webhook",
 				Url:         "https://example.com/webhook",
@@ -73,9 +73,9 @@ func TestCreateWebhook(t *testing.T) {
 		require.NoError(t, err)
 
 		userCtx := ts.CreateUserContext(ctx, regularUser.ID)
-
 		// Try to create webhook as regular user
 		req := &v1pb.CreateWebhookRequest{
+			Parent: fmt.Sprintf("users/%d", regularUser.ID),
 			Webhook: &v1pb.Webhook{
 				DisplayName: "Test Webhook",
 				Url:         "https://example.com/webhook",
@@ -99,9 +99,9 @@ func TestCreateWebhook(t *testing.T) {
 		require.NoError(t, err)
 
 		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
-
 		// Try to create webhook with missing URL
 		req := &v1pb.CreateWebhookRequest{
+			Parent: fmt.Sprintf("users/%d", hostUser.ID),
 			Webhook: &v1pb.Webhook{
 				DisplayName: "Test Webhook",
 				// URL missing
@@ -128,9 +128,10 @@ func TestListWebhooks(t *testing.T) {
 		require.NoError(t, err)
 
 		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
-
 		// List webhooks
-		req := &v1pb.ListWebhooksRequest{}
+		req := &v1pb.ListWebhooksRequest{
+			Parent: fmt.Sprintf("users/%d", hostUser.ID),
+		}
 		resp, err := ts.Service.ListWebhooks(userCtx, req)
 
 		// Verify response
@@ -148,9 +149,9 @@ func TestListWebhooks(t *testing.T) {
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
-
 		// Create a webhook
 		createReq := &v1pb.CreateWebhookRequest{
+			Parent: fmt.Sprintf("users/%d", hostUser.ID),
 			Webhook: &v1pb.Webhook{
 				DisplayName: "Test Webhook",
 				Url:         "https://example.com/webhook",
@@ -160,7 +161,9 @@ func TestListWebhooks(t *testing.T) {
 		require.NoError(t, err)
 
 		// List webhooks
-		listReq := &v1pb.ListWebhooksRequest{}
+		listReq := &v1pb.ListWebhooksRequest{
+			Parent: fmt.Sprintf("users/%d", hostUser.ID),
+		}
 		resp, err := ts.Service.ListWebhooks(userCtx, listReq)
 
 		// Verify response
@@ -175,9 +178,10 @@ func TestListWebhooks(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
-
 		// Try to list webhooks without authentication
-		req := &v1pb.ListWebhooksRequest{}
+		req := &v1pb.ListWebhooksRequest{
+			Parent: "users/1", // Dummy parent since we don't have a real user
+		}
 		_, err := ts.Service.ListWebhooks(ctx, req)
 
 		// Should fail with permission denied or unauthenticated
@@ -197,9 +201,9 @@ func TestGetWebhook(t *testing.T) {
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
-
 		// Create a webhook
 		createReq := &v1pb.CreateWebhookRequest{
+			Parent: fmt.Sprintf("users/%d", hostUser.ID),
 			Webhook: &v1pb.Webhook{
 				DisplayName: "Test Webhook",
 				Url:         "https://example.com/webhook",
@@ -213,13 +217,11 @@ func TestGetWebhook(t *testing.T) {
 			Name: createdWebhook.Name,
 		}
 		resp, err := ts.Service.GetWebhook(userCtx, getReq)
-
 		// Verify response
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.Equal(t, createdWebhook.Name, resp.Name)
 		require.Equal(t, createdWebhook.Url, resp.Url)
-		require.Equal(t, createdWebhook.Creator, resp.Creator)
 	})
 
 	t.Run("GetWebhook fails with invalid name", func(t *testing.T) {
@@ -251,10 +253,9 @@ func TestGetWebhook(t *testing.T) {
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
-
 		// Try to get non-existent webhook
 		req := &v1pb.GetWebhookRequest{
-			Name: "webhooks/999",
+			Name: fmt.Sprintf("users/%d/webhooks/999", hostUser.ID),
 		}
 		_, err = ts.Service.GetWebhook(userCtx, req)
 
@@ -276,12 +277,12 @@ func TestUpdateWebhook(t *testing.T) {
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
-
 		// Create a webhook
 		createReq := &v1pb.CreateWebhookRequest{
+			Parent: fmt.Sprintf("users/%d", hostUser.ID),
 			Webhook: &v1pb.Webhook{
-				Name: "Original Webhook",
-				Url:  "https://example.com/webhook",
+				DisplayName: "Original Webhook",
+				Url:         "https://example.com/webhook",
 			},
 		}
 		createdWebhook, err := ts.Service.CreateWebhook(userCtx, createReq)
@@ -310,11 +311,10 @@ func TestUpdateWebhook(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
-
 		// Try to update webhook without authentication
 		req := &v1pb.UpdateWebhookRequest{
 			Webhook: &v1pb.Webhook{
-				Name: "webhooks/1",
+				Name: "users/1/webhooks/1",
 				Url:  "https://updated.example.com/webhook",
 			},
 		}
@@ -328,7 +328,6 @@ func TestUpdateWebhook(t *testing.T) {
 
 func TestDeleteWebhook(t *testing.T) {
 	ctx := context.Background()
-
 	t.Run("DeleteWebhook removes webhook", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
@@ -341,6 +340,7 @@ func TestDeleteWebhook(t *testing.T) {
 
 		// Create a webhook
 		createReq := &v1pb.CreateWebhookRequest{
+			Parent: fmt.Sprintf("users/%d", hostUser.ID),
 			Webhook: &v1pb.Webhook{
 				DisplayName: "Test Webhook",
 				Url:         "https://example.com/webhook",
@@ -373,10 +373,9 @@ func TestDeleteWebhook(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
-
 		// Try to delete webhook without authentication
 		req := &v1pb.DeleteWebhookRequest{
-			Name: "webhooks/1",
+			Name: "users/1/webhooks/1",
 		}
 
 		_, err := ts.Service.DeleteWebhook(ctx, req)
@@ -394,10 +393,9 @@ func TestDeleteWebhook(t *testing.T) {
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
-
 		// Try to delete non-existent webhook
 		req := &v1pb.DeleteWebhookRequest{
-			Name: "webhooks/999",
+			Name: fmt.Sprintf("users/%d/webhooks/999", hostUser.ID),
 		}
 		_, err = ts.Service.DeleteWebhook(userCtx, req)
 

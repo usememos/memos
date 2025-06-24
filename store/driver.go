@@ -69,12 +69,6 @@ type Driver interface {
 	UpdateInbox(ctx context.Context, update *UpdateInbox) (*Inbox, error)
 	DeleteInbox(ctx context.Context, delete *DeleteInbox) error
 
-	// Webhook model related methods.
-	CreateWebhook(ctx context.Context, create *Webhook) (*Webhook, error)
-	ListWebhooks(ctx context.Context, find *FindWebhook) ([]*Webhook, error)
-	UpdateWebhook(ctx context.Context, update *UpdateWebhook) (*Webhook, error)
-	DeleteWebhook(ctx context.Context, delete *DeleteWebhook) error
-
 	// Reaction model related methods.
 	UpsertReaction(ctx context.Context, create *Reaction) (*Reaction, error)
 	ListReactions(ctx context.Context, find *FindReaction) ([]*Reaction, error)

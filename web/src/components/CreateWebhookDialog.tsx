@@ -3,6 +3,7 @@ import { XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { webhookServiceClient } from "@/grpcweb";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
@@ -20,6 +21,7 @@ interface State {
 const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
   const { webhookName, destroy, onConfirm } = props;
   const t = useTranslate();
+  const currentUser = useCurrentUser();
   const [state, setState] = useState({
     displayName: "",
     url: "",
@@ -67,9 +69,15 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
       return;
     }
 
+    if (!currentUser) {
+      toast.error("User not authenticated");
+      return;
+    }
+
     try {
       if (isCreating) {
         await webhookServiceClient.createWebhook({
+          parent: currentUser.name,
           webhook: {
             displayName: state.displayName,
             url: state.url,

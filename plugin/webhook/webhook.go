@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
@@ -19,9 +18,20 @@ var (
 	timeout = 30 * time.Second
 )
 
+type WebhookRequestPayload struct {
+	// The target URL for the webhook request.
+	Url string `json:"url"`
+	// The type of activity that triggered this webhook.
+	ActivityType string `json:"activityType"`
+	// The resource name of the creator. Format: users/{user}
+	Creator string `json:"creator"`
+	// The memo that triggered this webhook (if applicable).
+	Memo *v1pb.Memo `json:"memo"`
+}
+
 // Post posts the message to webhook endpoint.
-func Post(requestPayload *v1pb.WebhookRequestPayload) error {
-	body, err := protojson.Marshal(requestPayload)
+func Post(requestPayload *WebhookRequestPayload) error {
+	body, err := json.Marshal(requestPayload)
 	if err != nil {
 		return errors.Wrapf(err, "failed to marshal webhook request to %s", requestPayload.Url)
 	}
@@ -67,7 +77,7 @@ func Post(requestPayload *v1pb.WebhookRequestPayload) error {
 
 // PostAsync posts the message to webhook endpoint asynchronously.
 // It spawns a new goroutine to handle the request and does not wait for the response.
-func PostAsync(requestPayload *v1pb.WebhookRequestPayload) {
+func PostAsync(requestPayload *WebhookRequestPayload) {
 	go func() {
 		if err := Post(requestPayload); err != nil {
 			// Since we're in a goroutine, we can only log the error

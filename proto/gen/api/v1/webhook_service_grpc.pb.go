@@ -31,15 +31,15 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WebhookServiceClient interface {
-	// ListWebhooks returns a list of webhooks.
+	// ListWebhooks returns a list of webhooks for a user.
 	ListWebhooks(ctx context.Context, in *ListWebhooksRequest, opts ...grpc.CallOption) (*ListWebhooksResponse, error)
 	// GetWebhook gets a webhook by name.
 	GetWebhook(ctx context.Context, in *GetWebhookRequest, opts ...grpc.CallOption) (*Webhook, error)
-	// CreateWebhook creates a new webhook.
+	// CreateWebhook creates a new webhook for a user.
 	CreateWebhook(ctx context.Context, in *CreateWebhookRequest, opts ...grpc.CallOption) (*Webhook, error)
-	// UpdateWebhook updates a webhook.
+	// UpdateWebhook updates a webhook for a user.
 	UpdateWebhook(ctx context.Context, in *UpdateWebhookRequest, opts ...grpc.CallOption) (*Webhook, error)
-	// DeleteWebhook deletes a webhook.
+	// DeleteWebhook deletes a webhook for a user.
 	DeleteWebhook(ctx context.Context, in *DeleteWebhookRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -105,15 +105,15 @@ func (c *webhookServiceClient) DeleteWebhook(ctx context.Context, in *DeleteWebh
 // All implementations must embed UnimplementedWebhookServiceServer
 // for forward compatibility.
 type WebhookServiceServer interface {
-	// ListWebhooks returns a list of webhooks.
+	// ListWebhooks returns a list of webhooks for a user.
 	ListWebhooks(context.Context, *ListWebhooksRequest) (*ListWebhooksResponse, error)
 	// GetWebhook gets a webhook by name.
 	GetWebhook(context.Context, *GetWebhookRequest) (*Webhook, error)
-	// CreateWebhook creates a new webhook.
+	// CreateWebhook creates a new webhook for a user.
 	CreateWebhook(context.Context, *CreateWebhookRequest) (*Webhook, error)
-	// UpdateWebhook updates a webhook.
+	// UpdateWebhook updates a webhook for a user.
 	UpdateWebhook(context.Context, *UpdateWebhookRequest) (*Webhook, error)
-	// DeleteWebhook deletes a webhook.
+	// DeleteWebhook deletes a webhook for a user.
 	DeleteWebhook(context.Context, *DeleteWebhookRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedWebhookServiceServer()
 }

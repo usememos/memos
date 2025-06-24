@@ -602,57 +602,6 @@ paths:
           type: string
       tags:
         - UserService
-  /api/v1/webhooks:
-    get:
-      summary: ListWebhooks returns a list of webhooks.
-      operationId: WebhookService_ListWebhooks
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1ListWebhooksResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      tags:
-        - WebhookService
-    post:
-      summary: CreateWebhook creates a new webhook.
-      operationId: WebhookService_CreateWebhook
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1Webhook'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: webhook
-          description: Required. The webhook to create.
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1Webhook'
-            required:
-              - webhook
-        - name: webhookId
-          description: |-
-            Optional. The webhook ID to use for this webhook.
-            If empty, a unique ID will be generated.
-            Must match the pattern [a-z0-9-]+
-          in: query
-          required: false
-          type: string
-        - name: validateOnly
-          description: Optional. If set, validate the request but don't actually create the webhook.
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - WebhookService
   /api/v1/workspace/profile:
     get:
       summary: Gets the workspace profile.
@@ -1242,7 +1191,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Webhook'
+            $ref: '#/definitions/apiv1Webhook'
         default:
           description: An unexpected error response.
           schema:
@@ -1250,12 +1199,12 @@ paths:
       parameters:
         - name: name_6
           description: |-
-            Required. The resource name of the webhook.
-            Format: webhooks/{webhook}
+            Required. The resource name of the webhook to retrieve.
+            Format: users/{user}/webhooks/{webhook}
           in: path
           required: true
           type: string
-          pattern: webhooks/[^/]+
+          pattern: users/[^/]+/webhooks/[^/]+
       tags:
         - WebhookService
     delete:
@@ -1362,7 +1311,7 @@ paths:
         - ShortcutService
   /api/v1/{name_9}:
     delete:
-      summary: DeleteWebhook deletes a webhook.
+      summary: DeleteWebhook deletes a webhook for a user.
       operationId: WebhookService_DeleteWebhook
       responses:
         "200":
@@ -1378,11 +1327,11 @@ paths:
         - name: name_9
           description: |-
             Required. The resource name of the webhook to delete.
-            Format: webhooks/{webhook}
+            Format: users/{user}/webhooks/{webhook}
           in: path
           required: true
           type: string
-          pattern: webhooks/[^/]+
+          pattern: users/[^/]+/webhooks/[^/]+
       tags:
         - WebhookService
   /api/v1/{name}:
@@ -2131,6 +2080,66 @@ paths:
             $ref: '#/definitions/MemoServiceRenameMemoTagBody'
       tags:
         - MemoService
+  /api/v1/{parent}/webhooks:
+    get:
+      summary: ListWebhooks returns a list of webhooks for a user.
+      operationId: WebhookService_ListWebhooks
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListWebhooksResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            Required. The parent resource where webhooks are listed.
+            Format: users/{user}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - WebhookService
+    post:
+      summary: CreateWebhook creates a new webhook for a user.
+      operationId: WebhookService_CreateWebhook
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/apiv1Webhook'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            Required. The parent resource where this webhook will be created.
+            Format: users/{user}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: webhook
+          description: Required. The webhook to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/apiv1Webhook'
+            required:
+              - webhook
+        - name: validateOnly
+          description: Optional. If set, validate the request, but do not actually create the webhook.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - WebhookService
   /api/v1/{setting.name}:
     patch:
       summary: Updates a workspace setting.
@@ -2333,13 +2342,13 @@ paths:
         - UserService
   /api/v1/{webhook.name}:
     patch:
-      summary: UpdateWebhook updates a webhook.
+      summary: UpdateWebhook updates a webhook for a user.
       operationId: WebhookService_UpdateWebhook
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1Webhook'
+            $ref: '#/definitions/apiv1Webhook'
         default:
           description: An unexpected error response.
           schema:
@@ -2348,13 +2357,13 @@ paths:
         - name: webhook.name
           description: |-
             The resource name of the webhook.
-            Format: webhooks/{webhook}
+            Format: users/{user}/webhooks/{webhook}
           in: path
           required: true
           type: string
-          pattern: webhooks/[^/]+
+          pattern: users/[^/]+/webhooks/[^/]+
         - name: webhook
-          description: Required. The webhook to update.
+          description: Required. The webhook resource which replaces the resource on the server.
           in: body
           required: true
           schema:
@@ -2362,34 +2371,14 @@ paths:
             properties:
               displayName:
                 type: string
-                description: Required. The display name of the webhook.
+                description: The display name of the webhook.
               url:
                 type: string
-                description: Required. The target URL for the webhook.
-              creator:
-                type: string
-                title: |-
-                  Output only. The resource name of the creator.
-                  Format: users/{user}
-                readOnly: true
-              state:
-                $ref: '#/definitions/v1State'
-                description: The state of the webhook.
-              createTime:
-                type: string
-                format: date-time
-                description: Output only. The creation timestamp.
-                readOnly: true
-              updateTime:
-                type: string
-                format: date-time
-                description: Output only. The last update timestamp.
-                readOnly: true
-            title: Required. The webhook to update.
+                description: The target URL for the webhook.
+            title: Required. The webhook resource which replaces the resource on the server.
             required:
               - displayName
               - url
-              - state
               - webhook
       tags:
         - WebhookService
@@ -2878,6 +2867,23 @@ definitions:
         type: string
         description: The default visibility of the memo.
     title: User settings message
+  apiv1Webhook:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The resource name of the webhook.
+          Format: users/{user}/webhooks/{webhook}
+      displayName:
+        type: string
+        description: The display name of the webhook.
+      url:
+        type: string
+        description: The target URL for the webhook.
+    required:
+      - displayName
+      - url
   apiv1WorkspaceCustomProfile:
     type: object
     properties:
@@ -3658,7 +3664,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1Webhook'
+          $ref: '#/definitions/apiv1Webhook'
         description: The list of webhooks.
   v1MathBlockNode:
     type: object
@@ -4200,43 +4206,6 @@ definitions:
       - PROTECTED
       - PUBLIC
     default: VISIBILITY_UNSPECIFIED
-  v1Webhook:
-    type: object
-    properties:
-      name:
-        type: string
-        title: |-
-          The resource name of the webhook.
-          Format: webhooks/{webhook}
-      displayName:
-        type: string
-        description: Required. The display name of the webhook.
-      url:
-        type: string
-        description: Required. The target URL for the webhook.
-      creator:
-        type: string
-        title: |-
-          Output only. The resource name of the creator.
-          Format: users/{user}
-        readOnly: true
-      state:
-        $ref: '#/definitions/v1State'
-        description: The state of the webhook.
-      createTime:
-        type: string
-        format: date-time
-        description: Output only. The creation timestamp.
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        description: Output only. The last update timestamp.
-        readOnly: true
-    required:
-      - displayName
-      - url
-      - state
   v1WorkspaceProfile:
     type: object
     properties:

@@ -34,6 +34,8 @@ const (
 	UserSetting_ACCESS_TOKENS UserSetting_Key = 3
 	// The shortcuts of the user.
 	UserSetting_SHORTCUTS UserSetting_Key = 4
+	// The webhooks of the user.
+	UserSetting_WEBHOOKS UserSetting_Key = 5
 )
 
 // Enum value maps for UserSetting_Key.
@@ -44,6 +46,7 @@ var (
 		2: "SESSIONS",
 		3: "ACCESS_TOKENS",
 		4: "SHORTCUTS",
+		5: "WEBHOOKS",
 	}
 	UserSetting_Key_value = map[string]int32{
 		"KEY_UNSPECIFIED": 0,
@@ -51,6 +54,7 @@ var (
 		"SESSIONS":        2,
 		"ACCESS_TOKENS":   3,
 		"SHORTCUTS":       4,
+		"WEBHOOKS":        5,
 	}
 )
 
@@ -91,6 +95,7 @@ type UserSetting struct {
 	//	*UserSetting_Sessions
 	//	*UserSetting_AccessTokens
 	//	*UserSetting_Shortcuts
+	//	*UserSetting_Webhooks
 	Value         isUserSetting_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -183,6 +188,15 @@ func (x *UserSetting) GetShortcuts() *ShortcutsUserSetting {
 	return nil
 }
 
+func (x *UserSetting) GetWebhooks() *WebhooksUserSetting {
+	if x != nil {
+		if x, ok := x.Value.(*UserSetting_Webhooks); ok {
+			return x.Webhooks
+		}
+	}
+	return nil
+}
+
 type isUserSetting_Value interface {
 	isUserSetting_Value()
 }
@@ -203,6 +217,10 @@ type UserSetting_Shortcuts struct {
 	Shortcuts *ShortcutsUserSetting `protobuf:"bytes,6,opt,name=shortcuts,proto3,oneof"`
 }
 
+type UserSetting_Webhooks struct {
+	Webhooks *WebhooksUserSetting `protobuf:"bytes,7,opt,name=webhooks,proto3,oneof"`
+}
+
 func (*UserSetting_General) isUserSetting_Value() {}
 
 func (*UserSetting_Sessions) isUserSetting_Value() {}
@@ -210,6 +228,8 @@ func (*UserSetting_Sessions) isUserSetting_Value() {}
 func (*UserSetting_AccessTokens) isUserSetting_Value() {}
 
 func (*UserSetting_Shortcuts) isUserSetting_Value() {}
+
+func (*UserSetting_Webhooks) isUserSetting_Value() {}
 
 type GeneralUserSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -406,6 +426,50 @@ func (x *ShortcutsUserSetting) GetShortcuts() []*ShortcutsUserSetting_Shortcut {
 	return nil
 }
 
+type WebhooksUserSetting struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Webhooks      []*WebhooksUserSetting_Webhook `protobuf:"bytes,1,rep,name=webhooks,proto3" json:"webhooks,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WebhooksUserSetting) Reset() {
+	*x = WebhooksUserSetting{}
+	mi := &file_store_user_setting_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WebhooksUserSetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WebhooksUserSetting) ProtoMessage() {}
+
+func (x *WebhooksUserSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_store_user_setting_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WebhooksUserSetting.ProtoReflect.Descriptor instead.
+func (*WebhooksUserSetting) Descriptor() ([]byte, []int) {
+	return file_store_user_setting_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *WebhooksUserSetting) GetWebhooks() []*WebhooksUserSetting_Webhook {
+	if x != nil {
+		return x.Webhooks
+	}
+	return nil
+}
+
 type SessionsUserSetting_Session struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique session identifier.
@@ -424,7 +488,7 @@ type SessionsUserSetting_Session struct {
 
 func (x *SessionsUserSetting_Session) Reset() {
 	*x = SessionsUserSetting_Session{}
-	mi := &file_store_user_setting_proto_msgTypes[5]
+	mi := &file_store_user_setting_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -436,7 +500,7 @@ func (x *SessionsUserSetting_Session) String() string {
 func (*SessionsUserSetting_Session) ProtoMessage() {}
 
 func (x *SessionsUserSetting_Session) ProtoReflect() protoreflect.Message {
-	mi := &file_store_user_setting_proto_msgTypes[5]
+	mi := &file_store_user_setting_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -505,7 +569,7 @@ type SessionsUserSetting_ClientInfo struct {
 
 func (x *SessionsUserSetting_ClientInfo) Reset() {
 	*x = SessionsUserSetting_ClientInfo{}
-	mi := &file_store_user_setting_proto_msgTypes[6]
+	mi := &file_store_user_setting_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -517,7 +581,7 @@ func (x *SessionsUserSetting_ClientInfo) String() string {
 func (*SessionsUserSetting_ClientInfo) ProtoMessage() {}
 
 func (x *SessionsUserSetting_ClientInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_store_user_setting_proto_msgTypes[6]
+	mi := &file_store_user_setting_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -581,7 +645,7 @@ type AccessTokensUserSetting_AccessToken struct {
 
 func (x *AccessTokensUserSetting_AccessToken) Reset() {
 	*x = AccessTokensUserSetting_AccessToken{}
-	mi := &file_store_user_setting_proto_msgTypes[7]
+	mi := &file_store_user_setting_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -593,7 +657,7 @@ func (x *AccessTokensUserSetting_AccessToken) String() string {
 func (*AccessTokensUserSetting_AccessToken) ProtoMessage() {}
 
 func (x *AccessTokensUserSetting_AccessToken) ProtoReflect() protoreflect.Message {
-	mi := &file_store_user_setting_proto_msgTypes[7]
+	mi := &file_store_user_setting_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -634,7 +698,7 @@ type ShortcutsUserSetting_Shortcut struct {
 
 func (x *ShortcutsUserSetting_Shortcut) Reset() {
 	*x = ShortcutsUserSetting_Shortcut{}
-	mi := &file_store_user_setting_proto_msgTypes[8]
+	mi := &file_store_user_setting_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -646,7 +710,7 @@ func (x *ShortcutsUserSetting_Shortcut) String() string {
 func (*ShortcutsUserSetting_Shortcut) ProtoMessage() {}
 
 func (x *ShortcutsUserSetting_Shortcut) ProtoReflect() protoreflect.Message {
-	mi := &file_store_user_setting_proto_msgTypes[8]
+	mi := &file_store_user_setting_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -683,24 +747,89 @@ func (x *ShortcutsUserSetting_Shortcut) GetFilter() string {
 	return ""
 }
 
+type WebhooksUserSetting_Webhook struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Unique identifier for the webhook
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Descriptive title for the webhook
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// The webhook URL endpoint
+	Url           string `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WebhooksUserSetting_Webhook) Reset() {
+	*x = WebhooksUserSetting_Webhook{}
+	mi := &file_store_user_setting_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WebhooksUserSetting_Webhook) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WebhooksUserSetting_Webhook) ProtoMessage() {}
+
+func (x *WebhooksUserSetting_Webhook) ProtoReflect() protoreflect.Message {
+	mi := &file_store_user_setting_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WebhooksUserSetting_Webhook.ProtoReflect.Descriptor instead.
+func (*WebhooksUserSetting_Webhook) Descriptor() ([]byte, []int) {
+	return file_store_user_setting_proto_rawDescGZIP(), []int{5, 0}
+}
+
+func (x *WebhooksUserSetting_Webhook) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *WebhooksUserSetting_Webhook) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *WebhooksUserSetting_Webhook) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
 var File_store_user_setting_proto protoreflect.FileDescriptor
 
 const file_store_user_setting_proto_rawDesc = "" +
 	"\n" +
-	"\x18store/user_setting.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x03\n" +
+	"\x18store/user_setting.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\"\x93\x04\n" +
 	"\vUserSetting\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12.\n" +
 	"\x03key\x18\x02 \x01(\x0e2\x1c.memos.store.UserSetting.KeyR\x03key\x12;\n" +
 	"\ageneral\x18\x03 \x01(\v2\x1f.memos.store.GeneralUserSettingH\x00R\ageneral\x12>\n" +
 	"\bsessions\x18\x04 \x01(\v2 .memos.store.SessionsUserSettingH\x00R\bsessions\x12K\n" +
 	"\raccess_tokens\x18\x05 \x01(\v2$.memos.store.AccessTokensUserSettingH\x00R\faccessTokens\x12A\n" +
-	"\tshortcuts\x18\x06 \x01(\v2!.memos.store.ShortcutsUserSettingH\x00R\tshortcuts\"W\n" +
+	"\tshortcuts\x18\x06 \x01(\v2!.memos.store.ShortcutsUserSettingH\x00R\tshortcuts\x12>\n" +
+	"\bwebhooks\x18\a \x01(\v2 .memos.store.WebhooksUserSettingH\x00R\bwebhooks\"e\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\f\n" +
 	"\bSESSIONS\x10\x02\x12\x11\n" +
 	"\rACCESS_TOKENS\x10\x03\x12\r\n" +
-	"\tSHORTCUTS\x10\x04B\a\n" +
+	"\tSHORTCUTS\x10\x04\x12\f\n" +
+	"\bWEBHOOKS\x10\x05B\a\n" +
 	"\x05value\"u\n" +
 	"\x12GeneralUserSetting\x12\x16\n" +
 	"\x06locale\x18\x01 \x01(\tR\x06locale\x12\x1e\n" +
@@ -740,7 +869,13 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\bShortcut\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
-	"\x06filter\x18\x03 \x01(\tR\x06filterB\x9b\x01\n" +
+	"\x06filter\x18\x03 \x01(\tR\x06filter\"\x9e\x01\n" +
+	"\x13WebhooksUserSetting\x12D\n" +
+	"\bwebhooks\x18\x01 \x03(\v2(.memos.store.WebhooksUserSetting.WebhookR\bwebhooks\x1aA\n" +
+	"\aWebhook\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x10\n" +
+	"\x03url\x18\x03 \x01(\tR\x03urlB\x9b\x01\n" +
 	"\x0fcom.memos.storeB\x10UserSettingProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
 var (
@@ -756,7 +891,7 @@ func file_store_user_setting_proto_rawDescGZIP() []byte {
 }
 
 var file_store_user_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_store_user_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_store_user_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_store_user_setting_proto_goTypes = []any{
 	(UserSetting_Key)(0),                        // 0: memos.store.UserSetting.Key
 	(*UserSetting)(nil),                         // 1: memos.store.UserSetting
@@ -764,11 +899,13 @@ var file_store_user_setting_proto_goTypes = []any{
 	(*SessionsUserSetting)(nil),                 // 3: memos.store.SessionsUserSetting
 	(*AccessTokensUserSetting)(nil),             // 4: memos.store.AccessTokensUserSetting
 	(*ShortcutsUserSetting)(nil),                // 5: memos.store.ShortcutsUserSetting
-	(*SessionsUserSetting_Session)(nil),         // 6: memos.store.SessionsUserSetting.Session
-	(*SessionsUserSetting_ClientInfo)(nil),      // 7: memos.store.SessionsUserSetting.ClientInfo
-	(*AccessTokensUserSetting_AccessToken)(nil), // 8: memos.store.AccessTokensUserSetting.AccessToken
-	(*ShortcutsUserSetting_Shortcut)(nil),       // 9: memos.store.ShortcutsUserSetting.Shortcut
-	(*timestamppb.Timestamp)(nil),               // 10: google.protobuf.Timestamp
+	(*WebhooksUserSetting)(nil),                 // 6: memos.store.WebhooksUserSetting
+	(*SessionsUserSetting_Session)(nil),         // 7: memos.store.SessionsUserSetting.Session
+	(*SessionsUserSetting_ClientInfo)(nil),      // 8: memos.store.SessionsUserSetting.ClientInfo
+	(*AccessTokensUserSetting_AccessToken)(nil), // 9: memos.store.AccessTokensUserSetting.AccessToken
+	(*ShortcutsUserSetting_Shortcut)(nil),       // 10: memos.store.ShortcutsUserSetting.Shortcut
+	(*WebhooksUserSetting_Webhook)(nil),         // 11: memos.store.WebhooksUserSetting.Webhook
+	(*timestamppb.Timestamp)(nil),               // 12: google.protobuf.Timestamp
 }
 var file_store_user_setting_proto_depIdxs = []int32{
 	0,  // 0: memos.store.UserSetting.key:type_name -> memos.store.UserSetting.Key
@@ -776,18 +913,20 @@ var file_store_user_setting_proto_depIdxs = []int32{
 	3,  // 2: memos.store.UserSetting.sessions:type_name -> memos.store.SessionsUserSetting
 	4,  // 3: memos.store.UserSetting.access_tokens:type_name -> memos.store.AccessTokensUserSetting
 	5,  // 4: memos.store.UserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting
-	6,  // 5: memos.store.SessionsUserSetting.sessions:type_name -> memos.store.SessionsUserSetting.Session
-	8,  // 6: memos.store.AccessTokensUserSetting.access_tokens:type_name -> memos.store.AccessTokensUserSetting.AccessToken
-	9,  // 7: memos.store.ShortcutsUserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting.Shortcut
-	10, // 8: memos.store.SessionsUserSetting.Session.create_time:type_name -> google.protobuf.Timestamp
-	10, // 9: memos.store.SessionsUserSetting.Session.expire_time:type_name -> google.protobuf.Timestamp
-	10, // 10: memos.store.SessionsUserSetting.Session.last_accessed_time:type_name -> google.protobuf.Timestamp
-	7,  // 11: memos.store.SessionsUserSetting.Session.client_info:type_name -> memos.store.SessionsUserSetting.ClientInfo
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	6,  // 5: memos.store.UserSetting.webhooks:type_name -> memos.store.WebhooksUserSetting
+	7,  // 6: memos.store.SessionsUserSetting.sessions:type_name -> memos.store.SessionsUserSetting.Session
+	9,  // 7: memos.store.AccessTokensUserSetting.access_tokens:type_name -> memos.store.AccessTokensUserSetting.AccessToken
+	10, // 8: memos.store.ShortcutsUserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting.Shortcut
+	11, // 9: memos.store.WebhooksUserSetting.webhooks:type_name -> memos.store.WebhooksUserSetting.Webhook
+	12, // 10: memos.store.SessionsUserSetting.Session.create_time:type_name -> google.protobuf.Timestamp
+	12, // 11: memos.store.SessionsUserSetting.Session.expire_time:type_name -> google.protobuf.Timestamp
+	12, // 12: memos.store.SessionsUserSetting.Session.last_accessed_time:type_name -> google.protobuf.Timestamp
+	8,  // 13: memos.store.SessionsUserSetting.Session.client_info:type_name -> memos.store.SessionsUserSetting.ClientInfo
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_store_user_setting_proto_init() }
@@ -800,6 +939,7 @@ func file_store_user_setting_proto_init() {
 		(*UserSetting_Sessions)(nil),
 		(*UserSetting_AccessTokens)(nil),
 		(*UserSetting_Shortcuts)(nil),
+		(*UserSetting_Webhooks)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -807,7 +947,7 @@ func file_store_user_setting_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_user_setting_proto_rawDesc), len(file_store_user_setting_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

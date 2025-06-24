@@ -146,14 +146,18 @@ func ExtractActivityIDFromName(name string) (int32, error) {
 }
 
 // ExtractWebhookIDFromName returns the webhook ID from a resource name.
-func ExtractWebhookIDFromName(name string) (int32, error) {
-	tokens, err := GetNameParentTokens(name, WebhookNamePrefix)
+// Expected format: users/{user}/webhooks/{webhook}
+func ExtractWebhookIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, UserNamePrefix, WebhookNamePrefix)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid webhook ID %q", tokens[0])
+	if len(tokens) != 2 {
+		return "", errors.Errorf("invalid webhook name format: %q", name)
 	}
-	return id, nil
+	webhookID := tokens[1]
+	if webhookID == "" {
+		return "", errors.Errorf("invalid webhook ID %q", webhookID)
+	}
+	return webhookID, nil
 }
