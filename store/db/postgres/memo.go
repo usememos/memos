@@ -77,6 +77,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(holders, ", ")))
 	}
+	if v := find.Pinned; v != nil {
+		where, args = append(where, "COALESCE(memo_organizer.pinned, 0) = "+placeholder(len(args)+1)), append(args, *v)
+	}
 	if v := find.PayloadFind; v != nil {
 		if v.Raw != nil {
 			where, args = append(where, "memo.payload = "+placeholder(len(args)+1)), append(args, *v.Raw)

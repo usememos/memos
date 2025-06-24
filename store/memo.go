@@ -70,6 +70,7 @@ type FindMemo struct {
 	// Domain specific fields
 	ContentSearch   []string
 	VisibilityList  []Visibility
+	Pinned          *bool
 	PayloadFind     *FindMemoPayload
 	ExcludeContent  bool
 	ExcludeComments bool

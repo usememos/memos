@@ -101,6 +101,9 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if filter.HasIncompleteTasks {
 			find.PayloadFind.HasIncompleteTasks = true
 		}
+		if filter.Pinned {
+			find.Pinned = &filter.Pinned
+		}
 	}
 
 	user, err := s.GetCurrentUser(ctx)
@@ -149,6 +152,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("has_task_list", cel.BoolType),
 	cel.Variable("has_code", cel.BoolType),
 	cel.Variable("has_incomplete_tasks", cel.BoolType),
+	cel.Variable("pinned", cel.BoolType),
 }
 
 type MemoFilter struct {
@@ -168,6 +172,7 @@ type MemoFilter struct {
 	HasTaskList        bool
 	HasCode            bool
 	HasIncompleteTasks bool
+	Pinned             bool
 }
 
 func parseMemoFilter(expression string) (*MemoFilter, error) {
@@ -253,6 +258,9 @@ func findMemoField(callExpr *expr.Expr_Call, filter *MemoFilter) {
 			} else if idExpr.Name == "has_incomplete_tasks" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.HasIncompleteTasks = value
+			} else if idExpr.Name == "pinned" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.Pinned = value
 			}
 			return
 		}

@@ -7,6 +7,7 @@ import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
+import PinnedMemoList from "@/components/PinnedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useMemoFilterStore } from "@/store/v1";
@@ -14,7 +15,7 @@ import { RowStatus } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 
 const Home = () => {
-  const { md } = useResponsiveWidth();
+  const { md, lg } = useResponsiveWidth();
   const user = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
 
@@ -62,31 +63,42 @@ const Home = () => {
       )}
       <div className={clsx("w-full flex flex-row justify-start items-start", md ? "h-full" : "h-[calc(100vh-60px)]")}>
         {md && (
-          <div className="sticky top-0 left-0 shrink-0 -mt-6 h-full w-64 px-4 border-r border-zinc-200 dark:border-zinc-800">
+          <div className="flex-shrink-0 w-64 px-4 border-r border-zinc-200 dark:border-zinc-800">
             <HomeSidebar className="py-6" />
           </div>
         )}
-        <div className={clsx("px-4 sm:px-6 sm:pt-3 md:pt-6 flex flex-col h-full overflow-auto", md ? "w-[calc(100%-15rem)]" : "w-full")}>
-          <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
-          <MemoFilters />
-          <div className="flex flex-col justify-start items-start w-full max-w-full overflow-scroll">
-            <PagedMemoList
-              renderer={(memo: Memo) => (
-                <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned showExport compact />
-              )}
-              listSort={(memos: Memo[]) =>
-                memos
-                  .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
-                  .sort((a, b) =>
-                    memoFilterStore.orderByTimeAsc
-                      ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
-                      : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
-                  )
-                  .sort((a, b) => Number(b.pinned) - Number(a.pinned))
-              }
-              filter={memoListFilter}
-            />
+        <div className="flex-1 flex gap-4 px-4 sm:px-6 sm:pt-3 md:pt-6 h-full">
+          <div className="w-1/2 flex flex-col h-full overflow-auto">
+            <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
+            <MemoFilters />
+            <div className="flex flex-col justify-start items-start overflow-scroll">
+              <PagedMemoList
+                renderer={(memo: Memo) => (
+                  <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned showExport compact />
+                )}
+                listSort={(memos: Memo[]) =>
+                  memos
+                    .filter((memo) => memo.rowStatus === RowStatus.ACTIVE && (lg ? !memo.pinned : true))
+                    .sort((a, b) =>
+                      memoFilterStore.orderByTimeAsc
+                        ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
+                        : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
+                    )
+                    .sort((a, b) => Number(b.pinned) - Number(a.pinned))
+                }
+                filter={memoListFilter}
+              />
+            </div>
           </div>
+          {lg && (
+            <div className="w-1/2 flex flex-col h-full overflow-auto">
+              <PinnedMemoList
+                renderer={(memo: Memo) => (
+                  <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned showExport compact />
+                )}
+              />
+            </div>
+          )}
         </div>
       </div>
     </section>

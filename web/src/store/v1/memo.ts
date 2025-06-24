@@ -9,12 +9,14 @@ interface State {
   // It should be update when any state change.
   stateId: string;
   memoMapByName: Record<string, Memo>;
+  pinnedMemoMapByName: Record<string, Memo>;
   currentRequest: AbortController | null;
 }
 
 const getDefaultState = (): State => ({
   stateId: uniqueId(),
   memoMapByName: {},
+  pinnedMemoMapByName: {},
   currentRequest: null,
 });
 
@@ -106,8 +108,19 @@ export const useMemoStore = create(
       });
 
       const memoMap = get().memoMapByName;
+      const pinnedMemoMap = get().pinnedMemoMapByName;
+
       memoMap[memo.name] = memo;
-      set({ stateId: uniqueId(), memoMapByName: memoMap });
+
+      // Update pinnedMemoMapByName based on the memo's pinned status
+      if (memo.pinned) {
+        // Add the memo to the front of pinnedMemoMap
+        const newPinnedMemoMap = { [memo.name]: memo, ...pinnedMemoMap };
+        set({ stateId: uniqueId(), memoMapByName: memoMap, pinnedMemoMapByName: newPinnedMemoMap });
+      } else {
+        delete pinnedMemoMap[memo.name];
+        set({ stateId: uniqueId(), memoMapByName: memoMap, pinnedMemoMapByName: pinnedMemoMap });
+      }
       return memo;
     },
     deleteMemo: async (name: string) => {
@@ -118,6 +131,20 @@ export const useMemoStore = create(
       const memoMap = get().memoMapByName;
       delete memoMap[name];
       set({ stateId: uniqueId(), memoMapByName: memoMap });
+    },
+    fetchPinnedMemos: async (creatorName: string) => {
+      const { memos, nextPageToken } = await memoServiceClient.listMemos({
+        filter: `creator == "${creatorName}" && row_status == "NORMAL" && order_by_pinned == true && pinned == true`,
+        pageSize: 1000,
+        view: MemoView.MEMO_VIEW_FULL,
+      });
+
+      const memoMap = get().pinnedMemoMapByName;
+      for (const memo of memos) {
+        memoMap[memo.name] = memo;
+      }
+      set({ pinnedMemoMapByName: memoMap });
+      return { memos, nextPageToken };
     },
   })),
 );
@@ -139,4 +166,10 @@ export const useMemoList = () => {
     reset,
     size,
   };
+};
+
+export const usePinnedMemoList = () => {
+  const memoStore = useMemoStore();
+  const memos = Object.values(memoStore.getState().pinnedMemoMapByName);
+  return memos;
 };

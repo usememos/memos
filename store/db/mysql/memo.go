@@ -86,6 +86,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("`memo`.`visibility` in (%s)", strings.Join(placeholder, ",")))
 	}
+	if v := find.Pinned; v != nil {
+		where, args = append(where, "IFNULL(`memo_organizer`.`pinned`, 0) = ?"), append(args, *v)
+	}
 	if v := find.PayloadFind; v != nil {
 		if v.Raw != nil {
 			where, args = append(where, "`memo`.`payload` = ?"), append(args, *v.Raw)
