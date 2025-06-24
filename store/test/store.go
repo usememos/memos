@@ -50,7 +50,6 @@ func resetTestingDB(ctx context.Context, profile *profile.Profile, dbDriver stor
 		DROP TABLE IF EXISTS storage;
 		DROP TABLE IF EXISTS idp;
 		DROP TABLE IF EXISTS inbox;
-		DROP TABLE IF EXISTS webhook;
 		DROP TABLE IF EXISTS reaction;`)
 		if err != nil {
 			slog.Error("failed to reset testing db", slog.String("error", err.Error()))
@@ -71,7 +70,6 @@ func resetTestingDB(ctx context.Context, profile *profile.Profile, dbDriver stor
 		DROP TABLE IF EXISTS storage CASCADE;
 		DROP TABLE IF EXISTS idp CASCADE;
 		DROP TABLE IF EXISTS inbox CASCADE;
-		DROP TABLE IF EXISTS webhook CASCADE;
 		DROP TABLE IF EXISTS reaction CASCADE;`)
 		if err != nil {
 			slog.Error("failed to reset testing db", slog.String("error", err.Error()))
