@@ -698,7 +698,7 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 			return errors.Wrap(err, "failed to convert memo to webhook payload")
 		}
 		payload.ActivityType = activityType
-		payload.Url = hook.Url
+		payload.URL = hook.Url
 
 		// Use asynchronous webhook dispatch
 		webhook.PostAsync(payload)

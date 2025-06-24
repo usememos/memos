@@ -146,7 +146,6 @@ func ExtractActivityIDFromName(name string) (int32, error) {
 }
 
 // ExtractWebhookIDFromName returns the webhook ID from a resource name.
-// Expected format: users/{user}/webhooks/{webhook}
 func ExtractWebhookIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, UserNamePrefix, WebhookNamePrefix)
 	if err != nil {

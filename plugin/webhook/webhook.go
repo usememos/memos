@@ -20,7 +20,7 @@ var (
 
 type WebhookRequestPayload struct {
 	// The target URL for the webhook request.
-	Url string `json:"url"`
+	URL string `json:"url"`
 	// The type of activity that triggered this webhook.
 	ActivityType string `json:"activityType"`
 	// The resource name of the creator. Format: users/{user}
@@ -33,12 +33,12 @@ type WebhookRequestPayload struct {
 func Post(requestPayload *WebhookRequestPayload) error {
 	body, err := json.Marshal(requestPayload)
 	if err != nil {
-		return errors.Wrapf(err, "failed to marshal webhook request to %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to marshal webhook request to %s", requestPayload.URL)
 	}
 
-	req, err := http.NewRequest("POST", requestPayload.Url, bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", requestPayload.URL, bytes.NewBuffer(body))
 	if err != nil {
-		return errors.Wrapf(err, "failed to construct webhook request to %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to construct webhook request to %s", requestPayload.URL)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -47,17 +47,17 @@ func Post(requestPayload *WebhookRequestPayload) error {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return errors.Wrapf(err, "failed to post webhook to %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to post webhook to %s", requestPayload.URL)
 	}
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return errors.Wrapf(err, "failed to read webhook response from %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to read webhook response from %s", requestPayload.URL)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return errors.Errorf("failed to post webhook %s, status code: %d, response body: %s", requestPayload.Url, resp.StatusCode, b)
+		return errors.Errorf("failed to post webhook %s, status code: %d, response body: %s", requestPayload.URL, resp.StatusCode, b)
 	}
 
 	response := &struct {
@@ -65,7 +65,7 @@ func Post(requestPayload *WebhookRequestPayload) error {
 		Message string `json:"message"`
 	}{}
 	if err := json.Unmarshal(b, response); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal webhook response from %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to unmarshal webhook response from %s", requestPayload.URL)
 	}
 
 	if response.Code != 0 {
@@ -82,7 +82,7 @@ func PostAsync(requestPayload *WebhookRequestPayload) {
 		if err := Post(requestPayload); err != nil {
 			// Since we're in a goroutine, we can only log the error
 			slog.Warn("Failed to dispatch webhook asynchronously",
-				slog.String("url", requestPayload.Url),
+				slog.String("url", requestPayload.URL),
 				slog.String("activityType", requestPayload.ActivityType),
 				slog.Any("err", err))
 		}
