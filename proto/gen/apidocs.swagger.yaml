@@ -141,7 +141,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1User'
+            $ref: '#/definitions/v1CreateSessionResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -164,7 +164,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1User'
+            $ref: '#/definitions/v1GetCurrentSessionResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -3287,6 +3287,16 @@ definitions:
         description: |-
           Whether the session should never expire.
           Optional field that defaults to false for security.
+  v1CreateSessionResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v1User'
+        description: The authenticated user information.
+      expiresAt:
+        type: string
+        format: date-time
+        description: Token expiration time.
   v1EmbeddedContentNode:
     type: object
     properties:
@@ -3301,6 +3311,15 @@ definitions:
     properties:
       symbol:
         type: string
+  v1GetCurrentSessionResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v1User'
+      expiresAt:
+        type: string
+        format: date-time
+        description: Current session expiration time (if available).
   v1HTMLElementNode:
     type: object
     properties:

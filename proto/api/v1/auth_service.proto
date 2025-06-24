@@ -6,19 +6,20 @@ import "api/v1/user_service.proto";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v1";
 
 service AuthService {
   // GetCurrentSession returns the current active session information.
   // This method is idempotent and safe, suitable for checking current session state.
-  rpc GetCurrentSession(GetCurrentSessionRequest) returns (User) {
+  rpc GetCurrentSession(GetCurrentSessionRequest) returns (GetCurrentSessionResponse) {
     option (google.api.http) = {get: "/api/v1/auth/sessions/current"};
   }
 
   // CreateSession authenticates a user and creates a new session.
   // Returns the authenticated user information upon successful authentication.
-  rpc CreateSession(CreateSessionRequest) returns (User) {
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse) {
     option (google.api.http) = {
       post: "/api/v1/auth/sessions"
       body: "*"
@@ -36,6 +37,9 @@ message GetCurrentSessionRequest {}
 
 message GetCurrentSessionResponse {
   User user = 1;
+
+  // Current session expiration time (if available).
+  google.protobuf.Timestamp expires_at = 2;
 }
 
 message CreateSessionRequest {
@@ -67,7 +71,7 @@ message CreateSessionRequest {
 
   // Provide one authentication method (username/password or SSO).
   // Required field to specify the authentication method.
-  oneof method {
+  oneof credentials {
     // Username and password authentication method.
     PasswordCredentials password_credentials = 1;
 
@@ -78,6 +82,14 @@ message CreateSessionRequest {
   // Whether the session should never expire.
   // Optional field that defaults to false for security.
   bool never_expire = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message CreateSessionResponse {
+  // The authenticated user information.
+  User user = 1;
+
+  // Token expiration time.
+  google.protobuf.Timestamp expires_at = 2;
 }
 
 message DeleteSessionRequest {}

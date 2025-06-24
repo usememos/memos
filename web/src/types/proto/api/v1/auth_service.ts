@@ -7,6 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Empty } from "../../google/protobuf/empty";
+import { Timestamp } from "../../google/protobuf/timestamp";
 import { User } from "./user_service";
 
 export const protobufPackage = "memos.api.v1";
@@ -15,7 +16,11 @@ export interface GetCurrentSessionRequest {
 }
 
 export interface GetCurrentSessionResponse {
-  user?: User | undefined;
+  user?:
+    | User
+    | undefined;
+  /** Current session expiration time (if available). */
+  expiresAt?: Date | undefined;
 }
 
 export interface CreateSessionRequest {
@@ -67,6 +72,15 @@ export interface CreateSessionRequest_SSOCredentials {
   redirectUri: string;
 }
 
+export interface CreateSessionResponse {
+  /** The authenticated user information. */
+  user?:
+    | User
+    | undefined;
+  /** Token expiration time. */
+  expiresAt?: Date | undefined;
+}
+
 export interface DeleteSessionRequest {
 }
 
@@ -105,13 +119,16 @@ export const GetCurrentSessionRequest: MessageFns<GetCurrentSessionRequest> = {
 };
 
 function createBaseGetCurrentSessionResponse(): GetCurrentSessionResponse {
-  return { user: undefined };
+  return { user: undefined, expiresAt: undefined };
 }
 
 export const GetCurrentSessionResponse: MessageFns<GetCurrentSessionResponse> = {
   encode(message: GetCurrentSessionResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    if (message.expiresAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.expiresAt), writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -131,6 +148,14 @@ export const GetCurrentSessionResponse: MessageFns<GetCurrentSessionResponse> = 
           message.user = User.decode(reader, reader.uint32());
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.expiresAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -146,6 +171,7 @@ export const GetCurrentSessionResponse: MessageFns<GetCurrentSessionResponse> = 
   fromPartial(object: DeepPartial<GetCurrentSessionResponse>): GetCurrentSessionResponse {
     const message = createBaseGetCurrentSessionResponse();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.expiresAt = object.expiresAt ?? undefined;
     return message;
   },
 };
@@ -352,6 +378,64 @@ export const CreateSessionRequest_SSOCredentials: MessageFns<CreateSessionReques
   },
 };
 
+function createBaseCreateSessionResponse(): CreateSessionResponse {
+  return { user: undefined, expiresAt: undefined };
+}
+
+export const CreateSessionResponse: MessageFns<CreateSessionResponse> = {
+  encode(message: CreateSessionResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    if (message.expiresAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.expiresAt), writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateSessionResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateSessionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.expiresAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<CreateSessionResponse>): CreateSessionResponse {
+    return CreateSessionResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<CreateSessionResponse>): CreateSessionResponse {
+    const message = createBaseCreateSessionResponse();
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.expiresAt = object.expiresAt ?? undefined;
+    return message;
+  },
+};
+
 function createBaseDeleteSessionRequest(): DeleteSessionRequest {
   return {};
 }
@@ -399,7 +483,7 @@ export const AuthServiceDefinition = {
       name: "GetCurrentSession",
       requestType: GetCurrentSessionRequest,
       requestStream: false,
-      responseType: User,
+      responseType: GetCurrentSessionResponse,
       responseStream: false,
       options: {
         _unknownFields: {
@@ -450,7 +534,7 @@ export const AuthServiceDefinition = {
       name: "CreateSession",
       requestType: CreateSessionRequest,
       requestStream: false,
-      responseType: User,
+      responseType: CreateSessionResponse,
       responseStream: false,
       options: {
         _unknownFields: {
@@ -549,6 +633,18 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = Math.trunc(date.getTime() / 1_000);
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (t.seconds || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new globalThis.Date(millis);
+}
 
 export interface MessageFns<T> {
   encode(message: T, writer?: BinaryWriter): BinaryWriter;

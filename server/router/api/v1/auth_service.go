@@ -29,7 +29,7 @@ const (
 	unmatchedUsernameAndPasswordError = "unmatched username and password"
 )
 
-func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrentSessionRequest) (*v1pb.User, error) {
+func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrentSessionRequest) (*v1pb.GetCurrentSessionResponse, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
@@ -50,10 +50,12 @@ func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrent
 		}
 	}
 
-	return convertUserFromStore(user), nil
+	return &v1pb.GetCurrentSessionResponse{
+		User: convertUserFromStore(user),
+	}, nil
 }
 
-func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSessionRequest) (*v1pb.User, error) {
+func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSessionRequest) (*v1pb.CreateSessionResponse, error) {
 	var existingUser *store.User
 	if passwordCredentials := request.GetPasswordCredentials(); passwordCredentials != nil {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
@@ -173,7 +175,11 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 	if err := s.doSignIn(ctx, existingUser, expireTime); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to sign in, error: %v", err)
 	}
-	return convertUserFromStore(existingUser), nil
+
+	return &v1pb.CreateSessionResponse{
+		User:      convertUserFromStore(existingUser),
+		ExpiresAt: timestamppb.New(expireTime),
+	}, nil
 }
 
 func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) error {

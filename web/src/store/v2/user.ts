@@ -231,7 +231,16 @@ const userStore = (() => {
 
 export const initialUserStore = async () => {
   try {
-    const currentUser = await authServiceClient.getCurrentSession({});
+    const { user: currentUser } = await authServiceClient.getCurrentSession({});
+    if (!currentUser) {
+      // If no user is authenticated, we can skip the rest of the initialization.
+      userStore.state.setPartial({
+        currentUser: undefined,
+        userSetting: undefined,
+        userMapByName: {},
+      });
+      return;
+    }
     const userSetting = await userServiceClient.getUserSetting({ name: currentUser.name });
     userStore.state.setPartial({
       currentUser: currentUser.name,

@@ -31,10 +31,10 @@ const (
 type AuthServiceClient interface {
 	// GetCurrentSession returns the current active session information.
 	// This method is idempotent and safe, suitable for checking current session state.
-	GetCurrentSession(ctx context.Context, in *GetCurrentSessionRequest, opts ...grpc.CallOption) (*User, error)
+	GetCurrentSession(ctx context.Context, in *GetCurrentSessionRequest, opts ...grpc.CallOption) (*GetCurrentSessionResponse, error)
 	// CreateSession authenticates a user and creates a new session.
 	// Returns the authenticated user information upon successful authentication.
-	CreateSession(ctx context.Context, in *CreateSessionRequest, opts ...grpc.CallOption) (*User, error)
+	CreateSession(ctx context.Context, in *CreateSessionRequest, opts ...grpc.CallOption) (*CreateSessionResponse, error)
 	// DeleteSession terminates the current user session.
 	// This is an idempotent operation that invalidates the user's authentication.
 	DeleteSession(ctx context.Context, in *DeleteSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -48,9 +48,9 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) GetCurrentSession(ctx context.Context, in *GetCurrentSessionRequest, opts ...grpc.CallOption) (*User, error) {
+func (c *authServiceClient) GetCurrentSession(ctx context.Context, in *GetCurrentSessionRequest, opts ...grpc.CallOption) (*GetCurrentSessionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(User)
+	out := new(GetCurrentSessionResponse)
 	err := c.cc.Invoke(ctx, AuthService_GetCurrentSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -58,9 +58,9 @@ func (c *authServiceClient) GetCurrentSession(ctx context.Context, in *GetCurren
 	return out, nil
 }
 
-func (c *authServiceClient) CreateSession(ctx context.Context, in *CreateSessionRequest, opts ...grpc.CallOption) (*User, error) {
+func (c *authServiceClient) CreateSession(ctx context.Context, in *CreateSessionRequest, opts ...grpc.CallOption) (*CreateSessionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(User)
+	out := new(CreateSessionResponse)
 	err := c.cc.Invoke(ctx, AuthService_CreateSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -84,10 +84,10 @@ func (c *authServiceClient) DeleteSession(ctx context.Context, in *DeleteSession
 type AuthServiceServer interface {
 	// GetCurrentSession returns the current active session information.
 	// This method is idempotent and safe, suitable for checking current session state.
-	GetCurrentSession(context.Context, *GetCurrentSessionRequest) (*User, error)
+	GetCurrentSession(context.Context, *GetCurrentSessionRequest) (*GetCurrentSessionResponse, error)
 	// CreateSession authenticates a user and creates a new session.
 	// Returns the authenticated user information upon successful authentication.
-	CreateSession(context.Context, *CreateSessionRequest) (*User, error)
+	CreateSession(context.Context, *CreateSessionRequest) (*CreateSessionResponse, error)
 	// DeleteSession terminates the current user session.
 	// This is an idempotent operation that invalidates the user's authentication.
 	DeleteSession(context.Context, *DeleteSessionRequest) (*emptypb.Empty, error)
@@ -101,10 +101,10 @@ type AuthServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServiceServer struct{}
 
-func (UnimplementedAuthServiceServer) GetCurrentSession(context.Context, *GetCurrentSessionRequest) (*User, error) {
+func (UnimplementedAuthServiceServer) GetCurrentSession(context.Context, *GetCurrentSessionRequest) (*GetCurrentSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCurrentSession not implemented")
 }
-func (UnimplementedAuthServiceServer) CreateSession(context.Context, *CreateSessionRequest) (*User, error) {
+func (UnimplementedAuthServiceServer) CreateSession(context.Context, *CreateSessionRequest) (*CreateSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSession not implemented")
 }
 func (UnimplementedAuthServiceServer) DeleteSession(context.Context, *DeleteSessionRequest) (*emptypb.Empty, error) {
