@@ -59,7 +59,7 @@ func (s *APIV1Service) ListShortcuts(ctx context.Context, request *v1pb.ListShor
 
 	userSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &userID,
-		Key:    storepb.UserSettingKey_SHORTCUTS,
+		Key:    storepb.UserSetting_SHORTCUTS,
 	})
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func (s *APIV1Service) GetShortcut(ctx context.Context, request *v1pb.GetShortcu
 
 	userSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &userID,
-		Key:    storepb.UserSettingKey_SHORTCUTS,
+		Key:    storepb.UserSetting_SHORTCUTS,
 	})
 	if err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateS
 
 	userSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &userID,
-		Key:    storepb.UserSettingKey_SHORTCUTS,
+		Key:    storepb.UserSetting_SHORTCUTS,
 	})
 	if err != nil {
 		return nil, err
@@ -167,7 +167,7 @@ func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateS
 	if userSetting == nil {
 		userSetting = &storepb.UserSetting{
 			UserId: userID,
-			Key:    storepb.UserSettingKey_SHORTCUTS,
+			Key:    storepb.UserSetting_SHORTCUTS,
 			Value: &storepb.UserSetting_Shortcuts{
 				Shortcuts: &storepb.ShortcutsUserSetting{
 					Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{},
@@ -215,7 +215,7 @@ func (s *APIV1Service) UpdateShortcut(ctx context.Context, request *v1pb.UpdateS
 
 	userSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &userID,
-		Key:    storepb.UserSettingKey_SHORTCUTS,
+		Key:    storepb.UserSetting_SHORTCUTS,
 	})
 	if err != nil {
 		return nil, err
@@ -284,7 +284,7 @@ func (s *APIV1Service) DeleteShortcut(ctx context.Context, request *v1pb.DeleteS
 
 	userSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &userID,
-		Key:    storepb.UserSettingKey_SHORTCUTS,
+		Key:    storepb.UserSetting_SHORTCUTS,
 	})
 	if err != nil {
 		return nil, err

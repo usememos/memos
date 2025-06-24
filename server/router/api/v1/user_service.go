@@ -364,12 +364,13 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUser
 	userSettingMessage.Name = fmt.Sprintf("users/%d", userID)
 
 	for _, setting := range userSettings {
-		if setting.Key == storepb.UserSettingKey_LOCALE {
-			userSettingMessage.Locale = setting.GetLocale()
-		} else if setting.Key == storepb.UserSettingKey_APPEARANCE {
-			userSettingMessage.Appearance = setting.GetAppearance()
-		} else if setting.Key == storepb.UserSettingKey_MEMO_VISIBILITY {
-			userSettingMessage.MemoVisibility = setting.GetMemoVisibility()
+		if setting.Key == storepb.UserSetting_GENERAL {
+			general := setting.GetGeneral()
+			if general != nil {
+				userSettingMessage.Locale = general.Locale
+				userSettingMessage.Appearance = general.Appearance
+				userSettingMessage.MemoVisibility = general.MemoVisibility
+			}
 		}
 	}
 	return userSettingMessage, nil
@@ -396,40 +397,53 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
 
+	// Get the current general setting
+	existingGeneralSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
+		UserID: &userID,
+		Key:    storepb.UserSetting_GENERAL,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get existing general setting: %v", err)
+	}
+
+	// Create or update the general setting
+	generalSetting := &storepb.GeneralUserSetting{
+		Locale:         "en",
+		Appearance:     "system",
+		MemoVisibility: "PRIVATE",
+	}
+
+	// If there's an existing setting, use its values as defaults
+	if existingGeneralSetting != nil && existingGeneralSetting.GetGeneral() != nil {
+		existing := existingGeneralSetting.GetGeneral()
+		generalSetting.Locale = existing.Locale
+		generalSetting.Appearance = existing.Appearance
+		generalSetting.MemoVisibility = existing.MemoVisibility
+	}
+
+	// Apply updates based on the update mask
 	for _, field := range request.UpdateMask.Paths {
-		if field == "locale" {
-			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
-				UserId: userID,
-				Key:    storepb.UserSettingKey_LOCALE,
-				Value: &storepb.UserSetting_Locale{
-					Locale: request.Setting.Locale,
-				},
-			}); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
-			}
-		} else if field == "appearance" {
-			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
-				UserId: userID,
-				Key:    storepb.UserSettingKey_APPEARANCE,
-				Value: &storepb.UserSetting_Appearance{
-					Appearance: request.Setting.Appearance,
-				},
-			}); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
-			}
-		} else if field == "memo_visibility" {
-			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
-				UserId: userID,
-				Key:    storepb.UserSettingKey_MEMO_VISIBILITY,
-				Value: &storepb.UserSetting_MemoVisibility{
-					MemoVisibility: request.Setting.MemoVisibility,
-				},
-			}); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
-			}
-		} else {
+		switch field {
+		case "locale":
+			generalSetting.Locale = request.Setting.Locale
+		case "appearance":
+			generalSetting.Appearance = request.Setting.Appearance
+		case "memo_visibility":
+			generalSetting.MemoVisibility = request.Setting.MemoVisibility
+		default:
 			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", field)
 		}
+	}
+
+	// Upsert the general setting
+	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: userID,
+		Key:    storepb.UserSetting_GENERAL,
+		Value: &storepb.UserSetting_General{
+			General: generalSetting,
+		},
+	}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
 	}
 
 	return s.GetUserSetting(ctx, &v1pb.GetUserSettingRequest{Name: request.Setting.Name})
@@ -595,7 +609,7 @@ func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.
 	}
 	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: currentUser.ID,
-		Key:    storepb.UserSettingKey_ACCESS_TOKENS,
+		Key:    storepb.UserSetting_ACCESS_TOKENS,
 		Value: &storepb.UserSetting_AccessTokens{
 			AccessTokens: &storepb.AccessTokensUserSetting{
 				AccessTokens: updatedUserAccessTokens,
@@ -722,7 +736,7 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 
 	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSettingKey_ACCESS_TOKENS,
+		Key:    storepb.UserSetting_ACCESS_TOKENS,
 		Value: &storepb.UserSetting_AccessTokens{
 			AccessTokens: &storepb.AccessTokensUserSetting{
 				AccessTokens: userAccessTokens,

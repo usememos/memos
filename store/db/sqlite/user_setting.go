@@ -26,7 +26,7 @@ func (d *DB) UpsertUserSetting(ctx context.Context, upsert *store.UserSetting) (
 func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) ([]*store.UserSetting, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
-	if v := find.Key; v != storepb.UserSettingKey_USER_SETTING_KEY_UNSPECIFIED {
+	if v := find.Key; v != storepb.UserSetting_KEY_UNSPECIFIED {
 		where, args = append(where, "key = ?"), append(args, v.String())
 	}
 	if v := find.UserID; v != nil {
@@ -57,7 +57,7 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 		); err != nil {
 			return nil, err
 		}
-		userSetting.Key = storepb.UserSettingKey(storepb.UserSettingKey_value[keyString])
+		userSetting.Key = storepb.UserSetting_Key(storepb.UserSetting_Key_value[keyString])
 		userSettingList = append(userSettingList, userSetting)
 	}
 	if err := rows.Err(); err != nil {
