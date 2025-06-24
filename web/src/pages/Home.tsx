@@ -54,17 +54,22 @@ const Home = () => {
   }, [user, memoFilterStore.filters, memoFilterStore.orderByTimeAsc]);
 
   return (
-    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
+    <section className="@container w-full h-[100vh] flex flex-col justify-start items-center">
       {!md && (
         <MobileHeader>
           <HomeSidebarDrawer />
         </MobileHeader>
       )}
-      <div className={clsx("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
-        <div className={clsx(md ? "w-[calc(100%-15rem)]" : "w-full")}>
+      <div className={clsx("w-full flex flex-row justify-start items-start", md ? "h-full" : "h-[calc(100vh-60px)]")}>
+        {md && (
+          <div className="sticky top-0 left-0 shrink-0 -mt-6 h-full w-64 px-4 border-r border-zinc-200 dark:border-zinc-800">
+            <HomeSidebar className="py-6" />
+          </div>
+        )}
+        <div className={clsx("px-4 sm:px-6 sm:pt-3 md:pt-6 flex flex-col h-full overflow-auto", md ? "w-[calc(100%-15rem)]" : "w-full")}>
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
           <MemoFilters />
-          <div className="flex flex-col justify-start items-start w-full max-w-full">
+          <div className="flex flex-col justify-start items-start w-full max-w-full overflow-scroll">
             <PagedMemoList
               renderer={(memo: Memo) => (
                 <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned showExport compact />
@@ -83,11 +88,6 @@ const Home = () => {
             />
           </div>
         </div>
-        {md && (
-          <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">
-            <HomeSidebar className="py-6" />
-          </div>
-        )}
       </div>
     </section>
   );

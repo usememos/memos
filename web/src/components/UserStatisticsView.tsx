@@ -109,9 +109,10 @@ const UserStatisticsView = () => {
         >
           <div className="w-auto flex justify-start items-center mr-1">
             <LinkIcon className="w-4 h-auto mr-1" />
-            <span className="block text-sm">{t("memo.links")}</span>
           </div>
-          <span className="text-sm truncate">{memoStats.link}</span>
+          <Tooltip title={t("memo.links")} placement="top" arrow>
+            <span className="text-sm truncate">{memoStats.link}</span>
+          </Tooltip>
         </div>
         <div
           className={clsx("w-auto border dark:border-zinc-800 pl-1 pr-1.5 rounded-md flex justify-between items-center")}
@@ -119,10 +120,9 @@ const UserStatisticsView = () => {
         >
           <div className="w-auto flex justify-start items-center mr-1">
             {memoStats.incompleteTasks > 0 ? <ListTodoIcon className="w-4 h-auto mr-1" /> : <CheckCircleIcon className="w-4 h-auto mr-1" />}
-            <span className="block text-sm">{t("memo.to-do")}</span>
           </div>
           {memoStats.incompleteTasks > 0 ? (
-            <Tooltip title={"Done / Total"} placement="top" arrow>
+            <Tooltip title={t("memo.to-do")} placement="top" arrow>
               <div className="text-sm flex flex-row items-start justify-center">
                 <span className="truncate">{memoStats.taskList - memoStats.incompleteTasks}</span>
                 <span className="font-mono opacity-50">/</span>
@@ -130,7 +130,9 @@ const UserStatisticsView = () => {
               </div>
             </Tooltip>
           ) : (
-            <span className="text-sm truncate">{memoStats.taskList}</span>
+            <Tooltip title={t("memo.to-do")} placement="top" arrow>
+              <span className="text-sm truncate">{memoStats.taskList}</span>
+            </Tooltip>
           )}
         </div>
         <div
@@ -139,9 +141,10 @@ const UserStatisticsView = () => {
         >
           <div className="w-auto flex justify-start items-center mr-1">
             <Code2Icon className="w-4 h-auto mr-1" />
-            <span className="block text-sm">{t("memo.code")}</span>
           </div>
-          <span className="text-sm truncate">{memoStats.code}</span>
+          <Tooltip title={t("memo.code")} placement="top" arrow>
+            <span className="text-sm truncate">{memoStats.code}</span>
+          </Tooltip>
         </div>
       </div>
     </div>
