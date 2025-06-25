@@ -231,6 +231,14 @@
       "title": "存取令牌",
       "token": "令牌"
     },
+    "user-sessions-section": {
+      "title": "使用者會话",
+      "description": "此處列出您帳號的所有使用者會话。",
+      "device": "裝置",
+      "last-active": "最後活躍時間",
+      "expires": "過期時間",
+      "current": "當前裝置"
+    },
     "account-section": {
       "change-password": "變更密碼",
       "email-note": "非必須的",
