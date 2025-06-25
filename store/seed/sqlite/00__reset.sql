@@ -8,5 +8,4 @@ DELETE FROM resource;
 DELETE FROM activity;
 DELETE FROM idp;
 DELETE FROM inbox;
-DELETE FROM webhook;
 DELETE FROM reaction;
