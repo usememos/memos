@@ -229,16 +229,6 @@ func (s *APIV1Service) DeleteSession(ctx context.Context, _ *v1pb.DeleteSessionR
 		}
 	}
 
-	// Check if we have an access token (from header-based auth)
-	if accessToken, ok := ctx.Value(accessTokenContextKey).(string); ok && accessToken != "" {
-		// Delete the access token from the store
-		if _, err := s.DeleteUserAccessToken(ctx, &v1pb.DeleteUserAccessTokenRequest{
-			Name: fmt.Sprintf("%s%d/accessTokens/%s", UserNamePrefix, user.ID, accessToken),
-		}); err != nil {
-			slog.Error("failed to delete access token", "error", err)
-		}
-	}
-
 	if err := s.clearAuthCookies(ctx); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to clear auth cookies, error: %v", err)
 	}
