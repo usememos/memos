@@ -476,12 +476,11 @@ type SessionsUserSetting_Session struct {
 	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	// Timestamp when the session was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Timestamp when the session expires.
-	ExpireTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=expire_time,json=expireTime,proto3" json:"expire_time,omitempty"`
 	// Timestamp when the session was last accessed.
-	LastAccessedTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=last_accessed_time,json=lastAccessedTime,proto3" json:"last_accessed_time,omitempty"`
+	// Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+	LastAccessedTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_accessed_time,json=lastAccessedTime,proto3" json:"last_accessed_time,omitempty"`
 	// Client information associated with this session.
-	ClientInfo    *SessionsUserSetting_ClientInfo `protobuf:"bytes,5,opt,name=client_info,json=clientInfo,proto3" json:"client_info,omitempty"`
+	ClientInfo    *SessionsUserSetting_ClientInfo `protobuf:"bytes,4,opt,name=client_info,json=clientInfo,proto3" json:"client_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -526,13 +525,6 @@ func (x *SessionsUserSetting_Session) GetSessionId() string {
 func (x *SessionsUserSetting_Session) GetCreateTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreateTime
-	}
-	return nil
-}
-
-func (x *SessionsUserSetting_Session) GetExpireTime() *timestamppb.Timestamp {
-	if x != nil {
-		return x.ExpireTime
 	}
 	return nil
 }
@@ -836,18 +828,16 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\n" +
 	"appearance\x18\x02 \x01(\tR\n" +
 	"appearance\x12'\n" +
-	"\x0fmemo_visibility\x18\x03 \x01(\tR\x0ememoVisibility\"\xb0\x04\n" +
+	"\x0fmemo_visibility\x18\x03 \x01(\tR\x0ememoVisibility\"\xf3\x03\n" +
 	"\x13SessionsUserSetting\x12D\n" +
-	"\bsessions\x18\x01 \x03(\v2(.memos.store.SessionsUserSetting.SessionR\bsessions\x1a\xba\x02\n" +
+	"\bsessions\x18\x01 \x03(\v2(.memos.store.SessionsUserSetting.SessionR\bsessions\x1a\xfd\x01\n" +
 	"\aSession\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12;\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\x12;\n" +
-	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"expireTime\x12H\n" +
-	"\x12last_accessed_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x10lastAccessedTime\x12L\n" +
-	"\vclient_info\x18\x05 \x01(\v2+.memos.store.SessionsUserSetting.ClientInfoR\n" +
+	"createTime\x12H\n" +
+	"\x12last_accessed_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x10lastAccessedTime\x12L\n" +
+	"\vclient_info\x18\x04 \x01(\v2+.memos.store.SessionsUserSetting.ClientInfoR\n" +
 	"clientInfo\x1a\x95\x01\n" +
 	"\n" +
 	"ClientInfo\x12\x1d\n" +
@@ -919,14 +909,13 @@ var file_store_user_setting_proto_depIdxs = []int32{
 	10, // 8: memos.store.ShortcutsUserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting.Shortcut
 	11, // 9: memos.store.WebhooksUserSetting.webhooks:type_name -> memos.store.WebhooksUserSetting.Webhook
 	12, // 10: memos.store.SessionsUserSetting.Session.create_time:type_name -> google.protobuf.Timestamp
-	12, // 11: memos.store.SessionsUserSetting.Session.expire_time:type_name -> google.protobuf.Timestamp
-	12, // 12: memos.store.SessionsUserSetting.Session.last_accessed_time:type_name -> google.protobuf.Timestamp
-	8,  // 13: memos.store.SessionsUserSetting.Session.client_info:type_name -> memos.store.SessionsUserSetting.ClientInfo
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	12, // 11: memos.store.SessionsUserSetting.Session.last_accessed_time:type_name -> google.protobuf.Timestamp
+	8,  // 12: memos.store.SessionsUserSetting.Session.client_info:type_name -> memos.store.SessionsUserSetting.ClientInfo
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_store_user_setting_proto_init() }

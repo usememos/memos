@@ -650,7 +650,6 @@ func (s *APIV1Service) ListUserSessions(ctx context.Context, request *v1pb.ListU
 			Name:             fmt.Sprintf("users/%d/sessions/%s", userID, userSession.SessionId),
 			SessionId:        userSession.SessionId,
 			CreateTime:       userSession.CreateTime,
-			ExpireTime:       userSession.ExpireTime,
 			LastAccessedTime: userSession.LastAccessedTime,
 		}
 
@@ -715,7 +714,6 @@ func (s *APIV1Service) UpsertUserSession(ctx context.Context, userID int32, sess
 	session := &storepb.SessionsUserSetting_Session{
 		SessionId:        sessionID,
 		CreateTime:       timestamppb.Now(),
-		ExpireTime:       timestamppb.New(time.Now().Add(30 * 24 * time.Hour)), // 30 days default
 		LastAccessedTime: timestamppb.Now(),
 		ClientInfo:       clientInfo,
 	}

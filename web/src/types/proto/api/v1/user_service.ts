@@ -365,11 +365,10 @@ export interface UserSession {
   createTime?:
     | Date
     | undefined;
-  /** The timestamp when the session expires. */
-  expireTime?:
-    | Date
-    | undefined;
-  /** The timestamp when the session was last accessed. */
+  /**
+   * The timestamp when the session was last accessed.
+   * Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+   */
   lastAccessedTime?:
     | Date
     | undefined;
@@ -2073,14 +2072,7 @@ export const DeleteUserAccessTokenRequest: MessageFns<DeleteUserAccessTokenReque
 };
 
 function createBaseUserSession(): UserSession {
-  return {
-    name: "",
-    sessionId: "",
-    createTime: undefined,
-    expireTime: undefined,
-    lastAccessedTime: undefined,
-    clientInfo: undefined,
-  };
+  return { name: "", sessionId: "", createTime: undefined, lastAccessedTime: undefined, clientInfo: undefined };
 }
 
 export const UserSession: MessageFns<UserSession> = {
@@ -2094,14 +2086,11 @@ export const UserSession: MessageFns<UserSession> = {
     if (message.createTime !== undefined) {
       Timestamp.encode(toTimestamp(message.createTime), writer.uint32(26).fork()).join();
     }
-    if (message.expireTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.expireTime), writer.uint32(34).fork()).join();
-    }
     if (message.lastAccessedTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.lastAccessedTime), writer.uint32(42).fork()).join();
+      Timestamp.encode(toTimestamp(message.lastAccessedTime), writer.uint32(34).fork()).join();
     }
     if (message.clientInfo !== undefined) {
-      UserSession_ClientInfo.encode(message.clientInfo, writer.uint32(50).fork()).join();
+      UserSession_ClientInfo.encode(message.clientInfo, writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -2142,19 +2131,11 @@ export const UserSession: MessageFns<UserSession> = {
             break;
           }
 
-          message.expireTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.lastAccessedTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 5: {
           if (tag !== 42) {
-            break;
-          }
-
-          message.lastAccessedTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
             break;
           }
 
@@ -2178,7 +2159,6 @@ export const UserSession: MessageFns<UserSession> = {
     message.name = object.name ?? "";
     message.sessionId = object.sessionId ?? "";
     message.createTime = object.createTime ?? undefined;
-    message.expireTime = object.expireTime ?? undefined;
     message.lastAccessedTime = object.lastAccessedTime ?? undefined;
     message.clientInfo = (object.clientInfo !== undefined && object.clientInfo !== null)
       ? UserSession_ClientInfo.fromPartial(object.clientInfo)

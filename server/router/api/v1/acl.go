@@ -203,13 +203,16 @@ func (in *GRPCAuthInterceptor) updateSessionLastAccessed(ctx context.Context, us
 	return in.Store.UpdateUserSessionLastAccessed(ctx, userID, sessionID, timestamppb.Now())
 }
 
-// validateUserSession checks if a session exists and is still valid.
+// validateUserSession checks if a session exists and is still valid using sliding expiration.
 func validateUserSession(sessionID string, userSessions []*storepb.SessionsUserSetting_Session) bool {
 	for _, session := range userSessions {
 		if sessionID == session.SessionId {
-			// Check if session has expired
-			if session.ExpireTime != nil && session.ExpireTime.AsTime().Before(time.Now()) {
-				return false
+			// Use sliding expiration: check if last_accessed_time + 2 weeks > current_time
+			if session.LastAccessedTime != nil {
+				expirationTime := session.LastAccessedTime.AsTime().Add(SessionSlidingDuration)
+				if expirationTime.Before(time.Now()) {
+					return false
+				}
 			}
 			return true
 		}

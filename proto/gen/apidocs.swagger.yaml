@@ -3282,21 +3282,18 @@ definitions:
       ssoCredentials:
         $ref: '#/definitions/CreateSessionRequestSSOCredentials'
         description: SSO provider authentication method.
-      neverExpire:
-        type: boolean
-        description: |-
-          Whether the session should never expire.
-          Optional field that defaults to false for security.
   v1CreateSessionResponse:
     type: object
     properties:
       user:
         $ref: '#/definitions/v1User'
         description: The authenticated user information.
-      expiresAt:
+      lastAccessedAt:
         type: string
         format: date-time
-        description: Token expiration time.
+        description: |-
+          Last time the session was accessed.
+          Used for sliding expiration calculation (last_accessed_time + 2 weeks).
   v1EmbeddedContentNode:
     type: object
     properties:
@@ -3316,10 +3313,12 @@ definitions:
     properties:
       user:
         $ref: '#/definitions/v1User'
-      expiresAt:
+      lastAccessedAt:
         type: string
         format: date-time
-        description: Current session expiration time (if available).
+        description: |-
+          Last time the session was accessed.
+          Used for sliding expiration calculation (last_accessed_time + 2 weeks).
   v1HTMLElementNode:
     type: object
     properties:
@@ -4152,15 +4151,12 @@ definitions:
         format: date-time
         description: The timestamp when the session was created.
         readOnly: true
-      expireTime:
-        type: string
-        format: date-time
-        description: The timestamp when the session expires.
-        readOnly: true
       lastAccessedTime:
         type: string
         format: date-time
-        description: The timestamp when the session was last accessed.
+        description: |-
+          The timestamp when the session was last accessed.
+          Used for sliding expiration calculation (last_accessed_time + 2 weeks).
         readOnly: true
       clientInfo:
         $ref: '#/definitions/v1UserSessionClientInfo'

@@ -19,11 +19,10 @@ const (
 	KeyID = "v1"
 	// AccessTokenAudienceName is the audience name of the access token.
 	AccessTokenAudienceName = "user.access-token"
-	AccessTokenDuration     = 7 * 24 * time.Hour
+	// SessionSlidingDuration is the sliding expiration duration for user sessions (2 weeks).
+	// Sessions are considered valid if last_accessed_time + SessionSlidingDuration > current_time.
+	SessionSlidingDuration = 14 * 24 * time.Hour
 
-	// CookieExpDuration expires slightly earlier than the jwt expiration. Client would be logged out if the user
-	// cookie expires, thus the client would always logout first before attempting to make a request with the expired jwt.
-	CookieExpDuration = AccessTokenDuration - 1*time.Minute
 	// SessionCookieName is the cookie name of user session ID.
 	SessionCookieName = "user_session"
 )

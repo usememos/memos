@@ -60,6 +60,18 @@ const UserSessionsSection = () => {
     return parts.length > 0 ? parts.join(" • ") : "Unknown Device";
   };
 
+  const getSessionExpirationDate = (session: UserSession) => {
+    if (!session.lastAccessedTime) return null;
+    // Calculate expiration as last_accessed_time + 2 weeks (14 days)
+    const expirationDate = new Date(session.lastAccessedTime.getTime() + 14 * 24 * 60 * 60 * 1000);
+    return expirationDate;
+  };
+
+  const isSessionExpired = (session: UserSession) => {
+    const expirationDate = getSessionExpirationDate(session);
+    return expirationDate ? expirationDate < new Date() : false;
+  };
+
   const isCurrentSession = (session: UserSession) => {
     // A simple heuristic: the most recently accessed session is likely the current one
     if (userSessions.length === 0) return false;
@@ -126,7 +138,13 @@ const UserSessionsSection = () => {
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
-                        {userSession.expireTime?.toLocaleString() ?? t("setting.user-sessions-section.never")}
+                        <div className="flex items-center space-x-1">
+                          <ClockIcon className="w-4 h-4" />
+                          <span>
+                            {getSessionExpirationDate(userSession)?.toLocaleString() ?? t("setting.user-sessions-section.never")}
+                            {isSessionExpired(userSession) && <span className="ml-2 text-red-600 text-xs">(Expired)</span>}
+                          </span>
+                        </div>
                       </td>
                       <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm">
                         <Button

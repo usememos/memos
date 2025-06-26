@@ -42,16 +42,20 @@ func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrent
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
 	}
 
-	// Update session last accessed time if we have a session ID
+	var lastAccessedAt *timestamppb.Timestamp
+	// Update session last accessed time if we have a session ID and get the current session info
 	if sessionID, ok := ctx.Value(sessionIDContextKey).(string); ok && sessionID != "" {
-		if err := s.Store.UpdateUserSessionLastAccessed(ctx, user.ID, sessionID, timestamppb.Now()); err != nil {
+		now := timestamppb.Now()
+		if err := s.Store.UpdateUserSessionLastAccessed(ctx, user.ID, sessionID, now); err != nil {
 			// Log error but don't fail the request
 			slog.Error("failed to update session last accessed time", "error", err)
 		}
+		lastAccessedAt = now
 	}
 
 	return &v1pb.GetCurrentSessionResponse{
-		User: convertUserFromStore(user),
+		User:           convertUserFromStore(user),
+		LastAccessedAt: lastAccessedAt,
 	}, nil
 }
 
@@ -167,18 +171,15 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 		return nil, status.Errorf(codes.PermissionDenied, "user has been archived with username %s", existingUser.Username)
 	}
 
-	expireTime := time.Now().Add(AccessTokenDuration)
-	if request.NeverExpire {
-		// Set the expire time to 100 years.
-		expireTime = time.Now().Add(100 * 365 * 24 * time.Hour)
-	}
+	// Default session expiration time is 100 year
+	expireTime := time.Now().Add(100 * 365 * 24 * time.Hour)
 	if err := s.doSignIn(ctx, existingUser, expireTime); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to sign in, error: %v", err)
 	}
 
 	return &v1pb.CreateSessionResponse{
-		User:      convertUserFromStore(existingUser),
-		ExpiresAt: timestamppb.New(expireTime),
+		User:           convertUserFromStore(existingUser),
+		LastAccessedAt: timestamppb.Now(),
 	}, nil
 }
 
@@ -190,7 +191,7 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 	}
 
 	// Track session in user settings
-	if err := s.trackUserSession(ctx, user.ID, sessionID, expireTime); err != nil {
+	if err := s.trackUserSession(ctx, user.ID, sessionID); err != nil {
 		// Log the error but don't fail the login if session tracking fails
 		// This ensures backward compatibility
 		slog.Error("failed to track user session", "error", err)
@@ -308,14 +309,13 @@ func (s *APIV1Service) GetCurrentUser(ctx context.Context) (*store.User, error) 
 }
 
 // Helper function to track user session for session management.
-func (s *APIV1Service) trackUserSession(ctx context.Context, userID int32, sessionID string, expireTime time.Time) error {
+func (s *APIV1Service) trackUserSession(ctx context.Context, userID int32, sessionID string) error {
 	// Extract client information from the context
 	clientInfo := s.extractClientInfo(ctx)
 
 	session := &storepb.SessionsUserSetting_Session{
 		SessionId:        sessionID,
 		CreateTime:       timestamppb.Now(),
-		ExpireTime:       timestamppb.New(expireTime),
 		LastAccessedTime: timestamppb.Now(),
 		ClientInfo:       clientInfo,
 	}

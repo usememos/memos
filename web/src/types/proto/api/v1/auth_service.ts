@@ -19,8 +19,11 @@ export interface GetCurrentSessionResponse {
   user?:
     | User
     | undefined;
-  /** Current session expiration time (if available). */
-  expiresAt?: Date | undefined;
+  /**
+   * Last time the session was accessed.
+   * Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+   */
+  lastAccessedAt?: Date | undefined;
 }
 
 export interface CreateSessionRequest {
@@ -29,14 +32,7 @@ export interface CreateSessionRequest {
     | CreateSessionRequest_PasswordCredentials
     | undefined;
   /** SSO provider authentication method. */
-  ssoCredentials?:
-    | CreateSessionRequest_SSOCredentials
-    | undefined;
-  /**
-   * Whether the session should never expire.
-   * Optional field that defaults to false for security.
-   */
-  neverExpire: boolean;
+  ssoCredentials?: CreateSessionRequest_SSOCredentials | undefined;
 }
 
 /** Nested message for password-based authentication credentials. */
@@ -77,8 +73,11 @@ export interface CreateSessionResponse {
   user?:
     | User
     | undefined;
-  /** Token expiration time. */
-  expiresAt?: Date | undefined;
+  /**
+   * Last time the session was accessed.
+   * Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+   */
+  lastAccessedAt?: Date | undefined;
 }
 
 export interface DeleteSessionRequest {
@@ -119,7 +118,7 @@ export const GetCurrentSessionRequest: MessageFns<GetCurrentSessionRequest> = {
 };
 
 function createBaseGetCurrentSessionResponse(): GetCurrentSessionResponse {
-  return { user: undefined, expiresAt: undefined };
+  return { user: undefined, lastAccessedAt: undefined };
 }
 
 export const GetCurrentSessionResponse: MessageFns<GetCurrentSessionResponse> = {
@@ -127,8 +126,8 @@ export const GetCurrentSessionResponse: MessageFns<GetCurrentSessionResponse> = 
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).join();
     }
-    if (message.expiresAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.expiresAt), writer.uint32(18).fork()).join();
+    if (message.lastAccessedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.lastAccessedAt), writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -153,7 +152,7 @@ export const GetCurrentSessionResponse: MessageFns<GetCurrentSessionResponse> = 
             break;
           }
 
-          message.expiresAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.lastAccessedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -171,13 +170,13 @@ export const GetCurrentSessionResponse: MessageFns<GetCurrentSessionResponse> = 
   fromPartial(object: DeepPartial<GetCurrentSessionResponse>): GetCurrentSessionResponse {
     const message = createBaseGetCurrentSessionResponse();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
-    message.expiresAt = object.expiresAt ?? undefined;
+    message.lastAccessedAt = object.lastAccessedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseCreateSessionRequest(): CreateSessionRequest {
-  return { passwordCredentials: undefined, ssoCredentials: undefined, neverExpire: false };
+  return { passwordCredentials: undefined, ssoCredentials: undefined };
 }
 
 export const CreateSessionRequest: MessageFns<CreateSessionRequest> = {
@@ -187,9 +186,6 @@ export const CreateSessionRequest: MessageFns<CreateSessionRequest> = {
     }
     if (message.ssoCredentials !== undefined) {
       CreateSessionRequest_SSOCredentials.encode(message.ssoCredentials, writer.uint32(18).fork()).join();
-    }
-    if (message.neverExpire !== false) {
-      writer.uint32(24).bool(message.neverExpire);
     }
     return writer;
   },
@@ -217,14 +213,6 @@ export const CreateSessionRequest: MessageFns<CreateSessionRequest> = {
           message.ssoCredentials = CreateSessionRequest_SSOCredentials.decode(reader, reader.uint32());
           continue;
         }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.neverExpire = reader.bool();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -245,7 +233,6 @@ export const CreateSessionRequest: MessageFns<CreateSessionRequest> = {
     message.ssoCredentials = (object.ssoCredentials !== undefined && object.ssoCredentials !== null)
       ? CreateSessionRequest_SSOCredentials.fromPartial(object.ssoCredentials)
       : undefined;
-    message.neverExpire = object.neverExpire ?? false;
     return message;
   },
 };
@@ -379,7 +366,7 @@ export const CreateSessionRequest_SSOCredentials: MessageFns<CreateSessionReques
 };
 
 function createBaseCreateSessionResponse(): CreateSessionResponse {
-  return { user: undefined, expiresAt: undefined };
+  return { user: undefined, lastAccessedAt: undefined };
 }
 
 export const CreateSessionResponse: MessageFns<CreateSessionResponse> = {
@@ -387,8 +374,8 @@ export const CreateSessionResponse: MessageFns<CreateSessionResponse> = {
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).join();
     }
-    if (message.expiresAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.expiresAt), writer.uint32(18).fork()).join();
+    if (message.lastAccessedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.lastAccessedAt), writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -413,7 +400,7 @@ export const CreateSessionResponse: MessageFns<CreateSessionResponse> = {
             break;
           }
 
-          message.expiresAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.lastAccessedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -431,7 +418,7 @@ export const CreateSessionResponse: MessageFns<CreateSessionResponse> = {
   fromPartial(object: DeepPartial<CreateSessionResponse>): CreateSessionResponse {
     const message = createBaseCreateSessionResponse();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
-    message.expiresAt = object.expiresAt ?? undefined;
+    message.lastAccessedAt = object.lastAccessedAt ?? undefined;
     return message;
   },
 };

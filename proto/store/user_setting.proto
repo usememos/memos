@@ -48,12 +48,11 @@ message SessionsUserSetting {
     string session_id = 1;
     // Timestamp when the session was created.
     google.protobuf.Timestamp create_time = 2;
-    // Timestamp when the session expires.
-    google.protobuf.Timestamp expire_time = 3;
     // Timestamp when the session was last accessed.
-    google.protobuf.Timestamp last_accessed_time = 4;
+    // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+    google.protobuf.Timestamp last_accessed_time = 3;
     // Client information associated with this session.
-    ClientInfo client_info = 5;
+    ClientInfo client_info = 4;
   }
 
   message ClientInfo {

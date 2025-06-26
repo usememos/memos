@@ -253,7 +253,7 @@
     },
     "user-sessions-section": {
       "title": "Active Sessions",
-      "description": "A list of all active sessions for your account. You can revoke any session except the current one.",
+      "description": "A list of all active sessions for your account. Sessions automatically expire 2 weeks after the last activity. You can revoke any session except the current one.",
       "device": "Device",
       "location": "Location",
       "last-active": "Last Active",

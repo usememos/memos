@@ -481,14 +481,12 @@ message UserSession {
   // The timestamp when the session was created.
   google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // The timestamp when the session expires.
-  google.protobuf.Timestamp expire_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-
   // The timestamp when the session was last accessed.
-  google.protobuf.Timestamp last_accessed_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+  google.protobuf.Timestamp last_accessed_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Client information associated with this session.
-  ClientInfo client_info = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  ClientInfo client_info = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   message ClientInfo {
     // User agent string of the client.

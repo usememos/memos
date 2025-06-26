@@ -38,8 +38,9 @@ message GetCurrentSessionRequest {}
 message GetCurrentSessionResponse {
   User user = 1;
 
-  // Current session expiration time (if available).
-  google.protobuf.Timestamp expires_at = 2;
+  // Last time the session was accessed.
+  // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+  google.protobuf.Timestamp last_accessed_at = 2;
 }
 
 message CreateSessionRequest {
@@ -78,18 +79,15 @@ message CreateSessionRequest {
     // SSO provider authentication method.
     SSOCredentials sso_credentials = 2;
   }
-
-  // Whether the session should never expire.
-  // Optional field that defaults to false for security.
-  bool never_expire = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message CreateSessionResponse {
   // The authenticated user information.
   User user = 1;
 
-  // Token expiration time.
-  google.protobuf.Timestamp expires_at = 2;
+  // Last time the session was accessed.
+  // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+  google.protobuf.Timestamp last_accessed_at = 2;
 }
 
 message DeleteSessionRequest {}

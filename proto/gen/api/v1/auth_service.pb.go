@@ -63,10 +63,11 @@ func (*GetCurrentSessionRequest) Descriptor() ([]byte, []int) {
 type GetCurrentSessionResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	User  *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	// Current session expiration time (if available).
-	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Last time the session was accessed.
+	// Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+	LastAccessedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_accessed_at,json=lastAccessedAt,proto3" json:"last_accessed_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GetCurrentSessionResponse) Reset() {
@@ -106,9 +107,9 @@ func (x *GetCurrentSessionResponse) GetUser() *User {
 	return nil
 }
 
-func (x *GetCurrentSessionResponse) GetExpiresAt() *timestamppb.Timestamp {
+func (x *GetCurrentSessionResponse) GetLastAccessedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.ExpiresAt
+		return x.LastAccessedAt
 	}
 	return nil
 }
@@ -122,10 +123,7 @@ type CreateSessionRequest struct {
 	//
 	//	*CreateSessionRequest_PasswordCredentials_
 	//	*CreateSessionRequest_SsoCredentials
-	Credentials isCreateSessionRequest_Credentials `protobuf_oneof:"credentials"`
-	// Whether the session should never expire.
-	// Optional field that defaults to false for security.
-	NeverExpire   bool `protobuf:"varint,3,opt,name=never_expire,json=neverExpire,proto3" json:"never_expire,omitempty"`
+	Credentials   isCreateSessionRequest_Credentials `protobuf_oneof:"credentials"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -185,13 +183,6 @@ func (x *CreateSessionRequest) GetSsoCredentials() *CreateSessionRequest_SSOCred
 	return nil
 }
 
-func (x *CreateSessionRequest) GetNeverExpire() bool {
-	if x != nil {
-		return x.NeverExpire
-	}
-	return false
-}
-
 type isCreateSessionRequest_Credentials interface {
 	isCreateSessionRequest_Credentials()
 }
@@ -214,10 +205,11 @@ type CreateSessionResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The authenticated user information.
 	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	// Token expiration time.
-	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Last time the session was accessed.
+	// Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+	LastAccessedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_accessed_at,json=lastAccessedAt,proto3" json:"last_accessed_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreateSessionResponse) Reset() {
@@ -257,9 +249,9 @@ func (x *CreateSessionResponse) GetUser() *User {
 	return nil
 }
 
-func (x *CreateSessionResponse) GetExpiresAt() *timestamppb.Timestamp {
+func (x *CreateSessionResponse) GetLastAccessedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.ExpiresAt
+		return x.LastAccessedAt
 	}
 	return nil
 }
@@ -429,15 +421,13 @@ var File_api_v1_auth_service_proto protoreflect.FileDescriptor
 const file_api_v1_auth_service_proto_rawDesc = "" +
 	"\n" +
 	"\x19api/v1/auth_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1a\n" +
-	"\x18GetCurrentSessionRequest\"~\n" +
+	"\x18GetCurrentSessionRequest\"\x89\x01\n" +
 	"\x19GetCurrentSessionResponse\x12&\n" +
-	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\x129\n" +
-	"\n" +
-	"expires_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\xe0\x03\n" +
+	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\x12D\n" +
+	"\x10last_accessed_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0elastAccessedAt\"\xb8\x03\n" +
 	"\x14CreateSessionRequest\x12k\n" +
 	"\x14password_credentials\x18\x01 \x01(\v26.memos.api.v1.CreateSessionRequest.PasswordCredentialsH\x00R\x13passwordCredentials\x12\\\n" +
-	"\x0fsso_credentials\x18\x02 \x01(\v21.memos.api.v1.CreateSessionRequest.SSOCredentialsH\x00R\x0essoCredentials\x12&\n" +
-	"\fnever_expire\x18\x03 \x01(\bB\x03\xe0A\x01R\vneverExpire\x1aW\n" +
+	"\x0fsso_credentials\x18\x02 \x01(\v21.memos.api.v1.CreateSessionRequest.SSOCredentialsH\x00R\x0essoCredentials\x1aW\n" +
 	"\x13PasswordCredentials\x12\x1f\n" +
 	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
 	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\x1am\n" +
@@ -445,11 +435,10 @@ const file_api_v1_auth_service_proto_rawDesc = "" +
 	"\x06idp_id\x18\x01 \x01(\x05B\x03\xe0A\x02R\x05idpId\x12\x17\n" +
 	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\x12&\n" +
 	"\fredirect_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\vredirectUriB\r\n" +
-	"\vcredentials\"z\n" +
+	"\vcredentials\"\x85\x01\n" +
 	"\x15CreateSessionResponse\x12&\n" +
-	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\x129\n" +
-	"\n" +
-	"expires_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\x16\n" +
+	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\x12D\n" +
+	"\x10last_accessed_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0elastAccessedAt\"\x16\n" +
 	"\x14DeleteSessionRequest2\x8b\x03\n" +
 	"\vAuthService\x12\x8b\x01\n" +
 	"\x11GetCurrentSession\x12&.memos.api.v1.GetCurrentSessionRequest\x1a'.memos.api.v1.GetCurrentSessionResponse\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/v1/auth/sessions/current\x12z\n" +
@@ -484,11 +473,11 @@ var file_api_v1_auth_service_proto_goTypes = []any{
 }
 var file_api_v1_auth_service_proto_depIdxs = []int32{
 	7, // 0: memos.api.v1.GetCurrentSessionResponse.user:type_name -> memos.api.v1.User
-	8, // 1: memos.api.v1.GetCurrentSessionResponse.expires_at:type_name -> google.protobuf.Timestamp
+	8, // 1: memos.api.v1.GetCurrentSessionResponse.last_accessed_at:type_name -> google.protobuf.Timestamp
 	5, // 2: memos.api.v1.CreateSessionRequest.password_credentials:type_name -> memos.api.v1.CreateSessionRequest.PasswordCredentials
 	6, // 3: memos.api.v1.CreateSessionRequest.sso_credentials:type_name -> memos.api.v1.CreateSessionRequest.SSOCredentials
 	7, // 4: memos.api.v1.CreateSessionResponse.user:type_name -> memos.api.v1.User
-	8, // 5: memos.api.v1.CreateSessionResponse.expires_at:type_name -> google.protobuf.Timestamp
+	8, // 5: memos.api.v1.CreateSessionResponse.last_accessed_at:type_name -> google.protobuf.Timestamp
 	0, // 6: memos.api.v1.AuthService.GetCurrentSession:input_type -> memos.api.v1.GetCurrentSessionRequest
 	2, // 7: memos.api.v1.AuthService.CreateSession:input_type -> memos.api.v1.CreateSessionRequest
 	4, // 8: memos.api.v1.AuthService.DeleteSession:input_type -> memos.api.v1.DeleteSessionRequest
