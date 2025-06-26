@@ -244,6 +244,14 @@
       "description": "该账号下全部的访问令牌",
       "title": "访问令牌"
     },
+    "user-sessions-section": {
+      "title": "用户会话",
+      "description": "当前账号下全部的会话，你可以撤销除当前会话以外的所有会话。",
+      "device": "设备",
+      "last-active": "最后活跃时间",
+      "expires": "过期时间",
+      "current": "当前设备"
+    },
     "account-section": {
       "change-password": "修改密码",
       "email-note": "可选",
