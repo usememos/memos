@@ -250,7 +250,11 @@
       "device": "设备",
       "last-active": "最后活跃时间",
       "expires": "过期时间",
-      "current": "当前设备"
+      "current": "当前设备",
+      "never": "从未",
+      "session-revocation": "您确定要撤销会话 {{sessionId}} 吗？删除后您将需要在该设备上再次登录。",
+      "session-revoked": "会话已成功撤销",
+      "revoke-session": "撤销会话"
     },
     "account-section": {
       "change-password": "修改密码",
@@ -266,8 +270,8 @@
       "username-note": "用于登录"
     },
     "appearance-option": {
-      "dark": "总是深色",
-      "light": "总是浅色",
+      "dark": "深色",
+      "light": "浅色",
       "system": "跟随系统"
     },
     "member": "成员",
