@@ -237,7 +237,13 @@
       "device": "裝置",
       "last-active": "最後活躍時間",
       "expires": "過期時間",
-      "current": "當前裝置"
+      "current": "當前裝置",
+      "never": "永不過期",
+      "session-revocation": "您確定要撤銷 {{device}} 的使用者會话嗎？此操作無法恢復。",
+      "session-revoked": "使用者會话撤銷成功",
+      "revoke-session": "撤銷使用者會话",
+      "cannot-revoke-current": "不能撤銷當前裝置的使用者會话",
+      "no-sessions": "沒有使用者會话"
     },
     "account-section": {
       "change-password": "變更密碼",
@@ -253,8 +259,8 @@
       "username-note": "為登入用途"
     },
     "appearance-option": {
-      "dark": "總是深色",
-      "light": "總是淺色",
+      "dark": "深色",
+      "light": "淺色",
       "system": "跟隨系統"
     },
     "member": "使用者",
