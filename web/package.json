@@ -81,7 +81,7 @@
     "terser": "^5.40.0",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.0",
+    "typescript-eslint": "^8.35.1",
     "vite": "^6.3.5"
   },
   "pnpm": {
