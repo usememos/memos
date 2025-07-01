@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import MobileHeader from "@/components/MobileHeader";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 const HomeLayout = observer(() => {
   const { md, lg } = useResponsiveWidth();

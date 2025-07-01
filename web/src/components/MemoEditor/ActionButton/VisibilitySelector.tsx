@@ -1,9 +1,9 @@
 import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import VisibilityIcon from "@/components/VisibilityIcon";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {

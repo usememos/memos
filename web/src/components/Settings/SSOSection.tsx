@@ -1,15 +1,15 @@
-import { Divider, List, ListItem } from "@mui/joy";
-import { Button } from "@usememos/mui";
 import { MoreVerticalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/grpcweb";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const SSOSection = () => {
   const t = useTranslate();
@@ -48,7 +48,7 @@ const SSOSection = () => {
           {t("common.create")}
         </Button>
       </div>
-      <Divider />
+      <Separator />
       {identityProviderList.map((identityProvider) => (
         <div
           key={identityProvider.name}
@@ -95,8 +95,8 @@ const SSOSection = () => {
 
       <div className="w-full mt-4">
         <p className="text-sm">{t("common.learn-more")}:</p>
-        <List component="ul" marker="disc" size="sm">
-          <ListItem>
+        <ul className="list-disc list-inside text-sm ml-4">
+          <li>
             <Link
               className="text-sm text-blue-600 hover:underline"
               to="https://www.usememos.com/docs/advanced-settings/sso"
@@ -104,8 +104,8 @@ const SSOSection = () => {
             >
               {t("setting.sso-section.single-sign-on")}
             </Link>
-          </ListItem>
-        </List>
+          </li>
+        </ul>
       </div>
     </div>
   );

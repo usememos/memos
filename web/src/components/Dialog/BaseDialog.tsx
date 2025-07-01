@@ -1,10 +1,8 @@
-import { CssVarsProvider } from "@mui/joy";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
+import { cn } from "@/lib/utils";
 import dialogStore from "@/store/v2/dialog";
-import theme from "@/theme";
-import { cn } from "@/utils";
 
 interface DialogConfig {
   dialogName: string;
@@ -90,11 +88,9 @@ export function generateDialog<T extends DialogProps>(
   } as T;
 
   const Fragment = observer(() => (
-    <CssVarsProvider theme={theme}>
-      <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
-        <DialogComponent {...dialogProps} />
-      </BaseDialog>
-    </CssVarsProvider>
+    <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
+      <DialogComponent {...dialogProps} />
+    </BaseDialog>
   ));
 
   dialog.render(<Fragment />);

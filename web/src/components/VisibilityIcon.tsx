@@ -1,6 +1,6 @@
 import { Globe2Icon, LockIcon, UsersIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
-import { cn } from "@/utils";
 
 interface Props {
   visibility: Visibility;

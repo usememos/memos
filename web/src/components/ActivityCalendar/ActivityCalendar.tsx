@@ -1,10 +1,10 @@
-import { Tooltip } from "@mui/joy";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { workspaceStore } from "@/store/v2";
 import type { ActivityCalendarProps, CalendarDay } from "@/types/statistics";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
 const getCellOpacity = (ratio: number): string => {
@@ -59,9 +59,16 @@ const CalendarCell = memo(
     }
 
     return (
-      <Tooltip className="shrink-0" title={tooltipText} placement="top" arrow>
-        {cellContent}
-      </Tooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="shrink-0">{cellContent}</div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{tooltipText}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   },
 );

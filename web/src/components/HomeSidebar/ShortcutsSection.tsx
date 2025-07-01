@@ -1,15 +1,15 @@
-import { Tooltip } from "@mui/joy";
 import { Edit3Icon, MoreVerticalIcon, TrashIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { shortcutServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
+import { cn } from "@/lib/utils";
 import { userStore } from "@/store/v2";
 import memoFilterStore from "@/store/v2/memoFilter";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import showCreateShortcutDialog from "../CreateShortcutDialog";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
 
@@ -40,9 +40,16 @@ const ShortcutsSection = observer(() => {
     <div className="w-full flex flex-col justify-start items-start mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 select-none">
         <span>{t("common.shortcuts")}</span>
-        <Tooltip title={t("common.create")} placement="top">
-          <PlusIcon className="w-4 h-auto" onClick={() => showCreateShortcutDialog({})} />
-        </Tooltip>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PlusIcon className="w-4 h-auto cursor-pointer" onClick={() => showCreateShortcutDialog({})} />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t("common.create")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
         {shortcuts.map((shortcut) => {

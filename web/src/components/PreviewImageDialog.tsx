@@ -1,6 +1,6 @@
-import { Button } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { generateDialog } from "./Dialog";
 
 const MIN_SCALE = 0.5;

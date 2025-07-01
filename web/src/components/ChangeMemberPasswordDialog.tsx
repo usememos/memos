@@ -1,7 +1,8 @@
-import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { userStore } from "@/store/v2";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -69,7 +70,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
         <p>
           {t("setting.account-section.change-password")} ({user.displayName})
         </p>
-        <Button variant="plain" onClick={handleCloseBtnClick}>
+        <Button variant="ghost" onClick={handleCloseBtnClick}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
@@ -91,7 +92,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
           onChange={handleNewPasswordAgainChanged}
         />
         <div className="flex flex-row justify-end items-center mt-4 w-full gap-x-2">
-          <Button variant="plain" onClick={handleCloseBtnClick}>
+          <Button variant="ghost" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </Button>
           <Button color="primary" onClick={handleSaveBtnClick}>

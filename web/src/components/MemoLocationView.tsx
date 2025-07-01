@@ -3,7 +3,7 @@ import { MapPinIcon } from "lucide-react";
 import { useState } from "react";
 import { Location } from "@/types/proto/api/v1/memo_service";
 import LeafletMap from "./LeafletMap";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface Props {
   location: Location;

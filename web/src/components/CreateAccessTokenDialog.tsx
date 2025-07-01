@@ -1,8 +1,10 @@
-import { Radio, RadioGroup } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
@@ -56,9 +58,9 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const handleRoleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRoleInputChange = (value: string) => {
     setPartialState({
-      expiration: Number(e.target.value),
+      expiration: Number(value),
     });
   };
 
@@ -89,7 +91,7 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
     <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center w-full mb-4 gap-2">
         <p>{t("setting.access-token-section.create-dialog.create-access-token")}</p>
-        <Button variant="plain" onClick={() => destroy()}>
+        <Button variant="ghost" onClick={() => destroy()}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
@@ -113,18 +115,21 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
             {t("setting.access-token-section.create-dialog.expiration")} <span className="text-red-600">*</span>
           </span>
           <div className="w-full flex flex-row justify-start items-center text-base">
-            <RadioGroup orientation="horizontal" value={state.expiration} onChange={handleRoleInputChange}>
+            <RadioGroup value={state.expiration.toString()} onValueChange={handleRoleInputChange} className="flex flex-row gap-4">
               {expirationOptions.map((option) => (
-                <Radio key={option.value} value={option.value} checked={state.expiration === option.value} label={option.label} />
+                <div key={option.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option.value.toString()} id={`expiration-${option.value}`} />
+                  <Label htmlFor={`expiration-${option.value}`}>{option.label}</Label>
+                </div>
               ))}
             </RadioGroup>
           </div>
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-4 space-x-2">
-          <Button variant="plain" disabled={requestState.isLoading} onClick={destroy}>
+          <Button variant="ghost" disabled={requestState.isLoading} onClick={destroy}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" disabled={requestState.isLoading} onClick={handleSaveBtnClick}>
+          <Button disabled={requestState.isLoading} onClick={handleSaveBtnClick}>
             {t("common.create")}
           </Button>
         </div>

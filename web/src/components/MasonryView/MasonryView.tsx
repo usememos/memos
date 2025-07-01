@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { cn } from "@/utils";
 
 interface Props {
   memoList: Memo[];

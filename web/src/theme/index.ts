@@ -1,35 +1,5 @@
-import { extendTheme } from "@mui/joy";
+// Theme configuration for Tailwind CSS v4
+// This file is kept for compatibility but no longer used for MUI theme configuration
+// All styling is now handled by Tailwind CSS
 
-const theme = extendTheme({
-  components: {
-    JoyButton: {
-      defaultProps: {
-        size: "sm",
-      },
-    },
-    JoyInput: {
-      defaultProps: {
-        size: "sm",
-      },
-    },
-    JoySelect: {
-      defaultProps: {
-        size: "sm",
-      },
-      styleOverrides: {
-        listbox: {
-          zIndex: 9999,
-        },
-      },
-    },
-    JoyAutocomplete: {
-      styleOverrides: {
-        listbox: {
-          zIndex: 9999,
-        },
-      },
-    },
-  },
-});
-
-export default theme;
+export default {};

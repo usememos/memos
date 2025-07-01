@@ -1,8 +1,8 @@
 import { last } from "lodash-es";
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { markdownServiceClient } from "@/grpcweb";
+import { cn } from "@/lib/utils";
 import { Node, NodeType, OrderedListItemNode, TaskListItemNode, UnorderedListItemNode } from "@/types/proto/api/v1/markdown_service";
-import { cn } from "@/utils";
 import TagSuggestions from "./TagSuggestions";
 
 export interface EditorRefActions {

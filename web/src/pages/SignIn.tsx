@@ -1,11 +1,11 @@
-import { Divider } from "@mui/joy";
-import { Button } from "@usememos/mui";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import AuthFooter from "@/components/AuthFooter";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -79,14 +79,20 @@ const SignIn = observer(() => {
         )}
         {identityProviderList.length > 0 && (
           <>
-            {!workspaceGeneralSetting.disallowPasswordAuth && <Divider className="my-4!">{t("common.or")}</Divider>}
+            {!workspaceGeneralSetting.disallowPasswordAuth && (
+              <div className="relative my-4 w-full">
+                <Separator />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="bg-background px-2 text-xs text-muted-foreground">{t("common.or")}</span>
+                </div>
+              </div>
+            )}
             <div className="w-full flex flex-col space-y-2">
               {identityProviderList.map((identityProvider) => (
                 <Button
-                  className="bg-white dark:bg-black"
+                  className="bg-white dark:bg-black w-full"
                   key={identityProvider.name}
-                  variant="outlined"
-                  fullWidth
+                  variant="outline"
                   onClick={() => handleSignInWithIdentityProvider(identityProvider)}
                 >
                   {t("common.sign-in-with", { provider: identityProvider.title })}

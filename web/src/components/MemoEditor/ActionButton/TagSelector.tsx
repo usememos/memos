@@ -1,10 +1,10 @@
-import { Button } from "@usememos/mui";
 import { HashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import OverflowTip from "@/components/kit/OverflowTip";
+import { Button } from "@/components/ui/button";
 import { userStore } from "@/store/v2";
 import { useTranslate } from "@/utils/i18n";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { EditorRefActions } from "../Editor";
 
 interface Props {
@@ -35,8 +35,8 @@ const TagSelector = observer((props: Props) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="plain" className="p-0">
-          <HashIcon className="w-5 h-5" />
+        <Button variant="ghost">
+          <HashIcon />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" sideOffset={2}>

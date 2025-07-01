@@ -1,8 +1,8 @@
-import { Button } from "@usememos/mui";
 import copy from "copy-to-clipboard";
 import { ClipboardIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { UserAccessToken } from "@/types/proto/api/v1/user_service";
@@ -99,7 +99,7 @@ const AccessTokenSection = () => {
                     <tr key={userAccessToken.accessToken}>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400 flex flex-row justify-start items-center gap-x-1">
                         <span className="font-mono">{getFormatedAccessToken(userAccessToken.accessToken)}</span>
-                        <Button variant="plain" onClick={() => copyAccessToken(userAccessToken.accessToken)}>
+                        <Button variant="ghost" onClick={() => copyAccessToken(userAccessToken.accessToken)}>
                           <ClipboardIcon className="w-4 h-auto text-gray-400" />
                         </Button>
                       </td>
@@ -114,7 +114,7 @@ const AccessTokenSection = () => {
                       </td>
                       <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm">
                         <Button
-                          variant="plain"
+                          variant="ghost"
                           onClick={() => {
                             handleDeleteAccessToken(userAccessToken);
                           }}

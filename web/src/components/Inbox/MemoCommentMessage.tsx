@@ -1,17 +1,17 @@
-import { Tooltip } from "@mui/joy";
 import { InboxIcon, LoaderIcon, MessageCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { activityServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { cn } from "@/lib/utils";
 import { activityNamePrefix } from "@/store/common";
 import { memoStore, userStore } from "@/store/v2";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v1/inbox_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -79,9 +79,16 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
             : "border-gray-500 text-gray-500 bg-gray-50 dark:bg-zinc-800",
         )}
       >
-        <Tooltip title={"Comment"} placement="bottom">
-          <MessageCircleIcon className="w-4 sm:w-5 h-auto" />
-        </Tooltip>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <MessageCircleIcon className="w-4 sm:w-5 h-auto" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Comment</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <div
         className={cn(
@@ -95,12 +102,19 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
               <span className="text-sm text-gray-500">{inbox.createTime?.toLocaleString()}</span>
               <div>
                 {inbox.status === Inbox_Status.UNREAD && (
-                  <Tooltip title={t("common.archive")} placement="top">
-                    <InboxIcon
-                      className="w-4 h-auto cursor-pointer text-gray-400 hover:text-blue-600"
-                      onClick={() => handleArchiveMessage()}
-                    />
-                  </Tooltip>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <InboxIcon
+                          className="w-4 h-auto cursor-pointer text-gray-400 hover:text-blue-600"
+                          onClick={() => handleArchiveMessage()}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t("common.archive")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
             </div>

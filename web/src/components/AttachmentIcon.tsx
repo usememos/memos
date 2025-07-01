@@ -10,8 +10,8 @@ import {
   SheetIcon,
 } from "lucide-react";
 import React from "react";
+import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
-import { cn } from "@/utils";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";

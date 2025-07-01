@@ -1,11 +1,11 @@
-import { Button } from "@usememos/mui";
 import { MoreVerticalIcon, PenLineIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import AccessTokenSection from "./AccessTokenSection";
 import UserSessionsSection from "./UserSessionsSection";
 
@@ -27,13 +27,13 @@ const MyAccountSection = () => {
         </div>
       </div>
       <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
-        <Button variant="outlined" onClick={showUpdateAccountDialog}>
+        <Button variant="outline" onClick={showUpdateAccountDialog}>
           <PenLineIcon className="w-4 h-4 mx-auto mr-1" />
           {t("common.edit")}
         </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outlined">
+            <Button variant="outline">
               <MoreVerticalIcon className="w-4 h-4 mx-auto" />
             </Button>
           </PopoverTrigger>

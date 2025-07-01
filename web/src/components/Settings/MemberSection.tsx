@@ -1,10 +1,12 @@
-import { Radio, RadioGroup } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { userStore } from "@/store/v2";
@@ -12,7 +14,7 @@ import { State } from "@/types/proto/api/v1/common";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateUserDialog from "../CreateUserDialog";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface LocalState {
   creatingUser: User;
@@ -167,15 +169,23 @@ const MemberSection = observer(() => {
         </div>
         <div className="flex flex-col justify-start items-start gap-1">
           <span>{t("common.role")}</span>
-          <RadioGroup orientation="horizontal" defaultValue={User_Role.USER} onChange={handleUserRoleInputChange}>
-            <Radio value={User_Role.USER} label={t("setting.member-section.user")} />
-            <Radio value={User_Role.ADMIN} label={t("setting.member-section.admin")} />
+          <RadioGroup
+            defaultValue={User_Role.USER}
+            onValueChange={(value) => handleUserRoleInputChange({ target: { value } } as React.ChangeEvent<HTMLInputElement>)}
+            className="flex flex-row gap-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value={User_Role.USER} id="user-role" />
+              <Label htmlFor="user-role">{t("setting.member-section.user")}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value={User_Role.ADMIN} id="admin-role" />
+              <Label htmlFor="admin-role">{t("setting.member-section.admin")}</Label>
+            </div>
           </RadioGroup>
         </div>
         <div className="mt-2">
-          <Button color="primary" onClick={handleCreateUserBtnClick}>
-            {t("common.create")}
-          </Button>
+          <Button onClick={handleCreateUserBtnClick}>{t("common.create")}</Button>
         </div>
       </div>
       <div className="w-full flex flex-row justify-between items-center mt-6">

@@ -1,9 +1,9 @@
 import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import { extractMemoIdFromName } from "@/store/common";
 import { Memo, MemoRelation } from "@/types/proto/api/v1/memo_service";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {

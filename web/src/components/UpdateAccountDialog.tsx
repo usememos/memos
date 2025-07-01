@@ -1,8 +1,10 @@
-import { Button, Input, Textarea } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { userStore, workspaceStore } from "@/store/v2";
@@ -142,7 +144,7 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
     <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p className="title-text">{t("setting.account-section.update-information")}</p>
-        <Button variant="plain" onClick={handleCloseBtnClick}>
+        <Button variant="ghost" onClick={handleCloseBtnClick}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
@@ -188,16 +190,14 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
           {t("common.email")}
           <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.email-note")})</span>
         </p>
-        <Input fullWidth type="email" value={state.email} onChange={handleEmailChanged} />
+        <Input className="w-full" type="email" value={state.email} onChange={handleEmailChanged} />
         <p className="text-sm">{t("common.description")}</p>
-        <Textarea rows={2} fullWidth value={state.description} onChange={handleDescriptionChanged} />
+        <Textarea className="w-full" rows={2} value={state.description} onChange={handleDescriptionChanged} />
         <div className="w-full flex flex-row justify-end items-center pt-4 space-x-2">
-          <Button variant="plain" onClick={handleCloseBtnClick}>
+          <Button variant="ghost" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" onClick={handleSaveBtnClick}>
-            {t("common.save")}
-          </Button>
+          <Button onClick={handleSaveBtnClick}>{t("common.save")}</Button>
         </div>
       </div>
     </div>

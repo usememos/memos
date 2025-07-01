@@ -1,10 +1,9 @@
-import { useColorScheme } from "@mui/joy";
 import { useEffect, useRef, useState } from "react";
 import ForceGraph2D, { ForceGraphMethods, LinkObject, NodeObject } from "react-force-graph-2d";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { cn } from "@/lib/utils";
 import { extractMemoIdFromName } from "@/store/common";
 import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
-import { cn } from "@/utils";
 import { LinkType, NodeType } from "./types";
 import { convertMemoRelationsToGraphData } from "./utils";
 
@@ -19,10 +18,29 @@ const DEFAULT_NODE_COLOR = "#a1a1aa";
 
 const MemoRelationForceGraph = ({ className, memo, parentPage }: Props) => {
   const navigateTo = useNavigateTo();
-  const { mode } = useColorScheme();
+  const [mode, setMode] = useState<"light" | "dark">("light");
   const containerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<ForceGraphMethods<NodeObject<NodeType>, LinkObject<NodeType, LinkType>> | undefined>(undefined);
   const [graphSize, setGraphSize] = useState({ width: 0, height: 0 });
+
+  // Simple dark mode detection
+  useEffect(() => {
+    const updateMode = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setMode(isDark ? "dark" : "light");
+    };
+
+    updateMode();
+
+    // Watch for changes to the dark class
+    const observer = new MutationObserver(updateMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;

@@ -1,4 +1,3 @@
-import { Button } from "@usememos/mui";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
@@ -9,14 +8,15 @@ import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDet
 import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
+import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import { cn } from "@/lib/utils";
 import { memoNamePrefix } from "@/store/common";
 import { memoStore } from "@/store/v2";
 import { workspaceStore } from "@/store/v2";
 import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = observer(() => {
@@ -122,7 +122,7 @@ const MemoDetail = observer(() => {
               {comments.length === 0 ? (
                 showCreateCommentButton && (
                   <div className="w-full flex flex-row justify-center items-center py-6">
-                    <Button variant="plain" color="primary" onClick={handleShowCommentEditor}>
+                    <Button variant="ghost" onClick={handleShowCommentEditor}>
                       <span className="text-gray-500">{t("memo.comment.write-a-comment")}</span>
                       <MessageCircleIcon className="ml-2 w-5 h-auto text-gray-500" />
                     </Button>
@@ -137,7 +137,7 @@ const MemoDetail = observer(() => {
                       <span className="text-gray-400 text-sm ml-1">({comments.length})</span>
                     </div>
                     {showCreateCommentButton && (
-                      <Button variant="plain" color="primary" className="text-gray-500" onClick={handleShowCommentEditor}>
+                      <Button variant="ghost" className="text-gray-500" onClick={handleShowCommentEditor}>
                         {t("memo.comment.write-a-comment")}
                       </Button>
                     )}

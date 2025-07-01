@@ -1,6 +1,6 @@
-import { Tooltip } from "@mui/joy";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import type { StatCardProps } from "@/types/statistics";
-import { cn } from "@/utils";
 
 export const StatCard = ({ icon, label, count, onClick, tooltip, className }: StatCardProps) => {
   const content = (
@@ -22,9 +22,14 @@ export const StatCard = ({ icon, label, count, onClick, tooltip, className }: St
 
   if (tooltip) {
     return (
-      <Tooltip title={tooltip} placement="top" arrow>
-        {content}
-      </Tooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>{content}</TooltipTrigger>
+          <TooltipContent>
+            <p>{tooltip}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   }
 

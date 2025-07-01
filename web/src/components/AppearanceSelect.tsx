@@ -1,6 +1,6 @@
-import { Option, Select } from "@mui/joy";
 import { SunIcon, MoonIcon, SmileIcon } from "lucide-react";
 import { FC } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -31,21 +31,20 @@ const AppearanceSelect: FC<Props> = (props: Props) => {
   };
 
   return (
-    <Select
-      className={`min-w-40! w-auto whitespace-nowrap ${className ?? ""}`}
-      value={value}
-      onChange={(_, appearance) => {
-        if (appearance) {
-          handleSelectChange(appearance);
-        }
-      }}
-      startDecorator={getPrefixIcon(value)}
-    >
-      {appearanceList.map((item) => (
-        <Option key={item} value={item} className="whitespace-nowrap">
-          {t(`setting.appearance-option.${item}`)}
-        </Option>
-      ))}
+    <Select value={value} onValueChange={handleSelectChange}>
+      <SelectTrigger className={`min-w-40 w-auto whitespace-nowrap ${className ?? ""}`}>
+        <SelectValue placeholder="Select appearance" />
+      </SelectTrigger>
+      <SelectContent>
+        {appearanceList.map((item) => (
+          <SelectItem key={item} value={item} className="whitespace-nowrap">
+            <div className="flex items-center gap-2">
+              {getPrefixIcon(item)}
+              {t(`setting.appearance-option.${item}`)}
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
     </Select>
   );
 };

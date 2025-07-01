@@ -1,11 +1,14 @@
-import { Select, Option, Divider } from "@mui/joy";
-import { Button, Textarea, Switch } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { ExternalLinkIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { identityProviderServiceClient } from "@/grpcweb";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
@@ -71,19 +74,18 @@ const WorkspaceSection = observer(() => {
           {t("setting.system-section.server-name")}:{" "}
           <span className="font-mono font-bold">{workspaceGeneralSetting.customProfile?.title || "Memos"}</span>
         </div>
-        <Button variant="outlined" onClick={handleUpdateCustomizedProfileButtonClick}>
+        <Button variant="outline" onClick={handleUpdateCustomizedProfileButtonClick}>
           {t("common.edit")}
         </Button>
       </div>
-      <Divider />
+      <Separator />
       <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.system-section.title")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.additional-style")}</span>
       </div>
       <Textarea
-        className="font-mono"
+        className="font-mono w-full"
         rows={3}
-        fullWidth
         placeholder={t("setting.system-section.additional-style-placeholder")}
         value={workspaceGeneralSetting.additionalStyle}
         onChange={(event) => updatePartialSetting({ additionalStyle: event.target.value })}
@@ -92,9 +94,8 @@ const WorkspaceSection = observer(() => {
         <span>{t("setting.system-section.additional-script")}</span>
       </div>
       <Textarea
-        className="font-mono"
+        className="font-mono w-full"
         rows={3}
-        fullWidth
         placeholder={t("setting.system-section.additional-script-placeholder")}
         value={workspaceGeneralSetting.additionalScript}
         onChange={(event) => updatePartialSetting({ additionalScript: event.target.value })}
@@ -114,7 +115,7 @@ const WorkspaceSection = observer(() => {
         <Switch
           disabled={workspaceStore.state.profile.mode === "demo"}
           checked={workspaceGeneralSetting.disallowUserRegistration}
-          onChange={(event) => updatePartialSetting({ disallowUserRegistration: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ disallowUserRegistration: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
@@ -125,39 +126,43 @@ const WorkspaceSection = observer(() => {
             (identityProviderList.length === 0 && !workspaceGeneralSetting.disallowPasswordAuth)
           }
           checked={workspaceGeneralSetting.disallowPasswordAuth}
-          onChange={(event) => updatePartialSetting({ disallowPasswordAuth: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ disallowPasswordAuth: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.workspace-section.disallow-change-username")}</span>
         <Switch
           checked={workspaceGeneralSetting.disallowChangeUsername}
-          onChange={(event) => updatePartialSetting({ disallowChangeUsername: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ disallowChangeUsername: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.workspace-section.disallow-change-nickname")}</span>
         <Switch
           checked={workspaceGeneralSetting.disallowChangeNickname}
-          onChange={(event) => updatePartialSetting({ disallowChangeNickname: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ disallowChangeNickname: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span className="truncate">{t("setting.workspace-section.week-start-day")}</span>
         <Select
-          className="min-w-fit!"
-          value={workspaceGeneralSetting.weekStartDayOffset}
-          onChange={(_, weekStartDayOffset) => {
-            updatePartialSetting({ weekStartDayOffset: weekStartDayOffset || 0 });
+          value={workspaceGeneralSetting.weekStartDayOffset.toString()}
+          onValueChange={(value) => {
+            updatePartialSetting({ weekStartDayOffset: parseInt(value) || 0 });
           }}
         >
-          <Option value={-1}>{t("setting.workspace-section.saturday")}</Option>
-          <Option value={0}>{t("setting.workspace-section.sunday")}</Option>
-          <Option value={1}>{t("setting.workspace-section.monday")}</Option>
+          <SelectTrigger className="min-w-fit">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="-1">{t("setting.workspace-section.saturday")}</SelectItem>
+            <SelectItem value="0">{t("setting.workspace-section.sunday")}</SelectItem>
+            <SelectItem value="1">{t("setting.workspace-section.monday")}</SelectItem>
+          </SelectContent>
         </Select>
       </div>
       <div className="mt-2 w-full flex justify-end">
-        <Button color="primary" disabled={isEqual(workspaceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
+        <Button disabled={isEqual(workspaceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
           {t("common.save")}
         </Button>
       </div>
