@@ -30,6 +30,7 @@ type APIV1Service struct {
 	v1pb.UnimplementedWebhookServiceServer
 	v1pb.UnimplementedMarkdownServiceServer
 	v1pb.UnimplementedIdentityProviderServiceServer
+	v1pb.UnimplementedTagServiceServer
 
 	Secret  string
 	Profile *profile.Profile
@@ -57,6 +58,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 	v1pb.RegisterWebhookServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterMarkdownServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterIdentityProviderServiceServer(grpcServer, apiv1Service)
+	v1pb.RegisterTagServiceServer(grpcServer, apiv1Service)
 	reflection.Register(grpcServer)
 	return apiv1Service
 }
@@ -104,6 +106,9 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	if err := v1pb.RegisterIdentityProviderServiceHandler(ctx, gwMux, conn); err != nil {
+		return err
+	}
+	if err := v1pb.RegisterTagServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
 	gwGroup := echoServer.Group("")

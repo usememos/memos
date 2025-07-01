@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "api/v1/common.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service TagService {
+  // ListPinnedTags lists all pinned tags for the current user.
+  rpc ListPinnedTags(ListPinnedTagsRequest) returns (ListPinnedTagsResponse) {
+    option (google.api.http) = {get: "/api/v1/tags:pinned"};
+  }
+  // ListTagsWithEmoji lists all tags with emoji for the current user.
+  rpc ListTagsWithEmoji(ListTagsWithEmojiRequest) returns (ListTagsWithEmojiResponse) {
+    option (google.api.http) = {get: "/api/v1/tags:emoji"};
+  }
+  // UpdateTag updates tag metadata (emoji, pinned status, etc.).
+  rpc UpdateTag(UpdateTagRequest) returns (Tag) {
+    option (google.api.http) = {
+      patch: "/api/v1/tags/{tag_name}"
+      body: "*"
+    };
+  }
+}
+
+message Tag {
+  // The unique identifier of the tag.
+  int32 id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The creation timestamp.
+  google.protobuf.Timestamp create_time = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The last update timestamp.
+  google.protobuf.Timestamp update_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The creator of the tag.
+  string creator = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The hash of the tag name (used as unique identifier).
+  string tag_hash = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The original tag name.
+  string tag_name = 6;
+
+  // The emoji for the tag (optional).
+  string emoji = 7;
+
+  // The pinned timestamp. If set, the tag is pinned.
+  optional google.protobuf.Timestamp pinned_time = 8;
+}
+
+message ListPinnedTagsRequest {
+  // No additional parameters needed - returns pinned tags for current user
+}
+
+message ListPinnedTagsResponse {
+  repeated Tag tags = 1;
+}
+
+message ListTagsWithEmojiRequest {
+  // No additional parameters needed - returns emoji tags for current user
+}
+
+message ListTagsWithEmojiResponse {
+  repeated Tag tags = 1;
+}
+
+message UpdateTagRequest {
+  // The tag name to update.
+  string tag_name = 1;
+
+  // The emoji to set for the tag. Empty string to remove emoji.
+  optional string emoji = 2;
+
+  // Whether to pin/unpin the tag. If true, pins the tag. If false, unpins the tag.
+  optional bool pinned = 3;
+} 

@@ -84,9 +84,13 @@ func (d *DB) UpdateTag(ctx context.Context, update *store.UpdateTag) (*store.Tag
 			args = append(args, *update.Emoji)
 		}
 
-		if update.PinnedTs != nil {
-			sets = append(sets, "pinned_ts = "+placeholder(len(args)+1))
-			args = append(args, *update.PinnedTs)
+		if update.UpdatePinned {
+			if update.PinnedTs != nil {
+				sets = append(sets, "pinned_ts = "+placeholder(len(args)+1))
+				args = append(args, *update.PinnedTs)
+			} else {
+				sets = append(sets, "pinned_ts = NULL")
+			}
 		}
 
 		args = append(args, existing.ID)
@@ -119,6 +123,22 @@ func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, e
 	if find.OnlyPinned != nil && *find.OnlyPinned {
 		where = append(where, "pinned_ts IS NOT NULL")
 	}
+	if find.OnlyWithEmoji != nil && *find.OnlyWithEmoji {
+		where = append(where, "emoji != ''")
+	}
+
+	// Determine sort order based on query type
+	var orderBy string
+	if find.OnlyPinned != nil && *find.OnlyPinned {
+		// For pinned tags: order by pinned time (newest first)
+		orderBy = "ORDER BY pinned_ts DESC, updated_ts DESC"
+	} else if find.OnlyWithEmoji != nil && *find.OnlyWithEmoji {
+		// For emoji tags: order by updated time (most recently updated first)
+		orderBy = "ORDER BY updated_ts DESC"
+	} else {
+		// Default ordering
+		orderBy = "ORDER BY pinned_ts DESC, updated_ts DESC"
+	}
 
 	rows, err := d.db.QueryContext(ctx, `
 		SELECT
@@ -132,7 +152,7 @@ func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, e
 			pinned_ts
 		FROM tag
 		WHERE `+strings.Join(where, " AND ")+`
-		ORDER BY pinned_ts DESC, updated_ts DESC`,
+		`+orderBy,
 		args...,
 	)
 	if err != nil {

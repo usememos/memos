@@ -40,6 +40,9 @@ func request_AuthService_GetAuthStatus_0(ctx context.Context, marshaler runtime.
 		protoReq GetAuthStatusRequest
 		metadata runtime.ServerMetadata
 	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetAuthStatus(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -60,6 +63,9 @@ func request_AuthService_SignIn_0(ctx context.Context, marshaler runtime.Marshal
 		protoReq SignInRequest
 		metadata runtime.ServerMetadata
 	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -92,6 +98,9 @@ func request_AuthService_SignInWithSSO_0(ctx context.Context, marshaler runtime.
 		protoReq SignInWithSSORequest
 		metadata runtime.ServerMetadata
 	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -124,6 +133,9 @@ func request_AuthService_SignUp_0(ctx context.Context, marshaler runtime.Marshal
 		protoReq SignUpRequest
 		metadata runtime.ServerMetadata
 	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -154,6 +166,9 @@ func request_AuthService_SignOut_0(ctx context.Context, marshaler runtime.Marsha
 		protoReq SignOutRequest
 		metadata runtime.ServerMetadata
 	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.SignOut(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }

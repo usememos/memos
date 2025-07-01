@@ -40,6 +40,9 @@ func request_WorkspaceService_GetWorkspaceProfile_0(ctx context.Context, marshal
 		protoReq GetWorkspaceProfileRequest
 		metadata runtime.ServerMetadata
 	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetWorkspaceProfile(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }

@@ -11,6 +11,7 @@ tags:
   - name: MarkdownService
   - name: ResourceService
   - name: MemoService
+  - name: TagService
   - name: WebhookService
   - name: WorkspaceService
   - name: WorkspaceSettingService
@@ -459,6 +460,62 @@ paths:
           type: string
       tags:
         - ResourceService
+  /api/v1/tags/{tagName}:
+    patch:
+      summary: UpdateTag updates tag metadata (emoji, pinned status, etc.).
+      operationId: TagService_UpdateTag
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1Tag'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: tagName
+          description: The tag name to update.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TagServiceUpdateTagBody'
+      tags:
+        - TagService
+  /api/v1/tags:emoji:
+    get:
+      summary: ListTagsWithEmoji lists all tags with emoji for the current user.
+      operationId: TagService_ListTagsWithEmoji
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListTagsWithEmojiResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - TagService
+  /api/v1/tags:pinned:
+    get:
+      summary: ListPinnedTags lists all pinned tags for the current user.
+      operationId: TagService_ListPinnedTags
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1ListPinnedTagsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - TagService
   /api/v1/users:
     get:
       summary: ListUsers returns a list of users.
@@ -1794,6 +1851,15 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Node'
+  TagServiceUpdateTagBody:
+    type: object
+    properties:
+      emoji:
+        type: string
+        description: The emoji to set for the tag. Empty string to remove emoji.
+      pinned:
+        type: boolean
+        description: Whether to pin/unpin the tag. If true, pins the tag. If false, unpins the tag.
   UserRole:
     type: string
     enum:
@@ -2620,6 +2686,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Node'
+  v1ListPinnedTagsResponse:
+    type: object
+    properties:
+      tags:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Tag'
   v1ListResourcesResponse:
     type: object
     properties:
@@ -2628,6 +2702,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1Resource'
+  v1ListTagsWithEmojiResponse:
+    type: object
+    properties:
+      tags:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1Tag'
   v1ListUserAccessTokensResponse:
     type: object
     properties:
@@ -2994,6 +3076,42 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/TableNodeRow'
+  v1Tag:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: The unique identifier of the tag.
+        readOnly: true
+      createTime:
+        type: string
+        format: date-time
+        description: The creation timestamp.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: The last update timestamp.
+        readOnly: true
+      creator:
+        type: string
+        description: The creator of the tag.
+        readOnly: true
+      tagHash:
+        type: string
+        description: The hash of the tag name (used as unique identifier).
+        readOnly: true
+      tagName:
+        type: string
+        description: The original tag name.
+      emoji:
+        type: string
+        description: The emoji for the tag (optional).
+      pinnedTime:
+        type: string
+        format: date-time
+        description: The pinned timestamp. If set, the tag is pinned.
   v1TagNode:
     type: object
     properties:

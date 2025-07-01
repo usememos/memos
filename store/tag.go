@@ -24,8 +24,10 @@ type FindTag struct {
 	CreatorID *int32
 	TagHash   *string
 	TagName   *string
-	// OnlyPinned filters only pinned tags
+	// OnlyPinned filters only pinned tags, ordered by pinned_ts DESC
 	OnlyPinned *bool
+	// OnlyWithEmoji filters only tags that have emoji set
+	OnlyWithEmoji *bool
 }
 
 type UpdateTag struct {
@@ -34,6 +36,10 @@ type UpdateTag struct {
 	TagName   *string
 	Emoji     *string
 	PinnedTs  *int64
+	// UpdatePinned indicates whether to update the pinned status
+	// If true, PinnedTs value will be used (nil = unpin, non-nil = pin with timestamp)
+	// If false, pinned status won't be changed
+	UpdatePinned bool
 }
 
 // UpdateTag performs upsert operation: if tag doesn't exist, create it; if exists, update it
@@ -41,17 +47,22 @@ func (s *Store) UpdateTag(ctx context.Context, update *UpdateTag) (*Tag, error) 
 	return s.driver.UpdateTag(ctx, update)
 }
 
-func (s *Store) GetTag(ctx context.Context, find *FindTag) (*Tag, error) {
-	tags, err := s.driver.ListTags(ctx, find)
-	if err != nil {
-		return nil, err
+// ListPinnedTags returns all pinned tags for a user, ordered by pinned time (newest first)
+func (s *Store) ListPinnedTags(ctx context.Context, creatorID int32) ([]*Tag, error) {
+	onlyPinned := true
+	find := &FindTag{
+		CreatorID:  &creatorID,
+		OnlyPinned: &onlyPinned,
 	}
-	if len(tags) == 0 {
-		return nil, nil
-	}
-	return tags[0], nil
+	return s.driver.ListTags(ctx, find)
 }
 
-func (s *Store) ListTags(ctx context.Context, find *FindTag) ([]*Tag, error) {
+// ListTagsWithEmoji returns all tags that have emoji set for a user
+func (s *Store) ListTagsWithEmoji(ctx context.Context, creatorID int32) ([]*Tag, error) {
+	onlyWithEmoji := true
+	find := &FindTag{
+		CreatorID:     &creatorID,
+		OnlyWithEmoji: &onlyWithEmoji,
+	}
 	return s.driver.ListTags(ctx, find)
 }
