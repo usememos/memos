@@ -78,4 +78,8 @@ type Driver interface {
 	UpsertReaction(ctx context.Context, create *Reaction) (*Reaction, error)
 	ListReactions(ctx context.Context, find *FindReaction) ([]*Reaction, error)
 	DeleteReaction(ctx context.Context, delete *DeleteReaction) error
+
+	// Tag model related methods.
+	UpdateTag(ctx context.Context, update *UpdateTag) (*Tag, error)
+	ListTags(ctx context.Context, find *FindTag) ([]*Tag, error)
 }

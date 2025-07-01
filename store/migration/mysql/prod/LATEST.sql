@@ -130,3 +130,16 @@ CREATE TABLE `reaction` (
   `reaction_type` VARCHAR(256) NOT NULL,
   UNIQUE(`creator_id`,`content_id`,`reaction_type`)  
 );
+
+-- tag
+CREATE TABLE `tag` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `creator_id` INT NOT NULL,
+  `tag_hash` VARCHAR(255) NOT NULL,
+  `tag_name` VARCHAR(255) NOT NULL DEFAULT '',
+  `emoji` VARCHAR(255) NOT NULL DEFAULT '',
+  `pinned_ts` TIMESTAMP NULL,
+  UNIQUE(`creator_id`,`tag_hash`)
+);
