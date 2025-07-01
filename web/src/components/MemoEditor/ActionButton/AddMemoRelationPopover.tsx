@@ -6,7 +6,7 @@ import useDebounce from "react-use/lib/useDebounce";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Command, CommandInput, CommandItem, CommandList, CommandEmpty } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
@@ -157,34 +157,36 @@ const AddMemoRelationPopover = (props: Props) => {
           )}
 
           {/* Search and selection interface */}
-          <Command className="w-full">
-            <CommandInput
+          <div className="w-full">
+            <Input
               placeholder={t("reference.search-placeholder")}
               value={searchText}
-              onValueChange={setSearchText}
-              className="h-9"
+              onChange={(e) => setSearchText(e.target.value)}
+              className="h-9 mb-2"
             />
-            <CommandList className="max-h-[200px]">
-              <CommandEmpty>{isFetching ? "Loading..." : t("reference.no-memos-found")}</CommandEmpty>
-              {filteredMemos.map((memo) => (
-                <CommandItem
-                  key={memo.name}
-                  value={memo.name}
-                  onSelect={() => {
-                    setSelectedMemos((prev) => [...prev, memo]);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <div className="w-full flex flex-col justify-start items-start">
-                    <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
-                    <p className="mt-0.5 text-sm leading-5 line-clamp-2">
-                      {searchText ? getHighlightedContent(memo.content) : memo.snippet}
-                    </p>
+            <div className="max-h-[200px] overflow-y-auto">
+              {filteredMemos.length === 0 ? (
+                <div className="py-6 text-center text-sm text-gray-500">{isFetching ? "Loading..." : t("reference.no-memos-found")}</div>
+              ) : (
+                filteredMemos.map((memo) => (
+                  <div
+                    key={memo.name}
+                    className="relative flex cursor-pointer items-start gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                    onClick={() => {
+                      setSelectedMemos((prev) => [...prev, memo]);
+                    }}
+                  >
+                    <div className="w-full flex flex-col justify-start items-start">
+                      <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
+                      <p className="mt-0.5 text-sm leading-5 line-clamp-2">
+                        {searchText ? getHighlightedContent(memo.content) : memo.snippet}
+                      </p>
+                    </div>
                   </div>
-                </CommandItem>
-              ))}
-            </CommandList>
-          </Command>
+                ))
+              )}
+            </div>
+          </div>
 
           <div className="mt-2 w-full flex flex-row justify-end items-center gap-2">
             <div className="flex items-center space-x-2">
