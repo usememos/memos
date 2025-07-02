@@ -22,13 +22,13 @@ import (
 	"github.com/usememos/memos/store/db"
 )
 
-// TestTagService wraps the real tag service with test-specific behavior
+// TestTagService wraps the real tag service with test-specific behavior.
 type TestTagService struct {
 	store    *store.Store
 	testUser *store.User
 }
 
-// NewTestTagService creates a test tag service with a fixed user
+// NewTestTagService creates a test tag service with a fixed user.
 func NewTestTagService(store *store.Store, testUser *store.User) *TestTagService {
 	return &TestTagService{
 		store:    store,
@@ -36,7 +36,7 @@ func NewTestTagService(store *store.Store, testUser *store.User) *TestTagService
 	}
 }
 
-// ListPinnedTags mimics the API service but uses the test user
+// ListPinnedTags mimics the API service but uses the test user.
 func (s *TestTagService) ListPinnedTags(ctx context.Context, _ *v1pb.ListPinnedTagsRequest) (*v1pb.ListPinnedTagsResponse, error) {
 	if s.testUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
@@ -61,7 +61,7 @@ func (s *TestTagService) ListPinnedTags(ctx context.Context, _ *v1pb.ListPinnedT
 	return response, nil
 }
 
-// ListTagsWithEmoji mimics the API service but uses the test user
+// ListTagsWithEmoji mimics the API service but uses the test user.
 func (s *TestTagService) ListTagsWithEmoji(ctx context.Context, _ *v1pb.ListTagsWithEmojiRequest) (*v1pb.ListTagsWithEmojiResponse, error) {
 	if s.testUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
@@ -86,7 +86,7 @@ func (s *TestTagService) ListTagsWithEmoji(ctx context.Context, _ *v1pb.ListTags
 	return response, nil
 }
 
-// UpdateTag mimics the API service but uses the test user
+// UpdateTag mimics the API service but uses the test user.
 func (s *TestTagService) UpdateTag(ctx context.Context, request *v1pb.UpdateTagRequest) (*v1pb.Tag, error) {
 	if s.testUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
@@ -140,7 +140,7 @@ func (s *TestTagService) UpdateTag(ctx context.Context, request *v1pb.UpdateTagR
 	return tagMessage, nil
 }
 
-// convertTagFromStore converts a store.Tag to v1pb.Tag
+// convertTagFromStore converts a store.Tag to v1pb.Tag.
 func (s *TestTagService) convertTagFromStore(ctx context.Context, tag *store.Tag) (*v1pb.Tag, error) {
 	creator, err := s.store.GetUser(ctx, &store.FindUser{
 		ID: &tag.CreatorID,
@@ -446,7 +446,7 @@ func TestTagService_UpdateTag_InvalidTagName(t *testing.T) {
 	require.Equal(t, codes.InvalidArgument, st.Code())
 }
 
-// Helper functions
+// Helper functions.
 func createTestingHostUser(ctx context.Context, ts *store.Store) (*store.User, error) {
 	userCreate := &store.User{
 		Username:    "test",
@@ -459,6 +459,7 @@ func createTestingHostUser(ctx context.Context, ts *store.Store) (*store.User, e
 	return user, err
 }
 
+// calculateTagHash calculates a hash for a tag name for use as unique identifier.
 func calculateTagHash(tagName string) string {
 	hash := sha256.Sum256([]byte(tagName))
 	return fmt.Sprintf("%x", hash)

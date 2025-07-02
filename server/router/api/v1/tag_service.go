@@ -130,7 +130,7 @@ func (s *APIV1Service) UpdateTag(ctx context.Context, request *v1pb.UpdateTagReq
 	return tagMessage, nil
 }
 
-// convertTagFromStore converts a store.Tag to v1pb.Tag
+// convertTagFromStore converts a store.Tag to v1pb.Tag.
 func (s *APIV1Service) convertTagFromStore(ctx context.Context, tag *store.Tag) (*v1pb.Tag, error) {
 	creator, err := s.Store.GetUser(ctx, &store.FindUser{
 		ID: &tag.CreatorID,

@@ -228,7 +228,7 @@ func TestTagStore_EmptyResults(t *testing.T) {
 	require.Len(t, emojiTags, 0)
 }
 
-// Helper function to calculate tag hash (same as in API layer)
+// Helper function to calculate tag hash (same as in API layer).
 func calculateTagHash(tagName string) string {
 	hash := sha256.Sum256([]byte(tagName))
 	return fmt.Sprintf("%x", hash)

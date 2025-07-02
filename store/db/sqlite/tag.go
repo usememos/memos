@@ -189,7 +189,7 @@ func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, e
 	return list, nil
 }
 
-// Helper functions
+// Helper functions.
 func (d *DB) getTag(ctx context.Context, tagHash string, creatorID int32) (*store.Tag, error) {
 	find := &store.FindTag{
 		TagHash:   &tagHash,
