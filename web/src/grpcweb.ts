@@ -6,6 +6,7 @@ import { InboxServiceDefinition } from "./types/proto/api/v1/inbox_service";
 import { MarkdownServiceDefinition } from "./types/proto/api/v1/markdown_service";
 import { MemoServiceDefinition } from "./types/proto/api/v1/memo_service";
 import { ResourceServiceDefinition } from "./types/proto/api/v1/resource_service";
+import { TagServiceDefinition } from "./types/proto/api/v1/tag_service";
 import { UserServiceDefinition } from "./types/proto/api/v1/user_service";
 import { WebhookServiceDefinition } from "./types/proto/api/v1/webhook_service";
 import { WorkspaceServiceDefinition } from "./types/proto/api/v1/workspace_service";
@@ -39,5 +40,7 @@ export const activityServiceClient = clientFactory.create(ActivityServiceDefinit
 export const webhookServiceClient = clientFactory.create(WebhookServiceDefinition, channel);
 
 export const markdownServiceClient = clientFactory.create(MarkdownServiceDefinition, channel);
+
+export const tagServiceClient = clientFactory.create(TagServiceDefinition, channel);
 
 export const identityProviderServiceClient = clientFactory.create(IdentityProviderServiceDefinition, channel);

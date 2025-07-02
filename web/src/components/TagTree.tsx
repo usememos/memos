@@ -1,7 +1,8 @@
-import { ChevronRightIcon, HashIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
-import { useMemoFilterStore } from "@/store/v1";
+import { useMemoFilterStore, useTag } from "@/store/v1";
+import { EmojiPickerPopover } from "./EmojiPickerPopover";
 
 interface Tag {
   key: string;
@@ -16,6 +17,7 @@ interface Props {
 
 const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
   const [tags, setTags] = useState<Tag[]>([]);
+  const { fetchEmojiTags } = useTag();
 
   useEffect(() => {
     const sortedTagAmounts = Array.from(rawTagAmounts).sort();
@@ -70,6 +72,13 @@ const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
     setTags(root.subTags as Tag[]);
   }, [rawTagAmounts]);
 
+  // Fetch emoji tags when component mounts
+  useEffect(() => {
+    fetchEmojiTags().catch((error) => {
+      console.error("Failed to fetch emoji tags:", error);
+    });
+  }, [fetchEmojiTags]);
+
   return (
     <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap gap-2 mt-1">
       {tags.map((t, idx) => (
@@ -86,10 +95,14 @@ interface TagItemContainerProps {
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
   const { tag } = props;
   const memoFilterStore = useMemoFilterStore();
+  const { emojiTags, updateTagEmoji } = useTag();
   const tagFilters = memoFilterStore.getFiltersByFactor("tagSearch");
   const isActive = tagFilters.some((f) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
   const [showSubTags, toggleSubTags] = useToggle(false);
+
+  // Find emoji for this tag
+  const tagEmoji = emojiTags.find((t) => t.tagName === tag.text)?.emoji;
 
   const handleTagClick = () => {
     if (isActive) {
@@ -107,6 +120,22 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
     toggleSubTags();
   };
 
+  const handleEmojiSelect = async (emoji: string) => {
+    try {
+      await updateTagEmoji(tag.text, emoji);
+    } catch (error) {
+      console.error("Failed to update tag emoji:", error);
+    }
+  };
+
+  const handleEmojiRemove = async () => {
+    try {
+      await updateTagEmoji(tag.text, null);
+    } catch (error) {
+      console.error("Failed to remove tag emoji:", error);
+    }
+  };
+
   return (
     <>
       <div className="relative flex flex-row justify-between items-center w-full leading-6 py-0 mt-px rounded-lg text-sm select-none shrink-0">
@@ -115,8 +144,8 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
             isActive && "!text-blue-600"
           }`}
         >
-          <div className="shrink-0">
-            <HashIcon className="w-4 h-auto shrink-0 mr-1 text-gray-400 dark:text-gray-500" />
+          <div className="shrink-0 mr-1">
+            <EmojiPickerPopover emoji={tagEmoji} onEmojiSelect={handleEmojiSelect} onEmojiRemove={handleEmojiRemove} />
           </div>
           <span className="truncate cursor-pointer hover:opacity-80" onClick={handleTagClick}>
             {tag.key} {tag.amount > 1 && `(${tag.amount})`}
