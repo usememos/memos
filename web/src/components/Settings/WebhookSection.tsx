@@ -1,7 +1,7 @@
-import { Button } from "@usememos/mui";
 import { ExternalLinkIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { webhookServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Webhook } from "@/types/proto/api/v1/webhook_service";
@@ -85,7 +85,7 @@ const WebhookSection = () => {
                     </td>
                     <td className="relative whitespace-nowrap px-3 py-2 text-right text-sm">
                       <Button
-                        variant="plain"
+                        variant="ghost"
                         onClick={() => {
                           handleDeleteWebhook(webhook);
                         }}

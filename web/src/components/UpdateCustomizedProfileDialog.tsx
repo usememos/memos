@@ -1,7 +1,9 @@
-import { Button, Input, Textarea } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
 import { WorkspaceSettingKey } from "@/store/v2/workspace";
@@ -99,7 +101,7 @@ const UpdateCustomizedProfileDialog = ({ destroy }: Props) => {
     <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p className="title-text">{t("setting.system-section.customize-server.title")}</p>
-        <Button variant="plain" onClick={handleCloseButtonClick}>
+        <Button variant="ghost" onClick={handleCloseButtonClick}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
@@ -109,19 +111,19 @@ const UpdateCustomizedProfileDialog = ({ destroy }: Props) => {
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.icon-url")}</p>
         <Input className="w-full" type="text" value={customProfile.logoUrl} onChange={handleLogoUrlChanged} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.description")}</p>
-        <Textarea rows={3} fullWidth value={customProfile.description} onChange={handleDescriptionChanged} />
+        <Textarea rows={3} value={customProfile.description} onChange={handleDescriptionChanged} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.locale")}</p>
         <LocaleSelect className="w-full!" value={customProfile.locale} onChange={handleLocaleSelectChange} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.appearance")}</p>
         <AppearanceSelect className="w-full!" value={customProfile.appearance as Appearance} onChange={handleAppearanceSelectChange} />
         <div className="mt-4 w-full flex flex-row justify-between items-center space-x-2">
           <div className="flex flex-row justify-start items-center">
-            <Button variant="outlined" onClick={handleRestoreButtonClick}>
+            <Button variant="outline" onClick={handleRestoreButtonClick}>
               {t("common.restore")}
             </Button>
           </div>
           <div className="flex flex-row justify-end items-center gap-2">
-            <Button variant="plain" onClick={handleCloseButtonClick}>
+            <Button variant="ghost" onClick={handleCloseButtonClick}>
               {t("common.cancel")}
             </Button>
             <Button color="primary" onClick={handleSaveButtonClick}>

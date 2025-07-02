@@ -1,15 +1,15 @@
-import { Tooltip } from "@mui/joy";
 import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { memo, useCallback, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { cn } from "@/lib/utils";
 import { memoStore, userStore, workspaceStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import { isSuperUser } from "@/utils/user";
@@ -170,10 +170,13 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
         <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
           <div className="w-auto invisible group-hover:visible flex flex-row justify-between items-center gap-2">
             {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
-              <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
-                <span className="flex justify-center items-center hover:opacity-70">
-                  <VisibilityIcon visibility={memo.visibility} />
-                </span>
+              <Tooltip>
+                <TooltipTrigger>
+                  <span className="flex justify-center items-center hover:opacity-70">
+                    <VisibilityIcon visibility={memo.visibility} />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>{t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)}</TooltipContent>
               </Tooltip>
             )}
             {currentUser && !isArchived && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
@@ -195,11 +198,18 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
             </Link>
           )}
           {props.showPinned && memo.pinned && (
-            <Tooltip title={t("common.unpin")} placement="top">
-              <span className="cursor-pointer">
-                <BookmarkIcon className="w-4 h-auto text-amber-500" onClick={onPinIconClick} />
-              </span>
-            </Tooltip>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="cursor-pointer">
+                    <BookmarkIcon className="w-4 h-auto text-amber-500" onClick={onPinIconClick} />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t("common.unpin")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
           {nsfw && showNSFWContent && (
             <span className="cursor-pointer">

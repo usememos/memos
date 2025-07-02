@@ -1,13 +1,31 @@
-import { useColorScheme } from "@mui/joy";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
   content: string;
 }
 
 const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
-  const { mode: colorMode } = useColorScheme();
+  const [colorMode, setColorMode] = useState<"light" | "dark">("light");
   const mermaidDockBlock = useRef<null>(null);
+
+  // Simple dark mode detection
+  useEffect(() => {
+    const updateMode = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setColorMode(isDark ? "dark" : "light");
+    };
+
+    updateMode();
+
+    // Watch for changes to the dark class
+    const observer = new MutationObserver(updateMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     // Dynamically import mermaid to ensure compatibility with Vite

@@ -1,10 +1,12 @@
-import { Chip, ChipDelete } from "@mui/joy";
-import { Button, Input, Switch } from "@usememos/mui";
 import { isEqual, uniq } from "lodash-es";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, X } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
 import { WorkspaceSettingKey } from "@/store/v2/workspace";
@@ -70,42 +72,42 @@ const MemoRelatedSettings = observer(() => {
         <span>{t("setting.system-section.disable-public-memos")}</span>
         <Switch
           checked={memoRelatedSetting.disallowPublicVisibility}
-          onChange={(event) => updatePartialSetting({ disallowPublicVisibility: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ disallowPublicVisibility: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.display-with-updated-time")}</span>
         <Switch
           checked={memoRelatedSetting.displayWithUpdateTime}
-          onChange={(event) => updatePartialSetting({ displayWithUpdateTime: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ displayWithUpdateTime: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.memo-related-settings.enable-link-preview")}</span>
         <Switch
           checked={memoRelatedSetting.enableLinkPreview}
-          onChange={(event) => updatePartialSetting({ enableLinkPreview: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ enableLinkPreview: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.memo-related-settings.enable-memo-comments")}</span>
         <Switch
           checked={memoRelatedSetting.enableComment}
-          onChange={(event) => updatePartialSetting({ enableComment: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ enableComment: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.enable-double-click-to-edit")}</span>
         <Switch
           checked={memoRelatedSetting.enableDoubleClickEdit}
-          onChange={(event) => updatePartialSetting({ enableDoubleClickEdit: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ enableDoubleClickEdit: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.disable-markdown-shortcuts-in-editor")}</span>
         <Switch
           checked={memoRelatedSetting.disableMarkdownShortcuts}
-          onChange={(event) => updatePartialSetting({ disableMarkdownShortcuts: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ disableMarkdownShortcuts: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
@@ -122,33 +124,27 @@ const MemoRelatedSettings = observer(() => {
         <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
           {memoRelatedSetting.reactions.map((reactionType) => {
             return (
-              <Chip
-                className="h-8!"
-                key={reactionType}
-                variant="outlined"
-                size="lg"
-                endDecorator={
-                  <ChipDelete
-                    onDelete={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
-                  />
-                }
-              >
+              <Badge key={reactionType} variant="outline" className="h-8 flex items-center gap-1">
                 {reactionType}
-              </Chip>
+                <X
+                  className="w-3 h-3 cursor-pointer hover:text-red-500"
+                  onClick={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
+                />
+              </Badge>
             );
           })}
-          <Input
-            className="w-32 rounded-full! pl-1!"
-            placeholder={t("common.input")}
-            value={editingReaction}
-            onChange={(event) => setEditingReaction(event.target.value.trim())}
-            endDecorator={
-              <CheckIcon
-                className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
-                onClick={() => upsertReaction()}
-              />
-            }
-          />
+          <div className="flex items-center gap-1">
+            <Input
+              className="w-32"
+              placeholder={t("common.input")}
+              value={editingReaction}
+              onChange={(event) => setEditingReaction(event.target.value.trim())}
+            />
+            <CheckIcon
+              className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
+              onClick={() => upsertReaction()}
+            />
+          </div>
         </div>
       </div>
       <div className="w-full">
@@ -156,43 +152,37 @@ const MemoRelatedSettings = observer(() => {
           <span>{t("setting.memo-related-settings.enable-blur-nsfw-content")}</span>
           <Switch
             checked={memoRelatedSetting.enableBlurNsfwContent}
-            onChange={(event) => updatePartialSetting({ enableBlurNsfwContent: event.target.checked })}
+            onCheckedChange={(checked) => updatePartialSetting({ enableBlurNsfwContent: checked })}
           />
         </div>
         <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
           {memoRelatedSetting.nsfwTags.map((nsfwTag) => {
             return (
-              <Chip
-                className="h-8!"
-                key={nsfwTag}
-                variant="outlined"
-                size="lg"
-                endDecorator={
-                  <ChipDelete
-                    onDelete={() => updatePartialSetting({ nsfwTags: memoRelatedSetting.nsfwTags.filter((r) => r !== nsfwTag) })}
-                  />
-                }
-              >
+              <Badge key={nsfwTag} variant="outline" className="h-8 flex items-center gap-1">
                 {nsfwTag}
-              </Chip>
+                <X
+                  className="w-3 h-3 cursor-pointer hover:text-red-500"
+                  onClick={() => updatePartialSetting({ nsfwTags: memoRelatedSetting.nsfwTags.filter((r) => r !== nsfwTag) })}
+                />
+              </Badge>
             );
           })}
-          <Input
-            className="w-32 rounded-full! pl-1!"
-            placeholder={t("common.input")}
-            value={editingNsfwTag}
-            onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
-            endDecorator={
-              <CheckIcon
-                className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
-                onClick={() => upsertNsfwTags()}
-              />
-            }
-          />
+          <div className="flex items-center gap-1">
+            <Input
+              className="w-32"
+              placeholder={t("common.input")}
+              value={editingNsfwTag}
+              onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
+            />
+            <CheckIcon
+              className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
+              onClick={() => upsertNsfwTags()}
+            />
+          </div>
         </div>
       </div>
       <div className="mt-2 w-full flex justify-end">
-        <Button color="primary" disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
+        <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
           {t("common.save")}
         </Button>
       </div>

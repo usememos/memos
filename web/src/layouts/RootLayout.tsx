@@ -5,11 +5,11 @@ import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import { cn } from "@/lib/utils";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
 import { workspaceStore } from "@/store/v2";
 import memoFilterStore from "@/store/v2/memoFilter";
-import { cn } from "@/utils";
 
 const RootLayout = observer(() => {
   const location = useLocation();

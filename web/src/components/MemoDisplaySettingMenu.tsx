@@ -1,10 +1,10 @@
-import { Option, Select } from "@mui/joy";
 import { Settings2Icon } from "lucide-react";
 import { observer } from "mobx-react-lite";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { viewStore } from "@/store/v2";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface Props {
   className?: string;
@@ -26,29 +26,39 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-sm shrink-0 mr-3 dark:text-zinc-400">{t("memo.direction")}</span>
             <Select
-              value={viewStore.state.orderByTimeAsc}
-              onChange={(_, value) =>
+              value={viewStore.state.orderByTimeAsc.toString()}
+              onValueChange={(value) =>
                 viewStore.state.setPartial({
-                  orderByTimeAsc: Boolean(value),
+                  orderByTimeAsc: value === "true",
                 })
               }
             >
-              <Option value={false}>{t("memo.direction-desc")}</Option>
-              <Option value={true}>{t("memo.direction-asc")}</Option>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="false">{t("memo.direction-desc")}</SelectItem>
+                <SelectItem value="true">{t("memo.direction-asc")}</SelectItem>
+              </SelectContent>
             </Select>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-sm shrink-0 mr-3 dark:text-zinc-400">{t("common.layout")}</span>
             <Select
               value={viewStore.state.layout}
-              onChange={(_, value) =>
+              onValueChange={(value) =>
                 viewStore.state.setPartial({
                   layout: value as "LIST" | "MASONRY",
                 })
               }
             >
-              <Option value={"LIST"}>{t("memo.list")}</Option>
-              <Option value={"MASONRY"}>{t("memo.masonry")}</Option>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="LIST">{t("memo.list")}</SelectItem>
+                <SelectItem value="MASONRY">{t("memo.masonry")}</SelectItem>
+              </SelectContent>
             </Select>
           </div>
         </div>

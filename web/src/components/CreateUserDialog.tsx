@@ -1,8 +1,10 @@
-import { Radio, RadioGroup } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
@@ -66,7 +68,7 @@ const CreateUserDialog: React.FC<Props> = (props: Props) => {
     <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p className="title-text">{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.user")}`}</p>
-        <Button variant="plain" onClick={() => destroy()}>
+        <Button variant="ghost" onClick={() => destroy()}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
@@ -99,16 +101,22 @@ const CreateUserDialog: React.FC<Props> = (props: Props) => {
           />
           <span className="text-sm whitespace-nowrap mt-3 mb-1">{t("common.role")}</span>
           <RadioGroup
-            orientation="horizontal"
-            defaultValue={user.role}
-            onChange={(e) => setPartialUser({ role: e.target.value as User_Role })}
+            value={user.role}
+            onValueChange={(value) => setPartialUser({ role: value as User_Role })}
+            className="flex flex-row gap-4"
           >
-            <Radio value={User_Role.USER} label={t("setting.member-section.user")} />
-            <Radio value={User_Role.ADMIN} label={t("setting.member-section.admin")} />
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value={User_Role.USER} id="user" />
+              <Label htmlFor="user">{t("setting.member-section.user")}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value={User_Role.ADMIN} id="admin" />
+              <Label htmlFor="admin">{t("setting.member-section.admin")}</Label>
+            </div>
           </RadioGroup>
         </div>
         <div className="w-full flex flex-row justify-end items-center space-x-2 mt-2">
-          <Button variant="plain" disabled={requestState.isLoading} onClick={destroy}>
+          <Button variant="ghost" disabled={requestState.isLoading} onClick={destroy}>
             {t("common.cancel")}
           </Button>
           <Button color="primary" disabled={requestState.isLoading} onClick={handleConfirm}>

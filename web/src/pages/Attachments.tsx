@@ -1,5 +1,3 @@
-import { Divider, Tooltip } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
 import dayjs from "dayjs";
 import { includes } from "lodash-es";
 import { PaperclipIcon, SearchIcon, TrashIcon } from "lucide-react";
@@ -8,6 +6,10 @@ import { useEffect, useState } from "react";
 import AttachmentIcon from "@/components/AttachmentIcon";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { attachmentServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
@@ -75,13 +77,15 @@ const Attachments = observer(() => {
               <span className="text-lg">{t("common.attachments")}</span>
             </p>
             <div>
-              <Input
-                className="max-w-32"
-                placeholder={t("common.search")}
-                startDecorator={<SearchIcon className="w-4 h-auto" />}
-                value={state.searchQuery}
-                onChange={(e) => setState({ ...state, searchQuery: e.target.value })}
-              />
+              <div className="relative max-w-32">
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Input
+                  className="pl-9"
+                  placeholder={t("common.search")}
+                  value={state.searchQuery}
+                  onChange={(e) => setState({ ...state, searchQuery: e.target.value })}
+                />
+              </div>
             </div>
           </div>
           <div className="w-full flex flex-col justify-start items-start mt-4 mb-6">
@@ -127,18 +131,25 @@ const Attachments = observer(() => {
 
                     {unusedAttachments.length > 0 && (
                       <>
-                        <Divider />
+                        <Separator />
                         <div className="w-full flex flex-row justify-start items-start">
                           <div className="w-16 sm:w-24 sm:pl-4 flex flex-col justify-start items-start"></div>
                           <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                             <div className="w-full flex flex-row justify-start items-center gap-2">
                               <span className="text-gray-600 dark:text-gray-400">{t("resource.unused-resources")}</span>
                               <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedAttachments.length})</span>
-                              <Tooltip title="Delete all" placement="top">
-                                <Button variant="plain" onClick={handleDeleteUnusedAttachments}>
-                                  <TrashIcon className="w-4 h-auto opacity-60" />
-                                </Button>
-                              </Tooltip>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="sm" onClick={handleDeleteUnusedAttachments}>
+                                      <TrashIcon className="w-4 h-auto opacity-60" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Delete all</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </div>
                             {unusedAttachments.map((attachment) => {
                               return (

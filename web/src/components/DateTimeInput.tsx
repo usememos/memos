@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 const DATE_TIME_FORMAT = "M/D/YYYY, H:mm:ss";
 

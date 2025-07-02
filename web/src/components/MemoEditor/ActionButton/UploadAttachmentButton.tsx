@@ -1,8 +1,8 @@
-import { Button } from "@usememos/mui";
 import { LoaderIcon, PaperclipIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useContext, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 import { attachmentStore } from "@/store/v2";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { MemoEditorContext } from "../types";
@@ -73,7 +73,7 @@ const UploadAttachmentButton = observer((props: Props) => {
   const isUploading = state.uploadingFlag || props.isUploading;
 
   return (
-    <Button className="relative p-0" variant="plain" disabled={isUploading}>
+    <Button className="relative" variant="ghost" disabled={isUploading}>
       {isUploading ? <LoaderIcon className="w-5 h-5 animate-spin" /> : <PaperclipIcon className="w-5 h-5" />}
       <input
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"

@@ -1,4 +1,3 @@
-import { Button } from "@usememos/mui";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { ExternalLinkIcon } from "lucide-react";
@@ -9,6 +8,7 @@ import { useParams } from "react-router-dom";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
+import { Button } from "@/components/ui/button";
 import useLoading from "@/hooks/useLoading";
 import { viewStore, userStore } from "@/store/v2";
 import memoFilterStore from "@/store/v2/memoFilter";
@@ -81,7 +81,7 @@ const UserProfile = observer(() => {
           (user ? (
             <>
               <div className="my-4 w-full flex justify-end items-center gap-2">
-                <Button variant="outlined" onClick={handleCopyProfileLink}>
+                <Button variant="outline" onClick={handleCopyProfileLink}>
                   {t("common.share")}
                   <ExternalLinkIcon className="ml-1 w-4 h-auto opacity-60" />
                 </Button>

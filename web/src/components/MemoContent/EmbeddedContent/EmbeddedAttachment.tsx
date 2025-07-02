@@ -2,8 +2,8 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import MemoAttachmentListView from "@/components/MemoAttachmentListView";
 import useLoading from "@/hooks/useLoading";
+import { cn } from "@/lib/utils";
 import { attachmentStore } from "@/store/v2";
-import { cn } from "@/utils";
 import Error from "./Error";
 
 interface Props {

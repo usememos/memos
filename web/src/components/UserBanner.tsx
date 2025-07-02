@@ -2,11 +2,11 @@ import { ArchiveIcon, LogOutIcon, User2Icon, SquareUserIcon, SettingsIcon, BellI
 import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface Props {
   collapsed?: boolean;

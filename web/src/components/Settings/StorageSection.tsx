@@ -1,11 +1,16 @@
-import { Divider, List, ListItem, Radio, RadioGroup, Tooltip } from "@mui/joy";
-import { Button, Input, Switch } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { HelpCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
 import { WorkspaceSettingKey } from "@/store/v2/workspace";
@@ -131,23 +136,38 @@ const StorageSection = observer(() => {
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <div className="font-medium text-gray-700 dark:text-gray-500">{t("setting.storage-section.current-storage")}</div>
       <RadioGroup
-        orientation="horizontal"
-        className="w-full"
-        value={workspaceStorageSetting.storageType}
-        onChange={(event) => {
-          handleStorageTypeChanged(event.target.value as WorkspaceStorageSetting_StorageType);
+        value={workspaceStorageSetting.storageType.toString()}
+        onValueChange={(value) => {
+          handleStorageTypeChanged(parseInt(value) as unknown as WorkspaceStorageSetting_StorageType);
         }}
+        className="flex flex-row gap-4"
       >
-        <Radio value={WorkspaceStorageSetting_StorageType.DATABASE} label={t("setting.storage-section.type-database")} />
-        <Radio value={WorkspaceStorageSetting_StorageType.LOCAL} label={t("setting.storage-section.type-local")} />
-        <Radio value={WorkspaceStorageSetting_StorageType.S3} label={"S3"} />
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value={WorkspaceStorageSetting_StorageType.DATABASE.toString()} id="database" />
+          <Label htmlFor="database">{t("setting.storage-section.type-database")}</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value={WorkspaceStorageSetting_StorageType.LOCAL.toString()} id="local" />
+          <Label htmlFor="local">{t("setting.storage-section.type-local")}</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value={WorkspaceStorageSetting_StorageType.S3.toString()} id="s3" />
+          <Label htmlFor="s3">S3</Label>
+        </div>
       </RadioGroup>
       <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">
           <span className="text-gray-700 dark:text-gray-500 mr-1">{t("setting.system-section.max-upload-size")}</span>
-          <Tooltip title={t("setting.system-section.max-upload-size-hint")} placement="top">
-            <HelpCircleIcon className="w-4 h-auto" />
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <HelpCircleIcon className="w-4 h-auto" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t("setting.system-section.max-upload-size-hint")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <Input className="w-16 font-mono" value={workspaceStorageSetting.uploadSizeLimitMb} onChange={handleMaxUploadSizeChanged} />
       </div>
@@ -189,20 +209,23 @@ const StorageSection = observer(() => {
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-gray-700 dark:text-gray-500 mr-1">Use Path Style</span>
-            <Switch checked={workspaceStorageSetting.s3Config?.usePathStyle} onChange={handleS3ConfigUsePathStyleChanged} />
+            <Switch
+              checked={workspaceStorageSetting.s3Config?.usePathStyle}
+              onCheckedChange={(checked) => handleS3ConfigUsePathStyleChanged({ target: { checked } } as any)}
+            />
           </div>
         </>
       )}
       <div>
-        <Button color="primary" disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>
+        <Button disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>
           {t("common.save")}
         </Button>
       </div>
-      <Divider className="my-2!" />
+      <Separator className="my-2" />
       <div className="w-full mt-4">
         <p className="text-sm">{t("common.learn-more")}:</p>
-        <List component="ul" marker="disc" size="sm">
-          <ListItem>
+        <ul className="text-sm list-disc ml-4 space-y-1">
+          <li>
             <Link
               className="text-sm text-blue-600 hover:underline"
               to="https://www.usememos.com/docs/advanced-settings/local-storage"
@@ -210,8 +233,8 @@ const StorageSection = observer(() => {
             >
               Docs - Local storage
             </Link>
-          </ListItem>
-          <ListItem>
+          </li>
+          <li>
             <Link
               className="text-sm text-blue-600 hover:underline"
               to="https://www.usememos.com/blog/choosing-a-storage-for-your-resource"
@@ -219,8 +242,8 @@ const StorageSection = observer(() => {
             >
               Choosing a Storage for Your Resource: Database, S3 or Local Storage?
             </Link>
-          </ListItem>
-        </List>
+          </li>
+        </ul>
       </div>
     </div>
   );

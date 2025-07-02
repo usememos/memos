@@ -1,8 +1,8 @@
-import { List, ListItem } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { memoServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
@@ -50,7 +50,7 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
     <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p className="title-text">{t("tag.rename-tag")}</p>
-        <Button variant="plain" onClick={() => destroy()}>
+        <Button variant="ghost" onClick={() => destroy()}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
@@ -64,17 +64,17 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
             <span className="w-20 text-sm whitespace-nowrap shrink-0 text-right">{t("tag.new-name")}</span>
             <Input className="w-full" type="text" placeholder="A new tag name" value={newName} onChange={handleTagNameInputChange} />
           </div>
-          <List size="sm" marker="disc">
-            <ListItem>
+          <ul className="list-disc list-inside text-sm ml-4">
+            <li>
               <p className="leading-5">{t("tag.rename-tip")}</p>
-            </ListItem>
-          </List>
+            </li>
+          </ul>
         </div>
         <div className="w-full flex flex-row justify-end items-center space-x-2">
-          <Button variant="plain" disabled={requestState.isLoading} onClick={destroy}>
+          <Button variant="ghost" disabled={requestState.isLoading} onClick={destroy}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" disabled={requestState.isLoading} onClick={handleConfirm}>
+          <Button disabled={requestState.isLoading} onClick={handleConfirm}>
             {t("common.confirm")}
           </Button>
         </div>

@@ -1,6 +1,6 @@
 import useWindowScroll from "react-use/lib/useWindowScroll";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import NavigationDrawer from "./NavigationDrawer";
 
 interface Props {

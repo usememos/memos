@@ -1,9 +1,10 @@
-import { Button, Input } from "@usememos/mui";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -62,8 +63,7 @@ const PasswordSignInForm = observer(() => {
         <div className="w-full flex flex-col justify-start items-start">
           <span className="leading-8 text-gray-600">{t("common.username")}</span>
           <Input
-            className="w-full bg-white dark:bg-black"
-            size="lg"
+            className="w-full bg-white dark:bg-black h-10"
             type="text"
             readOnly={actionBtnLoadingState.isLoading}
             placeholder={t("common.username")}
@@ -78,8 +78,7 @@ const PasswordSignInForm = observer(() => {
         <div className="w-full flex flex-col justify-start items-start">
           <span className="leading-8 text-gray-600">{t("common.password")}</span>
           <Input
-            className="w-full bg-white dark:bg-black"
-            size="lg"
+            className="w-full bg-white dark:bg-black h-10"
             type="password"
             readOnly={actionBtnLoadingState.isLoading}
             placeholder={t("common.password")}
@@ -93,14 +92,7 @@ const PasswordSignInForm = observer(() => {
         </div>
       </div>
       <div className="flex flex-row justify-end items-center w-full mt-6">
-        <Button
-          type="submit"
-          color="primary"
-          size="lg"
-          fullWidth
-          disabled={actionBtnLoadingState.isLoading}
-          onClick={handleSignInButtonClick}
-        >
+        <Button type="submit" className="w-full h-10" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
           {t("common.sign-in")}
           {actionBtnLoadingState.isLoading && <LoaderIcon className="w-5 h-auto ml-2 animate-spin opacity-60" />}
         </Button>

@@ -1,4 +1,3 @@
-import { Option, Select } from "@mui/joy";
 import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -12,6 +11,7 @@ import SSOSection from "@/components/Settings/SSOSection";
 import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import StorageSection from "@/components/Settings/StorageSection";
 import WorkspaceSection from "@/components/Settings/WorkspaceSection";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { workspaceStore } from "@/store/v2";
@@ -123,12 +123,17 @@ const Setting = observer(() => {
           </div>
           <div className="w-full grow sm:pl-4 overflow-x-auto">
             <div className="w-auto inline-block my-2 sm:hidden">
-              <Select value={state.selectedSection} onChange={(_, value) => handleSectionSelectorItemClick(value as SettingSection)}>
-                {settingsSectionList.map((settingSection) => (
-                  <Option key={settingSection} value={settingSection}>
-                    {t(`setting.${settingSection}`)}
-                  </Option>
-                ))}
+              <Select value={state.selectedSection} onValueChange={(value) => handleSectionSelectorItemClick(value as SettingSection)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select section" />
+                </SelectTrigger>
+                <SelectContent>
+                  {settingsSectionList.map((settingSection) => (
+                    <SelectItem key={settingSection} value={settingSection}>
+                      {t(`setting.${settingSection}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             {state.selectedSection === "my-account" ? (

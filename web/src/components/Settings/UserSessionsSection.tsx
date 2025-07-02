@@ -1,7 +1,7 @@
-import { Button } from "@usememos/mui";
 import { ClockIcon, MonitorIcon, SmartphoneIcon, TabletIcon, TrashIcon, WifiIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { UserSession } from "@/types/proto/api/v1/user_service";
@@ -124,7 +124,7 @@ const UserSessionsSection = () => {
                       </td>
                       <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm">
                         <Button
-                          variant="plain"
+                          variant="ghost"
                           disabled={isCurrentSession(userSession)}
                           onClick={() => {
                             handleRevokeSession(userSession);

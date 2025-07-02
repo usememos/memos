@@ -1,16 +1,16 @@
-import { Switch } from "@usememos/mui";
 import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
 import useLocalStorage from "react-use/lib/useLocalStorage";
+import { Switch } from "@/components/ui/switch";
 import { memoServiceClient } from "@/grpcweb";
+import { cn } from "@/lib/utils";
 import { userStore } from "@/store/v2";
 import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import showRenameTagDialog from "../RenameTagDialog";
 import TagTree from "../TagTree";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface Props {
   readonly?: boolean;
@@ -58,7 +58,7 @@ const TagsSection = observer((props: Props) => {
             <PopoverContent align="end" alignOffset={-12}>
               <div className="w-auto flex flex-row justify-between items-center gap-2 p-1">
                 <span className="text-sm shrink-0 dark:text-zinc-400">{t("common.tree-mode")}</span>
-                <Switch size="sm" checked={treeMode} onChange={(event) => setTreeMode(event.target.checked)} />
+                <Switch checked={treeMode} onCheckedChange={(checked) => setTreeMode(checked)} />
               </div>
             </PopoverContent>
           </Popover>

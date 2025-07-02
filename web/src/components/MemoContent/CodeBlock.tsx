@@ -3,7 +3,7 @@ import hljs from "highlight.js";
 import { CopyIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import MermaidBlock from "./MermaidBlock";
 import { BaseProps } from "./types";
 

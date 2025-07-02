@@ -46,7 +46,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          "mui-vendor": ["@mui/joy", "@emotion/react", "@emotion/styled"],
           "utils-vendor": ["dayjs", "lodash-es"],
           "katex-vendor": ["katex"],
           "mermaid-vendor": ["mermaid"],

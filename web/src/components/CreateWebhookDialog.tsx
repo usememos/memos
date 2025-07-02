@@ -1,7 +1,8 @@
-import { Button, Input } from "@usememos/mui";
 import { XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { webhookServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
@@ -108,7 +109,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
         <p className="title-text">
           {isCreating ? t("setting.webhook-section.create-dialog.create-webhook") : t("setting.webhook-section.create-dialog.edit-webhook")}
         </p>
-        <Button variant="plain" onClick={() => destroy()}>
+        <Button variant="ghost" onClick={() => destroy()}>
           <XIcon className="w-5 h-auto" />
         </Button>
       </div>
@@ -142,7 +143,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
           </div>
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-2 space-x-2">
-          <Button variant="plain" disabled={requestState.isLoading} onClick={destroy}>
+          <Button variant="ghost" disabled={requestState.isLoading} onClick={destroy}>
             {t("common.cancel")}
           </Button>
           <Button color="primary" disabled={requestState.isLoading} onClick={handleSaveBtnClick}>

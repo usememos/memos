@@ -1,12 +1,12 @@
-import { Tooltip } from "@mui/joy";
 import { EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 import { userStore } from "@/store/v2";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import BrandBanner from "./BrandBanner";
 import UserBanner from "./UserBanner";
@@ -89,9 +89,16 @@ const Navigation = observer((props: Props) => {
             viewTransition
           >
             {props.collapsed ? (
-              <Tooltip title={navLink.title} placement="right" arrow>
-                <div>{navLink.icon}</div>
-              </Tooltip>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>{navLink.icon}</div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>{navLink.title}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ) : (
               navLink.icon
             )}

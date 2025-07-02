@@ -1,12 +1,12 @@
-import { Tooltip } from "@mui/joy";
 import { observer } from "mobx-react-lite";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { cn } from "@/lib/utils";
 import { memoStore } from "@/store/v2";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
-import { cn } from "@/utils";
 
 interface Props {
   memo: Memo;
@@ -65,20 +65,27 @@ const ReactionView = observer((props: Props) => {
   };
 
   return (
-    <Tooltip title={stringifyUsers(users, reactionType)} placement="top">
-      <div
-        className={cn(
-          "h-7 border border-zinc-200 px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1 dark:border-zinc-700",
-          "text-sm text-gray-600 dark:text-gray-400",
-          currentUser && !readonly && "cursor-pointer",
-          hasReaction && "bg-blue-100 border-blue-200 dark:bg-zinc-900",
-        )}
-        onClick={handleReactionClick}
-      >
-        <span>{reactionType}</span>
-        <span className="opacity-60">{users.length}</span>
-      </div>
-    </Tooltip>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className={cn(
+              "h-7 border border-zinc-200 px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1 dark:border-zinc-700",
+              "text-sm text-gray-600 dark:text-gray-400",
+              currentUser && !readonly && "cursor-pointer",
+              hasReaction && "bg-blue-100 border-blue-200 dark:bg-zinc-900",
+            )}
+            onClick={handleReactionClick}
+          >
+            <span>{reactionType}</span>
+            <span className="opacity-60">{users.length}</span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{stringifyUsers(users, reactionType)}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 });
 

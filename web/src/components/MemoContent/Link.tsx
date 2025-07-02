@@ -1,5 +1,5 @@
-import { Link as MLink, Tooltip } from "@mui/joy";
 import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { markdownServiceClient } from "@/grpcweb";
 import { workspaceStore } from "@/store/v2";
 import { LinkMetadata, Node } from "@/types/proto/api/v1/markdown_service";
@@ -43,33 +43,38 @@ const Link: React.FC<Props> = ({ content, url }: Props) => {
   };
 
   return (
-    <Tooltip
-      variant="outlined"
-      title={
-        linkMetadata && (
-          <div className="w-full max-w-64 sm:max-w-96 p-1 flex flex-col">
-            <div className="w-full flex flex-row justify-start items-center gap-1">
-              <img className="w-5 h-5 rounded" src={getFaviconWithGoogleS2(url)} alt={linkMetadata?.title} />
-              <h3 className="text-base truncate dark:opacity-90">{linkMetadata?.title}</h3>
+    <TooltipProvider>
+      <Tooltip open={showTooltip}>
+        <TooltipTrigger asChild>
+          <a
+            className="underline text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            target="_blank"
+            href={url}
+            rel="noopener noreferrer"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            {content ? content.map((child, index) => <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />) : url}
+          </a>
+        </TooltipTrigger>
+        {linkMetadata && (
+          <TooltipContent className="w-full max-w-64 sm:max-w-96 p-1">
+            <div className="w-full flex flex-col">
+              <div className="w-full flex flex-row justify-start items-center gap-1">
+                <img className="w-5 h-5 rounded" src={getFaviconWithGoogleS2(url)} alt={linkMetadata?.title} />
+                <h3 className="text-base truncate dark:opacity-90">{linkMetadata?.title}</h3>
+              </div>
+              {linkMetadata.description && (
+                <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>
+              )}
+              {linkMetadata.image && (
+                <img className="mt-1 w-full h-32 object-cover rounded" src={linkMetadata.image} alt={linkMetadata.title} />
+              )}
             </div>
-            {linkMetadata.description && (
-              <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>
-            )}
-            {linkMetadata.image && (
-              <img className="mt-1 w-full h-32 object-cover rounded" src={linkMetadata.image} alt={linkMetadata.title} />
-            )}
-          </div>
-        )
-      }
-      open={showTooltip}
-      arrow
-    >
-      <MLink underline="always" target="_blank" href={url} rel="noopener noreferrer">
-        <span onMouseEnter={handleMouseEnter} onMouseLeave={() => setShowTooltip(false)}>
-          {content ? content.map((child, index) => <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />) : url}
-        </span>
-      </MLink>
-    </Tooltip>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 

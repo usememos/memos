@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
+import { cn } from "@/lib/utils";
 import { workspaceStore } from "@/store/v2";
-import { cn } from "@/utils";
 import AppearanceSelect from "./AppearanceSelect";
 import LocaleSelect from "./LocaleSelect";
 

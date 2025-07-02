@@ -1,9 +1,9 @@
-import { Button } from "@usememos/mui";
 import { ArrowUpIcon, LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { matchPath } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
+import { Button } from "@/components/ui/button";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { Routes } from "@/router";
@@ -220,7 +220,7 @@ const BackToTop = () => {
   }
 
   return (
-    <Button variant="plain" onClick={scrollToTop}>
+    <Button variant="ghost" onClick={scrollToTop}>
       {t("router.back-to-top")}
       <ArrowUpIcon className="ml-1 w-4 h-auto" />
     </Button>

@@ -4,10 +4,10 @@ import { useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { cn } from "@/lib/utils";
 import { memoStore, workspaceStore } from "@/store/v2";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { cn } from "@/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface Props {
   memo: Memo;
