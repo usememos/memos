@@ -156,7 +156,7 @@ func (s *APIV1Service) convertTagFromStore(ctx context.Context, tag *store.Tag) 
 	return result, nil
 }
 
-// calculateTagHash calculates a hash for a tag name for use as unique identifier
+// calculateTagHash calculates a hash for a tag name for use as unique identifier.
 func calculateTagHash(tagName string) string {
 	hash := sha256.Sum256([]byte(tagName))
 	return fmt.Sprintf("%x", hash)
