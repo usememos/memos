@@ -123,7 +123,7 @@ export const useTagStore = create(
     updateTagEmoji: async (tagName: string, emoji: string | null) => {
       const tag = await tagServiceClient.updateTag({
         tagName,
-        emoji: emoji || undefined,
+        emoji: emoji === null ? "" : emoji,
       });
 
       // Update both pinned tags and emoji tags lists
