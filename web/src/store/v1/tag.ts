@@ -10,14 +10,16 @@ interface State {
   stateId: string;
   pinnedTags: Tag[];
   emojiTags: Tag[];
-  currentRequest: AbortController | null;
+  pinnedTagsRequest: AbortController | null;
+  emojiTagsRequest: AbortController | null;
 }
 
 const getDefaultState = (): State => ({
   stateId: uniqueId(),
   pinnedTags: [],
   emojiTags: [],
-  currentRequest: null,
+  pinnedTagsRequest: null,
+  emojiTagsRequest: null,
 });
 
 export const useTagStore = create(
@@ -28,18 +30,20 @@ export const useTagStore = create(
 
     // Fetch pinned tags
     fetchPinnedTags: async () => {
-      const currentRequest = get().currentRequest;
+      const currentRequest = get().pinnedTagsRequest;
       if (currentRequest) {
         currentRequest.abort();
       }
 
       const controller = new AbortController();
-      set({ currentRequest: controller });
+      set({ pinnedTagsRequest: controller });
 
       try {
         const { tags } = await tagServiceClient.listPinnedTags({}, { signal: controller.signal });
 
         if (!controller.signal.aborted) {
+          // Server already returns tags sorted by pinned time (newest first)
+          // No need to sort again, just use the server order
           set({ stateId: uniqueId(), pinnedTags: tags });
           return tags;
         }
@@ -49,21 +53,21 @@ export const useTagStore = create(
         }
         throw error;
       } finally {
-        if (get().currentRequest === controller) {
-          set({ currentRequest: null });
+        if (get().pinnedTagsRequest === controller) {
+          set({ pinnedTagsRequest: null });
         }
       }
     },
 
     // Fetch tags with emoji
     fetchEmojiTags: async () => {
-      const currentRequest = get().currentRequest;
+      const currentRequest = get().emojiTagsRequest;
       if (currentRequest) {
         currentRequest.abort();
       }
 
       const controller = new AbortController();
-      set({ currentRequest: controller });
+      set({ emojiTagsRequest: controller });
 
       try {
         const { tags } = await tagServiceClient.listTagsWithEmoji({}, { signal: controller.signal });
@@ -78,8 +82,8 @@ export const useTagStore = create(
         }
         throw error;
       } finally {
-        if (get().currentRequest === controller) {
-          set({ currentRequest: null });
+        if (get().emojiTagsRequest === controller) {
+          set({ emojiTagsRequest: null });
         }
       }
     },
@@ -91,17 +95,20 @@ export const useTagStore = create(
         pinned: true,
       });
 
-      // Update pinned tags list
+      // Update pinned tags list - newly pinned tag should be at the top
       const pinnedTags = get().pinnedTags;
       const existingIndex = pinnedTags.findIndex((t) => t.tagName === tagName);
 
+      let updatedPinnedTags: Tag[];
       if (existingIndex >= 0) {
-        pinnedTags[existingIndex] = tag;
+        // Remove the tag from its current position and add it to the front
+        updatedPinnedTags = [tag, ...pinnedTags.filter((t) => t.tagName !== tagName)];
       } else {
-        pinnedTags.push(tag);
+        // Add new pinned tag to the front
+        updatedPinnedTags = [tag, ...pinnedTags];
       }
 
-      set({ stateId: uniqueId(), pinnedTags: [...pinnedTags] });
+      set({ stateId: uniqueId(), pinnedTags: updatedPinnedTags });
       return tag;
     },
 
@@ -152,15 +159,21 @@ export const useTagStore = create(
 );
 
 export const useTag = () => {
-  const tagStore = useTagStore();
+  const pinnedTags = useTagStore((state) => state.pinnedTags);
+  const emojiTags = useTagStore((state) => state.emojiTags);
+  const pinTag = useTagStore((state) => state.pinTag);
+  const unpinTag = useTagStore((state) => state.unpinTag);
+  const updateTagEmoji = useTagStore((state) => state.updateTagEmoji);
+  const fetchPinnedTags = useTagStore((state) => state.fetchPinnedTags);
+  const fetchEmojiTags = useTagStore((state) => state.fetchEmojiTags);
 
   return {
-    pinnedTags: tagStore.getState().pinnedTags,
-    emojiTags: tagStore.getState().emojiTags,
-    pinTag: tagStore.pinTag,
-    unpinTag: tagStore.unpinTag,
-    updateTagEmoji: tagStore.updateTagEmoji,
-    fetchPinnedTags: tagStore.fetchPinnedTags,
-    fetchEmojiTags: tagStore.fetchEmojiTags,
+    pinnedTags,
+    emojiTags,
+    pinTag,
+    unpinTag,
+    updateTagEmoji,
+    fetchPinnedTags,
+    fetchEmojiTags,
   };
 };

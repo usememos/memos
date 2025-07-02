@@ -1,4 +1,4 @@
-import { ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon, PinIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
 import { useMemoFilterStore, useTag } from "@/store/v1";
@@ -17,7 +17,9 @@ interface Props {
 
 const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
   const [tags, setTags] = useState<Tag[]>([]);
-  const { fetchEmojiTags } = useTag();
+  const [pinnedTags, setPinnedTags] = useState<Tag[]>([]);
+  const [unpinnedTags, setUnpinnedTags] = useState<Tag[]>([]);
+  const { fetchEmojiTags, fetchPinnedTags, pinnedTags: pinnedTagsFromStore } = useTag();
 
   useEffect(() => {
     const sortedTagAmounts = Array.from(rawTagAmounts).sort();
@@ -72,17 +74,57 @@ const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
     setTags(root.subTags as Tag[]);
   }, [rawTagAmounts]);
 
-  // Fetch emoji tags when component mounts
+  // Separate pinned and unpinned tags
+  useEffect(() => {
+    const pinnedTagNames = pinnedTagsFromStore.map((tag) => tag.tagName);
+    const unpinned: Tag[] = [];
+
+    // For unpinned tags, use the alphabetically sorted order from tags
+    tags.forEach((tag) => {
+      if (!pinnedTagNames.includes(tag.text)) {
+        unpinned.push(tag);
+      }
+    });
+
+    // For pinned tags, maintain the server order (time-based) by creating them from pinnedTagsFromStore
+    const pinned: Tag[] = [];
+    pinnedTagsFromStore.forEach((pinnedTag) => {
+      // Find the corresponding tag from tags array to get the full structure with subTags
+      const fullTag = tags.find((tag) => tag.text === pinnedTag.tagName);
+      if (fullTag) {
+        pinned.push(fullTag);
+      }
+    });
+
+    setPinnedTags(pinned);
+    setUnpinnedTags(unpinned);
+  }, [tags, pinnedTagsFromStore]);
+
+  // Fetch emoji tags and pinned tags when component mounts
   useEffect(() => {
     fetchEmojiTags().catch((error) => {
       console.error("Failed to fetch emoji tags:", error);
     });
-  }, [fetchEmojiTags]);
+    fetchPinnedTags().catch((error) => {
+      console.error("Failed to fetch pinned tags:", error);
+    });
+  }, [fetchEmojiTags, fetchPinnedTags]);
 
   return (
     <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap gap-2 mt-1">
-      {tags.map((t, idx) => (
-        <TagItemContainer key={t.text + "-" + idx} tag={t} />
+      {/* Render pinned tags */}
+      {pinnedTags.length > 0 && (
+        <>
+          {pinnedTags.map((t, idx) => (
+            <TagItemContainer key={t.text + "-pinned-" + idx} tag={t} isPinned={true} />
+          ))}
+          <div className="w-full h-px bg-gray-300 dark:bg-zinc-500 my-1" />
+        </>
+      )}
+
+      {/* Render unpinned tags */}
+      {unpinnedTags.map((t, idx) => (
+        <TagItemContainer key={t.text + "-unpinned-" + idx} tag={t} isPinned={false} />
       ))}
     </div>
   );
@@ -90,19 +132,24 @@ const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
 
 interface TagItemContainerProps {
   tag: Tag;
+  isPinned?: boolean;
 }
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
-  const { tag } = props;
+  const { tag, isPinned = false } = props;
   const memoFilterStore = useMemoFilterStore();
-  const { emojiTags, updateTagEmoji } = useTag();
+  const { emojiTags, updateTagEmoji, pinTag, unpinTag } = useTag();
   const tagFilters = memoFilterStore.getFiltersByFactor("tagSearch");
   const isActive = tagFilters.some((f) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
   const [showSubTags, toggleSubTags] = useToggle(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Find emoji for this tag
   const tagEmoji = emojiTags.find((t) => t.tagName === tag.text)?.emoji;
+
+  // Check if this is a first-level tag (no "/" in the text)
+  const isFirstLevelTag = !tag.text.includes("/");
 
   const handleTagClick = () => {
     if (isActive) {
@@ -118,6 +165,19 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
   const handleToggleBtnClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     toggleSubTags();
+  };
+
+  const handlePinClick = async (event: React.MouseEvent) => {
+    event.stopPropagation();
+    try {
+      if (isPinned) {
+        await unpinTag(tag.text);
+      } else {
+        await pinTag(tag.text);
+      }
+    } catch (error) {
+      console.error("Failed to toggle pin status:", error);
+    }
   };
 
   const handleEmojiSelect = async (emoji: string) => {
@@ -138,7 +198,11 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
 
   return (
     <>
-      <div className="relative flex flex-row justify-between items-center w-full leading-6 py-0 mt-px rounded-lg text-sm select-none shrink-0">
+      <div
+        className="relative flex flex-row justify-between items-center w-full leading-6 py-0 mt-px rounded-lg text-sm select-none shrink-0"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <div
           className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-gray-600 dark:text-gray-400 ${
             isActive && "!text-blue-600"
@@ -152,6 +216,21 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
           </span>
         </div>
         <div className="flex flex-row justify-end items-center">
+          {/* Pin/Unpin button - only show for first-level tags and on hover */}
+          {isFirstLevelTag && (
+            <span
+              className={`flex flex-row justify-center items-center w-6 h-6 shrink-0 transition-all ${
+                isHovered ? "opacity-100" : "opacity-0"
+              }`}
+              onClick={handlePinClick}
+            >
+              <PinIcon
+                className={`w-4 h-4 cursor-pointer transition-colors ${
+                  isPinned ? "text-blue-500 fill-blue-500" : "text-gray-400 dark:text-gray-500 hover:text-blue-500"
+                }`}
+              />
+            </span>
+          )}
           {hasSubTags ? (
             <span
               className={`flex flex-row justify-center items-center w-6 h-6 shrink-0 transition-all rotate-0 ${showSubTags && "rotate-90"}`}
@@ -169,7 +248,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
           }`}
         >
           {tag.subTags.map((st, idx) => (
-            <TagItemContainer key={st.text + "-" + idx} tag={st} />
+            <TagItemContainer key={st.text + "-" + idx} tag={st} isPinned={false} />
           ))}
         </div>
       ) : null}
