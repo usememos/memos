@@ -2,11 +2,8 @@ syntax = "proto3";
 
 package memos.api.v1;
 
-import "api/v1/common.proto";
 import "google/api/annotations.proto";
-import "google/api/client.proto";
 import "google/api/field_behavior.proto";
-import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v1";
