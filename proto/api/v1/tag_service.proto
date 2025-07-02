@@ -77,4 +77,4 @@ message UpdateTagRequest {
 
   // Whether to pin/unpin the tag. If true, pins the tag. If false, unpins the tag.
   optional bool pinned = 3;
-} 
+}

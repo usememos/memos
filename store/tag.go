@@ -42,12 +42,12 @@ type UpdateTag struct {
 	UpdatePinned bool
 }
 
-// UpdateTag performs upsert operation: if tag doesn't exist, create it; if exists, update it
+// UpdateTag performs upsert operation: if tag doesn't exist, create it; if exists, update it.
 func (s *Store) UpdateTag(ctx context.Context, update *UpdateTag) (*Tag, error) {
 	return s.driver.UpdateTag(ctx, update)
 }
 
-// ListPinnedTags returns all pinned tags for a user, ordered by pinned time (newest first)
+// ListPinnedTags returns all pinned tags for a user, ordered by pinned time (newest first).
 func (s *Store) ListPinnedTags(ctx context.Context, creatorID int32) ([]*Tag, error) {
 	onlyPinned := true
 	find := &FindTag{
@@ -57,7 +57,7 @@ func (s *Store) ListPinnedTags(ctx context.Context, creatorID int32) ([]*Tag, er
 	return s.driver.ListTags(ctx, find)
 }
 
-// ListTagsWithEmoji returns all tags that have emoji set for a user
+// ListTagsWithEmoji returns all tags that have emoji set for a user.
 func (s *Store) ListTagsWithEmoji(ctx context.Context, creatorID int32) ([]*Tag, error) {
 	onlyWithEmoji := true
 	find := &FindTag{

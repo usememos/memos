@@ -61,44 +61,44 @@ func (d *DB) UpdateTag(ctx context.Context, update *store.UpdateTag) (*store.Tag
 			return nil, errors.Errorf("failed to create tag")
 		}
 		return tag, nil
-	} else {
-		// Update existing tag
-		sets := []string{}
-		args := []interface{}{}
-
-		if update.TagName != nil {
-			sets = append(sets, "`tag_name` = ?")
-			args = append(args, *update.TagName)
-		}
-
-		if update.Emoji != nil {
-			sets = append(sets, "`emoji` = ?")
-			args = append(args, *update.Emoji)
-		}
-
-		if update.UpdatePinned {
-			if update.PinnedTs != nil {
-				sets = append(sets, "`pinned_ts` = ?")
-				args = append(args, time.Unix(*update.PinnedTs, 0))
-			} else {
-				sets = append(sets, "`pinned_ts` = NULL")
-			}
-		}
-
-		if len(sets) == 0 {
-			return existing, nil
-		}
-
-		args = append(args, existing.ID)
-
-		stmt := "UPDATE `tag` SET " + strings.Join(sets, ", ") + " WHERE `id` = ?"
-		if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
-			return nil, err
-		}
-
-		// Return updated tag
-		return d.getTagByID(ctx, existing.ID)
 	}
+
+	// Update existing tag
+	sets := []string{}
+	args := []interface{}{}
+
+	if update.TagName != nil {
+		sets = append(sets, "`tag_name` = ?")
+		args = append(args, *update.TagName)
+	}
+
+	if update.Emoji != nil {
+		sets = append(sets, "`emoji` = ?")
+		args = append(args, *update.Emoji)
+	}
+
+	if update.UpdatePinned {
+		if update.PinnedTs != nil {
+			sets = append(sets, "`pinned_ts` = ?")
+			args = append(args, time.Unix(*update.PinnedTs, 0))
+		} else {
+			sets = append(sets, "`pinned_ts` = NULL")
+		}
+	}
+
+	if len(sets) == 0 {
+		return existing, nil
+	}
+
+	args = append(args, existing.ID)
+
+	stmt := "UPDATE `tag` SET " + strings.Join(sets, ", ") + " WHERE `id` = ?"
+	if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
+		return nil, err
+	}
+
+	// Return updated tag
+	return d.getTagByID(ctx, existing.ID)
 }
 
 func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, error) {

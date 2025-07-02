@@ -37,7 +37,7 @@ func NewTestTagService(store *store.Store, testUser *store.User) *TestTagService
 }
 
 // ListPinnedTags mimics the API service but uses the test user
-func (s *TestTagService) ListPinnedTags(ctx context.Context, request *v1pb.ListPinnedTagsRequest) (*v1pb.ListPinnedTagsResponse, error) {
+func (s *TestTagService) ListPinnedTags(ctx context.Context, _ *v1pb.ListPinnedTagsRequest) (*v1pb.ListPinnedTagsResponse, error) {
 	if s.testUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
 	}
@@ -62,7 +62,7 @@ func (s *TestTagService) ListPinnedTags(ctx context.Context, request *v1pb.ListP
 }
 
 // ListTagsWithEmoji mimics the API service but uses the test user
-func (s *TestTagService) ListTagsWithEmoji(ctx context.Context, request *v1pb.ListTagsWithEmojiRequest) (*v1pb.ListTagsWithEmojiResponse, error) {
+func (s *TestTagService) ListTagsWithEmoji(ctx context.Context, _ *v1pb.ListTagsWithEmojiRequest) (*v1pb.ListTagsWithEmojiResponse, error) {
 	if s.testUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
 	}

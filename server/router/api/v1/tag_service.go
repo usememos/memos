@@ -15,7 +15,7 @@ import (
 )
 
 // ListPinnedTags lists all pinned tags for the current user.
-func (s *APIV1Service) ListPinnedTags(ctx context.Context, request *v1pb.ListPinnedTagsRequest) (*v1pb.ListPinnedTagsResponse, error) {
+func (s *APIV1Service) ListPinnedTags(ctx context.Context, _ *v1pb.ListPinnedTagsRequest) (*v1pb.ListPinnedTagsResponse, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
@@ -44,7 +44,7 @@ func (s *APIV1Service) ListPinnedTags(ctx context.Context, request *v1pb.ListPin
 }
 
 // ListTagsWithEmoji lists all tags with emoji for the current user.
-func (s *APIV1Service) ListTagsWithEmoji(ctx context.Context, request *v1pb.ListTagsWithEmojiRequest) (*v1pb.ListTagsWithEmojiResponse, error) {
+func (s *APIV1Service) ListTagsWithEmoji(ctx context.Context, _ *v1pb.ListTagsWithEmojiRequest) (*v1pb.ListTagsWithEmojiResponse, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
