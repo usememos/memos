@@ -12,7 +12,7 @@ interface Props {
 
 const MemoDisplaySettingMenu = observer(({ className }: Props) => {
   const t = useTranslate();
-  const isApplying = viewStore.state.orderByTimeAsc !== false || viewStore.state.layout !== "LIST";
+  const isApplying = viewStore.state.orderByTimeAsc !== false || viewStore.state.layout !== "LIST" || viewStore.state.compact !== true;
 
   return (
     <Popover>
@@ -59,6 +59,20 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
                 <SelectItem value="LIST">{t("memo.list")}</SelectItem>
                 <SelectItem value="MASONRY">{t("memo.masonry")}</SelectItem>
               </SelectContent>
+            </Select>
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3">{t("memo.compact")}</span>
+            <Select
+              value={viewStore.state.compact}
+              onChange={(_, value) =>
+                viewStore.state.setPartial({
+                  compact: Boolean(value),
+                })
+              }
+            >
+              <Option value={false}>{t("memo.disable")}</Option>
+              <Option value={true}>{t("memo.enable")}</Option>
             </Select>
           </div>
         </div>
