@@ -14,7 +14,7 @@ import (
 
 func TestGetUserStats_TagCount(t *testing.T) {
 	ctx := context.Background()
-	
+
 	// Create test service
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -53,7 +53,7 @@ func TestGetUserStats_TagCount(t *testing.T) {
 
 	// Create another memo with the same tag
 	memo2, err := ts.Store.CreateMemo(ctx, &store.Memo{
-		UID:        "test-memo-2", 
+		UID:        "test-memo-2",
 		CreatorID:  user.ID,
 		Content:    "Another memo with #test tag",
 		Visibility: store.Public,
@@ -98,7 +98,7 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	// Check that the unique tag count is exactly 1
 	require.Contains(t, response3.TagCount, "unique")
 	require.Equal(t, int32(1), response3.TagCount["unique"], "New tag count should be 1 for first occurrence")
-	
+
 	// The original test tag should still be 2
 	require.Contains(t, response3.TagCount, "test")
 	require.Equal(t, int32(2), response3.TagCount["test"], "Original tag count should remain 2")
