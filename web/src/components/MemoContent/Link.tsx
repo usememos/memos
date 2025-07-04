@@ -47,7 +47,7 @@ const Link: React.FC<Props> = ({ content, url }: Props) => {
       <Tooltip open={showTooltip}>
         <TooltipTrigger asChild>
           <a
-            className="underline text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            className="underline text-primary hover:text-primary/80"
             target="_blank"
             href={url}
             rel="noopener noreferrer"
@@ -62,7 +62,7 @@ const Link: React.FC<Props> = ({ content, url }: Props) => {
             <div className="w-full flex flex-col">
               <div className="w-full flex flex-row justify-start items-center gap-1">
                 <img className="w-5 h-5 rounded" src={getFaviconWithGoogleS2(url)} alt={linkMetadata?.title} />
-                <h3 className="text-base truncate dark:opacity-90">{linkMetadata?.title}</h3>
+                <h3 className="text-base truncate">{linkMetadata?.title}</h3>
               </div>
               {linkMetadata.description && (
                 <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>

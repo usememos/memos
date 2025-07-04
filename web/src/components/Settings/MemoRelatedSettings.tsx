@@ -67,7 +67,7 @@ const MemoRelatedSettings = observer(() => {
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.memo-related-settings.title")}</p>
+      <p className="font-medium text-muted-foreground">{t("setting.memo-related-settings.title")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.disable-public-memos")}</span>
         <Switch
@@ -127,7 +127,7 @@ const MemoRelatedSettings = observer(() => {
               <Badge key={reactionType} variant="outline" className="h-8 flex items-center gap-1">
                 {reactionType}
                 <X
-                  className="w-3 h-3 cursor-pointer hover:text-red-500"
+                  className="w-3 h-3 cursor-pointer hover:text-destructive"
                   onClick={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
                 />
               </Badge>
@@ -141,7 +141,7 @@ const MemoRelatedSettings = observer(() => {
               onChange={(event) => setEditingReaction(event.target.value.trim())}
             />
             <CheckIcon
-              className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
+              className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary"
               onClick={() => upsertReaction()}
             />
           </div>
@@ -161,7 +161,7 @@ const MemoRelatedSettings = observer(() => {
               <Badge key={nsfwTag} variant="outline" className="h-8 flex items-center gap-1">
                 {nsfwTag}
                 <X
-                  className="w-3 h-3 cursor-pointer hover:text-red-500"
+                  className="w-3 h-3 cursor-pointer hover:text-destructive"
                   onClick={() => updatePartialSetting({ nsfwTags: memoRelatedSetting.nsfwTags.filter((r) => r !== nsfwTag) })}
                 />
               </Badge>
@@ -175,7 +175,7 @@ const MemoRelatedSettings = observer(() => {
               onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
             />
             <CheckIcon
-              className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
+              className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary"
               onClick={() => upsertNsfwTags()}
             />
           </div>

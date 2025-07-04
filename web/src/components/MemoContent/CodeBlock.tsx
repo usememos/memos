@@ -59,14 +59,14 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   }, [content]);
 
   return (
-    <div className="w-full my-1 bg-amber-100 border-l-4 border-amber-400 rounded hover:shadow dark:bg-zinc-600 dark:border-zinc-400 relative">
-      <div className="w-full px-2 py-1 flex flex-row justify-between items-center text-amber-500 dark:text-zinc-400">
+    <div className="w-full my-1 bg-accent/10 border-l-4 border-accent rounded hover:shadow relative">
+      <div className="w-full px-2 py-1 flex flex-row justify-between items-center text-accent-foreground">
         <span className="text-sm font-mono">{formatedLanguage}</span>
         <CopyIcon className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={handleCopyButtonClick} />
       </div>
 
       <div className="overflow-auto">
-        <pre className={cn("no-wrap overflow-auto", "w-full p-2 bg-amber-50 dark:bg-zinc-700 relative")}>
+        <pre className={cn("no-wrap overflow-auto", "w-full p-2 bg-accent/5 relative")}>
           <code
             className={cn(`language-${formatedLanguage}`, "block text-sm leading-5")}
             dangerouslySetInnerHTML={{ __html: highlightedCode }}

@@ -144,11 +144,11 @@ const AddMemoRelationPopover = (props: Props) => {
               {selectedMemos.map((memo) => (
                 <Badge key={memo.name} variant="outline" className="max-w-full flex items-center gap-1 p-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
+                    <p className="text-xs text-muted-foreground select-none">{memo.displayTime?.toLocaleString()}</p>
                     <span className="text-sm leading-5 truncate block">{memo.content}</span>
                   </div>
                   <X
-                    className="w-3 h-3 cursor-pointer hover:text-red-500 flex-shrink-0"
+                    className="w-3 h-3 cursor-pointer hover:text-destructive flex-shrink-0"
                     onClick={() => setSelectedMemos((memos) => memos.filter((m) => m.name !== memo.name))}
                   />
                 </Badge>
@@ -166,7 +166,7 @@ const AddMemoRelationPopover = (props: Props) => {
             />
             <div className="max-h-[200px] overflow-y-auto">
               {filteredMemos.length === 0 ? (
-                <div className="py-6 text-center text-sm text-gray-500">{isFetching ? "Loading..." : t("reference.no-memos-found")}</div>
+                <div className="py-6 text-center text-sm text-muted-foreground">{isFetching ? "Loading..." : t("reference.no-memos-found")}</div>
               ) : (
                 filteredMemos.map((memo) => (
                   <div
@@ -177,7 +177,7 @@ const AddMemoRelationPopover = (props: Props) => {
                     }}
                   >
                     <div className="w-full flex flex-col justify-start items-start">
-                      <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground select-none">{memo.displayTime?.toLocaleString()}</p>
                       <p className="mt-0.5 text-sm leading-5 line-clamp-2">
                         {searchText ? getHighlightedContent(memo.content) : memo.snippet}
                       </p>

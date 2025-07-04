@@ -88,7 +88,7 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
+    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center w-full mb-4 gap-2">
         <p>{t("setting.access-token-section.create-dialog.create-access-token")}</p>
         <Button variant="ghost" onClick={() => destroy()}>
@@ -98,7 +98,7 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
       <div className="flex flex-col justify-start items-start w-80!">
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <span className="mb-2">
-            {t("setting.access-token-section.create-dialog.description")} <span className="text-red-600">*</span>
+            {t("setting.access-token-section.create-dialog.description")} <span className="text-destructive">*</span>
           </span>
           <div className="relative w-full">
             <Input
@@ -112,7 +112,7 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
         </div>
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <span className="mb-2">
-            {t("setting.access-token-section.create-dialog.expiration")} <span className="text-red-600">*</span>
+            {t("setting.access-token-section.create-dialog.expiration")} <span className="text-destructive">*</span>
           </span>
           <div className="w-full flex flex-row justify-start items-center text-base">
             <RadioGroup value={state.expiration.toString()} onValueChange={handleRoleInputChange} className="flex flex-row gap-4">

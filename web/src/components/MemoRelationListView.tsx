@@ -30,13 +30,13 @@ const MemoRelationListView = (props: Props) => {
   }
 
   return (
-    <div className="relative flex flex-col justify-start items-start w-full px-2 pt-2 pb-1.5 bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700">
+    <div className="relative flex flex-col justify-start items-start w-full px-2 pt-2 pb-1.5 bg-secondary rounded-lg border border-border">
       <div className="w-full flex flex-row justify-start items-center mb-1 gap-3 opacity-60">
         {referencingMemoList.length > 0 && (
           <button
             className={cn(
-              "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-gray-500",
-              selectedTab === "referencing" && "text-gray-800 dark:text-gray-400",
+              "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-muted-foreground",
+              selectedTab === "referencing" && "text-foreground",
             )}
             onClick={() => setSelectedTab("referencing")}
           >
@@ -48,8 +48,8 @@ const MemoRelationListView = (props: Props) => {
         {referencedMemoList.length > 0 && (
           <button
             className={cn(
-              "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-gray-500",
-              selectedTab === "referenced" && "text-gray-800 dark:text-gray-400",
+              "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-muted-foreground",
+              selectedTab === "referenced" && "text-foreground",
             )}
             onClick={() => setSelectedTab("referenced")}
           >
@@ -65,14 +65,14 @@ const MemoRelationListView = (props: Props) => {
             return (
               <Link
                 key={memo.name}
-                className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-gray-600 dark:text-gray-400 dark:border-zinc-700 dark:bg-zinc-900 hover:underline"
+                className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-muted-foreground hover:underline"
                 to={`/${memo.name}`}
                 viewTransition
                 state={{
                   from: parentPage,
                 }}
               >
-                <span className="text-xs opacity-60 leading-4 border border-zinc-200 font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
+                <span className="text-xs opacity-60 leading-4 border border-border font-mono px-1 rounded-full mr-1">
                   {extractMemoIdFromName(memo.name).slice(0, 6)}
                 </span>
                 <span className="truncate">{memo.snippet}</span>
@@ -87,14 +87,14 @@ const MemoRelationListView = (props: Props) => {
             return (
               <Link
                 key={memo.name}
-                className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-gray-600 dark:text-gray-400 dark:border-zinc-700 dark:bg-zinc-900 hover:underline"
+                className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-muted-foreground hover:underline"
                 to={`/${memo.name}`}
                 viewTransition
                 state={{
                   from: parentPage,
                 }}
               >
-                <span className="text-xs opacity-60 leading-4 border border-zinc-200 font-mono px-1 rounded-full mr-1 dark:border-zinc-700">
+                <span className="text-xs opacity-60 leading-4 border border-border font-mono px-1 rounded-full mr-1">
                   {extractMemoIdFromName(memo.name).slice(0, 6)}
                 </span>
                 <span className="truncate">{memo.snippet}</span>

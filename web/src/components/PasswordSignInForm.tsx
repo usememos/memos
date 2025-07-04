@@ -61,9 +61,9 @@ const PasswordSignInForm = observer(() => {
     <form className="w-full mt-2" onSubmit={handleFormSubmit}>
       <div className="flex flex-col justify-start items-start w-full gap-4">
         <div className="w-full flex flex-col justify-start items-start">
-          <span className="leading-8 text-gray-600">{t("common.username")}</span>
+          <span className="leading-8 text-muted-foreground">{t("common.username")}</span>
           <Input
-            className="w-full bg-white dark:bg-black h-10"
+            className="w-full bg-background h-10"
             type="text"
             readOnly={actionBtnLoadingState.isLoading}
             placeholder={t("common.username")}
@@ -76,9 +76,9 @@ const PasswordSignInForm = observer(() => {
           />
         </div>
         <div className="w-full flex flex-col justify-start items-start">
-          <span className="leading-8 text-gray-600">{t("common.password")}</span>
+          <span className="leading-8 text-muted-foreground">{t("common.password")}</span>
           <Input
-            className="w-full bg-white dark:bg-black h-10"
+            className="w-full bg-background h-10"
             type="password"
             readOnly={actionBtnLoadingState.isLoading}
             placeholder={t("common.password")}

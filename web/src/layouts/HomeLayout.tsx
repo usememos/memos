@@ -19,7 +19,7 @@ const HomeLayout = observer(() => {
         <div
           className={cn(
             "fixed top-0 left-16 shrink-0 h-svh transition-all",
-            "border-r border-gray-200 dark:border-zinc-800",
+            "border-r border",
             lg ? "w-72" : "w-56",
           )}
         >

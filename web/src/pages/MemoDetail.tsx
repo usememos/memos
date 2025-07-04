@@ -93,7 +93,7 @@ const MemoDetail = observer(() => {
           {parentMemo && (
             <div className="w-auto inline-block mb-2">
               <Link
-                className="px-3 py-1 border border-zinc-200 rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
+                className="px-3 py-1 border border-border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-muted-foreground hover:shadow hover:opacity-80"
                 to={`/${parentMemo.name}`}
                 state={locationState}
                 viewTransition
@@ -123,8 +123,8 @@ const MemoDetail = observer(() => {
                 showCreateCommentButton && (
                   <div className="w-full flex flex-row justify-center items-center py-6">
                     <Button variant="ghost" onClick={handleShowCommentEditor}>
-                      <span className="text-gray-500">{t("memo.comment.write-a-comment")}</span>
-                      <MessageCircleIcon className="ml-2 w-5 h-auto text-gray-500" />
+                      <span className="text-muted-foreground">{t("memo.comment.write-a-comment")}</span>
+                      <MessageCircleIcon className="ml-2 w-5 h-auto text-muted-foreground" />
                     </Button>
                   </div>
                 )
@@ -132,12 +132,12 @@ const MemoDetail = observer(() => {
                 <>
                   <div className="w-full flex flex-row justify-between items-center h-8 pl-3 mb-2">
                     <div className="flex flex-row justify-start items-center">
-                      <MessageCircleIcon className="w-5 h-auto text-gray-400 mr-1" />
-                      <span className="text-gray-400 text-sm">{t("memo.comment.self")}</span>
-                      <span className="text-gray-400 text-sm ml-1">({comments.length})</span>
+                      <MessageCircleIcon className="w-5 h-auto text-muted-foreground mr-1" />
+                      <span className="text-muted-foreground text-sm">{t("memo.comment.self")}</span>
+                      <span className="text-muted-foreground text-sm ml-1">({comments.length})</span>
                     </div>
                     {showCreateCommentButton && (
-                      <Button variant="ghost" className="text-gray-500" onClick={handleShowCommentEditor}>
+                      <Button variant="ghost" className="text-muted-foreground" onClick={handleShowCommentEditor}>
                         {t("memo.comment.write-a-comment")}
                       </Button>
                     )}

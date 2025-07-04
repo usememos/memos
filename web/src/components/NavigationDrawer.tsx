@@ -23,12 +23,12 @@ const NavigationDrawer = observer(() => {
       <SheetTrigger asChild>
         <Button variant="ghost" className="px-2">
           <UserAvatar className="shrink-0 w-6 h-6 rounded-md" avatarUrl={avatarUrl} />
-          <span className="font-bold text-lg leading-10 ml-2 text-ellipsis shrink-0 cursor-pointer overflow-hidden text-gray-700 dark:text-gray-300">
+          <span className="font-bold text-lg leading-10 ml-2 text-ellipsis shrink-0 cursor-pointer overflow-hidden text-foreground">
             {title}
           </span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-full sm:w-80 overflow-auto px-2 bg-zinc-100 dark:bg-zinc-900">
+      <SheetContent side="left" className="w-full sm:w-80 overflow-auto px-2 bg-secondary">
         <Navigation />
       </SheetContent>
     </Sheet>

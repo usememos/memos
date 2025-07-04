@@ -83,7 +83,7 @@ const MemoContent = observer((props: Props) => {
         parentPage: props.parentPage,
       }}
     >
-      <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-400 ${className || ""}`}>
+      <div className={`w-full flex flex-col justify-start items-start text-foreground ${className || ""}`}>
         <div
           ref={memoContentContainerRef}
           className={cn(
@@ -104,13 +104,13 @@ const MemoContent = observer((props: Props) => {
             return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
           })}
           {showCompactMode == "ALL" && (
-            <div className="absolute bottom-0 left-0 w-full h-12 bg-linear-to-b from-transparent dark:to-zinc-800 to-white pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-full h-12 bg-linear-to-b from-transparent to-background pointer-events-none"></div>
           )}
         </div>
         {showCompactMode != undefined && (
           <div className="w-full mt-1">
             <span
-              className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
+              className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-primary hover:opacity-80"
               onClick={() => {
                 setShowCompactMode(compactStates[showCompactMode].nextState as ContentCompactView);
               }}

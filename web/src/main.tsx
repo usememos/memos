@@ -13,7 +13,7 @@ import "leaflet/dist/leaflet.css";
 const Main = observer(() => (
   <>
     <RouterProvider router={router} />
-    <Toaster position="top-right" toastOptions={{ className: "dark:bg-zinc-700 dark:text-gray-300" }} />
+    <Toaster position="top-right" />
   </>
 ));
 

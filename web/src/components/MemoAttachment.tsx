@@ -16,7 +16,7 @@ const MemoAttachment: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`w-auto flex flex-row justify-start items-center text-gray-500 dark:text-gray-400 hover:opacity-80 ${className}`}>
+    <div className={`w-auto flex flex-row justify-start items-center text-muted-foreground hover:opacity-80 ${className}`}>
       {attachment.type.startsWith("audio") ? (
         <audio src={attachmentUrl} controls></audio>
       ) : (

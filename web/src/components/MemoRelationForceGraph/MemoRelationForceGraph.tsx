@@ -57,7 +57,7 @@ const MemoRelationForceGraph = ({ className, memo, parentPage }: Props) => {
   };
 
   return (
-    <div ref={containerRef} className={cn("dark:opacity-80", className)}>
+    <div ref={containerRef} className={cn("opacity-80", className)}>
       <ForceGraph2D
         ref={graphRef}
         width={graphSize.width}
