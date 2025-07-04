@@ -142,15 +142,18 @@ const MemoDetail = observer(() => {
                       </Button>
                     )}
                   </div>
-                  {comments.map((comment) => (
-                    <MemoView
-                      key={`${comment.name}-${comment.displayTime}`}
-                      memo={comment}
-                      parentPage={locationState?.from}
-                      showCreator
-                      compact
-                    />
-                  ))}
+                  {comments
+                    .sort((a, b) => Number(b.pinned) - Number(a.pinned))
+                    .map((comment) => (
+                      <MemoView
+                        key={`${comment.name}-${comment.displayTime}`}
+                        memo={comment}
+                        parentPage={locationState?.from}
+                        showCreator
+                        showPinned
+                        compact
+                      />
+                    ))}
                 </>
               )}
             </div>
