@@ -7,14 +7,14 @@ import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import MobileHeader from "@/components/MobileHeader";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { userStore } from "@/store/v2";
-import { Inbox_Status, Inbox_Type } from "@/types/proto/api/v1/inbox_service";
+import { Inbox, Inbox_Status, Inbox_Type } from "@/types/proto/api/v1/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 
 const Inboxes = observer(() => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
 
-  const inboxes = sortBy(userStore.state.inboxes, (inbox) => {
+  const inboxes = sortBy(userStore.state.inboxes, (inbox: Inbox) => {
     if (inbox.status === Inbox_Status.UNREAD) return 0;
     if (inbox.status === Inbox_Status.ARCHIVED) return 1;
     return 2;
@@ -36,7 +36,7 @@ const Inboxes = observer(() => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && <MobileHeader />}
       <div className="w-full px-4 sm:px-6">
-        <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-black dark:text-gray-300">
+        <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-background text-foreground">
           <div className="relative w-full flex flex-row justify-between items-center">
             <p className="py-1 flex flex-row justify-start items-center select-none opacity-80">
               <BellIcon className="w-6 h-auto mr-1 opacity-80" />
@@ -47,11 +47,11 @@ const Inboxes = observer(() => {
             {inboxes.length === 0 && (
               <div className="w-full mt-4 mb-8 flex flex-col justify-center items-center italic">
                 <Empty />
-                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+                <p className="mt-4 text-muted-foreground">{t("message.no-data")}</p>
               </div>
             )}
             <div className="flex flex-col justify-start items-start w-full mt-4 gap-4">
-              {inboxes.map((inbox) => {
+              {inboxes.map((inbox: Inbox) => {
                 if (inbox.type === Inbox_Type.MEMO_COMMENT) {
                   return <MemoCommentMessage key={`${inbox.name}-${inbox.status}`} inbox={inbox} />;
                 }

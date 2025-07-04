@@ -38,7 +38,7 @@ const ShortcutsSection = observer(() => {
 
   return (
     <div className="w-full flex flex-col justify-start items-start mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
-      <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 select-none">
+      <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-muted-foreground select-none">
         <span>{t("common.shortcuts")}</span>
         <TooltipProvider>
           <Tooltip>
@@ -61,10 +61,10 @@ const ShortcutsSection = observer(() => {
           return (
             <div
               key={shortcutId}
-              className="shrink-0 w-full text-sm rounded-md leading-6 flex flex-row justify-between items-center select-none gap-2 text-gray-600 dark:text-gray-400 dark:border-zinc-800"
+              className="shrink-0 w-full text-sm rounded-md leading-6 flex flex-row justify-between items-center select-none gap-2 text-muted-foreground"
             >
               <span
-                className={cn("truncate cursor-pointer dark:opacity-80", selected && "text-primary font-medium")}
+                className={cn("truncate cursor-pointer opacity-80", selected && "text-primary font-medium")}
                 onClick={() => (selected ? memoFilterStore.setShortcut(undefined) : memoFilterStore.setShortcut(shortcutId))}
               >
                 {emoji && <span className="text-base mr-1">{emoji}</span>}
@@ -78,14 +78,14 @@ const ShortcutsSection = observer(() => {
                   <div className="flex flex-col text-sm gap-0.5">
                     <button
                       onClick={() => showCreateShortcutDialog({ shortcut })}
-                      className="flex items-center gap-2 px-2 py-1 text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
+                      className="flex items-center gap-2 px-2 py-1 text-left hover:bg-muted outline-none rounded"
                     >
                       <Edit3Icon className="w-4 h-auto" />
                       {t("common.edit")}
                     </button>
                     <button
                       onClick={() => handleDeleteShortcut(shortcut)}
-                      className="flex items-center gap-2 px-2 py-1 text-left text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700 outline-none rounded"
+                      className="flex items-center gap-2 px-2 py-1 text-left text-destructive hover:bg-muted outline-none rounded"
                     >
                       <TrashIcon className="w-4 h-auto" />
                       {t("common.delete")}

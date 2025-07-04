@@ -87,9 +87,9 @@ const Setting = observer(() => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
       {!md && <MobileHeader />}
       <div className="w-full px-4 sm:px-6">
-        <div className="w-full shadow flex flex-row justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-gray-600 dark:text-gray-400">
+        <div className="w-full shadow flex flex-row justify-start items-start px-4 py-3 rounded-xl bg-background text-muted-foreground">
           <div className="hidden sm:flex flex-col justify-start items-start w-40 h-auto shrink-0 py-2">
-            <span className="text-sm mt-0.5 pl-3 font-mono select-none text-gray-400 dark:text-gray-500">{t("common.basic")}</span>
+            <span className="text-sm mt-0.5 pl-3 font-mono select-none text-muted-foreground">{t("common.basic")}</span>
             <div className="w-full flex flex-col justify-start items-start mt-1">
               {BASIC_SECTIONS.map((item) => (
                 <SectionMenuItem
@@ -103,7 +103,7 @@ const Setting = observer(() => {
             </div>
             {isHost ? (
               <>
-                <span className="text-sm mt-4 pl-3 font-mono select-none text-gray-400 dark:text-gray-500">{t("common.admin")}</span>
+                <span className="text-sm mt-4 pl-3 font-mono select-none text-muted-foreground">{t("common.admin")}</span>
                 <div className="w-full flex flex-col justify-start items-start mt-1">
                   {ADMIN_SECTIONS.map((item) => (
                     <SectionMenuItem

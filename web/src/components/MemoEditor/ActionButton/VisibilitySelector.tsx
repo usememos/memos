@@ -43,14 +43,14 @@ const VisibilitySelector = (props: Props) => {
       <PopoverTrigger asChild>
         <button
           className={cn(
-            `flex items-center justify-center gap-1 px-0.5 text-xs rounded hover:bg-gray-100 dark:hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors`,
+            `flex items-center justify-center gap-1 px-0.5 text-xs rounded hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-colors`,
             props.className,
           )}
           type="button"
         >
           <VisibilityIcon className="w-3 h-3" visibility={value} />
-          <span className="dark:text-zinc-300">{currentOption?.label}</span>
-          <ChevronDownIcon className="w-3 h-3 opacity-60 dark:text-zinc-300" />
+          <span>{currentOption?.label}</span>
+          <ChevronDownIcon className="w-3 h-3 opacity-60" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="p-1!" align="end" sideOffset={2} alignOffset={-4}>
@@ -60,8 +60,8 @@ const VisibilitySelector = (props: Props) => {
               key={option.value}
               onClick={() => handleSelect(option.value)}
               className={cn(
-                `flex items-center gap-1 px-1 py-1 text-xs text-left dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded transition-colors`,
-                option.value === value ? "bg-gray-50 dark:bg-zinc-800" : "",
+                `flex items-center gap-1 px-1 py-1 text-xs text-left hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded transition-colors`,
+                option.value === value ? "bg-muted" : "",
               )}
             >
               <VisibilityIcon className="w-3 h-3" visibility={option.value} />

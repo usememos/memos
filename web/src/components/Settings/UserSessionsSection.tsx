@@ -41,12 +41,12 @@ const UserSessionsSection = () => {
   const getDeviceIcon = (deviceType: string) => {
     switch (deviceType?.toLowerCase()) {
       case "mobile":
-        return <SmartphoneIcon className="w-4 h-4 text-gray-500" />;
+        return <SmartphoneIcon className="w-4 h-4 text-muted-foreground" />;
       case "tablet":
-        return <TabletIcon className="w-4 h-4 text-gray-500" />;
+        return <TabletIcon className="w-4 h-4 text-muted-foreground" />;
       case "desktop":
       default:
-        return <MonitorIcon className="w-4 h-4 text-gray-500" />;
+        return <MonitorIcon className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -72,23 +72,23 @@ const UserSessionsSection = () => {
       <div className="w-full">
         <div className="sm:flex sm:items-center sm:justify-between">
           <div className="sm:flex-auto space-y-1">
-            <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">
+            <p className="flex flex-row justify-start items-center font-medium text-muted-foreground">
               {t("setting.user-sessions-section.title")}
               <LearnMore className="ml-2" url="https://usememos.com/docs/security/sessions" />
             </p>
-            <p className="text-sm text-gray-700 dark:text-gray-500">{t("setting.user-sessions-section.description")}</p>
+            <p className="text-sm text-muted-foreground">{t("setting.user-sessions-section.description")}</p>
           </div>
         </div>
         <div className="w-full mt-2 flow-root">
           <div className="overflow-x-auto">
-            <div className="inline-block min-w-full border border-zinc-200 rounded-lg align-middle dark:border-zinc-600">
-              <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
+            <div className="inline-block min-w-full border border-border rounded-lg align-middle">
+              <table className="min-w-full divide-y divide-border">
                 <thead>
                   <tr>
-                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
+                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-foreground">
                       {t("setting.user-sessions-section.device")}
                     </th>
-                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
+                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-foreground">
                       {t("setting.user-sessions-section.last-active")}
                     </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4">
@@ -96,27 +96,27 @@ const UserSessionsSection = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-zinc-700">
+                <tbody className="divide-y divide-border">
                   {userSessions.map((userSession) => (
                     <tr key={userSession.sessionId}>
-                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-900 dark:text-gray-400">
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-foreground">
                         <div className="flex items-center space-x-3">
                           {getDeviceIcon(userSession.clientInfo?.deviceType || "")}
                           <div className="flex flex-col">
                             <span className="font-medium">
                               {formatDeviceInfo(userSession.clientInfo)}
                               {isCurrentSession(userSession) && (
-                                <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                                <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary">
                                   <WifiIcon className="w-3 h-3 mr-1" />
                                   {t("setting.user-sessions-section.current")}
                                 </span>
                               )}
                             </span>
-                            <span className="text-xs text-gray-500 font-mono">{getFormattedSessionId(userSession.sessionId)}</span>
+                            <span className="text-xs text-muted-foreground font-mono">{getFormattedSessionId(userSession.sessionId)}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">
                         <div className="flex items-center space-x-1">
                           <ClockIcon className="w-4 h-4" />
                           <span>{userSession.lastAccessedTime?.toLocaleString()}</span>
@@ -135,7 +135,7 @@ const UserSessionsSection = () => {
                               : t("setting.user-sessions-section.revoke-session")
                           }
                         >
-                          <TrashIcon className={`w-4 h-auto ${isCurrentSession(userSession) ? "text-gray-400" : "text-red-600"}`} />
+                          <TrashIcon className={`w-4 h-auto ${isCurrentSession(userSession) ? "text-muted-foreground" : "text-destructive"}`} />
                         </Button>
                       </td>
                     </tr>
@@ -143,7 +143,7 @@ const UserSessionsSection = () => {
                 </tbody>
               </table>
               {userSessions.length === 0 && (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t("setting.user-sessions-section.no-sessions")}</div>
+                <div className="text-center py-8 text-muted-foreground">{t("setting.user-sessions-section.no-sessions")}</div>
               )}
             </div>
           </div>

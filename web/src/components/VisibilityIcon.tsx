@@ -22,7 +22,7 @@ const VisibilityIcon = (props: Props) => {
     return null;
   }
 
-  return <VIcon className={cn("w-4 h-auto text-gray-500 dark:text-gray-400", className)} />;
+  return <VIcon className={cn("w-4 h-auto text-muted-foreground", className)} />;
 };
 
 export default VisibilityIcon;

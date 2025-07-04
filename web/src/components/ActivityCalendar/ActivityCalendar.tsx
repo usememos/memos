@@ -9,10 +9,10 @@ import { useTranslate } from "@/utils/i18n";
 
 const getCellOpacity = (ratio: number): string => {
   if (ratio === 0) return "";
-  if (ratio > 0.75) return "bg-green-700/90 text-gray-50 dark:bg-green-400/80";
-  if (ratio > 0.5) return "bg-green-700/70 text-gray-100 dark:bg-green-400/60";
-  if (ratio > 0.25) return "bg-green-700/70 text-gray-100 dark:bg-green-400/40";
-  return "bg-green-700/50 text-gray-100 dark:bg-green-400/20";
+  if (ratio > 0.75) return "bg-primary/90 text-primary-foreground";
+  if (ratio > 0.5) return "bg-primary/70 text-primary-foreground";
+  if (ratio > 0.25) return "bg-primary/50 text-primary-foreground";
+  return "bg-primary/30 text-primary-foreground";
 };
 
 const CalendarCell = memo(
@@ -37,10 +37,10 @@ const CalendarCell = memo(
       <div
         className={cn(
           "w-6 h-6 text-xs lg:text-[13px] flex justify-center items-center cursor-default",
-          "rounded-lg border-2 text-gray-400 transition-all duration-200",
+          "rounded-lg border-2 text-muted-foreground transition-all duration-200",
           dayInfo.isCurrentMonth && getCellOpacity(count / maxCount),
-          dayInfo.isCurrentMonth && isToday && "border-zinc-400",
-          dayInfo.isCurrentMonth && isSelected && "font-medium border-zinc-400",
+          dayInfo.isCurrentMonth && isToday && "border-border",
+          dayInfo.isCurrentMonth && isSelected && "font-medium border-border",
           dayInfo.isCurrentMonth && !isToday && !isSelected && "border-transparent",
           count > 0 && "cursor-pointer hover:scale-110",
         )}
@@ -52,7 +52,7 @@ const CalendarCell = memo(
 
     if (!dayInfo.isCurrentMonth) {
       return (
-        <div className={cn("w-6 h-6 text-xs lg:text-[13px] flex justify-center items-center cursor-default opacity-60 text-gray-400")}>
+        <div className={cn("w-6 h-6 text-xs lg:text-[13px] flex justify-center items-center cursor-default opacity-60 text-muted-foreground")}>
           {dayInfo.day}
         </div>
       );

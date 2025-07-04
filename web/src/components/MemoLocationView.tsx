@@ -16,7 +16,7 @@ const MemoLocationView: React.FC<Props> = (props: Props) => {
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
-        <p className="w-full flex flex-row gap-0.5 items-center text-gray-500">
+        <p className="w-full flex flex-row gap-0.5 items-center text-muted-foreground">
           <MapPinIcon className="w-4 h-auto shrink-0" />
           <span className="text-sm font-normal text-ellipsis whitespace-nowrap overflow-hidden">
             {location.placeholder ? location.placeholder : `[${location.latitude}, ${location.longitude}]`}

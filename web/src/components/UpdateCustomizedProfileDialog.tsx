@@ -98,7 +98,7 @@ const UpdateCustomizedProfileDialog = ({ destroy }: Props) => {
   };
 
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
+    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p className="title-text">{t("setting.system-section.customize-server.title")}</p>
         <Button variant="ghost" onClick={handleCloseButtonClick}>

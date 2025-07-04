@@ -6,7 +6,7 @@ const PermissionDenied = () => {
       <MobileHeader />
       <div className="w-full px-4 grow flex flex-col justify-center items-center sm:px-6">
         <p className="font-medium">Permission denied</p>
-        <p className="mt-4 text-[8rem] font-mono dark:text-gray-300">403</p>
+        <p className="mt-4 text-[8rem] font-mono text-foreground">403</p>
       </div>
     </section>
   );

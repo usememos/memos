@@ -134,7 +134,7 @@ const StorageSection = observer(() => {
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <div className="font-medium text-gray-700 dark:text-gray-500">{t("setting.storage-section.current-storage")}</div>
+      <div className="font-medium text-muted-foreground">{t("setting.storage-section.current-storage")}</div>
       <RadioGroup
         value={workspaceStorageSetting.storageType.toString()}
         onValueChange={(value) => {
@@ -157,7 +157,7 @@ const StorageSection = observer(() => {
       </RadioGroup>
       <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">
-          <span className="text-gray-700 dark:text-gray-500 mr-1">{t("setting.system-section.max-upload-size")}</span>
+          <span className="text-muted-foreground mr-1">{t("setting.system-section.max-upload-size")}</span>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
@@ -173,7 +173,7 @@ const StorageSection = observer(() => {
       </div>
       {workspaceStorageSetting.storageType !== WorkspaceStorageSetting_StorageType.DATABASE && (
         <div className="w-full flex flex-row justify-between items-center">
-          <span className="text-gray-700 dark:text-gray-500 mr-1">{t("setting.storage-section.filepath-template")}</span>
+          <span className="text-muted-foreground mr-1">{t("setting.storage-section.filepath-template")}</span>
           <Input
             value={workspaceStorageSetting.filepathTemplate}
             placeholder="assets/{timestamp}_{filename}"
@@ -184,11 +184,11 @@ const StorageSection = observer(() => {
       {workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.S3 && (
         <>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-gray-700 dark:text-gray-500 mr-1">Access key id</span>
+            <span className="text-muted-foreground mr-1">Access key id</span>
             <Input value={workspaceStorageSetting.s3Config?.accessKeyId} placeholder="" onChange={handleS3ConfigAccessKeyIdChanged} />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-gray-700 dark:text-gray-500 mr-1">Access key secret</span>
+            <span className="text-muted-foreground mr-1">Access key secret</span>
             <Input
               value={workspaceStorageSetting.s3Config?.accessKeySecret}
               placeholder=""
@@ -196,19 +196,19 @@ const StorageSection = observer(() => {
             />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-gray-700 dark:text-gray-500 mr-1">Endpoint</span>
+            <span className="text-muted-foreground mr-1">Endpoint</span>
             <Input value={workspaceStorageSetting.s3Config?.endpoint} placeholder="" onChange={handleS3ConfigEndpointChanged} />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-gray-700 dark:text-gray-500 mr-1">Region</span>
+            <span className="text-muted-foreground mr-1">Region</span>
             <Input value={workspaceStorageSetting.s3Config?.region} placeholder="" onChange={handleS3ConfigRegionChanged} />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-gray-700 dark:text-gray-500 mr-1">Bucket</span>
+            <span className="text-muted-foreground mr-1">Bucket</span>
             <Input value={workspaceStorageSetting.s3Config?.bucket} placeholder="" onChange={handleS3ConfigBucketChanged} />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-gray-700 dark:text-gray-500 mr-1">Use Path Style</span>
+            <span className="text-muted-foreground mr-1">Use Path Style</span>
             <Switch
               checked={workspaceStorageSetting.s3Config?.usePathStyle}
               onCheckedChange={(checked) => handleS3ConfigUsePathStyleChanged({ target: { checked } } as any)}
@@ -227,7 +227,7 @@ const StorageSection = observer(() => {
         <ul className="text-sm list-disc ml-4 space-y-1">
           <li>
             <Link
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-primary hover:underline"
               to="https://www.usememos.com/docs/advanced-settings/local-storage"
               target="_blank"
             >
@@ -236,7 +236,7 @@ const StorageSection = observer(() => {
           </li>
           <li>
             <Link
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-primary hover:underline"
               to="https://www.usememos.com/blog/choosing-a-storage-for-your-resource"
               target="_blank"
             >

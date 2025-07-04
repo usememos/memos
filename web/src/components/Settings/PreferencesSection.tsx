@@ -29,7 +29,7 @@ const PreferencesSection = observer(() => {
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
+      <p className="font-medium text-muted-foreground">{t("common.basic")}</p>
 
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("common.language")}</span>
@@ -41,7 +41,7 @@ const PreferencesSection = observer(() => {
         <AppearanceSelect value={setting.appearance as Appearance} onChange={handleAppearanceSelectChange} />
       </div>
 
-      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.preference")}</p>
+      <p className="font-medium text-muted-foreground">{t("setting.preference")}</p>
 
       <div className="w-full flex flex-row justify-between items-center">
         <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>

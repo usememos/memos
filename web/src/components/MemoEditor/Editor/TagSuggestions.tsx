@@ -108,7 +108,7 @@ const TagSuggestions = observer(({ editorRef, editorActions }: Props) => {
   if (!isVisibleRef.current || !position) return null;
   return (
     <div
-      className="z-20 p-1 mt-1 -ml-2 absolute max-w-48 gap-px rounded font-mono flex flex-col justify-start items-start overflow-auto shadow bg-zinc-100 dark:bg-zinc-700"
+      className="z-20 p-1 mt-1 -ml-2 absolute max-w-48 gap-px rounded font-mono flex flex-col justify-start items-start overflow-auto shadow bg-popover"
       style={{ left: position.left, top: position.top + position.height }}
     >
       {suggestionsRef.current.map((tag, i) => (
@@ -116,8 +116,8 @@ const TagSuggestions = observer(({ editorRef, editorActions }: Props) => {
           key={tag}
           onMouseDown={() => autocomplete(tag)}
           className={cn(
-            "rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800",
-            i === selected ? "bg-zinc-300 dark:bg-zinc-600" : "",
+            "rounded p-1 px-2 w-full truncate text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground",
+            i === selected ? "bg-accent text-accent-foreground" : "",
           )}
         >
           <OverflowTip>#{tag}</OverflowTip>

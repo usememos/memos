@@ -46,7 +46,7 @@ const TagSelector = observer((props: Props) => {
               return (
                 <div
                   key={tag}
-                  className="inline-flex w-auto max-w-full cursor-pointer text-base leading-6 text-gray-500 dark:text-gray-400 hover:opacity-80"
+                  className="inline-flex w-auto max-w-full cursor-pointer text-base leading-6 text-muted-foreground hover:opacity-80"
                   onClick={() => handleTagClick(tag)}
                 >
                   <OverflowTip>#{tag}</OverflowTip>

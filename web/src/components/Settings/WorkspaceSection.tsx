@@ -68,7 +68,7 @@ const WorkspaceSection = observer(() => {
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
+      <p className="font-medium text-foreground">{t("common.basic")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <div>
           {t("setting.system-section.server-name")}:{" "}
@@ -79,7 +79,7 @@ const WorkspaceSection = observer(() => {
         </Button>
       </div>
       <Separator />
-      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.system-section.title")}</p>
+      <p className="font-medium text-foreground">{t("setting.system-section.title")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.additional-style")}</span>
       </div>
@@ -102,7 +102,7 @@ const WorkspaceSection = observer(() => {
       />
       <div className="w-full">
         <Link
-          className="text-gray-500 text-sm flex flex-row justify-start items-center hover:underline hover:text-blue-600"
+          className="text-muted-foreground text-sm flex flex-row justify-start items-center hover:underline hover:text-primary"
           to="https://usememos.com/docs/advanced-settings/custom-style-and-script"
           target="_blank"
         >

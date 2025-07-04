@@ -16,15 +16,13 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
 
   return (
     <Popover>
-      <PopoverTrigger
-        className={cn(className, isApplying ? "text-teal-600 bg-teal-100 dark:text-teal-500 dark:bg-teal-900 rounded" : "opacity-40")}
-      >
+      <PopoverTrigger className={cn(className, isApplying ? "text-primary bg-primary/10 rounded" : "opacity-40")}>
         <Settings2Icon className="w-4 h-auto shrink-0" />
       </PopoverTrigger>
       <PopoverContent align="end" alignOffset={-12} sideOffset={14}>
         <div className="flex flex-col gap-2 p-1">
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3 dark:text-zinc-400">{t("memo.direction")}</span>
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.direction")}</span>
             <Select
               value={viewStore.state.orderByTimeAsc.toString()}
               onValueChange={(value) =>
@@ -43,7 +41,7 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
             </Select>
           </div>
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3 dark:text-zinc-400">{t("common.layout")}</span>
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("common.layout")}</span>
             <Select
               value={viewStore.state.layout}
               onValueChange={(value) =>

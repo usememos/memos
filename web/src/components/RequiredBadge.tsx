@@ -5,7 +5,7 @@ interface Props {
 const RequiredBadge: React.FC<Props> = (props: Props) => {
   const { className } = props;
 
-  return <span className={`mx-0.5 text-red-500 font-bold ${className ?? ""}`}>*</span>;
+  return <span className={`mx-0.5 text-destructive font-bold ${className ?? ""}`}>*</span>;
 };
 
 export default RequiredBadge;

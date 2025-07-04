@@ -244,7 +244,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
+    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p>{t(isCreating ? "setting.sso-section.create-sso" : "setting.sso-section.update-sso")}</p>
         <Button variant="ghost" onClick={handleCloseBtnClick}>
@@ -285,7 +285,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         )}
         <p className="mb-1 text-sm font-medium">
           {t("common.name")}
-          <span className="text-red-600">*</span>
+          <span className="text-destructive">*</span>
         </p>
         <Input
           className="mb-2 w-full"
@@ -314,13 +314,13 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         {type === "OAUTH2" && (
           <>
             {isCreating && (
-              <p className="border border-zinc-100 dark:border-zinc-700 rounded-md p-2 text-sm w-full mb-2 break-all">
+              <p className="border border-border rounded-md p-2 text-sm w-full mb-2 break-all">
                 {t("setting.sso-section.redirect-url")}: {absolutifyLink("/auth/callback")}
               </p>
             )}
             <p className="mb-1 text-sm font-medium">
               {t("setting.sso-section.client-id")}
-              <span className="text-red-600">*</span>
+              <span className="text-destructive">*</span>
             </p>
             <Input
               className="mb-2 w-full"
@@ -330,7 +330,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             />
             <p className="mb-1 text-sm font-medium">
               {t("setting.sso-section.client-secret")}
-              <span className="text-red-600">*</span>
+              <span className="text-destructive">*</span>
             </p>
             <Input
               className="mb-2 w-full"
@@ -340,7 +340,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             />
             <p className="mb-1 text-sm font-medium">
               {t("setting.sso-section.authorization-endpoint")}
-              <span className="text-red-600">*</span>
+              <span className="text-destructive">*</span>
             </p>
             <Input
               className="mb-2 w-full"
@@ -350,7 +350,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             />
             <p className="mb-1 text-sm font-medium">
               {t("setting.sso-section.token-endpoint")}
-              <span className="text-red-600">*</span>
+              <span className="text-destructive">*</span>
             </p>
             <Input
               className="mb-2 w-full"
@@ -360,7 +360,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             />
             <p className="mb-1 text-sm font-medium">
               {t("setting.sso-section.user-endpoint")}
-              <span className="text-red-600">*</span>
+              <span className="text-destructive">*</span>
             </p>
             <Input
               className="mb-2 w-full"
@@ -370,7 +370,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             />
             <p className="mb-1 text-sm font-medium">
               {t("setting.sso-section.scopes")}
-              <span className="text-red-600">*</span>
+              <span className="text-destructive">*</span>
             </p>
             <Input
               className="mb-2 w-full"
@@ -381,7 +381,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             <Separator className="my-2" />
             <p className="mb-1 text-sm font-medium">
               {t("setting.sso-section.identifier")}
-              <span className="text-red-600">*</span>
+              <span className="text-destructive">*</span>
             </p>
             <Input
               className="mb-2 w-full"

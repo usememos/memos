@@ -60,19 +60,19 @@ const SignIn = observer(() => {
       <div className="w-full py-4 grow flex flex-col justify-center items-center">
         <div className="w-full flex flex-row justify-center items-center mb-6">
           <img className="h-14 w-auto rounded-full shadow" src={workspaceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
-          <p className="ml-2 text-5xl text-black opacity-80 dark:text-gray-200">
+          <p className="ml-2 text-5xl text-foreground opacity-80">
             {workspaceGeneralSetting.customProfile?.title || "Memos"}
           </p>
         </div>
         {!workspaceGeneralSetting.disallowPasswordAuth ? (
           <PasswordSignInForm />
         ) : (
-          identityProviderList.length == 0 && <p className="w-full text-2xl mt-2 dark:text-gray-500">Password auth is not allowed.</p>
+          identityProviderList.length == 0 && <p className="w-full text-2xl mt-2 text-muted-foreground">Password auth is not allowed.</p>
         )}
         {!workspaceGeneralSetting.disallowUserRegistration && !workspaceGeneralSetting.disallowPasswordAuth && (
           <p className="w-full mt-4 text-sm">
-            <span className="dark:text-gray-500">{t("auth.sign-up-tip")}</span>
-            <Link to="/auth/signup" className="cursor-pointer ml-2 text-blue-600 hover:underline" viewTransition>
+            <span className="text-muted-foreground">{t("auth.sign-up-tip")}</span>
+            <Link to="/auth/signup" className="cursor-pointer ml-2 text-primary hover:underline" viewTransition>
               {t("common.sign-up")}
             </Link>
           </p>
@@ -90,7 +90,7 @@ const SignIn = observer(() => {
             <div className="w-full flex flex-col space-y-2">
               {identityProviderList.map((identityProvider) => (
                 <Button
-                  className="bg-white dark:bg-black w-full"
+                  className="bg-background w-full"
                   key={identityProvider.name}
                   variant="outline"
                   onClick={() => handleSignInWithIdentityProvider(identityProvider)}

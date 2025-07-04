@@ -131,7 +131,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   ) : (
     <div
       className={cn(
-        "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
+        "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-card rounded-lg border border-card hover:border-border",
         className,
       )}
     >
@@ -144,14 +144,14 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
               </Link>
               <div className="w-full flex flex-col justify-center items-start">
                 <Link
-                  className="w-full block leading-tight hover:opacity-80 truncate text-gray-600 dark:text-gray-400"
+                  className="w-full block leading-tight hover:opacity-80 truncate text-muted-foreground"
                   to={`/u/${encodeURIComponent(creator.username)}`}
                   viewTransition
                 >
                   {creator.displayName || creator.username}
                 </Link>
                 <div
-                  className="w-auto -mt-0.5 text-xs leading-tight text-gray-400 dark:text-gray-500 select-none cursor-pointer"
+                  className="w-auto -mt-0.5 text-xs leading-tight text-muted-foreground select-none cursor-pointer"
                   onClick={handleGotoMemoDetailPage}
                 >
                   {displayTime}
@@ -160,7 +160,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
             </div>
           ) : (
             <div
-              className="w-full text-sm leading-tight text-gray-400 dark:text-gray-500 select-none cursor-pointer"
+              className="w-full text-sm leading-tight text-muted-foreground select-none cursor-pointer"
               onClick={handleGotoMemoDetailPage}
             >
               {displayTime}
@@ -193,8 +193,8 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
                 from: parentPage,
               }}
             >
-              <MessageCircleMoreIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
-              {commentAmount > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{commentAmount}</span>}
+              <MessageCircleMoreIcon className="w-4 h-4 mx-auto text-muted-foreground" />
+              {commentAmount > 0 && <span className="text-xs text-muted-foreground">{commentAmount}</span>}
             </Link>
           )}
           {props.showPinned && memo.pinned && (
@@ -202,7 +202,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span className="cursor-pointer">
-                    <BookmarkIcon className="w-4 h-auto text-amber-500" onClick={onPinIconClick} />
+                    <BookmarkIcon className="w-4 h-auto text-primary" onClick={onPinIconClick} />
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -213,7 +213,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           )}
           {nsfw && showNSFWContent && (
             <span className="cursor-pointer">
-              <EyeOffIcon className="w-4 h-auto text-amber-500" onClick={() => setShowNSFWContent(false)} />
+              <EyeOffIcon className="w-4 h-auto text-primary" onClick={() => setShowNSFWContent(false)} />
             </span>
           )}
           <MemoActionMenu className="-ml-1" memo={memo} readonly={readonly} onEdit={() => setShowEditor(true)} />
@@ -244,7 +244,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
         <>
           <div className="absolute inset-0 bg-transparent" />
           <button
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 py-2 px-4 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-zinc-800"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 py-2 px-4 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg bg-card"
             onClick={() => setShowNSFWContent(true)}
           >
             {t("memo.click-to-show-nsfw-content")}

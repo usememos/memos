@@ -141,7 +141,7 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
   };
 
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-white dark:bg-zinc-800 dark:text-gray-300 p-4 rounded-lg">
+    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
       <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
         <p className="title-text">{t("setting.account-section.update-information")}</p>
         <Button variant="ghost" onClick={handleCloseBtnClick}>
@@ -168,7 +168,7 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
         </div>
         <p className="text-sm">
           {t("common.username")}
-          <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.username-note")})</span>
+          <span className="text-sm text-muted-foreground ml-1">({t("setting.account-section.username-note")})</span>
         </p>
         <Input
           className="w-full"
@@ -178,7 +178,7 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
         />
         <p className="text-sm">
           {t("common.nickname")}
-          <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.nickname-note")})</span>
+          <span className="text-sm text-muted-foreground ml-1">({t("setting.account-section.nickname-note")})</span>
         </p>
         <Input
           className="w-full"
@@ -188,7 +188,7 @@ const UpdateAccountDialog = ({ destroy }: Props) => {
         />
         <p className="text-sm">
           {t("common.email")}
-          <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.email-note")})</span>
+          <span className="text-sm text-muted-foreground ml-1">({t("setting.account-section.email-note")})</span>
         </p>
         <Input className="w-full" type="email" value={state.email} onChange={handleEmailChanged} />
         <p className="text-sm">{t("common.description")}</p>

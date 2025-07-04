@@ -59,11 +59,11 @@ const ReactionSelector = observer((props: Props) => {
       <PopoverTrigger asChild>
         <span
           className={cn(
-            "h-7 w-7 flex justify-center items-center rounded-full border border-zinc-200 dark:border-zinc-700 hover:opacity-70 cursor-pointer",
+            "h-7 w-7 flex justify-center items-center rounded-full border hover:opacity-70 cursor-pointer",
             className,
           )}
         >
-          <SmilePlusIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
+          <SmilePlusIcon className="w-4 h-4 mx-auto text-muted-foreground" />
         </span>
       </PopoverTrigger>
       <PopoverContent align="start" sideOffset={2}>
@@ -74,8 +74,8 @@ const ReactionSelector = observer((props: Props) => {
                 <span
                   key={reactionType}
                   className={cn(
-                    "inline-flex w-auto text-base cursor-pointer rounded px-1 text-gray-500 dark:text-gray-400 hover:opacity-80",
-                    hasReacted(reactionType) && "bg-blue-100 dark:bg-zinc-800",
+                    "inline-flex w-auto text-base cursor-pointer rounded px-1 text-muted-foreground hover:opacity-80",
+                    hasReacted(reactionType) && "bg-primary/10",
                   )}
                   onClick={() => handleReactionClick(reactionType)}
                 >

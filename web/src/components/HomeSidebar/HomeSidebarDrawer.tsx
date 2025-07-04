@@ -17,10 +17,10 @@ const HomeSidebarDrawer = () => {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" className="bg-transparent! px-2">
-          <MenuIcon className="w-6 h-auto dark:text-gray-400" />
+          <MenuIcon className="w-6 h-auto text-foreground" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:w-80 bg-zinc-100 dark:bg-zinc-900">
+      <SheetContent side="right" className="w-full sm:w-80 bg-secondary">
         <HomeSidebar className="px-4 py-4" />
       </SheetContent>
     </Sheet>
