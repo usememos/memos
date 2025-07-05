@@ -73,8 +73,8 @@ const UploadAttachmentButton = observer((props: Props) => {
   const isUploading = state.uploadingFlag || props.isUploading;
 
   return (
-    <Button className="relative" variant="ghost" disabled={isUploading}>
-      {isUploading ? <LoaderIcon className="w-5 h-5 animate-spin" /> : <PaperclipIcon className="w-5 h-5" />}
+    <Button className="relative" variant="ghost" size="icon" disabled={isUploading}>
+      {isUploading ? <LoaderIcon className="size-5 animate-spin" /> : <PaperclipIcon className="size-5" />}
       <input
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         ref={fileInputRef}

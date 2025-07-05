@@ -92,9 +92,7 @@ const UserProfile = observer(() => {
                   <p className="w-full text-3xl text-foreground leading-tight font-medium opacity-80 truncate">
                     {user.displayName || user.username}
                   </p>
-                  <p className="w-full text-muted-foreground leading-snug whitespace-pre-wrap truncate line-clamp-6">
-                    {user.description}
-                  </p>
+                  <p className="w-full text-muted-foreground leading-snug whitespace-pre-wrap truncate line-clamp-6">{user.description}</p>
                 </div>
               </div>
               <PagedMemoList

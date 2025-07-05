@@ -124,7 +124,7 @@ const MemoRelatedSettings = observer(() => {
         <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
           {memoRelatedSetting.reactions.map((reactionType) => {
             return (
-              <Badge key={reactionType} variant="outline" className="h-8 flex items-center gap-1">
+              <Badge key={reactionType} variant="outline" className="h-9 flex items-center gap-1">
                 {reactionType}
                 <X
                   className="w-3 h-3 cursor-pointer hover:text-destructive"
@@ -140,10 +140,7 @@ const MemoRelatedSettings = observer(() => {
               value={editingReaction}
               onChange={(event) => setEditingReaction(event.target.value.trim())}
             />
-            <CheckIcon
-              className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary"
-              onClick={() => upsertReaction()}
-            />
+            <CheckIcon className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary" onClick={() => upsertReaction()} />
           </div>
         </div>
       </div>
@@ -158,7 +155,7 @@ const MemoRelatedSettings = observer(() => {
         <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
           {memoRelatedSetting.nsfwTags.map((nsfwTag) => {
             return (
-              <Badge key={nsfwTag} variant="outline" className="h-8 flex items-center gap-1">
+              <Badge key={nsfwTag} variant="outline" className="h-9 flex items-center gap-1">
                 {nsfwTag}
                 <X
                   className="w-3 h-3 cursor-pointer hover:text-destructive"
@@ -174,10 +171,7 @@ const MemoRelatedSettings = observer(() => {
               value={editingNsfwTag}
               onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
             />
-            <CheckIcon
-              className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary"
-              onClick={() => upsertNsfwTags()}
-            />
+            <CheckIcon className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary" onClick={() => upsertNsfwTags()} />
           </div>
         </div>
       </div>

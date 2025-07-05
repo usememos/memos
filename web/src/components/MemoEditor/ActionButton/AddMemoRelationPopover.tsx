@@ -132,8 +132,8 @@ const AddMemoRelationPopover = (props: Props) => {
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost">
-          <LinkIcon />
+        <Button variant="ghost" size="icon">
+          <LinkIcon className="size-5" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="center">
@@ -166,7 +166,9 @@ const AddMemoRelationPopover = (props: Props) => {
             />
             <div className="max-h-[200px] overflow-y-auto">
               {filteredMemos.length === 0 ? (
-                <div className="py-6 text-center text-sm text-muted-foreground">{isFetching ? "Loading..." : t("reference.no-memos-found")}</div>
+                <div className="py-6 text-center text-sm text-muted-foreground">
+                  {isFetching ? "Loading..." : t("reference.no-memos-found")}
+                </div>
               ) : (
                 filteredMemos.map((memo) => (
                   <div

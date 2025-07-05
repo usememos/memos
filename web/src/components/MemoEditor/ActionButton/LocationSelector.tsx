@@ -96,19 +96,17 @@ const LocationSelector = (props: Props) => {
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" asChild>
-          <div>
-            <MapPinIcon className="w-5 h-5 mx-auto shrink-0" />
-            {props.location && (
-              <>
-                <span className="ml-0.5 text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-32">
-                  {props.location.placeholder}
-                </span>
-                <XIcon className="w-5 h-5 mx-auto shrink-0 opacity-60 hover:opacity-80" onClick={removeLocation} />
-              </>
-            )}
-          </div>
-        </Button>
+        {props.location ? (
+          <Button variant="ghost">
+            <MapPinIcon className="size-5 shrink-0" />
+            <span className="ml-0.5 text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-32">{props.location.placeholder}</span>
+            <XIcon className="size-5 mx-auto shrink-0 opacity-60 hover:opacity-80" onClick={removeLocation} />
+          </Button>
+        ) : (
+          <Button variant="ghost" size="icon">
+            <MapPinIcon className="size-5 shrink-0" />
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent align="center">
         <div className="min-w-80 sm:w-lg p-1 flex flex-col justify-start items-start">
@@ -133,7 +131,6 @@ const LocationSelector = (props: Props) => {
             <Button
               className="shrink-0"
               color="primary"
-              size="sm"
               onClick={() => {
                 props.onChange(
                   Location.fromPartial({

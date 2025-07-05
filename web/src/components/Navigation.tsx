@@ -78,9 +78,9 @@ const Navigation = observer((props: Props) => {
           <NavLink
             className={({ isActive }) =>
               cn(
-                "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-foreground hover:bg-secondary hover:border-border",
+                "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-foreground hover:border-border",
                 collapsed ? "" : "w-full px-4",
-                isActive ? "bg-secondary drop-shadow-sm border-border" : "border-transparent",
+                isActive ? "bg-background border-border" : "border-transparent",
               )
             }
             key={navLink.id}
