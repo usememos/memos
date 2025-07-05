@@ -48,9 +48,7 @@ const RootLayout = observer(() => {
   ) : (
     <div className="w-full min-h-full flex flex-row justify-center items-start sm:pl-16">
       {sm && (
-        <div
-          className={cn("group flex flex-col justify-start items-start fixed top-0 left-0 select-none h-full bg-secondary", "w-16 px-2")}
-        >
+        <div className={cn("group flex flex-col justify-start items-start fixed top-0 left-0 select-none h-full bg-sidebar", "w-16 px-2")}>
           <Navigation collapsed={true} />
         </div>
       )}

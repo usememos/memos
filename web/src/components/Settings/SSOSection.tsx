@@ -63,7 +63,7 @@ const SSOSection = () => {
           <div className="flex flex-row items-center">
             <Popover>
               <PopoverTrigger asChild>
-                <button className="flex items-center justify-center p-1 hover:bg-secondary rounded">
+                <button className="flex items-center justify-center p-1 hover:bg-popover rounded">
                   <MoreVerticalIcon className="w-4 h-auto" />
                 </button>
               </PopoverTrigger>
@@ -71,13 +71,13 @@ const SSOSection = () => {
                 <div className="flex flex-col gap-0.5 text-sm">
                   <button
                     onClick={() => showCreateIdentityProviderDialog(identityProvider, fetchIdentityProviderList)}
-                    className="flex items-center gap-2 px-2 py-1 text-left text-foreground hover:bg-secondary outline-none rounded"
+                    className="flex items-center gap-2 px-2 py-1 text-left text-foreground hover:bg-popover outline-none rounded"
                   >
                     {t("common.edit")}
                   </button>
                   <button
                     onClick={() => handleDeleteIdentityProvider(identityProvider)}
-                    className="flex items-center gap-2 px-2 py-1 text-left text-destructive hover:bg-secondary outline-none rounded"
+                    className="flex items-center gap-2 px-2 py-1 text-left text-destructive hover:bg-popover outline-none rounded"
                   >
                     {t("common.delete")}
                   </button>

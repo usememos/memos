@@ -76,7 +76,7 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
           "shrink-0 mt-2 p-2 rounded-full border",
           inbox.status === Inbox_Status.UNREAD
             ? "border-primary text-primary bg-primary/10"
-            : "border-muted-foreground text-muted-foreground bg-secondary",
+            : "border-muted-foreground text-muted-foreground bg-popover",
         )}
       >
         <TooltipProvider>
@@ -92,7 +92,7 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
       </div>
       <div
         className={cn(
-          "border w-full p-2 px-3 rounded-lg flex flex-col justify-start items-start gap-1 border-border hover:bg-secondary",
+          "border w-full p-2 px-3 rounded-lg flex flex-col justify-start items-start gap-1 border-border hover:bg-background",
           inbox.status !== Inbox_Status.UNREAD && "opacity-60",
         )}
       >

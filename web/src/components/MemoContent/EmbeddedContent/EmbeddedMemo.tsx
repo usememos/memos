@@ -67,7 +67,7 @@ const EmbeddedMemo = observer(({ resourceId: uid, params: paramsStr }: Props) =>
   };
 
   return (
-    <div className="relative flex flex-col justify-start items-start w-full px-3 py-2 bg-secondary rounded-lg border border-border hover:shadow">
+    <div className="relative flex flex-col justify-start items-start w-full px-3 py-2 bg-popover rounded-lg border border-border hover:shadow">
       <div className="w-full mb-1 flex flex-row justify-between items-center text-muted-foreground">
         <div className="text-sm leading-5 select-none">
           <relative-time datetime={memo.displayTime?.toISOString()} format="datetime"></relative-time>
