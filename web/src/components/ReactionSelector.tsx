@@ -57,12 +57,7 @@ const ReactionSelector = observer((props: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <span
-          className={cn(
-            "h-7 w-7 flex justify-center items-center rounded-full border hover:opacity-70 cursor-pointer",
-            className,
-          )}
-        >
+        <span className={cn("h-7 w-7 flex justify-center items-center rounded-full border hover:opacity-70 cursor-pointer", className)}>
           <SmilePlusIcon className="w-4 h-4 mx-auto text-muted-foreground" />
         </span>
       </PopoverTrigger>

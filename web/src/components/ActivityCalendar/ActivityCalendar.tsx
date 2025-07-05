@@ -52,7 +52,9 @@ const CalendarCell = memo(
 
     if (!dayInfo.isCurrentMonth) {
       return (
-        <div className={cn("w-6 h-6 text-xs lg:text-[13px] flex justify-center items-center cursor-default opacity-60 text-muted-foreground")}>
+        <div
+          className={cn("w-6 h-6 text-xs lg:text-[13px] flex justify-center items-center cursor-default opacity-60 text-muted-foreground")}
+        >
           {dayInfo.day}
         </div>
       );

@@ -44,9 +44,7 @@ const WebhookSection = () => {
     <div className="w-full flex flex-col justify-start items-start">
       <div className="w-full flex justify-between items-center">
         <div className="flex-auto space-y-1">
-          <p className="flex flex-row justify-start items-center font-medium text-muted-foreground">
-            {t("setting.webhook-section.title")}
-          </p>
+          <p className="flex flex-row justify-start items-center font-medium text-muted-foreground">{t("setting.webhook-section.title")}</p>
         </div>
         <div>
           <Button

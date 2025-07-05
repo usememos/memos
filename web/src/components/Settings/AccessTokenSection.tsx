@@ -103,9 +103,7 @@ const AccessTokenSection = () => {
                           <ClipboardIcon className="w-4 h-auto text-muted-foreground" />
                         </Button>
                       </td>
-                      <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-foreground">
-                        {userAccessToken.description}
-                      </td>
+                      <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-foreground">{userAccessToken.description}</td>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">
                         {userAccessToken.issuedAt?.toLocaleString()}
                       </td>

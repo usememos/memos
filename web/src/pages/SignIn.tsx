@@ -60,9 +60,7 @@ const SignIn = observer(() => {
       <div className="w-full py-4 grow flex flex-col justify-center items-center">
         <div className="w-full flex flex-row justify-center items-center mb-6">
           <img className="h-14 w-auto rounded-full shadow" src={workspaceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
-          <p className="ml-2 text-5xl text-foreground opacity-80">
-            {workspaceGeneralSetting.customProfile?.title || "Memos"}
-          </p>
+          <p className="ml-2 text-5xl text-foreground opacity-80">{workspaceGeneralSetting.customProfile?.title || "Memos"}</p>
         </div>
         {!workspaceGeneralSetting.disallowPasswordAuth ? (
           <PasswordSignInForm />

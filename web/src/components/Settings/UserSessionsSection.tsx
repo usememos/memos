@@ -135,7 +135,9 @@ const UserSessionsSection = () => {
                               : t("setting.user-sessions-section.revoke-session")
                           }
                         >
-                          <TrashIcon className={`w-4 h-auto ${isCurrentSession(userSession) ? "text-muted-foreground" : "text-destructive"}`} />
+                          <TrashIcon
+                            className={`w-4 h-auto ${isCurrentSession(userSession) ? "text-muted-foreground" : "text-destructive"}`}
+                          />
                         </Button>
                       </td>
                     </tr>
