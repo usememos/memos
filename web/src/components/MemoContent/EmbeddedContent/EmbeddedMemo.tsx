@@ -67,19 +67,24 @@ const EmbeddedMemo = observer(({ resourceId: uid, params: paramsStr }: Props) =>
   };
 
   return (
-    <div className="relative flex flex-col justify-start items-start w-full px-3 py-2 bg-popover rounded-lg border border-border hover:shadow">
+    <div className="relative flex flex-col justify-start items-start w-full px-3 py-2 bg-card rounded-lg border border-border hover:shadow-md transition-shadow">
       <div className="w-full mb-1 flex flex-row justify-between items-center text-muted-foreground">
         <div className="text-sm leading-5 select-none">
           <relative-time datetime={memo.displayTime?.toISOString()} format="datetime"></relative-time>
         </div>
         <div className="flex justify-end items-center gap-1">
           <span
-            className="text-xs opacity-60 leading-5 cursor-pointer hover:opacity-80"
+            className="text-xs text-muted-foreground leading-5 cursor-pointer hover:text-foreground"
             onClick={() => copyMemoUid(extractMemoIdFromName(memo.name))}
           >
             {extractMemoIdFromName(memo.name).slice(0, 6)}
           </span>
-          <Link className="opacity-60 hover:opacity-80" to={`/${memo.name}`} state={{ from: context.parentPage }} viewTransition>
+          <Link
+            className="text-muted-foreground hover:text-foreground"
+            to={`/${memo.name}`}
+            state={{ from: context.parentPage }}
+            viewTransition
+          >
             <ArrowUpRightIcon className="w-5 h-auto" />
           </Link>
         </div>

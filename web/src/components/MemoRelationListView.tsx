@@ -35,8 +35,8 @@ const MemoRelationListView = (props: Props) => {
         {referencingMemoList.length > 0 && (
           <button
             className={cn(
-              "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-muted-foreground",
-              selectedTab === "referencing" && "text-foreground",
+              "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded px-1 py-0.5 transition-colors",
+              selectedTab === "referencing" && "text-foreground bg-accent",
             )}
             onClick={() => setSelectedTab("referencing")}
           >
@@ -48,8 +48,8 @@ const MemoRelationListView = (props: Props) => {
         {referencedMemoList.length > 0 && (
           <button
             className={cn(
-              "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-muted-foreground",
-              selectedTab === "referenced" && "text-foreground",
+              "w-auto flex flex-row justify-start items-center text-xs gap-0.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded px-1 py-0.5 transition-colors",
+              selectedTab === "referenced" && "text-foreground bg-accent",
             )}
             onClick={() => setSelectedTab("referenced")}
           >
@@ -65,7 +65,7 @@ const MemoRelationListView = (props: Props) => {
             return (
               <Link
                 key={memo.name}
-                className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-muted-foreground hover:underline"
+                className="w-full flex flex-row justify-start items-center text-sm leading-5 text-muted-foreground hover:text-foreground hover:bg-accent rounded px-2 py-1 transition-colors"
                 to={`/${memo.name}`}
                 viewTransition
                 state={{
@@ -87,7 +87,7 @@ const MemoRelationListView = (props: Props) => {
             return (
               <Link
                 key={memo.name}
-                className="w-auto max-w-full flex flex-row justify-start items-center text-sm leading-5 text-muted-foreground hover:underline"
+                className="w-full flex flex-row justify-start items-center text-sm leading-5 text-muted-foreground hover:text-foreground hover:bg-accent rounded px-2 py-1 transition-colors"
                 to={`/${memo.name}`}
                 viewTransition
                 state={{

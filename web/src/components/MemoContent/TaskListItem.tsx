@@ -46,7 +46,7 @@ const TaskListItem = observer(({ node, complete, children }: Props) => {
           onCheckedChange={(checked) => handleCheckboxChange(checked === true)}
         />
       </span>
-      <p className={cn(complete && "line-through opacity-80")}>
+      <p className={cn(complete && "line-through text-muted-foreground")}>
         {children.map((child, index) => (
           <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />
         ))}

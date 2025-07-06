@@ -14,7 +14,7 @@ import { State } from "@/types/proto/api/v1/common";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateUserDialog from "../CreateUserDialog";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 interface LocalState {
   creatingUser: User;
@@ -225,46 +225,33 @@ const MemberSection = observer(() => {
                     {currentUser?.name === user.name ? (
                       <span>{t("common.yourself")}</span>
                     ) : (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button className="flex items-center justify-center p-1 hover:bg-muted rounded">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline">
                             <MoreVerticalIcon className="w-4 h-auto" />
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent align="end" sideOffset={2}>
-                          <div className="flex flex-col gap-0.5 text-sm">
-                            <button
-                              onClick={() => showCreateUserDialog(user, () => fetchUsers())}
-                              className="flex items-center gap-2 px-2 py-1 text-left hover:bg-muted outline-none rounded"
-                            >
-                              {t("common.update")}
-                            </button>
-                            {user.state === State.NORMAL ? (
-                              <button
-                                onClick={() => handleArchiveUserClick(user)}
-                                className="flex items-center gap-2 px-2 py-1 text-left hover:bg-muted outline-none rounded"
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" sideOffset={2}>
+                          <DropdownMenuItem onClick={() => showCreateUserDialog(user, () => fetchUsers())}>
+                            {t("common.update")}
+                          </DropdownMenuItem>
+                          {user.state === State.NORMAL ? (
+                            <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>
+                              {t("setting.member-section.archive-member")}
+                            </DropdownMenuItem>
+                          ) : (
+                            <>
+                              <DropdownMenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteUserClick(user)}
+                                className="text-destructive focus:text-destructive"
                               >
-                                {t("setting.member-section.archive-member")}
-                              </button>
-                            ) : (
-                              <>
-                                <button
-                                  onClick={() => handleRestoreUserClick(user)}
-                                  className="flex items-center gap-2 px-2 py-1 text-left hover:bg-muted outline-none rounded"
-                                >
-                                  {t("common.restore")}
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteUserClick(user)}
-                                  className="flex items-center gap-2 px-2 py-1 text-left text-destructive hover:bg-muted outline-none rounded"
-                                >
-                                  {t("setting.member-section.delete-member")}
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </PopoverContent>
-                      </Popover>
+                                {t("setting.member-section.delete-member")}
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     )}
                   </td>
                 </tr>

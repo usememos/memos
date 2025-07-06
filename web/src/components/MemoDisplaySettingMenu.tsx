@@ -31,7 +31,7 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
                 })
               }
             >
-              <SelectTrigger className="w-32">
+              <SelectTrigger size="sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -50,7 +50,7 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
                 })
               }
             >
-              <SelectTrigger className="w-32">
+              <SelectTrigger size="sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

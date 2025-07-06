@@ -34,7 +34,10 @@ const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[
     if (type === "image/*") {
       return (
         <img
-          className={cn("cursor-pointer h-full w-auto rounded-lg border border-border object-contain hover:opacity-80", className)}
+          className={cn(
+            "cursor-pointer h-full w-auto rounded-lg border border-border object-contain hover:border-accent transition-colors",
+            className,
+          )}
           src={attachment.externalLink ? attachmentUrl : attachmentUrl + "?thumbnail=true"}
           onClick={() => handleImageClick(attachmentUrl)}
           decoding="async"
@@ -44,7 +47,10 @@ const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[
     } else if (type === "video/*") {
       return (
         <video
-          className={cn("cursor-pointer h-full w-auto rounded-lg border border-border object-contain bg-popover", className)}
+          className={cn(
+            "cursor-pointer h-full w-auto rounded-lg border border-border object-contain bg-popover hover:border-accent transition-colors",
+            className,
+          )}
           preload="metadata"
           crossOrigin="anonymous"
           src={attachmentUrl}

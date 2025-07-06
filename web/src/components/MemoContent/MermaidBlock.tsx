@@ -43,7 +43,10 @@ const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
   }, [content]);
 
   return (
-    <pre ref={mermaidDockBlock} className="w-full p-2 whitespace-pre-wrap relative">
+    <pre
+      ref={mermaidDockBlock}
+      className="w-full p-2 whitespace-pre-wrap relative bg-card border border-border rounded text-card-foreground"
+    >
       {content}
     </pre>
   );

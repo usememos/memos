@@ -40,25 +40,25 @@ const Navigation = observer((props: Props) => {
     id: "header-memos",
     path: Routes.ROOT,
     title: t("common.memos"),
-    icon: <LibraryIcon className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <LibraryIcon className="w-6 h-auto shrink-0" />,
   };
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",
     path: Routes.EXPLORE,
     title: t("common.explore"),
-    icon: <EarthIcon className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <EarthIcon className="w-6 h-auto shrink-0" />,
   };
   const attachmentsNavLink: NavLinkItem = {
     id: "header-attachments",
     path: Routes.ATTACHMENTS,
     title: t("common.attachments"),
-    icon: <PaperclipIcon className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <PaperclipIcon className="w-6 h-auto shrink-0" />,
   };
   const signInNavLink: NavLinkItem = {
     id: "header-auth",
     path: Routes.AUTH,
     title: t("common.sign-in"),
-    icon: <UserCircleIcon className="w-6 h-auto opacity-70 shrink-0" />,
+    icon: <UserCircleIcon className="w-6 h-auto shrink-0" />,
   };
 
   const navLinks: NavLinkItem[] = currentUser ? [homeNavLink, exploreNavLink, attachmentsNavLink] : [exploreNavLink, signInNavLink];
@@ -78,9 +78,11 @@ const Navigation = observer((props: Props) => {
           <NavLink
             className={({ isActive }) =>
               cn(
-                "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-sidebar-foreground hover:border-border",
+                "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-sidebar-foreground transition-colors",
                 collapsed ? "" : "w-full px-4",
-                isActive ? "bg-sidebar-primary text-sidebar-primary-foreground border-border" : "border-transparent",
+                isActive
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground border-sidebar-border"
+                  : "border-transparent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:border-sidebar-border",
               )
             }
             key={navLink.id}
@@ -106,7 +108,11 @@ const Navigation = observer((props: Props) => {
           </NavLink>
         ))}
       </div>
-      {currentUser && <UserBanner collapsed={collapsed} />}
+      {currentUser && (
+        <div className={cn("w-full flex flex-col justify-end", props.collapsed ? "items-center" : "items-start pl-3")}>
+          <UserBanner collapsed={collapsed} />
+        </div>
+      )}
     </header>
   );
 });

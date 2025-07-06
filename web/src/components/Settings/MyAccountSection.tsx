@@ -5,7 +5,7 @@ import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import AccessTokenSection from "./AccessTokenSection";
 import UserSessionsSection from "./UserSessionsSection";
 
@@ -31,21 +31,18 @@ const MyAccountSection = () => {
           <PenLineIcon className="w-4 h-4 mx-auto mr-1" />
           {t("common.edit")}
         </Button>
-        <Popover>
-          <PopoverTrigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button variant="outline">
               <MoreVerticalIcon className="w-4 h-4 mx-auto" />
             </Button>
-          </PopoverTrigger>
-          <PopoverContent align="start" className="text-sm p-1">
-            <button
-              onClick={() => showChangeMemberPasswordDialog(user)}
-              className="w-full flex items-center gap-2 px-2 py-1 text-left text-sm hover:bg-muted rounded-md"
-            >
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={() => showChangeMemberPasswordDialog(user)}>
               {t("setting.account-section.change-password")}
-            </button>
-          </PopoverContent>
-        </Popover>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <UserSessionsSection />

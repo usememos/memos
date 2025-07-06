@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/grpcweb";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const SSOSection = () => {
   const t = useTranslate();
@@ -57,38 +57,28 @@ const SSOSection = () => {
           <div className="flex flex-row items-center">
             <p className="ml-2">
               {identityProvider.title}
-              <span className="text-sm ml-1 opacity-40">({identityProvider.type})</span>
+              <span className="text-sm ml-1 text-muted-foreground">({identityProvider.type})</span>
             </p>
           </div>
           <div className="flex flex-row items-center">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="flex items-center justify-center p-1 hover:bg-popover rounded">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
                   <MoreVerticalIcon className="w-4 h-auto" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent align="end" sideOffset={2}>
-                <div className="flex flex-col gap-0.5 text-sm">
-                  <button
-                    onClick={() => showCreateIdentityProviderDialog(identityProvider, fetchIdentityProviderList)}
-                    className="flex items-center gap-2 px-2 py-1 text-left text-foreground hover:bg-popover outline-none rounded"
-                  >
-                    {t("common.edit")}
-                  </button>
-                  <button
-                    onClick={() => handleDeleteIdentityProvider(identityProvider)}
-                    className="flex items-center gap-2 px-2 py-1 text-left text-destructive hover:bg-popover outline-none rounded"
-                  >
-                    {t("common.delete")}
-                  </button>
-                </div>
-              </PopoverContent>
-            </Popover>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" sideOffset={2}>
+                <DropdownMenuItem onClick={() => showCreateIdentityProviderDialog(identityProvider, fetchIdentityProviderList)}>
+                  {t("common.edit")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDeleteIdentityProvider(identityProvider)}>{t("common.delete")}</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       ))}
       {identityProviderList.length === 0 && (
-        <div className="w-full mt-2 text-sm border-border opacity-60 flex flex-row items-center justify-between">
+        <div className="w-full mt-2 text-sm border-border text-muted-foreground flex flex-row items-center justify-between">
           <p className="">{t("setting.sso-section.no-sso-found")}</p>
         </div>
       )}

@@ -9,7 +9,7 @@ import memoFilterStore from "@/store/v2/memoFilter";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateShortcutDialog from "../CreateShortcutDialog";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
 
@@ -64,35 +64,27 @@ const ShortcutsSection = observer(() => {
               className="shrink-0 w-full text-sm rounded-md leading-6 flex flex-row justify-between items-center select-none gap-2 text-muted-foreground"
             >
               <span
-                className={cn("truncate cursor-pointer opacity-80", selected && "text-primary font-medium")}
+                className={cn("truncate cursor-pointer text-muted-foreground", selected && "text-primary font-medium")}
                 onClick={() => (selected ? memoFilterStore.setShortcut(undefined) : memoFilterStore.setShortcut(shortcutId))}
               >
                 {emoji && <span className="text-base mr-1">{emoji}</span>}
                 {title.trim()}
               </span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-40 cursor-pointer hover:opacity-70" />
-                </PopoverTrigger>
-                <PopoverContent align="end" alignOffset={-12}>
-                  <div className="flex flex-col text-sm gap-0.5">
-                    <button
-                      onClick={() => showCreateShortcutDialog({ shortcut })}
-                      className="flex items-center gap-2 px-2 py-1 text-left hover:bg-muted outline-none rounded"
-                    >
-                      <Edit3Icon className="w-4 h-auto" />
-                      {t("common.edit")}
-                    </button>
-                    <button
-                      onClick={() => handleDeleteShortcut(shortcut)}
-                      className="flex items-center gap-2 px-2 py-1 text-left text-destructive hover:bg-muted outline-none rounded"
-                    >
-                      <TrashIcon className="w-4 h-auto" />
-                      {t("common.delete")}
-                    </button>
-                  </div>
-                </PopoverContent>
-              </Popover>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <MoreVerticalIcon className="w-4 h-auto shrink-0 text-muted-foreground cursor-pointer hover:text-foreground" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" alignOffset={-12}>
+                  <DropdownMenuItem onClick={() => showCreateShortcutDialog({ shortcut })}>
+                    <Edit3Icon className="w-4 h-auto" />
+                    {t("common.edit")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleDeleteShortcut(shortcut)}>
+                    <TrashIcon className="w-4 h-auto" />
+                    {t("common.delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           );
         })}

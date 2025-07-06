@@ -44,7 +44,7 @@ const ReferencedMemo = observer(({ resourceId: uid, params: paramsStr }: Props) 
 
   return (
     <span
-      className="text-primary whitespace-nowrap cursor-pointer underline break-all hover:opacity-80 decoration-1"
+      className="text-primary whitespace-nowrap cursor-pointer underline break-all hover:text-primary/80 decoration-1"
       onClick={handleGotoMemoDetailPage}
     >
       {displayContent}

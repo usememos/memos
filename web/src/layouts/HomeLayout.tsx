@@ -16,7 +16,7 @@ const HomeLayout = observer(() => {
         </MobileHeader>
       )}
       {md && (
-        <div className={cn("fixed top-0 left-16 shrink-0 h-svh transition-all", "border-x border-border", lg ? "w-72" : "w-56")}>
+        <div className={cn("fixed top-0 left-16 shrink-0 h-svh transition-all", "border-r border-border", lg ? "w-72" : "w-56")}>
           <HomeSidebar className={cn("px-3 py-6")} />
         </div>
       )}
