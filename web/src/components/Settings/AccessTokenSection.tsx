@@ -5,9 +5,10 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useDialog } from "@/hooks/useDialog";
 import { UserAccessToken } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import showCreateAccessTokenDialog from "../CreateAccessTokenDialog";
+import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
 import LearnMore from "../LearnMore";
 
 const listAccessTokens = async (parent: string) => {
@@ -19,6 +20,7 @@ const AccessTokenSection = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [userAccessTokens, setUserAccessTokens] = useState<UserAccessToken[]>([]);
+  const createTokenDialog = useDialog();
 
   useEffect(() => {
     listAccessTokens(currentUser.name).then((accessTokens) => {
@@ -29,6 +31,10 @@ const AccessTokenSection = () => {
   const handleCreateAccessTokenDialogConfirm = async () => {
     const accessTokens = await listAccessTokens(currentUser.name);
     setUserAccessTokens(accessTokens);
+  };
+
+  const handleCreateToken = () => {
+    createTokenDialog.open();
   };
 
   const copyAccessToken = (accessToken: string) => {
@@ -61,12 +67,7 @@ const AccessTokenSection = () => {
             <p className="text-sm text-muted-foreground">{t("setting.access-token-section.description")}</p>
           </div>
           <div className="mt-4 sm:mt-0">
-            <Button
-              color="primary"
-              onClick={() => {
-                showCreateAccessTokenDialog(handleCreateAccessTokenDialogConfirm);
-              }}
-            >
+            <Button color="primary" onClick={handleCreateToken}>
               {t("common.create")}
             </Button>
           </div>
@@ -128,6 +129,13 @@ const AccessTokenSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Create Access Token Dialog */}
+      <CreateAccessTokenDialog
+        open={createTokenDialog.isOpen}
+        onOpenChange={createTokenDialog.setOpen}
+        onSuccess={handleCreateAccessTokenDialogConfirm}
+      />
     </div>
   );
 };

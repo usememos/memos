@@ -1,11 +1,16 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import MemoAttachment from "./MemoAttachment";
-import showPreviewImageDialog from "./PreviewImageDialog";
+import { PreviewImageDialog } from "./PreviewImageDialog";
 
 const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[] }) => {
+  const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({
+    open: false,
+    urls: [],
+    index: 0,
+  });
   const mediaAttachments: Attachment[] = [];
   const otherAttachments: Attachment[] = [];
 
@@ -24,7 +29,7 @@ const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[
       .filter((attachment) => getAttachmentType(attachment) === "image/*")
       .map((attachment) => getAttachmentUrl(attachment));
     const index = imgUrls.findIndex((url) => url === imgUrl);
-    showPreviewImageDialog(imgUrls, index);
+    setPreviewImage({ open: true, urls: imgUrls, index });
   };
 
   const MediaCard = ({ attachment, className }: { attachment: Attachment; className?: string }) => {
@@ -39,6 +44,14 @@ const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[
             className,
           )}
           src={attachment.externalLink ? attachmentUrl : attachmentUrl + "?thumbnail=true"}
+          onError={(e) => {
+            // Fallback to original image if thumbnail fails
+            const target = e.target as HTMLImageElement;
+            if (target.src.includes("?thumbnail=true")) {
+              console.warn("Thumbnail failed, falling back to original image:", attachmentUrl);
+              target.src = attachmentUrl;
+            }
+          }}
           onClick={() => handleImageClick(attachmentUrl)}
           decoding="async"
           loading="lazy"
@@ -88,6 +101,13 @@ const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[
     <>
       {mediaAttachments.length > 0 && <MediaList attachments={mediaAttachments} />}
       <OtherList attachments={otherAttachments} />
+
+      <PreviewImageDialog
+        open={previewImage.open}
+        onOpenChange={(open) => setPreviewImage((prev) => ({ ...prev, open }))}
+        imgUrls={previewImage.urls}
+        initialIndex={previewImage.index}
+      />
     </>
   );
 };

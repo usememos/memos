@@ -1,17 +1,19 @@
-import { XIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { webhookServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
-import { generateDialog } from "./Dialog";
 
-interface Props extends DialogProps {
+interface CreateWebhookDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   webhookName?: string;
-  onConfirm: () => void;
+  onSuccess?: () => void;
 }
 
 interface State {
@@ -19,11 +21,10 @@ interface State {
   url: string;
 }
 
-const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
-  const { webhookName, destroy, onConfirm } = props;
+export function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: CreateWebhookDialogProps) {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const [state, setState] = useState({
+  const [state, setState] = useState<State>({
     displayName: "",
     url: "",
   });
@@ -43,7 +44,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
           });
         });
     }
-  }, []);
+  }, [webhookName]);
 
   const setPartialState = (partialState: Partial<State>) => {
     setState({
@@ -76,6 +77,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
     }
 
     try {
+      requestState.setLoading();
       if (isCreating) {
         await webhookServiceClient.createWebhook({
           parent: currentUser.name,
@@ -95,46 +97,45 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
         });
       }
 
-      onConfirm();
-      destroy();
+      onSuccess?.();
+      onOpenChange(false);
+      requestState.setFinish();
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
+      requestState.setError();
     }
   };
 
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
-      <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
-        <p className="title-text">
-          {isCreating ? t("setting.webhook-section.create-dialog.create-webhook") : t("setting.webhook-section.create-dialog.edit-webhook")}
-        </p>
-        <Button variant="ghost" onClick={() => destroy()}>
-          <XIcon className="w-5 h-auto" />
-        </Button>
-      </div>
-      <div className="flex flex-col justify-start items-start w-80!">
-        <div className="w-full flex flex-col justify-start items-start mb-3">
-          <span className="mb-2">
-            {t("setting.webhook-section.create-dialog.title")} <span className="text-destructive">*</span>
-          </span>
-          <div className="relative w-full">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>
+            {isCreating
+              ? t("setting.webhook-section.create-dialog.create-webhook")
+              : t("setting.webhook-section.create-dialog.edit-webhook")}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="displayName">
+              {t("setting.webhook-section.create-dialog.title")} <span className="text-destructive">*</span>
+            </Label>
             <Input
-              className="w-full"
+              id="displayName"
               type="text"
               placeholder={t("setting.webhook-section.create-dialog.an-easy-to-remember-name")}
               value={state.displayName}
               onChange={handleTitleInputChange}
             />
           </div>
-        </div>
-        <div className="w-full flex flex-col justify-start items-start mb-3">
-          <span className="mb-2">
-            {t("setting.webhook-section.create-dialog.payload-url")} <span className="text-destructive">*</span>
-          </span>
-          <div className="relative w-full">
+          <div className="grid gap-2">
+            <Label htmlFor="url">
+              {t("setting.webhook-section.create-dialog.payload-url")} <span className="text-destructive">*</span>
+            </Label>
             <Input
-              className="w-full"
+              id="url"
               type="text"
               placeholder={t("setting.webhook-section.create-dialog.url-example-post-receive")}
               value={state.url}
@@ -142,30 +143,17 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
             />
           </div>
         </div>
-        <div className="w-full flex flex-row justify-end items-center mt-2 space-x-2">
-          <Button variant="ghost" disabled={requestState.isLoading} onClick={destroy}>
+        <DialogFooter>
+          <Button variant="ghost" disabled={requestState.isLoading} onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" disabled={requestState.isLoading} onClick={handleSaveBtnClick}>
+          <Button disabled={requestState.isLoading} onClick={handleSaveBtnClick}>
             {t("common.create")}
           </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-function showCreateWebhookDialog(onConfirm: () => void) {
-  generateDialog(
-    {
-      className: "create-webhook-dialog",
-      dialogName: "create-webhook-dialog",
-    },
-    CreateWebhookDialog,
-    {
-      onConfirm,
-    },
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export default showCreateWebhookDialog;
+export default CreateWebhookDialog;

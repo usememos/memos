@@ -6,12 +6,13 @@ import { webhookServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Webhook } from "@/types/proto/api/v1/webhook_service";
 import { useTranslate } from "@/utils/i18n";
-import showCreateWebhookDialog from "../CreateWebhookDialog";
+import CreateWebhookDialog from "../CreateWebhookDialog";
 
 const WebhookSection = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
+  const [isCreateWebhookDialogOpen, setIsCreateWebhookDialogOpen] = useState(false);
 
   const listWebhooks = async () => {
     if (!currentUser) return [];
@@ -30,6 +31,7 @@ const WebhookSection = () => {
   const handleCreateWebhookDialogConfirm = async () => {
     const webhooks = await listWebhooks();
     setWebhooks(webhooks);
+    setIsCreateWebhookDialogOpen(false);
   };
 
   const handleDeleteWebhook = async (webhook: Webhook) => {
@@ -47,12 +49,7 @@ const WebhookSection = () => {
           <p className="flex flex-row justify-start items-center font-medium text-muted-foreground">{t("setting.webhook-section.title")}</p>
         </div>
         <div>
-          <Button
-            color="primary"
-            onClick={() => {
-              showCreateWebhookDialog(handleCreateWebhookDialogConfirm);
-            }}
-          >
+          <Button color="primary" onClick={() => setIsCreateWebhookDialogOpen(true)}>
             {t("common.create")}
           </Button>
         </div>
@@ -116,6 +113,11 @@ const WebhookSection = () => {
           <ExternalLinkIcon className="inline w-4 h-auto ml-1" />
         </Link>
       </div>
+      <CreateWebhookDialog
+        open={isCreateWebhookDialogOpen}
+        onOpenChange={setIsCreateWebhookDialogOpen}
+        onSuccess={handleCreateWebhookDialogConfirm}
+      />
     </div>
   );
 };

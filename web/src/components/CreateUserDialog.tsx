@@ -1,7 +1,7 @@
-import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -9,19 +9,19 @@ import { userServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import { generateDialog } from "./Dialog";
 
-interface Props extends DialogProps {
+interface CreateUserDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   user?: User;
-  confirmCallback?: () => void;
+  onSuccess?: () => void;
 }
 
-const CreateUserDialog: React.FC<Props> = (props: Props) => {
-  const { confirmCallback, destroy } = props;
+export function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: CreateUserDialogProps) {
   const t = useTranslate();
-  const [user, setUser] = useState(User.fromPartial({ ...props.user }));
+  const [user, setUser] = useState(User.fromPartial({ ...initialUser }));
   const requestState = useLoading(false);
-  const isCreating = !props.user;
+  const isCreating = !initialUser;
 
   const setPartialUser = (state: Partial<User>) => {
     setUser({
@@ -37,106 +37,99 @@ const CreateUserDialog: React.FC<Props> = (props: Props) => {
     }
 
     try {
+      requestState.setLoading();
       if (isCreating) {
         await userServiceClient.createUser({ user });
         toast.success("Create user successfully");
       } else {
         const updateMask = [];
-        if (user.username !== props.user?.username) {
+        if (user.username !== initialUser?.username) {
           updateMask.push("username");
         }
         if (user.password) {
           updateMask.push("password");
         }
-        if (user.role !== props.user?.role) {
+        if (user.role !== initialUser?.role) {
           updateMask.push("role");
         }
         await userServiceClient.updateUser({ user, updateMask });
         toast.success("Update user successfully");
       }
+      requestState.setFinish();
+      onSuccess?.();
+      onOpenChange(false);
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
+      requestState.setError();
     }
-    if (confirmCallback) {
-      confirmCallback();
-    }
-    destroy();
   };
 
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
-      <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
-        <p className="title-text">{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.user")}`}</p>
-        <Button variant="ghost" onClick={() => destroy()}>
-          <XIcon className="w-5 h-auto" />
-        </Button>
-      </div>
-      <div className="flex flex-col justify-start items-start max-w-md min-w-72">
-        <div className="w-full flex flex-col justify-start items-start mb-3">
-          <span className="text-sm whitespace-nowrap mb-1">{t("common.username")}</span>
-          <Input
-            className="w-full"
-            type="text"
-            placeholder={t("common.username")}
-            value={user.username}
-            onChange={(e) =>
-              setPartialUser({
-                username: e.target.value,
-              })
-            }
-          />
-          <span className="text-sm whitespace-nowrap mt-3 mb-1">{t("common.password")}</span>
-          <Input
-            className="w-full"
-            type="password"
-            placeholder={t("common.password")}
-            autoComplete="off"
-            value={user.password}
-            onChange={(e) =>
-              setPartialUser({
-                password: e.target.value,
-              })
-            }
-          />
-          <span className="text-sm whitespace-nowrap mt-3 mb-1">{t("common.role")}</span>
-          <RadioGroup
-            value={user.role}
-            onValueChange={(value) => setPartialUser({ role: value as User_Role })}
-            className="flex flex-row gap-4"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value={User_Role.USER} id="user" />
-              <Label htmlFor="user">{t("setting.member-section.user")}</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value={User_Role.ADMIN} id="admin" />
-              <Label htmlFor="admin">{t("setting.member-section.admin")}</Label>
-            </div>
-          </RadioGroup>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.user")}`}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="username">{t("common.username")}</Label>
+            <Input
+              id="username"
+              type="text"
+              placeholder={t("common.username")}
+              value={user.username}
+              onChange={(e) =>
+                setPartialUser({
+                  username: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="password">{t("common.password")}</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder={t("common.password")}
+              autoComplete="off"
+              value={user.password}
+              onChange={(e) =>
+                setPartialUser({
+                  password: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label>{t("common.role")}</Label>
+            <RadioGroup
+              value={user.role}
+              onValueChange={(value) => setPartialUser({ role: value as User_Role })}
+              className="flex flex-row gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value={User_Role.USER} id="user" />
+                <Label htmlFor="user">{t("setting.member-section.user")}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value={User_Role.ADMIN} id="admin" />
+                <Label htmlFor="admin">{t("setting.member-section.admin")}</Label>
+              </div>
+            </RadioGroup>
+          </div>
         </div>
-        <div className="w-full flex flex-row justify-end items-center space-x-2 mt-2">
-          <Button variant="ghost" disabled={requestState.isLoading} onClick={destroy}>
+        <DialogFooter>
+          <Button variant="ghost" disabled={requestState.isLoading} onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" disabled={requestState.isLoading} onClick={handleConfirm}>
+          <Button disabled={requestState.isLoading} onClick={handleConfirm}>
             {t("common.confirm")}
           </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-function showCreateUserDialog(user?: User, confirmCallback?: () => void) {
-  generateDialog(
-    {
-      className: "create-user-dialog",
-      dialogName: "create-user-dialog",
-    },
-    CreateUserDialog,
-    { user, confirmCallback },
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export default showCreateUserDialog;
+export default CreateUserDialog;

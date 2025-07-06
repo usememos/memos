@@ -36,7 +36,7 @@ const Inboxes = observer(() => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && <MobileHeader />}
       <div className="w-full px-4 sm:px-6">
-        <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-background text-foreground">
+        <div className="w-full border border-border flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-background text-foreground">
           <div className="relative w-full flex flex-row justify-between items-center">
             <p className="py-1 flex flex-row justify-start items-center select-none opacity-80">
               <BellIcon className="w-6 h-auto mr-1 opacity-80" />

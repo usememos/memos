@@ -596,14 +596,14 @@ const file_api_v1_attachment_service_proto_rawDesc = "" +
 	"updateMask\"N\n" +
 	"\x17DeleteAttachmentRequest\x123\n" +
 	"\x04name\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\n" +
-	"\x17memos.api.v1/AttachmentR\x04name2\xdb\x06\n" +
+	"\x17memos.api.v1/AttachmentR\x04name2\xe5\x06\n" +
 	"\x11AttachmentService\x12\x89\x01\n" +
 	"\x10CreateAttachment\x12%.memos.api.v1.CreateAttachmentRequest\x1a\x18.memos.api.v1.Attachment\"4\xdaA\n" +
 	"attachment\x82\xd3\xe4\x93\x02!:\n" +
 	"attachment\"\x13/api/v1/attachments\x12{\n" +
 	"\x0fListAttachments\x12$.memos.api.v1.ListAttachmentsRequest\x1a%.memos.api.v1.ListAttachmentsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/attachments\x12z\n" +
-	"\rGetAttachment\x12\".memos.api.v1.GetAttachmentRequest\x1a\x18.memos.api.v1.Attachment\"+\xdaA\x04name\x82\xd3\xe4\x93\x02\x1e\x12\x1c/api/v1/{name=attachments/*}\x12\x94\x01\n" +
-	"\x13GetAttachmentBinary\x12(.memos.api.v1.GetAttachmentBinaryRequest\x1a\x14.google.api.HttpBody\"=\xdaA\rname,filename\x82\xd3\xe4\x93\x02'\x12%/file/{name=attachments/*}/{filename}\x12\xa9\x01\n" +
+	"\rGetAttachment\x12\".memos.api.v1.GetAttachmentRequest\x1a\x18.memos.api.v1.Attachment\"+\xdaA\x04name\x82\xd3\xe4\x93\x02\x1e\x12\x1c/api/v1/{name=attachments/*}\x12\x9e\x01\n" +
+	"\x13GetAttachmentBinary\x12(.memos.api.v1.GetAttachmentBinaryRequest\x1a\x14.google.api.HttpBody\"G\xdaA\x17name,filename,thumbnail\x82\xd3\xe4\x93\x02'\x12%/file/{name=attachments/*}/{filename}\x12\xa9\x01\n" +
 	"\x10UpdateAttachment\x12%.memos.api.v1.UpdateAttachmentRequest\x1a\x18.memos.api.v1.Attachment\"T\xdaA\x16attachment,update_mask\x82\xd3\xe4\x93\x025:\n" +
 	"attachment2'/api/v1/{attachment.name=attachments/*}\x12~\n" +
 	"\x10DeleteAttachment\x12%.memos.api.v1.DeleteAttachmentRequest\x1a\x16.google.protobuf.Empty\"+\xdaA\x04name\x82\xd3\xe4\x93\x02\x1e*\x1c/api/v1/{name=attachments/*}B\xae\x01\n" +

@@ -1,14 +1,16 @@
 import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { Switch } from "@/components/ui/switch";
 import { memoServiceClient } from "@/grpcweb";
+import { useDialog } from "@/hooks/useDialog";
 import { cn } from "@/lib/utils";
 import { userStore } from "@/store/v2";
 import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
 import { useTranslate } from "@/utils/i18n";
-import showRenameTagDialog from "../RenameTagDialog";
+import RenameTagDialog from "../RenameTagDialog";
 import TagTree from "../TagTree";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -20,6 +22,8 @@ interface Props {
 const TagsSection = observer((props: Props) => {
   const t = useTranslate();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
+  const renameTagDialog = useDialog();
+  const [selectedTag, setSelectedTag] = useState<string>("");
   const tags = Object.entries(userStore.state.tagCount)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
@@ -34,6 +38,16 @@ const TagsSection = observer((props: Props) => {
         value: tag,
       });
     }
+  };
+
+  const handleRenameTag = (tag: string) => {
+    setSelectedTag(tag);
+    renameTagDialog.open();
+  };
+
+  const handleRenameSuccess = () => {
+    // Refresh tags after rename
+    userStore.fetchUsers();
   };
 
   const handleDeleteTag = async (tag: string) => {
@@ -83,7 +97,7 @@ const TagsSection = observer((props: Props) => {
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" sideOffset={2}>
-                    <DropdownMenuItem onClick={() => showRenameTagDialog({ tag: tag })}>
+                    <DropdownMenuItem onClick={() => handleRenameTag(tag)}>
                       <Edit3Icon className="w-4 h-auto" />
                       {t("common.rename")}
                     </DropdownMenuItem>
@@ -112,6 +126,14 @@ const TagsSection = observer((props: Props) => {
           </div>
         )
       )}
+
+      {/* Rename Tag Dialog */}
+      <RenameTagDialog
+        open={renameTagDialog.isOpen}
+        onOpenChange={renameTagDialog.setOpen}
+        tag={selectedTag}
+        onSuccess={handleRenameSuccess}
+      />
     </div>
   );
 });

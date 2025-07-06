@@ -1,8 +1,9 @@
-import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { shortcutServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -10,23 +11,24 @@ import useLoading from "@/hooks/useLoading";
 import { userStore } from "@/store/v2";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { useTranslate } from "@/utils/i18n";
-import { generateDialog } from "./Dialog";
 
-interface Props extends DialogProps {
+interface CreateShortcutDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   shortcut?: Shortcut;
+  onSuccess?: () => void;
 }
 
-const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
-  const { destroy } = props;
+export function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, onSuccess }: CreateShortcutDialogProps) {
   const t = useTranslate();
   const user = useCurrentUser();
   const [shortcut, setShortcut] = useState<Shortcut>({
-    name: props.shortcut?.name || "",
-    title: props.shortcut?.title || "",
-    filter: props.shortcut?.filter || "",
+    name: initialShortcut?.name || "",
+    title: initialShortcut?.title || "",
+    filter: initialShortcut?.filter || "",
   });
   const requestState = useLoading(false);
-  const isCreating = !props.shortcut;
+  const isCreating = !initialShortcut;
 
   const onShortcutTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setShortcut({ ...shortcut, title: e.target.value });
@@ -43,6 +45,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
     }
 
     try {
+      requestState.setLoading();
       if (isCreating) {
         await shortcutServiceClient.createShortcut({
           parent: user.name,
@@ -57,7 +60,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
         await shortcutServiceClient.updateShortcut({
           shortcut: {
             ...shortcut,
-            name: props.shortcut!.name, // Keep the original resource name
+            name: initialShortcut!.name, // Keep the original resource name
           },
           updateMask: ["title", "filter"],
         });
@@ -65,79 +68,74 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       }
       // Refresh shortcuts.
       await userStore.fetchShortcuts();
-      destroy();
+      requestState.setFinish();
+      onSuccess?.();
+      onOpenChange(false);
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
+      requestState.setError();
     }
   };
 
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
-      <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
-        <p className="title-text">{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.shortcuts")}`}</p>
-        <Button variant="ghost" onClick={() => destroy()}>
-          <XIcon className="w-5 h-auto" />
-        </Button>
-      </div>
-      <div className="flex flex-col justify-start items-start max-w-md min-w-72">
-        <div className="w-full flex flex-col justify-start items-start mb-3">
-          <span className="text-sm whitespace-nowrap mb-1">{t("common.title")}</span>
-          <Input className="w-full" type="text" placeholder="" value={shortcut.title} onChange={onShortcutTitleChange} />
-          <span className="text-sm whitespace-nowrap mt-3 mb-1">{t("common.filter")}</span>
-          <Textarea
-            className="w-full"
-            rows={3}
-            placeholder={t("common.shortcut-filter")}
-            value={shortcut.filter}
-            onChange={onShortcutFilterChange}
-          />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.shortcuts")}`}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="title">{t("common.title")}</Label>
+            <Input id="title" type="text" placeholder="" value={shortcut.title} onChange={onShortcutTitleChange} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="filter">{t("common.filter")}</Label>
+            <Textarea
+              id="filter"
+              rows={3}
+              placeholder={t("common.shortcut-filter")}
+              value={shortcut.filter}
+              onChange={onShortcutFilterChange}
+            />
+          </div>
+          <div className="text-sm text-muted-foreground">
+            <p className="mb-2">{t("common.learn-more")}:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <a
+                  className="text-primary hover:underline"
+                  href="https://www.usememos.com/docs/getting-started/shortcuts"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Docs - Shortcuts
+                </a>
+              </li>
+              <li>
+                <a
+                  className="text-primary hover:underline"
+                  href="https://www.usememos.com/docs/getting-started/shortcuts#how-to-write-a-filter"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  How to Write a Filter?
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="w-full opacity-70">
-          <p className="text-sm">{t("common.learn-more")}:</p>
-          <ul className="list-disc list-inside text-sm pl-2 mt-1">
-            <li>
-              <a
-                className="text-sm text-primary hover:underline"
-                href="https://www.usememos.com/docs/getting-started/shortcuts"
-                target="_blank"
-              >
-                Docs - Shortcuts
-              </a>
-            </li>
-            <li>
-              <a
-                className="text-sm text-primary hover:underline"
-                href="https://www.usememos.com/docs/getting-started/shortcuts#how-to-write-a-filter"
-                target="_blank"
-              >
-                How to Write a Filter?
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="w-full flex flex-row justify-end items-center space-x-2 mt-2">
-          <Button variant="ghost" disabled={requestState.isLoading} onClick={destroy}>
+        <DialogFooter>
+          <Button variant="ghost" disabled={requestState.isLoading} onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" disabled={requestState.isLoading} onClick={handleConfirm}>
+          <Button disabled={requestState.isLoading} onClick={handleConfirm}>
             {t("common.confirm")}
           </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-function showCreateShortcutDialog(props: Pick<Props, "shortcut">) {
-  generateDialog(
-    {
-      className: "create-shortcut-dialog",
-      dialogName: "create-shortcut-dialog",
-    },
-    CreateShortcutDialog,
-    props,
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export default showCreateShortcutDialog;
+export default CreateShortcutDialog;

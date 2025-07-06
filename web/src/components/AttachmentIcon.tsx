@@ -9,11 +9,11 @@ import {
   FileVideo2Icon,
   SheetIcon,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
-import showPreviewImageDialog from "./PreviewImageDialog";
+import { PreviewImageDialog } from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
 
 interface Props {
@@ -24,26 +24,52 @@ interface Props {
 
 const AttachmentIcon = (props: Props) => {
   const { attachment } = props;
+  const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({
+    open: false,
+    urls: [],
+    index: 0,
+  });
   const resourceType = getAttachmentType(attachment);
-  const resourceUrl = getAttachmentUrl(attachment);
+  const attachmentUrl = getAttachmentUrl(attachment);
   const className = cn("w-full h-auto", props.className);
   const strokeWidth = props.strokeWidth;
 
   const previewResource = () => {
-    window.open(resourceUrl);
+    window.open(attachmentUrl);
+  };
+
+  const handleImageClick = () => {
+    setPreviewImage({ open: true, urls: [attachmentUrl], index: 0 });
   };
 
   if (resourceType === "image/*") {
     return (
-      <SquareDiv className={cn(className, "flex items-center justify-center overflow-clip")}>
-        <img
-          className="min-w-full min-h-full object-cover"
-          src={attachment.externalLink ? resourceUrl : resourceUrl + "?thumbnail=true"}
-          onClick={() => showPreviewImageDialog(resourceUrl)}
-          decoding="async"
-          loading="lazy"
+      <>
+        <SquareDiv className={cn(className, "flex items-center justify-center overflow-clip")}>
+          <img
+            className="min-w-full min-h-full object-cover"
+            src={attachment.externalLink ? attachmentUrl : attachmentUrl + "?thumbnail=true"}
+            onClick={handleImageClick}
+            onError={(e) => {
+              // Fallback to original image if thumbnail fails
+              const target = e.target as HTMLImageElement;
+              if (target.src.includes("?thumbnail=true")) {
+                console.warn("Thumbnail failed, falling back to original image:", attachmentUrl);
+                target.src = attachmentUrl;
+              }
+            }}
+            decoding="async"
+            loading="lazy"
+          />
+        </SquareDiv>
+
+        <PreviewImageDialog
+          open={previewImage.open}
+          onOpenChange={(open) => setPreviewImage((prev) => ({ ...prev, open }))}
+          imgUrls={previewImage.urls}
+          initialIndex={previewImage.index}
         />
-      </SquareDiv>
+      </>
     );
   }
 

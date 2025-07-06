@@ -1,7 +1,7 @@
-import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -9,10 +9,11 @@ import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
-import { generateDialog } from "./Dialog";
 
-interface Props extends DialogProps {
-  onConfirm: () => void;
+interface CreateAccessTokenDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
 }
 
 interface State {
@@ -20,8 +21,7 @@ interface State {
   expiration: number;
 }
 
-const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
-  const { destroy, onConfirm } = props;
+export function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: CreateAccessTokenDialogProps) {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [state, setState] = useState({
@@ -71,6 +71,7 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
     }
 
     try {
+      requestState.setLoading();
       await userServiceClient.createUserAccessToken({
         parent: currentUser.name,
         accessToken: {
@@ -79,42 +80,39 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
         },
       });
 
-      onConfirm();
-      destroy();
+      requestState.setFinish();
+      onSuccess();
+      onOpenChange(false);
     } catch (error: any) {
       toast.error(error.details);
       console.error(error);
+      requestState.setError();
     }
   };
 
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
-      <div className="flex flex-row justify-between items-center w-full mb-4 gap-2">
-        <p>{t("setting.access-token-section.create-dialog.create-access-token")}</p>
-        <Button variant="ghost" onClick={() => destroy()}>
-          <XIcon className="w-5 h-auto" />
-        </Button>
-      </div>
-      <div className="flex flex-col justify-start items-start w-80!">
-        <div className="w-full flex flex-col justify-start items-start mb-3">
-          <span className="mb-2">
-            {t("setting.access-token-section.create-dialog.description")} <span className="text-destructive">*</span>
-          </span>
-          <div className="relative w-full">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t("setting.access-token-section.create-dialog.create-access-token")}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="description">
+              {t("setting.access-token-section.create-dialog.description")} <span className="text-destructive">*</span>
+            </Label>
             <Input
-              className="w-full"
+              id="description"
               type="text"
               placeholder={t("setting.access-token-section.create-dialog.some-description")}
               value={state.description}
               onChange={handleDescriptionInputChange}
             />
           </div>
-        </div>
-        <div className="w-full flex flex-col justify-start items-start mb-3">
-          <span className="mb-2">
-            {t("setting.access-token-section.create-dialog.expiration")} <span className="text-destructive">*</span>
-          </span>
-          <div className="w-full flex flex-row justify-start items-center text-base">
+          <div className="grid gap-2">
+            <Label>
+              {t("setting.access-token-section.create-dialog.expiration")} <span className="text-destructive">*</span>
+            </Label>
             <RadioGroup value={state.expiration.toString()} onValueChange={handleRoleInputChange} className="flex flex-row gap-4">
               {expirationOptions.map((option) => (
                 <div key={option.value} className="flex items-center space-x-2">
@@ -125,30 +123,17 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
             </RadioGroup>
           </div>
         </div>
-        <div className="w-full flex flex-row justify-end items-center mt-4 space-x-2">
-          <Button variant="ghost" disabled={requestState.isLoading} onClick={destroy}>
+        <DialogFooter>
+          <Button variant="ghost" disabled={requestState.isLoading} onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
           <Button disabled={requestState.isLoading} onClick={handleSaveBtnClick}>
             {t("common.create")}
           </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-function showCreateAccessTokenDialog(onConfirm: () => void) {
-  generateDialog(
-    {
-      className: "create-access-token-dialog",
-      dialogName: "create-access-token-dialog",
-    },
-    CreateAccessTokenDialog,
-    {
-      onConfirm,
-    },
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export default showCreateAccessTokenDialog;
+export default CreateAccessTokenDialog;

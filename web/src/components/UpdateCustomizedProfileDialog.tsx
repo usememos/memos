@@ -1,8 +1,9 @@
-import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { workspaceStore } from "@/store/v2";
@@ -10,29 +11,28 @@ import { WorkspaceSettingKey } from "@/store/v2/workspace";
 import { WorkspaceCustomProfile } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "./AppearanceSelect";
-import { generateDialog } from "./Dialog";
 import LocaleSelect from "./LocaleSelect";
 
-type Props = DialogProps;
+interface UpdateCustomizedProfileDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+}
 
-const UpdateCustomizedProfileDialog = ({ destroy }: Props) => {
+export function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: UpdateCustomizedProfileDialogProps) {
   const t = useTranslate();
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
   const [customProfile, setCustomProfile] = useState<WorkspaceCustomProfile>(
     WorkspaceCustomProfile.fromPartial(workspaceGeneralSetting.customProfile || {}),
   );
 
-  const handleCloseButtonClick = () => {
-    destroy();
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const setPartialState = (partialState: Partial<WorkspaceCustomProfile>) => {
-    setCustomProfile((state) => {
-      return {
-        ...state,
-        ...partialState,
-      };
-    });
+    setCustomProfile((state) => ({
+      ...state,
+      ...partialState,
+    }));
   };
 
   const handleNameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,12 +75,17 @@ const UpdateCustomizedProfileDialog = ({ destroy }: Props) => {
     });
   };
 
+  const handleCloseButtonClick = () => {
+    onOpenChange(false);
+  };
+
   const handleSaveButtonClick = async () => {
     if (customProfile.title === "") {
       toast.error("Title cannot be empty.");
       return;
     }
 
+    setIsLoading(true);
     try {
       await workspaceStore.upsertWorkspaceSetting({
         name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
@@ -89,61 +94,75 @@ const UpdateCustomizedProfileDialog = ({ destroy }: Props) => {
           customProfile: customProfile,
         },
       });
+      toast.success(t("message.update-succeed"));
+      onSuccess?.();
+      onOpenChange(false);
     } catch (error) {
       console.error(error);
-      return;
+      toast.error("Failed to update profile");
+    } finally {
+      setIsLoading(false);
     }
-    toast.success(t("message.update-succeed"));
-    destroy();
   };
 
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
-      <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
-        <p className="title-text">{t("setting.system-section.customize-server.title")}</p>
-        <Button variant="ghost" onClick={handleCloseButtonClick}>
-          <XIcon className="w-5 h-auto" />
-        </Button>
-      </div>
-      <div className="flex flex-col justify-start items-start min-w-[16rem]">
-        <p className="text-sm mb-1">{t("setting.system-section.server-name")}</p>
-        <Input className="w-full" type="text" value={customProfile.title} onChange={handleNameChanged} />
-        <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.icon-url")}</p>
-        <Input className="w-full" type="text" value={customProfile.logoUrl} onChange={handleLogoUrlChanged} />
-        <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.description")}</p>
-        <Textarea rows={3} value={customProfile.description} onChange={handleDescriptionChanged} />
-        <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.locale")}</p>
-        <LocaleSelect className="w-full!" value={customProfile.locale} onChange={handleLocaleSelectChange} />
-        <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.appearance")}</p>
-        <AppearanceSelect className="w-full!" value={customProfile.appearance as Appearance} onChange={handleAppearanceSelectChange} />
-        <div className="mt-4 w-full flex flex-row justify-between items-center space-x-2">
-          <div className="flex flex-row justify-start items-center">
-            <Button variant="outline" onClick={handleRestoreButtonClick}>
-              {t("common.restore")}
-            </Button>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{t("setting.system-section.customize-server.title")}</DialogTitle>
+          <DialogDescription>Customize your workspace appearance and settings.</DialogDescription>
+        </DialogHeader>
+
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="server-name">{t("setting.system-section.server-name")}</Label>
+            <Input id="server-name" type="text" value={customProfile.title} onChange={handleNameChanged} placeholder="Enter server name" />
           </div>
-          <div className="flex flex-row justify-end items-center gap-2">
-            <Button variant="ghost" onClick={handleCloseButtonClick}>
+
+          <div className="grid gap-2">
+            <Label htmlFor="icon-url">{t("setting.system-section.customize-server.icon-url")}</Label>
+            <Input id="icon-url" type="text" value={customProfile.logoUrl} onChange={handleLogoUrlChanged} placeholder="Enter icon URL" />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="description">{t("setting.system-section.customize-server.description")}</Label>
+            <Textarea
+              id="description"
+              rows={3}
+              value={customProfile.description}
+              onChange={handleDescriptionChanged}
+              placeholder="Enter description"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>{t("setting.system-section.customize-server.locale")}</Label>
+            <LocaleSelect className="w-full" value={customProfile.locale} onChange={handleLocaleSelectChange} />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>{t("setting.system-section.customize-server.appearance")}</Label>
+            <AppearanceSelect className="w-full" value={customProfile.appearance as Appearance} onChange={handleAppearanceSelectChange} />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-4">
+          <Button variant="outline" onClick={handleRestoreButtonClick} disabled={isLoading}>
+            {t("common.restore")}
+          </Button>
+
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={handleCloseButtonClick} disabled={isLoading}>
               {t("common.cancel")}
             </Button>
-            <Button color="primary" onClick={handleSaveButtonClick}>
-              {t("common.save")}
+            <Button onClick={handleSaveButtonClick} disabled={isLoading}>
+              {isLoading ? "Saving..." : t("common.save")}
             </Button>
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-function showUpdateCustomizedProfileDialog() {
-  generateDialog(
-    {
-      className: "update-customized-profile-dialog",
-      dialogName: "update-customized-profile-dialog",
-    },
-    UpdateCustomizedProfileDialog,
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export default showUpdateCustomizedProfileDialog;
+export default UpdateCustomizedProfileDialog;

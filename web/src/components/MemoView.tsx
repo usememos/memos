@@ -20,7 +20,7 @@ import MemoEditor from "./MemoEditor";
 import MemoLocationView from "./MemoLocationView";
 import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
-import showPreviewImageDialog from "./PreviewImageDialog";
+import { PreviewImageDialog } from "./PreviewImageDialog";
 import ReactionSelector from "./ReactionSelector";
 import UserAvatar from "./UserAvatar";
 import VisibilityIcon from "./VisibilityIcon";
@@ -46,6 +46,11 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const [showNSFWContent, setShowNSFWContent] = useState(props.showNsfwContent);
+  const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({
+    open: false,
+    urls: [],
+    index: 0,
+  });
   const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(
@@ -80,7 +85,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     if (targetEl.tagName === "IMG") {
       const imgUrl = targetEl.getAttribute("src");
       if (imgUrl) {
-        showPreviewImageDialog([imgUrl], 0);
+        setPreviewImage({ open: true, urls: [imgUrl], index: 0 });
       }
     }
   }, []);
@@ -256,6 +261,13 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           </button>
         </>
       )}
+
+      <PreviewImageDialog
+        open={previewImage.open}
+        onOpenChange={(open) => setPreviewImage((prev) => ({ ...prev, open }))}
+        imgUrls={previewImage.urls}
+        initialIndex={previewImage.index}
+      />
     </div>
   );
 });

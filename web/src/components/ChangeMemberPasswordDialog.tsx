@@ -1,19 +1,21 @@
-import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { userStore } from "@/store/v2";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import { generateDialog } from "./Dialog";
 
-interface Props extends DialogProps {
-  user: User;
+interface ChangeMemberPasswordDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  user?: User;
+  onSuccess?: () => void;
 }
 
-const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
-  const { user, destroy } = props;
+export function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: ChangeMemberPasswordDialogProps) {
   const t = useTranslate();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
@@ -23,7 +25,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
   }, []);
 
   const handleCloseBtnClick = () => {
-    destroy();
+    onOpenChange(false);
   };
 
   const handleNewPasswordChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +39,8 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleSaveBtnClick = async () => {
+    if (!user) return;
+
     if (newPassword === "" || newPasswordAgain === "") {
       toast.error(t("message.fill-all"));
       return;
@@ -57,62 +61,55 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
         ["password"],
       );
       toast(t("message.password-changed"));
-      handleCloseBtnClick();
+      onSuccess?.();
+      onOpenChange(false);
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
     }
   };
 
+  if (!user) return null;
+
   return (
-    <div className="max-w-full shadow flex flex-col justify-start items-start bg-card text-card-foreground p-4 rounded-lg">
-      <div className="flex flex-row justify-between items-center mb-4 gap-2 w-full">
-        <p>
-          {t("setting.account-section.change-password")} ({user.displayName})
-        </p>
-        <Button variant="ghost" onClick={handleCloseBtnClick}>
-          <XIcon className="w-5 h-auto" />
-        </Button>
-      </div>
-      <div className="flex flex-col justify-start items-start w-80!">
-        <p className="text-sm mb-1">{t("auth.new-password")}</p>
-        <Input
-          className="w-full"
-          type="password"
-          placeholder={t("auth.new-password")}
-          value={newPassword}
-          onChange={handleNewPasswordChanged}
-        />
-        <p className="text-sm mb-1 mt-2">{t("auth.repeat-new-password")}</p>
-        <Input
-          className="w-full"
-          type="password"
-          placeholder={t("auth.repeat-new-password")}
-          value={newPasswordAgain}
-          onChange={handleNewPasswordAgainChanged}
-        />
-        <div className="flex flex-row justify-end items-center mt-4 w-full gap-x-2">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>
+            {t("setting.account-section.change-password")} ({user.displayName})
+          </DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="newPassword">{t("auth.new-password")}</Label>
+            <Input
+              id="newPassword"
+              type="password"
+              placeholder={t("auth.new-password")}
+              value={newPassword}
+              onChange={handleNewPasswordChanged}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="newPasswordAgain">{t("auth.repeat-new-password")}</Label>
+            <Input
+              id="newPasswordAgain"
+              type="password"
+              placeholder={t("auth.repeat-new-password")}
+              value={newPasswordAgain}
+              onChange={handleNewPasswordAgainChanged}
+            />
+          </div>
+        </div>
+        <DialogFooter>
           <Button variant="ghost" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" onClick={handleSaveBtnClick}>
-            {t("common.save")}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-function showChangeMemberPasswordDialog(user: User) {
-  generateDialog(
-    {
-      className: "change-member-password-dialog",
-      dialogName: "change-member-password-dialog",
-    },
-    ChangeMemberPasswordDialog,
-    { user },
+          <Button onClick={handleSaveBtnClick}>{t("common.save")}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export default showChangeMemberPasswordDialog;
+export default ChangeMemberPasswordDialog;

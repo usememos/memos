@@ -34,7 +34,7 @@ service AttachmentService {
   // GetAttachmentBinary returns a attachment binary by name.
   rpc GetAttachmentBinary(GetAttachmentBinaryRequest) returns (google.api.HttpBody) {
     option (google.api.http) = {get: "/file/{name=attachments/*}/{filename}"};
-    option (google.api.method_signature) = "name,filename";
+    option (google.api.method_signature) = "name,filename,thumbnail";
   }
   // UpdateAttachment updates a attachment.
   rpc UpdateAttachment(UpdateAttachmentRequest) returns (Attachment) {

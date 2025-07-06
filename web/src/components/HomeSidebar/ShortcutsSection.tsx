@@ -1,5 +1,6 @@
 import { Edit3Icon, MoreVerticalIcon, TrashIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { shortcutServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
@@ -8,7 +9,7 @@ import { userStore } from "@/store/v2";
 import memoFilterStore from "@/store/v2/memoFilter";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { useTranslate } from "@/utils/i18n";
-import showCreateShortcutDialog from "../CreateShortcutDialog";
+import CreateShortcutDialog from "../CreateShortcutDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
@@ -23,6 +24,8 @@ const getShortcutId = (name: string): string => {
 const ShortcutsSection = observer(() => {
   const t = useTranslate();
   const shortcuts = userStore.state.shortcuts;
+  const [isCreateShortcutDialogOpen, setIsCreateShortcutDialogOpen] = useState(false);
+  const [editingShortcut, setEditingShortcut] = useState<Shortcut | undefined>();
 
   useAsyncEffect(async () => {
     await userStore.fetchShortcuts();
@@ -36,6 +39,21 @@ const ShortcutsSection = observer(() => {
     }
   };
 
+  const handleCreateShortcut = () => {
+    setEditingShortcut(undefined);
+    setIsCreateShortcutDialogOpen(true);
+  };
+
+  const handleEditShortcut = (shortcut: Shortcut) => {
+    setEditingShortcut(shortcut);
+    setIsCreateShortcutDialogOpen(true);
+  };
+
+  const handleShortcutDialogSuccess = () => {
+    setIsCreateShortcutDialogOpen(false);
+    setEditingShortcut(undefined);
+  };
+
   return (
     <div className="w-full flex flex-col justify-start items-start mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-muted-foreground select-none">
@@ -43,7 +61,7 @@ const ShortcutsSection = observer(() => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <PlusIcon className="w-4 h-auto cursor-pointer" onClick={() => showCreateShortcutDialog({})} />
+              <PlusIcon className="w-4 h-auto cursor-pointer" onClick={handleCreateShortcut} />
             </TooltipTrigger>
             <TooltipContent>
               <p>{t("common.create")}</p>
@@ -75,7 +93,7 @@ const ShortcutsSection = observer(() => {
                   <MoreVerticalIcon className="w-4 h-auto shrink-0 text-muted-foreground cursor-pointer hover:text-foreground" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" alignOffset={-12}>
-                  <DropdownMenuItem onClick={() => showCreateShortcutDialog({ shortcut })}>
+                  <DropdownMenuItem onClick={() => handleEditShortcut(shortcut)}>
                     <Edit3Icon className="w-4 h-auto" />
                     {t("common.edit")}
                   </DropdownMenuItem>
@@ -89,6 +107,12 @@ const ShortcutsSection = observer(() => {
           );
         })}
       </div>
+      <CreateShortcutDialog
+        open={isCreateShortcutDialogOpen}
+        onOpenChange={setIsCreateShortcutDialogOpen}
+        shortcut={editingShortcut}
+        onSuccess={handleShortcutDialogSuccess}
+      />
     </div>
   );
 });

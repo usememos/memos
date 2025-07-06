@@ -8,12 +8,14 @@ import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/grpcweb";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
-import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
+import CreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";
 
 const SSOSection = () => {
   const t = useTranslate();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [editingIdentityProvider, setEditingIdentityProvider] = useState<IdentityProvider | undefined>();
 
   useEffect(() => {
     fetchIdentityProviderList();
@@ -37,6 +39,22 @@ const SSOSection = () => {
     }
   };
 
+  const handleCreateIdentityProvider = () => {
+    setEditingIdentityProvider(undefined);
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleEditIdentityProvider = (identityProvider: IdentityProvider) => {
+    setEditingIdentityProvider(identityProvider);
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleDialogSuccess = async () => {
+    await fetchIdentityProviderList();
+    setIsCreateDialogOpen(false);
+    setEditingIdentityProvider(undefined);
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <div className="w-full flex flex-row justify-between items-center gap-1">
@@ -44,7 +62,7 @@ const SSOSection = () => {
           <span className="font-mono text-muted-foreground">{t("setting.sso-section.sso-list")}</span>
           <LearnMore url="https://www.usememos.com/docs/advanced-settings/sso" />
         </div>
-        <Button color="primary" onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}>
+        <Button color="primary" onClick={handleCreateIdentityProvider}>
           {t("common.create")}
         </Button>
       </div>
@@ -68,9 +86,7 @@ const SSOSection = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" sideOffset={2}>
-                <DropdownMenuItem onClick={() => showCreateIdentityProviderDialog(identityProvider, fetchIdentityProviderList)}>
-                  {t("common.edit")}
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEditIdentityProvider(identityProvider)}>{t("common.edit")}</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDeleteIdentityProvider(identityProvider)}>{t("common.delete")}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -93,6 +109,12 @@ const SSOSection = () => {
           </li>
         </ul>
       </div>
+      <CreateIdentityProviderDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        identityProvider={editingIdentityProvider}
+        onSuccess={handleDialogSuccess}
+      />
     </div>
   );
 };

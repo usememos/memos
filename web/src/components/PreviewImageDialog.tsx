@@ -1,203 +1,93 @@
-import { XIcon } from "lucide-react";
+import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { generateDialog } from "./Dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-const MIN_SCALE = 0.5;
-const MAX_SCALE = 5;
-const SCALE_UNIT = 0.2;
-
-interface Props extends DialogProps {
+interface PreviewImageDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   imgUrls: string[];
-  initialIndex: number;
+  initialIndex?: number;
 }
 
-interface State {
-  scale: number;
-  originX: number;
-  originY: number;
-}
-
-const defaultState: State = {
-  scale: 1,
-  originX: -1,
-  originY: -1,
-};
-
-const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }: Props) => {
+export function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: PreviewImageDialogProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [state, setState] = useState<State>(defaultState);
-  let startX = -1;
-  let endX = -1;
 
-  const handleCloseBtnClick = () => {
-    destroyAndResetViewport();
-  };
-
-  const handleTouchStart = (event: React.TouchEvent) => {
-    if (event.touches.length > 1) {
-      // two or more fingers, ignore
-      return;
-    }
-    startX = event.touches[0].clientX;
-  };
-
-  const handleTouchMove = (event: React.TouchEvent) => {
-    if (event.touches.length > 1) {
-      // two or more fingers, ignore
-      return;
-    }
-    endX = event.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (event: React.TouchEvent) => {
-    if (event.touches.length > 1) {
-      // two or more fingers, ignore
-      return;
-    }
-    if (startX > -1 && endX > -1) {
-      const distance = startX - endX;
-      if (distance > 50) {
-        showNextImg();
-      } else if (distance < -50) {
-        showPrevImg();
-      }
-    }
-
-    endX = -1;
-    startX = -1;
-  };
-
-  const showPrevImg = () => {
-    if (currentIndex > 0) {
-      setState(defaultState);
-      setCurrentIndex(currentIndex - 1);
-    } else {
-      destroyAndResetViewport();
-    }
-  };
-
-  const showNextImg = () => {
-    if (currentIndex < imgUrls.length - 1) {
-      setState(defaultState);
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      destroyAndResetViewport();
-    }
-  };
-
-  const handleImgContainerClick = (event: React.MouseEvent) => {
-    if (event.clientX < window.innerWidth / 2) {
-      showPrevImg();
-    } else {
-      showNextImg();
-    }
-  };
-
-  const handleImageContainerKeyDown = (event: KeyboardEvent) => {
-    switch (event.key) {
-      case "ArrowLeft":
-        showPrevImg();
-        break;
-      case "ArrowRight":
-        showNextImg();
-        break;
-      case "Escape":
-        destroyAndResetViewport();
-        break;
-      default:
-    }
-  };
-
-  const handleImgContainerScroll = (event: React.WheelEvent) => {
-    event.stopPropagation();
-    const offsetX = event.nativeEvent.offsetX;
-    const offsetY = event.nativeEvent.offsetY;
-    const sign = event.deltaY < 0 ? 1 : -1;
-    const scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, state.scale + sign * SCALE_UNIT));
-    setState({
-      ...state,
-      originX: offsetX,
-      originY: offsetY,
-      scale: scale,
-    });
-  };
-
-  const setViewportScalable = () => {
-    const viewport = document.querySelector("meta[name=viewport]");
-    if (viewport) {
-      const contentAttrs = viewport.getAttribute("content");
-      if (contentAttrs) {
-        viewport.setAttribute("content", contentAttrs.replace("user-scalable=no", "user-scalable=yes"));
-      }
-    }
-  };
-
-  const destroyAndResetViewport = () => {
-    const viewport = document.querySelector("meta[name=viewport]");
-    if (viewport) {
-      const contentAttrs = viewport.getAttribute("content");
-      if (contentAttrs) {
-        viewport.setAttribute("content", contentAttrs.replace("user-scalable=yes", "user-scalable=no"));
-      }
-    }
-    destroy();
-  };
-
-  const imageComputedStyle = {
-    transform: `scale(${state.scale})`,
-    transformOrigin: `${state.originX === -1 ? "center" : `${state.originX}px`} ${state.originY === -1 ? "center" : `${state.originY}px`}`,
-  };
-
+  // Update current index when initialIndex prop changes
   useEffect(() => {
-    setViewportScalable();
-  }, []);
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
 
+  // Handle keyboard navigation
   useEffect(() => {
-    document.addEventListener("keydown", handleImageContainerKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleImageContainerKeyDown);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!open) return;
+
+      switch (event.key) {
+        case "Escape":
+          onOpenChange(false);
+          break;
+        default:
+          break;
+      }
     };
-  }, [currentIndex]);
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open, onOpenChange]);
+
+  const handleClose = () => {
+    onOpenChange(false);
+  };
+
+  // Prevent closing when clicking on the image
+  const handleImageClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
+  // Return early if no images provided
+  if (!imgUrls.length) return null;
+
+  // Ensure currentIndex is within bounds
+  const safeIndex = Math.max(0, Math.min(currentIndex, imgUrls.length - 1));
 
   return (
-    <>
-      <div className="fixed top-8 right-8 z-1 flex flex-col justify-start items-center">
-        <Button onClick={handleCloseBtnClick}>
-          <XIcon className="w-6 h-auto" />
-        </Button>
-      </div>
-      <div
-        className="w-full h-screen p-4 sm:p-8 flex flex-col justify-center items-center hide-scrollbar"
-        onClick={handleImgContainerClick}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="!w-[100vw] !h-[100vh] !max-w-[100vw] !max-h-[100vw] p-0 border-0 shadow-none bg-transparent [&>button]:hidden"
+        aria-describedby="image-preview-description"
       >
-        <img
-          className="object-contain max-h-full max-w-full"
-          style={imageComputedStyle}
-          src={imgUrls[currentIndex]}
-          onClick={(e) => e.stopPropagation()}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onWheel={handleImgContainerScroll}
-          decoding="async"
-          loading="lazy"
-        />
-      </div>
-    </>
-  );
-};
+        {/* Close button */}
+        <div className="fixed top-4 right-4 z-50">
+          <Button
+            onClick={handleClose}
+            variant="secondary"
+            size="icon"
+            className="rounded-full bg-popover/20 hover:bg-popover/30 border-border/20 backdrop-blur-sm"
+            aria-label="Close image preview"
+          >
+            <X className="h-4 w-4 text-popover-foreground" />
+          </Button>
+        </div>
 
-export default function showPreviewImageDialog(imgUrls: string[] | string, initialIndex?: number): void {
-  generateDialog(
-    {
-      className: "preview-image-dialog p-0 z-1001",
-      dialogName: "preview-image-dialog",
-    },
-    PreviewImageDialog,
-    {
-      imgUrls: Array.isArray(imgUrls) ? imgUrls : [imgUrls],
-      initialIndex: initialIndex || 0,
-    },
+        {/* Image container */}
+        <div className="w-full h-full flex items-center justify-center p-4 sm:p-8 overflow-auto">
+          <img
+            src={imgUrls[safeIndex]}
+            alt={`Preview image ${safeIndex + 1} of ${imgUrls.length}`}
+            className="max-w-full max-h-full object-contain select-none"
+            onClick={handleImageClick}
+            draggable={false}
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+
+        {/* Screen reader description */}
+        <div id="image-preview-description" className="sr-only">
+          Image preview dialog. Press Escape to close or click outside the image.
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
