@@ -137,7 +137,6 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     <div
       className={cn(
         "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-card text-card-foreground rounded-lg border border-border transition-colors",
-        "hover:bg-accent hover:text-accent-foreground hover:border-accent",
         className,
       )}
     >
@@ -182,7 +181,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
             {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
               <Tooltip>
                 <TooltipTrigger>
-                  <span className="flex justify-center items-center hover:bg-accent hover:text-accent-foreground rounded-md p-1 transition-colors">
+                  <span className="flex justify-center items-center rounded-md p-1 hover:opacity-80">
                     <VisibilityIcon visibility={memo.visibility} />
                   </span>
                 </TooltipTrigger>
@@ -194,7 +193,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           {!isInMemoDetailPage && (workspaceMemoRelatedSetting.enableComment || commentAmount > 0) && (
             <Link
               className={cn(
-                "flex flex-row justify-start items-center hover:bg-accent hover:text-accent-foreground rounded-md p-1 transition-colors",
+                "flex flex-row justify-start items-center rounded-md p-1 hover:opacity-80",
                 commentAmount === 0 && "invisible group-hover:visible",
               )}
               to={`/${memo.name}#comments`}

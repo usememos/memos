@@ -81,8 +81,8 @@ const Navigation = observer((props: Props) => {
                 "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-sidebar-foreground transition-colors",
                 collapsed ? "" : "w-full px-4",
                 isActive
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground border-sidebar-border"
-                  : "border-transparent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:border-sidebar-border",
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-accent-border drop-shadow"
+                  : "border-transparent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:border-sidebar-accent-border opacity-80",
               )
             }
             key={navLink.id}
