@@ -145,7 +145,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           {props.showCreator && creator ? (
             <div className="w-full flex flex-row justify-start items-center">
               <Link
-                className="w-auto hover:bg-accent hover:text-accent-foreground rounded-md p-1 transition-colors"
+                className="w-auto hover:opacity-80 rounded-md transition-colors"
                 to={`/u/${encodeURIComponent(creator.username)}`}
                 viewTransition
               >
@@ -153,14 +153,14 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
               </Link>
               <div className="w-full flex flex-col justify-center items-start">
                 <Link
-                  className="w-full block leading-tight hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors truncate text-muted-foreground"
+                  className="block leading-tight hover:opacity-80 rounded-md transition-colors truncate text-muted-foreground"
                   to={`/u/${encodeURIComponent(creator.username)}`}
                   viewTransition
                 >
                   {creator.displayName || creator.username}
                 </Link>
                 <div
-                  className="w-auto -mt-0.5 text-xs leading-tight text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors"
+                  className="w-auto -mt-0.5 text-xs leading-tight text-muted-foreground select-none cursor-pointer hover:opacity-80 transition-colors"
                   onClick={handleGotoMemoDetailPage}
                 >
                   {displayTime}
