@@ -83,14 +83,12 @@ The color system supports both light and dark themes automatically through CSS c
 | `--accent-foreground` | Dark gray    | Light gray  | Text on accent backgrounds   |
 | `--border`            | Medium light | Medium dark | Dividers, input borders      |
 | `--input`             | Medium light | Medium dark | Form input backgrounds       |
-| `--ring`              | Blue         | Blue        | Focus outlines               |
 
 **When to use:**
 
 - Hover states (`--accent`)
 - Form field borders (`--border`)
 - Input field backgrounds (`--input`)
-- Focus indicators (`--ring`)
 
 ### ⚠️ Feedback Colors
 
@@ -134,7 +132,6 @@ The color system supports both light and dark themes automatically through CSS c
 | `--sidebar-accent`             | Sidebar hover states         |
 | `--sidebar-accent-foreground`  | Text on sidebar hover states |
 | `--sidebar-border`             | Sidebar dividers             |
-| `--sidebar-ring`               | Sidebar focus indicators     |
 
 ## Best Practices
 
@@ -149,7 +146,6 @@ The color system supports both light and dark themes automatically through CSS c
    ```
 
 2. **Use semantic meaning:**
-
    - Primary = main actions
    - Secondary = supporting actions
    - Destructive = dangerous/delete actions
@@ -170,7 +166,6 @@ The color system supports both light and dark themes automatically through CSS c
    ```
 
 2. **Don't use colors outside their intended purpose:**
-
    - Don't use destructive colors for positive actions
    - Don't use primary colors for secondary elements
 
@@ -196,7 +191,6 @@ document.documentElement.classList.toggle("dark");
 ## Accessibility
 
 - All color pairs meet WCAG contrast requirements
-- Focus indicators use `--ring` for consistency
 - Color is never the only means of conveying information
 
 ## Implementation Examples
@@ -234,10 +228,6 @@ document.documentElement.classList.toggle("dark");
   background: var(--input);
   color: var(--foreground);
   border: 1px solid var(--border);
-}
-
-.input:focus {
-  outline: 2px solid var(--ring);
 }
 ```
 
