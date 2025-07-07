@@ -42,6 +42,11 @@ export interface WorkspaceSetting {
 }
 
 export interface WorkspaceGeneralSetting {
+  /**
+   * theme is the name of the selected theme.
+   * This references a CSS file in the web/public/themes/ directory.
+   */
+  theme: string;
   /** disallow_user_registration disallows user registration. */
   disallowUserRegistration: boolean;
   /** disallow_password_auth disallows password authentication. */
@@ -394,6 +399,7 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
 
 function createBaseWorkspaceGeneralSetting(): WorkspaceGeneralSetting {
   return {
+    theme: "",
     disallowUserRegistration: false,
     disallowPasswordAuth: false,
     additionalScript: "",
@@ -407,29 +413,32 @@ function createBaseWorkspaceGeneralSetting(): WorkspaceGeneralSetting {
 
 export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
   encode(message: WorkspaceGeneralSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.theme !== "") {
+      writer.uint32(10).string(message.theme);
+    }
     if (message.disallowUserRegistration !== false) {
-      writer.uint32(8).bool(message.disallowUserRegistration);
+      writer.uint32(16).bool(message.disallowUserRegistration);
     }
     if (message.disallowPasswordAuth !== false) {
-      writer.uint32(16).bool(message.disallowPasswordAuth);
+      writer.uint32(24).bool(message.disallowPasswordAuth);
     }
     if (message.additionalScript !== "") {
-      writer.uint32(26).string(message.additionalScript);
+      writer.uint32(34).string(message.additionalScript);
     }
     if (message.additionalStyle !== "") {
-      writer.uint32(34).string(message.additionalStyle);
+      writer.uint32(42).string(message.additionalStyle);
     }
     if (message.customProfile !== undefined) {
-      WorkspaceCustomProfile.encode(message.customProfile, writer.uint32(42).fork()).join();
+      WorkspaceCustomProfile.encode(message.customProfile, writer.uint32(50).fork()).join();
     }
     if (message.weekStartDayOffset !== 0) {
-      writer.uint32(48).int32(message.weekStartDayOffset);
+      writer.uint32(56).int32(message.weekStartDayOffset);
     }
     if (message.disallowChangeUsername !== false) {
-      writer.uint32(56).bool(message.disallowChangeUsername);
+      writer.uint32(64).bool(message.disallowChangeUsername);
     }
     if (message.disallowChangeNickname !== false) {
-      writer.uint32(64).bool(message.disallowChangeNickname);
+      writer.uint32(72).bool(message.disallowChangeNickname);
     }
     return writer;
   },
@@ -442,11 +451,11 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.disallowUserRegistration = reader.bool();
+          message.theme = reader.string();
           continue;
         }
         case 2: {
@@ -454,15 +463,15 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
             break;
           }
 
-          message.disallowPasswordAuth = reader.bool();
+          message.disallowUserRegistration = reader.bool();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.additionalScript = reader.string();
+          message.disallowPasswordAuth = reader.bool();
           continue;
         }
         case 4: {
@@ -470,7 +479,7 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
             break;
           }
 
-          message.additionalStyle = reader.string();
+          message.additionalScript = reader.string();
           continue;
         }
         case 5: {
@@ -478,15 +487,15 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
             break;
           }
 
-          message.customProfile = WorkspaceCustomProfile.decode(reader, reader.uint32());
+          message.additionalStyle = reader.string();
           continue;
         }
         case 6: {
-          if (tag !== 48) {
+          if (tag !== 50) {
             break;
           }
 
-          message.weekStartDayOffset = reader.int32();
+          message.customProfile = WorkspaceCustomProfile.decode(reader, reader.uint32());
           continue;
         }
         case 7: {
@@ -494,11 +503,19 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
             break;
           }
 
-          message.disallowChangeUsername = reader.bool();
+          message.weekStartDayOffset = reader.int32();
           continue;
         }
         case 8: {
           if (tag !== 64) {
+            break;
+          }
+
+          message.disallowChangeUsername = reader.bool();
+          continue;
+        }
+        case 9: {
+          if (tag !== 72) {
             break;
           }
 
@@ -519,6 +536,7 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
   },
   fromPartial(object: DeepPartial<WorkspaceGeneralSetting>): WorkspaceGeneralSetting {
     const message = createBaseWorkspaceGeneralSetting();
+    message.theme = object.theme ?? "";
     message.disallowUserRegistration = object.disallowUserRegistration ?? false;
     message.disallowPasswordAuth = object.disallowPasswordAuth ?? false;
     message.additionalScript = object.additionalScript ?? "";

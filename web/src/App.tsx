@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import { getSystemColorScheme } from "./helpers/utils";
 import useNavigateTo from "./hooks/useNavigateTo";
 import { userStore, workspaceStore } from "./store/v2";
+import { loadTheme } from "./utils/theme";
 
 const App = observer(() => {
   const { i18n } = useTranslation();
@@ -102,6 +103,11 @@ const App = observer(() => {
       appearance: userSetting.appearance || workspaceStore.state.appearance,
     });
   }, [userSetting?.locale, userSetting?.appearance]);
+
+  // Load theme when workspace setting changes, validate API response
+  useEffect(() => {
+    loadTheme(workspaceGeneralSetting.theme);
+  }, [workspaceGeneralSetting.theme]);
 
   return <Outlet />;
 });

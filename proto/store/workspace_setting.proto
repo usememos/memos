@@ -34,25 +34,27 @@ message WorkspaceBasicSetting {
 }
 
 message WorkspaceGeneralSetting {
+  // theme is the name of the selected theme.
+  // This references a CSS file in the web/public/themes/ directory.
+  string theme = 1;
   // disallow_user_registration disallows user registration.
-  bool disallow_user_registration = 1;
+  bool disallow_user_registration = 2;
   // disallow_password_auth disallows password authentication.
-  bool disallow_password_auth = 2;
+  bool disallow_password_auth = 3;
   // additional_script is the additional script.
-  string additional_script = 3;
+  string additional_script = 4;
   // additional_style is the additional style.
-  string additional_style = 4;
+  string additional_style = 5;
   // custom_profile is the custom profile.
-  WorkspaceCustomProfile custom_profile = 5;
+  WorkspaceCustomProfile custom_profile = 6;
   // week_start_day_offset is the week start day offset from Sunday.
   // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
   // Default is Sunday.
-  int32 week_start_day_offset = 6;
-
+  int32 week_start_day_offset = 7;
   // disallow_change_username disallows changing username.
-  bool disallow_change_username = 7;
+  bool disallow_change_username = 8;
   // disallow_change_nickname disallows changing nickname.
-  bool disallow_change_nickname = 8;
+  bool disallow_change_nickname = 9;
 }
 
 message WorkspaceCustomProfile {

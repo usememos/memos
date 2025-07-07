@@ -2900,6 +2900,11 @@ definitions:
   apiv1WorkspaceGeneralSetting:
     type: object
     properties:
+      theme:
+        type: string
+        description: |-
+          theme is the name of the selected theme.
+          This references a CSS file in the web/public/themes/ directory.
       disallowUserRegistration:
         type: boolean
         description: disallow_user_registration disallows user registration.

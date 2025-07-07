@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 const DropdownMenu = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root>
->(({ ...props }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+>(({ ...props }, _ref) => {
   return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
 });
 DropdownMenu.displayName = "DropdownMenu";

@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 const TooltipProvider = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Provider>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Provider>
->(({ delayDuration = 0, ...props }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+>(({ delayDuration = 0, ...props }, _ref) => {
   return <TooltipPrimitive.Provider data-slot="tooltip-provider" delayDuration={delayDuration} {...props} />;
 });
 TooltipProvider.displayName = "TooltipProvider";
@@ -13,7 +14,8 @@ TooltipProvider.displayName = "TooltipProvider";
 const Tooltip = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root>
->(({ ...props }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+>(({ ...props }, _ref) => {
   return (
     <TooltipProvider>
       <TooltipPrimitive.Root data-slot="tooltip" {...props} />
