@@ -45,10 +45,14 @@ const Tag = observer(({ content }: Props) => {
 
   return (
     <span
-      className={cn("inline-block w-auto text-primary", context.disableFilter ? "" : "cursor-pointer hover:text-primary/80")}
+      className={cn(
+        "inline-block w-auto px-1 py-px rounded-md text-sm font-medium bg-secondary text-secondary-foreground",
+        context.disableFilter ? "" : "cursor-pointer hover:opacity-80 transition-colors",
+      )}
       onClick={handleTagClick}
     >
-      #{content}
+      <span className="opacity-70 font-mono">#</span>
+      {content}
     </span>
   );
 });

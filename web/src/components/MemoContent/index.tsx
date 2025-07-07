@@ -87,7 +87,7 @@ const MemoContent = observer((props: Props) => {
         <div
           ref={memoContentContainerRef}
           className={cn(
-            "relative w-full max-w-full break-words text-base leading-snug space-y-2 whitespace-pre-wrap",
+            "relative w-full max-w-full break-words text-base leading-6 space-y-1 whitespace-pre-wrap",
             showCompactMode == "ALL" && "line-clamp-6 max-h-60",
             contentClassName,
           )}
