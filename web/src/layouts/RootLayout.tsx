@@ -55,7 +55,7 @@ const RootLayout = observer(() => {
             "border-r border-border",
           )}
         >
-          <Navigation collapsed={true} />
+          <Navigation className="py-4 md:pt-6" collapsed={true} />
         </div>
       )}
       <main className="w-full h-auto grow shrink flex flex-col justify-start items-center">

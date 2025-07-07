@@ -45,9 +45,9 @@ const HomeSidebar = observer((props: Props) => {
       )}
     >
       <SearchBar />
+      <MemoFilters />
       <div className="mt-1 px-1 w-full">
         <StatisticsView />
-        <MemoFilters />
         {currentUser && <ShortcutsSection />}
         <TagsSection />
       </div>

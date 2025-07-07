@@ -22,7 +22,7 @@ const HomeSidebarDrawer = () => {
       </SheetTrigger>
       <SheetContent side="right" className="w-80 max-w-full bg-background">
         <SheetHeader>
-          <SheetTitle></SheetTitle>
+          <SheetTitle />
         </SheetHeader>
         <HomeSidebar className="px-4" />
       </SheetContent>

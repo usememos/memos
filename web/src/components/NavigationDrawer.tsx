@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { workspaceStore } from "@/store/v2";
 import Navigation from "./Navigation";
 import UserAvatar from "./UserAvatar";
@@ -27,7 +27,10 @@ const NavigationDrawer = observer(() => {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-80 max-w-full overflow-auto px-2 bg-background">
-        <Navigation />
+        <SheetHeader>
+          <SheetTitle />
+        </SheetHeader>
+        <Navigation className="pb-4" />
       </SheetContent>
     </Sheet>
   );
