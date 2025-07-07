@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
 import { useMemo } from "react";
-import { userStore } from "@/store/v2";
+import { userStore } from "@/store";
 import { UserStats_MemoTypeStats } from "@/types/proto/api/v1/user_service";
 import type { StatisticsData } from "@/types/statistics";
 

@@ -3,8 +3,8 @@ import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, HashIcon, LinkIcon, B
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { memoFilterStore } from "@/store/v2";
-import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters } from "@/store/v2/memoFilter";
+import { memoFilterStore } from "@/store";
+import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters } from "@/store/memoFilter";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoFilters = observer(() => {

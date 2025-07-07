@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { Routes } from "@/router";
-import { memoStore, viewStore } from "@/store/v2";
+import { memoStore, viewStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";

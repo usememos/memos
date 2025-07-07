@@ -4,8 +4,8 @@ import { useLocation } from "react-router-dom";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { memoFilterStore } from "@/store/v2";
-import { stringifyFilters, MemoFilter } from "@/store/v2/memoFilter";
+import { memoFilterStore } from "@/store";
+import { stringifyFilters, MemoFilter } from "@/store/memoFilter";
 import { RendererContext } from "./types";
 
 interface Props {

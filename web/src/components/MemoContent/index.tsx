@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
-import { memoStore } from "@/store/v2";
+import { memoStore } from "@/store";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
 import { useTranslate } from "@/utils/i18n";
 import { isSuperUser } from "@/utils/user";

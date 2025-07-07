@@ -6,7 +6,7 @@ import Empty from "@/components/Empty";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import MobileHeader from "@/components/MobileHeader";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { userStore } from "@/store/v2";
+import { userStore } from "@/store";
 import { Inbox, Inbox_Status, Inbox_Type } from "@/types/proto/api/v1/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 

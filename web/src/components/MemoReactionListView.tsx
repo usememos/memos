@@ -2,7 +2,7 @@ import { uniq } from "lodash-es";
 import { observer } from "mobx-react-lite";
 import { memo, useEffect, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { userStore } from "@/store/v2";
+import { userStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { Reaction } from "@/types/proto/api/v1/memo_service";

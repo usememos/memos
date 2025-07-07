@@ -6,8 +6,8 @@ import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
 import router from "./router";
-import { initialUserStore } from "./store/v2/user";
-import { initialWorkspaceStore } from "./store/v2/workspace";
+import { initialUserStore } from "./store/user";
+import { initialWorkspaceStore } from "./store/workspace";
 import "leaflet/dist/leaflet.css";
 
 const Main = observer(() => (

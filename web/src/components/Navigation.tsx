@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { userStore } from "@/store/v2";
+import { userStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
 import BrandBanner from "./BrandBanner";
 import UserBanner from "./UserBanner";

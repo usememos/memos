@@ -7,9 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
-import { workspaceStore } from "@/store/v2";
-import { WorkspaceSettingKey } from "@/store/v2/workspace";
+import { WorkspaceSettingKey } from "@/store/workspace";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 

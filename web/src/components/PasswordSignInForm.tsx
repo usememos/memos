@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { workspaceStore } from "@/store/v2";
-import { initialUserStore } from "@/store/v2/user";
+import { workspaceStore } from "@/store";
+import { initialUserStore } from "@/store/user";
 import { useTranslate } from "@/utils/i18n";
 
 const PasswordSignInForm = observer(() => {

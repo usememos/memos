@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input";
 import { authServiceClient, userServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { workspaceStore } from "@/store/v2";
-import { initialUserStore } from "@/store/v2/user";
+import { workspaceStore } from "@/store";
+import { initialUserStore } from "@/store/user";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 

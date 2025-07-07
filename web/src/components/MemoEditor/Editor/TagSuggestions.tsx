@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import OverflowTip from "@/components/kit/OverflowTip";
 import { cn } from "@/lib/utils";
-import { userStore } from "@/store/v2";
+import { userStore } from "@/store";
 import { EditorRefActions } from ".";
 
 type Props = {

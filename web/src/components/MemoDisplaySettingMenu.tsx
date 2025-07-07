@@ -2,7 +2,7 @@ import { Settings2Icon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { viewStore } from "@/store/v2";
+import { viewStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 

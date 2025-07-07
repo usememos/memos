@@ -11,9 +11,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
-import { workspaceStore } from "@/store/v2";
-import { WorkspaceSettingKey } from "@/store/v2/workspace";
+import { WorkspaceSettingKey } from "@/store/workspace";
 import {
   WorkspaceStorageSetting,
   WorkspaceStorageSetting_S3Config,

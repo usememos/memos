@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { userStore } from "@/store/v2";
+import { userStore } from "@/store";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";

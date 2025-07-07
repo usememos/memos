@@ -4,8 +4,8 @@ import { useMemo } from "react";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { viewStore } from "@/store/v2";
-import memoFilterStore from "@/store/v2/memoFilter";
+import { viewStore } from "@/store";
+import memoFilterStore from "@/store/memoFilter";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 

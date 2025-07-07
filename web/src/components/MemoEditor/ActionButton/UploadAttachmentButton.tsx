@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useContext, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { attachmentStore } from "@/store/v2";
+import { attachmentStore } from "@/store";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { MemoEditorContext } from "../types";
 

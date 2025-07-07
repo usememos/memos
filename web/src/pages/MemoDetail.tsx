@@ -13,9 +13,9 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
+import { memoStore } from "@/store";
+import { workspaceStore } from "@/store";
 import { memoNamePrefix } from "@/store/common";
-import { memoStore } from "@/store/v2";
-import { workspaceStore } from "@/store/v2";
 import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 

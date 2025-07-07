@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { authServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { initialUserStore } from "@/store/v2/user";
+import { initialUserStore } from "@/store/user";
 
 interface State {
   loading: boolean;

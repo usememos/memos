@@ -2,7 +2,7 @@ import { HashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import OverflowTip from "@/components/kit/OverflowTip";
 import { Button } from "@/components/ui/button";
-import { userStore } from "@/store/v2";
+import { userStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { EditorRefActions } from "../Editor";

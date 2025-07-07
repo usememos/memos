@@ -2,7 +2,7 @@ import { SearchIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { memoFilterStore } from "@/store/v2";
+import { memoFilterStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
 import MemoDisplaySettingMenu from "./MemoDisplaySettingMenu";
 

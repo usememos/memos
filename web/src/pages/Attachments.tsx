@@ -14,7 +14,7 @@ import { attachmentServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
-import { memoStore } from "@/store/v2";
+import { memoStore } from "@/store";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { useTranslate } from "@/utils/i18n";
 

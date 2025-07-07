@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import { getSystemColorScheme } from "./helpers/utils";
 import useNavigateTo from "./hooks/useNavigateTo";
-import { userStore, workspaceStore } from "./store/v2";
+import { userStore, workspaceStore } from "./store";
 import { loadTheme } from "./utils/theme";
 
 const App = observer(() => {

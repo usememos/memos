@@ -1,7 +1,7 @@
 import { LinkIcon, XIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { memoStore } from "@/store/v2";
+import { memoStore } from "@/store";
 import { Memo, MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 
 interface Props {

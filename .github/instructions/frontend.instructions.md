@@ -63,7 +63,7 @@ pnpm dlx shadcn@latest add button
 
 - `web/src/components/` → shared React components
 - `web/src/pages/` → route-based pages
-- `web/src/store/v2/` → MobX stores
+- `web/src/store/` → MobX stores
 - `web/src/style.css` → color variables and global styles
 - `web/src/hooks/` → reusable hooks
 

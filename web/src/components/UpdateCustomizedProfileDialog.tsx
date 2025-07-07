@@ -5,9 +5,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
-import { workspaceStore } from "@/store/v2";
-import { WorkspaceSettingKey } from "@/store/v2/workspace";
+import { WorkspaceSettingKey } from "@/store/workspace";
 import { WorkspaceCustomProfile } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "./AppearanceSelect";

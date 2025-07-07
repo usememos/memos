@@ -2,8 +2,8 @@ import { observer } from "mobx-react-lite";
 import { useContext, useEffect } from "react";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { memoStore } from "@/store";
 import { memoNamePrefix } from "@/store/common";
-import { memoStore } from "@/store/v2";
 import { RendererContext } from "../types";
 import Error from "./Error";
 

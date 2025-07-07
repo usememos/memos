@@ -4,7 +4,7 @@ import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { viewStore } from "@/store/v2";
+import { viewStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 

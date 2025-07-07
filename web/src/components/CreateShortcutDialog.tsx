@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { shortcutServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
-import { userStore } from "@/store/v2";
+import { userStore } from "@/store";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { useTranslate } from "@/utils/i18n";
 

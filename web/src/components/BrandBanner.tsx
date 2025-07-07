@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { cn } from "@/lib/utils";
-import { workspaceStore } from "@/store/v2";
+import { workspaceStore } from "@/store";
 import UserAvatar from "./UserAvatar";
 
 interface Props {

@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { workspaceStore } from "@/store/v2";
+import { workspaceStore } from "@/store";
 import type { ActivityCalendarProps, CalendarDay } from "@/types/statistics";
 import { useTranslate } from "@/utils/i18n";
 

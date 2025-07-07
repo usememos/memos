@@ -2,7 +2,7 @@ import { ChevronRightIcon, HashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
-import memoFilterStore, { MemoFilter } from "@/store/v2/memoFilter";
+import memoFilterStore, { MemoFilter } from "@/store/memoFilter";
 
 interface Tag {
   key: string;

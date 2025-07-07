@@ -1,4 +1,4 @@
-import { userStore } from "@/store/v2";
+import { userStore } from "@/store";
 
 const useCurrentUser = () => {
   return userStore.state.userMapByName[userStore.state.currentUser || ""];

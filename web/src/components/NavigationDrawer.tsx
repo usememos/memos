@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { workspaceStore } from "@/store/v2";
+import { workspaceStore } from "@/store";
 import Navigation from "./Navigation";
 import UserAvatar from "./UserAvatar";
 

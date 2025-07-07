@@ -8,8 +8,8 @@ import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
-import { workspaceStore } from "@/store/v2";
-import memoFilterStore from "@/store/v2/memoFilter";
+import { workspaceStore } from "@/store";
+import memoFilterStore from "@/store/memoFilter";
 
 const RootLayout = observer(() => {
   const location = useLocation();

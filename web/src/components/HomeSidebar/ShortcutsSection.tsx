@@ -5,8 +5,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { shortcutServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import { cn } from "@/lib/utils";
-import { userStore } from "@/store/v2";
-import memoFilterStore from "@/store/v2/memoFilter";
+import { userStore } from "@/store";
+import memoFilterStore from "@/store/memoFilter";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { useTranslate } from "@/utils/i18n";
 import CreateShortcutDialog from "../CreateShortcutDialog";
