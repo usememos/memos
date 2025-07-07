@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 const Popover = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Root>
->(({ ...props }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+>(({ ...props }, _ref) => {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />;
 });
 Popover.displayName = "Popover";
