@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import { getSystemColorScheme } from "./helpers/utils";
 import useNavigateTo from "./hooks/useNavigateTo";
 import { userStore, workspaceStore } from "./store/v2";
+import { loadTheme, validateTheme, getStoredTheme, loadStoredThemeSync } from "./utils/theme";
 
 const App = observer(() => {
   const { i18n } = useTranslation();
@@ -13,6 +14,11 @@ const App = observer(() => {
   const workspaceProfile = workspaceStore.state.profile;
   const userSetting = userStore.state.userSetting;
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
+
+  // Load theme immediately from localStorage to prevent flickering
+  useEffect(() => {
+    loadStoredThemeSync();
+  }, []);
 
   // Redirect to sign up page if no instance owner.
   useEffect(() => {
@@ -102,6 +108,20 @@ const App = observer(() => {
       appearance: userSetting.appearance || workspaceStore.state.appearance,
     });
   }, [userSetting?.locale, userSetting?.appearance]);
+
+  // Load theme when workspace setting changes, validate API response
+  useEffect(() => {
+    const theme = workspaceGeneralSetting.theme;
+    if (theme) {
+      // Validate theme.
+      const validatedTheme = validateTheme(theme);
+      // Only load if different from current stored theme
+      const currentTheme = getStoredTheme();
+      if (validatedTheme !== currentTheme) {
+        loadTheme(validatedTheme);
+      }
+    }
+  }, [workspaceGeneralSetting.theme]);
 
   return <Outlet />;
 });

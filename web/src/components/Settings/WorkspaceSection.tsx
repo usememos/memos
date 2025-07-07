@@ -17,6 +17,7 @@ import { WorkspaceSettingKey } from "@/store/v2/workspace";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
+import ThemeSelector from "../ThemeSelector";
 import UpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 
 const WorkspaceSection = observer(() => {
@@ -82,6 +83,14 @@ const WorkspaceSection = observer(() => {
       </div>
       <Separator />
       <p className="font-medium text-foreground">{t("setting.system-section.title")}</p>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>Theme</span>
+        <ThemeSelector
+          value={workspaceGeneralSetting.theme || "default"}
+          onValueChange={(value) => updatePartialSetting({ theme: value })}
+          className="min-w-fit"
+        />
+      </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.additional-style")}</span>
       </div>

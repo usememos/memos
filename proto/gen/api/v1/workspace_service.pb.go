@@ -300,24 +300,27 @@ func (*WorkspaceSetting_MemoRelatedSetting) isWorkspaceSetting_Value() {}
 
 type WorkspaceGeneralSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// theme is the name of the selected theme.
+	// This references a CSS file in the web/public/themes/ directory.
+	Theme string `protobuf:"bytes,1,opt,name=theme,proto3" json:"theme,omitempty"`
 	// disallow_user_registration disallows user registration.
-	DisallowUserRegistration bool `protobuf:"varint,1,opt,name=disallow_user_registration,json=disallowUserRegistration,proto3" json:"disallow_user_registration,omitempty"`
+	DisallowUserRegistration bool `protobuf:"varint,2,opt,name=disallow_user_registration,json=disallowUserRegistration,proto3" json:"disallow_user_registration,omitempty"`
 	// disallow_password_auth disallows password authentication.
-	DisallowPasswordAuth bool `protobuf:"varint,2,opt,name=disallow_password_auth,json=disallowPasswordAuth,proto3" json:"disallow_password_auth,omitempty"`
+	DisallowPasswordAuth bool `protobuf:"varint,3,opt,name=disallow_password_auth,json=disallowPasswordAuth,proto3" json:"disallow_password_auth,omitempty"`
 	// additional_script is the additional script.
-	AdditionalScript string `protobuf:"bytes,3,opt,name=additional_script,json=additionalScript,proto3" json:"additional_script,omitempty"`
+	AdditionalScript string `protobuf:"bytes,4,opt,name=additional_script,json=additionalScript,proto3" json:"additional_script,omitempty"`
 	// additional_style is the additional style.
-	AdditionalStyle string `protobuf:"bytes,4,opt,name=additional_style,json=additionalStyle,proto3" json:"additional_style,omitempty"`
+	AdditionalStyle string `protobuf:"bytes,5,opt,name=additional_style,json=additionalStyle,proto3" json:"additional_style,omitempty"`
 	// custom_profile is the custom profile.
-	CustomProfile *WorkspaceCustomProfile `protobuf:"bytes,5,opt,name=custom_profile,json=customProfile,proto3" json:"custom_profile,omitempty"`
+	CustomProfile *WorkspaceCustomProfile `protobuf:"bytes,6,opt,name=custom_profile,json=customProfile,proto3" json:"custom_profile,omitempty"`
 	// week_start_day_offset is the week start day offset from Sunday.
 	// 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
 	// Default is Sunday.
-	WeekStartDayOffset int32 `protobuf:"varint,6,opt,name=week_start_day_offset,json=weekStartDayOffset,proto3" json:"week_start_day_offset,omitempty"`
+	WeekStartDayOffset int32 `protobuf:"varint,7,opt,name=week_start_day_offset,json=weekStartDayOffset,proto3" json:"week_start_day_offset,omitempty"`
 	// disallow_change_username disallows changing username.
-	DisallowChangeUsername bool `protobuf:"varint,7,opt,name=disallow_change_username,json=disallowChangeUsername,proto3" json:"disallow_change_username,omitempty"`
+	DisallowChangeUsername bool `protobuf:"varint,8,opt,name=disallow_change_username,json=disallowChangeUsername,proto3" json:"disallow_change_username,omitempty"`
 	// disallow_change_nickname disallows changing nickname.
-	DisallowChangeNickname bool `protobuf:"varint,8,opt,name=disallow_change_nickname,json=disallowChangeNickname,proto3" json:"disallow_change_nickname,omitempty"`
+	DisallowChangeNickname bool `protobuf:"varint,9,opt,name=disallow_change_nickname,json=disallowChangeNickname,proto3" json:"disallow_change_nickname,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -350,6 +353,13 @@ func (x *WorkspaceGeneralSetting) ProtoReflect() protoreflect.Message {
 // Deprecated: Use WorkspaceGeneralSetting.ProtoReflect.Descriptor instead.
 func (*WorkspaceGeneralSetting) Descriptor() ([]byte, []int) {
 	return file_api_v1_workspace_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *WorkspaceGeneralSetting) GetTheme() string {
+	if x != nil {
+		return x.Theme
+	}
+	return ""
 }
 
 func (x *WorkspaceGeneralSetting) GetDisallowUserRegistration() bool {
@@ -887,16 +897,17 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x0fstorage_setting\x18\x03 \x01(\v2%.memos.api.v1.WorkspaceStorageSettingH\x00R\x0estorageSetting\x12]\n" +
 	"\x14memo_related_setting\x18\x04 \x01(\v2).memos.api.v1.WorkspaceMemoRelatedSettingH\x00R\x12memoRelatedSetting:f\xeaAc\n" +
 	"\x1eapi.memos.dev/WorkspaceSetting\x12\x1cworkspace/settings/{setting}*\x11workspaceSettings2\x10workspaceSettingB\a\n" +
-	"\x05value\"\xd9\x03\n" +
-	"\x17WorkspaceGeneralSetting\x12<\n" +
-	"\x1adisallow_user_registration\x18\x01 \x01(\bR\x18disallowUserRegistration\x124\n" +
-	"\x16disallow_password_auth\x18\x02 \x01(\bR\x14disallowPasswordAuth\x12+\n" +
-	"\x11additional_script\x18\x03 \x01(\tR\x10additionalScript\x12)\n" +
-	"\x10additional_style\x18\x04 \x01(\tR\x0fadditionalStyle\x12K\n" +
-	"\x0ecustom_profile\x18\x05 \x01(\v2$.memos.api.v1.WorkspaceCustomProfileR\rcustomProfile\x121\n" +
-	"\x15week_start_day_offset\x18\x06 \x01(\x05R\x12weekStartDayOffset\x128\n" +
-	"\x18disallow_change_username\x18\a \x01(\bR\x16disallowChangeUsername\x128\n" +
-	"\x18disallow_change_nickname\x18\b \x01(\bR\x16disallowChangeNickname\"\xa3\x01\n" +
+	"\x05value\"\xef\x03\n" +
+	"\x17WorkspaceGeneralSetting\x12\x14\n" +
+	"\x05theme\x18\x01 \x01(\tR\x05theme\x12<\n" +
+	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
+	"\x16disallow_password_auth\x18\x03 \x01(\bR\x14disallowPasswordAuth\x12+\n" +
+	"\x11additional_script\x18\x04 \x01(\tR\x10additionalScript\x12)\n" +
+	"\x10additional_style\x18\x05 \x01(\tR\x0fadditionalStyle\x12K\n" +
+	"\x0ecustom_profile\x18\x06 \x01(\v2$.memos.api.v1.WorkspaceCustomProfileR\rcustomProfile\x121\n" +
+	"\x15week_start_day_offset\x18\a \x01(\x05R\x12weekStartDayOffset\x128\n" +
+	"\x18disallow_change_username\x18\b \x01(\bR\x16disallowChangeUsername\x128\n" +
+	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\"\xa3\x01\n" +
 	"\x16WorkspaceCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
