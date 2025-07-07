@@ -9,6 +9,7 @@ interface ThemeSelectorProps {
 const THEMES = [
   { value: "default", label: "Default" },
   { value: "paper", label: "Paper" },
+  { value: "whitewall", label: "Whitewall" },
 ] as const;
 
 export const ThemeSelector = ({ value = "default", onValueChange, className }: ThemeSelectorProps) => {

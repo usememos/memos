@@ -1,11 +1,13 @@
 import paperThemeContent from "../themes/paper.css?raw";
+import whitewallThemeContent from "../themes/whitewall.css?raw";
 
-const VALID_THEMES = ["default", "paper"] as const;
+const VALID_THEMES = ["default", "paper", "whitewall"] as const;
 type ValidTheme = (typeof VALID_THEMES)[number];
 
 const THEME_CONTENT: Record<ValidTheme, string | null> = {
   default: null,
   paper: paperThemeContent,
+  whitewall: whitewallThemeContent,
 };
 
 const validateTheme = (theme: string): ValidTheme => {
