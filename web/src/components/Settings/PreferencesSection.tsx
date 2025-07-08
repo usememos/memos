@@ -42,7 +42,7 @@ const PreferencesSection = observer(() => {
       </div>
 
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.preference-section.theme")}</span>
+        <span>{t("setting.preference-section.apperance")}</span>
         <AppearanceSelect value={setting.appearance as Appearance} onChange={handleAppearanceSelectChange} />
       </div>
 

@@ -310,6 +310,7 @@
     "preference-section": {
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
+      "apperance": "Appearance",
       "theme": "Theme"
     },
     "sso": "SSO",
