@@ -93,6 +93,7 @@ type FindMemoPayload struct {
 	HasTaskList        bool
 	HasCode            bool
 	HasIncompleteTasks bool
+	HasDueDate         bool
 }
 
 type UpdateMemo struct {

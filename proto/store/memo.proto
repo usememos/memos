@@ -19,6 +19,7 @@ message MemoPayload {
     bool has_incomplete_tasks = 4;
     // The references of the memo. Should be a list of uuid.
     repeated string references = 5;
+    bool has_due_date = 6;
   }
 
   message Location {

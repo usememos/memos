@@ -249,6 +249,7 @@ export interface UserStats_MemoTypeStats {
   codeCount: number;
   todoCount: number;
   undoCount: number;
+  dueDateCount: number;
 }
 
 export interface GetUserStatsRequest {
@@ -1404,7 +1405,7 @@ export const UserStats_TagCountEntry: MessageFns<UserStats_TagCountEntry> = {
 };
 
 function createBaseUserStats_MemoTypeStats(): UserStats_MemoTypeStats {
-  return { linkCount: 0, codeCount: 0, todoCount: 0, undoCount: 0 };
+  return { linkCount: 0, codeCount: 0, todoCount: 0, undoCount: 0, dueDateCount: 0 };
 }
 
 export const UserStats_MemoTypeStats: MessageFns<UserStats_MemoTypeStats> = {
@@ -1420,6 +1421,9 @@ export const UserStats_MemoTypeStats: MessageFns<UserStats_MemoTypeStats> = {
     }
     if (message.undoCount !== 0) {
       writer.uint32(32).int32(message.undoCount);
+    }
+    if (message.dueDateCount !== 0) {
+      writer.uint32(40).int32(message.dueDateCount);
     }
     return writer;
   },
@@ -1463,6 +1467,14 @@ export const UserStats_MemoTypeStats: MessageFns<UserStats_MemoTypeStats> = {
           message.undoCount = reader.int32();
           continue;
         }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.dueDateCount = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1481,6 +1493,7 @@ export const UserStats_MemoTypeStats: MessageFns<UserStats_MemoTypeStats> = {
     message.codeCount = object.codeCount ?? 0;
     message.todoCount = object.todoCount ?? 0;
     message.undoCount = object.undoCount ?? 0;
+    message.dueDateCount = object.dueDateCount ?? 0;
     return message;
   },
 };

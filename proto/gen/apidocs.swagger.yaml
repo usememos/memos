@@ -2561,6 +2561,9 @@ definitions:
       undoCount:
         type: integer
         format: int32
+      dueDateCount:
+        type: integer
+        format: int32
     description: Memo type statistics.
   WorkspaceStorageSettingS3Config:
     type: object

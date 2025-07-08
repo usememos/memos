@@ -336,6 +336,7 @@ message UserStats {
     int32 code_count = 2;
     int32 todo_count = 3;
     int32 undo_count = 4;
+    int32 due_date_count = 5;
   }
 }
 

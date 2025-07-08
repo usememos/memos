@@ -54,6 +54,8 @@ const UserProfile = observer(() => {
         contentSearch.push(`"${filter.value}"`);
       } else if (filter.factor === "tagSearch") {
         tagSearch.push(`"${filter.value}"`);
+      } else if (filter.factor === "dueDate") {
+        conditions.push(`has_due_date == true`);
       }
     }
     if (contentSearch.length > 0) {

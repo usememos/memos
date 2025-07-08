@@ -1769,6 +1769,7 @@ type UserStats_MemoTypeStats struct {
 	CodeCount     int32                  `protobuf:"varint,2,opt,name=code_count,json=codeCount,proto3" json:"code_count,omitempty"`
 	TodoCount     int32                  `protobuf:"varint,3,opt,name=todo_count,json=todoCount,proto3" json:"todo_count,omitempty"`
 	UndoCount     int32                  `protobuf:"varint,4,opt,name=undo_count,json=undoCount,proto3" json:"undo_count,omitempty"`
+	DueDateCount  int32                  `protobuf:"varint,5,opt,name=due_date_count,json=dueDateCount,proto3" json:"due_date_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1827,6 +1828,13 @@ func (x *UserStats_MemoTypeStats) GetTodoCount() int32 {
 func (x *UserStats_MemoTypeStats) GetUndoCount() int32 {
 	if x != nil {
 		return x.UndoCount
+	}
+	return 0
+}
+
+func (x *UserStats_MemoTypeStats) GetDueDateCount() int32 {
+	if x != nil {
+		return x.DueDateCount
 	}
 	return 0
 }
@@ -1982,7 +1990,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"total_size\x18\x03 \x01(\x05R\ttotalSize\"E\n" +
 	"\x14GetUserAvatarRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
-	"\x11memos.api.v1/UserR\x04name\"\xe4\x04\n" +
+	"\x11memos.api.v1/UserR\x04name\"\x8a\x05\n" +
 	"\tUserStats\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12R\n" +
 	"\x17memo_display_timestamps\x18\x02 \x03(\v2\x1a.google.protobuf.TimestampR\x15memoDisplayTimestamps\x12M\n" +
@@ -1992,7 +2000,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x10total_memo_count\x18\x06 \x01(\x05R\x0etotalMemoCount\x1a;\n" +
 	"\rTagCountEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a\x8b\x01\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a\xb1\x01\n" +
 	"\rMemoTypeStats\x12\x1d\n" +
 	"\n" +
 	"link_count\x18\x01 \x01(\x05R\tlinkCount\x12\x1d\n" +
@@ -2001,7 +2009,8 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\n" +
 	"todo_count\x18\x03 \x01(\x05R\ttodoCount\x12\x1d\n" +
 	"\n" +
-	"undo_count\x18\x04 \x01(\x05R\tundoCount:?\xeaA<\n" +
+	"undo_count\x18\x04 \x01(\x05R\tundoCount\x12$\n" +
+	"\x0edue_date_count\x18\x05 \x01(\x05R\fdueDateCount:?\xeaA<\n" +
 	"\x16memos.api.v1/UserStats\x12\fusers/{user}*\tuserStats2\tuserStats\"D\n" +
 	"\x13GetUserStatsRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +

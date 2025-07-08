@@ -111,6 +111,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if v.HasIncompleteTasks {
 			where = append(where, "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE")
 		}
+		if v.HasDueDate {
+			where = append(where, "JSON_EXTRACT(`memo`.`payload`, '$.property.hasDueDate') IS TRUE")
+		}
 	}
 	if v := find.Filter; v != nil {
 		// Parse filter string and return the parsed expression.

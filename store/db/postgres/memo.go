@@ -102,6 +102,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if v.HasIncompleteTasks {
 			where = append(where, "(memo.payload->'property'->>'hasIncompleteTasks')::BOOLEAN IS TRUE")
 		}
+		if v.HasDueDate {
+			where = append(where, "(memo.payload->'property'->>'hasDueDate')::BOOLEAN IS TRUE")
+		}
 	}
 	if v := find.Filter; v != nil {
 		// Parse filter string and return the parsed expression.

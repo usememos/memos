@@ -43,6 +43,8 @@ const Home = observer(() => {
         const timestampAfter = filterUtcTimestamp / 1000;
         conditions.push(`display_time_after == ${timestampAfter}`);
         conditions.push(`display_time_before == ${timestampAfter + 60 * 60 * 24}`);
+      } else if (filter.factor === "dueDate") {
+        conditions.push(`has_due_date == true`);
       }
     }
     if (contentSearch.length > 0) {

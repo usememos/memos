@@ -3,6 +3,7 @@ package memopayload
 import (
 	"context"
 	"log/slog"
+	"regexp"
 	"slices"
 
 	"github.com/pkg/errors"
@@ -104,6 +105,10 @@ func RebuildMemoPayload(memo *store.Memo) error {
 			property.References = append(property.References, n.ResourceName)
 		}
 	})
+
+	// Check for patterns in raw content
+	property.HasDueDate = hasDueDate(memo.Content)
+
 	memo.Payload.Tags = tags
 	memo.Payload.Property = property
 	return nil
@@ -131,4 +136,49 @@ func TraverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {
 			TraverseASTNodes(n.Children, fn)
 		}
 	}
+}
+
+// hasDueDate checks if the content contains a valid due date pattern @due(YYYY-MM-DD).
+func hasDueDate(content string) bool {
+	// Regular expression to match @due(YYYY-MM-DD) format
+	// This pattern ensures:
+	// - @due( prefix
+	// - 4 digit year
+	// - - separator
+	// - 2 digit month (01-12)
+	// - - separator
+	// - 2 digit day (01-31)
+	// - ) suffix
+	dueDatePattern := regexp.MustCompile(`@due\((\d{4})-(\d{2})-(\d{2})\)`)
+	matches := dueDatePattern.FindAllStringSubmatch(content, -1)
+
+	if len(matches) == 0 {
+		return false
+	}
+
+	// Validate each match to ensure it's a reasonable date
+	for _, match := range matches {
+		if len(match) < 4 {
+			continue
+		}
+		year := match[1]
+		month := match[2]
+		day := match[3]
+
+		// Basic validation for reasonable date ranges
+		if year < "1900" || year > "2100" {
+			continue
+		}
+		if month < "01" || month > "12" {
+			continue
+		}
+		if day < "01" || day > "31" {
+			continue
+		}
+
+		// Found at least one valid due date
+		return true
+	}
+
+	return false
 }
