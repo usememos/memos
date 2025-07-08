@@ -97,6 +97,7 @@
     "username": "Uživatelské jméno",
     "version": "Verze",
     "visibility": "Viditelnost",
+    "user": "Uživatel",
     "yourself": "Vy sami"
   },
   "days": {
@@ -111,7 +112,8 @@
   "editor": {
     "add-your-comment-here": "Přidejte sem svůj komentář...",
     "any-thoughts": "Jakékoli myšlenky...",
-    "save": "Uložit"
+    "save": "Uložit",
+    "no-changes-detected": "Nebyly zjištěny žádné změny"
   },
   "filters": {
     "has-code": "hasCode",
@@ -137,7 +139,7 @@
       "write-a-comment": "Napsat komentář"
     },
     "copy-link": "Kopírovat odkaz",
-    "count-memos-in-date": "{{date}} {{memos}}: {{count}}",
+    "count-memos-in-date": "{{count}} {{memos}} v {{date}}",
     "delete-confirm": "Opravdu chcete smazat tuto poznámku? TATO AKCE JE NEVRATNÁ",
     "direction": "Směr",
     "direction-asc": "Vzestupně",
@@ -145,13 +147,14 @@
     "display-time": "Doba zobrazení",
     "filters": "Filtry",
     "links": "Odkazy",
-    "load-more": "Načíst další",
+    "list": "Seznam",
+    "masonry": "Zdivo",
     "no-archived-memos": "Žádné archivované poznámky.",
     "no-memos": "Žádné poznámky.",
     "order-by": "Řadit dle",
     "remove-completed-task-list-items": "Odstranit dokončené",
     "remove-completed-task-list-items-confirm": "Jste si jisti, že chcete odstranit všechny dokončené úkoly? TATO AKCE JE NEVRATNÁ",
-    "search-placeholder": "Hledat poznámky",
+    "search-placeholder": "Hledat poznámky...",
     "show-less": "Zobrazit méně",
     "show-more": "Zobrazit více",
     "to-do": "Úkoly",
@@ -161,9 +164,7 @@
       "private": "Soukromá",
       "protected": "Pracovní prostor",
       "public": "Veřejná"
-    },
-    "list": "Seznam",
-    "masonry": "Zdivo"
+    }
   },
   "message": {
     "archived-successfully": "Úspěšně archivováno",
