@@ -408,6 +408,13 @@
     "create-tags-guide": "您可以通過輸入`#標籤`來創建標籤。",
     "delete-confirm": "您確定要刪除此標籤嗎？所有關聯的memos將會被封存",
     "delete-tag": "刪除標籤",
-    "no-tag-found": "找不到標籤"
+    "no-tag-found": "找不到標籤",
+    "new-tag": "新標籤",
+    "old-name": "舊標籤名稱",
+    "rename-error-empty": "標籤名稱不能為空",
+    "rename-error-repeat": "標籤名稱已存在",
+    "rename-success": "標籤重命名成功",
+    "rename-tag": "重命名標籤",
+    "rename-tip": "您的標籤名稱將會被更新"
   }
 }
