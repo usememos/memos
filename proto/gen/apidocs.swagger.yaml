@@ -2218,6 +2218,12 @@ paths:
               memoVisibility:
                 type: string
                 description: The default visibility of the memo.
+              theme:
+                type: string
+                description: |-
+                  The preferred theme of the user.
+                  This references a CSS file in the web/public/themes/ directory.
+                  If not set, the default theme will be used.
             title: Required. The user setting to update.
             required:
               - setting
@@ -2866,6 +2872,12 @@ definitions:
       memoVisibility:
         type: string
         description: The default visibility of the memo.
+      theme:
+        type: string
+        description: |-
+          The preferred theme of the user.
+          This references a CSS file in the web/public/themes/ directory.
+          If not set, the default theme will be used.
     title: User settings message
   apiv1Webhook:
     type: object

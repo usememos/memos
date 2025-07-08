@@ -943,8 +943,12 @@ type UserSetting struct {
 	Appearance string `protobuf:"bytes,3,opt,name=appearance,proto3" json:"appearance,omitempty"`
 	// The default visibility of the memo.
 	MemoVisibility string `protobuf:"bytes,4,opt,name=memo_visibility,json=memoVisibility,proto3" json:"memo_visibility,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// The preferred theme of the user.
+	// This references a CSS file in the web/public/themes/ directory.
+	// If not set, the default theme will be used.
+	Theme         string `protobuf:"bytes,5,opt,name=theme,proto3" json:"theme,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UserSetting) Reset() {
@@ -1001,6 +1005,13 @@ func (x *UserSetting) GetAppearance() string {
 func (x *UserSetting) GetMemoVisibility() string {
 	if x != nil {
 		return x.MemoVisibility
+	}
+	return ""
+}
+
+func (x *UserSetting) GetTheme() string {
+	if x != nil {
+		return x.Theme
 	}
 	return ""
 }
@@ -2005,14 +2016,15 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x16memos.api.v1/UserStats\x12\fusers/{user}*\tuserStats2\tuserStats\"D\n" +
 	"\x13GetUserStatsRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
-	"\x11memos.api.v1/UserR\x04name\"\xde\x01\n" +
+	"\x11memos.api.v1/UserR\x04name\"\xf9\x01\n" +
 	"\vUserSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1b\n" +
 	"\x06locale\x18\x02 \x01(\tB\x03\xe0A\x01R\x06locale\x12#\n" +
 	"\n" +
 	"appearance\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
 	"appearance\x12,\n" +
-	"\x0fmemo_visibility\x18\x04 \x01(\tB\x03\xe0A\x01R\x0ememoVisibility:F\xeaAC\n" +
+	"\x0fmemo_visibility\x18\x04 \x01(\tB\x03\xe0A\x01R\x0ememoVisibility\x12\x19\n" +
+	"\x05theme\x18\x05 \x01(\tB\x03\xe0A\x01R\x05theme:F\xeaAC\n" +
 	"\x18memos.api.v1/UserSetting\x12\fusers/{user}*\fuserSettings2\vuserSetting\"F\n" +
 	"\x15GetUserSettingRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +

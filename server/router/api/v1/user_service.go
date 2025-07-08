@@ -249,7 +249,8 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
 	}
 	for _, field := range request.UpdateMask.Paths {
-		if field == "username" {
+		switch field {
+		case "username":
 			if workspaceGeneralSetting.DisallowChangeUsername {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change username")
 			}
@@ -257,35 +258,35 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 			}
 			update.Username = &request.User.Username
-		} else if field == "display_name" {
+		case "display_name":
 			if workspaceGeneralSetting.DisallowChangeNickname {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change nickname")
 			}
 			update.Nickname = &request.User.DisplayName
-		} else if field == "email" {
+		case "email":
 			update.Email = &request.User.Email
-		} else if field == "avatar_url" {
+		case "avatar_url":
 			update.AvatarURL = &request.User.AvatarUrl
-		} else if field == "description" {
+		case "description":
 			update.Description = &request.User.Description
-		} else if field == "role" {
+		case "role":
 			// Only allow admin to update role.
 			if currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 			}
 			role := convertUserRoleToStore(request.User.Role)
 			update.Role = &role
-		} else if field == "password" {
+		case "password":
 			passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
 			if err != nil {
 				return nil, echo.NewHTTPError(http.StatusInternalServerError, "failed to generate password hash").SetInternal(err)
 			}
 			passwordHashStr := string(passwordHash)
 			update.PasswordHash = &passwordHashStr
-		} else if field == "state" {
+		case "state":
 			rowStatus := convertStateToStore(request.User.State)
 			update.RowStatus = &rowStatus
-		} else {
+		default:
 			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", field)
 		}
 	}
@@ -334,6 +335,7 @@ func getDefaultUserSetting() *v1pb.UserSetting {
 		Locale:         "en",
 		Appearance:     "system",
 		MemoVisibility: "PRIVATE",
+		Theme:          "",
 	}
 }
 
@@ -370,9 +372,24 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUser
 				userSettingMessage.Locale = general.Locale
 				userSettingMessage.Appearance = general.Appearance
 				userSettingMessage.MemoVisibility = general.MemoVisibility
+				userSettingMessage.Theme = general.Theme
 			}
 		}
 	}
+
+	// Backfill theme if empty: use workspace theme or default to "default"
+	if userSettingMessage.Theme == "" {
+		workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
+		}
+		workspaceTheme := workspaceGeneralSetting.Theme
+		if workspaceTheme == "" {
+			workspaceTheme = "default"
+		}
+		userSettingMessage.Theme = workspaceTheme
+	}
+
 	return userSettingMessage, nil
 }
 
@@ -411,6 +428,7 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		Locale:         "en",
 		Appearance:     "system",
 		MemoVisibility: "PRIVATE",
+		Theme:          "",
 	}
 
 	// If there's an existing setting, use its values as defaults
@@ -419,6 +437,7 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		generalSetting.Locale = existing.Locale
 		generalSetting.Appearance = existing.Appearance
 		generalSetting.MemoVisibility = existing.MemoVisibility
+		generalSetting.Theme = existing.Theme
 	}
 
 	// Apply updates based on the update mask
@@ -430,6 +449,8 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 			generalSetting.Appearance = request.Setting.Appearance
 		case "memo_visibility":
 			generalSetting.MemoVisibility = request.Setting.MemoVisibility
+		case "theme":
+			generalSetting.Theme = request.Setting.Theme
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", field)
 		}

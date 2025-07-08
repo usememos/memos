@@ -5,12 +5,11 @@ import { locales } from "@/i18n";
 
 interface Props {
   value: Locale;
-  className?: string;
   onChange: (locale: Locale) => void;
 }
 
 const LocaleSelect: FC<Props> = (props: Props) => {
-  const { onChange, value, className } = props;
+  const { onChange, value } = props;
 
   const handleSelectChange = async (locale: Locale) => {
     onChange(locale);
@@ -18,7 +17,7 @@ const LocaleSelect: FC<Props> = (props: Props) => {
 
   return (
     <Select value={value} onValueChange={handleSelectChange}>
-      <SelectTrigger className={`min-w-40 w-auto whitespace-nowrap ${className ?? ""}`}>
+      <SelectTrigger>
         <div className="flex items-center gap-2">
           <GlobeIcon className="w-4 h-auto" />
           <SelectValue placeholder="Select language" />

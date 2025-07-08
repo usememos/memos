@@ -272,6 +272,12 @@ export interface UserSetting {
   appearance: string;
   /** The default visibility of the memo. */
   memoVisibility: string;
+  /**
+   * The preferred theme of the user.
+   * This references a CSS file in the web/public/themes/ directory.
+   * If not set, the default theme will be used.
+   */
+  theme: string;
 }
 
 export interface GetUserSettingRequest {
@@ -1532,7 +1538,7 @@ export const GetUserStatsRequest: MessageFns<GetUserStatsRequest> = {
 };
 
 function createBaseUserSetting(): UserSetting {
-  return { name: "", locale: "", appearance: "", memoVisibility: "" };
+  return { name: "", locale: "", appearance: "", memoVisibility: "", theme: "" };
 }
 
 export const UserSetting: MessageFns<UserSetting> = {
@@ -1548,6 +1554,9 @@ export const UserSetting: MessageFns<UserSetting> = {
     }
     if (message.memoVisibility !== "") {
       writer.uint32(34).string(message.memoVisibility);
+    }
+    if (message.theme !== "") {
+      writer.uint32(42).string(message.theme);
     }
     return writer;
   },
@@ -1591,6 +1600,14 @@ export const UserSetting: MessageFns<UserSetting> = {
           message.memoVisibility = reader.string();
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.theme = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1609,6 +1626,7 @@ export const UserSetting: MessageFns<UserSetting> = {
     message.locale = object.locale ?? "";
     message.appearance = object.appearance ?? "";
     message.memoVisibility = object.memoVisibility ?? "";
+    message.theme = object.theme ?? "";
     return message;
   },
 };

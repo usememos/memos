@@ -8,6 +8,7 @@ import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
+import ThemeSelector from "../ThemeSelector";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
 
@@ -27,6 +28,10 @@ const PreferencesSection = observer(() => {
     await userStore.updateUserSetting({ memoVisibility: value }, ["memo_visibility"]);
   };
 
+  const handleThemeChange = async (theme: string) => {
+    await userStore.updateUserSetting({ theme }, ["theme"]);
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <p className="font-medium text-muted-foreground">{t("common.basic")}</p>
@@ -39,6 +44,11 @@ const PreferencesSection = observer(() => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.preference-section.theme")}</span>
         <AppearanceSelect value={setting.appearance as Appearance} onChange={handleAppearanceSelectChange} />
+      </div>
+
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("setting.preference-section.theme")}</span>
+        <ThemeSelector value={setting.theme} onValueChange={handleThemeChange} />
       </div>
 
       <p className="font-medium text-muted-foreground">{t("setting.preference")}</p>

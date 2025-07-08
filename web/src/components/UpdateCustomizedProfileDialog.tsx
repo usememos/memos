@@ -137,12 +137,12 @@ export function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }:
 
           <div className="grid gap-2">
             <Label>{t("setting.system-section.customize-server.locale")}</Label>
-            <LocaleSelect className="w-full" value={customProfile.locale} onChange={handleLocaleSelectChange} />
+            <LocaleSelect value={customProfile.locale} onChange={handleLocaleSelectChange} />
           </div>
 
           <div className="grid gap-2">
             <Label>{t("setting.system-section.customize-server.appearance")}</Label>
-            <AppearanceSelect className="w-full" value={customProfile.appearance as Appearance} onChange={handleAppearanceSelectChange} />
+            <AppearanceSelect value={customProfile.appearance as Appearance} onChange={handleAppearanceSelectChange} />
           </div>
         </div>
 

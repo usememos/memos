@@ -369,6 +369,11 @@ message UserSetting {
 
   // The default visibility of the memo.
   string memo_visibility = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // The preferred theme of the user.
+  // This references a CSS file in the web/public/themes/ directory.
+  // If not set, the default theme will be used.
+  string theme = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message GetUserSettingRequest {

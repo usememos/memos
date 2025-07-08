@@ -6,13 +6,12 @@ import { useTranslate } from "@/utils/i18n";
 interface Props {
   value: Appearance;
   onChange: (appearance: Appearance) => void;
-  className?: string;
 }
 
 const appearanceList = ["system", "light", "dark"] as const;
 
 const AppearanceSelect: FC<Props> = (props: Props) => {
-  const { onChange, value, className } = props;
+  const { onChange, value } = props;
   const t = useTranslate();
 
   const getPrefixIcon = (appearance: Appearance) => {
@@ -32,7 +31,7 @@ const AppearanceSelect: FC<Props> = (props: Props) => {
 
   return (
     <Select value={value} onValueChange={handleSelectChange}>
-      <SelectTrigger className={`min-w-40 w-auto whitespace-nowrap ${className ?? ""}`}>
+      <SelectTrigger>
         <SelectValue placeholder="Select appearance" />
       </SelectTrigger>
       <SelectContent>

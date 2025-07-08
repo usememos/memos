@@ -104,10 +104,12 @@ const App = observer(() => {
     });
   }, [userSetting?.locale, userSetting?.appearance]);
 
-  // Load theme when workspace setting changes, validate API response
+  // Load theme when user setting changes (user theme is already backfilled with workspace theme)
   useEffect(() => {
-    loadTheme(workspaceGeneralSetting.theme);
-  }, [workspaceGeneralSetting.theme]);
+    if (userSetting?.theme) {
+      loadTheme(userSetting.theme);
+    }
+  }, [userSetting?.theme]);
 
   return <Outlet />;
 });
