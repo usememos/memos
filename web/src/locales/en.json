@@ -162,7 +162,7 @@
     "visibility": {
       "disabled": "Public memos are disabled",
       "private": "Private",
-      "protected": "Workspace",
+      "protected": "Protected",
       "public": "Public"
     },
     "list": "List",

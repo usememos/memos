@@ -41,24 +41,24 @@ const UserBanner = (props: Props) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         <DropdownMenuItem onClick={() => navigateTo(`/u/${encodeURIComponent(currentUser.username)}`)}>
-          <SquareUserIcon className="w-4 h-auto text-muted-foreground" />
-          <span className="truncate">{t("common.profile")}</span>
+          <SquareUserIcon className="size-4 text-muted-foreground" />
+          {t("common.profile")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigateTo(Routes.ARCHIVED)}>
-          <ArchiveIcon className="w-4 h-auto text-muted-foreground" />
-          <span className="truncate">{t("common.archived")}</span>
+          <ArchiveIcon className="size-4 text-muted-foreground" />
+          {t("common.archived")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigateTo(Routes.INBOX)}>
-          <BellIcon className="w-4 h-auto text-muted-foreground" />
-          <span className="truncate">{t("common.inbox")}</span>
+          <BellIcon className="size-4 text-muted-foreground" />
+          {t("common.inbox")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigateTo(Routes.SETTING)}>
-          <SettingsIcon className="w-4 h-auto text-muted-foreground" />
-          <span className="truncate">{t("common.settings")}</span>
+          <SettingsIcon className="size-4 text-muted-foreground" />
+          {t("common.settings")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
-          <LogOutIcon className="w-4 h-auto text-muted-foreground" />
-          <span className="truncate">{t("common.sign-out")}</span>
+          <LogOutIcon className="size-4 text-muted-foreground" />
+          {t("common.sign-out")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

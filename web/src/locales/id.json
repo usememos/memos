@@ -122,7 +122,7 @@
     "visibility": {
       "disabled": "Memo publik dinonaktifkan",
       "private": "Pribadi",
-      "protected": "Workspace",
+      "protected": "Protected",
       "public": "Publik"
     }
   },

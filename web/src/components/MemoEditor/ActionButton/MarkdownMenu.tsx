@@ -1,7 +1,7 @@
 import { CheckSquareIcon, Code2Icon, SquareSlashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslate } from "@/utils/i18n";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { EditorRefActions } from "../Editor";
 
 interface Props {
@@ -60,41 +60,33 @@ const MarkdownMenu = (props: Props) => {
   };
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <SquareSlashIcon className="size-5" />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="text-sm p-1">
-        <div className="flex flex-col text-sm gap-0.5">
-          <button
-            onClick={handleCodeBlockClick}
-            className="flex items-center gap-2 px-2 py-1 text-left text-foreground hover:bg-background outline-none rounded"
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem onClick={handleCodeBlockClick}>
+          <Code2Icon className="w-4 h-auto text-muted-foreground" />
+          {t("markdown.code-block")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleCheckboxClick}>
+          <CheckSquareIcon className="w-4 h-auto text-muted-foreground" />
+          {t("markdown.checkbox")}
+        </DropdownMenuItem>
+        <div className="px-2 -mt-1">
+          <a
+            className="text-xs text-primary hover:underline"
+            href="https://www.usememos.com/docs/getting-started/content-syntax"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <Code2Icon className="w-4 h-auto" />
-            <span>{t("markdown.code-block")}</span>
-          </button>
-          <button
-            onClick={handleCheckboxClick}
-            className="flex items-center gap-2 px-2 py-1 text-left text-foreground hover:bg-background outline-none rounded"
-          >
-            <CheckSquareIcon className="w-4 h-auto" />
-            <span>{t("markdown.checkbox")}</span>
-          </button>
-          <div className="pl-2">
-            <a
-              className="text-xs text-primary hover:underline"
-              href="https://www.usememos.com/docs/getting-started/content-syntax"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t("markdown.content-syntax")}
-            </a>
-          </div>
+            {t("markdown.content-syntax")}
+          </a>
         </div>
-      </PopoverContent>
-    </Popover>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

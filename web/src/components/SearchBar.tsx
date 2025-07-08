@@ -33,15 +33,15 @@ const SearchBar = observer(() => {
 
   return (
     <div className="relative w-full h-auto flex flex-row justify-start items-center">
-      <SearchIcon className="absolute left-2 w-4 h-auto opacity-40 text-muted-foreground" />
+      <SearchIcon className="absolute left-2 w-4 h-auto opacity-40 text-sidebar-foreground" />
       <input
-        className={cn("w-full text-muted-foreground leading-6 bg-muted border border-border text-sm rounded-lg p-1 pl-8 outline-0")}
+        className={cn("w-full text-sidebar-foreground leading-6 bg-sidebar border border-border text-sm rounded-lg p-1 pl-8 outline-0")}
         placeholder={t("memo.search-placeholder")}
         value={queryText}
         onChange={onTextChange}
         onKeyDown={onKeyDown}
       />
-      <MemoDisplaySettingMenu className="absolute right-2 top-2 text-muted-foreground" />
+      <MemoDisplaySettingMenu className="absolute right-2 top-2 text-sidebar-foreground" />
     </div>
   );
 });

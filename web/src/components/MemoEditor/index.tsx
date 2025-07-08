@@ -530,7 +530,7 @@ const MemoEditor = observer((props: Props) => {
         </div>
         <div
           className={cn(
-            "absolute right-1 top-1 opacity-60",
+            "absolute right-1 top-1",
             "flex flex-row justify-end items-center gap-1",
             "invisible group-focus-within:visible group-hover:visible hover:visible focus-within:visible",
             (isVisibilitySelectorOpen || memoName) && "visible",
