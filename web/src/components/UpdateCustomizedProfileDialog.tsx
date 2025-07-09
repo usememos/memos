@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -113,7 +113,7 @@ export function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }:
           <DialogDescription>Customize your workspace appearance and settings.</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="server-name">{t("setting.system-section.server-name")}</Label>
             <Input id="server-name" type="text" value={customProfile.title} onChange={handleNameChanged} placeholder="Enter server name" />
@@ -146,20 +146,19 @@ export function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }:
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-4">
-          <Button variant="outline" onClick={handleRestoreButtonClick} disabled={isLoading}>
+        <DialogFooter className="flex-col sm:flex-row sm:justify-between gap-2">
+          <Button variant="outline" onClick={handleRestoreButtonClick} disabled={isLoading} className="sm:mr-auto">
             {t("common.restore")}
           </Button>
-
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={handleCloseButtonClick} disabled={isLoading}>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="ghost" onClick={handleCloseButtonClick} disabled={isLoading} className="flex-1 sm:flex-initial">
               {t("common.cancel")}
             </Button>
-            <Button onClick={handleSaveButtonClick} disabled={isLoading}>
+            <Button onClick={handleSaveButtonClick} disabled={isLoading} className="flex-1 sm:flex-initial">
               {isLoading ? "Saving..." : t("common.save")}
             </Button>
           </div>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
