@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "Blog",
+    "description": "Layanan pencatatan ringan yang mengutamakan privasi. Abadikan dan bagikan pemikiran hebat Anda dengan mudah.",
+    "documents": "Dokumen",
+    "github-repository": "Repositori GitHub",
+    "official-website": "Situs Web Resmi"
+  },
   "auth": {
     "create-your-account": "Buat akun Anda",
     "host-tip": "Anda mendaftar sebagai Host Situs.",
@@ -13,6 +20,7 @@
     "admin": "Admin",
     "archive": "Arsip",
     "archived": "Diarsipkan",
+    "attachments": "Lampiran",
     "avatar": "Avatar",
     "basic": "Dasar",
     "beta": "Beta",
@@ -23,7 +31,9 @@
     "collapse": "Kempiskan",
     "confirm": "Konfirmasi",
     "create": "Buat",
+    "created-at": "Dibuat pada",
     "database": "Basis Data",
+    "day": "Hari",
     "days": "Hari",
     "delete": "Hapus",
     "description": "Deskripsi",
@@ -35,11 +45,16 @@
     "filter": "Saring",
     "home": "Beranda",
     "image": "Gambar",
+    "in": "Dalam",
     "inbox": "Kotak Masuk",
+    "input": "Masukan",
     "language": "Bahasa",
+    "last-updated-at": "Terakhir diperbarui pada",
+    "layout": "Tata letak",
     "learn-more": "Pelajari lebih lanjut",
     "link": "Tautan",
     "mark": "Tandai",
+    "memo": "Memo",
     "memos": "Memo",
     "name": "Nama",
     "new": "Baru",
@@ -51,6 +66,10 @@
     "pinned": "Dijepit",
     "preview": "Pratampil",
     "profile": "Profil",
+    "properties": "Properti",
+    "referenced-by": "Dirujuk oleh",
+    "referencing": "Merujuk",
+    "relations": "Relasi",
     "remember-me": "Ingat saya",
     "rename": "Ubah nama",
     "reset": "Atur ulang",
@@ -62,6 +81,8 @@
     "select": "Pilih",
     "settings": "Pengaturan",
     "share": "Bagikan",
+    "shortcut-filter": "Saring pintasan",
+    "shortcuts": "Pintasan",
     "sign-in": "Masuk",
     "sign-in-with": "Masuk dengan {{provider}}",
     "sign-out": "Keluar",
@@ -69,10 +90,12 @@
     "statistics": "Statistik",
     "tags": "Tag",
     "title": "Judul",
+    "tree-mode": "Mode pohon",
     "type": "Tipe",
     "unpin": "Lepaskan",
     "update": "Perbarui",
     "upload": "Unggah",
+    "user": "Pengguna",
     "username": "Nama pengguna",
     "version": "Versi",
     "visibility": "Visibilitas",
@@ -90,7 +113,13 @@
   "editor": {
     "add-your-comment-here": "Tambahkan komentar Anda di sini...",
     "any-thoughts": "Punya pemikiran...",
-    "save": "Simpan"
+    "save": "Simpan",
+    "no-changes-detected": "Tidak ada perubahan yang terdeteksi"
+  },
+  "filters": {
+    "has-code": "Memiliki kode",
+    "has-link": "Memiliki tautan",
+    "has-task-list": "Memiliki daftar tugas"
   },
   "inbox": {
     "memo-comment": "{{user}} memiliki komentar di {{memo}} Anda.",
@@ -103,6 +132,8 @@
   },
   "memo": {
     "archived-at": "Diarsipkan pada",
+    "click-to-hide-nsfw-content": "Klik untuk menyembunyikan konten NSFW",
+    "click-to-show-nsfw-content": "Klik untuk menampilkan konten NSFW",
     "code": "Kode",
     "comment": {
       "self": "Komentar",
@@ -111,33 +142,48 @@
     "copy-link": "Salin Tautan",
     "count-memos-in-date": "{{count}} memo di {{date}}",
     "delete-confirm": "Apakah Anda yakin ingin menghapus memo ini? TINDAKAN INI TIDAK DAPAT DIURANGI",
+    "direction": "Arah",
+    "direction-asc": "Menaik",
+    "direction-desc": "Menurun",
+    "display-time": "Waktu Tampil",
+    "filters": "Saring",
     "links": "Tautan",
     "load-more": "Muat lebih banyak",
     "no-archived-memos": "Tidak ada memo yang diarsipkan.",
+    "no-memos": "Tidak ada memo.",
+    "order-by": "Urutkan Berdasarkan",
+    "remove-completed-task-list-items": "Hapus yang selesai",
+    "remove-completed-task-list-items-confirm": "Anda yakin ingin menghapus semua daftar tugas yang selesai? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
     "search-placeholder": "Cari memo",
     "show-less": "Tampilkan lebih sedikit",
     "show-more": "Tampilkan lebih banyak",
-    "to-do": "Yang harus dilakukan",
+    "to-do": "Daftar tugas",
     "view-detail": "Lihat Detail",
     "visibility": {
       "disabled": "Memo publik dinonaktifkan",
       "private": "Pribadi",
       "protected": "Protected",
       "public": "Publik"
-    }
+    },
+    "list": "Daftar",
+    "masonry": "Masonry"
   },
   "message": {
     "archived-successfully": "Berhasil diarsipkan",
     "change-memo-created-time": "Ubah waktu pembuatan memo",
     "copied": "Disalin",
     "deleted-successfully": "Berhasil dihapus",
+    "description-is-required": "Deskripsi wajib diisi",
+    "failed-to-embed-memo": "Gagal menyematkan memo",
     "fill-all": "Harap isi semua kolom.",
+    "fill-all-required-fields": "Harap isi semua kolom wajib yang wajib",
     "maximum-upload-size-is": "Ukuran unggahan maksimum yang diizinkan adalah {{size}} MiB",
     "memo-not-found": "Memo tidak ditemukan.",
     "new-password-not-match": "Kata sandi baru tidak cocok.",
     "no-data": "Data tidak ditemukan.",
     "password-changed": "Kata sandi diubah",
     "password-not-match": "Kata sandi tidak cocok.",
+    "remove-completed-task-list-items-successfully": "Berhasil dihapus",
     "restored-successfully": "Berhasil dipulihkan",
     "succeed-copy-link": "Tautan berhasil disalin.",
     "update-succeed": "Pembaruan berhasil",
@@ -179,7 +225,8 @@
     "no-unused-resources": "Tidak ada sumber daya yang tidak terpakai",
     "reset-link": "Atur ulang Tautan",
     "reset-link-prompt": "Apakah Anda yakin untuk mengatur ulang tautan? Ini akan memutus semua penggunaan tautan yang ada. TINDAKAN INI TIDAK DAPAT DIURANGI",
-    "reset-resource-link": "Atur ulang Tautan Sumber Daya"
+    "reset-resource-link": "Atur ulang Tautan Sumber Daya",
+    "unused-resources": "Sumber daya tidak terpakai"
   },
   "router": {
     "back-to-top": "Kembali ke Atas",
@@ -187,9 +234,37 @@
   },
   "setting": {
     "access-token-section": {
+      "access-token-copied-to-clipboard": "Token akses disalin ke papan klip",
+      "access-token-deletion": "Anda yakin ingin menghapus token akses {{accessToken}}? TINDAKAN INI TIDAK DAPAT DIBATALKAN.",
+      "create-dialog": {
+        "create-access-token": "Buat Token Akses",
+        "created-at": "Dibuat pada",
+        "description": "Deskripsi",
+        "duration-1m": "1 bulan",
+        "duration-8h": "8 jam",
+        "duration-never": "Tidak Pernah",
+        "expiration": "Kedaluwarsa",
+        "expires-at": "Berakhir pada",
+        "some-description": "Beberapa deskirpsi..."
+      },
       "description": "Daftar semua token akses untuk akun Anda.",
       "title": "Token Akses",
       "token": "Token"
+    },
+    "user-sessions-section": {
+      "title": "Sesi Aktif",
+      "description": "Daftar semua sesi aktif untuk akun Anda. Sesi akan otomatis berakhir 2 minggu setelah aktivitas terakhir. Anda dapat mencabut sesi mana pun kecuali sesi saat ini.",
+      "device": "Perangkat",
+      "location": "Lokasi",
+      "last-active": "Terakhir Aktif",
+      "expires": "Berakhir",
+      "current": "Saat ini",
+      "never": "Tidak Pernah",
+      "session-revocation": "Apakah Anda yakin ingin mencabut sesi {{sessionId}}? Anda perlu masuk kembali di perangkat tersebut.",
+      "session-revoked": "Sesi berhasil dicabut",
+      "revoke-session": "Cabut sesi",
+      "cannot-revoke-current": "Tidak dapat mencabut sesi saat ini",
+      "no-sessions": "Tidak ada sesi aktif yang ditemukan"
     },
     "account-section": {
       "change-password": "Ubah kata sandi",
@@ -212,15 +287,18 @@
     "member": "Anggota",
     "member-list": "Daftar Anggota",
     "member-section": {
+      "admin": "Admin",
       "archive-member": "Arsip anggota",
       "archive-warning": "Apakah Anda yakin untuk mengarsipkan {{username}}?",
       "create-a-member": "Buat anggota",
       "delete-member": "Hapus Anggota",
-      "delete-warning": "Apakah Anda yakin untuk menghapus {{username}}? TINDAKAN INI TIDAK DAPAT DIURANGI"
+      "delete-warning": "Apakah Anda yakin untuk menghapus {{username}}? TINDAKAN INI TIDAK DAPAT DIURANGI",
+      "user": "Pengguna"
     },
     "memo-related": "Memo",
     "memo-related-settings": {
       "content-lenght-limit": "Batas panjang konten (Byte)",
+      "enable-blur-nsfw-content": "Aktifkan pengaburan konten sensitif (NSFW)",
       "enable-link-preview": "Aktifkan pratinjau tautan",
       "enable-memo-comments": "Aktifkan komentar memo",
       "enable-memo-location": "Aktifkan lokasi memo",
@@ -232,6 +310,7 @@
     "preference-section": {
       "default-memo-sort-option": "Waktu tampil memo",
       "default-memo-visibility": "Visibilitas memo default",
+      "apperance": "Tampilan",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -270,6 +349,7 @@
       "current-storage": "Penyimpanan objek saat ini",
       "delete-storage": "Hapus Penyimpanan",
       "endpoint": "Akhir",
+      "filepath-template": "Templat jalur berkas",
       "local-storage-path": "Jalur penyimpanan lokal",
       "path": "Jalur Penyimpanan",
       "path-description": "Anda dapat menggunakan variabel dinamis yang sama dari penyimpanan lokal, seperti {filename}",
@@ -319,10 +399,20 @@
       "enable-password-login-warning": "Ini akan mengaktifkan login kata sandi untuk semua pengguna. Lanjutkan hanya jika Anda ingin pengguna dapat login menggunakan SSO dan kata sandi.",
       "max-upload-size": "Ukuran unggah maksimum (MiB)",
       "max-upload-size-hint": "Nilai yang direkomendasikan adalah 32 MiB.",
-      "server-name": "Nama Server"
+      "removed-completed-task-list-items": "Aktifkan penghapusan item daftar tugas yang selesai",
+      "server-name": "Nama Server",
+      "title": "Umum"
     },
     "version": "Versi",
     "webhook-section": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Nama yang mudah diingat",
+        "create-webhook": "Buat webhook",
+        "edit-webhook": "Edit webhook",
+        "payload-url": "URL Payload",
+        "title": "Judul",
+        "url-example-post-receive": "https://example.com/postreceive"
+      },
       "no-webhooks-found": "Tidak ada webhook ditemukan.",
       "title": "Webhook",
       "url": "URL"
@@ -344,6 +434,13 @@
     "create-tags-guide": "Anda dapat membuat tag dengan memasukkan `#tag`.",
     "delete-confirm": "Apakah Anda yakin ingin menghapus tag ini? Semua memo terkait akan diarsipkan.",
     "delete-tag": "Hapus Tag",
-    "no-tag-found": "Tidak ada tag ditemukan"
+    "new-name": "Nama Baru",
+    "no-tag-found": "Tidak ada tag ditemukan",
+    "old-name": "Nama Lama",
+    "rename-error-empty": "Nama tag tidak boleh kosong atau mengandung spasi",
+    "rename-error-repeat": "Nama baru tidak boleh sama dengan nama lama",
+    "rename-success": "Berhasil mengganti nama tag",
+    "rename-tag": "Ganti nama tag",
+    "rename-tip": "Semua memo Anda dengan tag ini akan diperbarui."
   }
 }
