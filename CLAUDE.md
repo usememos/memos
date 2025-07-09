@@ -1,218 +1,236 @@
-# CLAUDE.md - Memos Project Documentation
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-**Memos** is a modern, open-source, self-hosted knowledge management and note-taking platform designed for privacy-conscious users and organizations. It provides a lightweight yet powerful solution for capturing, organizing, and sharing thoughts with comprehensive Markdown support and cross-platform accessibility.
+Memos is a self-hosted note-taking and knowledge management platform with a Go backend and React/TypeScript frontend. The architecture follows clean separation of concerns with gRPC APIs, REST gateway, and database abstraction.
 
-### Key Technologies
+## Development Commands
 
-- **Backend**: Go 1.24 with gRPC and Protocol Buffers
-- **Frontend**: React 18 with TypeScript, Vite, and Tailwind CSS
-- **Database**: SQLite (default), MySQL, PostgreSQL support
-- **API**: RESTful HTTP/gRPC with grpc-gateway
-- **Authentication**: JWT-based with OAuth2 providers
+### Backend (Go)
+```bash
+# Run in development mode
+go run ./bin/memos/main.go --mode dev --port 8081
+
+# Build binary
+go build -o ./build/memos ./bin/memos/main.go
+# OR use build script
+./scripts/build.sh
+
+# Run tests
+go test -v ./...
+go test -cover ./...
+
+# Run specific test packages
+go test -v ./store/test/
+go test -v ./server/router/api/v1/test/
+```
+
+### Frontend (React/TypeScript)
+```bash
+cd web/
+
+# Development server (http://localhost:3001)
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Build for release (outputs to server/router/frontend/dist)
+pnpm release
+
+# Lint and type check
+pnpm lint
+```
+
+### Full Development Setup
+1. **Backend**: `go run ./bin/memos/main.go --mode dev --port 8081`
+2. **Frontend**: `cd web && pnpm dev`
+3. **Access**: Backend API at `http://localhost:8081`, Frontend at `http://localhost:3001`
 
 ## Architecture Overview
 
 ### Backend Structure
+- **`/bin/memos/main.go`** - Application entrypoint with CLI and server initialization
+- **`/server/`** - HTTP/gRPC server with Echo framework and cmux for protocol multiplexing
+- **`/server/router/api/v1/`** - gRPC services with REST gateway via grpc-gateway
+- **`/store/`** - Data access layer with multi-database support (SQLite/PostgreSQL/MySQL)
+- **`/store/db/`** - Database-specific implementations with shared interface
+- **`/proto/`** - Protocol buffer definitions for APIs and data models
+- **`/internal/`** - Shared utilities, profile management, and version handling
+- **`/plugin/`** - Modular plugins (S3 storage, OAuth, webhooks, etc.)
 
-```text
-server/
-├── router/
-│   ├── api/v1/          # API v1 services and handlers
-│   ├── frontend/        # Static frontend assets
-│   └── rss/            # RSS feed generation
-├── runner/             # Background job runners
-└── profiler/           # Performance profiling
-```
+### Frontend Structure
+- **`/web/src/`** - React/TypeScript application
+- **`/web/src/components/`** - Reusable UI components with shadcn/ui
+- **`/web/src/pages/`** - Page-level components
+- **`/web/src/store/`** - MobX state management
+- **`/web/src/types/`** - TypeScript type definitions generated from protobuf
 
-### Protocol Buffers & API
+### Key Architecture Patterns
 
-```text
-proto/
-├── api/v1/             # Public API definitions
-│   ├── user_service.proto
-│   ├── workspace_service.proto
-│   ├── shortcut_service.proto
-│   ├── idp_service.proto
-│   └── webhook_service.proto
-└── store/              # Internal data structures
-    ├── workspace_setting.proto
-    ├── user_setting.proto
-    └── ...
-```
+#### Server Architecture
+- **Protocol Multiplexing**: Single port serves both HTTP and gRPC via cmux
+- **gRPC-first**: Core APIs defined in protobuf, REST via grpc-gateway
+- **Layered**: Router → Service → Store → Database
+- **Middleware**: Authentication, logging, CORS handled via interceptors
 
-### Data Layer
+#### Database Layer
+- **Multi-database**: Unified interface for SQLite, PostgreSQL, MySQL
+- **Migration System**: Version-based schema migrations in `/store/migration/`
+- **Driver Pattern**: `/store/db/{sqlite,postgres,mysql}/` with common interface
+- **Caching**: Built-in cache layer for workspace settings, users, user settings
 
-```text
-store/
-├── db/                 # Database drivers
-│   ├── sqlite/
-│   ├── mysql/
-│   └── postgres/
-├── migration/          # Database migrations
-├── cache/              # Caching layer
-└── test/               # Test utilities
-```
+#### Authentication & Security
+- **JWT-based**: Secret key generated per workspace
+- **gRPC Interceptors**: Authentication middleware for all API calls
+- **Context Propagation**: User context flows through request lifecycle
+- **Development vs Production**: Different secret handling based on mode
 
-## Recent Major Refactoring: Google AIP Compliance
+## Database Operations
 
-### Overview
+### Supported Databases
+- **SQLite** (default): `--driver sqlite --data ./data`
+- **PostgreSQL**: `--driver postgres --dsn "postgres://..."`
+- **MySQL**: `--driver mysql --dsn "user:pass@tcp(host:port)/db"`
 
-We recently completed a comprehensive refactoring to align the API with Google API Improvement Proposals (AIP) for resource-oriented API design. This involved updating protocol buffers, backend services, and frontend TypeScript code.
+### Migration System
+- Database schema managed via `/store/migration/{sqlite,postgres,mysql}/`
+- Automatic migration on startup via `store.Migrate(ctx)`
+- Version-based migration files (e.g., `0.22/00__memo_tags.sql`)
 
-### Key Changes Made
+## Testing Approach
 
-#### 1. Protocol Buffer Refactoring
+### Backend Testing
+- **Store Tests**: `/store/test/*_test.go` with in-memory SQLite
+- **API Tests**: `/server/router/api/v1/test/*_test.go` with full service setup
+- **Test Helpers**: 
+  - `NewTestingStore()` for isolated database testing
+  - `NewTestService()` for API integration testing
+- **Test Patterns**: Context-based authentication, proper cleanup, realistic data
 
-- **Resource Patterns**: Implemented standard resource naming (e.g., `users/{user}`, `workspace/settings/{setting}`)
-- **Field Behaviors**: Added proper field annotations (`REQUIRED`, `OUTPUT_ONLY`, `IMMUTABLE`)
-- **HTTP Annotations**: Updated REST mappings to follow RESTful conventions
-- **Service Consolidation**: Merged `workspace_setting_service.proto` into `workspace_service.proto`
+### Frontend Testing
+- Currently relies on TypeScript compilation and ESLint
+- No dedicated test framework configured
 
-#### 2. Backend Service Updates
-
-- **Resource Name Handling**: Added robust parsing for resource names
-- **Method Signatures**: Updated to use resource names instead of raw IDs
-- **Error Handling**: Improved error responses with proper gRPC status codes
-- **Permission Checks**: Enhanced authorization based on user roles
-
-#### 3. Frontend TypeScript Migration
-
-- **Resource Name Utilities**: Helper functions for extracting IDs from resource names
-- **State Management**: Updated MobX stores to use new resource formats
-- **Component Updates**: React components now handle new API structures
-- **Type Safety**: Enhanced TypeScript definitions for better type checking
-
-## Development Workflow
-
-### Code Quality Standards
-
-- **golangci-lint**: Comprehensive linting with 15+ linters enabled
-- **Protocol Buffer Generation**: `buf generate` for type-safe API generation
-- **Frontend Linting**: ESLint + TypeScript strict mode
-
-### Build Process
-
+### Running Tests
 ```bash
-# Backend build
-sh ./scripts/build.sh
+# All tests
+go test -v ./...
 
-# Frontend build
-cd web && pnpm build
+# Specific packages
+go test -v ./store/test/
+go test -v ./server/router/api/v1/test/
 
-# Protocol buffer generation
-cd proto && buf generate
-
-# Linting
-golangci-lint run --timeout=3m
-cd web && pnpm lint
-```
-
-### Testing Commands
-
-```bash
-# Run all tests
-go test ./...
-
-# Specific service tests
-go test ./server/router/api/v1/... -v
-
-# Test with coverage
+# With coverage
 go test -cover ./...
 ```
 
-## Frontend Architecture
+## Development Modes
 
-### Technology Stack
-
-- **React 18**: Modern React with hooks and functional components
-- **TypeScript**: Strict type checking for better development experience
-- **Vite**: Fast build tool and development server
-- **Tailwind CSS**: Utility-first CSS framework
-- **MobX**: State management for reactive data flows
-
-### Key Components
-
-```text
-web/src/
-├── components/          # Reusable UI components
-├── pages/              # Route-based page components
-├── store/              # MobX state management
-│   └── v2/             # Updated stores for AIP compliance
-├── types/              # TypeScript type definitions
-│   └── proto/          # Generated from Protocol Buffers
-└── utils/              # Utility functions and helpers
+### Production Mode
+```bash
+go run ./bin/memos/main.go --mode prod --port 5230
 ```
+- Uses workspace-generated secret key
+- Serves built frontend from `/server/router/frontend/dist/`
+- Optimized for deployment
 
-## API Design Principles
-
-### Resource-Oriented Design
-
-Following Google AIP standards:
-
-- **Resource Names**: Hierarchical, human-readable identifiers
-- **Standard Methods**: List, Get, Create, Update, Delete patterns
-- **Field Behaviors**: Clear annotations for API contracts
-- **HTTP Mapping**: RESTful URL structures
-
-### Error Handling
-
-- **gRPC Status Codes**: Proper error classification
-- **Detailed Messages**: Helpful error descriptions
-- **Field Validation**: Input validation with clear feedback
-
-### Authentication & Authorization
-
-- **JWT Tokens**: Stateless authentication
-- **Role-Based Access**: Host, User role differentiation
-- **Context Propagation**: User context through request pipeline
-
-## Database Schema
-
-### Core Entities
-
-- **Users**: User accounts with roles and permissions
-- **Workspaces**: Workspace configuration and settings
-- **Identity Providers**: OAuth2 and other auth providers
-- **Webhooks**: External integration endpoints
-- **Shortcuts**: User-defined quick actions
-
-### Migration Strategy
-
-- **Version-Controlled**: Database schema changes tracked
-- **Multi-Database**: Support for SQLite, MySQL, PostgreSQL
-- **Backward Compatibility**: Careful migration planning
-
-## Deployment Options
-
-### Docker
-
-```dockerfile
-# Multi-stage build for optimized images
-FROM golang:1.24-alpine AS backend
-FROM node:18-alpine AS frontend
-FROM alpine:latest AS production
+### Development Mode  
+```bash
+go run ./bin/memos/main.go --mode dev --port 8081
 ```
+- Fixed secret key "usememos"
+- Enables debugging features
+- Separate frontend development server recommended
 
-### Configuration
+### Demo Mode
+```bash
+go run ./bin/memos/main.go --mode demo
+```
+- Specialized configuration for demonstration purposes
 
-- **Environment Variables**: Runtime configuration
-- **Profile-Based**: Development, staging, production profiles
-- **Database URLs**: Flexible database connection strings
+## Key Configuration
 
-## Contributing Guidelines
+### Environment Variables
+All CLI flags can be set via environment variables with `MEMOS_` prefix:
+- `MEMOS_MODE` - Server mode (dev/prod/demo)
+- `MEMOS_PORT` - Server port
+- `MEMOS_DATA` - Data directory
+- `MEMOS_DRIVER` - Database driver
+- `MEMOS_DSN` - Database connection string
+- `MEMOS_INSTANCE_URL` - Public instance URL
 
-### Code Standards
+### Runtime Configuration
+- **Profile**: `/internal/profile/` handles configuration validation
+- **Secrets**: Auto-generated workspace secret in production
+- **Data Directory**: Configurable storage location for SQLite and assets
 
-1. **Protocol Buffers**: Follow AIP guidelines for new services
-2. **Go Code**: Use `golangci-lint` configuration
-3. **TypeScript**: Strict mode with comprehensive type checking
-4. **Testing**: Write tests for new features using TestService helpers
+## Frontend Technology Stack
 
-### Pull Request Process
+### Core Framework
+- **React 18** with TypeScript
+- **Vite** for build tooling and development server
+- **React Router** for navigation
+- **MobX** for state management
 
-1. **Lint Checking**: All linters must pass
-2. **Test Coverage**: New code should include tests
-3. **Documentation**: Update relevant documentation
-4. **AIP Compliance**: New APIs should follow [AIP](https://google.aip.dev/) standards
+### UI Components
+- **Radix UI** primitives for accessibility
+- **Tailwind CSS** for styling with custom themes
+- **Lucide React** for icons
+- **shadcn/ui** component patterns
+
+### Key Libraries
+- **dayjs** for date manipulation
+- **highlight.js** for code syntax highlighting
+- **katex** for math rendering
+- **mermaid** for diagram rendering
+- **react-leaflet** for maps
+- **i18next** for internationalization
+
+## Protocol Buffer Workflow
+
+### Code Generation
+- **Source**: `/proto/api/v1/*.proto` and `/proto/store/*.proto`
+- **Generated**: `/proto/gen/` for Go, `/web/src/types/proto/` for TypeScript
+- **Build Tool**: Buf for protobuf compilation
+- **API Docs**: Generated swagger at `/proto/gen/apidocs.swagger.yaml`
+
+### API Design
+- gRPC services in `/proto/api/v1/`
+- Resource-oriented design (User, Memo, Attachment, etc.)
+- REST gateway auto-generated from protobuf annotations
+
+## File Organization Principles
+
+### Backend
+- **Domain-driven**: Each entity (user, memo, attachment) has dedicated files
+- **Layered**: Clear separation between API, business logic, and data layers
+- **Database-agnostic**: Common interfaces with driver-specific implementations
+
+### Frontend  
+- **Component-based**: Reusable components in `/components/`
+- **Feature-based**: Related functionality grouped together
+- **Type-safe**: Strong TypeScript integration with generated protobuf types
+
+## Common Development Workflows
+
+### Adding New API Endpoint
+1. Define service method in `/proto/api/v1/{service}.proto`
+2. Generate code: `buf generate` 
+3. Implement service method in `/server/router/api/v1/{service}_service.go`
+4. Add any required store methods in `/store/{entity}.go`
+5. Update database layer if needed in `/store/db/{driver}/{entity}.go`
+
+### Database Schema Changes
+1. Create migration file in `/store/migration/{driver}/{version}/`
+2. Update store interface in `/store/{entity}.go`
+3. Implement in each database driver
+4. Update protobuf if external API changes needed
+
+### Frontend Component Development
+1. Create component in `/web/src/components/`
+2. Follow existing patterns for styling and state management
+3. Use TypeScript for type safety
+4. Import and use in pages or other components
