@@ -1,7 +1,7 @@
 {
   "auth": {
-    "create-your-account": "Создайте свою учетную запись",
-    "host-tip": "Вы регистрируете владельца сайта.",
+    "create-your-account": "Создание учетной записи",
+    "host-tip": "Вы регистрируете учетную запись владельца сайта",
     "new-password": "Новый пароль",
     "repeat-new-password": "Повторить новый пароль",
     "sign-in-tip": "У вас уже есть учетная запись?",
@@ -9,9 +9,11 @@
   },
   "common": {
     "about": "О Memos",
+    "add": "Добавить",
     "admin": "Администратор",
     "archive": "Архивировать",
-    "archived": "В архиве",
+    "archived": "Архив",
+    "attachments": "Файлы",
     "avatar": "Аватар",
     "basic": "Базовые",
     "beta": "Beta",
@@ -21,7 +23,9 @@
     "close": "Закрыть",
     "confirm": "Подтвердить",
     "create": "Создать",
+    "created-at": "Создано",
     "database": "База данных",
+    "day": "День",
     "days": "Дни",
     "delete": "Удалить",
     "description": "Описание",
@@ -32,11 +36,15 @@
     "filter": "Фильтр",
     "home": "Главная",
     "image": "Изображение",
-    "inbox": "Входящие",
+    "inbox": "Уведомления",
+    "input": "Напишите...",
     "language": "Язык",
+    "last-updated-at": "Изменено",
+    "layout": "Макет",
     "learn-more": "Узнать больше",
     "link": "Ссылка",
     "mark": "Связать",
+    "memo": "Заметка",
     "memos": "Заметки",
     "name": "Название",
     "new": "Новая запись",
@@ -48,7 +56,11 @@
     "pinned": "Закреплено",
     "preview": "Предпросмотр",
     "profile": "Профиль",
-    "remember-me": "Remember me",
+    "properties": "Свойства",
+    "referenced-by": "Упоминания",
+    "referencing": "Связи",
+    "relations": "Карта связей",
+    "remember-me": "Запомнить меня",
     "rename": "Переименовать",
     "reset": "Сбросить",
     "resources": "Ресурсы",
@@ -59,6 +71,8 @@
     "select": "Выбрать",
     "settings": "Настройки",
     "share": "Поделиться",
+    "shortcut-filter": "Условие отбора",
+    "shortcuts": "Ярлыки",
     "sign-in": "Войти",
     "sign-in-with": "Войти через {{provider}}",
     "sign-out": "Выйти",
@@ -66,11 +80,13 @@
     "statistics": "Статистика",
     "tags": "Теги",
     "title": "Заголовок",
+    "tree-mode": "Иерархический вид",
     "type": "Тип",
     "unpin": "Открепить",
     "update": "Изменить",
     "upload": "Загрузить",
-    "username": "Имя",
+    "user": "Пользователь",
+    "username": "Имя пользователя",
     "version": "Версия",
     "visibility": "Видимость",
     "yourself": "Вы"
@@ -85,44 +101,68 @@
     "wed": "Ср."
   },
   "editor": {
-    "add-your-comment-here": "Оставь свой комментарий здесь ...",
-    "any-thoughts": "Ваши мысли...",
+    "add-your-comment-here": "Напишите свой комметарий...",
+    "any-thoughts": "Напишите что-нибудь...",
+    "no-changes-detected": "Изменений не обнаружено",
     "save": "Сохранить"
   },
   "inbox": {
+    "memo-comment": "{{user}} добавил комментарий к вашей заметке {{memo}}.",
     "version-update": "Новая версия {{version}} уже доступна!"
   },
+  "markdown": {
+    "checkbox": "Список задач",
+    "code-block": "Блок кода",
+    "content-syntax": "Синтаксис форматирования"
+  },
   "memo": {
-    "archived-at": "Архив",
+    "archived-at": "В архиве",
+    "click-to-show-nsfw-content": "Нажмите, чтобы посмотреть",
     "comment": {
       "self": "Комментарии"
     },
+    "code": "Код",
+    "comment": {
+      "self": "Комментарии",
+      "write-a-comment": "Добавить комментарий"
+    },
     "copy-link": "Скопировать ссылку",
-    "delete-confirm": "Вы уверены, что хотите удалить эту запись?\nЭТО ДЕЙСТВИЕ НЕВОЗМОЖНО ОТМЕНИТЬ!",
+    "count-memos-in-date": "{{count}} {{memos}} за {{date}}",
+    "delete-confirm": "Вы уверены, что хотите удалить эту запись?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ!",
+    "direction": "Сортировка",
+    "direction-asc": "По возрастанию",
+    "direction-desc": "По убыванию",
+    "links": "Ссылки",
     "no-archived-memos": "Нет заархивированных записей.",
     "remove-completed-task-list-items": "Удалить выполненные",
     "remove-completed-task-list-items-confirm": "Вы уверены, что хотите удалить все выполненные задачи? (Данное действие необратимо)",
     "search-placeholder": "Поиск записей",
     "show-less": "Показать меньше",
     "show-more": "Подробнее",
+    "to-do": "Задачи",
     "view-detail": "Подробно",
     "visibility": {
       "disabled": "Публичные записи отключены",
       "private": "Видно только вам",
       "protected": "Видно только пользователям",
-      "public": "Видно всем"
-    }
+      "public": "Публичная заметка"
+    },
+    "list": "Список",
+    "masonry": "Плитки"
   },
   "message": {
-    "archived-successfully": "Успешная архивация",
+    "archived-successfully": "Перемещено в архив",
     "change-memo-created-time": "Изменить время создания записи",
     "copied": "Скопировано",
     "deleted-successfully": "Успешное удаление",
-    "fill-all": "Пожалуйста, заполните все поля.",
+    "description-is-required": "Необходимо заполнить \"Описание\"",
+    "failed-to-embed-memo": "Не удалось встроить заметку",
+    "fill-all": "Пожалуйста, заполните все поля",
+    "fill-all-required-fields": "Пожалуйста, заполните все необходимые поля",
     "maximum-upload-size-is": "Максимальный размер для загрузки {{size}} МБ",
     "memo-not-found": "Запись не найдена.",
     "new-password-not-match": "Новый пароль не совпадает.",
-    "no-data": "Данные не были найдены.",
+    "no-data": "Здесь ничего нет",
     "password-changed": "Пароль изменён",
     "password-not-match": "Пароли не совпадают.",
     "remove-completed-task-list-items-successfully": "Удалено успешно!",
@@ -132,8 +172,10 @@
     "user-not-found": "Пользователь не найден"
   },
   "reference": {
-    "add-references": "Добавить ссылку",
-    "embedded-usage": "Вставить контент"
+    "add-references": "Добавить связь",
+    "embedded-usage": "Вставить контент",
+    "no-memos-found": "Ничего не найдено",
+    "search-placeholder": "Поиск по содержимому"
   },
   "resource": {
     "clear": "Удалить неиспользуемые",
@@ -143,7 +185,6 @@
         "file-name": "Название файла",
         "file-name-placeholder": "Название файла",
         "link": "Ссылка",
-        "link-placeholder": "https://the.link.to/your/resource",
         "option": "Внешняя ссылка",
         "type": "Тип",
         "type-placeholder": "Тип файла"
@@ -164,19 +205,53 @@
     "no-resources": "Нет ресурсов.",
     "no-unused-resources": "Нет неиспользуемых ресурсов",
     "reset-link": "Удалить ссылку",
-    "reset-link-prompt": "Вы уверены, что хотите удалить ссылку? Все использования этой ссылки будут сломаны.\nЭТО ДЕЙСТВИЕ НЕВОЗМОЖНО ОТМЕНИТЬ!",
-    "reset-resource-link": "Удаление ссылки на ресурс"
+    "reset-link-prompt": "Вы уверены, что хотите удалить ссылку? Все использования этой ссылки будут сломаны.\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ",
+    "reset-resource-link": "Удаление ссылки на ресурс",
+    "unused-resources": "Неиспользуемые"
   },
   "router": {
     "back-to-top": "В начало",
     "go-to-home": "Домой"
   },
   "setting": {
+    "access-token-section": {
+      "access-token-copied-to-clipboard": "Токен скопирован в буфер обмена",
+      "access-token-deletion": "Вы действительно хотите удалить токен {{accessToken}}?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ.",
+      "create-dialog": {
+        "create-access-token": "Создание токена доступа",
+        "created-at": "Создан",
+        "description": "Описание",
+        "duration-1m": "1 Месяц",
+        "duration-8h": "8 Часов",
+        "duration-never": "Никогда",
+        "expiration": "Срок действия",
+        "expires-at": "Истекает",
+        "some-description": "Введите описание..."
+      },
+      "description": "Список всех токенов доступа для вашей учетной записи.",
+      "title": "Токены доступа",
+      "token": "Токен"
+    },
+    "user-sessions-section": {
+      "title": "Активные сессии",
+      "description": "Список всех активных сессий для вашей учетной записи. Сессии истекают через 2 недели после последней активности. Вы можете завершить любую сессию, кроме текущей.",
+      "device": "Устройство",
+      "location": "Местоположение",
+      "last-active": "Последняя активность",
+      "expires": "Expires",
+      "current": "Текущая",
+      "never": "Никогда",
+      "session-revocation": "Вы действительно хотите завершить сессию {{sessionId}}?\nПридётся повторно войти на связанном устройстве.",
+      "session-revoked": "Сессия завершена",
+      "revoke-session": "Завершить сессию",
+      "cannot-revoke-current": "Нельзя завершить текущую сессию",
+      "no-sessions": "Нет активных сессий"
+    },
     "account-section": {
       "change-password": "Изменить пароль",
       "email-note": "Опционально",
       "export-memos": "Экспорт заметок",
-      "nickname-note": "Отображается на баннере",
+      "nickname-note": "Отображается в системе",
       "openapi-reset": "Очистить ключ OpenAPI",
       "openapi-sample-post": "Привет #memos от {{url}}",
       "openapi-title": "OpenAPI",
@@ -193,11 +268,23 @@
     "member": "Пользователи",
     "member-list": "Список пользователей",
     "member-section": {
+      "admin": "Администратор",
       "archive-member": "Деактивировать",
       "archive-warning": "Вы уверены, что хотите деактивировать пользователя {{username}}?",
       "create-a-member": "Создать",
       "delete-member": "Удалить",
-      "delete-warning": "Вы уверены, что хотите удалить пользователя {{username}}?\nЭТО ДЕЙСТВИЕ НЕВОЗМОЖНО ОТМЕНИТЬ!"
+      "delete-warning": "Вы уверены, что хотите удалить пользователя {{username}}?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ!",
+      "user": "Пользователь"
+    },
+    "memo-related": "Заметки",
+    "memo-related-settings": {
+      "content-lenght-limit": "Макс. длина заметки (байт)",
+      "enable-blur-nsfw-content": "\"Размывать\" заметки с тегами",
+      "enable-link-preview": "Предпросмотр ссылок",
+      "enable-memo-comments": "Комментарии",
+      "enable-memo-location": "Геометки",
+      "reactions": "Реакции",
+      "title": "Настройки заметок"
     },
     "my-account": "Мой аккаунт",
     "preference": "Настройки",
@@ -208,25 +295,20 @@
     },
     "sso": "SSO",
     "sso-section": {
-      "authorization-endpoint": "Конечная точка авторизации",
-      "client-id": "ID клиента",
-      "client-secret": "Секрет клиента",
-      "confirm-delete": "Вы уверены, что хотите удалить конфигурацию SSO \"{{name}}\"?\nЭТО ДЕЙСТВИЕ НЕОБРАТИМО!",
-      "create-sso": "Создать SSO",
+      "confirm-delete": "Вы уверены, что хотите удалить SSO-провайдер \"{{name}}\"?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ!",
+      "create-sso": "Подключение SSO-провайдера",
       "custom": "Собственный",
       "delete-sso": "Подтвердите удаление",
-      "display-name": "Отображаемое имя",
-      "identifier": "Идентификатор",
-      "identifier-filter": "Идентифиактор фильтра",
+      "display-name": "Псевдоним",
+      "identifier": "Имя пользователя",
+      "identifier-filter": "Фильтр по \"Имя пользователя\" (RegExp)",
+      "no-sso-found": "Нет настроенных SSO-провайдеров",
       "redirect-url": "URL-адрес перенаправления",
-      "scopes": "Области применения",
-      "sso-created": "SSO {{name}} создана",
-      "sso-list": "Список SSO",
-      "sso-updated": "SSO {{name}} обновлена",
+      "sso-created": "SSO-провайдер {{name}} создан",
+      "sso-list": "SSO-провайдеры",
+      "sso-updated": "SSO-провайдер {{name}} обновлен",
       "template": "Шаблон",
-      "token-endpoint": "Конечная точка токена",
-      "update-sso": "Обновить SSO",
-      "user-endpoint": "Конечная точка пользователя"
+      "update-sso": "Изменение SSO-провайдера"
     },
     "storage": "Хранилище",
     "storage-section": {
@@ -239,6 +321,7 @@
       "current-storage": "Текущее объектное хранилище",
       "delete-storage": "Удалить Хранилище",
       "endpoint": "Конечная точка",
+      "filepath-template": "Шаблон имени файла",
       "local-storage-path": "Путь к локальному хранилищу",
       "path": "Путь к хранилищу",
       "path-description": "Вы можете использовать переменные от локального хранилища, например {filename}",
@@ -261,34 +344,68 @@
       "url-suffix": "суффикс URL",
       "url-suffix-placeholder": "Пользовательский суффикс URL, необязательно"
     },
-    "system": "Системные",
+    "system": "Система",
     "system-section": {
-      "additional-script": "Настраиваемый скрипт",
-      "additional-script-placeholder": "Настраиваемый код JavaScript",
-      "additional-style": "Настраиваемый стиль",
-      "additional-style-placeholder": "Настраиваемый код CSS",
+      "additional-script": "Дополнительный скрипт",
+      "additional-script-placeholder": "Напишите сюда ваш JavaScript код",
+      "additional-style": "Дополнительный стиль",
+      "additional-style-placeholder": "Напишите сюда ваш CSS код",
       "allow-user-signup": "Разрешить регистрацию пользователей",
       "customize-server": {
         "appearance": "Тема",
         "description": "Описание",
         "icon-url": "URL иконки",
-        "locale": "Язык",
+        "locale": "Локализация",
         "title": "Настроить сервер"
       },
-      "disable-public-memos": "Отключить публичные записи",
-      "display-with-updated-time": "Отображать время обновления записи",
-      "max-upload-size": "Максимальный размер загрузки (МБ)",
-      "max-upload-size-hint": "Рекомендуемое значение 32 MБ.",
+      "disable-public-memos": "Отключить публичные заметки",
+      "display-with-updated-time": "Время изменения - основное",
+      "enable-double-click-to-edit": "Редактировать двойным кликом",
+      "enable-password-login": "Разрешить вход по паролю",
+      "enable-password-login-warning": "Это разрешит вход по паролю для всех пользователей. Продолжайте, только если хотите, чтобы пользователи входили и по SSO и по паролю.",
+      "max-upload-size": "Макс. размер файла (МБ)",
+      "max-upload-size-hint": "Рекомендуемое значение 32 MБ",
       "removed-completed-task-list-items": "Включить удаление выполненных",
-      "server-name": "Имя сервера"
+      "server-name": "Имя сервера",
+      "title": "Общие"
+    },
+    "version": "Версия",
+    "webhook-section": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Название, которое легко запомнить",
+        "create-webhook": "Создание вебхука",
+        "edit-webhook": "Изменить вебхук",
+        "payload-url": "Ссылка",
+        "title": "Название"
+      },
+      "no-webhooks-found": "Нет вебхуков",
+      "title": "Вебхуки",
+      "url": "Ссылка"
+    },
+    "workspace-section": {
+        "disallow-change-nickname": "Запретить смену псевдонима",
+        "disallow-change-username": "Запретить смену имени пользователя",
+        "disallow-password-auth": "Запретить вход по паролю",
+        "disallow-user-registration": "Запретить регистрацию пользователей",
+        "monday": "Понедельник",
+        "saturday": "Суббота",
+        "sunday": "Воскресенье",
+        "week-start-day": "Начало недели"
     }
   },
   "tag": {
     "all-tags": "Все теги",
     "create-tag": "Создать тег",
-    "create-tags-guide": "Вы можете создать тек, используя `#tag`",
+    "create-tags-guide": "Создавайте теги, используя `#tag` в заметках. Теги `#tag/subtag` можно показывать иерархично.",
     "delete-confirm": "Вы точно хотите удалить этот тег?",
     "delete-tag": "Удалить тег",
-    "no-tag-found": "Тег не найден"
+    "no-tag-found": "Нет тегов",
+    "new-name": "Новое имя",
+    "old-name": "Старое имя",
+    "rename-error-empty": "Тег не может быть пустым или содержать пробелы",
+    "rename-error-repeat": "Новое имя должно отличаться от старого",
+    "rename-success": "Тег обновлен",
+    "rename-tag": "Переименование тега",
+    "rename-tip": "Все ваши заметки с этим тегом будут обновлены"
   }
 }
