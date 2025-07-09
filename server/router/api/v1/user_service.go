@@ -785,7 +785,7 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 		// Check if avatar url is base64 format.
 		_, _, err := extractImageInfo(user.AvatarURL)
 		if err == nil {
-			userpb.AvatarUrl = fmt.Sprintf("/file/%s/avatar", userpb.Name)
+			userpb.AvatarUrl = fmt.Sprintf("/api/v1/%s/avatar", userpb.Name)
 		} else {
 			userpb.AvatarUrl = user.AvatarURL
 		}
