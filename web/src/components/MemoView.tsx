@@ -136,7 +136,8 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   ) : (
     <div
       className={cn(
-        "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-card text-card-foreground rounded-lg border border-border transition-colors",
+        "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-lg border border-border transition-colors",
+        props.showPinned && memo.pinned ? "bg-accent" : "bg-card",
         className,
       )}
     >
