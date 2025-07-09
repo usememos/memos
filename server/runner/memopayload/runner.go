@@ -97,7 +97,7 @@ func RebuildMemoPayload(memo *store.Memo) error {
 			if !n.Complete {
 				property.HasIncompleteTasks = true
 			}
-		case *ast.Code, *ast.CodeBlock:
+		case *ast.CodeBlock:
 			property.HasCode = true
 		case *ast.EmbeddedContent:
 			// TODO: validate references.
