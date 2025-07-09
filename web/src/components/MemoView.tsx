@@ -1,6 +1,6 @@
 import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
@@ -20,6 +20,8 @@ import MemoEditor from "./MemoEditor";
 import MemoLocationView from "./MemoLocationView";
 import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
+import MemoYoutubeEmbedListView from "./MemoYoutubeEmbedListView";
+import { extractYoutubeVideoIdsFromNodes } from "@/utils/youtube";
 import PreviewImageDialog from "./PreviewImageDialog";
 import ReactionSelector from "./ReactionSelector";
 import UserAvatar from "./UserAvatar";
@@ -64,6 +66,8 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   const nsfw =
     workspaceMemoRelatedSetting.enableBlurNsfwContent &&
     memo.tags?.some((tag) => workspaceMemoRelatedSetting.nsfwTags.some((nsfwTag) => tag === nsfwTag || tag.startsWith(`${nsfwTag}/`)));
+
+  const youtubeVideoIds = useMemo(() => extractYoutubeVideoIdsFromNodes(memo.nodes), [memo.nodes]);
 
   // Initial related data: creator.
   useAsyncEffect(async () => {
@@ -246,6 +250,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           parentPage={parentPage}
         />
         {memo.location && <MemoLocationView location={memo.location} />}
+        <MemoYoutubeEmbedListView videoIds={youtubeVideoIds} />
         <MemoAttachmentListView attachments={memo.attachments} />
         <MemoRelationListView memo={memo} relations={referencedMemos} parentPage={parentPage} />
         <MemoReactionistView memo={memo} reactions={memo.reactions} />
