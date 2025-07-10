@@ -68,6 +68,9 @@ func (s *APIV1Service) buildMemoFindWithFilter(ctx context.Context, find *store.
 		if filterExpr.HasIncompleteTasks {
 			find.PayloadFind.HasIncompleteTasks = true
 		}
+		if filterExpr.HasDueDate {
+			find.PayloadFind.HasDueDate = true
+		}
 	}
 	return nil
 }
@@ -83,6 +86,7 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("has_task_list", cel.BoolType),
 	cel.Variable("has_code", cel.BoolType),
 	cel.Variable("has_incomplete_tasks", cel.BoolType),
+	cel.Variable("has_due_date", cel.BoolType),
 }
 
 type MemoFilter struct {
@@ -95,6 +99,7 @@ type MemoFilter struct {
 	HasTaskList        bool
 	HasCode            bool
 	HasIncompleteTasks bool
+	HasDueDate         bool
 }
 
 func parseMemoFilter(expression string) (*MemoFilter, error) {
@@ -155,6 +160,9 @@ func findMemoField(callExpr *exprv1.Expr_Call, filter *MemoFilter) {
 			} else if idExpr.Name == "has_incomplete_tasks" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.HasIncompleteTasks = value
+			} else if idExpr.Name == "has_due_date" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.HasDueDate = value
 			}
 			return
 		}

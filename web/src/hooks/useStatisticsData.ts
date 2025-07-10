@@ -17,6 +17,7 @@ export const useStatisticsData = (): StatisticsData => {
         memoTypeStats.linkCount += stats.memoTypeStats.linkCount;
         memoTypeStats.todoCount += stats.memoTypeStats.todoCount;
         memoTypeStats.undoCount += stats.memoTypeStats.undoCount;
+        memoTypeStats.dueDateCount += stats.memoTypeStats.dueDateCount || 0;
       }
     }
 
