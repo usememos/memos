@@ -25,7 +25,7 @@ export const extractYoutubeIdFromUrl = (url: string): string | undefined => {
 
 /**
  * Extract YouTube video IDs from markdown nodes.
- * @param nodes The array of markdown nodes to extract YouTube video IDs from .
+ * @param nodes The array of markdown nodes to extract YouTube video IDs from.
  * @returns A deduplicated array of YouTube video IDs.
  */
 export const extractYoutubeVideoIdsFromNodes = (nodes: Node[]): string[] => {

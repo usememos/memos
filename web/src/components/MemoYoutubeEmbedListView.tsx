@@ -18,7 +18,7 @@ const MemoYoutubeEmbedListView: React.FC<Props> = ({ videoIds }: Props) => {
             className="absolute top-0 left-0 w-full h-full"
             src={`https://www.youtube.com/embed/${videoId}`}
             title="YouTube video player"
-            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           />
         </div>
