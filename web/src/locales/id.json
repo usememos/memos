@@ -141,7 +141,7 @@
     },
     "copy-link": "Salin Tautan",
     "count-memos-in-date": "{{count}} memo di {{date}}",
-    "delete-confirm": "Apakah Anda yakin ingin menghapus memo ini? TINDAKAN INI TIDAK DAPAT DIURANGI",
+    "delete-confirm": "Apakah Anda yakin ingin menghapus memo ini? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
     "direction": "Arah",
     "direction-asc": "Menaik",
     "direction-desc": "Menurun",
@@ -162,7 +162,7 @@
     "visibility": {
       "disabled": "Memo publik dinonaktifkan",
       "private": "Pribadi",
-      "protected": "Protected",
+      "protected": "Terlindungi",
       "public": "Publik"
     },
     "list": "Daftar",
@@ -192,7 +192,7 @@
   "reference": {
     "add-references": "Tambah referensi",
     "embedded-usage": "Gunakan sebagai Konten Tertanam",
-    "no-memos-found": "Tidak ada memo ditemukan",
+    "no-memos-found": "Tidak ada memo yang ditemukan",
     "search-placeholder": "Cari konten"
   },
   "resource": {
@@ -224,7 +224,7 @@
     "no-resources": "Tidak ada sumber daya.",
     "no-unused-resources": "Tidak ada sumber daya yang tidak terpakai",
     "reset-link": "Atur ulang Tautan",
-    "reset-link-prompt": "Apakah Anda yakin untuk mengatur ulang tautan? Ini akan memutus semua penggunaan tautan yang ada. TINDAKAN INI TIDAK DAPAT DIURANGI",
+    "reset-link-prompt": "Apakah Anda yakin untuk mengatur ulang tautan? Ini akan memutus semua penggunaan tautan yang ada. TINDAKAN INI TIDAK DAPAT DIBATALKAN",
     "reset-resource-link": "Atur ulang Tautan Sumber Daya",
     "unused-resources": "Sumber daya tidak terpakai"
   },
@@ -292,7 +292,7 @@
       "archive-warning": "Apakah Anda yakin untuk mengarsipkan {{username}}?",
       "create-a-member": "Buat anggota",
       "delete-member": "Hapus Anggota",
-      "delete-warning": "Apakah Anda yakin untuk menghapus {{username}}? TINDAKAN INI TIDAK DAPAT DIURANGI",
+      "delete-warning": "Apakah Anda yakin untuk menghapus {{username}}? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
       "user": "Pengguna"
     },
     "memo-related": "Memo",
@@ -326,7 +326,7 @@
       "display-name": "Nama Tampilan",
       "identifier": "Pengenal",
       "identifier-filter": "Filter Pengenal",
-      "no-sso-found": "Tidak ada SSO ditemukan.",
+      "no-sso-found": "Tidak ada SSO yang ditemukan.",
       "redirect-url": "URL Pengalihan",
       "scopes": "Lingkup",
       "single-sign-on": "Mengonfigurasi Single Sign-On (SSO) untuk Autentikasi",
@@ -413,7 +413,7 @@
         "title": "Judul",
         "url-example-post-receive": "https://example.com/postreceive"
       },
-      "no-webhooks-found": "Tidak ada webhook ditemukan.",
+      "no-webhooks-found": "Tidak ada webhook yang ditemukan.",
       "title": "Webhook",
       "url": "URL"
     },
@@ -425,7 +425,7 @@
       "monday": "Senin",
       "saturday": "Sabtu",
       "sunday": "Minggu",
-      "week-start-day": "Hari mulai minggu"
+      "week-start-day": "Hari awal pekan"
     }
   },
   "tag": {
@@ -435,7 +435,7 @@
     "delete-confirm": "Apakah Anda yakin ingin menghapus tag ini? Semua memo terkait akan diarsipkan.",
     "delete-tag": "Hapus Tag",
     "new-name": "Nama Baru",
-    "no-tag-found": "Tidak ada tag ditemukan",
+    "no-tag-found": "Tidak ada tag yang ditemukan",
     "old-name": "Nama Lama",
     "rename-error-empty": "Nama tag tidak boleh kosong atau mengandung spasi",
     "rename-error-repeat": "Nama baru tidak boleh sama dengan nama lama",
