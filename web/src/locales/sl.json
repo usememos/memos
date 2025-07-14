@@ -20,6 +20,7 @@
     "admin": "Admin",
     "archive": "Arhiv",
     "archived": "Arhivirani",
+    "attachments": "Priloge",
     "avatar": "Avatar",
     "basic": "Osnovni",
     "beta": "Beta",
@@ -30,6 +31,7 @@
     "collapse": "Strni",
     "confirm": "Potrdi",
     "create": "Dodaj",
+    "created-at": "Ustvarjeno",
     "database": "Baza",
     "day": "Dan",
     "days": "Dni",
@@ -45,7 +47,10 @@
     "image": "Slika",
     "in": "v",
     "inbox": "Prejeto",
+    "input": "Vnos",
     "language": "Jezik",
+    "last-updated-at": "Zadnja posodobitev",
+    "layout": "Postavitev",
     "learn-more": "Spoznaj več",
     "link": "Povezava",
     "mark": "Označi",
@@ -61,17 +66,23 @@
     "pinned": "Pripeto",
     "preview": "Predogled",
     "profile": "Profil",
+    "properties": "Lastnosti",
+    "referenced-by": "Nanaša se na",
+    "referencing": "Nanašanje",
+    "relations": "Relacije",
     "remember-me": "Zapomni se me",
     "rename": "Preimenuj",
     "reset": "Ponastavi",
     "resources": "Viri",
     "restore": "Obnovi",
     "role": "Vloga",
-    "save": "Save",
+    "save": "Shrani",
     "search": "Iskanje",
     "select": "Izberi",
     "settings": "Nastavitve",
     "share": "Deli",
+    "shortcut-filter": "Filter bližnjic",
+    "shortcuts": "Bližnjice",
     "sign-in": "Prijavi se",
     "sign-in-with": "Prijavi se z {{provider}}",
     "sign-out": "Odjavi se",
@@ -79,11 +90,13 @@
     "statistics": "Statistika",
     "tags": "Značke",
     "title": "Naslov",
+    "tree-mode": "Drevesni način",
     "type": "Tip",
     "unpin": "Odpni",
     "update": "Posodobi",
     "upload": "Naloži",
-    "username": "Uporabnik",
+    "user": "Uporabnik",
+    "username": "Uporabniško ime",
     "version": "Verzija",
     "visibility": "Vidnost",
     "yourself": "Ti"
@@ -100,7 +113,13 @@
   "editor": {
     "add-your-comment-here": "Tu dodaj svoj komentar...",
     "any-thoughts": "Kakšne misli...",
-    "save": "Shrani"
+    "save": "Shrani",
+    "no-changes-detected": "Ni zaznanih sprememb"
+  },
+  "filters": {
+    "has-code": "imaKodo",
+    "has-link": "imaPovezavo",
+    "has-task-list": "imaSeznamOpravil"
   },
   "inbox": {
     "memo-comment": "{{user}} je komentiral tvojo {{memo}}.",
@@ -113,6 +132,8 @@
   },
   "memo": {
     "archived-at": "Arhivirano ob",
+    "click-to-hide-nsfw-content": "Kliknite za skrivanje NSFW vsebine",
+    "click-to-show-nsfw-content": "Kliknite za prikaz NSFW vsebine",
     "code": "Koda",
     "comment": {
       "self": "Komentarji",
@@ -132,7 +153,7 @@
     "no-memos": "Ni beležk.",
     "order-by": "Razvrsti po",
     "remove-completed-task-list-items": "Odstrani končane",
-    "remove-completed-task-list-items-confirm": "Ste prepričani, da želite odstraniti vse končane naloge? (Ta dejanje ni obrnljivo)",
+    "remove-completed-task-list-items-confirm": "Ste prepričani, da želite odstraniti vse končane naloge? TO DEJANJE JE NEPOVRATNO",
     "search-placeholder": "Poišči beležke",
     "show-less": "Prikaži manj",
     "show-more": "Prikaži več",
@@ -140,13 +161,15 @@
     "view-detail": "Poglej podrobnosti",
     "visibility": {
       "disabled": "Javne beležke so onemogočene",
-      "private": "Vidno samo za vas",
-      "protected": "Vidno uporabnikom",
-      "public": "Vidno vsem"
-    }
+      "private": "Zasebno",
+      "protected": "Za uporabnike",
+      "public": "Javno"
+    },
+    "list": "Seznam",
+    "masonry": "Masonry"
   },
   "message": {
-    "archived-successfully": "Archived successfully",
+    "archived-successfully": "Uspešno arhivirano",
     "change-memo-created-time": "Spremeni čas izdelave beležke",
     "copied": "Skopirano",
     "deleted-successfully": "Uspešno izbrisano",
@@ -194,15 +217,16 @@
     },
     "delete-resource": "Izbriši vir",
     "delete-selected-resources": "Izbrišite izbrane vire",
-    "fetching-data": "pridobivam podatke...",
+    "fetching-data": "Pridobivam podatke...",
     "file-drag-drop-prompt": "Za nalaganje, tu povlecite in spustite vaše datoteke",
     "linked-amount": "Povezana količina beležk",
-    "no-files-selected": "Nobena datoteka ni označena❗",
+    "no-files-selected": "Nobena datoteka ni označena",
     "no-resources": "Ni virov.",
     "no-unused-resources": "Ni neuporabljenih virov",
     "reset-link": "Ponastavi povezavo",
     "reset-link-prompt": "Ali ste prepričani, da želite ponastaviti povezavo? To bo prekinilo vse trenutne uporabe povezav. TO DEJANJE JE NEPOVRATNO",
-    "reset-resource-link": "Ponastavi povezavo do vira"
+    "reset-resource-link": "Ponastavi povezavo do vira",
+    "unused-resources": "Neuporabljeni viri"
   },
   "router": {
     "back-to-top": "Nazaj na vrh",
@@ -214,7 +238,7 @@
       "access-token-deletion": "Ali ste prepričani, da želite izbrisati dostopni žeton {{accessToken}}? TO DEJANJE JE NEPOVRATNO.",
       "create-dialog": {
         "create-access-token": "Ustvari žeton za dostop",
-        "created-at": "Ustvrajen",
+        "created-at": "Ustvarjen",
         "description": "Opis",
         "duration-1m": "1 mesec",
         "duration-8h": "8 ur",
@@ -224,8 +248,23 @@
         "some-description": "Nek opis..."
       },
       "description": "Seznam vseh dostopnih žetonov za vaš račun.",
-      "title": "Dostopni žeton",
+      "title": "Dostopni žetoni",
       "token": "Žeton"
+    },
+    "user-sessions-section": {
+      "title": "Aktivne seje",
+      "description": "Seznam vseh aktivnih sej vašega računa. Seje samodejno potečejo 2 tedna po zadnji aktivnosti. Lahko prekličete katerokoli sejo razen trenutne.",
+      "device": "Naprava",
+      "location": "Lokacija",
+      "last-active": "Zadnja aktivnost",
+      "expires": "Poteče",
+      "current": "Trenutna",
+      "never": "Nikoli",
+      "session-revocation": "Ali ste prepričani, da želite preklicati sejo {{sessionId}}? Ponovno se boste morali prijaviti na tej napravi.",
+      "session-revoked": "Seja uspešno preklicana",
+      "revoke-session": "Prekliči sejo",
+      "cannot-revoke-current": "Trenutne seje ni mogoče preklicati",
+      "no-sessions": "Ni aktivnih sej"
     },
     "account-section": {
       "change-password": "Zamenjaj geslo",
@@ -248,15 +287,18 @@
     "member": "Uporabnik",
     "member-list": "Seznam uporabnikov",
     "member-section": {
+      "admin": "Admin",
       "archive-member": "Arhiviraj uporabnika",
       "archive-warning": "Ali ste prepričani, da želite arhivirati {{username}}?",
       "create-a-member": "Dodaj novega uporabnika",
       "delete-member": "Izbriši uporabnika",
-      "delete-warning": "Ali ste prepričani, da želite izbrisati {{username}}? TO DEJANJE JE NEPOVRATNO"
+      "delete-warning": "Ali ste prepričani, da želite izbrisati {{username}}? TO DEJANJE JE NEPOVRATNO",
+      "user": "Uporabnik"
     },
     "memo-related": "Beležka",
     "memo-related-settings": {
-      "content-lenght-limit": "Omejitev dolžine vsebin (bajt)",
+      "content-lenght-limit": "Omejitev dolžine vsebine (bajt)",
+      "enable-blur-nsfw-content": "Omogoči zameglitev občutljive vsebine (NSFW)",
       "enable-link-preview": "Omogoči predogled povezave",
       "enable-memo-comments": "Omogoči komentarje na beležkah",
       "enable-memo-location": "Omogoči lokacijo beležk",
@@ -268,6 +310,7 @@
     "preference-section": {
       "default-memo-sort-option": "Čas prikaza beležke",
       "default-memo-visibility": "Privzeta vidnost beležke",
+      "apperance": "Videz",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -280,7 +323,7 @@
       "custom": "Po meri",
       "delete-sso": "Potrdi brisanje",
       "disabled-password-login-warning": "Prijava z geslom je onemogočena, bodite še posebej previdni pri odstranjevanju ponudnikov identitete",
-      "display-name": "Prikaz imena",
+      "display-name": "Prikazno ime",
       "identifier": "Identifikator",
       "identifier-filter": "Filter identifikatorja",
       "no-sso-found": "Ne najdem nobenega SSO.",
@@ -305,7 +348,8 @@
       "create-storage": "Ustvari shrambo",
       "current-storage": "Trenutna shramba predmetov",
       "delete-storage": "Izbriši shrambo",
-      "endpoint": "Kočna točka",
+      "endpoint": "Končna točka",
+      "filepath-template": "Predloga poti do datoteke",
       "local-storage-path": "Lokalna pot shrambe",
       "path": "Pot shrambe",
       "path-description": "Uporabite lahko iste dinamične spremenljivke iz lokalne shrambe, kot je {filename}",
@@ -320,13 +364,14 @@
       "type-database": "Baza podatkov",
       "type-local": "Lokalni datotečni sistem",
       "update-a-service": "Posodobi storitev",
-      "update-local-path": "Posodobite pot di lokalne shrambe",
+      "update-local-path": "Posodobite pot do lokalne shrambe",
       "update-local-path-description": "Pot lokalne shrambe je relativna pot do vaše datoteke zbirke podatkov",
       "update-storage": "Posodobi shrambo",
       "url-prefix": "URL predpona",
       "url-prefix-placeholder": "URL predpona po meri, opcijsko",
       "url-suffix": "URL pripona",
-      "url-suffix-placeholder": "URL pripona po meri, opcijsko"
+      "url-suffix-placeholder": "URL pripona po meri, opcijsko",
+      "warning-text": "Ali ste prepričani, da želite izbrisati storitev shrambe \"{{name}}\"? TO DEJANJE JE NEPOVRATNO"
     },
     "system": "Sistem",
     "system-section": {
@@ -355,7 +400,8 @@
       "max-upload-size": "Največja velikost nalaganja (MiB)",
       "max-upload-size-hint": "Priporočena velikost je 32 MiB.",
       "removed-completed-task-list-items": "Omogoči odstranitev končanih",
-      "server-name": "Ime strežnika"
+      "server-name": "Ime strežnika",
+      "title": "Splošno"
     },
     "version": "Verzija",
     "webhook-section": {
@@ -383,11 +429,18 @@
     }
   },
   "tag": {
-    "all-tags": "Vse oznke",
-    "create-tag": "Kreiraj oznako",
-    "create-tags-guide": "Oznako lahko ustvarite z vnosom `#tag`.",
-    "delete-confirm": "Ste prepričani, da želite odstraniti to oznako? Vse povezane beležke bodo arhivirane.",
-    "delete-tag": "Izbriši oznako",
-    "no-tag-found": "Ne najdem oznak"
+    "all-tags": "Vse značke",
+    "create-tag": "Kreiraj značko",
+    "create-tags-guide": "Značko lahko ustvarite z vnosom `#tag`.",
+    "delete-confirm": "Ste prepričani, da želite odstraniti to značko? Vse povezane beležke bodo arhivirane.",
+    "delete-tag": "Izbriši značko",
+    "new-name": "Novo ime",
+    "no-tag-found": "Ne najdem značk",
+    "old-name": "Staro ime",
+    "rename-error-empty": "Ime značke ne sme biti prazno ali vsebovati presledkov",
+    "rename-error-repeat": "Novo ime ne sme biti enako staremu",
+    "rename-success": "Značka uspešno preimenovana",
+    "rename-tag": "Preimenuj značko",
+    "rename-tip": "Vse vaše beležke s to značko bodo posodobljene."
   }
 }
