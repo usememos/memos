@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "ब्लॉग्ज",
+    "description": "गोपनीयता-प्रथम, हलकी नोट घेण्याची सेवा. तुमचे उत्तम विचार सहजपणे टिपा आणि शेअर करा.",
+    "documents": "दस्तऐवज",
+    "github-repository": "GitHub रेपॉजिटरी",
+    "official-website": "अधिकृत वेबसाइट"
+  },
   "auth": {
     "create-your-account": "तुमचे खाते तयार करा",
     "host-tip": "तुम्ही साइट होस्ट म्हणून नोंदणी करत आहात.",
@@ -9,9 +16,11 @@
   },
   "common": {
     "about": "बद्दल",
+    "add": "जोडा",
     "admin": "ॲडमिन",
     "archive": "संग्रहण",
     "archived": "संग्रहित",
+    "attachments": "संलग्नक",
     "avatar": "अवतार",
     "basic": "मूलभूत",
     "beta": "बीटा",
@@ -19,24 +28,33 @@
     "change": "बदला",
     "clear": "साफ",
     "close": "बंद",
+    "collapse": "संकुचित करा",
     "confirm": "पुष्टी",
     "create": "तयार करा",
+    "created-at": "तयार केले",
     "database": "डेटाबेस",
+    "day": "दिवस",
     "days": "दिवस",
     "delete": "हटवा",
     "description": "वर्णन",
     "edit": "संपादन",
     "email": "ईमेल",
+    "expand": "विस्तृत करा",
     "explore": "अन्वेषण",
     "file": "फाईल",
     "filter": "गाळा",
     "home": "घर",
     "image": "प्रतिमा",
+    "in": "मध्ये",
     "inbox": "इनबॉक्स",
+    "input": "इनपुट",
     "language": "भाषा",
+    "last-updated-at": "शेवटचे अद्यतन",
+    "layout": "लेआउट",
     "learn-more": "अधिक जाणून घ्या",
     "link": "लिंक",
     "mark": "खूण",
+    "memo": "मेमो",
     "memos": "मेमो",
     "name": "नाव",
     "new": "नविन",
@@ -48,6 +66,10 @@
     "pinned": "पिन केलेला",
     "preview": "पूर्वावलोकन",
     "profile": "प्रोफाइल",
+    "properties": "गुणधर्म",
+    "referenced-by": "याने संदर्भित",
+    "referencing": "संदर्भ देत आहे",
+    "relations": "संबंध",
     "remember-me": "माझी आठवण ठेवा",
     "rename": "नाव बदला",
     "reset": "रीसेट करा",
@@ -59,6 +81,8 @@
     "select": "निवडा",
     "settings": "सेटिंग्ज",
     "share": "शेअर करा",
+    "shortcut-filter": "शॉर्टकट फिल्टर",
+    "shortcuts": "शॉर्टकट्स",
     "sign-in": "साइन इन करा",
     "sign-in-with": "{{provider}} सह साइन इन करा",
     "sign-out": "साइन आउट करा",
@@ -66,10 +90,12 @@
     "statistics": "आकडेवारी",
     "tags": "टॅग्ज",
     "title": "शीर्षक",
+    "tree-mode": "ट्री मोड",
     "type": "प्रकार",
     "unpin": "अनपिन",
     "update": "अपडेट करा",
     "upload": "अपलोड करा",
+    "user": "वापरकर्ता",
     "username": "वापरकर्तानाव",
     "version": "आवृत्ती",
     "visibility": "दृश्यमानता",
@@ -87,14 +113,28 @@
   "editor": {
     "add-your-comment-here": "तुमची टिप्पणी येथे जो़डा",
     "any-thoughts": "आपले विचार...",
-    "save": "जतन"
+    "save": "जतन",
+    "no-changes-detected": "कोणतेही बदल आढळले नाहीत"
+  },
+  "filters": {
+    "has-code": "कोड आहे",
+    "has-link": "लिंक आहे",
+    "has-task-list": "कार्यसूची आहे"
   },
   "inbox": {
     "memo-comment": "{{user}} ची तुमच्या {{memo}} वर टिप्पणी आहे.",
     "version-update": "नवीन आवृत्ती {{version}} आता उपलब्ध आहे!"
   },
+  "markdown": {
+    "checkbox": "चेकबॉक्स",
+    "code-block": "कोड ब्लॉक",
+    "content-syntax": "सामग्री सिंटॅक्स"
+  },
   "memo": {
     "archived-at": "येथे संग्रहित",
+    "click-to-hide-nsfw-content": "संवेदनशील सामग्री लपवण्यासाठी क्लिक करा",
+    "click-to-show-nsfw-content": "संवेदनशील सामग्री दाखवण्यासाठी क्लिक करा",
+    "code": "कोड",
     "comment": {
       "self": "टिप्पण्या",
       "write-a-comment": "टिप्पणी लिहा"
@@ -102,12 +142,24 @@
     "copy-link": "लिंकची प्रत बनवा",
     "count-memos-in-date": "{{date}} ला {{count}} मेमो लिहीलीत",
     "delete-confirm": "हा मेमो हटवण्याची तुम्हाला खात्री आहे का? हि क्रिया अपरिवर्तनीय आहे",
+    "direction": "दिशा",
+    "direction-asc": "आरोही",
+    "direction-desc": "अवरोही",
+    "display-time": "प्रदर्शन वेळ",
+    "filters": "गाळा",
+    "links": "लिंक्स",
+    "list": "यादी",
+    "load-more": "अधिक लोड करा",
+    "masonry": "मेसनरी",
     "no-archived-memos": "कोणतेही संग्रहित मेमो नाहीत.",
+    "no-memos": "कोणतेही मेमो नाहीत.",
+    "order-by": "क्रमवारी",
     "remove-completed-task-list-items": "हटवा केलेले",
-    "remove-completed-task-list-items-confirm": "तुम्ही सगळ्या पूर्ण केलेल्या कामांचे हटवणार आहात का? (या क्रियेचे उलट घेणे शक्य नाही)",
-    "search-placeholder": "मेमोज शोधा",
+    "remove-completed-task-list-items-confirm": "तुम्ही सगळ्या पूर्ण केलेल्या कामांचे हटवणार आहात का? ही क्रिया अपरिवर्तनीय आहे",
+    "search-placeholder": "मेमोज शोधा...",
     "show-less": "कमी दाखवा",
     "show-more": "अधिक दाखवा",
+    "to-do": "कार्य",
     "view-detail": "तपशील दाखवा",
     "visibility": {
       "disabled": "सार्वजनिक मेमो अक्षम केले आहेत",
@@ -121,7 +173,10 @@
     "change-memo-created-time": "मेमो तयार केलेली वेळ बदला",
     "copied": "प्रत बनवली",
     "deleted-successfully": "यशस्वीरित्या हटवले",
+    "description-is-required": "वर्णन आवश्यक आहे",
+    "failed-to-embed-memo": "मेमो एम्बेड करण्यात अयशस्वी",
     "fill-all": "कृपया सर्व फील्ड भरा.",
+    "fill-all-required-fields": "कृपया सर्व आवश्यक फील्ड भरा",
     "maximum-upload-size-is": "कमाल अनुमत अपलोड आकार {{size}} MiB आहे",
     "memo-not-found": "मेमो सापडला नाही.",
     "new-password-not-match": "नवीन पासवर्ड जुळत नाहीत.",
@@ -170,13 +225,47 @@
     "no-unused-resources": "कोणतीही न वापरलेली संसाधने नाहीत",
     "reset-link": "लिंक रीसेट करा",
     "reset-link-prompt": "तुम्हाला लिंक रीसेट करण्याची खात्री आहे का? हे सर्व वर्तमान लिंक वापर खंडित करेल. ही क्रिया अपरिवर्तनीय आहे",
-    "reset-resource-link": "संसाधन लिंक रीसेट करा"
+    "reset-resource-link": "संसाधन लिंक रीसेट करा",
+    "unused-resources": "न वापरलेली संसाधने"
   },
   "router": {
     "back-to-top": "परत वर जा",
     "go-to-home": "घरी जा"
   },
   "setting": {
+    "access-token-section": {
+      "access-token-copied-to-clipboard": "ऍक्सेस टोकन क्लिपबोर्डवर कॉपी केले",
+      "access-token-deletion": "तुम्हाला ऍक्सेस टोकन {{accessToken}} हटवायचे आहे का? ही क्रिया अपरिवर्तनीय आहे.",
+      "create-dialog": {
+        "create-access-token": "ऍक्सेस टोकन तयार करा",
+        "created-at": "तयार केले",
+        "description": "वर्णन",
+        "duration-1m": "1 महिना",
+        "duration-8h": "8 तास",
+        "duration-never": "कधीच नाही",
+        "expiration": "कालबाह्यता",
+        "expires-at": "कालबाह्यता तारीख",
+        "some-description": "काही वर्णन..."
+      },
+      "description": "तुमच्या खात्यातील सर्व ऍक्सेस टोकन्सची यादी.",
+      "title": "ऍक्सेस टोकन्स",
+      "token": "टोकन"
+    },
+    "user-sessions-section": {
+      "title": "सक्रिय सत्रे",
+      "description": "तुमच्या खात्यातील सर्व सक्रिय सत्रांची यादी. सत्रे शेवटच्या क्रियेनंतर 2 आठवड्यांनी आपोआप कालबाह्य होतात. तुम्ही चालू सत्र वगळता कोणतेही सत्र रद्द करू शकता.",
+      "device": "डिव्हाइस",
+      "location": "स्थान",
+      "last-active": "शेवटचे सक्रिय",
+      "expires": "कालबाह्यता",
+      "current": "चालू",
+      "never": "कधीच नाही",
+      "session-revocation": "तुम्हाला सत्र {{sessionId}} रद्द करायचे आहे का? त्या डिव्हाइसवर पुन्हा साइन इन करावे लागेल.",
+      "session-revoked": "सत्र यशस्वीरित्या रद्द केले",
+      "revoke-session": "सत्र रद्द करा",
+      "cannot-revoke-current": "चालू सत्र रद्द करता येणार नाही",
+      "no-sessions": "कोणतीही सक्रिय सत्रे आढळली नाहीत"
+    },
     "account-section": {
       "change-password": "पासवर्ड बदला",
       "email-note": "ऐच्छिक",
@@ -198,17 +287,30 @@
     "member": "सदस्य",
     "member-list": "सदस्य यादी",
     "member-section": {
+      "admin": "ॲडमिन",
       "archive-member": "संग्रहण सदस्य",
       "archive-warning": "तुम्हाला {{username}} संग्रहित करण्याची खात्री आहे?",
       "create-a-member": "सदस्य तयार करा",
       "delete-member": "सदस्य हटवा",
-      "delete-warning": "तुम्हाला नक्की {{username}} हटवायचे आहे का? ही क्रिया अपरिवर्तनीय आहे"
+      "delete-warning": "तुम्हाला नक्की {{username}} हटवायचे आहे का? ही क्रिया अपरिवर्तनीय आहे",
+      "user": "वापरकर्ता"
+    },
+    "memo-related": "मेमो",
+    "memo-related-settings": {
+      "content-lenght-limit": "सामग्रीची कमाल लांबी (बाइट)",
+      "enable-blur-nsfw-content": "संवेदनशील (NSFW) सामग्री ब्लर करा सक्षम करा",
+      "enable-link-preview": "लिंक पूर्वावलोकन सक्षम करा",
+      "enable-memo-comments": "मेमो टिप्पण्या सक्षम करा",
+      "enable-memo-location": "मेमो स्थान सक्षम करा",
+      "reactions": "प्रतिक्रिया",
+      "title": "मेमो संबंधित सेटिंग्ज"
     },
     "my-account": "माझे खाते",
     "preference": "प्राधान्ये",
     "preference-section": {
       "default-memo-sort-option": "मेमो प्रदर्शन वेळ",
       "default-memo-visibility": "डीफॉल्ट मेमो दृश्यमानता",
+      "apperance": "रूप",
       "theme": "थीम"
     },
     "sso": "SSO",
@@ -224,8 +326,10 @@
       "display-name": "प्रदर्शनासाठी नाव",
       "identifier": "ओळखकर्ता",
       "identifier-filter": "अभिज्ञापक फिल्टर",
+      "no-sso-found": "कोणतेही SSO आढळले नाही.",
       "redirect-url": "URL पुनर्निर्देशित करा",
       "scopes": "व्याप्ती",
+      "single-sign-on": "प्रमाणीकरणासाठी Single Sign-On (SSO) कॉन्फिगर करा",
       "sso-created": "SSO {{name}} तयार केले",
       "sso-list": "SSO सूची",
       "sso-updated": "SSO {{name}} अपडेट केले",
@@ -245,6 +349,7 @@
       "current-storage": "वर्तमान ऑब्जेक्ट स्टोरेज",
       "delete-storage": "स्टोरेज हटवा",
       "endpoint": "एन्डपाॅंईन्ट",
+      "filepath-template": "फाईलपथ टेम्पलेट",
       "local-storage-path": "स्थानिक स्टोरेज मार्ग",
       "path": "स्टोरेज पथ",
       "path-description": "तुम्ही स्थानिक स्टोरेजमधून समान डायनॅमिक व्हेरिएबल्स वापरू शकता, जसे की {filename}",
@@ -282,17 +387,45 @@
         "locale": "सर्व्हर लोकेल",
         "title": "सर्व्हर सानुकूलित करा"
       },
+      "disable-markdown-shortcuts-in-editor": "एडिटरमध्ये Markdown शॉर्टकट अक्षम करा",
       "disable-password-login": "पासवर्ड लॉगिन अक्षम करा",
       "disable-password-login-final-warning": "तुम्ही काय करत आहात हे तुम्हाला माहीत असल्यास कृपया \"CONFIRM\" टाइप करा.",
       "disable-password-login-warning": "हे सर्व वापरकर्त्यांसाठी पासवर्ड लॉगिन अक्षम करेल. तुमचे कॉन्फिगर केलेले ओळख प्रदाते अयशस्वी झाल्यास डेटाबेसमध्ये ही सेटिंग पूर्ववत केल्याशिवाय लॉग इन करणे शक्य नाही. ओळख प्रदाता काढून टाकताना तुम्हाला अधिक सावधगिरी बाळगावी लागेल",
       "disable-public-memos": "सार्वजनिक मेमो अक्षम करा",
       "display-with-updated-time": "अद्यतनित वेळेसह प्रदर्शित करा",
+      "enable-auto-compact": "ऑटो-कॉम्पॅक्ट सक्षम करा",
+      "enable-double-click-to-edit": "डबल क्लिकने संपादन सक्षम करा",
       "enable-password-login": "पासवर्ड लॉगिन सक्षम करा",
       "enable-password-login-warning": "हे सर्व वापरकर्त्यांसाठी पासवर्ड लॉगिन सक्षम करेल. जर तुम्ही वापरकर्त्यांना SSO आणि पासवर्ड दोन्ही वापरून लॉग इन करू इच्छित असाल तरच सुरू ठेवा",
       "max-upload-size": "कमाल अपलोड आकार (MiB)",
       "max-upload-size-hint": "शिफारस केलेले मूल्य 32 MiB आहे.",
-      "removed-completed-task-list-items": "हटवा केलेले सक्षम करा",
-      "server-name": "सर्व्हरचे नाव"
+      "removed-completed-task-list-items": "पूर्ण झालेल्या कार्यसूची आयटम हटवणे सक्षम करा",
+      "server-name": "सर्व्हरचे नाव",
+      "title": "सामान्य"
+    },
+    "version": "आवृत्ती",
+    "webhook-section": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "स्मरणात राहणारे नाव",
+        "create-webhook": "Webhook तयार करा",
+        "edit-webhook": "Webhook संपादित करा",
+        "payload-url": "Payload URL",
+        "title": "शीर्षक",
+        "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "no-webhooks-found": "कोणतेही वेबहुक आढळले नाहीत.",
+      "title": "Webhooks",
+      "url": "URL"
+    },
+    "workspace-section": {
+      "disallow-change-nickname": "टोपणनाव बदलण्यास मनाई करा",
+      "disallow-change-username": "वापरकर्तानाव बदलण्यास मनाई करा",
+      "disallow-password-auth": "पासवर्ड प्रमाणीकरणास मनाई करा",
+      "disallow-user-registration": "वापरकर्ता नोंदणीस मनाई करा",
+      "monday": "सोमवार",
+      "saturday": "शनिवार",
+      "sunday": "रविवार",
+      "week-start-day": "आठवड्याचा प्रारंभ दिवस"
     }
   },
   "tag": {
@@ -301,6 +434,13 @@
     "create-tags-guide": "तुम्ही `#tag` इनपुट करून टॅग तयार करू शकता.",
     "delete-confirm": "तुम्हाला हा टॅग हटवण्याची खात्री आहे का? सर्व संबंधित मेमो संग्रहित केले जातील.",
     "delete-tag": "टॅग हटवा",
-    "no-tag-found": "कोणताही टॅग आढळला नाही"
+    "new-name": "नवीन नाव",
+    "no-tag-found": "कोणताही टॅग आढळला नाही",
+    "old-name": "जुने नाव",
+    "rename-error-empty": "टॅगचे नाव रिकामे किंवा स्पेस असू शकत नाही",
+    "rename-error-repeat": "नवीन नाव जुना नावासारखे असू शकत नाही",
+    "rename-success": "टॅग यशस्वीरित्या बदलला",
+    "rename-tag": "टॅगचे नाव बदला",
+    "rename-tip": "या टॅगसह तुमचे सर्व मेमो अपडेट केले जातील."
   }
 }
