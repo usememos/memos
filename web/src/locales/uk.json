@@ -20,6 +20,7 @@
     "admin": "Адмін",
     "archive": "Архів",
     "archived": "Архівовано",
+    "attachments": "Вкладення",
     "avatar": "Аватар",
     "basic": "Основний",
     "beta": "Бета-версія",
@@ -30,6 +31,7 @@
     "collapse": "Згорнути",
     "confirm": "Підтвердити",
     "create": "Створити",
+    "created-at": "Створено",
     "database": "База даних",
     "day": "День",
     "days": "Днів",
@@ -45,7 +47,10 @@
     "image": "Зображення",
     "in": "В",
     "inbox": "Вхідні",
+    "input": "Ввід",
     "language": "Мова",
+    "last-updated-at": "Останнє оновлення",
+    "layout": "Макет",
     "learn-more": "Дізнатися більше",
     "link": "Посилання",
     "mark": "Позначити",
@@ -61,6 +66,10 @@
     "pinned": "Закріплено",
     "preview": "Попередній перегляд",
     "profile": "Профіль",
+    "properties": "Властивості",
+    "referenced-by": "Згадується в",
+    "referencing": "Згадує",
+    "relations": "Зв'язки",
     "remember-me": "Запам'ятати мене",
     "rename": "Перейменувати",
     "reset": "Скинути",
@@ -72,6 +81,7 @@
     "select": "Вибрати",
     "settings": "Налаштування",
     "share": "Поділитися",
+    "shortcut-filter": "Фільтр ярликів",
     "shortcuts": "Ярлики",
     "sign-in": "Увійти",
     "sign-in-with": "Увійти через {{provider}}",
@@ -80,10 +90,12 @@
     "statistics": "Статистика",
     "tags": "Теги",
     "title": "Заголовок",
+    "tree-mode": "Деревовидний режим",
     "type": "Тип",
     "unpin": "Відкріпити",
     "update": "Оновити",
     "upload": "Завантажити",
+    "user": "Користувач",
     "username": "Ім'я користувача",
     "version": "Версія",
     "visibility": "Видимість",
@@ -101,7 +113,13 @@
   "editor": {
     "add-your-comment-here": "Додайте свій коментар тут...",
     "any-thoughts": "Якісь думки...",
-    "save": "Зберегти"
+    "save": "Зберегти",
+    "no-changes-detected": "Змін не виявлено"
+  },
+  "filters": {
+    "has-code": "єКод",
+    "has-link": "єПосилання",
+    "has-task-list": "єСписокЗавдань"
   },
   "inbox": {
     "memo-comment": "{{user}} залишив коментар до вашої {{memo}}.",
@@ -114,6 +132,8 @@
   },
   "memo": {
     "archived-at": "Архівовано о",
+    "click-to-hide-nsfw-content": "Натисніть, щоб приховати NSFW-контент",
+    "click-to-show-nsfw-content": "Натисніть, щоб показати NSFW-контент",
     "code": "Код",
     "comment": {
       "self": "Коментарі",
@@ -133,8 +153,8 @@
     "no-memos": "Немає нотаток.",
     "order-by": "Впорядкувати за",
     "remove-completed-task-list-items": "Видалити виконані",
-    "remove-completed-task-list-items-confirm": "Ви впевнені, що хочете видалити всі виконані задачі? (Ця дія неодмінна)",
-    "search-placeholder": "Пошук нотаток",
+    "remove-completed-task-list-items-confirm": "Ви впевнені, що хочете видалити всі виконані задачі? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ",
+    "search-placeholder": "Пошук нотаток...",
     "show-less": "Показувати менше",
     "show-more": "Показати більше",
     "to-do": "Список справ",
@@ -144,7 +164,9 @@
       "private": "Приватні",
       "protected": "Робоча область",
       "public": "Публічні"
-    }
+    },
+    "list": "Список",
+    "masonry": "Плитка"
   },
   "message": {
     "archived-successfully": "Архівовано успішно",
@@ -152,10 +174,10 @@
     "copied": "Скопійовано",
     "deleted-successfully": "Успішно видалено",
     "description-is-required": "Опис є обов’язковим",
-    "failed-to-embed-memo": "Не вдалося вбудувати замітку",
+    "failed-to-embed-memo": "Не вдалося вбудувати нотатку",
     "fill-all": "Будь ласка, заповніть всі поля.",
     "fill-all-required-fields": "Будь ласка, заповніть усі обов’язкові поля",
-    "maximum-upload-size-is": "Максимально допустимий розмір завантаження становить {{size}} MiB",
+    "maximum-upload-size-is": "Максимально допустимий розмір завантаження {{size}} MiB",
     "memo-not-found": "Нотатку не знайдено.",
     "new-password-not-match": "Нові паролі не співпадають.",
     "no-data": "Дані не знайдено.",
@@ -203,7 +225,8 @@
     "no-unused-resources": "Немає невикористаних ресурсів",
     "reset-link": "Скинути посилання",
     "reset-link-prompt": "Ви впевнені, що хочете скинути посилання? Це зруйнує всі поточні використання посилань. ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ",
-    "reset-resource-link": "Скинути посилання на ресурс"
+    "reset-resource-link": "Скинути посилання на ресурс",
+    "unused-resources": "Невикористані ресурси"
   },
   "router": {
     "back-to-top": "На початок",
@@ -212,7 +235,7 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Токен доступу скопійовано в буфер обміну",
-      "access-token-deletion": "Ви впевнені, що хочете видалити токен доступу {{accessToken}}? ЦЮ ДІЮ НЕМОЖЛИВО СКАСУВАТИ.",
+      "access-token-deletion": "Ви впевнені, що хочете видалити токен доступу {{accessToken}}? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ.",
       "create-dialog": {
         "create-access-token": "Створити токен доступу",
         "created-at": "Створено",
@@ -227,6 +250,21 @@
       "description": "Список усіх токенів доступу для вашого облікового запису.",
       "title": "Токени доступу",
       "token": "Токен"
+    },
+    "user-sessions-section": {
+      "title": "Активні сесії",
+      "description": "Список усіх активних сесій для вашого облікового запису. Сесії автоматично завершуються через 2 тижні після останньої активності. Ви можете відкликати будь-яку сесію, окрім поточної.",
+      "device": "Пристрій",
+      "location": "Місцезнаходження",
+      "last-active": "Остання активність",
+      "expires": "Завершується",
+      "current": "Поточна",
+      "never": "Ніколи",
+      "session-revocation": "Ви впевнені, що хочете відкликати сесію {{sessionId}}? Вам потрібно буде увійти знову на цьому пристрої.",
+      "session-revoked": "Сесію успішно відкликано",
+      "revoke-session": "Відкликати сесію",
+      "cannot-revoke-current": "Не можна відкликати поточну сесію",
+      "no-sessions": "Активних сесій не знайдено"
     },
     "account-section": {
       "change-password": "Змінити пароль",
@@ -249,14 +287,18 @@
     "member": "Учасник",
     "member-list": "Список учасників",
     "member-section": {
+      "admin": "Адмін",
       "archive-member": "Архівувати учасника",
       "archive-warning": "Ви впевнені, що хочете архівувати {{username}}?",
       "create-a-member": "Створити учасника",
       "delete-member": "Видалити учасника",
-      "delete-warning": "Ви впевнені, що хочете видалити {{username}}? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ"
+      "delete-warning": "Ви впевнені, що хочете видалити {{username}}? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ",
+      "user": "Користувач"
     },
     "memo-related": "Нотатка",
     "memo-related-settings": {
+      "content-lenght-limit": "Обмеження довжини вмісту (байт)",
+      "enable-blur-nsfw-content": "Увімкнути розмиття чутливого контенту (NSFW)",
       "enable-link-preview": "Увімкнути попередній перегляд посилань",
       "enable-memo-comments": "Увімкнути коментарі до нотаток",
       "enable-memo-location": "Увімкнути місцезнаходження нотаток",
@@ -268,6 +310,7 @@
     "preference-section": {
       "default-memo-sort-option": "Час відображення нотаток",
       "default-memo-visibility": "Типова видимість нотаток",
+      "apperance": "Зовнішній вигляд",
       "theme": "Тема"
     },
     "sso": "SSO",
@@ -306,6 +349,7 @@
       "current-storage": "Поточне сховище об'єктів",
       "delete-storage": "Видалити сховище",
       "endpoint": "Кінцева точка",
+      "filepath-template": "Шаблон шляху до файлу",
       "local-storage-path": "Шлях до локального сховища",
       "path": "Шлях до сховища",
       "path-description": "Ви можете використовувати ті ж динамічні змінні з локального сховища, такі як {filename}",
@@ -355,8 +399,9 @@
       "enable-password-login-warning": "Це дозволить вхід за паролем для всіх користувачів. Продовжуйте тільки якщо ви хочете, щоб користувачі могли входити як через SSO, так і за паролем.",
       "max-upload-size": "Максимальний розмір завантаження (MiB)",
       "max-upload-size-hint": "Рекомендується значення - 32 MiB.",
-      "removed-completed-task-list-items": "Увімкнути видалення виконаних",
-      "server-name": "Назва сервера"
+      "removed-completed-task-list-items": "Увімкнути видалення виконаних завдань",
+      "server-name": "Назва сервера",
+      "title": "Загальні"
     },
     "version": "Версія",
     "webhook-section": {
@@ -389,6 +434,13 @@
     "create-tags-guide": "Ви можете створити теги, ввівши `#тег`.",
     "delete-confirm": "Ви впевнені, що хочете видалити цей тег? Всі пов'язані нотатки будуть архівовані.",
     "delete-tag": "Видалити тег",
-    "no-tag-found": "Тегів не знайдено"
+    "new-name": "Нова назва",
+    "no-tag-found": "Тегів не знайдено",
+    "old-name": "Стара назва",
+    "rename-error-empty": "Назва тегу не може бути порожньою або містити пробіли",
+    "rename-error-repeat": "Нова назва не може співпадати зі старою",
+    "rename-success": "Тег успішно перейменовано",
+    "rename-tag": "Перейменувати тег",
+    "rename-tip": "Всі ваші нотатки з цим тегом також будуть оновлені"
   }
 }
