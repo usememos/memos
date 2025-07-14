@@ -20,6 +20,7 @@
     "admin": "Yönetici",
     "archive": "Arşiv",
     "archived": "Arşivlendi",
+    "attachments": "Ekler",
     "avatar": "Profil Resmi",
     "basic": "Temel",
     "beta": "Beta",
@@ -30,6 +31,7 @@
     "collapse": "Daralt",
     "confirm": "Onayla",
     "create": "Oluştur",
+    "created-at": "Oluşturulma Tarihi",
     "database": "Veritabanı",
     "day": "Gün",
     "days": "Gün",
@@ -45,7 +47,10 @@
     "image": "Görsel",
     "in": "İçinde",
     "inbox": "Gelen Kutusu",
+    "input": "Girdi",
     "language": "Dil",
+    "last-updated-at": "Son güncelleme",
+    "layout": "Yerleşim",
     "learn-more": "Daha fazla bilgi",
     "link": "Bağlantı",
     "mark": "İşaretle",
@@ -61,6 +66,10 @@
     "pinned": "Sabitlendi",
     "preview": "Önizleme",
     "profile": "Profil",
+    "properties": "Özellikler",
+    "referenced-by": "Referanslayan",
+    "referencing": "Referanslanan",
+    "relations": "İlişkiler",
     "remember-me": "Beni hatırla",
     "rename": "Yeniden adlandır",
     "reset": "Sıfırla",
@@ -72,6 +81,7 @@
     "select": "Seç",
     "settings": "Ayarlar",
     "share": "Paylaş",
+    "shortcut-filter": "Kısayol filtresi",
     "shortcuts": "Kısayollar",
     "sign-in": "Giriş yap",
     "sign-in-with": "{{provider}} ile giriş yap",
@@ -80,10 +90,12 @@
     "statistics": "İstatistikler",
     "tags": "Etiketler",
     "title": "Başlık",
+    "tree-mode": "Ağaç modu",
     "type": "Tür",
     "unpin": "Sabitlemeyi kaldır",
     "update": "Güncelle",
     "upload": "Yükle",
+    "user": "Kullanıcı",
     "username": "Kullanıcı adı",
     "version": "Sürüm",
     "visibility": "Görünürlük",
@@ -101,7 +113,13 @@
   "editor": {
     "add-your-comment-here": "Yorumunuzu buraya ekleyin...",
     "any-thoughts": "Düşünceleriniz...",
-    "save": "Kaydet"
+    "save": "Kaydet",
+    "no-changes-detected": "Değişiklik yok"
+  },
+  "filters": {
+    "has-code": "kodVar",
+    "has-link": "bağlantıVar",
+    "has-task-list": "görevListesiVar"
   },
   "inbox": {
     "memo-comment": "{{user}} {{memo}} notunuza yorum yaptı.",
@@ -114,6 +132,8 @@
   },
   "memo": {
     "archived-at": "Arşivlenme tarihi",
+    "click-to-hide-nsfw-content": "NSFW içeriği gizlemek için tıklayın",
+    "click-to-show-nsfw-content": "NSFW içeriği göstermek için tıklayın",
     "code": "Kod",
     "comment": {
       "self": "Yorumlar",
@@ -144,7 +164,9 @@
       "private": "Özel",
       "protected": "Çalışma Alanı",
       "public": "Herkese Açık"
-    }
+    },
+    "list": "Liste",
+    "masonry": "Masonry"
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",
@@ -203,7 +225,8 @@
     "no-unused-resources": "Kullanılmayan kaynak yok",
     "reset-link": "Bağlantıyı Sıfırla",
     "reset-link-prompt": "Bağlantıyı sıfırlamak istediğinizden emin misiniz? Bu işlem mevcut tüm bağlantı kullanımlarını bozacaktır. BU İŞLEM GERİ ALINAMAZ",
-    "reset-resource-link": "Kaynak Bağlantısını Sıfırla"
+    "reset-resource-link": "Kaynak Bağlantısını Sıfırla",
+    "unused-resources": "Kullanılmayan kaynaklar"
   },
   "router": {
     "back-to-top": "Başa Dön",
@@ -228,6 +251,21 @@
       "title": "Erişim Tokenleri",
       "token": "Token"
     },
+    "user-sessions-section": {
+      "title": "Aktif Oturumlar",
+      "description": "Hesabınız için tüm aktif oturumların listesi. Oturumlar, son etkinlikten 2 hafta sonra otomatik olarak sona erer. Mevcut oturum hariç herhangi bir oturumu iptal edebilirsiniz.",
+      "device": "Cihaz",
+      "location": "Konum",
+      "last-active": "Son Etkinlik",
+      "expires": "Sona Erme",
+      "current": "Mevcut",
+      "never": "Asla",
+      "session-revocation": "{{sessionId}} oturumunu iptal etmek istediğinizden emin misiniz? O cihazda tekrar giriş yapmanız gerekecek.",
+      "session-revoked": "Oturum başarıyla iptal edildi",
+      "revoke-session": "Oturumu iptal et",
+      "cannot-revoke-current": "Mevcut oturum iptal edilemez",
+      "no-sessions": "Aktif oturum bulunamadı"
+    },
     "account-section": {
       "change-password": "Şifre değiştir",
       "email-note": "İsteğe bağlı",
@@ -249,15 +287,18 @@
     "member": "Üye",
     "member-list": "Üye listesi",
     "member-section": {
+      "admin": "Yönetici",
       "archive-member": "Üyeyi arşivle",
       "archive-warning": "{{username}} kullanıcısını arşivlemek istediğinizden emin misiniz?",
       "create-a-member": "Üye oluştur",
       "delete-member": "Üyeyi Sil",
-      "delete-warning": "{{username}} kullanıcısını silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ"
+      "delete-warning": "{{username}} kullanıcısını silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
+      "user": "Kullanıcı"
     },
     "memo-related": "Not",
     "memo-related-settings": {
       "content-lenght-limit": "İçerik uzunluğu sınırı (Bayt)",
+      "enable-blur-nsfw-content": "NSFW içeriği bulanıklaştırmayı etkinleştir",
       "enable-link-preview": "Bağlantı önizlemeyi etkinleştir",
       "enable-memo-comments": "Not yorumlarını etkinleştir",
       "enable-memo-location": "Not konumunu etkinleştir",
@@ -269,6 +310,7 @@
     "preference-section": {
       "default-memo-sort-option": "Not görüntüleme zamanı",
       "default-memo-visibility": "Varsayılan not görünürlüğü",
+      "apperance": "Görünüm",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -307,6 +349,7 @@
       "current-storage": "Mevcut nesne depolama",
       "delete-storage": "Depolamayı Sil",
       "endpoint": "Uç nokta",
+      "filepath-template": "Dosya yolu şablonu",
       "local-storage-path": "Yerel depolama yolu",
       "path": "Depolama Yolu",
       "path-description": "Yerel depolamadaki gibi {filename} gibi aynı dinamik değişkenleri kullanabilirsiniz",
@@ -357,7 +400,8 @@
       "max-upload-size": "Maksimum yükleme boyutu (MiB)",
       "max-upload-size-hint": "Önerilen değer 32 MiB'dir.",
       "removed-completed-task-list-items": "Tamamlanan görev listesi öğelerinin kaldırılmasını etkinleştir",
-      "server-name": "Sunucu Adı"
+      "server-name": "Sunucu Adı",
+      "title": "Genel"
     },
     "version": "Sürüm",
     "webhook-section": {
@@ -390,6 +434,13 @@
     "create-tags-guide": "`#etiket` yazarak etiket oluşturabilirsiniz.",
     "delete-confirm": "Bu etiketi silmek istediğinizden emin misiniz? İlgili tüm notlar arşivlenecektir.",
     "delete-tag": "Etiketi Sil",
-    "no-tag-found": "Etiket bulunamadı"
+    "new-name": "Yeni İsim",
+    "no-tag-found": "Etiket bulunamadı",
+    "old-name": "Eski İsim",
+    "rename-error-empty": "Etiket adı boş olamaz veya boşluk içeremez",
+    "rename-error-repeat": "Yeni isim eski isimle aynı olamaz",
+    "rename-success": "Etiket başarıyla yeniden adlandırıldı",
+    "rename-tag": "Etiketi yeniden adlandır",
+    "rename-tip": "Bu etiketle ilişkili tüm notların etiketini değiştirecektir."
   }
 }
