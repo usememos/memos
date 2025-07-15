@@ -8,14 +8,14 @@ import { memoServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
 
-interface RenameTagDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tag: string;
   onSuccess?: () => void;
 }
 
-export function RenameTagDialog({ open, onOpenChange, tag, onSuccess }: RenameTagDialogProps) {
+function RenameTagDialog({ open, onOpenChange, tag, onSuccess }: Props) {
   const t = useTranslate();
   const [newName, setNewName] = useState(tag);
   const requestState = useLoading(false);

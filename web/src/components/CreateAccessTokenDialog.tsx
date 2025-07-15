@@ -10,7 +10,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
 
-interface CreateAccessTokenDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
@@ -21,7 +21,7 @@ interface State {
   expiration: number;
 }
 
-export function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: CreateAccessTokenDialogProps) {
+function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [state, setState] = useState({

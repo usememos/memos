@@ -8,14 +8,14 @@ import { userStore } from "@/store";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 
-interface ChangeMemberPasswordDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user?: User;
   onSuccess?: () => void;
 }
 
-export function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: ChangeMemberPasswordDialogProps) {
+function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Props) {
   const t = useTranslate();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");

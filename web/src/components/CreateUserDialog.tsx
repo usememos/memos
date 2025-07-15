@@ -10,14 +10,14 @@ import useLoading from "@/hooks/useLoading";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 
-interface CreateUserDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user?: User;
   onSuccess?: () => void;
 }
 
-export function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: CreateUserDialogProps) {
+function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: Props) {
   const t = useTranslate();
   const [user, setUser] = useState(User.fromPartial({ ...initialUser }));
   const requestState = useLoading(false);

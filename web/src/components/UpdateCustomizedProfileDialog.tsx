@@ -13,13 +13,13 @@ import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "./AppearanceSelect";
 import LocaleSelect from "./LocaleSelect";
 
-interface UpdateCustomizedProfileDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }
 
-export function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: UpdateCustomizedProfileDialogProps) {
+function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
   const [customProfile, setCustomProfile] = useState<WorkspaceCustomProfile>(

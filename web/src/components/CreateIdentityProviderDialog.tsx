@@ -97,14 +97,14 @@ const templateList: IdentityProvider[] = [
   },
 ];
 
-interface CreateIdentityProviderDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   identityProvider?: IdentityProvider;
   onSuccess?: () => void;
 }
 
-export function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, onSuccess }: CreateIdentityProviderDialogProps) {
+function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, onSuccess }: Props) {
   const t = useTranslate();
   const identityProviderTypes = [...new Set(templateList.map((t) => t.type))];
   const [basicInfo, setBasicInfo] = useState({

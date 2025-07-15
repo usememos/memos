@@ -12,14 +12,14 @@ import { userStore } from "@/store";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { useTranslate } from "@/utils/i18n";
 
-interface CreateShortcutDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shortcut?: Shortcut;
   onSuccess?: () => void;
 }
 
-export function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, onSuccess }: CreateShortcutDialogProps) {
+function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, onSuccess }: Props) {
   const t = useTranslate();
   const user = useCurrentUser();
   const [shortcut, setShortcut] = useState<Shortcut>({

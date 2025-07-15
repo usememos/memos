@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import MemoAttachment from "./MemoAttachment";
-import { PreviewImageDialog } from "./PreviewImageDialog";
+import PreviewImageDialog from "./PreviewImageDialog";
 
 const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[] }) => {
   const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({

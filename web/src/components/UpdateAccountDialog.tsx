@@ -14,7 +14,7 @@ import { User as UserPb } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
 
-interface UpdateAccountDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
@@ -28,7 +28,7 @@ interface State {
   description: string;
 }
 
-export function UpdateAccountDialog({ open, onOpenChange, onSuccess }: UpdateAccountDialogProps) {
+function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({

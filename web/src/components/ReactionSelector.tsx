@@ -59,23 +59,23 @@ const ReactionSelector = observer((props: Props) => {
       <PopoverTrigger asChild>
         <span
           className={cn(
-            "h-7 w-7 flex justify-center items-center rounded-full border hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors",
+            "h-7 w-7 flex justify-center items-center rounded-full border cursor-pointer transition-colors hover:opacity-80",
             className,
           )}
         >
           <SmilePlusIcon className="w-4 h-4 mx-auto text-muted-foreground" />
         </span>
       </PopoverTrigger>
-      <PopoverContent align="start" sideOffset={2}>
+      <PopoverContent align="center">
         <div ref={containerRef}>
-          <div className="flex flex-row flex-wrap py-0.5 px-2 h-auto gap-1 max-w-56">
+          <div className="grid grid-cols-4 sm:grid-cols-6 h-auto gap-1 max-w-56">
             {workspaceMemoRelatedSetting.reactions.map((reactionType) => {
               return (
                 <span
                   key={reactionType}
                   className={cn(
-                    "inline-flex w-auto text-base cursor-pointer rounded px-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors",
-                    hasReacted(reactionType) && "bg-primary text-primary-foreground",
+                    "inline-flex w-auto text-base cursor-pointer rounded px-1 text-muted-foreground hover:opacity-80 transition-colors",
+                    hasReacted(reactionType) && "bg-secondary text-secondary-foreground",
                   )}
                   onClick={() => handleReactionClick(reactionType)}
                 >

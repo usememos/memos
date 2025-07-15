@@ -9,7 +9,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
 
-interface CreateWebhookDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   webhookName?: string;
@@ -21,7 +21,7 @@ interface State {
   url: string;
 }
 
-export function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: CreateWebhookDialogProps) {
+function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Props) {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({

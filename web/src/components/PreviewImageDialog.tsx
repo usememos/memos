@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-interface PreviewImageDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   imgUrls: string[];
   initialIndex?: number;
 }
 
-export function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: PreviewImageDialogProps) {
+function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
   // Update current index when initialIndex prop changes
@@ -91,3 +91,5 @@ export function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex =
     </Dialog>
   );
 }
+
+export default PreviewImageDialog;
