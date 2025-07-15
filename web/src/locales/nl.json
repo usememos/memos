@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "Blogs",
+    "description": "Een privacy-eerst, lichtgewicht notitie-app. Leg je gedachten eenvoudig vast en deel ze.",
+    "documents": "Documenten",
+    "github-repository": "GitHub Repo",
+    "official-website": "Officiële website"
+  },
   "auth": {
     "create-your-account": "Maak je account",
     "host-tip": "Je registreert je als Site Host.",
@@ -9,9 +16,11 @@
   },
   "common": {
     "about": "Over",
+    "add": "Toevoegen",
     "admin": "Admin",
     "archive": "Archiveren",
     "archived": "Gearchiveerd",
+    "attachments": "Bijlagen",
     "avatar": "Avatar",
     "basic": "Simpel",
     "beta": "Beta",
@@ -19,20 +28,34 @@
     "change": "Wijzigen",
     "clear": "Leegmaken",
     "close": "Sluiten",
+    "collapse": "Samenvouwen",
     "confirm": "Bevestigen",
     "create": "Aanmaken",
+    "created-at": "Aangemaakt op",
     "database": "Database",
+    "day": "Dag",
+    "days": "Dagen",
     "delete": "Verwijderen",
+    "description": "Beschrijving",
     "edit": "Bewerken",
     "email": "E-mailadres",
+    "expand": "Uitvouwen",
     "explore": "Ontdekken",
+    "file": "Bestand",
     "filter": "Filter",
     "home": "Home",
     "image": "Afbeelding",
+    "in": "In",
+    "inbox": "Inbox",
+    "input": "Invoer",
     "language": "Taal",
+    "last-updated-at": "Laatst bijgewerkt op",
+    "layout": "Indeling",
     "learn-more": "Lees meer",
     "link": "Link",
     "mark": "Citeren",
+    "memo": "Memo",
+    "memos": "Memos",
     "name": "Naam",
     "new": "Nieuw",
     "nickname": "Bijnaam",
@@ -40,26 +63,39 @@
     "or": "of",
     "password": "Wachtwoord",
     "pin": "Vastzetten",
+    "pinned": "Vastgezet",
     "preview": "Voorbeeld",
     "profile": "Profiel",
+    "properties": "Eigenschappen",
+    "referenced-by": "Gerefereerd door",
+    "referencing": "Verwijst naar",
+    "relations": "Relaties",
+    "remember-me": "Onthoud mij",
     "rename": "Hernoemen",
     "reset": "Herstel",
     "resources": "Bronnen",
     "restore": "Terugzetten",
+    "role": "Rol",
     "save": "Opslaan",
+    "search": "Zoeken",
     "select": "Selecteer",
     "settings": "Instellingen",
     "share": "Delen",
+    "shortcut-filter": "Sneltoetsfilter",
+    "shortcuts": "Sneltoetsen",
     "sign-in": "Inloggen",
     "sign-in-with": "Log in met {{provider}}",
     "sign-out": "Uitloggen",
     "sign-up": "Registreren",
+    "statistics": "Statistieken",
     "tags": "Labels",
     "title": "Titel",
+    "tree-mode": "Boomstructuur",
     "type": "Type",
     "unpin": "Losmaken",
     "update": "Bijwerken",
     "upload": "Uploaden",
+    "user": "Gebruiker",
     "username": "Gebruikersnaam",
     "version": "Versie",
     "visibility": "Zichtbaarheid",
@@ -75,32 +111,73 @@
     "wed": "wo"
   },
   "editor": {
+    "add-your-comment-here": "Voeg hier je opmerking toe...",
     "any-thoughts": "Leeg je gedachten...",
-    "save": "Opslaan"
+    "save": "Opslaan",
+    "no-changes-detected": "Geen wijzigingen gedetecteerd"
+  },
+  "filters": {
+    "has-code": "heeftCode",
+    "has-link": "heeftLink",
+    "has-task-list": "heeftTakenlijst"
+  },
+  "inbox": {
+    "memo-comment": "{{user}} heeft een opmerking bij jouw {{memo}}.",
+    "version-update": "Nieuwe versie {{version}} is nu beschikbaar!"
+  },
+  "markdown": {
+    "checkbox": "Selectievakje",
+    "code-block": "Codeblok",
+    "content-syntax": "Inhoudssyntaxis"
   },
   "memo": {
     "archived-at": "Gearchiveerd op",
+    "click-to-hide-nsfw-content": "Klik om NSFW-inhoud te verbergen",
+    "click-to-show-nsfw-content": "Klik om NSFW-inhoud te tonen",
+    "code": "Code",
     "comment": {
-      "self": "Opmerkingen"
+      "self": "Opmerkingen",
+      "write-a-comment": "Schrijf een opmerking"
     },
     "copy-link": "Kopieer link",
-    "delete-confirm": "Weet je zeker dat je deze memo wilt verwijderen?\n\nDit kan niet teruggedraaid worden!",
+    "count-memos-in-date": "{{count}} {{memos}} op {{date}}",
+    "delete-confirm": "Weet je zeker dat je deze memo wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN",
+    "direction": "Richting",
+    "direction-asc": "Oplopend",
+    "direction-desc": "Aflopend",
+    "display-time": "Tijd weergeven",
+    "filters": "Filters",
+    "links": "Links",
+    "load-more": "Meer laden",
     "no-archived-memos": "Geen gearchiveerde memos.",
+    "no-memos": "Geen memos.",
+    "order-by": "Sorteren op",
     "remove-completed-task-list-items": "Verwijder voltooid",
-    "remove-completed-task-list-items-confirm": "Weet u zeker dat u alle voltooide taken wilt verwijderen? (Deze actie is onomkeerbaar)",
-    "search-placeholder": "Zoek memos",
+    "remove-completed-task-list-items-confirm": "Weet u zeker dat u alle voltooide taken wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN",
+    "search-placeholder": "Zoek memos...",
+    "show-less": "Minder tonen",
+    "show-more": "Meer tonen",
+    "to-do": "Takenlijst",
     "view-detail": "Bekijk details",
     "visibility": {
       "disabled": "Openbare memos zijn uitgezet",
       "private": "Privé",
       "protected": "Werkruimte",
       "public": "Openbaar"
-    }
+    },
+    "list": "Lijst",
+    "masonry": "Masonry"
   },
   "message": {
+    "archived-successfully": "Succesvol gearchiveerd",
     "change-memo-created-time": "Tijd van aanmaken wijzigen",
     "copied": "Gekopieerd",
+    "deleted-successfully": "Succesvol verwijderd",
+    "description-is-required": "Beschrijving is verplicht",
+    "failed-to-embed-memo": "Memo insluiten mislukt",
     "fill-all": "Vul alsjeblieft alle velden in.",
+    "fill-all-required-fields": "Vul alle verplichte velden in",
+    "maximum-upload-size-is": "Maximale uploadgrootte is {{size}} MiB",
     "memo-not-found": "Memo niet gevonden.",
     "new-password-not-match": "Nieuwe wachtwoorden komen niet overeen.",
     "no-data": "Geen data gevonden.",
@@ -112,47 +189,128 @@
     "update-succeed": "Update voltooid",
     "user-not-found": "Gebruiker niet gevonden"
   },
+  "reference": {
+    "add-references": "Referenties toevoegen",
+    "embedded-usage": "Gebruik als ingesloten inhoud",
+    "no-memos-found": "Geen memos gevonden",
+    "search-placeholder": "Zoek inhoud"
+  },
   "resource": {
     "clear": "Opruimen",
     "copy-link": "Kopieer Link",
+    "create-dialog": {
+      "external-link": {
+        "file-name": "Bestandsnaam",
+        "file-name-placeholder": "Bestandsnaam",
+        "link": "Link",
+        "link-placeholder": "https://de.link.naar/je/bron",
+        "option": "Externe link",
+        "type": "Type",
+        "type-placeholder": "Bestandstype"
+      },
+      "local-file": {
+        "choose": "Kies een bestand…",
+        "option": "Lokaal bestand"
+      },
+      "title": "Bron aanmaken",
+      "upload-method": "Uploadmethode"
+    },
     "delete-resource": "Bron verwijderen",
+    "delete-selected-resources": "Geselecteerde bronnen verwijderen",
     "fetching-data": "data aan het ophalen...",
+    "file-drag-drop-prompt": "Sleep je bestand hierheen om te uploaden",
     "linked-amount": "Aantal gelinkte memo's",
+    "no-files-selected": "Geen bestanden geselecteerd",
     "no-resources": "Geen bronnen.",
     "no-unused-resources": "Geen ongebruikte bronnen",
     "reset-link": "Link resetten",
-    "reset-resource-link": "Link resetten"
+    "reset-link-prompt": "Weet je zeker dat je de link wilt resetten? Dit verbreekt alle huidige linkgebruik. DEZE ACTIE IS NIET TERUG TE DRAAIEN",
+    "reset-resource-link": "Bronlink resetten",
+    "unused-resources": "Ongebruikte bronnen"
   },
   "router": {
     "back-to-top": "Terug naar boven",
     "go-to-home": "Ga naar homepagina"
   },
   "setting": {
+    "access-token-section": {
+      "access-token-copied-to-clipboard": "Access token gekopieerd naar klembord",
+      "access-token-deletion": "Weet je zeker dat je access token {{accessToken}} wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN.",
+      "create-dialog": {
+        "create-access-token": "Access token aanmaken",
+        "created-at": "Aangemaakt op",
+        "description": "Beschrijving",
+        "duration-1m": "1 maand",
+        "duration-8h": "8 uur",
+        "duration-never": "Nooit",
+        "expiration": "Vervaldatum",
+        "expires-at": "Verloopt op",
+        "some-description": "Een beschrijving..."
+      },
+      "description": "Lijst van alle access tokens voor je account.",
+      "title": "Access tokens",
+      "token": "Token"
+    },
+    "user-sessions-section": {
+      "title": "Actieve sessies",
+      "description": "Een lijst van alle actieve sessies voor je account. Sessies verlopen automatisch 2 weken na de laatste activiteit. Je kunt elke sessie intrekken behalve de huidige.",
+      "device": "Apparaat",
+      "location": "Locatie",
+      "last-active": "Laatst actief",
+      "expires": "Verloopt",
+      "current": "Huidig",
+      "never": "Nooit",
+      "session-revocation": "Weet je zeker dat je sessie {{sessionId}} wilt intrekken? Je moet opnieuw inloggen op dat apparaat.",
+      "session-revoked": "Sessie succesvol ingetrokken",
+      "revoke-session": "Sessie intrekken",
+      "cannot-revoke-current": "Kan huidige sessie niet intrekken",
+      "no-sessions": "Geen actieve sessies gevonden"
+    },
     "account-section": {
       "change-password": "Wachtwoord wijzigen",
+      "email-note": "Optioneel",
+      "export-memos": "Memo's exporteren",
+      "nickname-note": "Wordt getoond in de banner",
+      "openapi-reset": "OpenAPI-sleutel resetten",
       "openapi-sample-post": "Hallo #memos vanaf {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API resetten",
       "title": "Accountinformatie",
-      "update-information": "Informatie wijzigen"
+      "update-information": "Informatie wijzigen",
+      "username-note": "Gebruikt om in te loggen"
     },
     "appearance-option": {
       "dark": "Altijd donker",
       "light": "Altijd licht",
       "system": "Volg systeem"
     },
-    "member": "Gebruikers",
+    "member": "Gebruiker",
     "member-list": "Gebruikers",
     "member-section": {
+      "admin": "Beheerder",
       "archive-member": "Archiveer gebruiker",
       "archive-warning": "Weet je zeker dat je {{username}} wilt archiveren?",
       "create-a-member": "Lid toevoegen",
       "delete-member": "Gebruiker verwijderen",
-      "delete-warning": "Weet je zeker dat je {{username}} wilt verwijderen?\n\nDEZE ACTIE IS NIET TERUG TE DRAAIEN"
+      "delete-warning": "Weet je zeker dat je {{username}} wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN",
+      "user": "Gebruiker"
+    },
+    "memo-related": "Memo",
+    "memo-related-settings": {
+      "content-lenght-limit": "Maximale inhoudslengte (Byte)",
+      "enable-blur-nsfw-content": "NSFW-inhoud vervagen inschakelen",
+      "enable-link-preview": "Linkvoorbeeld inschakelen",
+      "enable-memo-comments": "Memo-opmerkingen inschakelen",
+      "enable-memo-location": "Memo-locatie inschakelen",
+      "reactions": "Reacties",
+      "title": "Memo-gerelateerde instellingen"
     },
     "my-account": "Mijn account",
     "preference": "Voorkeuren",
     "preference-section": {
-      "default-memo-sort-option": "Sorteer op tijd van aanmaken/wijziging",
+      "default-memo-sort-option": "Memo weergavetijd",
       "default-memo-visibility": "Standaard memo zichtbaarheid",
+      "apperance": "Uiterlijk",
       "theme": "Thema"
     },
     "sso": "SSO",
@@ -160,7 +318,7 @@
       "authorization-endpoint": "Authorization endpoint",
       "client-id": "Client ID",
       "client-secret": "Client secret",
-      "confirm-delete": "Weet je zeker dat je de \"{{name}}\" SSO configuratie wilt verwijderen?\n\nDeze actie is niet terug te draaien",
+      "confirm-delete": "Weet je zeker dat je de \"{{name}}\" SSO configuratie wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN",
       "create-sso": "SSO instellen",
       "custom": "Aangepast",
       "delete-sso": "Verwijdering bevestigen",
@@ -168,8 +326,10 @@
       "display-name": "Weergavenaam",
       "identifier": "Identifier",
       "identifier-filter": "Identifier Filter",
+      "no-sso-found": "Geen SSO gevonden.",
       "redirect-url": "Redirect URL",
       "scopes": "Scopes",
+      "single-sign-on": "Single Sign-On (SSO) configureren voor authenticatie",
       "sso-created": "SSO {{name}} ingesteld",
       "sso-list": "SSO lijst",
       "sso-updated": "SSO {{name}} bijgewerkt",
@@ -183,16 +343,18 @@
       "accesskey": "Access key",
       "accesskey-placeholder": "Access key / Access ID",
       "bucket": "Bucket",
-      "bucket-placeholder": "Bucket name",
+      "bucket-placeholder": "Bucket naam",
       "create-a-service": "Opslagdienst instellen",
-      "create-storage": "Opslagdienst instellen",
+      "create-storage": "Opslagdienst aanmaken",
       "current-storage": "Huidige objectopslag",
       "delete-storage": "Opslagdienst verwijderen",
       "endpoint": "Endpoint",
+      "filepath-template": "Bestandspad sjabloon",
       "local-storage-path": "Lokaal opslagpad",
       "path": "Opslagpad",
       "path-description": "Je kan dezelfde dynamische variabelen gebruiken, zoals {filename}",
       "path-placeholder": "eigen/pad",
+      "presign-placeholder": "Pre-sign URL, optioneel",
       "region": "Regio",
       "region-placeholder": "Regionaam",
       "s3-compatible-url": "S3 compatibele URL",
@@ -206,10 +368,10 @@
       "update-local-path-description": "Lokaal opslagpad is relatief aan je databasebestand.",
       "update-storage": "Opslagdienst bijwerken",
       "url-prefix": "URL prefix",
-      "url-prefix-placeholder": "Aagnepaste URL prefix, optioneel",
+      "url-prefix-placeholder": "Aangepaste URL prefix, optioneel",
       "url-suffix": "URL suffix",
       "url-suffix-placeholder": "Aangepaste URL suffix, optioneel",
-      "warning-text": "Weet je zeker dat je \"{{name}}\" wilt verwijderen?\n\nDeze actie is niet terug te draaien!"
+      "warning-text": "Weet je zeker dat je opslagdienst \"{{name}}\" wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN!"
     },
     "system": "Systeem",
     "system-section": {
@@ -225,21 +387,60 @@
         "locale": "Server taal",
         "title": "Server aanpassen"
       },
+      "disable-markdown-shortcuts-in-editor": "Markdown-sneltoetsen uitschakelen in editor",
       "disable-password-login": "Wachtwoordlogin uitzetten",
       "disable-password-login-final-warning": "Typ \"CONFIRM\" als je zeker weet wat je doet.",
       "disable-password-login-warning": "Als je dit uitzet, kan je niet meer inloggen met een wachtwoord, zonder de database aan te passen. Als je inlogprovider niet werkt, kan je memos niet in.",
       "disable-public-memos": "Openbare memos uitzetten",
       "display-with-updated-time": "Laten zien met bewerkte tijd",
+      "enable-auto-compact": "Automatisch compact inschakelen",
+      "enable-double-click-to-edit": "Dubbelklik om te bewerken inschakelen",
       "enable-password-login": "Wachtwoordlogin aanzetten",
       "enable-password-login-warning": "Als je dit aanzet kan er met zowel SSO als een wachtwoord ingelogd worden",
       "max-upload-size": "Maximum uploadgrootte (MiB)",
       "max-upload-size-hint": "32 MiB wordt aangeraden.",
       "removed-completed-task-list-items": "Verwijder voltooid inschakelen",
-      "server-name": "Servernaam"
+      "server-name": "Servernaam",
+      "title": "Algemeen"
+    },
+    "version": "Versie",
+    "webhook-section": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Een makkelijk te onthouden naam",
+        "create-webhook": "Webhook aanmaken",
+        "edit-webhook": "Webhook bewerken",
+        "payload-url": "Payload URL",
+        "title": "Titel",
+        "url-example-post-receive": "https://voorbeeld.com/postreceive"
+      },
+      "no-webhooks-found": "Geen webhooks gevonden.",
+      "title": "Webhooks",
+      "url": "URL"
+    },
+    "workspace-section": {
+      "disallow-change-nickname": "Wijzigen van bijnaam niet toestaan",
+      "disallow-change-username": "Wijzigen van gebruikersnaam niet toestaan",
+      "disallow-password-auth": "Wachtwoordauthenticatie niet toestaan",
+      "disallow-user-registration": "Registratie van gebruikers niet toestaan",
+      "monday": "Maandag",
+      "saturday": "Zaterdag",
+      "sunday": "Zondag",
+      "week-start-day": "Week start dag"
     }
   },
   "tag": {
     "all-tags": "Alle labels",
-    "create-tag": "Label maken"
+    "create-tag": "Label maken",
+    "create-tags-guide": "Je kunt labels maken door `#label` in te voeren.",
+    "delete-confirm": "Weet je zeker dat je dit label wilt verwijderen? Alle gerelateerde memos worden gearchiveerd.",
+    "delete-tag": "Label verwijderen",
+    "new-name": "Nieuwe naam",
+    "no-tag-found": "Geen labels gevonden",
+    "old-name": "Oude naam",
+    "rename-error-empty": "Labelnaam mag niet leeg zijn of spaties bevatten",
+    "rename-error-repeat": "Nieuwe naam mag niet hetzelfde zijn als de oude naam",
+    "rename-success": "Label succesvol hernoemd",
+    "rename-tag": "Label hernoemen",
+    "rename-tip": "Al je memos met dit label worden automatisch bijgewerkt."
   }
 }
