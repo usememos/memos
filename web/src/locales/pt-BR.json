@@ -50,6 +50,7 @@
     "input": "Entrada",
     "language": "Idioma",
     "last-updated-at": "Atualizado em",
+    "layout": "Layout",
     "learn-more": "Saiba mais",
     "link": "Link",
     "mark": "Vincular",
@@ -94,6 +95,7 @@
     "unpin": "Desafixar",
     "update": "Atualizar",
     "upload": "Carregar",
+    "user": "Usuário",
     "username": "Nome de usuário",
     "version": "Versão",
     "visibility": "Visibilidade",
@@ -111,7 +113,8 @@
   "editor": {
     "add-your-comment-here": "Adicione seu comentário aqui…",
     "any-thoughts": "Alguma ideia…",
-    "save": "Salvar"
+    "save": "Salvar",
+    "no-changes-detected": "Nenhuma alteração detectada"
   },
   "filters": {
     "has-code": "temCódigo",
@@ -150,18 +153,20 @@
     "no-memos": "Nenhum memo.",
     "order-by": "Ordenar por",
     "remove-completed-task-list-items": "Remover concluídos",
-    "remove-completed-task-list-items-confirm": "Você tem certeza de que deseja remover todos os itens concluídos? (Essa ação é irreversível)",
-    "search-placeholder": "Pesquisar memos",
+    "remove-completed-task-list-items-confirm": "Você tem certeza de que deseja remover todos os itens concluídos? ESTA AÇÃO É IRREVERSÍVEL",
+    "search-placeholder": "Pesquisar memos...",
     "show-less": "Mostrar menos",
     "show-more": "Mostrar mais",
     "to-do": "Tarefas",
     "view-detail": "Ver detalhes",
     "visibility": {
       "disabled": "Memos públicos estão desabilitados",
-      "private": "Privado (eu)",
-      "protected": "Protegido (membros)",
-      "public": "Público (todos)"
-    }
+      "private": "Privado",
+      "protected": "Protegido",
+      "public": "Público"
+    },
+    "list": "Lista",
+    "masonry": "Masonry"
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",
@@ -220,7 +225,8 @@
     "no-unused-resources": "Nenhum recurso não utilizado",
     "reset-link": "Redefinir link",
     "reset-link-prompt": "Tem certeza de que deseja redefinir o link?\nIsso quebrará todos os vínculos atuais.\n\nESTA AÇÃO É IRREVERSÍVEL",
-    "reset-resource-link": "Redefinir link do recurso"
+    "reset-resource-link": "Redefinir link do recurso",
+    "unused-resources": "Recursos não utilizados"
   },
   "router": {
     "back-to-top": "Voltar ao Topo",
@@ -274,16 +280,16 @@
       "username-note": "Usado para entrar"
     },
     "appearance-option": {
-      "dark": "Escuro",
-      "light": "Claro",
-      "system": "Sistema"
+      "dark": "Sempre escuro",
+      "light": "Sempre claro",
+      "system": "Seguir sistema"
     },
     "member": "Membro",
     "member-list": "Lista de membros",
     "member-section": {
       "admin": "Admin",
       "archive-member": "Arquivar membro",
-      "archive-warning": "! Tem certeza de que deseja arquivar {{username}}?",
+      "archive-warning": "Tem certeza de que deseja arquivar {{username}}?",
       "create-a-member": "Criar um membro",
       "delete-member": "Deletar membro",
       "delete-warning": "Tem certeza de que deseja deletar {{username}}?\n\nESTA AÇÃO É IRREVERSÍVEL",
@@ -304,6 +310,7 @@
     "preference-section": {
       "default-memo-sort-option": "Exibição de tempo do memo",
       "default-memo-visibility": "Visibilidade padrão do memo",
+      "apperance": "Aparência",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -383,7 +390,7 @@
       "disable-markdown-shortcuts-in-editor": "Desabilitar atalhos de Markdown no editor",
       "disable-password-login": "Desabilitar login com senha",
       "disable-password-login-final-warning": "Por favor, digite \"CONFIRM\" para prosseguir.",
-      "disable-password-login-warning": "Isso desabilitará o login com senha para todos os usuários. Caso seus provedores de identidade (SSO) configurados falhem, não será possível fazer login sem reverter esse ajuste manualmente no banco de dados. Você também deverá tomar precauções adicionais ao remover qualquer provedor de identidade !",
+      "disable-password-login-warning": "Isso desabilitará o login com senha para todos os usuários. Caso seus provedores de identidade (SSO) configurados falhem, não será possível fazer login sem reverter esse ajuste manualmente no banco de dados. Você também deverá tomar precauções adicionais ao remover qualquer provedor de identidade!",
       "disable-public-memos": "Desabilitar memos públicos",
       "display-with-updated-time": "Exibir hora de atualização nos memos",
       "enable-auto-compact": "Ativar exibição compacta automaticamente",
@@ -391,7 +398,7 @@
       "enable-password-login": "Habilitar login com senha",
       "enable-password-login-warning": "Isso permitirá o login com senha para todos os usuários. Continue apenas se desejar que os usuários possam fazer login usando SSO e senha local.",
       "max-upload-size": "Tamanho máximo de upload (MiB)",
-      "max-upload-size-hint": "O valor recomendado é 30 MiB.",
+      "max-upload-size-hint": "O valor recomendado é 32 MiB.",
       "removed-completed-task-list-items": "Remoção de itens concluídos da lista de tarefas",
       "server-name": "Nome da instância",
       "title": "Geral"
@@ -425,7 +432,7 @@
     "all-tags": "Todas as Tags",
     "create-tag": "Criar Tag",
     "create-tags-guide": "Você pode criar tags inserindo `#tag`.",
-    "delete-confirm": "Tem certeza de que deseja excluir esta tag?\\nTodos os memos relacionados serão arquivados.",
+    "delete-confirm": "Tem certeza de que deseja excluir esta tag?\nTodos os memos relacionados serão arquivados.",
     "delete-tag": "Excluir Tag",
     "new-name": "Novo Nome",
     "no-tag-found": "Nenhuma tag encontrada",
