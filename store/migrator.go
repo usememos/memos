@@ -33,13 +33,16 @@ const (
 	LatestSchemaFileName = "LATEST.sql"
 )
 
-// Migrate applies the latest schema to the database.
+// Migrate migrates the database schema to the latest version.
+// It checks the current schema version and applies any necessary migrations.
+// It also seeds the database with initial data if in demo mode.
 func (s *Store) Migrate(ctx context.Context) error {
 	if err := s.preMigrate(ctx); err != nil {
 		return errors.Wrap(err, "failed to pre-migrate")
 	}
 
-	if s.profile.Mode == "prod" {
+	switch s.profile.Mode {
+	case "prod":
 		workspaceBasicSetting, err := s.GetWorkspaceBasicSetting(ctx)
 		if err != nil {
 			return errors.Wrap(err, "failed to get workspace basic setting")
@@ -94,7 +97,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 				return errors.Wrap(err, "failed to update current schema version")
 			}
 		}
-	} else if s.profile.Mode == "demo" {
+	case "demo":
 		// In demo mode, we should seed the database.
 		if err := s.seed(ctx); err != nil {
 			return errors.Wrap(err, "failed to seed")
@@ -103,6 +106,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 	return nil
 }
 
+// preMigrate checks if the database is initialized and applies the latest schema if not.
 func (s *Store) preMigrate(ctx context.Context) error {
 	initialized, err := s.driver.IsInitialized(ctx)
 	if err != nil {
@@ -157,6 +161,9 @@ func (s *Store) getSeedBasePath() string {
 	return fmt.Sprintf("seed/%s/", s.profile.Driver)
 }
 
+// seed seeds the database with initial data.
+// It reads all seed files from the embedded filesystem and executes them in order.
+// This is only supported for SQLite databases.
 func (s *Store) seed(ctx context.Context) error {
 	// Only seed for SQLite.
 	if s.profile.Driver != "sqlite" {
@@ -205,6 +212,9 @@ func (s *Store) GetCurrentSchemaVersion() (string, error) {
 	return s.getSchemaVersionOfMigrateScript(filePaths[len(filePaths)-1])
 }
 
+// getSchemaVersionOfMigrateScript extracts the schema version from the migration script file path.
+// It returns the schema version in the format "major.minor.patch".
+// If the file is the latest schema file, it returns the current schema version.
 func (s *Store) getSchemaVersionOfMigrateScript(filePath string) (string, error) {
 	// If the file is the latest schema file, return the current schema version.
 	if strings.HasSuffix(filePath, LatestSchemaFileName) {
@@ -225,7 +235,8 @@ func (s *Store) getSchemaVersionOfMigrateScript(filePath string) (string, error)
 	return fmt.Sprintf("%s.%d", minorVersion, patchVersion+1), nil
 }
 
-// execute runs a single SQL statement within a transaction.
+// execute executes a SQL statement within a transaction context.
+// It returns an error if the execution fails.
 func (*Store) execute(ctx context.Context, tx *sql.Tx, stmt string) error {
 	if _, err := tx.ExecContext(ctx, stmt); err != nil {
 		return errors.Wrap(err, "failed to execute statement")
@@ -233,6 +244,8 @@ func (*Store) execute(ctx context.Context, tx *sql.Tx, stmt string) error {
 	return nil
 }
 
+// updateCurrentSchemaVersion updates the current schema version in the workspace basic setting.
+// It retrieves the workspace basic setting, updates the schema version, and upserts the setting back to the database.
 func (s *Store) updateCurrentSchemaVersion(ctx context.Context, schemaVersion string) error {
 	workspaceBasicSetting, err := s.GetWorkspaceBasicSetting(ctx)
 	if err != nil {
@@ -248,6 +261,8 @@ func (s *Store) updateCurrentSchemaVersion(ctx context.Context, schemaVersion st
 	return nil
 }
 
+// normalizeMigrationHistoryList normalizes the migration history list.
+// It checks the existing migration history and updates it to the latest schema version if necessary.
 func (s *Store) normalizeMigrationHistoryList(ctx context.Context) error {
 	migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
 	if err != nil {
@@ -299,6 +314,8 @@ func (s *Store) normalizeMigrationHistoryList(ctx context.Context) error {
 	return nil
 }
 
+// migrateSchemaVersionToSetting migrates the schema version from the migration history to the workspace basic setting.
+// It retrieves the migration history, sorts the versions, and updates the workspace basic setting if necessary
 func (s *Store) migrateSchemaVersionToSetting(ctx context.Context) error {
 	migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
 	if err != nil {
