@@ -13,7 +13,7 @@ import (
 
 func (d *DB) ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error {
 	const dbType = filter.PostgreSQLTemplate
-	_, err := d.convertWithParameterIndex(ctx, expr, dbType, len(ctx.Args)+1)
+	_, err := d.convertWithParameterIndex(ctx, expr, dbType, ctx.ArgsOffset+len(ctx.Args)+1)
 	return err
 }
 
