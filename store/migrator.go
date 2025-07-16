@@ -315,7 +315,7 @@ func (s *Store) normalizeMigrationHistoryList(ctx context.Context) error {
 }
 
 // migrateSchemaVersionToSetting migrates the schema version from the migration history to the workspace basic setting.
-// It retrieves the migration history, sorts the versions, and updates the workspace basic setting if necessary
+// It retrieves the migration history, sorts the versions, and updates the workspace basic setting if necessary.
 func (s *Store) migrateSchemaVersionToSetting(ctx context.Context) error {
 	migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
 	if err != nil {
