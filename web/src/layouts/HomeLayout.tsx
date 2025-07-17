@@ -1,12 +1,35 @@
+import { last } from "lodash-es";
 import { observer } from "mobx-react-lite";
-import { Outlet } from "react-router-dom";
+import { matchPath, Outlet } from "react-router-dom";
+import { useDebounce } from "react-use";
 import { HomeSidebar, HomeSidebarDrawer } from "@/components/HomeSidebar";
 import MobileHeader from "@/components/MobileHeader";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
+import { Routes } from "@/router";
+import { memoStore, userStore } from "@/store";
 
 const HomeLayout = observer(() => {
   const { md, lg } = useResponsiveWidth();
+  const currentUser = useCurrentUser();
+
+  useDebounce(
+    async () => {
+      let parent: string | undefined = undefined;
+      if (location.pathname === Routes.ROOT && currentUser) {
+        parent = currentUser.name;
+      }
+      if (matchPath("/u/:username", location.pathname) !== null) {
+        const username = last(location.pathname.split("/"));
+        const user = await userStore.getOrFetchUserByUsername(username || "");
+        parent = user.name;
+      }
+      await userStore.fetchUserStats(parent);
+    },
+    300,
+    [memoStore.state.memos.length, userStore.state.statsStateId, location.pathname],
+  );
 
   return (
     <section className="@container w-full min-h-full flex flex-col justify-start items-center">
