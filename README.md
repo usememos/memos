@@ -70,7 +70,7 @@ Memos is a lightweight, self-hosted alternative to cloud-based note-taking servi
 
 ### Prerequisites
 
-- Docker or Docker Compose installed on your system
+- [Docker](https://www.docker.com/) or Docker Compose installed on your system
 - Minimum 512MB RAM and 1GB available disk space
 
 ### Docker Deployment
