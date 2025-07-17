@@ -142,7 +142,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
         setOAuth2Scopes(oauth2Config.scopes.join(" "));
       }
     }
-  }, []);
+  }, [identityProvider]);
 
   useEffect(() => {
     if (!isCreating) {

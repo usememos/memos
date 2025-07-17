@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -29,6 +29,18 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
   });
   const requestState = useLoading(false);
   const isCreating = !initialShortcut;
+
+  useEffect(() => {
+    if (initialShortcut) {
+      setShortcut({
+        name: initialShortcut.name,
+        title: initialShortcut.title,
+        filter: initialShortcut.filter,
+      });
+    } else {
+      setShortcut({ name: "", title: "", filter: "" });
+    }
+  }, [initialShortcut]);
 
   const onShortcutTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setShortcut({ ...shortcut, title: e.target.value });

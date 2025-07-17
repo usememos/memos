@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -19,10 +19,6 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
   const t = useTranslate();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
-
-  useEffect(() => {
-    // do nth
-  }, []);
 
   const handleCloseBtnClick = () => {
     onOpenChange(false);

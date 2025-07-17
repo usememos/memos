@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -22,6 +22,14 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
   const [user, setUser] = useState(User.fromPartial({ ...initialUser }));
   const requestState = useLoading(false);
   const isCreating = !initialUser;
+
+  useEffect(() => {
+    if (initialUser) {
+      setUser(User.fromPartial(initialUser));
+    } else {
+      setUser(User.fromPartial({}));
+    }
+  }, [initialUser]);
 
   const setPartialUser = (state: Partial<User>) => {
     setUser({
