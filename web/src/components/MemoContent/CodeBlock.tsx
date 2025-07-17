@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import MermaidBlock from "./MermaidBlock";
 import { BaseProps } from "./types";
+import "highlight.js/styles/atom-one-dark.css";
+import "highlight.js/styles/github.css";
 
 // Special languages that are rendered differently.
 enum SpecialLanguage {
