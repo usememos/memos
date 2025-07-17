@@ -117,6 +117,7 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 	codeCount := int32(0)
 	todoCount := int32(0)
 	undoCount := int32(0)
+	dueDateCount := int32(0)
 	pinnedMemos := []string{}
 
 	for _, memo := range memos {
@@ -143,6 +144,9 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 				if memo.Payload.Property.HasIncompleteTasks {
 					undoCount++
 				}
+				if memo.Payload.Property.HasDueDate {
+					dueDateCount++
+				}
 			}
 		}
 		if memo.Pinned {
@@ -157,10 +161,11 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		PinnedMemos:           pinnedMemos,
 		TotalMemoCount:        int32(len(memos)),
 		MemoTypeStats: &v1pb.UserStats_MemoTypeStats{
-			LinkCount: linkCount,
-			CodeCount: codeCount,
-			TodoCount: todoCount,
-			UndoCount: undoCount,
+			LinkCount:    linkCount,
+			CodeCount:    codeCount,
+			TodoCount:    todoCount,
+			UndoCount:    undoCount,
+			DueDateCount: dueDateCount,
 		},
 	}
 

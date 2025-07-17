@@ -90,6 +90,7 @@ type MemoPayload_Property struct {
 	HasIncompleteTasks bool                   `protobuf:"varint,4,opt,name=has_incomplete_tasks,json=hasIncompleteTasks,proto3" json:"has_incomplete_tasks,omitempty"`
 	// The references of the memo. Should be a list of uuid.
 	References    []string `protobuf:"bytes,5,rep,name=references,proto3" json:"references,omitempty"`
+	HasDueDate    bool     `protobuf:"varint,6,opt,name=has_due_date,json=hasDueDate,proto3" json:"has_due_date,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -159,6 +160,13 @@ func (x *MemoPayload_Property) GetReferences() []string {
 	return nil
 }
 
+func (x *MemoPayload_Property) GetHasDueDate() bool {
+	if x != nil {
+		return x.HasDueDate
+	}
+	return false
+}
+
 type MemoPayload_Location struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Placeholder   string                 `protobuf:"bytes,1,opt,name=placeholder,proto3" json:"placeholder,omitempty"`
@@ -223,11 +231,11 @@ var File_store_memo_proto protoreflect.FileDescriptor
 
 const file_store_memo_proto_rawDesc = "" +
 	"\n" +
-	"\x10store/memo.proto\x12\vmemos.store\"\xc0\x03\n" +
+	"\x10store/memo.proto\x12\vmemos.store\"\xe2\x03\n" +
 	"\vMemoPayload\x12=\n" +
 	"\bproperty\x18\x01 \x01(\v2!.memos.store.MemoPayload.PropertyR\bproperty\x12=\n" +
 	"\blocation\x18\x02 \x01(\v2!.memos.store.MemoPayload.LocationR\blocation\x12\x12\n" +
-	"\x04tags\x18\x03 \x03(\tR\x04tags\x1a\xb6\x01\n" +
+	"\x04tags\x18\x03 \x03(\tR\x04tags\x1a\xd8\x01\n" +
 	"\bProperty\x12\x19\n" +
 	"\bhas_link\x18\x01 \x01(\bR\ahasLink\x12\"\n" +
 	"\rhas_task_list\x18\x02 \x01(\bR\vhasTaskList\x12\x19\n" +
@@ -235,7 +243,9 @@ const file_store_memo_proto_rawDesc = "" +
 	"\x14has_incomplete_tasks\x18\x04 \x01(\bR\x12hasIncompleteTasks\x12\x1e\n" +
 	"\n" +
 	"references\x18\x05 \x03(\tR\n" +
-	"references\x1af\n" +
+	"references\x12 \n" +
+	"\fhas_due_date\x18\x06 \x01(\bR\n" +
+	"hasDueDate\x1af\n" +
 	"\bLocation\x12 \n" +
 	"\vplaceholder\x18\x01 \x01(\tR\vplaceholder\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +

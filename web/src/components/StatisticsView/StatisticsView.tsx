@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { CheckCircleIcon, Code2Icon, LinkIcon, ListTodoIcon, BookmarkIcon } from "lucide-react";
+import { CheckCircleIcon, Code2Icon, LinkIcon, ListTodoIcon, BookmarkIcon, CalendarIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState, useCallback } from "react";
 import { matchPath, useLocation } from "react-router-dom";
@@ -55,6 +55,13 @@ const StatisticsView = observer(() => {
             onClick={() => handleFilterClick("pinned")}
           />
         )}
+
+        <StatCard
+          icon={<CalendarIcon className="w-4 h-auto mr-1 opacity-70" />}
+          label="Due"
+          count={memoTypeStats.dueDateCount || 0}
+          onClick={() => handleFilterClick("dueDate")}
+        />
 
         <StatCard
           icon={<LinkIcon className="w-4 h-auto mr-1 opacity-70" />}
