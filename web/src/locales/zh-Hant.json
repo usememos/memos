@@ -31,6 +31,7 @@
     "collapse": "摺疊",
     "confirm": "確認",
     "create": "建立",
+    "created-at": "建立於",
     "database": "資料庫",
     "day": "日",
     "days": "日",
@@ -46,7 +47,10 @@
     "image": "圖片",
     "in": "在",
     "inbox": "通知",
+    "input": "輸入",
     "language": "語言",
+    "last-updated-at": "最後更新於",
+    "layout": "排版",
     "learn-more": "了解更多",
     "link": "連結",
     "mark": "標記",
@@ -61,7 +65,11 @@
     "pin": "置頂",
     "pinned": "已置頂",
     "preview": "預覽",
-    "profile": "個人專頁",
+    "profile": "個人檔案",
+    "properties": "屬性",
+    "referenced-by": "被引用",
+    "referencing": "引用",
+    "relations": "關聯",
     "remember-me": "保持登入",
     "rename": "重新命名",
     "reset": "重設",
@@ -73,6 +81,8 @@
     "select": "選擇",
     "settings": "設定",
     "share": "分享",
+    "shortcut-filter": "快捷鍵篩選",
+    "shortcuts": "快捷鍵",
     "sign-in": "登入",
     "sign-in-with": "使用 {{provider}} 登入",
     "sign-out": "登出",
@@ -80,6 +90,7 @@
     "statistics": "統計",
     "tags": "標籤",
     "title": "標題",
+    "tree-mode": "樹狀顯示",
     "type": "類型",
     "unpin": "取消置頂",
     "update": "更新",
@@ -88,7 +99,7 @@
     "username": "帳號",
     "version": "版本",
     "visibility": "瀏覽權限",
-    "yourself": "你自己"
+    "yourself": "您自己"
   },
   "days": {
     "fri": "五",
@@ -102,7 +113,13 @@
   "editor": {
     "add-your-comment-here": "在這裡添加您的評論...",
     "any-thoughts": "任何想法...",
-    "save": "儲存"
+    "save": "儲存",
+    "no-changes-detected": "未檢測到變更"
+  },
+  "filters": {
+    "has-code": "有程式碼",
+    "has-link": "有連結",
+    "has-task-list": "有待辦事項"
   },
   "inbox": {
     "memo-comment": "{{user}} 對您的 {{memo}} 發表了評論。",
@@ -147,7 +164,9 @@
       "private": "私人",
       "protected": "成員",
       "public": "公開"
-    }
+    },
+    "list": "列表",
+    "masonry": "瀑布流"
   },
   "message": {
     "archived-successfully": "封存成功",
@@ -164,7 +183,7 @@
     "no-data": "或許尋覓虛空，或者改換選擇之軌跡。",
     "password-changed": "密碼變更完成",
     "password-not-match": "密碼不一致。",
-    "remove-completed-task-list-items-successfully": "移除成功！",
+    "remove-completed-task-list-items-successfully": "移除成功",
     "restored-successfully": "還原成功",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
     "update-succeed": "更新成功",
@@ -206,7 +225,8 @@
     "no-unused-resources": "無未使用的檔案",
     "reset-link": "重設連結",
     "reset-link-prompt": "您確定要重設連結嗎？這將導致當前使用的連結失效。（此操作無法恢復）",
-    "reset-resource-link": "重設檔案連結"
+    "reset-resource-link": "重設檔案連結",
+    "unused-resources": "未使用的檔案"
   },
   "router": {
     "back-to-top": "回到頂端",
@@ -218,13 +238,13 @@
       "access-token-deletion": "您確定要刪除存取令牌 {{accessToken}} 嗎？（此操作無法恢復）",
       "create-dialog": {
         "create-access-token": "建立存取令牌",
-        "created-at": "建立時間",
+        "created-at": "建立於",
         "description": "說明",
         "duration-1m": "1 個月",
         "duration-8h": "8 小時",
         "duration-never": "永不過期",
         "expiration": "過期時間",
-        "expires-at": "過期時間",
+        "expires-at": "過期於",
         "some-description": "請輸入說明..."
       },
       "description": "此處列出您帳號的所有存取令牌。",
@@ -232,18 +252,19 @@
       "token": "令牌"
     },
     "user-sessions-section": {
-      "title": "使用者工作階段",
-      "description": "此處列出您帳號的所有使用者工作階段。",
+      "title": "工作階段",
+      "description": "此處列出您帳號的所有工作階段。工作階段將於最後一次活動的兩週後自動過期。您可以撤銷除了現階段之外的所有工作階段。",
       "device": "裝置",
+      "location": "位置",
       "last-active": "最後活躍時間",
       "expires": "過期時間",
       "current": "當前裝置",
       "never": "永不過期",
-      "session-revocation": "您確定要撤銷 {{device}} 的使用者工作階段嗎？（此操作無法恢復）",
-      "session-revoked": "使用者工作階段撤銷成功",
-      "revoke-session": "撤銷使用者工作階段",
-      "cannot-revoke-current": "無法撤銷當前裝置的使用者工作階段",
-      "no-sessions": "無使用者工作階段"
+      "session-revocation": "您確定要撤銷 {{device}} 的工作階段嗎？（此操作無法恢復）",
+      "session-revoked": "工作階段撤銷成功",
+      "revoke-session": "撤銷工作階段",
+      "cannot-revoke-current": "無法撤銷當前裝置的工作階段",
+      "no-sessions": "無工作階段"
     },
     "account-section": {
       "change-password": "變更密碼",
@@ -266,11 +287,13 @@
     "member": "使用者",
     "member-list": "使用者列表",
     "member-section": {
+      "admin": "管理者",
       "archive-member": "封存使用者",
       "archive-warning": "您確定要封存 {{username}}?",
       "create-a-member": "新增使用者",
       "delete-member": "刪除使用者",
-      "delete-warning": "您確定要刪除 {{username}}?（此操作無法恢復）"
+      "delete-warning": "您確定要刪除 {{username}}?（此操作無法恢復）",
+      "user": "使用者"
     },
     "memo-related": "備忘錄",
     "memo-related-settings": {
@@ -287,6 +310,7 @@
     "preference-section": {
       "default-memo-sort-option": "備忘錄顯示時間",
       "default-memo-visibility": "備忘錄預設瀏覽權限",
+      "apperance": "外觀",
       "theme": "主題"
     },
     "sso": "SSO",
@@ -325,6 +349,7 @@
       "current-storage": "目前的儲存空間",
       "delete-storage": "刪除儲存空間",
       "endpoint": "端點（Endpoint）",
+      "filepath-template": "檔案路徑範本",
       "local-storage-path": "本機儲存空間路徑",
       "path": "儲存空間路徑",
       "path-description": "您可以使用與本機儲存空間相同的動態變數，如 {filename}",
@@ -364,7 +389,7 @@
       },
       "disable-markdown-shortcuts-in-editor": "停用編輯器 Markdown 快捷鍵",
       "disable-password-login": "停用密碼登入",
-      "disable-password-login-final-warning": "如果你知道自己在做什麼，請輸入「CONFIRM」。",
+      "disable-password-login-final-warning": "如果您知道自己在做什麼，請輸入「CONFIRM」。",
       "disable-password-login-warning": "所有使用者將無法使用密碼登入。如果設定的身份識別提供者失效，不在資料庫中恢復此設定將無法登入。刪除身分識別提供者時也要特別小心❗",
       "disable-public-memos": "停用公共備忘錄",
       "display-with-updated-time": "顯示更新時間",
@@ -393,9 +418,9 @@
       "url": "網址"
     },
     "workspace-section": {
-      "disallow-change-nickname": "禁止更改暱稱",
-      "disallow-change-username": "禁止更改使用者名稱",
-      "disallow-password-auth": "禁止使用密碼驗證",
+      "disallow-change-nickname": "禁止變更暱稱",
+      "disallow-change-username": "禁止變更使用者名稱",
+      "disallow-password-auth": "禁止使用密碼登入",
       "disallow-user-registration": "禁止使用者註冊",
       "monday": "星期一",
       "saturday": "星期六",
@@ -406,11 +431,11 @@
   "tag": {
     "all-tags": "所有標籤",
     "create-tag": "建立標籤",
-    "create-tags-guide": "您可以通過輸入`#標籤`來創建標籤。",
+    "create-tags-guide": "您可以通過輸入`#標籤`來建立標籤。",
     "delete-confirm": "您確定要刪除此標籤嗎？所有關聯的備忘錄將會被封存",
     "delete-tag": "刪除標籤",
     "no-tag-found": "未找到標籤",
-    "new-tag": "新標籤",
+    "new-name": "新標籤名稱",
     "old-name": "舊標籤名稱",
     "rename-error-empty": "標籤名稱不能為空",
     "rename-error-repeat": "標籤名稱已存在",
