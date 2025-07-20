@@ -17,9 +17,9 @@ plugins:
   - remote: buf.build/grpc-ecosystem/gateway
     out: gen
     opt: paths=source_relative
-  - remote: buf.build/grpc-ecosystem/openapiv2
+  - remote: buf.build/community/google-gnostic-openapi
     out: gen
-    opt: output_format=yaml,allow_merge=true
+    opt: paths=source_relative,enum_type=string
   - remote: buf.build/community/stephenh-ts-proto
     out: ../web/src/types/proto
     opt:
