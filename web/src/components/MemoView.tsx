@@ -13,6 +13,7 @@ import { Memo, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_s
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import { isSuperUser } from "@/utils/user";
+import { extractYoutubeVideoIdsFromNodes } from "@/utils/youtube";
 import MemoActionMenu from "./MemoActionMenu";
 import MemoAttachmentListView from "./MemoAttachmentListView";
 import MemoContent from "./MemoContent";
@@ -21,7 +22,6 @@ import MemoLocationView from "./MemoLocationView";
 import MemoReactionistView from "./MemoReactionListView";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoYoutubeEmbedListView from "./MemoYoutubeEmbedListView";
-import { extractYoutubeVideoIdsFromNodes } from "@/utils/youtube";
 import PreviewImageDialog from "./PreviewImageDialog";
 import ReactionSelector from "./ReactionSelector";
 import UserAvatar from "./UserAvatar";
