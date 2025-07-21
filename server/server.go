@@ -7,6 +7,7 @@ import (
 	"math"
 	"net"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/google/uuid"
@@ -17,14 +18,13 @@ import (
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
 
+	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/server/profiler"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/rss"
-	"github.com/usememos/memos/server/runner/memopayload"
 	"github.com/usememos/memos/server/runner/s3presign"
-	"github.com/usememos/memos/server/runner/version"
 	"github.com/usememos/memos/store"
 )
 
@@ -33,8 +33,10 @@ type Server struct {
 	Profile *profile.Profile
 	Store   *store.Store
 
-	echoServer *echo.Echo
-	grpcServer *grpc.Server
+	echoServer        *echo.Echo
+	grpcServer        *grpc.Server
+	profiler          *profiler.Profiler
+	runnerCancelFuncs []context.CancelFunc
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -49,6 +51,11 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	echoServer.HidePort = true
 	echoServer.Use(middleware.Recover())
 	s.echoServer = echoServer
+
+	// Initialize profiler
+	s.profiler = profiler.NewProfiler()
+	s.profiler.RegisterRoutes(echoServer)
+	s.profiler.StartMemoryMonitor(ctx)
 
 	workspaceBasicSetting, err := s.getOrUpsertWorkspaceBasicSetting(ctx)
 	if err != nil {
@@ -66,7 +73,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		return c.String(http.StatusOK, "Service ready.")
 	})
 
-	// Serve frontend resources.
+	// Serve frontend static files.
 	frontend.NewFrontendService(profile, store).Serve(ctx, echoServer)
 
 	rootGroup := echoServer.Group("")
@@ -75,7 +82,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
 	grpcServer := grpc.NewServer(
-		// Override the maximum receiving message size to math.MaxInt32 for uploading large resources.
+		// Override the maximum receiving message size to math.MaxInt32 for uploading large attachments.
 		grpc.MaxRecvMsgSize(math.MaxInt32),
 		grpc.ChainUnaryInterceptor(
 			apiv1.NewLoggerInterceptor().LoggerInterceptor,
@@ -94,8 +101,15 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 }
 
 func (s *Server) Start(ctx context.Context) error {
-	address := fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port)
-	listener, err := net.Listen("tcp", address)
+	var address, network string
+	if len(s.Profile.UNIXSock) == 0 {
+		address = fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port)
+		network = "tcp"
+	} else {
+		address = s.Profile.UNIXSock
+		network = "unix"
+	}
+	listener, err := net.Listen(network, address)
 	if err != nil {
 		return errors.Wrap(err, "failed to listen")
 	}
@@ -128,9 +142,35 @@ func (s *Server) Shutdown(ctx context.Context) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
+	slog.Info("server shutting down")
+
+	// Cancel all background runners
+	for _, cancelFunc := range s.runnerCancelFuncs {
+		if cancelFunc != nil {
+			cancelFunc()
+		}
+	}
+
 	// Shutdown echo server.
 	if err := s.echoServer.Shutdown(ctx); err != nil {
 		slog.Error("failed to shutdown server", slog.String("error", err.Error()))
+	}
+
+	// Shutdown gRPC server.
+	s.grpcServer.GracefulStop()
+
+	// Stop the profiler
+	if s.profiler != nil {
+		slog.Info("stopping profiler")
+		// Log final memory stats
+		var m runtime.MemStats
+		runtime.ReadMemStats(&m)
+		slog.Info("final memory stats before exit",
+			"heapAlloc", m.Alloc,
+			"heapSys", m.Sys,
+			"heapObjects", m.HeapObjects,
+			"numGoroutine", runtime.NumGoroutine(),
+		)
 	}
 
 	// Close database connection.
@@ -142,16 +182,25 @@ func (s *Server) Shutdown(ctx context.Context) {
 }
 
 func (s *Server) StartBackgroundRunners(ctx context.Context) {
+	// Create a separate context for each background runner
+	// This allows us to control cancellation for each runner independently
+	s3Context, s3Cancel := context.WithCancel(ctx)
+
+	// Store the cancel function so we can properly shut down runners
+	s.runnerCancelFuncs = append(s.runnerCancelFuncs, s3Cancel)
+
+	// Create and start S3 presign runner
 	s3presignRunner := s3presign.NewRunner(s.Store)
 	s3presignRunner.RunOnce(ctx)
-	versionRunner := version.NewRunner(s.Store, s.Profile)
-	versionRunner.RunOnce(ctx)
-	memopayloadRunner := memopayload.NewRunner(s.Store)
-	// Rebuild all memos' payload after server starts.
-	memopayloadRunner.RunOnce(ctx)
 
-	go s3presignRunner.Run(ctx)
-	go versionRunner.Run(ctx)
+	// Start continuous S3 presign runner
+	go func() {
+		s3presignRunner.Run(s3Context)
+		slog.Info("s3presign runner stopped")
+	}()
+
+	// Log the number of goroutines running
+	slog.Info("background runners started", "goroutines", runtime.NumGoroutine())
 }
 
 func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb.WorkspaceBasicSetting, error) {

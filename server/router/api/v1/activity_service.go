@@ -14,6 +14,37 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+func (s *APIV1Service) ListActivities(ctx context.Context, request *v1pb.ListActivitiesRequest) (*v1pb.ListActivitiesResponse, error) {
+	// Set default page size if not specified
+	pageSize := request.PageSize
+	if pageSize <= 0 || pageSize > 1000 {
+		pageSize = 100
+	}
+
+	// TODO: Implement pagination with page_token and use pageSize for limiting
+	// For now, we'll fetch all activities and the pageSize will be used in future pagination implementation
+	_ = pageSize // Acknowledge pageSize variable to avoid linter warning
+
+	activities, err := s.Store.ListActivities(ctx, &store.FindActivity{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list activities: %v", err)
+	}
+
+	var activityMessages []*v1pb.Activity
+	for _, activity := range activities {
+		activityMessage, err := s.convertActivityFromStore(ctx, activity)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to convert activity from store: %v", err)
+		}
+		activityMessages = append(activityMessages, activityMessage)
+	}
+
+	return &v1pb.ListActivitiesResponse{
+		Activities: activityMessages,
+		// TODO: Implement next_page_token for pagination
+	}, nil
+}
+
 func (s *APIV1Service) GetActivity(ctx context.Context, request *v1pb.GetActivityRequest) (*v1pb.Activity, error) {
 	activityID, err := ExtractActivityIDFromName(request.Name)
 	if err != nil {
@@ -38,11 +69,30 @@ func (s *APIV1Service) convertActivityFromStore(ctx context.Context, activity *s
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to convert activity payload from store: %v", err)
 	}
+
+	// Convert store activity type to proto enum
+	var activityType v1pb.Activity_Type
+	switch activity.Type {
+	case store.ActivityTypeMemoComment:
+		activityType = v1pb.Activity_MEMO_COMMENT
+	default:
+		activityType = v1pb.Activity_TYPE_UNSPECIFIED
+	}
+
+	// Convert store activity level to proto enum
+	var activityLevel v1pb.Activity_Level
+	switch activity.Level {
+	case store.ActivityLevelInfo:
+		activityLevel = v1pb.Activity_INFO
+	default:
+		activityLevel = v1pb.Activity_LEVEL_UNSPECIFIED
+	}
+
 	return &v1pb.Activity{
 		Name:       fmt.Sprintf("%s%d", ActivityNamePrefix, activity.ID),
 		Creator:    fmt.Sprintf("%s%d", UserNamePrefix, activity.CreatorID),
-		Type:       activity.Type.String(),
-		Level:      activity.Level.String(),
+		Type:       activityType,
+		Level:      activityLevel,
 		CreateTime: timestamppb.New(time.Unix(activity.CreatedTs, 0)),
 		Payload:    payload,
 	}, nil
@@ -65,14 +115,11 @@ func (s *APIV1Service) convertActivityPayloadFromStore(ctx context.Context, payl
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get related memo: %v", err)
 		}
-		v2Payload.MemoComment = &v1pb.ActivityMemoCommentPayload{
-			Memo:        fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
-			RelatedMemo: fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID),
-		}
-	}
-	if payload.VersionUpdate != nil {
-		v2Payload.VersionUpdate = &v1pb.ActivityVersionUpdatePayload{
-			Version: payload.VersionUpdate.Version,
+		v2Payload.Payload = &v1pb.ActivityPayload_MemoComment{
+			MemoComment: &v1pb.ActivityMemoCommentPayload{
+				Memo:        fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
+				RelatedMemo: fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID),
+			},
 		}
 	}
 	return v2Payload, nil

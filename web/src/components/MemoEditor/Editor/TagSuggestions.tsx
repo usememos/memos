@@ -1,9 +1,10 @@
 import Fuse from "fuse.js";
+import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import OverflowTip from "@/components/kit/OverflowTip";
-import { useUserStatsTags } from "@/store/v1";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
+import { userStore } from "@/store";
 import { EditorRefActions } from ".";
 
 type Props = {
@@ -13,12 +14,12 @@ type Props = {
 
 type Position = { left: number; top: number; height: number };
 
-const TagSuggestions = ({ editorRef, editorActions }: Props) => {
+const TagSuggestions = observer(({ editorRef, editorActions }: Props) => {
   const [position, setPosition] = useState<Position | null>(null);
   const [selected, select] = useState(0);
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
-  const tags = Object.entries(useUserStatsTags())
+  const tags = Object.entries(userStore.state.tagCount)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1])
     .map(([tag]) => tag);
@@ -85,7 +86,11 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
 
     const caretCordinates = getCaretCoordinates(editor, index);
     caretCordinates.top -= editor.scrollTop;
-    isActive ? setPosition(caretCordinates) : hide();
+    if (isActive) {
+      setPosition(caretCordinates);
+    } else {
+      hide();
+    }
   };
 
   const listenersAreRegisteredRef = useRef(false);
@@ -103,7 +108,7 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
   if (!isVisibleRef.current || !position) return null;
   return (
     <div
-      className="z-20 p-1 mt-1 -ml-2 absolute max-w-[12rem] gap-px rounded font-mono flex flex-col justify-start items-start overflow-auto shadow bg-zinc-100 dark:bg-zinc-700"
+      className="z-20 p-1 mt-1 -ml-2 absolute max-w-48 gap-px rounded font-mono flex flex-col justify-start items-start overflow-auto shadow bg-popover"
       style={{ left: position.left, top: position.top + position.height }}
     >
       {suggestionsRef.current.map((tag, i) => (
@@ -111,8 +116,8 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
           key={tag}
           onMouseDown={() => autocomplete(tag)}
           className={cn(
-            "rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800",
-            i === selected ? "bg-zinc-300 dark:bg-zinc-600" : "",
+            "rounded p-1 px-2 w-full truncate text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground",
+            i === selected ? "bg-accent text-accent-foreground" : "",
           )}
         >
           <OverflowTip>#{tag}</OverflowTip>
@@ -120,6 +125,6 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
       ))}
     </div>
   );
-};
+});
 
 export default TagSuggestions;

@@ -1,25 +1,24 @@
-import { Switch, Select, Option, Chip, ChipDelete } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
 import { isEqual, uniq } from "lodash-es";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, X } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { workspaceSettingNamePrefix, useWorkspaceSettingStore } from "@/store/v1";
-import { Visibility } from "@/types/proto/api/v1/memo_service";
-import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { workspaceStore } from "@/store";
+import { workspaceSettingNamePrefix } from "@/store/common";
+import { WorkspaceSettingKey } from "@/store/workspace";
+import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
-import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
-import VisibilityIcon from "../VisibilityIcon";
 
-const MemoRelatedSettings = () => {
+const MemoRelatedSettings = observer(() => {
   const t = useTranslate();
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const originalSetting = WorkspaceMemoRelatedSetting.fromPartial(
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED)?.memoRelatedSetting || {},
-  );
+  const [originalSetting, setOriginalSetting] = useState<WorkspaceMemoRelatedSetting>(workspaceStore.state.memoRelatedSetting);
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
+  const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
 
   const updatePartialSetting = (partial: Partial<WorkspaceMemoRelatedSetting>) => {
     const newWorkspaceMemoRelatedSetting = WorkspaceMemoRelatedSetting.fromPartial({
@@ -38,6 +37,15 @@ const MemoRelatedSettings = () => {
     setEditingReaction("");
   };
 
+  const upsertNsfwTags = () => {
+    if (!editingNsfwTag) {
+      return;
+    }
+
+    updatePartialSetting({ nsfwTags: uniq([...memoRelatedSetting.nsfwTags, editingNsfwTag.trim()]) });
+    setEditingNsfwTag("");
+  };
+
   const updateSetting = async () => {
     if (memoRelatedSetting.reactions.length === 0) {
       toast.error("Reactions must not be empty.");
@@ -45,75 +53,61 @@ const MemoRelatedSettings = () => {
     }
 
     try {
-      await workspaceSettingStore.setWorkspaceSetting({
+      await workspaceStore.upsertWorkspaceSetting({
         name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
         memoRelatedSetting,
       });
+      setOriginalSetting(memoRelatedSetting);
+      toast.success(t("message.update-succeed"));
     } catch (error: any) {
       toast.error(error.details);
       console.error(error);
-      return;
     }
-    toast.success(t("message.update-succeed"));
   };
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.memo-related-settings.title")}</p>
+      <p className="font-medium text-muted-foreground">{t("setting.memo-related-settings.title")}</p>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.disable-public-memos")}</span>
         <Switch
           checked={memoRelatedSetting.disallowPublicVisibility}
-          onChange={(event) => updatePartialSetting({ disallowPublicVisibility: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ disallowPublicVisibility: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.display-with-updated-time")}</span>
         <Switch
           checked={memoRelatedSetting.displayWithUpdateTime}
-          onChange={(event) => updatePartialSetting({ displayWithUpdateTime: event.target.checked })}
-        />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.system-section.enable-auto-compact")}</span>
-        <Switch
-          checked={memoRelatedSetting.enableAutoCompact}
-          onChange={(event) => updatePartialSetting({ enableAutoCompact: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ displayWithUpdateTime: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.memo-related-settings.enable-link-preview")}</span>
         <Switch
           checked={memoRelatedSetting.enableLinkPreview}
-          onChange={(event) => updatePartialSetting({ enableLinkPreview: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ enableLinkPreview: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.memo-related-settings.enable-memo-comments")}</span>
         <Switch
           checked={memoRelatedSetting.enableComment}
-          onChange={(event) => updatePartialSetting({ enableComment: event.target.checked })}
-        />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.memo-related-settings.enable-memo-location")}</span>
-        <Switch
-          checked={memoRelatedSetting.enableLocation}
-          onChange={(event) => updatePartialSetting({ enableLocation: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ enableComment: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.enable-double-click-to-edit")}</span>
         <Switch
           checked={memoRelatedSetting.enableDoubleClickEdit}
-          onChange={(event) => updatePartialSetting({ enableDoubleClickEdit: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ enableDoubleClickEdit: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.disable-markdown-shortcuts-in-editor")}</span>
         <Switch
           checked={memoRelatedSetting.disableMarkdownShortcuts}
-          onChange={(event) => updatePartialSetting({ disableMarkdownShortcuts: event.target.checked })}
+          onCheckedChange={(checked) => updatePartialSetting({ disableMarkdownShortcuts: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
@@ -125,67 +119,69 @@ const MemoRelatedSettings = () => {
           onBlur={(event) => updatePartialSetting({ contentLengthLimit: Number(event.target.value) })}
         />
       </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>
-        <Select
-          className="!min-w-fit"
-          value={memoRelatedSetting.defaultVisibility}
-          startDecorator={<VisibilityIcon visibility={convertVisibilityFromString(memoRelatedSetting.defaultVisibility)} />}
-          onChange={(_, visibility) => {
-            updatePartialSetting({ defaultVisibility: visibility || Visibility.PRIVATE });
-          }}
-        >
-          {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]
-            .map((v) => convertVisibilityToString(v))
-            .map((item) => (
-              <Option key={item} value={item} className="whitespace-nowrap">
-                {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
-              </Option>
-            ))}
-        </Select>
-      </div>
       <div className="w-full">
         <span className="truncate">{t("setting.memo-related-settings.reactions")}</span>
         <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
           {memoRelatedSetting.reactions.map((reactionType) => {
             return (
-              <Chip
-                className="!h-8"
-                key={reactionType}
-                variant="outlined"
-                size="lg"
-                endDecorator={
-                  <ChipDelete
-                    onDelete={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
-                  />
-                }
-              >
+              <Badge key={reactionType} variant="outline" className="flex items-center gap-1">
                 {reactionType}
-              </Chip>
+                <X
+                  className="w-3 h-3 cursor-pointer hover:text-destructive"
+                  onClick={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
+                />
+              </Badge>
             );
           })}
-          <Input
-            className="w-32 !rounded-full !pl-3"
-            placeholder="Input"
-            size="sm"
-            value={editingReaction}
-            onChange={(event) => setEditingReaction(event.target.value.trim())}
-            endDecorator={
-              <CheckIcon
-                className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-teal-600"
-                onClick={() => upsertReaction()}
-              />
-            }
+          <div className="flex items-center gap-1">
+            <Input
+              className="w-32"
+              placeholder={t("common.input")}
+              value={editingReaction}
+              onChange={(event) => setEditingReaction(event.target.value.trim())}
+            />
+            <CheckIcon className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary" onClick={() => upsertReaction()} />
+          </div>
+        </div>
+      </div>
+      <div className="w-full">
+        <div className="w-full flex flex-row justify-between items-center">
+          <span>{t("setting.memo-related-settings.enable-blur-nsfw-content")}</span>
+          <Switch
+            checked={memoRelatedSetting.enableBlurNsfwContent}
+            onCheckedChange={(checked) => updatePartialSetting({ enableBlurNsfwContent: checked })}
           />
+        </div>
+        <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
+          {memoRelatedSetting.nsfwTags.map((nsfwTag) => {
+            return (
+              <Badge key={nsfwTag} variant="outline" className="flex items-center gap-1">
+                {nsfwTag}
+                <X
+                  className="w-3 h-3 cursor-pointer hover:text-destructive"
+                  onClick={() => updatePartialSetting({ nsfwTags: memoRelatedSetting.nsfwTags.filter((r) => r !== nsfwTag) })}
+                />
+              </Badge>
+            );
+          })}
+          <div className="flex items-center gap-1">
+            <Input
+              className="w-32"
+              placeholder={t("common.input")}
+              value={editingNsfwTag}
+              onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
+            />
+            <CheckIcon className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary" onClick={() => upsertNsfwTags()} />
+          </div>
         </div>
       </div>
       <div className="mt-2 w-full flex justify-end">
-        <Button color="primary" disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
+        <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
           {t("common.save")}
         </Button>
       </div>
     </div>
   );
-};
+});
 
 export default MemoRelatedSettings;

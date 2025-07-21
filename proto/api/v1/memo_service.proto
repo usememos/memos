@@ -2,14 +2,13 @@ syntax = "proto3";
 
 package memos.api.v1;
 
+import "api/v1/attachment_service.proto";
 import "api/v1/common.proto";
 import "api/v1/markdown_service.proto";
-import "api/v1/memo_relation_service.proto";
-import "api/v1/reaction_service.proto";
-import "api/v1/resource_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
@@ -23,6 +22,7 @@ service MemoService {
       post: "/api/v1/memos"
       body: "memo"
     };
+    option (google.api.method_signature) = "memo";
   }
   // ListMemos lists memos with pagination and filter.
   rpc ListMemos(ListMemosRequest) returns (ListMemosResponse) {
@@ -30,6 +30,8 @@ service MemoService {
       get: "/api/v1/memos"
       additional_bindings: {get: "/api/v1/{parent=users/*}/memos"}
     };
+    option (google.api.method_signature) = "";
+    option (google.api.method_signature) = "parent";
   }
   // GetMemo gets a memo.
   rpc GetMemo(GetMemoRequest) returns (Memo) {
@@ -55,22 +57,24 @@ service MemoService {
       patch: "/api/v1/{parent=memos/*}/tags:rename"
       body: "*"
     };
+    option (google.api.method_signature) = "parent,old_tag,new_tag";
   }
   // DeleteMemoTag deletes a tag for a memo.
   rpc DeleteMemoTag(DeleteMemoTagRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{parent=memos/*}/tags/{tag}"};
+    option (google.api.method_signature) = "parent,tag";
   }
-  // SetMemoResources sets resources for a memo.
-  rpc SetMemoResources(SetMemoResourcesRequest) returns (google.protobuf.Empty) {
+  // SetMemoAttachments sets attachments for a memo.
+  rpc SetMemoAttachments(SetMemoAttachmentsRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      patch: "/api/v1/{name=memos/*}/resources"
+      patch: "/api/v1/{name=memos/*}/attachments"
       body: "*"
     };
     option (google.api.method_signature) = "name";
   }
-  // ListMemoResources lists resources for a memo.
-  rpc ListMemoResources(ListMemoResourcesRequest) returns (ListMemoResourcesResponse) {
-    option (google.api.http) = {get: "/api/v1/{name=memos/*}/resources"};
+  // ListMemoAttachments lists attachments for a memo.
+  rpc ListMemoAttachments(ListMemoAttachmentsRequest) returns (ListMemoAttachmentsResponse) {
+    option (google.api.http) = {get: "/api/v1/{name=memos/*}/attachments"};
     option (google.api.method_signature) = "name";
   }
   // SetMemoRelations sets relations for a memo.
@@ -92,7 +96,7 @@ service MemoService {
       post: "/api/v1/{name=memos/*}/comments"
       body: "comment"
     };
-    option (google.api.method_signature) = "name";
+    option (google.api.method_signature) = "name,comment";
   }
   // ListMemoComments lists comments for a memo.
   rpc ListMemoComments(ListMemoCommentsRequest) returns (ListMemoCommentsResponse) {
@@ -114,8 +118,8 @@ service MemoService {
   }
   // DeleteMemoReaction deletes a reaction for a memo.
   rpc DeleteMemoReaction(DeleteMemoReactionRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/reactions/{id}"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {delete: "/api/v1/{name=reactions/*}"};
+    option (google.api.method_signature) = "name";
   }
 }
 
@@ -126,99 +130,186 @@ enum Visibility {
   PUBLIC = 3;
 }
 
+message Reaction {
+  option (google.api.resource) = {
+    type: "memos.api.v1/Reaction"
+    pattern: "reactions/{reaction}"
+    name_field: "name"
+    singular: "reaction"
+    plural: "reactions"
+  };
+
+  // The resource name of the reaction.
+  // Format: reactions/{reaction}
+  string name = 1 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = IDENTIFIER
+  ];
+
+  // The resource name of the creator.
+  // Format: users/{user}
+  string creator = 2 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+
+  // The resource name of the content.
+  // For memo reactions, this should be the memo's resource name.
+  // Format: memos/{memo}
+  string content_id = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Required. The type of reaction (e.g., "👍", "❤️", "😄").
+  string reaction_type = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // Output only. The creation timestamp.
+  google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
 message Memo {
-  reserved 2;
+  option (google.api.resource) = {
+    type: "memos.api.v1/Memo"
+    pattern: "memos/{memo}"
+    name_field: "name"
+    singular: "memo"
+    plural: "memos"
+  };
 
-  // The name of the memo.
+  // The resource name of the memo.
   // Format: memos/{memo}, memo is the user defined id or uuid.
-  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  State state = 3;
+  // The state of the memo.
+  State state = 2 [(google.api.field_behavior) = REQUIRED];
 
   // The name of the creator.
   // Format: users/{user}
-  string creator = 4;
+  string creator = 3 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
 
-  google.protobuf.Timestamp create_time = 5;
+  // Output only. The creation timestamp.
+  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  google.protobuf.Timestamp update_time = 6;
+  // Output only. The last update timestamp.
+  google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  google.protobuf.Timestamp display_time = 7;
+  // The display timestamp of the memo.
+  google.protobuf.Timestamp display_time = 6 [(google.api.field_behavior) = OPTIONAL];
 
-  string content = 8;
+  // Required. The content of the memo in Markdown format.
+  string content = 7 [(google.api.field_behavior) = REQUIRED];
 
-  repeated Node nodes = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output only. The parsed nodes from the content.
+  repeated Node nodes = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  Visibility visibility = 10;
+  // The visibility of the memo.
+  Visibility visibility = 9 [(google.api.field_behavior) = REQUIRED];
 
-  repeated string tags = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output only. The tags extracted from the content.
+  repeated string tags = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  bool pinned = 12;
+  // Whether the memo is pinned.
+  bool pinned = 11 [(google.api.field_behavior) = OPTIONAL];
 
-  repeated Resource resources = 14;
+  // Optional. The attachments of the memo.
+  repeated Attachment attachments = 12 [(google.api.field_behavior) = OPTIONAL];
 
-  repeated MemoRelation relations = 15;
+  // Optional. The relations of the memo.
+  repeated MemoRelation relations = 13 [(google.api.field_behavior) = OPTIONAL];
 
-  repeated Reaction reactions = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output only. The reactions to the memo.
+  repeated Reaction reactions = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  MemoProperty property = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output only. The computed properties of the memo.
+  Property property = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // The name of the parent memo.
-  // Format: memos/{id}
-  optional string parent = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output only. The name of the parent memo.
+  // Format: memos/{memo}
+  optional string parent = 16 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
 
-  // The snippet of the memo content. Plain text only.
-  string snippet = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output only. The snippet of the memo content. Plain text only.
+  string snippet = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // The location of the memo.
-  optional Location location = 20;
-}
+  // Optional. The location of the memo.
+  optional Location location = 18 [(google.api.field_behavior) = OPTIONAL];
 
-message MemoProperty {
-  bool has_link = 1;
-  bool has_task_list = 2;
-  bool has_code = 3;
-  bool has_incomplete_tasks = 4;
+  // Computed properties of a memo.
+  message Property {
+    bool has_link = 1;
+    bool has_task_list = 2;
+    bool has_code = 3;
+    bool has_incomplete_tasks = 4;
+  }
 }
 
 message Location {
-  string placeholder = 1;
-  double latitude = 2;
-  double longitude = 3;
+  // A placeholder text for the location.
+  string placeholder = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // The latitude of the location.
+  double latitude = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The longitude of the location.
+  double longitude = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message CreateMemoRequest {
-  // The memo to create.
+  // Required. The memo to create.
   Memo memo = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The memo ID to use for this memo.
+  // If empty, a unique ID will be generated.
+  string memo_id = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. If set, validate the request but don't actually create the memo.
+  bool validate_only = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. An idempotency token.
+  string request_id = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListMemosRequest {
-  // The parent is the owner of the memos.
+  // Optional. The parent is the owner of the memos.
   // If not specified or `users/-`, it will list all memos.
-  string parent = 1;
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
 
-  // The maximum number of memos to return.
-  int32 page_size = 2;
+  // Optional. The maximum number of memos to return.
+  // The service may return fewer than this value.
+  // If unspecified, at most 50 memos will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
 
-  // A page token, received from a previous `ListMemos` call.
+  // Optional. A page token, received from a previous `ListMemos` call.
   // Provide this to retrieve the subsequent page.
-  string page_token = 3;
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
 
-  // The state of the memos to list.
+  // Optional. The state of the memos to list.
   // Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
-  State state = 4;
+  State state = 4 [(google.api.field_behavior) = OPTIONAL];
 
-  // What field to sort the results by.
-  // Default to display_time.
-  string sort = 5;
+  // Optional. The order to sort results by.
+  // Default to "display_time desc".
+  // Example: "display_time desc" or "create_time asc"
+  string order_by = 5 [(google.api.field_behavior) = OPTIONAL];
 
-  // The direction to sort the results by.
-  // Default to DESC.
-  Direction direction = 6;
-
+  // Optional. Filter to apply to the list results.
   // Filter is a CEL expression to filter memos.
   // Refer to `Shortcut.filter`.
-  string filter = 7;
+  string filter = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. If true, show deleted memos in the response.
+  bool show_deleted = 7 [(google.api.field_behavior) = OPTIONAL];
 
   // [Deprecated] Old filter contains some specific conditions to filter memos.
   // Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
@@ -226,114 +317,276 @@ message ListMemosRequest {
 }
 
 message ListMemosResponse {
+  // The list of memos.
   repeated Memo memos = 1;
 
-  // A token, which can be sent as `page_token` to retrieve the next page.
+  // A token that can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
   string next_page_token = 2;
+
+  // The total count of memos (may be approximate).
+  int32 total_size = 3;
 }
 
 message GetMemoRequest {
-  // The name of the memo.
-  string name = 1;
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Optional. The fields to return in the response.
+  // If not specified, all fields are returned.
+  google.protobuf.FieldMask read_mask = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message UpdateMemoRequest {
-  // The memo to update.
+  // Required. The memo to update.
   // The `name` field is required.
   Memo memo = 1 [(google.api.field_behavior) = REQUIRED];
 
-  google.protobuf.FieldMask update_mask = 2;
+  // Required. The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. If set to true, allows updating sensitive fields.
+  bool allow_missing = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message DeleteMemoRequest {
-  // The name of the memo.
-  string name = 1;
+  // Required. The resource name of the memo to delete.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Optional. If set to true, the memo will be deleted even if it has associated data.
+  bool force = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message RenameMemoTagRequest {
-  // The parent, who owns the tags.
-  // Format: memos/{id}. Use "memos/-" to rename all tags.
-  string parent = 1;
-  string old_tag = 2;
-  string new_tag = 3;
+  // Required. The parent, who owns the tags.
+  // Format: memos/{memo}. Use "memos/-" to rename all tags.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Required. The old tag name to rename.
+  string old_tag = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The new tag name.
+  string new_tag = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 message DeleteMemoTagRequest {
-  // The parent, who owns the tags.
-  // Format: memos/{id}. Use "memos/-" to delete all tags.
-  string parent = 1;
-  string tag = 2;
-  bool delete_related_memos = 3;
+  // Required. The parent, who owns the tags.
+  // Format: memos/{memo}. Use "memos/-" to delete all tags.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Required. The tag name to delete.
+  string tag = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Whether to delete related memos.
+  bool delete_related_memos = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
-message SetMemoResourcesRequest {
-  // The name of the memo.
-  string name = 1;
+message SetMemoAttachmentsRequest {
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
 
-  repeated Resource resources = 2;
+  // Required. The attachments to set for the memo.
+  repeated Attachment attachments = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-message ListMemoResourcesRequest {
-  // The name of the memo.
-  string name = 1;
+message ListMemoAttachmentsRequest {
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Optional. The maximum number of attachments to return.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token for pagination.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
-message ListMemoResourcesResponse {
-  repeated Resource resources = 1;
+message ListMemoAttachmentsResponse {
+  // The list of attachments.
+  repeated Attachment attachments = 1;
+
+  // A token for the next page of results.
+  string next_page_token = 2;
+
+  // The total count of attachments.
+  int32 total_size = 3;
+}
+
+message MemoRelation {
+  // The memo in the relation.
+  Memo memo = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The related memo.
+  Memo related_memo = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The type of the relation.
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    REFERENCE = 1;
+    COMMENT = 2;
+  }
+  Type type = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Memo reference in relations.
+  message Memo {
+    // The resource name of the memo.
+    // Format: memos/{memo}
+    string name = 1 [
+      (google.api.field_behavior) = REQUIRED,
+      (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+    ];
+
+    // Output only. The snippet of the memo content. Plain text only.
+    string snippet = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
 }
 
 message SetMemoRelationsRequest {
-  // The name of the memo.
-  string name = 1;
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
 
-  repeated MemoRelation relations = 2;
+  // Required. The relations to set for the memo.
+  repeated MemoRelation relations = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ListMemoRelationsRequest {
-  // The name of the memo.
-  string name = 1;
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Optional. The maximum number of relations to return.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token for pagination.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListMemoRelationsResponse {
+  // The list of relations.
   repeated MemoRelation relations = 1;
+
+  // A token for the next page of results.
+  string next_page_token = 2;
+
+  // The total count of relations.
+  int32 total_size = 3;
 }
 
 message CreateMemoCommentRequest {
-  // The name of the memo.
-  string name = 1;
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
 
-  // The comment to create.
-  Memo comment = 2;
+  // Required. The comment to create.
+  Memo comment = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The comment ID to use.
+  string comment_id = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListMemoCommentsRequest {
-  // The name of the memo.
-  string name = 1;
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Optional. The maximum number of comments to return.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token for pagination.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The order to sort results by.
+  string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListMemoCommentsResponse {
+  // The list of comment memos.
   repeated Memo memos = 1;
+
+  // A token for the next page of results.
+  string next_page_token = 2;
+
+  // The total count of comments.
+  int32 total_size = 3;
 }
 
 message ListMemoReactionsRequest {
-  // The name of the memo.
-  string name = 1;
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Optional. The maximum number of reactions to return.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token for pagination.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListMemoReactionsResponse {
+  // The list of reactions.
   repeated Reaction reactions = 1;
+
+  // A token for the next page of results.
+  string next_page_token = 2;
+
+  // The total count of reactions.
+  int32 total_size = 3;
 }
 
 message UpsertMemoReactionRequest {
-  // The name of the memo.
-  string name = 1;
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
 
-  Reaction reaction = 2;
+  // Required. The reaction to upsert.
+  Reaction reaction = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message DeleteMemoReactionRequest {
-  // The id of the reaction.
-  // Refer to the `Reaction.id`.
-  int32 id = 1;
+  // Required. The resource name of the reaction to delete.
+  // Format: reactions/{reaction}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Reaction"}
+  ];
 }

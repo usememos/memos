@@ -30,12 +30,16 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MarkdownServiceClient interface {
 	// ParseMarkdown parses the given markdown content and returns a list of nodes.
+	// This is a utility method that transforms markdown text into structured nodes.
 	ParseMarkdown(ctx context.Context, in *ParseMarkdownRequest, opts ...grpc.CallOption) (*ParseMarkdownResponse, error)
 	// RestoreMarkdownNodes restores the given nodes to markdown content.
+	// This is the inverse operation of ParseMarkdown.
 	RestoreMarkdownNodes(ctx context.Context, in *RestoreMarkdownNodesRequest, opts ...grpc.CallOption) (*RestoreMarkdownNodesResponse, error)
 	// StringifyMarkdownNodes stringify the given nodes to plain text content.
+	// This removes all markdown formatting and returns plain text.
 	StringifyMarkdownNodes(ctx context.Context, in *StringifyMarkdownNodesRequest, opts ...grpc.CallOption) (*StringifyMarkdownNodesResponse, error)
 	// GetLinkMetadata returns metadata for a given link.
+	// This is useful for generating link previews.
 	GetLinkMetadata(ctx context.Context, in *GetLinkMetadataRequest, opts ...grpc.CallOption) (*LinkMetadata, error)
 }
 
@@ -92,12 +96,16 @@ func (c *markdownServiceClient) GetLinkMetadata(ctx context.Context, in *GetLink
 // for forward compatibility.
 type MarkdownServiceServer interface {
 	// ParseMarkdown parses the given markdown content and returns a list of nodes.
+	// This is a utility method that transforms markdown text into structured nodes.
 	ParseMarkdown(context.Context, *ParseMarkdownRequest) (*ParseMarkdownResponse, error)
 	// RestoreMarkdownNodes restores the given nodes to markdown content.
+	// This is the inverse operation of ParseMarkdown.
 	RestoreMarkdownNodes(context.Context, *RestoreMarkdownNodesRequest) (*RestoreMarkdownNodesResponse, error)
 	// StringifyMarkdownNodes stringify the given nodes to plain text content.
+	// This removes all markdown formatting and returns plain text.
 	StringifyMarkdownNodes(context.Context, *StringifyMarkdownNodesRequest) (*StringifyMarkdownNodesResponse, error)
 	// GetLinkMetadata returns metadata for a given link.
+	// This is useful for generating link previews.
 	GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*LinkMetadata, error)
 	mustEmbedUnimplementedMarkdownServiceServer()
 }

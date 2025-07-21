@@ -13,7 +13,7 @@ const SectionMenuItem: React.FC<SettingMenuItemProps> = ({ text, icon: IconCompo
     <div
       onClick={onClick}
       className={`w-auto max-w-full px-3 leading-8 flex flex-row justify-start items-center cursor-pointer rounded-lg select-none hover:opacity-80 ${
-        isSelected ? "bg-zinc-100 shadow dark:bg-zinc-900" : ""
+        isSelected ? "bg-accent shadow" : ""
       }`}
     >
       <IconComponent className="w-4 h-auto mr-2 opacity-80 shrink-0" />

@@ -18,7 +18,7 @@ func (s *APIV1Service) CreateIdentityProvider(ctx context.Context, request *v1pb
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
-	if currentUser.Role != store.RoleHost {
+	if currentUser == nil || currentUser.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -97,6 +97,16 @@ func (s *APIV1Service) DeleteIdentityProvider(ctx context.Context, request *v1pb
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
 	}
+
+	// Check if the identity provider exists before trying to delete it
+	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{ID: &id})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to check identity provider existence: %v", err)
+	}
+	if identityProvider == nil {
+		return nil, status.Errorf(codes.NotFound, "identity provider not found")
+	}
+
 	if err := s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProvider{ID: id}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete identity provider, error: %+v", err)
 	}
@@ -125,6 +135,7 @@ func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider
 						Identifier:  oauth2Config.FieldMapping.Identifier,
 						DisplayName: oauth2Config.FieldMapping.DisplayName,
 						Email:       oauth2Config.FieldMapping.Email,
+						AvatarUrl:   oauth2Config.FieldMapping.AvatarUrl,
 					},
 				},
 			},
@@ -162,6 +173,7 @@ func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProv
 						Identifier:  oauth2Config.FieldMapping.Identifier,
 						DisplayName: oauth2Config.FieldMapping.DisplayName,
 						Email:       oauth2Config.FieldMapping.Email,
+						AvatarUrl:   oauth2Config.FieldMapping.AvatarUrl,
 					},
 				},
 			},

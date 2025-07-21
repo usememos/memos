@@ -1,45 +1,47 @@
-import { Textarea } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useUserStore, useWorkspaceSettingStore } from "@/store/v1";
+import { userStore, workspaceStore } from "@/store";
 import { User as UserPb } from "@/types/proto/api/v1/user_service";
-import { WorkspaceGeneralSetting, WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
-import { generateDialog } from "./Dialog";
 import UserAvatar from "./UserAvatar";
 
-type Props = DialogProps;
+interface Props {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+}
 
 interface State {
   avatarUrl: string;
   username: string;
-  nickname: string;
+  displayName: string;
   email: string;
   description: string;
 }
 
-const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
+function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const userStore = useUserStore();
   const [state, setState] = useState<State>({
     avatarUrl: currentUser.avatarUrl,
     username: currentUser.username,
-    nickname: currentUser.nickname,
+    displayName: currentUser.displayName,
     email: currentUser.email,
     description: currentUser.description,
   });
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const workspaceGeneralSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || WorkspaceGeneralSetting.fromPartial({});
+  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
 
   const handleCloseBtnClick = () => {
-    destroy();
+    onOpenChange(false);
   };
 
   const setPartialState = (partialState: Partial<State>) => {
@@ -71,9 +73,9 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     }
   };
 
-  const handleNicknameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDisplayNameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPartialState({
-      nickname: e.target.value as string,
+      displayName: e.target.value as string,
     });
   };
 
@@ -112,8 +114,8 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
       if (!isEqual(currentUser.username, state.username)) {
         updateMask.push("username");
       }
-      if (!isEqual(currentUser.nickname, state.nickname)) {
-        updateMask.push("nickname");
+      if (!isEqual(currentUser.displayName, state.displayName)) {
+        updateMask.push("display_name");
       }
       if (!isEqual(currentUser.email, state.email)) {
         updateMask.push("email");
@@ -128,7 +130,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
         UserPb.fromPartial({
           name: currentUser.name,
           username: state.username,
-          nickname: state.nickname,
+          displayName: state.displayName,
           email: state.email,
           avatarUrl: state.avatarUrl,
           description: state.description,
@@ -136,7 +138,8 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
         updateMask,
       );
       toast.success(t("message.update-succeed"));
-      handleCloseBtnClick();
+      onSuccess?.();
+      onOpenChange(false);
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
@@ -144,86 +147,74 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
   };
 
   return (
-    <>
-      <div className="dialog-header-container !w-64">
-        <p className="title-text">{t("setting.account-section.update-information")}</p>
-        <Button size="sm" variant="plain" onClick={handleCloseBtnClick}>
-          <XIcon className="w-5 h-auto" />
-        </Button>
-      </div>
-      <div className="dialog-content-container space-y-2">
-        <div className="w-full flex flex-row justify-start items-center">
-          <span className="text-sm mr-2">{t("common.avatar")}</span>
-          <label className="relative cursor-pointer hover:opacity-80">
-            <UserAvatar className="!w-10 !h-10" avatarUrl={state.avatarUrl} />
-            <input type="file" accept="image/*" className="absolute invisible w-full h-full inset-0" onChange={handleAvatarChanged} />
-          </label>
-          {state.avatarUrl && (
-            <XIcon
-              className="w-4 h-auto ml-1 cursor-pointer opacity-60 hover:opacity-80"
-              onClick={() =>
-                setPartialState({
-                  avatarUrl: "",
-                })
-              }
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t("setting.account-section.update-information")}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-row items-center gap-2">
+            <Label>{t("common.avatar")}</Label>
+            <label className="relative cursor-pointer hover:opacity-80">
+              <UserAvatar className="w-10 h-10" avatarUrl={state.avatarUrl} />
+              <input type="file" accept="image/*" className="absolute invisible w-full h-full inset-0" onChange={handleAvatarChanged} />
+            </label>
+            {state.avatarUrl && (
+              <XIcon
+                className="w-4 h-auto cursor-pointer opacity-60 hover:opacity-80"
+                onClick={() =>
+                  setPartialState({
+                    avatarUrl: "",
+                  })
+                }
+              />
+            )}
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="username">
+              {t("common.username")}
+              <span className="text-sm text-muted-foreground ml-1">({t("setting.account-section.username-note")})</span>
+            </Label>
+            <Input
+              id="username"
+              value={state.username}
+              onChange={handleUsernameChanged}
+              disabled={workspaceGeneralSetting.disallowChangeUsername}
             />
-          )}
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="displayName">
+              {t("common.nickname")}
+              <span className="text-sm text-muted-foreground ml-1">({t("setting.account-section.nickname-note")})</span>
+            </Label>
+            <Input
+              id="displayName"
+              value={state.displayName}
+              onChange={handleDisplayNameChanged}
+              disabled={workspaceGeneralSetting.disallowChangeNickname}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="email">
+              {t("common.email")}
+              <span className="text-sm text-muted-foreground ml-1">({t("setting.account-section.email-note")})</span>
+            </Label>
+            <Input id="email" type="email" value={state.email} onChange={handleEmailChanged} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="description">{t("common.description")}</Label>
+            <Textarea id="description" rows={2} value={state.description} onChange={handleDescriptionChanged} />
+          </div>
         </div>
-        <p className="text-sm">
-          {t("common.username")}
-          <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.username-note")})</span>
-        </p>
-        <Input
-          className="w-full"
-          value={state.username}
-          onChange={handleUsernameChanged}
-          disabled={workspaceGeneralSetting.disallowChangeUsername}
-        />
-        <p className="text-sm">
-          {t("common.nickname")}
-          <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.nickname-note")})</span>
-        </p>
-        <Input
-          className="w-full"
-          value={state.nickname}
-          onChange={handleNicknameChanged}
-          disabled={workspaceGeneralSetting.disallowChangeNickname}
-        />
-        <p className="text-sm">
-          {t("common.email")}
-          <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.email-note")})</span>
-        </p>
-        <Input fullWidth type="email" value={state.email} onChange={handleEmailChanged} />
-        <p className="text-sm">{t("common.description")}</p>
-        <Textarea
-          className="w-full"
-          color="neutral"
-          minRows={2}
-          maxRows={4}
-          value={state.description}
-          onChange={handleDescriptionChanged}
-        />
-        <div className="w-full flex flex-row justify-end items-center pt-4 space-x-2">
-          <Button variant="plain" onClick={handleCloseBtnClick}>
+        <DialogFooter>
+          <Button variant="ghost" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" onClick={handleSaveBtnClick}>
-            {t("common.save")}
-          </Button>
-        </div>
-      </div>
-    </>
-  );
-};
-
-function showUpdateAccountDialog() {
-  generateDialog(
-    {
-      className: "update-account-dialog",
-      dialogName: "update-account-dialog",
-    },
-    UpdateAccountDialog,
+          <Button onClick={handleSaveBtnClick}>{t("common.save")}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export default showUpdateAccountDialog;
+export default UpdateAccountDialog;

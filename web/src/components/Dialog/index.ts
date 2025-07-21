@@ -1,1 +1,0 @@
-export { generateDialog } from "./BaseDialog";

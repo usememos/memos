@@ -1,7 +1,7 @@
 import { head } from "lodash-es";
 import React from "react";
+import { cn } from "@/lib/utils";
 import { ListNode_Kind, Node, NodeType } from "@/types/proto/api/v1/markdown_service";
-import { cn } from "@/utils";
 import Renderer from "./Renderer";
 
 interface Props {
@@ -29,24 +29,22 @@ const List: React.FC<Props> = ({ kind, indent, children }: Props) => {
   };
 
   const getAttributes = () => {
-    if (kind === ListNode_Kind.ORDERED) {
-      const firstChild = head(children);
-      if (firstChild?.type === NodeType.ORDERED_LIST_ITEM) {
-        return {
-          start: firstChild.orderedListItemNode?.number,
-        };
-      }
+    const attrs: any = {
+      style: { paddingLeft: `${indent > 0 ? indent * 10 : 20}px` },
+    };
+    const firstChild = head(children);
+    if (firstChild?.type === NodeType.ORDERED_LIST_ITEM) {
+      attrs.start = firstChild.orderedListItemNode?.number;
+    } else if (firstChild?.type === NodeType.TASK_LIST_ITEM) {
+      attrs.style = { paddingLeft: `${indent * 8}px` };
     }
-    return {};
+    return attrs;
   };
 
   return React.createElement(
     getListContainer(),
     {
-      className: cn(
-        `list-inside ${kind === ListNode_Kind.ORDERED ? "list-decimal" : kind === ListNode_Kind.UNORDERED ? "list-disc" : "list-none"}`,
-        indent > 0 ? `pl-${2 * indent}` : "",
-      ),
+      className: cn(kind === ListNode_Kind.ORDERED ? "list-decimal" : kind === ListNode_Kind.UNORDERED ? "list-disc" : "list-none"),
       ...getAttributes(),
     },
     children.map((child, index) => {

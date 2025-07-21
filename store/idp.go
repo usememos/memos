@@ -46,7 +46,6 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *storepb.Iden
 	if err != nil {
 		return nil, err
 	}
-	s.idpCache.Store(identityProvider.Id, identityProvider)
 	return identityProvider, nil
 }
 
@@ -63,21 +62,11 @@ func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityPro
 			return nil, err
 		}
 		identityProviders = append(identityProviders, identityProvider)
-		s.idpCache.Store(identityProvider.Id, identityProvider)
 	}
 	return identityProviders, nil
 }
 
 func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProvider) (*storepb.IdentityProvider, error) {
-	if find.ID != nil {
-		if cache, ok := s.idpCache.Load(*find.ID); ok {
-			identityProvider, ok := cache.(*storepb.IdentityProvider)
-			if ok {
-				return identityProvider, nil
-			}
-		}
-	}
-
 	list, err := s.ListIdentityProviders(ctx, find)
 	if err != nil {
 		return nil, err
@@ -127,7 +116,6 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 	if err != nil {
 		return nil, err
 	}
-	s.idpCache.Store(identityProvider.Id, identityProvider)
 	return identityProvider, nil
 }
 
@@ -136,8 +124,6 @@ func (s *Store) DeleteIdentityProvider(ctx context.Context, delete *DeleteIdenti
 	if err != nil {
 		return err
 	}
-
-	s.idpCache.Delete(delete.ID)
 	return nil
 }
 

@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/httpbody.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service AttachmentService {
+  // CreateAttachment creates a new attachment.
+  rpc CreateAttachment(CreateAttachmentRequest) returns (Attachment) {
+    option (google.api.http) = {
+      post: "/api/v1/attachments"
+      body: "attachment"
+    };
+    option (google.api.method_signature) = "attachment";
+  }
+  // ListAttachments lists all attachments.
+  rpc ListAttachments(ListAttachmentsRequest) returns (ListAttachmentsResponse) {
+    option (google.api.http) = {get: "/api/v1/attachments"};
+  }
+  // GetAttachment returns a attachment by name.
+  rpc GetAttachment(GetAttachmentRequest) returns (Attachment) {
+    option (google.api.http) = {get: "/api/v1/{name=attachments/*}"};
+    option (google.api.method_signature) = "name";
+  }
+  // GetAttachmentBinary returns a attachment binary by name.
+  rpc GetAttachmentBinary(GetAttachmentBinaryRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {get: "/file/{name=attachments/*}/{filename}"};
+    option (google.api.method_signature) = "name,filename,thumbnail";
+  }
+  // UpdateAttachment updates a attachment.
+  rpc UpdateAttachment(UpdateAttachmentRequest) returns (Attachment) {
+    option (google.api.http) = {
+      patch: "/api/v1/{attachment.name=attachments/*}"
+      body: "attachment"
+    };
+    option (google.api.method_signature) = "attachment,update_mask";
+  }
+  // DeleteAttachment deletes a attachment by name.
+  rpc DeleteAttachment(DeleteAttachmentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=attachments/*}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+message Attachment {
+  option (google.api.resource) = {
+    type: "memos.api.v1/Attachment"
+    pattern: "attachments/{attachment}"
+    singular: "attachment"
+    plural: "attachments"
+  };
+
+  // The name of the attachment.
+  // Format: attachments/{attachment}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Output only. The creation timestamp.
+  google.protobuf.Timestamp create_time = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The filename of the attachment.
+  string filename = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Input only. The content of the attachment.
+  bytes content = 4 [(google.api.field_behavior) = INPUT_ONLY];
+
+  // Optional. The external link of the attachment.
+  string external_link = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // The MIME type of the attachment.
+  string type = 6 [(google.api.field_behavior) = REQUIRED];
+
+  // Output only. The size of the attachment in bytes.
+  int64 size = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Optional. The related memo. Refer to `Memo.name`.
+  // Format: memos/{memo}
+  optional string memo = 8 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message CreateAttachmentRequest {
+  // Required. The attachment to create.
+  Attachment attachment = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The attachment ID to use for this attachment.
+  // If empty, a unique ID will be generated.
+  string attachment_id = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListAttachmentsRequest {
+  // Optional. The maximum number of attachments to return.
+  // The service may return fewer than this value.
+  // If unspecified, at most 50 attachments will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token, received from a previous `ListAttachments` call.
+  // Provide this to retrieve the subsequent page.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Filter to apply to the list results.
+  // Example: "type=image/png" or "filename:*.jpg"
+  // Supported operators: =, !=, <, <=, >, >=, :
+  // Supported fields: filename, type, size, create_time, memo
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The order to sort results by.
+  // Example: "create_time desc" or "filename asc"
+  string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListAttachmentsResponse {
+  // The list of attachments.
+  repeated Attachment attachments = 1;
+
+  // A token that can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+
+  // The total count of attachments (may be approximate).
+  int32 total_size = 3;
+}
+
+message GetAttachmentRequest {
+  // Required. The attachment name of the attachment to retrieve.
+  // Format: attachments/{attachment}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Attachment"}
+  ];
+}
+
+message GetAttachmentBinaryRequest {
+  // Required. The attachment name of the attachment.
+  // Format: attachments/{attachment}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Attachment"}
+  ];
+
+  // The filename of the attachment. Mainly used for downloading.
+  string filename = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. A flag indicating if the thumbnail version of the attachment should be returned.
+  bool thumbnail = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message UpdateAttachmentRequest {
+  // Required. The attachment which replaces the attachment on the server.
+  Attachment attachment = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteAttachmentRequest {
+  // Required. The attachment name of the attachment to delete.
+  // Format: attachments/{attachment}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Attachment"}
+  ];
+}

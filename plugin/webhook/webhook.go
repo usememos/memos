@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/pkg/errors"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
@@ -18,16 +18,27 @@ var (
 	timeout = 30 * time.Second
 )
 
+type WebhookRequestPayload struct {
+	// The target URL for the webhook request.
+	URL string `json:"url"`
+	// The type of activity that triggered this webhook.
+	ActivityType string `json:"activityType"`
+	// The resource name of the creator. Format: users/{user}
+	Creator string `json:"creator"`
+	// The memo that triggered this webhook (if applicable).
+	Memo *v1pb.Memo `json:"memo"`
+}
+
 // Post posts the message to webhook endpoint.
-func Post(requestPayload *v1pb.WebhookRequestPayload) error {
-	body, err := protojson.Marshal(requestPayload)
+func Post(requestPayload *WebhookRequestPayload) error {
+	body, err := json.Marshal(requestPayload)
 	if err != nil {
-		return errors.Wrapf(err, "failed to marshal webhook request to %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to marshal webhook request to %s", requestPayload.URL)
 	}
 
-	req, err := http.NewRequest("POST", requestPayload.Url, bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", requestPayload.URL, bytes.NewBuffer(body))
 	if err != nil {
-		return errors.Wrapf(err, "failed to construct webhook request to %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to construct webhook request to %s", requestPayload.URL)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -36,17 +47,17 @@ func Post(requestPayload *v1pb.WebhookRequestPayload) error {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return errors.Wrapf(err, "failed to post webhook to %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to post webhook to %s", requestPayload.URL)
 	}
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return errors.Wrapf(err, "failed to read webhook response from %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to read webhook response from %s", requestPayload.URL)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return errors.Errorf("failed to post webhook %s, status code: %d, response body: %s", requestPayload.Url, resp.StatusCode, b)
+		return errors.Errorf("failed to post webhook %s, status code: %d, response body: %s", requestPayload.URL, resp.StatusCode, b)
 	}
 
 	response := &struct {
@@ -54,7 +65,7 @@ func Post(requestPayload *v1pb.WebhookRequestPayload) error {
 		Message string `json:"message"`
 	}{}
 	if err := json.Unmarshal(b, response); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal webhook response from %s", requestPayload.Url)
+		return errors.Wrapf(err, "failed to unmarshal webhook response from %s", requestPayload.URL)
 	}
 
 	if response.Code != 0 {
@@ -62,4 +73,18 @@ func Post(requestPayload *v1pb.WebhookRequestPayload) error {
 	}
 
 	return nil
+}
+
+// PostAsync posts the message to webhook endpoint asynchronously.
+// It spawns a new goroutine to handle the request and does not wait for the response.
+func PostAsync(requestPayload *WebhookRequestPayload) {
+	go func() {
+		if err := Post(requestPayload); err != nil {
+			// Since we're in a goroutine, we can only log the error
+			slog.Warn("Failed to dispatch webhook asynchronously",
+				slog.String("url", requestPayload.URL),
+				slog.String("activityType", requestPayload.ActivityType),
+				slog.Any("err", err))
+		}
+	}()
 }

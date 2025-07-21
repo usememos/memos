@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -33,7 +32,7 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 		return nil, err
 	}
 	if len(list) != 1 {
-		return nil, errors.Wrapf(nil, "unexpected user count: %d", len(list))
+		return nil, errors.Errorf("unexpected user count: %d", len(list))
 	}
 
 	return list[0], nil
@@ -64,6 +63,9 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	}
 	if v := update.Description; v != nil {
 		set, args = append(set, "`description` = ?"), append(args, *v)
+	}
+	if v := update.Role; v != nil {
+		set, args = append(set, "`role` = ?"), append(args, *v)
 	}
 	args = append(args, update.ID)
 
@@ -99,10 +101,6 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	}
 
 	orderBy := []string{"`created_ts` DESC", "`row_status` DESC"}
-	if find.Random {
-		orderBy = slices.Concat([]string{"RAND()"}, orderBy)
-	}
-
 	query := "SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, `description`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE " + strings.Join(where, " AND ") + " ORDER BY " + strings.Join(orderBy, ", ")
 	if v := find.Limit; v != nil {
 		query += fmt.Sprintf(" LIMIT %d", *v)
@@ -147,7 +145,7 @@ func (d *DB) GetUser(ctx context.Context, find *store.FindUser) (*store.User, er
 		return nil, err
 	}
 	if len(list) != 1 {
-		return nil, errors.Wrapf(nil, "unexpected user count: %d", len(list))
+		return nil, errors.Errorf("unexpected user count: %d", len(list))
 	}
 	return list[0], nil
 }

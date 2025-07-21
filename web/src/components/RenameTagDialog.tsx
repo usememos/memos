@@ -1,22 +1,22 @@
-import { List, ListItem } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
-import { XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { memoServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
-import { useUserStatsStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
-import { generateDialog } from "./Dialog";
 
-interface Props extends DialogProps {
+interface Props {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   tag: string;
+  onSuccess?: () => void;
 }
 
-const RenameTagDialog: React.FC<Props> = (props: Props) => {
-  const { tag, destroy } = props;
+function RenameTagDialog({ open, onOpenChange, tag, onSuccess }: Props) {
   const t = useTranslate();
-  const userStatsStore = useUserStatsStore();
   const [newName, setNewName] = useState(tag);
   const requestState = useLoading(false);
 
@@ -26,75 +26,64 @@ const RenameTagDialog: React.FC<Props> = (props: Props) => {
 
   const handleConfirm = async () => {
     if (!newName || newName.includes(" ")) {
-      toast.error("Tag name cannot be empty or contain spaces");
+      toast.error(t("tag.rename-error-empty"));
       return;
     }
     if (newName === tag) {
-      toast.error("New name cannot be the same as the old name");
+      toast.error(t("tag.rename-error-repeat"));
       return;
     }
 
     try {
+      requestState.setLoading();
       await memoServiceClient.renameMemoTag({
         parent: "memos/-",
         oldTag: tag,
         newTag: newName,
       });
-      toast.success("Rename tag successfully");
-      userStatsStore.setStateId();
+      toast.success(t("tag.rename-success"));
+      requestState.setFinish();
+      onSuccess?.();
+      onOpenChange(false);
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
+      requestState.setError();
     }
-    destroy();
   };
 
   return (
-    <>
-      <div className="dialog-header-container">
-        <p className="title-text">{"Rename tag"}</p>
-        <Button size="sm" variant="plain" onClick={() => destroy()}>
-          <XIcon className="w-5 h-auto" />
-        </Button>
-      </div>
-      <div className="dialog-content-container max-w-xs">
-        <div className="w-full flex flex-col justify-start items-start mb-3">
-          <div className="relative w-full mb-2 flex flex-row justify-start items-center space-x-2">
-            <span className="w-20 text-sm whitespace-nowrap shrink-0 text-right">Old Name</span>
-            <Input className="w-full" readOnly disabled type="text" placeholder="A new tag name" value={tag} />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t("tag.rename-tag")}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="oldName">{t("tag.old-name")}</Label>
+            <Input id="oldName" readOnly disabled type="text" value={tag} />
           </div>
-          <div className="relative w-full mb-2 flex flex-row justify-start items-center space-x-2">
-            <span className="w-20 text-sm whitespace-nowrap shrink-0 text-right">New Name</span>
-            <Input className="w-full" type="text" placeholder="A new tag name" value={newName} onChange={handleTagNameInputChange} />
+          <div className="grid gap-2">
+            <Label htmlFor="newName">{t("tag.new-name")}</Label>
+            <Input id="newName" type="text" placeholder="A new tag name" value={newName} onChange={handleTagNameInputChange} />
           </div>
-          <List size="sm" marker="disc">
-            <ListItem>
-              <p className="leading-5">All your memos with this tag will be updated.</p>
-            </ListItem>
-          </List>
+          <div className="text-sm text-muted-foreground">
+            <ul className="list-disc list-inside">
+              <li>{t("tag.rename-tip")}</li>
+            </ul>
+          </div>
         </div>
-        <div className="w-full flex flex-row justify-end items-center space-x-2">
-          <Button variant="plain" disabled={requestState.isLoading} onClick={destroy}>
+        <DialogFooter>
+          <Button variant="ghost" disabled={requestState.isLoading} onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
-          <Button color="primary" disabled={requestState.isLoading} onClick={handleConfirm}>
+          <Button disabled={requestState.isLoading} onClick={handleConfirm}>
             {t("common.confirm")}
           </Button>
-        </div>
-      </div>
-    </>
-  );
-};
-
-function showRenameTagDialog(props: Pick<Props, "tag">) {
-  generateDialog(
-    {
-      className: "rename-tag-dialog",
-      dialogName: "rename-tag-dialog",
-    },
-    RenameTagDialog,
-    props,
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export default showRenameTagDialog;
+export default RenameTagDialog;

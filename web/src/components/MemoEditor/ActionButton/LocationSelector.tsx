@@ -1,10 +1,11 @@
-import { Button, Input } from "@usememos/mui";
 import { LatLng } from "leaflet";
 import { MapPinIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import LeafletMap from "@/components/LeafletMap";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Location } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 
@@ -85,49 +86,54 @@ const LocationSelector = (props: Props) => {
     setState({ ...state, position });
   };
 
-  const removeLocation = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const removeLocation = () => {
     props.onChange(undefined);
   };
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger asChild>
-        <Button className="flex items-center justify-center" size="sm" variant="plain">
-          <MapPinIcon className="w-5 h-5 mx-auto shrink-0" />
-          {props.location && (
-            <>
-              <span className="ml-0.5 text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-32">{props.location.placeholder}</span>
-              <XIcon className="w-5 h-5 mx-auto shrink-0 hidden group-hover:block opacity-60 hover:opacity-80" onClick={removeLocation} />
-            </>
-          )}
-        </Button>
-      </PopoverTrigger>
+      {props.location ? (
+        <div className="flex items-center">
+          <PopoverTrigger asChild>
+            <Button variant="ghost" className="rounded-r-none">
+              <MapPinIcon className="size-5 shrink-0" />
+              <span className="ml-0.5 text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-28">{props.location.placeholder}</span>
+            </Button>
+          </PopoverTrigger>
+          <Button variant="ghost" size="icon" className="rounded-l-none opacity-60 hover:opacity-80" onClick={removeLocation}>
+            <XIcon className="size-4 shrink-0" />
+          </Button>
+        </div>
+      ) : (
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <MapPinIcon className="size-5 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+      )}
       <PopoverContent align="center">
-        <div className="min-w-80 sm:w-128 flex flex-col justify-start items-start">
+        <div className="min-w-80 sm:w-lg p-1 flex flex-col justify-start items-start">
           <LeafletMap key={JSON.stringify(state.initilized)} latlng={state.position} onChange={onPositionChanged} />
           <div className="mt-2 w-full flex flex-row justify-between items-center gap-2">
-            <div className="flex flex-row items-center justify-start gap-2">
-              <Input
-                placeholder="Choose a position first."
-                value={state.placeholder}
-                size="sm"
-                startDecorator={
-                  state.position && (
-                    <span className="text-xs opacity-60">
-                      [{state.position.lat.toFixed(2)}, {state.position.lng.toFixed(2)}]
-                    </span>
-                  )
-                }
-                disabled={!state.position}
-                onChange={(e) => setState((state) => ({ ...state, placeholder: e.target.value }))}
-              />
+            <div className="flex flex-row items-center justify-start gap-2 w-full">
+              <div className="relative flex-1">
+                {state.position && (
+                  <div className="absolute left-2 top-1/2 -translate-y-1/2 text-xs leading-6 opacity-60 z-10">
+                    [{state.position.lat.toFixed(2)}, {state.position.lng.toFixed(2)}]
+                  </div>
+                )}
+                <Input
+                  placeholder="Choose a position first."
+                  value={state.placeholder}
+                  disabled={!state.position}
+                  className={state.position ? "pl-24" : ""}
+                  onChange={(e) => setState((state) => ({ ...state, placeholder: e.target.value }))}
+                />
+              </div>
             </div>
             <Button
               className="shrink-0"
               color="primary"
-              size="sm"
               onClick={() => {
                 props.onChange(
                   Location.fromPartial({

@@ -3,10 +3,12 @@ package v1
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
@@ -55,8 +57,13 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 }
 
 func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.DeleteMemoReactionRequest) (*emptypb.Empty, error) {
+	reactionID, err := ExtractReactionIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid reaction name: %v", err)
+	}
+
 	if err := s.Store.DeleteReaction(ctx, &store.DeleteReaction{
-		ID: request.Id,
+		ID: reactionID,
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete reaction")
 	}
@@ -71,10 +78,13 @@ func (s *APIV1Service) convertReactionFromStore(ctx context.Context, reaction *s
 	if err != nil {
 		return nil, err
 	}
+
+	reactionUID := fmt.Sprintf("%d", reaction.ID)
 	return &v1pb.Reaction{
-		Id:           reaction.ID,
+		Name:         fmt.Sprintf("%s%s", ReactionNamePrefix, reactionUID),
 		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
 		ContentId:    reaction.ContentID,
 		ReactionType: reaction.ReactionType,
+		CreateTime:   timestamppb.New(time.Unix(reaction.CreatedTs, 0)),
 	}, nil
 }

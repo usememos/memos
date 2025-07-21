@@ -10,13 +10,15 @@ import (
 )
 
 const (
-	WorkspaceSettingNamePrefix = "settings/"
+	WorkspaceSettingNamePrefix = "workspace/settings/"
 	UserNamePrefix             = "users/"
 	MemoNamePrefix             = "memos/"
-	ResourceNamePrefix         = "resources/"
+	AttachmentNamePrefix       = "attachments/"
+	ReactionNamePrefix         = "reactions/"
 	InboxNamePrefix            = "inboxes/"
 	IdentityProviderNamePrefix = "identityProviders/"
 	ActivityNamePrefix         = "activities/"
+	WebhookNamePrefix          = "webhooks/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -40,11 +42,22 @@ func GetNameParentTokens(name string, tokenPrefixes ...string) ([]string, error)
 }
 
 func ExtractWorkspaceSettingKeyFromName(name string) (string, error) {
-	tokens, err := GetNameParentTokens(name, WorkspaceSettingNamePrefix)
-	if err != nil {
-		return "", err
+	const prefix = "workspace/settings/"
+	if !strings.HasPrefix(name, prefix) {
+		return "", errors.Errorf("invalid workspace setting name: expected prefix %q, got %q", prefix, name)
 	}
-	return tokens[0], nil
+
+	settingKey := strings.TrimPrefix(name, prefix)
+	if settingKey == "" {
+		return "", errors.Errorf("invalid workspace setting name: empty setting key in %q", name)
+	}
+
+	// Ensure there are no additional path segments
+	if strings.Contains(settingKey, "/") {
+		return "", errors.Errorf("invalid workspace setting name: setting key cannot contain '/' in %q", name)
+	}
+
+	return settingKey, nil
 }
 
 // ExtractUserIDFromName returns the uid from a resource name.
@@ -71,13 +84,27 @@ func ExtractMemoUIDFromName(name string) (string, error) {
 	return id, nil
 }
 
-// ExtractResourceUIDFromName returns the resource UID from a resource name.
-func ExtractResourceUIDFromName(name string) (string, error) {
-	tokens, err := GetNameParentTokens(name, ResourceNamePrefix)
+// ExtractAttachmentUIDFromName returns the attachment UID from a resource name.
+func ExtractAttachmentUIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, AttachmentNamePrefix)
 	if err != nil {
 		return "", err
 	}
 	id := tokens[0]
+	return id, nil
+}
+
+// ExtractReactionIDFromName returns the reaction ID from a resource name.
+// e.g., "reactions/123" -> 123.
+func ExtractReactionIDFromName(name string) (int32, error) {
+	tokens, err := GetNameParentTokens(name, ReactionNamePrefix)
+	if err != nil {
+		return 0, err
+	}
+	id, err := util.ConvertStringToInt32(tokens[0])
+	if err != nil {
+		return 0, errors.Errorf("invalid reaction ID %q", tokens[0])
+	}
 	return id, nil
 }
 
@@ -116,4 +143,20 @@ func ExtractActivityIDFromName(name string) (int32, error) {
 		return 0, errors.Errorf("invalid activity ID %q", tokens[0])
 	}
 	return id, nil
+}
+
+// ExtractWebhookIDFromName returns the webhook ID from a resource name.
+func ExtractWebhookIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, UserNamePrefix, WebhookNamePrefix)
+	if err != nil {
+		return "", err
+	}
+	if len(tokens) != 2 {
+		return "", errors.Errorf("invalid webhook name format: %q", name)
+	}
+	webhookID := tokens[1]
+	if webhookID == "" {
+		return "", errors.Errorf("invalid webhook ID %q", webhookID)
+	}
+	return webhookID, nil
 }

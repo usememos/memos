@@ -2,9 +2,13 @@ package v1
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/pkg/errors"
+
+	"github.com/usememos/memos/internal/util"
 )
 
 const (
@@ -15,13 +19,12 @@ const (
 	KeyID = "v1"
 	// AccessTokenAudienceName is the audience name of the access token.
 	AccessTokenAudienceName = "user.access-token"
-	AccessTokenDuration     = 7 * 24 * time.Hour
+	// SessionSlidingDuration is the sliding expiration duration for user sessions (2 weeks).
+	// Sessions are considered valid if last_accessed_time + SessionSlidingDuration > current_time.
+	SessionSlidingDuration = 14 * 24 * time.Hour
 
-	// CookieExpDuration expires slightly earlier than the jwt expiration. Client would be logged out if the user
-	// cookie expires, thus the client would always logout first before attempting to make a request with the expired jwt.
-	CookieExpDuration = AccessTokenDuration - 1*time.Minute
-	// AccessTokenCookieName is the cookie name of access token.
-	AccessTokenCookieName = "memos.access-token"
+	// SessionCookieName is the cookie name of user session ID.
+	SessionCookieName = "user_session"
 )
 
 type ClaimsMessage struct {
@@ -60,4 +63,29 @@ func generateToken(username string, userID int32, audience string, expirationTim
 	}
 
 	return tokenString, nil
+}
+
+// GenerateSessionID generates a unique session ID using UUIDv4.
+func GenerateSessionID() (string, error) {
+	return util.GenUUID(), nil
+}
+
+// BuildSessionCookieValue builds the session cookie value in format {userID}-{sessionID}.
+func BuildSessionCookieValue(userID int32, sessionID string) string {
+	return fmt.Sprintf("%d-%s", userID, sessionID)
+}
+
+// ParseSessionCookieValue parses the session cookie value to extract userID and sessionID.
+func ParseSessionCookieValue(cookieValue string) (int32, string, error) {
+	parts := strings.SplitN(cookieValue, "-", 2)
+	if len(parts) != 2 {
+		return 0, "", errors.New("invalid session cookie format")
+	}
+
+	userID, err := util.ConvertStringToInt32(parts[0])
+	if err != nil {
+		return 0, "", errors.Errorf("invalid user ID in session cookie: %v", err)
+	}
+
+	return userID, parts[1], nil
 }

@@ -1,20 +1,31 @@
-import { Dropdown, Menu, MenuButton, MenuItem, Tooltip } from "@mui/joy";
 import { Edit3Icon, MoreVerticalIcon, TrashIcon, PlusIcon } from "lucide-react";
-import { userServiceClient } from "@/grpcweb";
+import { observer } from "mobx-react-lite";
+import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { shortcutServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
-import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoFilterStore, useUserStore } from "@/store/v1";
-import { Shortcut } from "@/types/proto/api/v1/user_service";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
+import { userStore } from "@/store";
+import memoFilterStore from "@/store/memoFilter";
+import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import { useTranslate } from "@/utils/i18n";
-import showCreateShortcutDialog from "../CreateShortcutDialog";
+import CreateShortcutDialog from "../CreateShortcutDialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
-const ShortcutsSection = () => {
+const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
+
+// Helper function to extract shortcut ID from resource name
+// Format: users/{user}/shortcuts/{shortcut}
+const getShortcutId = (name: string): string => {
+  const parts = name.split("/");
+  return parts.length === 4 ? parts[3] : "";
+};
+
+const ShortcutsSection = observer(() => {
   const t = useTranslate();
-  const user = useCurrentUser();
-  const userStore = useUserStore();
-  const memoFilterStore = useMemoFilterStore();
-  const shortcuts = userStore.getState().shortcuts;
+  const shortcuts = userStore.state.shortcuts;
+  const [isCreateShortcutDialogOpen, setIsCreateShortcutDialogOpen] = useState(false);
+  const [editingShortcut, setEditingShortcut] = useState<Shortcut | undefined>();
 
   useAsyncEffect(async () => {
     await userStore.fetchShortcuts();
@@ -23,54 +34,87 @@ const ShortcutsSection = () => {
   const handleDeleteShortcut = async (shortcut: Shortcut) => {
     const confirmed = window.confirm("Are you sure you want to delete this shortcut?");
     if (confirmed) {
-      await userServiceClient.deleteShortcut({ parent: user.name, id: shortcut.id });
+      await shortcutServiceClient.deleteShortcut({ name: shortcut.name });
       await userStore.fetchShortcuts();
     }
   };
 
+  const handleCreateShortcut = () => {
+    setEditingShortcut(undefined);
+    setIsCreateShortcutDialogOpen(true);
+  };
+
+  const handleEditShortcut = (shortcut: Shortcut) => {
+    setEditingShortcut(shortcut);
+    setIsCreateShortcutDialogOpen(true);
+  };
+
+  const handleShortcutDialogSuccess = () => {
+    setIsCreateShortcutDialogOpen(false);
+    setEditingShortcut(undefined);
+  };
+
   return (
     <div className="w-full flex flex-col justify-start items-start mt-3 px-1 h-auto shrink-0 flex-nowrap hide-scrollbar">
-      <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-gray-400 select-none">
+      <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-muted-foreground select-none">
         <span>{t("common.shortcuts")}</span>
-        <Tooltip title={t("common.create")} placement="top">
-          <PlusIcon className="w-4 h-auto" onClick={() => showCreateShortcutDialog({})} />
-        </Tooltip>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PlusIcon className="w-4 h-auto cursor-pointer" onClick={handleCreateShortcut} />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t("common.create")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
         {shortcuts.map((shortcut) => {
-          const selected = memoFilterStore.shortcut === shortcut.id;
+          const shortcutId = getShortcutId(shortcut.name);
+          const maybeEmoji = shortcut.title.split(" ")[0];
+          const emoji = emojiRegex.test(maybeEmoji) ? maybeEmoji : undefined;
+          const title = emoji ? shortcut.title.replace(emoji, "") : shortcut.title;
+          const selected = memoFilterStore.shortcut === shortcutId;
           return (
             <div
-              key={shortcut.id}
-              className="shrink-0 w-full text-sm rounded-md leading-6 flex flex-row justify-between items-center select-none gap-2 text-gray-600 dark:text-gray-400 dark:border-zinc-800"
+              key={shortcutId}
+              className="shrink-0 w-full text-sm rounded-md leading-6 flex flex-row justify-between items-center select-none gap-2 text-muted-foreground"
             >
               <span
-                className={cn("truncate cursor-pointer dark:opacity-80", selected && "font-medium underline")}
-                onClick={() => (selected ? memoFilterStore.setShortcut(undefined) : memoFilterStore.setShortcut(shortcut.id))}
+                className={cn("truncate cursor-pointer text-muted-foreground", selected && "text-primary font-medium")}
+                onClick={() => (selected ? memoFilterStore.setShortcut(undefined) : memoFilterStore.setShortcut(shortcutId))}
               >
-                {shortcut.title}
+                {emoji && <span className="text-base mr-1">{emoji}</span>}
+                {title.trim()}
               </span>
-              <Dropdown>
-                <MenuButton slots={{ root: "div" }}>
-                  <MoreVerticalIcon className="w-4 h-auto shrink-0 opacity-40" />
-                </MenuButton>
-                <Menu size="sm" placement="bottom-start">
-                  <MenuItem onClick={() => showCreateShortcutDialog({ shortcut })}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <MoreVerticalIcon className="w-4 h-auto shrink-0 text-muted-foreground cursor-pointer hover:text-foreground" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" alignOffset={-12}>
+                  <DropdownMenuItem onClick={() => handleEditShortcut(shortcut)}>
                     <Edit3Icon className="w-4 h-auto" />
                     {t("common.edit")}
-                  </MenuItem>
-                  <MenuItem color="danger" onClick={() => handleDeleteShortcut(shortcut)}>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleDeleteShortcut(shortcut)}>
                     <TrashIcon className="w-4 h-auto" />
                     {t("common.delete")}
-                  </MenuItem>
-                </Menu>
-              </Dropdown>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           );
         })}
       </div>
+      <CreateShortcutDialog
+        open={isCreateShortcutDialogOpen}
+        onOpenChange={setIsCreateShortcutDialogOpen}
+        shortcut={editingShortcut}
+        onSuccess={handleShortcutDialogSuccess}
+      />
     </div>
   );
-};
+});
 
 export default ShortcutsSection;

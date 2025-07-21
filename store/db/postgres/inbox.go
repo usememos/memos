@@ -100,7 +100,7 @@ func (d *DB) GetInbox(ctx context.Context, find *store.FindInbox) (*store.Inbox,
 		return nil, errors.Wrap(err, "failed to get inbox")
 	}
 	if len(list) != 1 {
-		return nil, errors.Wrapf(nil, "unexpected inbox count: %d", len(list))
+		return nil, errors.Errorf("unexpected inbox count: %d", len(list))
 	}
 	return list[0], nil
 }

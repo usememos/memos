@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "gen/api/v1";
+
+service ShortcutService {
+  // ListShortcuts returns a list of shortcuts for a user.
+  rpc ListShortcuts(ListShortcutsRequest) returns (ListShortcutsResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/shortcuts"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // GetShortcut gets a shortcut by name.
+  rpc GetShortcut(GetShortcutRequest) returns (Shortcut) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*/shortcuts/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // CreateShortcut creates a new shortcut for a user.
+  rpc CreateShortcut(CreateShortcutRequest) returns (Shortcut) {
+    option (google.api.http) = {
+      post: "/api/v1/{parent=users/*}/shortcuts"
+      body: "shortcut"
+    };
+    option (google.api.method_signature) = "parent,shortcut";
+  }
+
+  // UpdateShortcut updates a shortcut for a user.
+  rpc UpdateShortcut(UpdateShortcutRequest) returns (Shortcut) {
+    option (google.api.http) = {
+      patch: "/api/v1/{shortcut.name=users/*/shortcuts/*}"
+      body: "shortcut"
+    };
+    option (google.api.method_signature) = "shortcut,update_mask";
+  }
+
+  // DeleteShortcut deletes a shortcut for a user.
+  rpc DeleteShortcut(DeleteShortcutRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*/shortcuts/*}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+message Shortcut {
+  option (google.api.resource) = {
+    type: "memos.api.v1/Shortcut"
+    pattern: "users/{user}/shortcuts/{shortcut}"
+    singular: "shortcut"
+    plural: "shortcuts"
+  };
+
+  // The resource name of the shortcut.
+  // Format: users/{user}/shortcuts/{shortcut}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The title of the shortcut.
+  string title = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The filter expression for the shortcut.
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListShortcutsRequest {
+  // Required. The parent resource where shortcuts are listed.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api.v1/Shortcut"}
+  ];
+}
+
+message ListShortcutsResponse {
+  // The list of shortcuts.
+  repeated Shortcut shortcuts = 1;
+}
+
+message GetShortcutRequest {
+  // Required. The resource name of the shortcut to retrieve.
+  // Format: users/{user}/shortcuts/{shortcut}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Shortcut"}
+  ];
+}
+
+message CreateShortcutRequest {
+  // Required. The parent resource where this shortcut will be created.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api.v1/Shortcut"}
+  ];
+
+  // Required. The shortcut to create.
+  Shortcut shortcut = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. If set, validate the request, but do not actually create the shortcut.
+  bool validate_only = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message UpdateShortcutRequest {
+  // Required. The shortcut resource which replaces the resource on the server.
+  Shortcut shortcut = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message DeleteShortcutRequest {
+  // Required. The resource name of the shortcut to delete.
+  // Format: users/{user}/shortcuts/{shortcut}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Shortcut"}
+  ];
+}

@@ -1,17 +1,16 @@
 import { LinkIcon, XIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { useMemoStore } from "@/store/v1";
-import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo } from "@/types/proto/api/v1/memo_service";
+import { memoStore } from "@/store";
+import { Memo, MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 
 interface Props {
   relationList: MemoRelation[];
   setRelationList: (relationList: MemoRelation[]) => void;
 }
 
-const RelationListView = (props: Props) => {
+const RelationListView = observer((props: Props) => {
   const { relationList, setRelationList } = props;
-  const memoStore = useMemoStore();
   const [referencingMemoList, setReferencingMemoList] = useState<Memo[]>([]);
 
   useEffect(() => {
@@ -38,7 +37,7 @@ const RelationListView = (props: Props) => {
             return (
               <div
                 key={memo.name}
-                className="w-auto max-w-xs overflow-hidden flex flex-row justify-start items-center bg-zinc-100 dark:bg-zinc-900 hover:opacity-80 rounded-md text-sm p-1 px-2 text-gray-500 dark:text-gray-400 cursor-pointer hover:line-through"
+                className="w-auto max-w-xs overflow-hidden flex flex-row justify-start items-center bg-popover hover:opacity-80 rounded-md text-sm p-1 px-2 text-muted-foreground cursor-pointer hover:line-through"
                 onClick={() => handleDeleteRelation(memo)}
               >
                 <LinkIcon className="w-4 h-auto shrink-0 opacity-80" />
@@ -51,6 +50,6 @@ const RelationListView = (props: Props) => {
       )}
     </>
   );
-};
+});
 
 export default RelationListView;

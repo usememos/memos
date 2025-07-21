@@ -1,9 +1,10 @@
-import { Checkbox } from "@usememos/mui";
-import { useContext, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useContext } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { markdownServiceClient } from "@/grpcweb";
-import { useMemoStore } from "@/store/v1";
+import { cn } from "@/lib/utils";
+import { memoStore } from "@/store";
 import { Node, TaskListItemNode } from "@/types/proto/api/v1/markdown_service";
-import { cn } from "@/utils";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
@@ -16,10 +17,8 @@ interface Props {
   children: Node[];
 }
 
-const TaskListItem: React.FC<Props> = ({ node, complete, children }: Props) => {
+const TaskListItem = observer(({ node, complete, children }: Props) => {
   const context = useContext(RendererContext);
-  const memoStore = useMemoStore();
-  const [checked, setChecked] = useState(complete);
 
   const handleCheckboxChange = async (on: boolean) => {
     if (context.readonly || !context.memoName) {
@@ -35,21 +34,25 @@ const TaskListItem: React.FC<Props> = ({ node, complete, children }: Props) => {
       },
       ["content"],
     );
-    setChecked(on);
   };
 
   return (
     <li className={cn("w-full grid grid-cols-[24px_1fr]")}>
       <span className="w-6 h-6 flex justify-start items-center">
-        <Checkbox size="sm" checked={checked} disabled={context.readonly} onChange={(e) => handleCheckboxChange(e.target.checked)} />
+        <Checkbox
+          className="h-4 w-4"
+          checked={complete}
+          disabled={context.readonly}
+          onCheckedChange={(checked) => handleCheckboxChange(checked === true)}
+        />
       </span>
-      <p className={cn(complete && "line-through opacity-80")}>
+      <p className={cn(complete && "line-through text-muted-foreground")}>
         {children.map((child, index) => (
           <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />
         ))}
       </p>
     </li>
   );
-};
+});
 
 export default TaskListItem;

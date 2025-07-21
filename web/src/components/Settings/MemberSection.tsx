@@ -1,33 +1,25 @@
-import { Dropdown, Menu, MenuButton, MenuItem, Radio, RadioGroup } from "@mui/joy";
-import { Button, Input } from "@usememos/mui";
 import { sortBy } from "lodash-es";
-import { MoreVerticalIcon } from "lucide-react";
+import { MoreVerticalIcon, PlusIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { stringifyUserRole, useUserStore } from "@/store/v1";
+import { useDialog } from "@/hooks/useDialog";
+import { userStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
+import CreateUserDialog from "../CreateUserDialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
-interface LocalState {
-  creatingUser: User;
-}
-
-const MemberSection = () => {
+const MemberSection = observer(() => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const userStore = useUserStore();
-  const [state, setState] = useState<LocalState>({
-    creatingUser: User.fromPartial({
-      username: "",
-      password: "",
-      role: User_Role.USER,
-    }),
-  });
   const [users, setUsers] = useState<User[]>([]);
+  const createDialog = useDialog();
+  const editDialog = useDialog();
+  const [editingUser, setEditingUser] = useState<User | undefined>();
   const sortedUsers = sortBy(users, "id");
 
   useEffect(() => {
@@ -39,70 +31,28 @@ const MemberSection = () => {
     setUsers(users);
   };
 
-  const handleUsernameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({
-      ...state,
-      creatingUser: {
-        ...state.creatingUser,
-        username: event.target.value,
-      },
-    });
-  };
-
-  const handlePasswordInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({
-      ...state,
-      creatingUser: {
-        ...state.creatingUser,
-        password: event.target.value,
-      },
-    });
-  };
-
-  const handleUserRoleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({
-      ...state,
-      creatingUser: {
-        ...state.creatingUser,
-        role: event.target.value as User_Role,
-      },
-    });
-  };
-
-  const handleCreateUserBtnClick = async () => {
-    if (state.creatingUser.username === "" || state.creatingUser.password === "") {
-      toast.error(t("message.fill-all"));
-      return;
+  const stringifyUserRole = (role: User_Role) => {
+    if (role === User_Role.HOST) {
+      return "Host";
+    } else if (role === User_Role.ADMIN) {
+      return t("setting.member-section.admin");
+    } else {
+      return t("setting.member-section.user");
     }
-
-    try {
-      await userServiceClient.createUser({
-        user: {
-          username: state.creatingUser.username,
-          password: state.creatingUser.password,
-          role: state.creatingUser.role,
-        },
-      });
-    } catch (error: any) {
-      toast.error(error.details);
-    }
-    await fetchUsers();
-    setState({
-      ...state,
-      creatingUser: User.fromPartial({
-        username: "",
-        password: "",
-        role: User_Role.USER,
-      }),
-    });
   };
 
-  const handleChangePasswordClick = (user: User) => {
-    showChangeMemberPasswordDialog(user);
+  const handleCreateUser = () => {
+    setEditingUser(undefined);
+    createDialog.open();
+  };
+
+  const handleEditUser = (user: User) => {
+    setEditingUser(user);
+    editDialog.open();
   };
 
   const handleArchiveUserClick = async (user: User) => {
-    const confirmed = window.confirm(t("setting.member-section.archive-warning", { username: user.nickname }));
+    const confirmed = window.confirm(t("setting.member-section.archive-warning", { username: user.displayName }));
     if (confirmed) {
       await userServiceClient.updateUser({
         user: {
@@ -127,7 +77,7 @@ const MemberSection = () => {
   };
 
   const handleDeleteUserClick = async (user: User) => {
-    const confirmed = window.confirm(t("setting.member-section.delete-warning", { username: user.nickname }));
+    const confirmed = window.confirm(t("setting.member-section.delete-warning", { username: user.displayName }));
     if (confirmed) {
       await userStore.deleteUser(user.name);
       fetchUsers();
@@ -136,42 +86,21 @@ const MemberSection = () => {
 
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.member-section.create-a-member")}</p>
-      <div className="w-auto flex flex-col justify-start items-start gap-2 border rounded-md py-2 px-3 dark:border-zinc-700">
-        <div className="flex flex-col justify-start items-start gap-1">
-          <span>{t("common.username")}</span>
-          <Input type="text" placeholder={t("common.username")} value={state.creatingUser.username} onChange={handleUsernameInputChange} />
-        </div>
-        <div className="flex flex-col justify-start items-start gap-1">
-          <span>{t("common.password")}</span>
-          <Input
-            type="password"
-            placeholder={t("common.password")}
-            value={state.creatingUser.password}
-            onChange={handlePasswordInputChange}
-          />
-        </div>
-        <div className="flex flex-col justify-start items-start gap-1">
-          <span>{t("common.role")}</span>
-          <RadioGroup orientation="horizontal" defaultValue={User_Role.USER} onChange={handleUserRoleInputChange}>
-            <Radio value={User_Role.USER} label="User" />
-            <Radio value={User_Role.ADMIN} label="Admin" />
-          </RadioGroup>
-        </div>
-        <div className="mt-2">
-          <Button color="primary" onClick={handleCreateUserBtnClick}>
-            {t("common.create")}
-          </Button>
-        </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <p className="font-medium text-muted-foreground">{t("setting.member-section.create-a-member")}</p>
+        <Button onClick={handleCreateUser}>
+          <PlusIcon className="w-4 h-4 mr-2" />
+          {t("common.create")}
+        </Button>
       </div>
       <div className="w-full flex flex-row justify-between items-center mt-6">
         <div className="title-text">{t("setting.member-list")}</div>
       </div>
       <div className="w-full overflow-x-auto">
-        <div className="inline-block min-w-full align-middle border rounded-lg dark:border-zinc-600">
-          <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
+        <div className="inline-block min-w-full align-middle border border-border rounded-lg">
+          <table className="min-w-full divide-y divide-border">
             <thead>
-              <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-400">
+              <tr className="text-sm font-semibold text-left text-foreground">
                 <th scope="col" className="px-3 py-2">
                   {t("common.username")}
                 </th>
@@ -187,38 +116,45 @@ const MemberSection = () => {
                 <th scope="col" className="relative py-2 pl-3 pr-4"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
+            <tbody className="divide-y divide-border">
               {sortedUsers.map((user) => (
                 <tr key={user.name}>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">
                     {user.username}
                     <span className="ml-1 italic">{user.state === State.ARCHIVED && "(Archived)"}</span>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{stringifyUserRole(user.role)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{user.nickname}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{user.email}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">{stringifyUserRole(user.role)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">{user.displayName}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">{user.email}</td>
                   <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium flex justify-end">
                     {currentUser?.name === user.name ? (
                       <span>{t("common.yourself")}</span>
                     ) : (
-                      <Dropdown>
-                        <MenuButton size="sm">
-                          <MoreVerticalIcon className="w-4 h-auto" />
-                        </MenuButton>
-                        <Menu placement="bottom-end" size="sm">
-                          <MenuItem onClick={() => handleChangePasswordClick(user)}>
-                            {t("setting.account-section.change-password")}
-                          </MenuItem>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline">
+                            <MoreVerticalIcon className="w-4 h-auto" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" sideOffset={2}>
+                          <DropdownMenuItem onClick={() => handleEditUser(user)}>{t("common.update")}</DropdownMenuItem>
                           {user.state === State.NORMAL ? (
-                            <MenuItem onClick={() => handleArchiveUserClick(user)}>{t("setting.member-section.archive-member")}</MenuItem>
+                            <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>
+                              {t("setting.member-section.archive-member")}
+                            </DropdownMenuItem>
                           ) : (
                             <>
-                              <MenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</MenuItem>
-                              <MenuItem onClick={() => handleDeleteUserClick(user)}>{t("setting.member-section.delete-member")}</MenuItem>
+                              <DropdownMenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteUserClick(user)}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                {t("setting.member-section.delete-member")}
+                              </DropdownMenuItem>
                             </>
                           )}
-                        </Menu>
-                      </Dropdown>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     )}
                   </td>
                 </tr>
@@ -227,8 +163,14 @@ const MemberSection = () => {
           </table>
         </div>
       </div>
+
+      {/* Create User Dialog */}
+      <CreateUserDialog open={createDialog.isOpen} onOpenChange={createDialog.setOpen} onSuccess={fetchUsers} />
+
+      {/* Edit User Dialog */}
+      <CreateUserDialog open={editDialog.isOpen} onOpenChange={editDialog.setOpen} user={editingUser} onSuccess={fetchUsers} />
     </div>
   );
-};
+});
 
 export default MemberSection;

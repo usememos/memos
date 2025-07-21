@@ -1,22 +1,22 @@
 import { last } from "lodash-es";
 import { LoaderIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { authServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserStore } from "@/store/v1";
+import { initialUserStore } from "@/store/user";
 
 interface State {
   loading: boolean;
   errorMessage: string;
 }
 
-const AuthCallback = () => {
+const AuthCallback = observer(() => {
   const navigateTo = useNavigateTo();
   const [searchParams] = useSearchParams();
-  const userStore = useUserStore();
   const [state, setState] = useState<State>({
     loading: true,
     errorMessage: "",
@@ -46,16 +46,18 @@ const AuthCallback = () => {
     const redirectUri = absolutifyLink("/auth/callback");
     (async () => {
       try {
-        await authServiceClient.signInWithSSO({
-          idpId: identityProviderId,
-          code,
-          redirectUri,
+        await authServiceClient.createSession({
+          ssoCredentials: {
+            idpId: identityProviderId,
+            code,
+            redirectUri,
+          },
         });
         setState({
           loading: false,
           errorMessage: "",
         });
-        await userStore.fetchCurrentUser();
+        await initialUserStore();
         navigateTo("/");
       } catch (error: any) {
         console.error(error);
@@ -70,12 +72,12 @@ const AuthCallback = () => {
   return (
     <div className="p-4 py-24 w-full h-full flex justify-center items-center">
       {state.loading ? (
-        <LoaderIcon className="animate-spin dark:text-gray-200" />
+        <LoaderIcon className="animate-spin text-foreground" />
       ) : (
         <div className="max-w-lg font-mono whitespace-pre-wrap opacity-80">{state.errorMessage}</div>
       )}
     </div>
   );
-};
+});
 
 export default AuthCallback;

@@ -1,0 +1,91 @@
+name: Build and Push Canary Image
+
+on:
+  push:
+    branches: [main]
+
+env:
+  DOCKER_PLATFORMS: |
+    linux/amd64
+    linux/arm64
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.repository }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push-canary-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: ${{ env.DOCKER_PLATFORMS }}
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: latest
+          install: true
+          platforms: ${{ env.DOCKER_PLATFORMS }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            neosmemo/memos
+            ghcr.io/usememos/memos
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=canary
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      # Frontend build.
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: "web/pnpm-lock.yaml"
+      - run: pnpm install
+        working-directory: web
+      - name: Run frontend build
+        run: pnpm release
+        working-directory: web
+
+      - name: Build and Push
+        id: docker_build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./scripts/Dockerfile
+          platforms: ${{ env.DOCKER_PLATFORMS }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
