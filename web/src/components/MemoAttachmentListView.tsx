@@ -74,7 +74,7 @@ const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[
 
   const MediaList = ({ attachments = [] }: { attachments: Attachment[] }) => {
     const cards = attachments.map((attachment) => (
-      <div key={attachment.name} className="max-w-[70%] grow flex flex-col justify-start items-start shrink-0">
+      <div key={attachment.name} className="max-w-[60%] w-fit flex flex-col justify-start items-start shrink-0">
         <MediaCard className="max-h-64 grow" attachment={attachment} />
       </div>
     ));
