@@ -1,29 +1,27 @@
-import { Button } from "@usememos/mui";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { ExternalLinkIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import MemoFilters from "@/components/MemoFilters";
 import MemoView from "@/components/MemoView";
-import MobileHeader from "@/components/MobileHeader";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
+import { Button } from "@/components/ui/button";
 import useLoading from "@/hooks/useLoading";
-import { useMemoFilterStore, useUserStore } from "@/store/v1";
-import { Direction, State } from "@/types/proto/api/v1/common";
+import { viewStore, userStore } from "@/store";
+import memoFilterStore from "@/store/memoFilter";
+import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 
-const UserProfile = () => {
+const UserProfile = observer(() => {
   const t = useTranslate();
   const params = useParams();
-  const userStore = useUserStore();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
-  const memoFilterStore = useMemoFilterStore();
 
   useEffect(() => {
     const username = params.username;
@@ -32,7 +30,7 @@ const UserProfile = () => {
     }
 
     userStore
-      .fetchUserByUsername(username)
+      .getOrFetchUserByUsername(username)
       .then((user) => {
         setUser(user);
         loadingState.setFinish();
@@ -77,30 +75,26 @@ const UserProfile = () => {
   };
 
   return (
-    <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
-      <MobileHeader />
-      <div className="w-full px-4 sm:px-6 flex flex-col justify-start items-center">
+    <section className="w-full max-w-3xl mx-auto min-h-full flex flex-col justify-start items-center pb-8">
+      <div className="w-full flex flex-col justify-start items-center max-w-2xl">
         {!loadingState.isLoading &&
           (user ? (
             <>
               <div className="my-4 w-full flex justify-end items-center gap-2">
-                <Button variant="outlined" onClick={handleCopyProfileLink}>
+                <Button variant="outline" onClick={handleCopyProfileLink}>
                   {t("common.share")}
                   <ExternalLinkIcon className="ml-1 w-4 h-auto opacity-60" />
                 </Button>
               </div>
               <div className="w-full flex flex-col justify-start items-start pt-4 pb-8 px-3">
-                <UserAvatar className="!w-16 !h-16 drop-shadow rounded-3xl" avatarUrl={user?.avatarUrl} />
+                <UserAvatar className="w-16! h-16! drop-shadow rounded-3xl" avatarUrl={user?.avatarUrl} />
                 <div className="mt-2 w-auto max-w-[calc(100%-6rem)] flex flex-col justify-center items-start">
-                  <p className="w-full text-3xl text-black leading-tight font-medium opacity-80 dark:text-gray-200 truncate">
-                    {user.nickname || user.username}
+                  <p className="w-full text-3xl text-foreground leading-tight font-medium opacity-80 truncate">
+                    {user.displayName || user.username}
                   </p>
-                  <p className="w-full text-gray-500 leading-snug dark:text-gray-400 whitespace-pre-wrap truncate line-clamp-6">
-                    {user.description}
-                  </p>
+                  <p className="w-full text-muted-foreground leading-snug whitespace-pre-wrap truncate line-clamp-6">{user.description}</p>
                 </div>
               </div>
-              <MemoFilters />
               <PagedMemoList
                 renderer={(memo: Memo) => (
                   <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />
@@ -109,14 +103,14 @@ const UserProfile = () => {
                   memos
                     .filter((memo) => memo.state === State.NORMAL)
                     .sort((a, b) =>
-                      memoFilterStore.orderByTimeAsc
+                      viewStore.state.orderByTimeAsc
                         ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
                         : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
                     )
                     .sort((a, b) => Number(b.pinned) - Number(a.pinned))
                 }
                 owner={user.name}
-                direction={memoFilterStore.orderByTimeAsc ? Direction.ASC : Direction.DESC}
+                orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
                 oldFilter={memoListFilter}
               />
             </>
@@ -126,6 +120,6 @@ const UserProfile = () => {
       </div>
     </section>
   );
-};
+});
 
 export default UserProfile;

@@ -1,12 +1,13 @@
 import { SearchIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { useMemoFilterStore } from "@/store/v1";
+import { cn } from "@/lib/utils";
+import { memoFilterStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
 import MemoDisplaySettingMenu from "./MemoDisplaySettingMenu";
 
-const SearchBar = () => {
+const SearchBar = observer(() => {
   const t = useTranslate();
-  const memoFilterStore = useMemoFilterStore();
   const [queryText, setQueryText] = useState("");
 
   const onTextChange = (event: React.FormEvent<HTMLInputElement>) => {
@@ -16,11 +17,14 @@ const SearchBar = () => {
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (queryText !== "") {
-        memoFilterStore.removeFilter((f) => f.factor === "contentSearch");
-        memoFilterStore.addFilter({
-          factor: "contentSearch",
-          value: queryText,
+      const trimmedText = queryText.trim();
+      if (trimmedText !== "") {
+        const words = trimmedText.split(/\s+/);
+        words.forEach((word) => {
+          memoFilterStore.addFilter({
+            factor: "contentSearch",
+            value: word,
+          });
         });
         setQueryText("");
       }
@@ -29,17 +33,17 @@ const SearchBar = () => {
 
   return (
     <div className="relative w-full h-auto flex flex-row justify-start items-center">
-      <SearchIcon className="absolute left-3 w-4 h-auto opacity-40" />
+      <SearchIcon className="absolute left-2 w-4 h-auto opacity-40 text-sidebar-foreground" />
       <input
-        className="w-full text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 border dark:border-zinc-800 text-sm leading-7 rounded-lg p-1 pl-8 outline-none"
+        className={cn("w-full text-sidebar-foreground leading-6 bg-sidebar border border-border text-sm rounded-lg p-1 pl-8 outline-0")}
         placeholder={t("memo.search-placeholder")}
         value={queryText}
         onChange={onTextChange}
         onKeyDown={onKeyDown}
       />
-      <MemoDisplaySettingMenu className="absolute right-3 top-3" />
+      <MemoDisplaySettingMenu className="absolute right-2 top-2 text-sidebar-foreground" />
     </div>
   );
-};
+});
 
 export default SearchBar;

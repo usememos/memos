@@ -1,4 +1,4 @@
-name: Proto linter
+name: Proto Linter
 
 on:
   push:

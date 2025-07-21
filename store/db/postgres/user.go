@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/usememos/memos/store"
@@ -12,10 +11,9 @@ import (
 func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, error) {
 	fields := []string{"username", "role", "email", "nickname", "password_hash", "avatar_url"}
 	args := []any{create.Username, create.Role, create.Email, create.Nickname, create.PasswordHash, create.AvatarURL}
-	stmt := "INSERT INTO \"user\" (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, avatar_url, description, created_ts, updated_ts, row_status"
+	stmt := "INSERT INTO \"user\" (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, description, created_ts, updated_ts, row_status"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,
-		&create.AvatarURL,
 		&create.Description,
 		&create.CreatedTs,
 		&create.UpdatedTs,
@@ -52,6 +50,9 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	}
 	if v := update.Description; v != nil {
 		set, args = append(set, "description = "+placeholder(len(args)+1)), append(args, *v)
+	}
+	if v := update.Role; v != nil {
+		set, args = append(set, "role = "+placeholder(len(args)+1)), append(args, *v)
 	}
 
 	query := `
@@ -101,10 +102,6 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	}
 
 	orderBy := []string{"created_ts DESC", "row_status DESC"}
-	if find.Random {
-		orderBy = slices.Concat([]string{"RANDOM()"}, orderBy)
-	}
-
 	query := `
 		SELECT 
 			id,

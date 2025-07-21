@@ -1,17 +1,18 @@
-import { Autocomplete, AutocompleteOption, Chip } from "@mui/joy";
-import { Button, Checkbox } from "@usememos/mui";
 import { uniqBy } from "lodash-es";
-import { LinkIcon } from "lucide-react";
+import { LinkIcon, X } from "lucide-react";
 import React, { useContext, useState } from "react";
 import { toast } from "react-hot-toast";
 import useDebounce from "react-use/lib/useDebounce";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractMemoIdFromName } from "@/store/v1";
-import { MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_relation_service";
-import { Memo } from "@/types/proto/api/v1/memo_service";
+import { extractMemoIdFromName } from "@/store/common";
+import { Memo, MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { EditorRefActions } from "../Editor";
 import { MemoEditorContext } from "../types";
@@ -130,52 +131,73 @@ const AddMemoRelationPopover = (props: Props) => {
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger className="w-9 relative">
-        <Button className="flex items-center justify-center" size="sm" variant="plain" asChild>
-          <LinkIcon className="w-5 h-5 mx-auto p-0" />
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <LinkIcon className="size-5" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="center">
-        <div className="w-[16rem] flex flex-col justify-start items-start">
-          <Autocomplete
-            className="w-full"
-            size="md"
-            clearOnBlur
-            disableClearable
-            placeholder={t("reference.search-placeholder")}
-            noOptionsText={t("reference.no-memos-found")}
-            options={filteredMemos}
-            loading={isFetching}
-            inputValue={searchText}
-            value={selectedMemos}
-            multiple
-            onInputChange={(_, value) => setSearchText(value.trim())}
-            getOptionKey={(memo) => memo.name}
-            getOptionLabel={(memo) => memo.content}
-            isOptionEqualToValue={(memo, value) => memo.name === value.name}
-            renderOption={(props, memo) => (
-              <AutocompleteOption {...props} key={memo.name}>
-                <div className="w-full flex flex-col justify-start items-start">
-                  <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
-                  <p className="mt-0.5 text-sm leading-5 line-clamp-2">{searchText ? getHighlightedContent(memo.content) : memo.snippet}</p>
-                </div>
-              </AutocompleteOption>
-            )}
-            renderTags={(memos) =>
-              memos.map((memo) => (
-                <Chip key={memo.name} className="!max-w-full !rounded" variant="outlined" color="neutral">
-                  <div className="w-full flex flex-col justify-start items-start">
-                    <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
-                    <span className="w-full text-sm leading-5 truncate">{memo.content}</span>
+        <div className="w-[16rem] p-1 flex flex-col justify-start items-start">
+          {/* Selected memos display */}
+          {selectedMemos.length > 0 && (
+            <div className="w-full mb-2 flex flex-wrap gap-1">
+              {selectedMemos.map((memo) => (
+                <Badge key={memo.name} variant="outline" className="max-w-full flex items-center gap-1 p-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground select-none">{memo.displayTime?.toLocaleString()}</p>
+                    <span className="text-sm leading-5 truncate block">{memo.content}</span>
                   </div>
-                </Chip>
-              ))
-            }
-            onChange={(_, value) => setSelectedMemos(value)}
-          />
+                  <X
+                    className="w-3 h-3 cursor-pointer hover:text-destructive flex-shrink-0"
+                    onClick={() => setSelectedMemos((memos) => memos.filter((m) => m.name !== memo.name))}
+                  />
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* Search and selection interface */}
+          <div className="w-full">
+            <Input
+              placeholder={t("reference.search-placeholder")}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="mb-2"
+            />
+            <div className="max-h-[200px] overflow-y-auto">
+              {filteredMemos.length === 0 ? (
+                <div className="py-6 text-center text-sm text-muted-foreground">
+                  {isFetching ? "Loading..." : t("reference.no-memos-found")}
+                </div>
+              ) : (
+                filteredMemos.map((memo) => (
+                  <div
+                    key={memo.name}
+                    className="relative flex cursor-pointer items-start gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                    onClick={() => {
+                      setSelectedMemos((prev) => [...prev, memo]);
+                    }}
+                  >
+                    <div className="w-full flex flex-col justify-start items-start">
+                      <p className="text-xs text-muted-foreground select-none">{memo.displayTime?.toLocaleString()}</p>
+                      <p className="mt-0.5 text-sm leading-5 line-clamp-2">
+                        {searchText ? getHighlightedContent(memo.content) : memo.snippet}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
           <div className="mt-2 w-full flex flex-row justify-end items-center gap-2">
-            <Checkbox size="sm" label={"Embed"} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
-            <Button size="sm" color="primary" onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="embed-checkbox" checked={embedded} onCheckedChange={(checked) => setEmbedded(checked === true)} />
+              <label htmlFor="embed-checkbox" className="text-sm">
+                Embed
+              </label>
+            </div>
+            <Button onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
               {t("common.add")}
             </Button>
           </div>

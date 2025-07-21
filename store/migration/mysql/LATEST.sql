@@ -77,7 +77,7 @@ CREATE TABLE `resource` (
   `size` INT NOT NULL DEFAULT '0',
   `memo_id` INT DEFAULT NULL,
   `storage_type` VARCHAR(256) NOT NULL DEFAULT '',
-  `reference` VARCHAR(256) NOT NULL DEFAULT '',
+  `reference` TEXT NOT NULL DEFAULT (''),
   `payload` TEXT NOT NULL
 );
 
@@ -108,17 +108,6 @@ CREATE TABLE `inbox` (
   `receiver_id` INT NOT NULL,
   `status` TEXT NOT NULL,
   `message` TEXT NOT NULL
-);
-
--- webhook
-CREATE TABLE `webhook` (
-  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
-  `creator_id` INT NOT NULL,
-  `name` TEXT NOT NULL,
-  `url` TEXT NOT NULL
 );
 
 -- reaction

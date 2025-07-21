@@ -1,5 +1,5 @@
 import { GraphData, LinkObject, NodeObject } from "react-force-graph-2d";
-import { MemoRelation, MemoRelation_Memo } from "@/types/proto/api/v1/memo_relation_service";
+import { MemoRelation, MemoRelation_Memo } from "@/types/proto/api/v1/memo_service";
 import { LinkType, NodeType } from "./types";
 
 export const convertMemoRelationsToGraphData = (memoRelations: MemoRelation[]): GraphData<NodeType, LinkType> => {

@@ -1,31 +1,23 @@
-import { Button, Checkbox, Input } from "@usememos/mui";
 import { LoaderIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useCommonContext } from "@/layouts/CommonContextProvider";
-import { useUserStore } from "@/store/v1";
+import { workspaceStore } from "@/store";
+import { initialUserStore } from "@/store/user";
 import { useTranslate } from "@/utils/i18n";
 
-const PasswordSignInForm = () => {
+const PasswordSignInForm = observer(() => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const commonContext = useCommonContext();
-  const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(true);
-
-  useEffect(() => {
-    if (commonContext.profile.mode === "demo") {
-      setUsername("yourselfhosted");
-      setPassword("yourselfhosted");
-    }
-  }, [commonContext.profile.mode]);
+  const [username, setUsername] = useState(workspaceStore.state.profile.mode === "demo" ? "yourselfhosted" : "");
+  const [password, setPassword] = useState(workspaceStore.state.profile.mode === "demo" ? "yourselfhosted" : "");
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -53,8 +45,10 @@ const PasswordSignInForm = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await authServiceClient.signIn({ username, password, neverExpire: remember });
-      await userStore.fetchCurrentUser();
+      await authServiceClient.createSession({
+        passwordCredentials: { username, password },
+      });
+      await initialUserStore();
       navigateTo("/");
     } catch (error: any) {
       console.error(error);
@@ -67,10 +61,9 @@ const PasswordSignInForm = () => {
     <form className="w-full mt-2" onSubmit={handleFormSubmit}>
       <div className="flex flex-col justify-start items-start w-full gap-4">
         <div className="w-full flex flex-col justify-start items-start">
-          <span className="leading-8 text-gray-600">{t("common.username")}</span>
+          <span className="leading-8 text-muted-foreground">{t("common.username")}</span>
           <Input
-            className="w-full bg-white dark:bg-black"
-            size="lg"
+            className="w-full bg-background h-10"
             type="text"
             readOnly={actionBtnLoadingState.isLoading}
             placeholder={t("common.username")}
@@ -83,10 +76,9 @@ const PasswordSignInForm = () => {
           />
         </div>
         <div className="w-full flex flex-col justify-start items-start">
-          <span className="leading-8 text-gray-600">{t("common.password")}</span>
+          <span className="leading-8 text-muted-foreground">{t("common.password")}</span>
           <Input
-            className="w-full bg-white dark:bg-black"
-            size="lg"
+            className="w-full bg-background h-10"
             type="password"
             readOnly={actionBtnLoadingState.isLoading}
             placeholder={t("common.password")}
@@ -99,24 +91,14 @@ const PasswordSignInForm = () => {
           />
         </div>
       </div>
-      <div className="flex flex-row justify-start items-center w-full mt-6">
-        <Checkbox label={t("common.remember-me")} checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-      </div>
       <div className="flex flex-row justify-end items-center w-full mt-6">
-        <Button
-          type="submit"
-          color="primary"
-          size="lg"
-          fullWidth
-          disabled={actionBtnLoadingState.isLoading}
-          onClick={handleSignInButtonClick}
-        >
+        <Button type="submit" className="w-full h-10" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
           {t("common.sign-in")}
           {actionBtnLoadingState.isLoading && <LoaderIcon className="w-5 h-auto ml-2 animate-spin opacity-60" />}
         </Button>
       </div>
     </form>
   );
-};
+});
 
 export default PasswordSignInForm;

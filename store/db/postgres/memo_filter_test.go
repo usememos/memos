@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -16,17 +17,17 @@ func TestRestoreExprToSQL(t *testing.T) {
 	}{
 		{
 			filter: `tag in ["tag1", "tag2"]`,
-			want:   "(memo.payload->'tags' @> $1::jsonb OR memo.payload->'tags' @> $2::jsonb)",
-			args:   []any{[]any{"tag1"}, []any{"tag2"}},
+			want:   "(memo.payload->'tags' @> jsonb_build_array($1) OR memo.payload->'tags' @> jsonb_build_array($2))",
+			args:   []any{"tag1", "tag2"},
 		},
 		{
 			filter: `!(tag in ["tag1", "tag2"])`,
-			want:   `NOT ((memo.payload->'tags' @> $1::jsonb OR memo.payload->'tags' @> $2::jsonb))`,
-			args:   []any{[]any{"tag1"}, []any{"tag2"}},
+			want:   `NOT ((memo.payload->'tags' @> jsonb_build_array($1) OR memo.payload->'tags' @> jsonb_build_array($2)))`,
+			args:   []any{"tag1", "tag2"},
 		},
 		{
 			filter: `content.contains("memos")`,
-			want:   "memo.content ILIKE LIKE $1",
+			want:   "memo.content ILIKE $1",
 			args:   []any{"%memos%"},
 		},
 		{
@@ -40,14 +41,79 @@ func TestRestoreExprToSQL(t *testing.T) {
 			args:   []any{"PUBLIC", "PRIVATE"},
 		},
 		{
-			filter: `create_time == "2006-01-02T15:04:05+07:00"`,
-			want:   "memo.created_ts = $1",
-			args:   []any{int64(1136189045)},
+			filter: `tag in ['tag1'] || content.contains('hello')`,
+			want:   "(memo.payload->'tags' @> jsonb_build_array($1) OR memo.content ILIKE $2)",
+			args:   []any{"tag1", "%hello%"},
 		},
 		{
-			filter: `tag in ['tag1'] || content.contains('hello')`,
-			want:   "(memo.payload->'tags' @> $1::jsonb OR memo.content ILIKE LIKE $2)",
-			args:   []any{[]any{"tag1"}, "%hello%"},
+			filter: `1`,
+			want:   "",
+			args:   []any{},
+		},
+		{
+			filter: `pinned`,
+			want:   "memo.pinned IS TRUE",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list`,
+			want:   "(memo.payload->'property'->>'hasTaskList')::boolean IS TRUE",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == true`,
+			want:   "(memo.payload->'property'->>'hasTaskList')::boolean = $1",
+			args:   []any{true},
+		},
+		{
+			filter: `has_task_list != false`,
+			want:   "(memo.payload->'property'->>'hasTaskList')::boolean != $1",
+			args:   []any{false},
+		},
+		{
+			filter: `has_task_list == false`,
+			want:   "(memo.payload->'property'->>'hasTaskList')::boolean = $1",
+			args:   []any{false},
+		},
+		{
+			filter: `!has_task_list`,
+			want:   "NOT ((memo.payload->'property'->>'hasTaskList')::boolean IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && pinned`,
+			want:   "((memo.payload->'property'->>'hasTaskList')::boolean IS TRUE AND memo.pinned IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && content.contains("todo")`,
+			want:   "((memo.payload->'property'->>'hasTaskList')::boolean IS TRUE AND memo.content ILIKE $1)",
+			args:   []any{"%todo%"},
+		},
+		{
+			filter: `created_ts > now() - 60 * 60 * 24`,
+			want:   "EXTRACT(EPOCH FROM memo.created_ts) > $1",
+			args:   []any{time.Now().Unix() - 60*60*24},
+		},
+		{
+			filter: `size(tags) == 0`,
+			want:   "jsonb_array_length(COALESCE(memo.payload->'tags', '[]'::jsonb)) = $1",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `size(tags) > 0`,
+			want:   "jsonb_array_length(COALESCE(memo.payload->'tags', '[]'::jsonb)) > $1",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `"work" in tags`,
+			want:   "memo.payload->'tags' @> jsonb_build_array($1)",
+			args:   []any{"work"},
+		},
+		{
+			filter: `size(tags) == 2`,
+			want:   "jsonb_array_length(COALESCE(memo.payload->'tags', '[]'::jsonb)) = $1",
+			args:   []any{int64(2)},
 		},
 	}
 

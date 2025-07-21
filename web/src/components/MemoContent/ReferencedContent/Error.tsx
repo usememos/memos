@@ -3,7 +3,7 @@ interface Props {
 }
 
 const Error = ({ message }: Props) => {
-  return <p className="font-mono text-sm text-red-600 dark:text-red-700">{message}</p>;
+  return <p className="font-mono text-sm text-destructive">{message}</p>;
 };
 
 export default Error;

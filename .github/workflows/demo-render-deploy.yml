@@ -1,0 +1,17 @@
+name: Demo Render Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{"trigger": "github_action"}'
+
+      - name: Deployment Status
+        run: echo "Demo deployment triggered successfully on Render"

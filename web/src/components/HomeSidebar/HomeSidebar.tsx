@@ -1,9 +1,9 @@
-import useDebounce from "react-use/lib/useDebounce";
+import { observer } from "mobx-react-lite";
 import SearchBar from "@/components/SearchBar";
-import StatisticsView from "@/components/StatisticsView";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoList, useUserStatsStore } from "@/store/v1";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
+import MemoFilters from "../MemoFilters";
+import StatisticsView from "../StatisticsView";
 import ShortcutsSection from "./ShortcutsSection";
 import TagsSection from "./TagsSection";
 
@@ -11,32 +11,25 @@ interface Props {
   className?: string;
 }
 
-const HomeSidebar = (props: Props) => {
+const HomeSidebar = observer((props: Props) => {
   const currentUser = useCurrentUser();
-  const memoList = useMemoList();
-  const userStatsStore = useUserStatsStore();
-
-  useDebounce(
-    async () => {
-      await userStatsStore.listUserStats(currentUser.name);
-    },
-    300,
-    [memoList.size(), userStatsStore.stateId, currentUser],
-  );
 
   return (
     <aside
       className={cn(
-        "relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start",
+        "relative w-full h-full overflow-auto flex flex-col justify-start items-start bg-background text-sidebar-foreground",
         props.className,
       )}
     >
       <SearchBar />
-      <StatisticsView />
-      <ShortcutsSection />
-      <TagsSection />
+      <MemoFilters />
+      <div className="mt-1 px-1 w-full">
+        <StatisticsView />
+        {currentUser && <ShortcutsSection />}
+        <TagsSection />
+      </div>
     </aside>
   );
-};
+});
 
 export default HomeSidebar;

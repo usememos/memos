@@ -1,8 +1,9 @@
+import { observer } from "mobx-react-lite";
 import { memo, useEffect, useRef, useState } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore } from "@/store/v1";
+import { cn } from "@/lib/utils";
+import { memoStore } from "@/store";
 import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
-import { cn } from "@/utils";
 import { useTranslate } from "@/utils/i18n";
 import { isSuperUser } from "@/utils/user";
 import Renderer from "./Renderer";
@@ -29,11 +30,10 @@ interface Props {
 
 type ContentCompactView = "ALL" | "SNIPPET";
 
-const MemoContent: React.FC<Props> = (props: Props) => {
+const MemoContent = observer((props: Props) => {
   const { className, contentClassName, nodes, memoName, embeddedMemos, onClick, onDoubleClick } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<ContentCompactView | undefined>(undefined);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
@@ -83,11 +83,11 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         parentPage: props.parentPage,
       }}
     >
-      <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-400 ${className || ""}`}>
+      <div className={`w-full flex flex-col justify-start items-start text-foreground ${className || ""}`}>
         <div
           ref={memoContentContainerRef}
           className={cn(
-            "relative w-full max-w-full word-break text-base leading-snug space-y-2 whitespace-pre-wrap",
+            "relative w-full max-w-full break-words text-base leading-6 space-y-1 whitespace-pre-wrap",
             showCompactMode == "ALL" && "line-clamp-6 max-h-60",
             contentClassName,
           )}
@@ -104,13 +104,13 @@ const MemoContent: React.FC<Props> = (props: Props) => {
             return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
           })}
           {showCompactMode == "ALL" && (
-            <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-b from-transparent dark:to-zinc-800 to-white pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-full h-12 bg-linear-to-b from-transparent to-background pointer-events-none"></div>
           )}
         </div>
         {showCompactMode != undefined && (
           <div className="w-full mt-1">
             <span
-              className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:opacity-80"
+              className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-primary hover:opacity-80"
               onClick={() => {
                 setShowCompactMode(compactStates[showCompactMode].nextState as ContentCompactView);
               }}
@@ -122,6 +122,6 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       </div>
     </RendererContext.Provider>
   );
-};
+});
 
 export default memo(MemoContent);

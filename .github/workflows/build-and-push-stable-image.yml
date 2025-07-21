@@ -1,16 +1,23 @@
-name: build-and-push-stable-image
+name: Build and Push Stable Image
 
 on:
   push:
+    branches:
+      - "release/**"
     tags:
-      # Match stable and rc versions, such as 'v1.0.0' or 'v0.23.0-rc.0'
       - "v*.*.*"
       - "v*.*.*-rc.*"
       # 匹配深色版本
       - "v*.*.*-dark.*"
 
+env:
+  DOCKER_PLATFORMS: |
+    linux/amd64
+    linux/arm/v7
+    linux/arm64
+
 jobs:
-  build-and-push-stable-image:
+  build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -20,16 +27,24 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        with:
+          platforms: ${{ env.DOCKER_PLATFORMS }}
 
-      - name: Extract build args
-        # Extract version number and check if it's an rc version
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: latest
+          install: true
+          platforms: ${{ env.DOCKER_PLATFORMS }}
+
+      - name: Extract version
         run: |
-          if [[ "${GITHUB_REF_NAME}" =~ -rc ]]; then
-            echo "PRE_RELEASE=true" >> $GITHUB_ENV
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
           else
-            echo "PRE_RELEASE=false" >> $GITHUB_ENV
+            echo "VERSION=${GITHUB_REF_NAME#release/}" >> $GITHUB_ENV
           fi
-          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -56,29 +71,41 @@ jobs:
             type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
             type=raw,value=stable
           flavor: |
-            latest=true
+            latest=false
           labels: |
             org.opencontainers.image.version=${{ env.VERSION }}
 
-      # Metadata for rc versions
-      - name: Docker meta for rc
-        id: meta-rc
-        if: env.PRE_RELEASE == 'true'
-        uses: docker/metadata-action@v5
+      # Frontend build.
+      - uses: pnpm/action-setup@v4.1.0
         with:
           images: ctkghost/memos-dark
           tags: |
             type=raw,value=${{ env.VERSION }}
           labels: |
             org.opencontainers.image.version=${{ env.VERSION }}
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: "web/pnpm-lock.yaml"
+      - run: pnpm install
+        working-directory: web
+      - name: Run frontend build
+        run: pnpm release
+        working-directory: web
 
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v6
         with:
-          context: ./
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
+          context: .
+          file: ./scripts/Dockerfile
+          platforms: ${{ env.DOCKER_PLATFORMS }}
           push: true
-          tags: ${{ steps.meta-stable.outputs.tags || steps.meta-rc.outputs.tags }}
-          labels: ${{ steps.meta-stable.outputs.labels || steps.meta-rc.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1

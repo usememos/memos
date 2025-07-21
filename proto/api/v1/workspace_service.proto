@@ -3,26 +3,175 @@ syntax = "proto3";
 package memos.api.v1;
 
 import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/field_mask.proto";
 
 option go_package = "gen/api/v1";
 
 service WorkspaceService {
-  // GetWorkspaceProfile returns the workspace profile.
+  // Gets the workspace profile.
   rpc GetWorkspaceProfile(GetWorkspaceProfileRequest) returns (WorkspaceProfile) {
     option (google.api.http) = {get: "/api/v1/workspace/profile"};
   }
+
+  // Gets a workspace setting.
+  rpc GetWorkspaceSetting(GetWorkspaceSettingRequest) returns (WorkspaceSetting) {
+    option (google.api.http) = {get: "/api/v1/{name=workspace/settings/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Updates a workspace setting.
+  rpc UpdateWorkspaceSetting(UpdateWorkspaceSettingRequest) returns (WorkspaceSetting) {
+    option (google.api.http) = {
+      patch: "/api/v1/{setting.name=workspace/settings/*}"
+      body: "setting"
+    };
+    option (google.api.method_signature) = "setting,update_mask";
+  }
 }
 
+// Workspace profile message containing basic workspace information.
 message WorkspaceProfile {
   // The name of instance owner.
   // Format: users/{user}
   string owner = 1;
-  // version is the current version of instance
+
+  // Version is the current version of instance.
   string version = 2;
-  // mode is the instance mode (e.g. "prod", "dev" or "demo").
+
+  // Mode is the instance mode (e.g. "prod", "dev" or "demo").
   string mode = 3;
-  // instance_url is the URL of the instance.
+
+  // Instance URL is the URL of the instance.
   string instance_url = 6;
 }
 
+// Request for workspace profile.
 message GetWorkspaceProfileRequest {}
+
+// A workspace setting resource.
+message WorkspaceSetting {
+  option (google.api.resource) = {
+    type: "api.memos.dev/WorkspaceSetting"
+    pattern: "workspace/settings/{setting}"
+    singular: "workspaceSetting"
+    plural: "workspaceSettings"
+  };
+
+  // The name of the workspace setting.
+  // Format: workspace/settings/{setting}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  oneof value {
+    WorkspaceGeneralSetting general_setting = 2;
+    WorkspaceStorageSetting storage_setting = 3;
+    WorkspaceMemoRelatedSetting memo_related_setting = 4;
+  }
+}
+
+message WorkspaceGeneralSetting {
+  // theme is the name of the selected theme.
+  // This references a CSS file in the web/public/themes/ directory.
+  string theme = 1;
+  // disallow_user_registration disallows user registration.
+  bool disallow_user_registration = 2;
+  // disallow_password_auth disallows password authentication.
+  bool disallow_password_auth = 3;
+  // additional_script is the additional script.
+  string additional_script = 4;
+  // additional_style is the additional style.
+  string additional_style = 5;
+  // custom_profile is the custom profile.
+  WorkspaceCustomProfile custom_profile = 6;
+  // week_start_day_offset is the week start day offset from Sunday.
+  // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+  // Default is Sunday.
+  int32 week_start_day_offset = 7;
+
+  // disallow_change_username disallows changing username.
+  bool disallow_change_username = 8;
+  // disallow_change_nickname disallows changing nickname.
+  bool disallow_change_nickname = 9;
+}
+
+message WorkspaceCustomProfile {
+  string title = 1;
+  string description = 2;
+  string logo_url = 3;
+  string locale = 4;
+  string appearance = 5;
+}
+
+message WorkspaceStorageSetting {
+  enum StorageType {
+    STORAGE_TYPE_UNSPECIFIED = 0;
+    // DATABASE is the database storage type.
+    DATABASE = 1;
+    // LOCAL is the local storage type.
+    LOCAL = 2;
+    // S3 is the S3 storage type.
+    S3 = 3;
+  }
+  // storage_type is the storage type.
+  StorageType storage_type = 1;
+  // The template of file path.
+  // e.g. assets/{timestamp}_{filename}
+  string filepath_template = 2;
+  // The max upload size in megabytes.
+  int64 upload_size_limit_mb = 3;
+  // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+  message S3Config {
+    string access_key_id = 1;
+    string access_key_secret = 2;
+    string endpoint = 3;
+    string region = 4;
+    string bucket = 5;
+    bool use_path_style = 6;
+  }
+  // The S3 config.
+  S3Config s3_config = 4;
+}
+
+message WorkspaceMemoRelatedSetting {
+  // disallow_public_visibility disallows set memo as public visibility.
+  bool disallow_public_visibility = 1;
+  // display_with_update_time orders and displays memo with update time.
+  bool display_with_update_time = 2;
+  // content_length_limit is the limit of content length. Unit is byte.
+  int32 content_length_limit = 3;
+  // enable_double_click_edit enables editing on double click.
+  bool enable_double_click_edit = 4;
+  // enable_link_preview enables links preview.
+  bool enable_link_preview = 5;
+  // enable_comment enables comment.
+  bool enable_comment = 6;
+  // reactions is the list of reactions.
+  repeated string reactions = 7;
+  // disable_markdown_shortcuts disallow the registration of markdown shortcuts.
+  bool disable_markdown_shortcuts = 8;
+  // enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
+  bool enable_blur_nsfw_content = 9;
+  // nsfw_tags is the list of tags that mark content as NSFW for blurring.
+  repeated string nsfw_tags = 10;
+}
+
+// Request message for GetWorkspaceSetting method.
+message GetWorkspaceSettingRequest {
+  // The resource name of the workspace setting.
+  // Format: workspace/settings/{setting}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.memos.dev/WorkspaceSetting"}
+  ];
+}
+
+// Request message for UpdateWorkspaceSetting method.
+message UpdateWorkspaceSettingRequest {
+  // The workspace setting resource which replaces the resource on the server.
+  WorkspaceSetting setting = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
+}

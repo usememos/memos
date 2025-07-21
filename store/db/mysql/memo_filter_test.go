@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -40,14 +41,79 @@ func TestConvertExprToSQL(t *testing.T) {
 			args:   []any{"PUBLIC", "PRIVATE"},
 		},
 		{
-			filter: `create_time == "2006-01-02T15:04:05+07:00"`,
-			want:   "UNIX_TIMESTAMP(`memo`.`created_ts`) = ?",
-			args:   []any{int64(1136189045)},
-		},
-		{
 			filter: `tag in ['tag1'] || content.contains('hello')`,
 			want:   "(JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?) OR `memo`.`content` LIKE ?)",
 			args:   []any{"tag1", "%hello%"},
+		},
+		{
+			filter: `1`,
+			want:   "",
+			args:   []any{},
+		},
+		{
+			filter: `pinned`,
+			want:   "`memo`.`pinned` IS TRUE",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == true`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list != false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') != CAST('false' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list == false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('false' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `!has_task_list`,
+			want:   "NOT (JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON))",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && pinned`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON) AND `memo`.`pinned` IS TRUE)",
+			args:   []any{},
+		},
+		{
+			filter: `has_task_list && content.contains("todo")`,
+			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON) AND `memo`.`content` LIKE ?)",
+			args:   []any{"%todo%"},
+		},
+		{
+			filter: `created_ts > now() - 60 * 60 * 24`,
+			want:   "UNIX_TIMESTAMP(`memo`.`created_ts`) > ?",
+			args:   []any{time.Now().Unix() - 60*60*24},
+		},
+		{
+			filter: `size(tags) == 0`,
+			want:   "JSON_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) = ?",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `size(tags) > 0`,
+			want:   "JSON_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) > ?",
+			args:   []any{int64(0)},
+		},
+		{
+			filter: `"work" in tags`,
+			want:   "JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?)",
+			args:   []any{"work"},
+		},
+		{
+			filter: `size(tags) == 2`,
+			want:   "JSON_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) = ?",
+			args:   []any{int64(2)},
 		},
 	}
 

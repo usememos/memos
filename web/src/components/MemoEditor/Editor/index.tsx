@@ -1,8 +1,8 @@
 import { last } from "lodash-es";
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { markdownServiceClient } from "@/grpcweb";
-import { NodeType, OrderedListItemNode, TaskListItemNode, UnorderedListItemNode } from "@/types/proto/api/v1/markdown_service";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
+import { Node, NodeType, OrderedListItemNode, TaskListItemNode, UnorderedListItemNode } from "@/types/proto/api/v1/markdown_service";
 import TagSuggestions from "./TagSuggestions";
 
 export interface EditorRefActions {
@@ -150,6 +150,20 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     updateEditorHeight();
   }, []);
 
+  const getLastNode = (nodes: Node[]): Node | undefined => {
+    const lastNode = last(nodes);
+    if (!lastNode) {
+      return undefined;
+    }
+    if (lastNode.type === NodeType.LIST) {
+      const children = lastNode.listNode?.children;
+      if (children) {
+        return getLastNode(children);
+      }
+    }
+    return lastNode;
+  };
+
   const handleEditorKeyDown = async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !isInIME) {
       if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
@@ -159,7 +173,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       const cursorPosition = editorActions.getCursorPosition();
       const prevContent = editorActions.getContent().substring(0, cursorPosition);
       const { nodes } = await markdownServiceClient.parseMarkdown({ markdown: prevContent });
-      const lastNode = last(last(nodes)?.listNode?.children);
+      const lastNode = getLastNode(nodes);
       if (!lastNode) {
         return;
       }
@@ -171,27 +185,38 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       let insertText = indentationMatch ? indentationMatch[0] : ""; // Keep the indentation of the previous line
       if (lastNode.type === NodeType.TASK_LIST_ITEM) {
         const { symbol } = lastNode.taskListItemNode as TaskListItemNode;
-        insertText = `${symbol} [ ] `;
+        insertText += `${symbol} [ ] `;
       } else if (lastNode.type === NodeType.UNORDERED_LIST_ITEM) {
         const { symbol } = lastNode.unorderedListItemNode as UnorderedListItemNode;
-        insertText = `${symbol} `;
+        insertText += `${symbol} `;
       } else if (lastNode.type === NodeType.ORDERED_LIST_ITEM) {
         const { number } = lastNode.orderedListItemNode as OrderedListItemNode;
-        insertText = `${Number(number) + 1}. `;
+        insertText += `${Number(number) + 1}. `;
+      } else if (lastNode.type === NodeType.TABLE) {
+        const columns = lastNode.tableNode?.header.length;
+        if (!columns) {
+          return;
+        }
+
+        insertText += "| ";
+        for (let i = 1; i < columns; i++) {
+          insertText += " | ";
+        }
+        insertText += " |";
       }
+
       if (insertText) {
+        // Insert the text at the current cursor position.
         editorActions.insertText(insertText);
       }
     }
   };
 
   return (
-    <div
-      className={cn("flex flex-col justify-start items-start relative w-full h-auto max-h-[50vh] bg-inherit dark:text-gray-300", className)}
-    >
+    <div className={cn("flex flex-col justify-start items-start relative w-full h-auto max-h-[50vh] bg-inherit", className)}>
       <textarea
-        className="w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap word-break"
-        rows={1}
+        className="w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap break-words"
+        rows={2}
         placeholder={placeholder}
         ref={editorRef}
         onPaste={onPaste}

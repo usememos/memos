@@ -1,30 +1,26 @@
-import { Link as MLink, Tooltip } from "@mui/joy";
 import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { markdownServiceClient } from "@/grpcweb";
-import { useWorkspaceSettingStore } from "@/store/v1";
-import { LinkMetadata } from "@/types/proto/api/v1/markdown_service";
-import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_setting_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { workspaceStore } from "@/store";
+import { LinkMetadata, Node } from "@/types/proto/api/v1/markdown_service";
+import Renderer from "./Renderer";
 
 interface Props {
   url: string;
-  text?: string;
+  content?: Node[];
 }
 
 const getFaviconWithGoogleS2 = (url: string) => {
   try {
     const urlObject = new URL(url);
     return `https://www.google.com/s2/favicons?sz=128&domain=${urlObject.hostname}`;
-  } catch (error) {
+  } catch {
     return undefined;
   }
 };
 
-const Link: React.FC<Props> = ({ text, url }: Props) => {
-  const workspaceSettingStore = useWorkspaceSettingStore();
-  const workspaceMemoRelatedSetting =
-    workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting ||
-    WorkspaceMemoRelatedSetting.fromPartial({});
+const Link: React.FC<Props> = ({ content, url }: Props) => {
+  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
   const [initialized, setInitialized] = useState<boolean>(false);
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const [linkMetadata, setLinkMetadata] = useState<LinkMetadata | undefined>();
@@ -47,30 +43,38 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
   };
 
   return (
-    <Tooltip
-      variant="outlined"
-      title={
-        linkMetadata && (
-          <div className="w-full max-w-64 sm:max-w-96 p-1 flex flex-col">
-            <div className="w-full flex flex-row justify-start items-center gap-1">
-              <img className="w-5 h-5 rounded" src={getFaviconWithGoogleS2(url)} alt={linkMetadata?.title} />
-              <h3 className="text-base truncate dark:opacity-90">{linkMetadata?.title}</h3>
+    <TooltipProvider>
+      <Tooltip open={showTooltip}>
+        <TooltipTrigger asChild>
+          <a
+            className="underline text-primary hover:text-primary/80"
+            target="_blank"
+            href={url}
+            rel="noopener noreferrer"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            {content ? content.map((child, index) => <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />) : url}
+          </a>
+        </TooltipTrigger>
+        {linkMetadata && (
+          <TooltipContent className="w-full max-w-64 sm:max-w-96 p-1">
+            <div className="w-full flex flex-col">
+              <div className="w-full flex flex-row justify-start items-center gap-1">
+                <img className="w-5 h-5 rounded" src={getFaviconWithGoogleS2(url)} alt={linkMetadata?.title} />
+                <h3 className="text-base truncate">{linkMetadata?.title}</h3>
+              </div>
+              {linkMetadata.description && (
+                <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>
+              )}
+              {linkMetadata.image && (
+                <img className="mt-1 w-full h-32 object-cover rounded" src={linkMetadata.image} alt={linkMetadata.title} />
+              )}
             </div>
-            {linkMetadata.description && (
-              <p className="mt-1 w-full text-sm leading-snug opacity-80 line-clamp-3">{linkMetadata.description}</p>
-            )}
-          </div>
-        )
-      }
-      open={showTooltip}
-      arrow
-    >
-      <MLink underline="always" target="_blank" href={url}>
-        <span onMouseEnter={handleMouseEnter} onMouseLeave={() => setShowTooltip(false)}>
-          {text || url}
-        </span>
-      </MLink>
-    </Tooltip>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 

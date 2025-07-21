@@ -23,11 +23,11 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	UserService_ListUsers_FullMethodName             = "/memos.api.v1.UserService/ListUsers"
 	UserService_GetUser_FullMethodName               = "/memos.api.v1.UserService/GetUser"
-	UserService_GetUserByUsername_FullMethodName     = "/memos.api.v1.UserService/GetUserByUsername"
-	UserService_GetUserAvatarBinary_FullMethodName   = "/memos.api.v1.UserService/GetUserAvatarBinary"
 	UserService_CreateUser_FullMethodName            = "/memos.api.v1.UserService/CreateUser"
 	UserService_UpdateUser_FullMethodName            = "/memos.api.v1.UserService/UpdateUser"
 	UserService_DeleteUser_FullMethodName            = "/memos.api.v1.UserService/DeleteUser"
+	UserService_SearchUsers_FullMethodName           = "/memos.api.v1.UserService/SearchUsers"
+	UserService_GetUserAvatar_FullMethodName         = "/memos.api.v1.UserService/GetUserAvatar"
 	UserService_ListAllUserStats_FullMethodName      = "/memos.api.v1.UserService/ListAllUserStats"
 	UserService_GetUserStats_FullMethodName          = "/memos.api.v1.UserService/GetUserStats"
 	UserService_GetUserSetting_FullMethodName        = "/memos.api.v1.UserService/GetUserSetting"
@@ -35,10 +35,8 @@ const (
 	UserService_ListUserAccessTokens_FullMethodName  = "/memos.api.v1.UserService/ListUserAccessTokens"
 	UserService_CreateUserAccessToken_FullMethodName = "/memos.api.v1.UserService/CreateUserAccessToken"
 	UserService_DeleteUserAccessToken_FullMethodName = "/memos.api.v1.UserService/DeleteUserAccessToken"
-	UserService_ListShortcuts_FullMethodName         = "/memos.api.v1.UserService/ListShortcuts"
-	UserService_CreateShortcut_FullMethodName        = "/memos.api.v1.UserService/CreateShortcut"
-	UserService_UpdateShortcut_FullMethodName        = "/memos.api.v1.UserService/UpdateShortcut"
-	UserService_DeleteShortcut_FullMethodName        = "/memos.api.v1.UserService/DeleteShortcut"
+	UserService_ListUserSessions_FullMethodName      = "/memos.api.v1.UserService/ListUserSessions"
+	UserService_RevokeUserSession_FullMethodName     = "/memos.api.v1.UserService/RevokeUserSession"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -49,38 +47,34 @@ type UserServiceClient interface {
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
 	// GetUser gets a user by name.
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)
-	// GetUserByUsername gets a user by username.
-	GetUserByUsername(ctx context.Context, in *GetUserByUsernameRequest, opts ...grpc.CallOption) (*User, error)
-	// GetUserAvatarBinary gets the avatar of a user.
-	GetUserAvatarBinary(ctx context.Context, in *GetUserAvatarBinaryRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	// CreateUser creates a new user.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
 	// UpdateUser updates a user.
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error)
 	// DeleteUser deletes a user.
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// ListAllUserStats returns all user stats.
+	// SearchUsers searches for users based on query.
+	SearchUsers(ctx context.Context, in *SearchUsersRequest, opts ...grpc.CallOption) (*SearchUsersResponse, error)
+	// GetUserAvatar gets the avatar of a user.
+	GetUserAvatar(ctx context.Context, in *GetUserAvatarRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
+	// ListAllUserStats returns statistics for all users.
 	ListAllUserStats(ctx context.Context, in *ListAllUserStatsRequest, opts ...grpc.CallOption) (*ListAllUserStatsResponse, error)
-	// GetUserStats returns the stats of a user.
+	// GetUserStats returns statistics for a specific user.
 	GetUserStats(ctx context.Context, in *GetUserStatsRequest, opts ...grpc.CallOption) (*UserStats, error)
-	// GetUserSetting gets the setting of a user.
+	// GetUserSetting returns the user setting.
 	GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
-	// UpdateUserSetting updates the setting of a user.
+	// UpdateUserSetting updates the user setting.
 	UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(ctx context.Context, in *ListUserAccessTokensRequest, opts ...grpc.CallOption) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
 	CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*UserAccessToken, error)
-	// DeleteUserAccessToken deletes an access token for a user.
+	// DeleteUserAccessToken deletes an access token.
 	DeleteUserAccessToken(ctx context.Context, in *DeleteUserAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// ListShortcuts returns a list of shortcuts for a user.
-	ListShortcuts(ctx context.Context, in *ListShortcutsRequest, opts ...grpc.CallOption) (*ListShortcutsResponse, error)
-	// CreateShortcut creates a new shortcut for a user.
-	CreateShortcut(ctx context.Context, in *CreateShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error)
-	// UpdateShortcut updates a shortcut for a user.
-	UpdateShortcut(ctx context.Context, in *UpdateShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error)
-	// DeleteShortcut deletes a shortcut for a user.
-	DeleteShortcut(ctx context.Context, in *DeleteShortcutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// ListUserSessions returns a list of active sessions for a user.
+	ListUserSessions(ctx context.Context, in *ListUserSessionsRequest, opts ...grpc.CallOption) (*ListUserSessionsResponse, error)
+	// RevokeUserSession revokes a specific session for a user.
+	RevokeUserSession(ctx context.Context, in *RevokeUserSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type userServiceClient struct {
@@ -111,26 +105,6 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opt
 	return out, nil
 }
 
-func (c *userServiceClient) GetUserByUsername(ctx context.Context, in *GetUserByUsernameRequest, opts ...grpc.CallOption) (*User, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(User)
-	err := c.cc.Invoke(ctx, UserService_GetUserByUsername_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) GetUserAvatarBinary(ctx context.Context, in *GetUserAvatarBinaryRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(httpbody.HttpBody)
-	err := c.cc.Invoke(ctx, UserService_GetUserAvatarBinary_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(User)
@@ -155,6 +129,26 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, UserService_DeleteUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) SearchUsers(ctx context.Context, in *SearchUsersRequest, opts ...grpc.CallOption) (*SearchUsersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchUsersResponse)
+	err := c.cc.Invoke(ctx, UserService_SearchUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetUserAvatar(ctx context.Context, in *GetUserAvatarRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, UserService_GetUserAvatar_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -231,40 +225,20 @@ func (c *userServiceClient) DeleteUserAccessToken(ctx context.Context, in *Delet
 	return out, nil
 }
 
-func (c *userServiceClient) ListShortcuts(ctx context.Context, in *ListShortcutsRequest, opts ...grpc.CallOption) (*ListShortcutsResponse, error) {
+func (c *userServiceClient) ListUserSessions(ctx context.Context, in *ListUserSessionsRequest, opts ...grpc.CallOption) (*ListUserSessionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListShortcutsResponse)
-	err := c.cc.Invoke(ctx, UserService_ListShortcuts_FullMethodName, in, out, cOpts...)
+	out := new(ListUserSessionsResponse)
+	err := c.cc.Invoke(ctx, UserService_ListUserSessions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) CreateShortcut(ctx context.Context, in *CreateShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Shortcut)
-	err := c.cc.Invoke(ctx, UserService_CreateShortcut_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) UpdateShortcut(ctx context.Context, in *UpdateShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Shortcut)
-	err := c.cc.Invoke(ctx, UserService_UpdateShortcut_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) DeleteShortcut(ctx context.Context, in *DeleteShortcutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *userServiceClient) RevokeUserSession(ctx context.Context, in *RevokeUserSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, UserService_DeleteShortcut_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserService_RevokeUserSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -279,38 +253,34 @@ type UserServiceServer interface {
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	// GetUser gets a user by name.
 	GetUser(context.Context, *GetUserRequest) (*User, error)
-	// GetUserByUsername gets a user by username.
-	GetUserByUsername(context.Context, *GetUserByUsernameRequest) (*User, error)
-	// GetUserAvatarBinary gets the avatar of a user.
-	GetUserAvatarBinary(context.Context, *GetUserAvatarBinaryRequest) (*httpbody.HttpBody, error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
 	// UpdateUser updates a user.
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
 	// DeleteUser deletes a user.
 	DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
-	// ListAllUserStats returns all user stats.
+	// SearchUsers searches for users based on query.
+	SearchUsers(context.Context, *SearchUsersRequest) (*SearchUsersResponse, error)
+	// GetUserAvatar gets the avatar of a user.
+	GetUserAvatar(context.Context, *GetUserAvatarRequest) (*httpbody.HttpBody, error)
+	// ListAllUserStats returns statistics for all users.
 	ListAllUserStats(context.Context, *ListAllUserStatsRequest) (*ListAllUserStatsResponse, error)
-	// GetUserStats returns the stats of a user.
+	// GetUserStats returns statistics for a specific user.
 	GetUserStats(context.Context, *GetUserStatsRequest) (*UserStats, error)
-	// GetUserSetting gets the setting of a user.
+	// GetUserSetting returns the user setting.
 	GetUserSetting(context.Context, *GetUserSettingRequest) (*UserSetting, error)
-	// UpdateUserSetting updates the setting of a user.
+	// UpdateUserSetting updates the user setting.
 	UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UserSetting, error)
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(context.Context, *ListUserAccessTokensRequest) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
 	CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*UserAccessToken, error)
-	// DeleteUserAccessToken deletes an access token for a user.
+	// DeleteUserAccessToken deletes an access token.
 	DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error)
-	// ListShortcuts returns a list of shortcuts for a user.
-	ListShortcuts(context.Context, *ListShortcutsRequest) (*ListShortcutsResponse, error)
-	// CreateShortcut creates a new shortcut for a user.
-	CreateShortcut(context.Context, *CreateShortcutRequest) (*Shortcut, error)
-	// UpdateShortcut updates a shortcut for a user.
-	UpdateShortcut(context.Context, *UpdateShortcutRequest) (*Shortcut, error)
-	// DeleteShortcut deletes a shortcut for a user.
-	DeleteShortcut(context.Context, *DeleteShortcutRequest) (*emptypb.Empty, error)
+	// ListUserSessions returns a list of active sessions for a user.
+	ListUserSessions(context.Context, *ListUserSessionsRequest) (*ListUserSessionsResponse, error)
+	// RevokeUserSession revokes a specific session for a user.
+	RevokeUserSession(context.Context, *RevokeUserSessionRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -327,12 +297,6 @@ func (UnimplementedUserServiceServer) ListUsers(context.Context, *ListUsersReque
 func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedUserServiceServer) GetUserByUsername(context.Context, *GetUserByUsernameRequest) (*User, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUsername not implemented")
-}
-func (UnimplementedUserServiceServer) GetUserAvatarBinary(context.Context, *GetUserAvatarBinaryRequest) (*httpbody.HttpBody, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserAvatarBinary not implemented")
-}
 func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
@@ -341,6 +305,12 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 }
 func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedUserServiceServer) SearchUsers(context.Context, *SearchUsersRequest) (*SearchUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchUsers not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserAvatar(context.Context, *GetUserAvatarRequest) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserAvatar not implemented")
 }
 func (UnimplementedUserServiceServer) ListAllUserStats(context.Context, *ListAllUserStatsRequest) (*ListAllUserStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAllUserStats not implemented")
@@ -363,17 +333,11 @@ func (UnimplementedUserServiceServer) CreateUserAccessToken(context.Context, *Cr
 func (UnimplementedUserServiceServer) DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserAccessToken not implemented")
 }
-func (UnimplementedUserServiceServer) ListShortcuts(context.Context, *ListShortcutsRequest) (*ListShortcutsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListShortcuts not implemented")
+func (UnimplementedUserServiceServer) ListUserSessions(context.Context, *ListUserSessionsRequest) (*ListUserSessionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserSessions not implemented")
 }
-func (UnimplementedUserServiceServer) CreateShortcut(context.Context, *CreateShortcutRequest) (*Shortcut, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateShortcut not implemented")
-}
-func (UnimplementedUserServiceServer) UpdateShortcut(context.Context, *UpdateShortcutRequest) (*Shortcut, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateShortcut not implemented")
-}
-func (UnimplementedUserServiceServer) DeleteShortcut(context.Context, *DeleteShortcutRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteShortcut not implemented")
+func (UnimplementedUserServiceServer) RevokeUserSession(context.Context, *RevokeUserSessionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeUserSession not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -432,42 +396,6 @@ func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetUserByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserByUsernameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).GetUserByUsername(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_GetUserByUsername_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUserByUsername(ctx, req.(*GetUserByUsernameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_GetUserAvatarBinary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserAvatarBinaryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).GetUserAvatarBinary(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_GetUserAvatarBinary_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUserAvatarBinary(ctx, req.(*GetUserAvatarBinaryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateUserRequest)
 	if err := dec(in); err != nil {
@@ -518,6 +446,42 @@ func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).DeleteUser(ctx, req.(*DeleteUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_SearchUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).SearchUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_SearchUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).SearchUsers(ctx, req.(*SearchUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetUserAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserAvatarRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserAvatar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserAvatar_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserAvatar(ctx, req.(*GetUserAvatarRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -648,74 +612,38 @@ func _UserService_DeleteUserAccessToken_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_ListShortcuts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListShortcutsRequest)
+func _UserService_ListUserSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserSessionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).ListShortcuts(ctx, in)
+		return srv.(UserServiceServer).ListUserSessions(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_ListShortcuts_FullMethodName,
+		FullMethod: UserService_ListUserSessions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ListShortcuts(ctx, req.(*ListShortcutsRequest))
+		return srv.(UserServiceServer).ListUserSessions(ctx, req.(*ListUserSessionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_CreateShortcut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateShortcutRequest)
+func _UserService_RevokeUserSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeUserSessionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).CreateShortcut(ctx, in)
+		return srv.(UserServiceServer).RevokeUserSession(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_CreateShortcut_FullMethodName,
+		FullMethod: UserService_RevokeUserSession_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).CreateShortcut(ctx, req.(*CreateShortcutRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_UpdateShortcut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateShortcutRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).UpdateShortcut(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_UpdateShortcut_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).UpdateShortcut(ctx, req.(*UpdateShortcutRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_DeleteShortcut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteShortcutRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).DeleteShortcut(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_DeleteShortcut_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).DeleteShortcut(ctx, req.(*DeleteShortcutRequest))
+		return srv.(UserServiceServer).RevokeUserSession(ctx, req.(*RevokeUserSessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -736,14 +664,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetUser_Handler,
 		},
 		{
-			MethodName: "GetUserByUsername",
-			Handler:    _UserService_GetUserByUsername_Handler,
-		},
-		{
-			MethodName: "GetUserAvatarBinary",
-			Handler:    _UserService_GetUserAvatarBinary_Handler,
-		},
-		{
 			MethodName: "CreateUser",
 			Handler:    _UserService_CreateUser_Handler,
 		},
@@ -754,6 +674,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUser",
 			Handler:    _UserService_DeleteUser_Handler,
+		},
+		{
+			MethodName: "SearchUsers",
+			Handler:    _UserService_SearchUsers_Handler,
+		},
+		{
+			MethodName: "GetUserAvatar",
+			Handler:    _UserService_GetUserAvatar_Handler,
 		},
 		{
 			MethodName: "ListAllUserStats",
@@ -784,20 +712,12 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_DeleteUserAccessToken_Handler,
 		},
 		{
-			MethodName: "ListShortcuts",
-			Handler:    _UserService_ListShortcuts_Handler,
+			MethodName: "ListUserSessions",
+			Handler:    _UserService_ListUserSessions_Handler,
 		},
 		{
-			MethodName: "CreateShortcut",
-			Handler:    _UserService_CreateShortcut_Handler,
-		},
-		{
-			MethodName: "UpdateShortcut",
-			Handler:    _UserService_UpdateShortcut_Handler,
-		},
-		{
-			MethodName: "DeleteShortcut",
-			Handler:    _UserService_DeleteShortcut_Handler,
+			MethodName: "RevokeUserSession",
+			Handler:    _UserService_RevokeUserSession_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

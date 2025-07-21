@@ -1,8 +1,9 @@
+import { observer } from "mobx-react-lite";
 import { useContext, useEffect } from "react";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { memoNamePrefix, useMemoStore } from "@/store/v1";
-import { memoLink } from "@/utils/memo";
+import { memoStore } from "@/store";
+import { memoNamePrefix } from "@/store/common";
 import { RendererContext } from "../types";
 import Error from "./Error";
 
@@ -11,10 +12,9 @@ interface Props {
   params: string;
 }
 
-const ReferencedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
+const ReferencedMemo = observer(({ resourceId: uid, params: paramsStr }: Props) => {
   const navigateTo = useNavigateTo();
   const loadingState = useLoading();
-  const memoStore = useMemoStore();
   const memoName = `${memoNamePrefix}${uid}`;
   const memo = memoStore.getMemoByName(memoName);
   const params = new URLSearchParams(paramsStr);
@@ -35,7 +35,7 @@ const ReferencedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
   const displayContent = paramsText || (memo.snippet.length > 12 ? `${memo.snippet.slice(0, 12)}...` : memo.snippet);
 
   const handleGotoMemoDetailPage = () => {
-    navigateTo(memoLink(memo.name), {
+    navigateTo(`/${memo.name}`, {
       state: {
         from: context.parentPage,
       },
@@ -44,12 +44,12 @@ const ReferencedMemo = ({ resourceId: uid, params: paramsStr }: Props) => {
 
   return (
     <span
-      className="text-blue-600 whitespace-nowrap dark:text-blue-400 cursor-pointer underline break-all hover:opacity-80 decoration-1"
+      className="text-primary whitespace-nowrap cursor-pointer underline break-all hover:text-primary/80 decoration-1"
       onClick={handleGotoMemoDetailPage}
     >
       {displayContent}
     </span>
   );
-};
+});
 
 export default ReferencedMemo;

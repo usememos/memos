@@ -1,17 +1,8 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import dialogReducer from "./reducer/dialog";
+import attachmentStore from "./attachment";
+import memoStore from "./memo";
+import memoFilterStore from "./memoFilter";
+import userStore from "./user";
+import viewStore from "./view";
+import workspaceStore from "./workspace";
 
-const store = configureStore({
-  reducer: {
-    dialog: dialogReducer,
-  },
-});
-
-type AppState = ReturnType<typeof store.getState>;
-type AppDispatch = typeof store.dispatch;
-
-export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
-export const useAppDispatch: () => AppDispatch = useDispatch;
-
-export default store;
+export { memoFilterStore, memoStore, attachmentStore, workspaceStore, userStore, viewStore };

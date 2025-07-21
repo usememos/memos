@@ -1,0 +1,3967 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /api/v1/activities:
+        get:
+            tags:
+                - ActivityService
+            description: ListActivities returns a list of activities.
+            operationId: ActivityService_ListActivities
+            parameters:
+                - name: pageSize
+                  in: query
+                  description: |-
+                    The maximum number of activities to return.
+                     The service may return fewer than this value.
+                     If unspecified, at most 100 activities will be returned.
+                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: |-
+                    A page token, received from a previous `ListActivities` call.
+                     Provide this to retrieve the subsequent page.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListActivitiesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/activities/{activity}:
+        get:
+            tags:
+                - ActivityService
+            description: GetActivity returns the activity with the given id.
+            operationId: ActivityService_GetActivity
+            parameters:
+                - name: activity
+                  in: path
+                  description: The activity id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Activity'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/attachments:
+        get:
+            tags:
+                - AttachmentService
+            description: ListAttachments lists all attachments.
+            operationId: AttachmentService_ListAttachments
+            parameters:
+                - name: pageSize
+                  in: query
+                  description: |-
+                    Optional. The maximum number of attachments to return.
+                     The service may return fewer than this value.
+                     If unspecified, at most 50 attachments will be returned.
+                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: |-
+                    Optional. A page token, received from a previous `ListAttachments` call.
+                     Provide this to retrieve the subsequent page.
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: |-
+                    Optional. Filter to apply to the list results.
+                     Example: "type=image/png" or "filename:*.jpg"
+                     Supported operators: =, !=, <, <=, >, >=, :
+                     Supported fields: filename, type, size, create_time, memo
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  description: |-
+                    Optional. The order to sort results by.
+                     Example: "create_time desc" or "filename asc"
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAttachmentsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - AttachmentService
+            description: CreateAttachment creates a new attachment.
+            operationId: AttachmentService_CreateAttachment
+            parameters:
+                - name: attachmentId
+                  in: query
+                  description: |-
+                    Optional. The attachment ID to use for this attachment.
+                     If empty, a unique ID will be generated.
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Attachment'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Attachment'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/attachments/{attachment}:
+        get:
+            tags:
+                - AttachmentService
+            description: GetAttachment returns a attachment by name.
+            operationId: AttachmentService_GetAttachment
+            parameters:
+                - name: attachment
+                  in: path
+                  description: The attachment id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Attachment'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - AttachmentService
+            description: DeleteAttachment deletes a attachment by name.
+            operationId: AttachmentService_DeleteAttachment
+            parameters:
+                - name: attachment
+                  in: path
+                  description: The attachment id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - AttachmentService
+            description: UpdateAttachment updates a attachment.
+            operationId: AttachmentService_UpdateAttachment
+            parameters:
+                - name: attachment
+                  in: path
+                  description: The attachment id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Attachment'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Attachment'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/auth/sessions:
+        post:
+            tags:
+                - AuthService
+            description: |-
+                CreateSession authenticates a user and creates a new session.
+                 Returns the authenticated user information upon successful authentication.
+            operationId: AuthService_CreateSession
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateSessionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateSessionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/auth/sessions/current:
+        get:
+            tags:
+                - AuthService
+            description: |-
+                GetCurrentSession returns the current active session information.
+                 This method is idempotent and safe, suitable for checking current session state.
+            operationId: AuthService_GetCurrentSession
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetCurrentSessionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - AuthService
+            description: |-
+                DeleteSession terminates the current user session.
+                 This is an idempotent operation that invalidates the user's authentication.
+            operationId: AuthService_DeleteSession
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/identityProviders:
+        get:
+            tags:
+                - IdentityProviderService
+            description: ListIdentityProviders lists identity providers.
+            operationId: IdentityProviderService_ListIdentityProviders
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListIdentityProvidersResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - IdentityProviderService
+            description: CreateIdentityProvider creates an identity provider.
+            operationId: IdentityProviderService_CreateIdentityProvider
+            parameters:
+                - name: identityProviderId
+                  in: query
+                  description: |-
+                    Optional. The ID to use for the identity provider, which will become the final component of the resource name.
+                     If not provided, the system will generate one.
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/IdentityProvider'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/IdentityProvider'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/identityProviders/{identityProvider}:
+        get:
+            tags:
+                - IdentityProviderService
+            description: GetIdentityProvider gets an identity provider.
+            operationId: IdentityProviderService_GetIdentityProvider
+            parameters:
+                - name: identityProvider
+                  in: path
+                  description: The identityProvider id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/IdentityProvider'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - IdentityProviderService
+            description: DeleteIdentityProvider deletes an identity provider.
+            operationId: IdentityProviderService_DeleteIdentityProvider
+            parameters:
+                - name: identityProvider
+                  in: path
+                  description: The identityProvider id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - IdentityProviderService
+            description: UpdateIdentityProvider updates an identity provider.
+            operationId: IdentityProviderService_UpdateIdentityProvider
+            parameters:
+                - name: identityProvider
+                  in: path
+                  description: The identityProvider id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: |-
+                    Required. The update mask applies to the resource. Only the top level fields of
+                     IdentityProvider are supported.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/IdentityProvider'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/IdentityProvider'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/inboxes/{inboxe}:
+        delete:
+            tags:
+                - InboxService
+            description: DeleteInbox deletes an inbox.
+            operationId: InboxService_DeleteInbox
+            parameters:
+                - name: inboxe
+                  in: path
+                  description: The inboxe id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - InboxService
+            description: UpdateInbox updates an inbox.
+            operationId: InboxService_UpdateInbox
+            parameters:
+                - name: inboxe
+                  in: path
+                  description: The inboxe id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+                - name: allowMissing
+                  in: query
+                  description: Optional. If set to true, allows updating missing fields.
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Inbox'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Inbox'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/markdown/links:getMetadata:
+        get:
+            tags:
+                - MarkdownService
+            description: |-
+                GetLinkMetadata returns metadata for a given link.
+                 This is useful for generating link previews.
+            operationId: MarkdownService_GetLinkMetadata
+            parameters:
+                - name: link
+                  in: query
+                  description: The link URL to get metadata for.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/LinkMetadata'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/markdown:parse:
+        post:
+            tags:
+                - MarkdownService
+            description: |-
+                ParseMarkdown parses the given markdown content and returns a list of nodes.
+                 This is a utility method that transforms markdown text into structured nodes.
+            operationId: MarkdownService_ParseMarkdown
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ParseMarkdownRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ParseMarkdownResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/markdown:restore:
+        post:
+            tags:
+                - MarkdownService
+            description: |-
+                RestoreMarkdownNodes restores the given nodes to markdown content.
+                 This is the inverse operation of ParseMarkdown.
+            operationId: MarkdownService_RestoreMarkdownNodes
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RestoreMarkdownNodesRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RestoreMarkdownNodesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/markdown:stringify:
+        post:
+            tags:
+                - MarkdownService
+            description: |-
+                StringifyMarkdownNodes stringify the given nodes to plain text content.
+                 This removes all markdown formatting and returns plain text.
+            operationId: MarkdownService_StringifyMarkdownNodes
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/StringifyMarkdownNodesRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StringifyMarkdownNodesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos:
+        get:
+            tags:
+                - MemoService
+            description: ListMemos lists memos with pagination and filter.
+            operationId: MemoService_ListMemos
+            parameters:
+                - name: parent
+                  in: query
+                  description: |-
+                    Optional. The parent is the owner of the memos.
+                     If not specified or `users/-`, it will list all memos.
+                     Format: users/{user}
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: |-
+                    Optional. The maximum number of memos to return.
+                     The service may return fewer than this value.
+                     If unspecified, at most 50 memos will be returned.
+                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: |-
+                    Optional. A page token, received from a previous `ListMemos` call.
+                     Provide this to retrieve the subsequent page.
+                  schema:
+                    type: string
+                - name: state
+                  in: query
+                  description: |-
+                    Optional. The state of the memos to list.
+                     Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
+                  schema:
+                    enum:
+                        - STATE_UNSPECIFIED
+                        - NORMAL
+                        - ARCHIVED
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: |-
+                    Optional. The order to sort results by.
+                     Default to "display_time desc".
+                     Example: "display_time desc" or "create_time asc"
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: |-
+                    Optional. Filter to apply to the list results.
+                     Filter is a CEL expression to filter memos.
+                     Refer to `Shortcut.filter`.
+                  schema:
+                    type: string
+                - name: showDeleted
+                  in: query
+                  description: Optional. If true, show deleted memos in the response.
+                  schema:
+                    type: boolean
+                - name: oldFilter
+                  in: query
+                  description: |-
+                    [Deprecated] Old filter contains some specific conditions to filter memos.
+                     Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListMemosResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - MemoService
+            description: CreateMemo creates a memo.
+            operationId: MemoService_CreateMemo
+            parameters:
+                - name: memoId
+                  in: query
+                  description: |-
+                    Optional. The memo ID to use for this memo.
+                     If empty, a unique ID will be generated.
+                  schema:
+                    type: string
+                - name: validateOnly
+                  in: query
+                  description: Optional. If set, validate the request but don't actually create the memo.
+                  schema:
+                    type: boolean
+                - name: requestId
+                  in: query
+                  description: Optional. An idempotency token.
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Memo'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Memo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}:
+        get:
+            tags:
+                - MemoService
+            description: GetMemo gets a memo.
+            operationId: MemoService_GetMemo
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: readMask
+                  in: query
+                  description: |-
+                    Optional. The fields to return in the response.
+                     If not specified, all fields are returned.
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Memo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - MemoService
+            description: DeleteMemo deletes a memo.
+            operationId: MemoService_DeleteMemo
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: force
+                  in: query
+                  description: Optional. If set to true, the memo will be deleted even if it has associated data.
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - MemoService
+            description: UpdateMemo updates a memo.
+            operationId: MemoService_UpdateMemo
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+                - name: allowMissing
+                  in: query
+                  description: Optional. If set to true, allows updating sensitive fields.
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Memo'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Memo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/attachments:
+        get:
+            tags:
+                - MemoService
+            description: ListMemoAttachments lists attachments for a memo.
+            operationId: MemoService_ListMemoAttachments
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of attachments to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A page token for pagination.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListMemoAttachmentsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - MemoService
+            description: SetMemoAttachments sets attachments for a memo.
+            operationId: MemoService_SetMemoAttachments
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SetMemoAttachmentsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/comments:
+        get:
+            tags:
+                - MemoService
+            description: ListMemoComments lists comments for a memo.
+            operationId: MemoService_ListMemoComments
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of comments to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A page token for pagination.
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  description: Optional. The order to sort results by.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListMemoCommentsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - MemoService
+            description: CreateMemoComment creates a comment for a memo.
+            operationId: MemoService_CreateMemoComment
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: commentId
+                  in: query
+                  description: Optional. The comment ID to use.
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Memo'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Memo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/reactions:
+        get:
+            tags:
+                - MemoService
+            description: ListMemoReactions lists reactions for a memo.
+            operationId: MemoService_ListMemoReactions
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of reactions to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A page token for pagination.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListMemoReactionsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - MemoService
+            description: UpsertMemoReaction upserts a reaction for a memo.
+            operationId: MemoService_UpsertMemoReaction
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpsertMemoReactionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Reaction'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/relations:
+        get:
+            tags:
+                - MemoService
+            description: ListMemoRelations lists relations for a memo.
+            operationId: MemoService_ListMemoRelations
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of relations to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A page token for pagination.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListMemoRelationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - MemoService
+            description: SetMemoRelations sets relations for a memo.
+            operationId: MemoService_SetMemoRelations
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SetMemoRelationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/tags/{tag}:
+        delete:
+            tags:
+                - MemoService
+            description: DeleteMemoTag deletes a tag for a memo.
+            operationId: MemoService_DeleteMemoTag
+            parameters:
+                - name: tag
+                  in: path
+                  description: Required. The tag name to delete.
+                  required: true
+                  schema:
+                    type: string
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: tag
+                  in: path
+                  description: The tag id.
+                  required: true
+                  schema:
+                    type: string
+                - name: deleteRelatedMemos
+                  in: query
+                  description: Optional. Whether to delete related memos.
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/tags:rename:
+        patch:
+            tags:
+                - MemoService
+            description: RenameMemoTag renames a tag for a memo.
+            operationId: MemoService_RenameMemoTag
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RenameMemoTagRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/reactions/{reaction}:
+        delete:
+            tags:
+                - MemoService
+            description: DeleteMemoReaction deletes a reaction for a memo.
+            operationId: MemoService_DeleteMemoReaction
+            parameters:
+                - name: reaction
+                  in: path
+                  description: The reaction id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users:
+        get:
+            tags:
+                - UserService
+            description: ListUsers returns a list of users.
+            operationId: UserService_ListUsers
+            parameters:
+                - name: pageSize
+                  in: query
+                  description: |-
+                    Optional. The maximum number of users to return.
+                     The service may return fewer than this value.
+                     If unspecified, at most 50 users will be returned.
+                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: |-
+                    Optional. A page token, received from a previous `ListUsers` call.
+                     Provide this to retrieve the subsequent page.
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: |-
+                    Optional. Filter to apply to the list results.
+                     Example: "state=ACTIVE" or "role=USER" or "email:@example.com"
+                     Supported operators: =, !=, <, <=, >, >=, :
+                     Supported fields: username, email, role, state, create_time, update_time
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  description: |-
+                    Optional. The order to sort results by.
+                     Example: "create_time desc" or "username asc"
+                  schema:
+                    type: string
+                - name: showDeleted
+                  in: query
+                  description: Optional. If true, show deleted users in the response.
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUsersResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - UserService
+            description: CreateUser creates a new user.
+            operationId: UserService_CreateUser
+            parameters:
+                - name: userId
+                  in: query
+                  description: |-
+                    Optional. The user ID to use for this user.
+                     If empty, a unique ID will be generated.
+                     Must match the pattern [a-z0-9-]+
+                  schema:
+                    type: string
+                - name: validateOnly
+                  in: query
+                  description: Optional. If set, validate the request but don't actually create the user.
+                  schema:
+                    type: boolean
+                - name: requestId
+                  in: query
+                  description: |-
+                    Optional. An idempotency token that can be used to ensure that multiple
+                     requests to create a user have the same result.
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/User'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}:
+        get:
+            tags:
+                - UserService
+            description: GetUser gets a user by name.
+            operationId: UserService_GetUser
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: readMask
+                  in: query
+                  description: |-
+                    Optional. The fields to return in the response.
+                     If not specified, all fields are returned.
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - UserService
+            description: DeleteUser deletes a user.
+            operationId: UserService_DeleteUser
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: force
+                  in: query
+                  description: Optional. If set to true, the user will be deleted even if they have associated data.
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - UserService
+            description: UpdateUser updates a user.
+            operationId: UserService_UpdateUser
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+                - name: allowMissing
+                  in: query
+                  description: Optional. If set to true, allows updating sensitive fields.
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/User'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/accessTokens:
+        get:
+            tags:
+                - UserService
+            description: ListUserAccessTokens returns a list of access tokens for a user.
+            operationId: UserService_ListUserAccessTokens
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of access tokens to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A page token for pagination.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUserAccessTokensResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - UserService
+            description: CreateUserAccessToken creates a new access token for a user.
+            operationId: UserService_CreateUserAccessToken
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: accessTokenId
+                  in: query
+                  description: Optional. The access token ID to use.
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserAccessToken'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserAccessToken'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/accessTokens/{accessToken}:
+        delete:
+            tags:
+                - UserService
+            description: DeleteUserAccessToken deletes an access token.
+            operationId: UserService_DeleteUserAccessToken
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: accessToken
+                  in: path
+                  description: The accessToken id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/avatar:
+        get:
+            tags:
+                - UserService
+            description: GetUserAvatar gets the avatar of a user.
+            operationId: UserService_GetUserAvatar
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        '*/*': {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/inboxes:
+        get:
+            tags:
+                - InboxService
+            description: ListInboxes lists inboxes for a user.
+            operationId: InboxService_ListInboxes
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: |-
+                    Optional. The maximum number of inboxes to return.
+                     The service may return fewer than this value.
+                     If unspecified, at most 50 inboxes will be returned.
+                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: |-
+                    Optional. A page token, received from a previous `ListInboxes` call.
+                     Provide this to retrieve the subsequent page.
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: |-
+                    Optional. Filter to apply to the list results.
+                     Example: "status=UNREAD" or "type=MEMO_COMMENT"
+                     Supported operators: =, !=
+                     Supported fields: status, type, sender, create_time
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  description: |-
+                    Optional. The order to sort results by.
+                     Example: "create_time desc" or "status asc"
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListInboxesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/memos:
+        get:
+            tags:
+                - MemoService
+            description: ListMemos lists memos with pagination and filter.
+            operationId: MemoService_ListMemos
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: |-
+                    Optional. The maximum number of memos to return.
+                     The service may return fewer than this value.
+                     If unspecified, at most 50 memos will be returned.
+                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: |-
+                    Optional. A page token, received from a previous `ListMemos` call.
+                     Provide this to retrieve the subsequent page.
+                  schema:
+                    type: string
+                - name: state
+                  in: query
+                  description: |-
+                    Optional. The state of the memos to list.
+                     Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
+                  schema:
+                    enum:
+                        - STATE_UNSPECIFIED
+                        - NORMAL
+                        - ARCHIVED
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: |-
+                    Optional. The order to sort results by.
+                     Default to "display_time desc".
+                     Example: "display_time desc" or "create_time asc"
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: |-
+                    Optional. Filter to apply to the list results.
+                     Filter is a CEL expression to filter memos.
+                     Refer to `Shortcut.filter`.
+                  schema:
+                    type: string
+                - name: showDeleted
+                  in: query
+                  description: Optional. If true, show deleted memos in the response.
+                  schema:
+                    type: boolean
+                - name: oldFilter
+                  in: query
+                  description: |-
+                    [Deprecated] Old filter contains some specific conditions to filter memos.
+                     Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListMemosResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/sessions:
+        get:
+            tags:
+                - UserService
+            description: ListUserSessions returns a list of active sessions for a user.
+            operationId: UserService_ListUserSessions
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUserSessionsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/sessions/{session}:
+        delete:
+            tags:
+                - UserService
+            description: RevokeUserSession revokes a specific session for a user.
+            operationId: UserService_RevokeUserSession
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: session
+                  in: path
+                  description: The session id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/shortcuts:
+        get:
+            tags:
+                - ShortcutService
+            description: ListShortcuts returns a list of shortcuts for a user.
+            operationId: ShortcutService_ListShortcuts
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListShortcutsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - ShortcutService
+            description: CreateShortcut creates a new shortcut for a user.
+            operationId: ShortcutService_CreateShortcut
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: validateOnly
+                  in: query
+                  description: Optional. If set, validate the request, but do not actually create the shortcut.
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Shortcut'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Shortcut'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/shortcuts/{shortcut}:
+        get:
+            tags:
+                - ShortcutService
+            description: GetShortcut gets a shortcut by name.
+            operationId: ShortcutService_GetShortcut
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: shortcut
+                  in: path
+                  description: The shortcut id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Shortcut'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - ShortcutService
+            description: DeleteShortcut deletes a shortcut for a user.
+            operationId: ShortcutService_DeleteShortcut
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: shortcut
+                  in: path
+                  description: The shortcut id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - ShortcutService
+            description: UpdateShortcut updates a shortcut for a user.
+            operationId: ShortcutService_UpdateShortcut
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: shortcut
+                  in: path
+                  description: The shortcut id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Optional. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Shortcut'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Shortcut'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/webhooks:
+        get:
+            tags:
+                - WebhookService
+            description: ListWebhooks returns a list of webhooks for a user.
+            operationId: WebhookService_ListWebhooks
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListWebhooksResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - WebhookService
+            description: CreateWebhook creates a new webhook for a user.
+            operationId: WebhookService_CreateWebhook
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: validateOnly
+                  in: query
+                  description: Optional. If set, validate the request, but do not actually create the webhook.
+                  schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Webhook'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Webhook'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/webhooks/{webhook}:
+        get:
+            tags:
+                - WebhookService
+            description: GetWebhook gets a webhook by name.
+            operationId: WebhookService_GetWebhook
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: webhook
+                  in: path
+                  description: The webhook id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Webhook'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - WebhookService
+            description: DeleteWebhook deletes a webhook for a user.
+            operationId: WebhookService_DeleteWebhook
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: webhook
+                  in: path
+                  description: The webhook id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - WebhookService
+            description: UpdateWebhook updates a webhook for a user.
+            operationId: WebhookService_UpdateWebhook
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: webhook
+                  in: path
+                  description: The webhook id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Optional. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Webhook'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Webhook'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}:getSetting:
+        get:
+            tags:
+                - UserService
+            description: GetUserSetting returns the user setting.
+            operationId: UserService_GetUserSetting
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserSetting'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}:getStats:
+        get:
+            tags:
+                - UserService
+            description: GetUserStats returns statistics for a specific user.
+            operationId: UserService_GetUserStats
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserStats'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}:updateSetting:
+        patch:
+            tags:
+                - UserService
+            description: UpdateUserSetting updates the user setting.
+            operationId: UserService_UpdateUserSetting
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserSetting'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserSetting'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users:search:
+        get:
+            tags:
+                - UserService
+            description: SearchUsers searches for users based on query.
+            operationId: UserService_SearchUsers
+            parameters:
+                - name: query
+                  in: query
+                  description: Required. The search query.
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of users to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A page token for pagination.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SearchUsersResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users:stats:
+        get:
+            tags:
+                - UserService
+            description: ListAllUserStats returns statistics for all users.
+            operationId: UserService_ListAllUserStats
+            parameters:
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of user stats to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A page token for pagination.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAllUserStatsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/workspace/profile:
+        get:
+            tags:
+                - WorkspaceService
+            description: Gets the workspace profile.
+            operationId: WorkspaceService_GetWorkspaceProfile
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/WorkspaceProfile'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/workspace/{workspace}/*:
+        get:
+            tags:
+                - WorkspaceService
+            description: Gets a workspace setting.
+            operationId: WorkspaceService_GetWorkspaceSetting
+            parameters:
+                - name: workspace
+                  in: path
+                  description: The workspace id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/WorkspaceSetting'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - WorkspaceService
+            description: Updates a workspace setting.
+            operationId: WorkspaceService_UpdateWorkspaceSetting
+            parameters:
+                - name: workspace
+                  in: path
+                  description: The workspace id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/WorkspaceSetting'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/WorkspaceSetting'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /file/attachments/{attachment}/{filename:
+        get:
+            tags:
+                - AttachmentService
+            description: GetAttachmentBinary returns a attachment binary by name.
+            operationId: AttachmentService_GetAttachmentBinary
+            parameters:
+                - name: filename
+                  in: path
+                  description: The filename of the attachment. Mainly used for downloading.
+                  required: true
+                  schema:
+                    type: string
+                - name: attachment
+                  in: path
+                  description: The attachment id.
+                  required: true
+                  schema:
+                    type: string
+                - name: thumbnail
+                  in: query
+                  description: Optional. A flag indicating if the thumbnail version of the attachment should be returned.
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        '*/*': {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+components:
+    schemas:
+        Activity:
+            type: object
+            properties:
+                name:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The name of the activity.
+                         Format: activities/{id}
+                creator:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The name of the creator.
+                         Format: users/{user}
+                type:
+                    readOnly: true
+                    enum:
+                        - TYPE_UNSPECIFIED
+                        - MEMO_COMMENT
+                        - VERSION_UPDATE
+                    type: string
+                    description: The type of the activity.
+                    format: enum
+                level:
+                    readOnly: true
+                    enum:
+                        - LEVEL_UNSPECIFIED
+                        - INFO
+                        - WARN
+                        - ERROR
+                    type: string
+                    description: The level of the activity.
+                    format: enum
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: The create time of the activity.
+                    format: date-time
+                payload:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/ActivityPayload'
+                    description: The payload of the activity.
+        ActivityMemoCommentPayload:
+            type: object
+            properties:
+                memo:
+                    type: string
+                    description: |-
+                        The memo name of comment.
+                         Format: memos/{memo}
+                relatedMemo:
+                    type: string
+                    description: |-
+                        The name of related memo.
+                         Format: memos/{memo}
+            description: ActivityMemoCommentPayload represents the payload of a memo comment activity.
+        ActivityPayload:
+            type: object
+            properties:
+                memoComment:
+                    allOf:
+                        - $ref: '#/components/schemas/ActivityMemoCommentPayload'
+                    description: Memo comment activity payload.
+        Attachment:
+            required:
+                - filename
+                - type
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The name of the attachment.
+                         Format: attachments/{attachment}
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The creation timestamp.
+                    format: date-time
+                filename:
+                    type: string
+                    description: The filename of the attachment.
+                content:
+                    writeOnly: true
+                    type: string
+                    description: Input only. The content of the attachment.
+                    format: bytes
+                externalLink:
+                    type: string
+                    description: Optional. The external link of the attachment.
+                type:
+                    type: string
+                    description: The MIME type of the attachment.
+                size:
+                    readOnly: true
+                    type: string
+                    description: Output only. The size of the attachment in bytes.
+                memo:
+                    type: string
+                    description: |-
+                        Optional. The related memo. Refer to `Memo.name`.
+                         Format: memos/{memo}
+        AutoLinkNode:
+            type: object
+            properties:
+                url:
+                    type: string
+                isRawText:
+                    type: boolean
+        BlockquoteNode:
+            type: object
+            properties:
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        BoldItalicNode:
+            type: object
+            properties:
+                symbol:
+                    type: string
+                content:
+                    type: string
+        BoldNode:
+            type: object
+            properties:
+                symbol:
+                    type: string
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        CodeBlockNode:
+            type: object
+            properties:
+                language:
+                    type: string
+                content:
+                    type: string
+        CodeNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        CreateSessionRequest:
+            type: object
+            properties:
+                passwordCredentials:
+                    allOf:
+                        - $ref: '#/components/schemas/CreateSessionRequest_PasswordCredentials'
+                    description: Username and password authentication method.
+                ssoCredentials:
+                    allOf:
+                        - $ref: '#/components/schemas/CreateSessionRequest_SSOCredentials'
+                    description: SSO provider authentication method.
+        CreateSessionRequest_PasswordCredentials:
+            required:
+                - username
+                - password
+            type: object
+            properties:
+                username:
+                    type: string
+                    description: |-
+                        The username to sign in with.
+                         Required field for password-based authentication.
+                password:
+                    type: string
+                    description: |-
+                        The password to sign in with.
+                         Required field for password-based authentication.
+            description: Nested message for password-based authentication credentials.
+        CreateSessionRequest_SSOCredentials:
+            required:
+                - idpId
+                - code
+                - redirectUri
+            type: object
+            properties:
+                idpId:
+                    type: integer
+                    description: |-
+                        The ID of the SSO provider.
+                         Required field to identify the SSO provider.
+                    format: int32
+                code:
+                    type: string
+                    description: |-
+                        The authorization code from the SSO provider.
+                         Required field for completing the SSO flow.
+                redirectUri:
+                    type: string
+                    description: |-
+                        The redirect URI used in the SSO flow.
+                         Required field for security validation.
+            description: Nested message for SSO authentication credentials.
+        CreateSessionResponse:
+            type: object
+            properties:
+                user:
+                    allOf:
+                        - $ref: '#/components/schemas/User'
+                    description: The authenticated user information.
+                lastAccessedAt:
+                    type: string
+                    description: |-
+                        Last time the session was accessed.
+                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+                    format: date-time
+        EmbeddedContentNode:
+            type: object
+            properties:
+                resourceName:
+                    type: string
+                    description: The resource name of the embedded content.
+                params:
+                    type: string
+                    description: Additional parameters for the embedded content.
+        EscapingCharacterNode:
+            type: object
+            properties:
+                symbol:
+                    type: string
+        FieldMapping:
+            type: object
+            properties:
+                identifier:
+                    type: string
+                displayName:
+                    type: string
+                email:
+                    type: string
+                avatarUrl:
+                    type: string
+        GetCurrentSessionResponse:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/User'
+                lastAccessedAt:
+                    type: string
+                    description: |-
+                        Last time the session was accessed.
+                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+                    format: date-time
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        HTMLElementNode:
+            type: object
+            properties:
+                tagName:
+                    type: string
+                attributes:
+                    type: object
+                    additionalProperties:
+                        type: string
+        HeadingNode:
+            type: object
+            properties:
+                level:
+                    type: integer
+                    format: int32
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        HighlightNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        HorizontalRuleNode:
+            type: object
+            properties:
+                symbol:
+                    type: string
+        IdentityProvider:
+            required:
+                - type
+                - title
+                - config
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the identity provider.
+                         Format: identityProviders/{idp}
+                type:
+                    enum:
+                        - TYPE_UNSPECIFIED
+                        - OAUTH2
+                    type: string
+                    description: Required. The type of the identity provider.
+                    format: enum
+                title:
+                    type: string
+                    description: Required. The display title of the identity provider.
+                identifierFilter:
+                    type: string
+                    description: Optional. Filter applied to user identifiers.
+                config:
+                    allOf:
+                        - $ref: '#/components/schemas/IdentityProviderConfig'
+                    description: Required. Configuration for the identity provider.
+        IdentityProviderConfig:
+            type: object
+            properties:
+                oauth2Config:
+                    $ref: '#/components/schemas/OAuth2Config'
+        ImageNode:
+            type: object
+            properties:
+                altText:
+                    type: string
+                url:
+                    type: string
+        Inbox:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the inbox.
+                         Format: inboxes/{inbox}
+                sender:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The sender of the inbox notification.
+                         Format: users/{user}
+                receiver:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The receiver of the inbox notification.
+                         Format: users/{user}
+                status:
+                    enum:
+                        - STATUS_UNSPECIFIED
+                        - UNREAD
+                        - ARCHIVED
+                    type: string
+                    description: The status of the inbox notification.
+                    format: enum
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The creation timestamp.
+                    format: date-time
+                type:
+                    readOnly: true
+                    enum:
+                        - TYPE_UNSPECIFIED
+                        - MEMO_COMMENT
+                        - VERSION_UPDATE
+                    type: string
+                    description: The type of the inbox notification.
+                    format: enum
+                activityId:
+                    type: integer
+                    description: Optional. The activity ID associated with this inbox notification.
+                    format: int32
+        ItalicNode:
+            type: object
+            properties:
+                symbol:
+                    type: string
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        LineBreakNode:
+            type: object
+            properties: {}
+        LinkMetadata:
+            type: object
+            properties:
+                title:
+                    type: string
+                    description: The title of the linked page.
+                description:
+                    type: string
+                    description: The description of the linked page.
+                image:
+                    type: string
+                    description: The URL of the preview image for the linked page.
+        LinkNode:
+            type: object
+            properties:
+                content:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+                url:
+                    type: string
+        ListActivitiesResponse:
+            type: object
+            properties:
+                activities:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Activity'
+                    description: The activities.
+                nextPageToken:
+                    type: string
+                    description: |-
+                        A token to retrieve the next page of results.
+                         Pass this value in the page_token field in the subsequent call to `ListActivities`
+                         method to retrieve the next page of results.
+        ListAllUserStatsResponse:
+            type: object
+            properties:
+                userStats:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserStats'
+                    description: The list of user statistics.
+                nextPageToken:
+                    type: string
+                    description: A token for the next page of results.
+                totalSize:
+                    type: integer
+                    description: The total count of user statistics.
+                    format: int32
+        ListAttachmentsResponse:
+            type: object
+            properties:
+                attachments:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Attachment'
+                    description: The list of attachments.
+                nextPageToken:
+                    type: string
+                    description: |-
+                        A token that can be sent as `page_token` to retrieve the next page.
+                         If this field is omitted, there are no subsequent pages.
+                totalSize:
+                    type: integer
+                    description: The total count of attachments (may be approximate).
+                    format: int32
+        ListIdentityProvidersResponse:
+            type: object
+            properties:
+                identityProviders:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/IdentityProvider'
+                    description: The list of identity providers.
+        ListInboxesResponse:
+            type: object
+            properties:
+                inboxes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Inbox'
+                    description: The list of inboxes.
+                nextPageToken:
+                    type: string
+                    description: |-
+                        A token that can be sent as `page_token` to retrieve the next page.
+                         If this field is omitted, there are no subsequent pages.
+                totalSize:
+                    type: integer
+                    description: The total count of inboxes (may be approximate).
+                    format: int32
+        ListMemoAttachmentsResponse:
+            type: object
+            properties:
+                attachments:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Attachment'
+                    description: The list of attachments.
+                nextPageToken:
+                    type: string
+                    description: A token for the next page of results.
+                totalSize:
+                    type: integer
+                    description: The total count of attachments.
+                    format: int32
+        ListMemoCommentsResponse:
+            type: object
+            properties:
+                memos:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Memo'
+                    description: The list of comment memos.
+                nextPageToken:
+                    type: string
+                    description: A token for the next page of results.
+                totalSize:
+                    type: integer
+                    description: The total count of comments.
+                    format: int32
+        ListMemoReactionsResponse:
+            type: object
+            properties:
+                reactions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Reaction'
+                    description: The list of reactions.
+                nextPageToken:
+                    type: string
+                    description: A token for the next page of results.
+                totalSize:
+                    type: integer
+                    description: The total count of reactions.
+                    format: int32
+        ListMemoRelationsResponse:
+            type: object
+            properties:
+                relations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MemoRelation'
+                    description: The list of relations.
+                nextPageToken:
+                    type: string
+                    description: A token for the next page of results.
+                totalSize:
+                    type: integer
+                    description: The total count of relations.
+                    format: int32
+        ListMemosResponse:
+            type: object
+            properties:
+                memos:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Memo'
+                    description: The list of memos.
+                nextPageToken:
+                    type: string
+                    description: |-
+                        A token that can be sent as `page_token` to retrieve the next page.
+                         If this field is omitted, there are no subsequent pages.
+                totalSize:
+                    type: integer
+                    description: The total count of memos (may be approximate).
+                    format: int32
+        ListNode:
+            type: object
+            properties:
+                kind:
+                    enum:
+                        - KIND_UNSPECIFIED
+                        - ORDERED
+                        - UNORDERED
+                        - DESCRIPTION
+                    type: string
+                    format: enum
+                indent:
+                    type: integer
+                    format: int32
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        ListShortcutsResponse:
+            type: object
+            properties:
+                shortcuts:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Shortcut'
+                    description: The list of shortcuts.
+        ListUserAccessTokensResponse:
+            type: object
+            properties:
+                accessTokens:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserAccessToken'
+                    description: The list of access tokens.
+                nextPageToken:
+                    type: string
+                    description: A token for the next page of results.
+                totalSize:
+                    type: integer
+                    description: The total count of access tokens.
+                    format: int32
+        ListUserSessionsResponse:
+            type: object
+            properties:
+                sessions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserSession'
+                    description: The list of user sessions.
+        ListUsersResponse:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User'
+                    description: The list of users.
+                nextPageToken:
+                    type: string
+                    description: |-
+                        A token that can be sent as `page_token` to retrieve the next page.
+                         If this field is omitted, there are no subsequent pages.
+                totalSize:
+                    type: integer
+                    description: The total count of users (may be approximate).
+                    format: int32
+        ListWebhooksResponse:
+            type: object
+            properties:
+                webhooks:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Webhook'
+                    description: The list of webhooks.
+        Location:
+            type: object
+            properties:
+                placeholder:
+                    type: string
+                    description: A placeholder text for the location.
+                latitude:
+                    type: number
+                    description: The latitude of the location.
+                    format: double
+                longitude:
+                    type: number
+                    description: The longitude of the location.
+                    format: double
+        MathBlockNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        MathNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        Memo:
+            required:
+                - state
+                - content
+                - visibility
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the memo.
+                         Format: memos/{memo}, memo is the user defined id or uuid.
+                state:
+                    enum:
+                        - STATE_UNSPECIFIED
+                        - NORMAL
+                        - ARCHIVED
+                    type: string
+                    description: The state of the memo.
+                    format: enum
+                creator:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The name of the creator.
+                         Format: users/{user}
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The creation timestamp.
+                    format: date-time
+                updateTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The last update timestamp.
+                    format: date-time
+                displayTime:
+                    type: string
+                    description: The display timestamp of the memo.
+                    format: date-time
+                content:
+                    type: string
+                    description: Required. The content of the memo in Markdown format.
+                nodes:
+                    readOnly: true
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+                    description: Output only. The parsed nodes from the content.
+                visibility:
+                    enum:
+                        - VISIBILITY_UNSPECIFIED
+                        - PRIVATE
+                        - PROTECTED
+                        - PUBLIC
+                    type: string
+                    description: The visibility of the memo.
+                    format: enum
+                tags:
+                    readOnly: true
+                    type: array
+                    items:
+                        type: string
+                    description: Output only. The tags extracted from the content.
+                pinned:
+                    type: boolean
+                    description: Whether the memo is pinned.
+                attachments:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Attachment'
+                    description: Optional. The attachments of the memo.
+                relations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MemoRelation'
+                    description: Optional. The relations of the memo.
+                reactions:
+                    readOnly: true
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Reaction'
+                    description: Output only. The reactions to the memo.
+                property:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/Memo_Property'
+                    description: Output only. The computed properties of the memo.
+                parent:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        Output only. The name of the parent memo.
+                         Format: memos/{memo}
+                snippet:
+                    readOnly: true
+                    type: string
+                    description: Output only. The snippet of the memo content. Plain text only.
+                location:
+                    allOf:
+                        - $ref: '#/components/schemas/Location'
+                    description: Optional. The location of the memo.
+        MemoRelation:
+            required:
+                - memo
+                - relatedMemo
+                - type
+            type: object
+            properties:
+                memo:
+                    allOf:
+                        - $ref: '#/components/schemas/MemoRelation_Memo'
+                    description: The memo in the relation.
+                relatedMemo:
+                    allOf:
+                        - $ref: '#/components/schemas/MemoRelation_Memo'
+                    description: The related memo.
+                type:
+                    enum:
+                        - TYPE_UNSPECIFIED
+                        - REFERENCE
+                        - COMMENT
+                    type: string
+                    format: enum
+        MemoRelation_Memo:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the memo.
+                         Format: memos/{memo}
+                snippet:
+                    readOnly: true
+                    type: string
+                    description: Output only. The snippet of the memo content. Plain text only.
+            description: Memo reference in relations.
+        Memo_Property:
+            type: object
+            properties:
+                hasLink:
+                    type: boolean
+                hasTaskList:
+                    type: boolean
+                hasCode:
+                    type: boolean
+                hasIncompleteTasks:
+                    type: boolean
+            description: Computed properties of a memo.
+        Node:
+            type: object
+            properties:
+                type:
+                    enum:
+                        - NODE_UNSPECIFIED
+                        - LINE_BREAK
+                        - PARAGRAPH
+                        - CODE_BLOCK
+                        - HEADING
+                        - HORIZONTAL_RULE
+                        - BLOCKQUOTE
+                        - LIST
+                        - ORDERED_LIST_ITEM
+                        - UNORDERED_LIST_ITEM
+                        - TASK_LIST_ITEM
+                        - MATH_BLOCK
+                        - TABLE
+                        - EMBEDDED_CONTENT
+                        - TEXT
+                        - BOLD
+                        - ITALIC
+                        - BOLD_ITALIC
+                        - CODE
+                        - IMAGE
+                        - LINK
+                        - AUTO_LINK
+                        - TAG
+                        - STRIKETHROUGH
+                        - ESCAPING_CHARACTER
+                        - MATH
+                        - HIGHLIGHT
+                        - SUBSCRIPT
+                        - SUPERSCRIPT
+                        - REFERENCED_CONTENT
+                        - SPOILER
+                        - HTML_ELEMENT
+                    type: string
+                    format: enum
+                lineBreakNode:
+                    allOf:
+                        - $ref: '#/components/schemas/LineBreakNode'
+                    description: Block nodes.
+                paragraphNode:
+                    $ref: '#/components/schemas/ParagraphNode'
+                codeBlockNode:
+                    $ref: '#/components/schemas/CodeBlockNode'
+                headingNode:
+                    $ref: '#/components/schemas/HeadingNode'
+                horizontalRuleNode:
+                    $ref: '#/components/schemas/HorizontalRuleNode'
+                blockquoteNode:
+                    $ref: '#/components/schemas/BlockquoteNode'
+                listNode:
+                    $ref: '#/components/schemas/ListNode'
+                orderedListItemNode:
+                    $ref: '#/components/schemas/OrderedListItemNode'
+                unorderedListItemNode:
+                    $ref: '#/components/schemas/UnorderedListItemNode'
+                taskListItemNode:
+                    $ref: '#/components/schemas/TaskListItemNode'
+                mathBlockNode:
+                    $ref: '#/components/schemas/MathBlockNode'
+                tableNode:
+                    $ref: '#/components/schemas/TableNode'
+                embeddedContentNode:
+                    $ref: '#/components/schemas/EmbeddedContentNode'
+                textNode:
+                    allOf:
+                        - $ref: '#/components/schemas/TextNode'
+                    description: Inline nodes.
+                boldNode:
+                    $ref: '#/components/schemas/BoldNode'
+                italicNode:
+                    $ref: '#/components/schemas/ItalicNode'
+                boldItalicNode:
+                    $ref: '#/components/schemas/BoldItalicNode'
+                codeNode:
+                    $ref: '#/components/schemas/CodeNode'
+                imageNode:
+                    $ref: '#/components/schemas/ImageNode'
+                linkNode:
+                    $ref: '#/components/schemas/LinkNode'
+                autoLinkNode:
+                    $ref: '#/components/schemas/AutoLinkNode'
+                tagNode:
+                    $ref: '#/components/schemas/TagNode'
+                strikethroughNode:
+                    $ref: '#/components/schemas/StrikethroughNode'
+                escapingCharacterNode:
+                    $ref: '#/components/schemas/EscapingCharacterNode'
+                mathNode:
+                    $ref: '#/components/schemas/MathNode'
+                highlightNode:
+                    $ref: '#/components/schemas/HighlightNode'
+                subscriptNode:
+                    $ref: '#/components/schemas/SubscriptNode'
+                superscriptNode:
+                    $ref: '#/components/schemas/SuperscriptNode'
+                referencedContentNode:
+                    $ref: '#/components/schemas/ReferencedContentNode'
+                spoilerNode:
+                    $ref: '#/components/schemas/SpoilerNode'
+                htmlElementNode:
+                    $ref: '#/components/schemas/HTMLElementNode'
+        OAuth2Config:
+            type: object
+            properties:
+                clientId:
+                    type: string
+                clientSecret:
+                    type: string
+                authUrl:
+                    type: string
+                tokenUrl:
+                    type: string
+                userInfoUrl:
+                    type: string
+                scopes:
+                    type: array
+                    items:
+                        type: string
+                fieldMapping:
+                    $ref: '#/components/schemas/FieldMapping'
+        OrderedListItemNode:
+            type: object
+            properties:
+                number:
+                    type: string
+                indent:
+                    type: integer
+                    format: int32
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        ParagraphNode:
+            type: object
+            properties:
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        ParseMarkdownRequest:
+            required:
+                - markdown
+            type: object
+            properties:
+                markdown:
+                    type: string
+                    description: The markdown content to parse.
+        ParseMarkdownResponse:
+            type: object
+            properties:
+                nodes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+                    description: The parsed markdown nodes.
+        Reaction:
+            required:
+                - contentId
+                - reactionType
+            type: object
+            properties:
+                name:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The resource name of the reaction.
+                         Format: reactions/{reaction}
+                creator:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The resource name of the creator.
+                         Format: users/{user}
+                contentId:
+                    type: string
+                    description: |-
+                        The resource name of the content.
+                         For memo reactions, this should be the memo's resource name.
+                         Format: memos/{memo}
+                reactionType:
+                    type: string
+                    description: "Required. The type of reaction (e.g., \"\U0001F44D\", \"❤️\", \"\U0001F604\")."
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The creation timestamp.
+                    format: date-time
+        ReferencedContentNode:
+            type: object
+            properties:
+                resourceName:
+                    type: string
+                    description: The resource name of the referenced content.
+                params:
+                    type: string
+                    description: Additional parameters for the referenced content.
+        RenameMemoTagRequest:
+            required:
+                - parent
+                - oldTag
+                - newTag
+            type: object
+            properties:
+                parent:
+                    type: string
+                    description: |-
+                        Required. The parent, who owns the tags.
+                         Format: memos/{memo}. Use "memos/-" to rename all tags.
+                oldTag:
+                    type: string
+                    description: Required. The old tag name to rename.
+                newTag:
+                    type: string
+                    description: Required. The new tag name.
+        RestoreMarkdownNodesRequest:
+            required:
+                - nodes
+            type: object
+            properties:
+                nodes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+                    description: The nodes to restore to markdown content.
+        RestoreMarkdownNodesResponse:
+            type: object
+            properties:
+                markdown:
+                    type: string
+                    description: The restored markdown content.
+        SearchUsersResponse:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User'
+                    description: The list of users matching the search query.
+                nextPageToken:
+                    type: string
+                    description: A token for the next page of results.
+                totalSize:
+                    type: integer
+                    description: The total count of matching users.
+                    format: int32
+        SetMemoAttachmentsRequest:
+            required:
+                - name
+                - attachments
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        Required. The resource name of the memo.
+                         Format: memos/{memo}
+                attachments:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Attachment'
+                    description: Required. The attachments to set for the memo.
+        SetMemoRelationsRequest:
+            required:
+                - name
+                - relations
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        Required. The resource name of the memo.
+                         Format: memos/{memo}
+                relations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MemoRelation'
+                    description: Required. The relations to set for the memo.
+        Shortcut:
+            required:
+                - title
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the shortcut.
+                         Format: users/{user}/shortcuts/{shortcut}
+                title:
+                    type: string
+                    description: The title of the shortcut.
+                filter:
+                    type: string
+                    description: The filter expression for the shortcut.
+        SpoilerNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        StrikethroughNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        StringifyMarkdownNodesRequest:
+            required:
+                - nodes
+            type: object
+            properties:
+                nodes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+                    description: The nodes to stringify to plain text.
+        StringifyMarkdownNodesResponse:
+            type: object
+            properties:
+                plainText:
+                    type: string
+                    description: The plain text content.
+        SubscriptNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        SuperscriptNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        TableNode:
+            type: object
+            properties:
+                header:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+                delimiter:
+                    type: array
+                    items:
+                        type: string
+                rows:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/TableNode_Row'
+        TableNode_Row:
+            type: object
+            properties:
+                cells:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        TagNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        TaskListItemNode:
+            type: object
+            properties:
+                symbol:
+                    type: string
+                indent:
+                    type: integer
+                    format: int32
+                complete:
+                    type: boolean
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        TextNode:
+            type: object
+            properties:
+                content:
+                    type: string
+        UnorderedListItemNode:
+            type: object
+            properties:
+                symbol:
+                    type: string
+                indent:
+                    type: integer
+                    format: int32
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Node'
+        UpsertMemoReactionRequest:
+            required:
+                - name
+                - reaction
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        Required. The resource name of the memo.
+                         Format: memos/{memo}
+                reaction:
+                    allOf:
+                        - $ref: '#/components/schemas/Reaction'
+                    description: Required. The reaction to upsert.
+        User:
+            required:
+                - role
+                - username
+                - state
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the user.
+                         Format: users/{user}
+                role:
+                    enum:
+                        - ROLE_UNSPECIFIED
+                        - HOST
+                        - ADMIN
+                        - USER
+                    type: string
+                    description: The role of the user.
+                    format: enum
+                username:
+                    type: string
+                    description: Required. The unique username for login.
+                email:
+                    type: string
+                    description: Optional. The email address of the user.
+                displayName:
+                    type: string
+                    description: Optional. The display name of the user.
+                avatarUrl:
+                    type: string
+                    description: Optional. The avatar URL of the user.
+                description:
+                    type: string
+                    description: Optional. The description of the user.
+                password:
+                    writeOnly: true
+                    type: string
+                    description: Input only. The password for the user.
+                state:
+                    enum:
+                        - STATE_UNSPECIFIED
+                        - NORMAL
+                        - ARCHIVED
+                    type: string
+                    description: The state of the user.
+                    format: enum
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The creation timestamp.
+                    format: date-time
+                updateTime:
+                    readOnly: true
+                    type: string
+                    description: Output only. The last update timestamp.
+                    format: date-time
+        UserAccessToken:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the access token.
+                         Format: users/{user}/accessTokens/{access_token}
+                accessToken:
+                    readOnly: true
+                    type: string
+                    description: Output only. The access token value.
+                description:
+                    type: string
+                    description: The description of the access token.
+                issuedAt:
+                    readOnly: true
+                    type: string
+                    description: Output only. The issued timestamp.
+                    format: date-time
+                expiresAt:
+                    type: string
+                    description: Optional. The expiration timestamp.
+                    format: date-time
+            description: User access token message
+        UserSession:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the session.
+                         Format: users/{user}/sessions/{session}
+                sessionId:
+                    readOnly: true
+                    type: string
+                    description: The session ID.
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: The timestamp when the session was created.
+                    format: date-time
+                lastAccessedTime:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The timestamp when the session was last accessed.
+                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+                    format: date-time
+                clientInfo:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/UserSession_ClientInfo'
+                    description: Client information associated with this session.
+        UserSession_ClientInfo:
+            type: object
+            properties:
+                userAgent:
+                    type: string
+                    description: User agent string of the client.
+                ipAddress:
+                    type: string
+                    description: IP address of the client.
+                deviceType:
+                    type: string
+                    description: Optional. Device type (e.g., "mobile", "desktop", "tablet").
+                os:
+                    type: string
+                    description: Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
+                browser:
+                    type: string
+                    description: Optional. Browser name and version (e.g., "Chrome 119.0").
+        UserSetting:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the user whose setting this is.
+                         Format: users/{user}
+                locale:
+                    type: string
+                    description: The preferred locale of the user.
+                appearance:
+                    type: string
+                    description: The preferred appearance of the user.
+                memoVisibility:
+                    type: string
+                    description: The default visibility of the memo.
+                theme:
+                    type: string
+                    description: |-
+                        The preferred theme of the user.
+                         This references a CSS file in the web/public/themes/ directory.
+                         If not set, the default theme will be used.
+            description: User settings message
+        UserStats:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the user whose stats these are.
+                         Format: users/{user}
+                memoDisplayTimestamps:
+                    type: array
+                    items:
+                        type: string
+                        format: date-time
+                    description: The timestamps when the memos were displayed.
+                memoTypeStats:
+                    allOf:
+                        - $ref: '#/components/schemas/UserStats_MemoTypeStats'
+                    description: The stats of memo types.
+                tagCount:
+                    type: object
+                    additionalProperties:
+                        type: integer
+                        format: int32
+                    description: The count of tags.
+                pinnedMemos:
+                    type: array
+                    items:
+                        type: string
+                    description: The pinned memos of the user.
+                totalMemoCount:
+                    type: integer
+                    description: Total memo count.
+                    format: int32
+            description: User statistics messages
+        UserStats_MemoTypeStats:
+            type: object
+            properties:
+                linkCount:
+                    type: integer
+                    format: int32
+                codeCount:
+                    type: integer
+                    format: int32
+                todoCount:
+                    type: integer
+                    format: int32
+                undoCount:
+                    type: integer
+                    format: int32
+            description: Memo type statistics.
+        Webhook:
+            required:
+                - displayName
+                - url
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the webhook.
+                         Format: users/{user}/webhooks/{webhook}
+                displayName:
+                    type: string
+                    description: The display name of the webhook.
+                url:
+                    type: string
+                    description: The target URL for the webhook.
+        WorkspaceCustomProfile:
+            type: object
+            properties:
+                title:
+                    type: string
+                description:
+                    type: string
+                logoUrl:
+                    type: string
+                locale:
+                    type: string
+                appearance:
+                    type: string
+        WorkspaceGeneralSetting:
+            type: object
+            properties:
+                theme:
+                    type: string
+                    description: |-
+                        theme is the name of the selected theme.
+                         This references a CSS file in the web/public/themes/ directory.
+                disallowUserRegistration:
+                    type: boolean
+                    description: disallow_user_registration disallows user registration.
+                disallowPasswordAuth:
+                    type: boolean
+                    description: disallow_password_auth disallows password authentication.
+                additionalScript:
+                    type: string
+                    description: additional_script is the additional script.
+                additionalStyle:
+                    type: string
+                    description: additional_style is the additional style.
+                customProfile:
+                    allOf:
+                        - $ref: '#/components/schemas/WorkspaceCustomProfile'
+                    description: custom_profile is the custom profile.
+                weekStartDayOffset:
+                    type: integer
+                    description: |-
+                        week_start_day_offset is the week start day offset from Sunday.
+                         0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+                         Default is Sunday.
+                    format: int32
+                disallowChangeUsername:
+                    type: boolean
+                    description: disallow_change_username disallows changing username.
+                disallowChangeNickname:
+                    type: boolean
+                    description: disallow_change_nickname disallows changing nickname.
+        WorkspaceMemoRelatedSetting:
+            type: object
+            properties:
+                disallowPublicVisibility:
+                    type: boolean
+                    description: disallow_public_visibility disallows set memo as public visibility.
+                displayWithUpdateTime:
+                    type: boolean
+                    description: display_with_update_time orders and displays memo with update time.
+                contentLengthLimit:
+                    type: integer
+                    description: content_length_limit is the limit of content length. Unit is byte.
+                    format: int32
+                enableDoubleClickEdit:
+                    type: boolean
+                    description: enable_double_click_edit enables editing on double click.
+                enableLinkPreview:
+                    type: boolean
+                    description: enable_link_preview enables links preview.
+                enableComment:
+                    type: boolean
+                    description: enable_comment enables comment.
+                reactions:
+                    type: array
+                    items:
+                        type: string
+                    description: reactions is the list of reactions.
+                disableMarkdownShortcuts:
+                    type: boolean
+                    description: disable_markdown_shortcuts disallow the registration of markdown shortcuts.
+                enableBlurNsfwContent:
+                    type: boolean
+                    description: enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
+                nsfwTags:
+                    type: array
+                    items:
+                        type: string
+                    description: nsfw_tags is the list of tags that mark content as NSFW for blurring.
+        WorkspaceProfile:
+            type: object
+            properties:
+                owner:
+                    type: string
+                    description: |-
+                        The name of instance owner.
+                         Format: users/{user}
+                version:
+                    type: string
+                    description: Version is the current version of instance.
+                mode:
+                    type: string
+                    description: Mode is the instance mode (e.g. "prod", "dev" or "demo").
+                instanceUrl:
+                    type: string
+                    description: Instance URL is the URL of the instance.
+            description: Workspace profile message containing basic workspace information.
+        WorkspaceSetting:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The name of the workspace setting.
+                         Format: workspace/settings/{setting}
+                generalSetting:
+                    $ref: '#/components/schemas/WorkspaceGeneralSetting'
+                storageSetting:
+                    $ref: '#/components/schemas/WorkspaceStorageSetting'
+                memoRelatedSetting:
+                    $ref: '#/components/schemas/WorkspaceMemoRelatedSetting'
+            description: A workspace setting resource.
+        WorkspaceStorageSetting:
+            type: object
+            properties:
+                storageType:
+                    enum:
+                        - STORAGE_TYPE_UNSPECIFIED
+                        - DATABASE
+                        - LOCAL
+                        - S3
+                    type: string
+                    description: storage_type is the storage type.
+                    format: enum
+                filepathTemplate:
+                    type: string
+                    description: |-
+                        The template of file path.
+                         e.g. assets/{timestamp}_{filename}
+                uploadSizeLimitMb:
+                    type: string
+                    description: The max upload size in megabytes.
+                s3Config:
+                    allOf:
+                        - $ref: '#/components/schemas/WorkspaceStorageSetting_S3Config'
+                    description: The S3 config.
+        WorkspaceStorageSetting_S3Config:
+            type: object
+            properties:
+                accessKeyId:
+                    type: string
+                accessKeySecret:
+                    type: string
+                endpoint:
+                    type: string
+                region:
+                    type: string
+                bucket:
+                    type: string
+                usePathStyle:
+                    type: boolean
+            description: 'Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/'
+tags:
+    - name: ActivityService
+    - name: AttachmentService
+    - name: AuthService
+    - name: IdentityProviderService
+    - name: InboxService
+    - name: MarkdownService
+    - name: MemoService
+    - name: ShortcutService
+    - name: UserService
+    - name: WebhookService
+    - name: WorkspaceService

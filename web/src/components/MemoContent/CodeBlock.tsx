@@ -1,9 +1,9 @@
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import { CopyIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import MermaidBlock from "./MermaidBlock";
 import { BaseProps } from "./types";
 
@@ -25,7 +25,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   if (formatedLanguage === SpecialLanguage.HTML) {
     return (
       <div
-        className="w-full overflow-auto !my-2"
+        className="w-full overflow-auto my-2!"
         dangerouslySetInnerHTML={{
           __html: content,
         }}
@@ -35,6 +35,44 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
     return <MermaidBlock content={content} />;
   }
 
+  useEffect(() => {
+    const dynamicImportStyle = async () => {
+      const isDark = document.documentElement.classList.contains("dark");
+
+      // Remove any existing highlight.js style
+      const existingStyle = document.querySelector("style[data-hljs-theme]");
+      if (existingStyle) {
+        existingStyle.remove();
+      }
+
+      try {
+        // Dynamically import the appropriate CSS.
+        const cssModule = isDark
+          ? await import("highlight.js/styles/atom-one-dark.css?inline")
+          : await import("highlight.js/styles/github.css?inline");
+
+        // Create and inject the style
+        const style = document.createElement("style");
+        style.textContent = cssModule.default;
+        style.setAttribute("data-hljs-theme", isDark ? "dark" : "light");
+        document.head.appendChild(style);
+      } catch (error) {
+        console.warn("Failed to load highlight.js theme:", error);
+      }
+    };
+
+    dynamicImportStyle();
+
+    // Watch for changes to the dark class
+    const observer = new MutationObserver(dynamicImportStyle);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const highlightedCode = useMemo(() => {
     try {
       const lang = hljs.getLanguage(formatedLanguage);
@@ -43,7 +81,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
           language: formatedLanguage,
         }).value;
       }
-    } catch (error) {
+    } catch {
       // Skip error and use default highlighted code.
     }
 
@@ -53,22 +91,22 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
     }).innerHTML;
   }, [formatedLanguage, content]);
 
-  const handleCopyButtonClick = useCallback(() => {
+  const copyContent = () => {
     copy(content);
     toast.success("Copied to clipboard!");
-  }, [content]);
+  };
 
   return (
-    <div className="w-full my-1 bg-amber-100 border-l-4 border-amber-400 rounded hover:shadow dark:bg-zinc-600 dark:border-zinc-400 relative">
-      <div className="w-full px-2 py-1 flex flex-row justify-between items-center text-amber-500 dark:text-zinc-400">
-        <span className="text-sm font-mono">{formatedLanguage}</span>
-        <CopyIcon className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={handleCopyButtonClick} />
+    <div className="w-full my-1 bg-card border border-border rounded-md relative">
+      <div className="w-full px-2 py-0.5 flex flex-row justify-between items-center text-muted-foreground">
+        <span className="text-xs font-mono">{formatedLanguage}</span>
+        <CopyIcon className="w-3 h-auto cursor-pointer hover:text-foreground" onClick={copyContent} />
       </div>
 
       <div className="overflow-auto">
-        <pre className={cn("no-wrap overflow-auto", "w-full p-2 bg-amber-50 dark:bg-zinc-700 relative")}>
+        <pre className={cn("no-wrap overflow-auto", "w-full p-2 bg-muted/50 relative")}>
           <code
-            className={cn(`language-${formatedLanguage}`, "block text-sm leading-5")}
+            className={cn(`language-${formatedLanguage}`, "block text-sm leading-5 text-foreground")}
             dangerouslySetInnerHTML={{ __html: highlightedCode }}
           ></code>
         </pre>

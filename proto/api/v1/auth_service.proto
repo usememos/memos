@@ -4,62 +4,90 @@ package memos.api.v1;
 
 import "api/v1/user_service.proto";
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v1";
 
 service AuthService {
-  // GetAuthStatus returns the current auth status of the user.
-  rpc GetAuthStatus(GetAuthStatusRequest) returns (User) {
-    option (google.api.http) = {post: "/api/v1/auth/status"};
+  // GetCurrentSession returns the current active session information.
+  // This method is idempotent and safe, suitable for checking current session state.
+  rpc GetCurrentSession(GetCurrentSessionRequest) returns (GetCurrentSessionResponse) {
+    option (google.api.http) = {get: "/api/v1/auth/sessions/current"};
   }
-  // SignIn signs in the user with the given username and password.
-  rpc SignIn(SignInRequest) returns (User) {
-    option (google.api.http) = {post: "/api/v1/auth/signin"};
+
+  // CreateSession authenticates a user and creates a new session.
+  // Returns the authenticated user information upon successful authentication.
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/sessions"
+      body: "*"
+    };
   }
-  // SignInWithSSO signs in the user with the given SSO code.
-  rpc SignInWithSSO(SignInWithSSORequest) returns (User) {
-    option (google.api.http) = {post: "/api/v1/auth/signin/sso"};
-  }
-  // SignUp signs up the user with the given username and password.
-  rpc SignUp(SignUpRequest) returns (User) {
-    option (google.api.http) = {post: "/api/v1/auth/signup"};
-  }
-  // SignOut signs out the user.
-  rpc SignOut(SignOutRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {post: "/api/v1/auth/signout"};
+
+  // DeleteSession terminates the current user session.
+  // This is an idempotent operation that invalidates the user's authentication.
+  rpc DeleteSession(DeleteSessionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/auth/sessions/current"};
   }
 }
 
-message GetAuthStatusRequest {}
+message GetCurrentSessionRequest {}
 
-message GetAuthStatusResponse {
+message GetCurrentSessionResponse {
   User user = 1;
+
+  // Last time the session was accessed.
+  // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+  google.protobuf.Timestamp last_accessed_at = 2;
 }
 
-message SignInRequest {
-  // The username to sign in with.
-  string username = 1;
-  // The password to sign in with.
-  string password = 2;
-  // Whether the session should never expire.
-  bool never_expire = 3;
+message CreateSessionRequest {
+  // Nested message for password-based authentication credentials.
+  message PasswordCredentials {
+    // The username to sign in with.
+    // Required field for password-based authentication.
+    string username = 1 [(google.api.field_behavior) = REQUIRED];
+
+    // The password to sign in with.
+    // Required field for password-based authentication.
+    string password = 2 [(google.api.field_behavior) = REQUIRED];
+  }
+
+  // Nested message for SSO authentication credentials.
+  message SSOCredentials {
+    // The ID of the SSO provider.
+    // Required field to identify the SSO provider.
+    int32 idp_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+    // The authorization code from the SSO provider.
+    // Required field for completing the SSO flow.
+    string code = 2 [(google.api.field_behavior) = REQUIRED];
+
+    // The redirect URI used in the SSO flow.
+    // Required field for security validation.
+    string redirect_uri = 3 [(google.api.field_behavior) = REQUIRED];
+  }
+
+  // Provide one authentication method (username/password or SSO).
+  // Required field to specify the authentication method.
+  oneof credentials {
+    // Username and password authentication method.
+    PasswordCredentials password_credentials = 1;
+
+    // SSO provider authentication method.
+    SSOCredentials sso_credentials = 2;
+  }
 }
 
-message SignInWithSSORequest {
-  // The ID of the SSO provider.
-  int32 idp_id = 1;
-  // The code to sign in with.
-  string code = 2;
-  // The redirect URI.
-  string redirect_uri = 3;
+message CreateSessionResponse {
+  // The authenticated user information.
+  User user = 1;
+
+  // Last time the session was accessed.
+  // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+  google.protobuf.Timestamp last_accessed_at = 2;
 }
 
-message SignUpRequest {
-  // The username to sign up with.
-  string username = 1;
-  // The password to sign up with.
-  string password = 2;
-}
-
-message SignOutRequest {}
+message DeleteSessionRequest {}

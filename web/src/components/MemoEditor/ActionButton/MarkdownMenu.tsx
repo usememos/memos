@@ -1,7 +1,7 @@
-import { Dropdown, Menu, MenuButton, MenuItem, Link } from "@mui/joy";
-import { Button } from "@usememos/mui";
 import { CheckSquareIcon, Code2Icon, SquareSlashIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useTranslate } from "@/utils/i18n";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { EditorRefActions } from "../Editor";
 
 interface Props {
@@ -9,9 +9,8 @@ interface Props {
 }
 
 const MarkdownMenu = (props: Props) => {
-  const t = useTranslate();
-
   const { editorRef } = props;
+  const t = useTranslate();
 
   const handleCodeBlockClick = () => {
     if (!editorRef.current) {
@@ -61,28 +60,33 @@ const MarkdownMenu = (props: Props) => {
   };
 
   return (
-    <Dropdown>
-      <MenuButton slots={{ root: "div" }}>
-        <Button size="sm" variant="plain">
-          <SquareSlashIcon className="w-5 h-5 mx-auto" />
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <SquareSlashIcon className="size-5" />
         </Button>
-      </MenuButton>
-      <Menu className="text-sm" size="sm" placement="bottom-start">
-        <MenuItem onClick={handleCodeBlockClick}>
-          <Code2Icon className="w-4 h-auto" />
-          <span>{t("markdown.code-block")}</span>
-        </MenuItem>
-        <MenuItem onClick={handleCheckboxClick}>
-          <CheckSquareIcon className="w-4 h-auto" />
-          <span>{t("markdown.checkbox")}</span>
-        </MenuItem>
-        <div className="-mt-0.5 pl-2">
-          <Link fontSize={12} href="https://www.usememos.com/docs/getting-started/content-syntax" target="_blank">
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem onClick={handleCodeBlockClick}>
+          <Code2Icon className="w-4 h-auto text-muted-foreground" />
+          {t("markdown.code-block")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleCheckboxClick}>
+          <CheckSquareIcon className="w-4 h-auto text-muted-foreground" />
+          {t("markdown.checkbox")}
+        </DropdownMenuItem>
+        <div className="px-2 -mt-1">
+          <a
+            className="text-xs text-primary hover:underline"
+            href="https://www.usememos.com/docs/getting-started/content-syntax"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {t("markdown.content-syntax")}
-          </Link>
+          </a>
         </div>
-      </Menu>
-    </Dropdown>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

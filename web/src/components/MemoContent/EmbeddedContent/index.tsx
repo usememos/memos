@@ -1,5 +1,5 @@
+import EmbeddedAttachment from "./EmbeddedAttachment";
 import EmbeddedMemo from "./EmbeddedMemo";
-import EmbeddedResource from "./EmbeddedResource";
 import Error from "./Error";
 
 interface Props {
@@ -16,8 +16,8 @@ const EmbeddedContent = ({ resourceName, params }: Props) => {
   const { resourceType, resourceId } = extractResourceTypeAndId(resourceName);
   if (resourceType === "memos") {
     return <EmbeddedMemo resourceId={resourceId} params={params} />;
-  } else if (resourceType === "resources") {
-    return <EmbeddedResource resourceId={resourceId} params={params} />;
+  } else if (resourceType === "attachments") {
+    return <EmbeddedAttachment resourceId={resourceId} params={params} />;
   }
   return <Error message={`Unknown resource: ${resourceName}`} />;
 };

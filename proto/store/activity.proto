@@ -9,11 +9,6 @@ message ActivityMemoCommentPayload {
   int32 related_memo_id = 2;
 }
 
-message ActivityVersionUpdatePayload {
-  string version = 1;
-}
-
 message ActivityPayload {
   ActivityMemoCommentPayload memo_comment = 1;
-  ActivityVersionUpdatePayload version_update = 2;
 }

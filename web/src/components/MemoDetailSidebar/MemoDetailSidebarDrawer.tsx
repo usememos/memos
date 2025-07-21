@@ -1,8 +1,8 @@
-import { Drawer } from "@mui/joy";
-import { Button } from "@usememos/mui";
 import { GanttChartIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import MemoDetailSidebar from "./MemoDetailSidebar";
 
@@ -19,24 +19,17 @@ const MemoDetailSidebarDrawer = ({ memo, parentPage }: Props) => {
     setOpen(false);
   }, [location.pathname]);
 
-  const toggleDrawer = (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (event.type === "keydown" && ((event as React.KeyboardEvent).key === "Tab" || (event as React.KeyboardEvent).key === "Shift")) {
-      return;
-    }
-    setOpen(inOpen);
-  };
-
   return (
-    <>
-      <Button variant="plain" className="!bg-transparent px-2" onClick={toggleDrawer(true)}>
-        <GanttChartIcon className="w-5 h-auto dark:text-gray-400" />
-      </Button>
-      <Drawer anchor="right" size="sm" open={open} onClose={toggleDrawer(false)}>
-        <div className="w-full h-full px-4 bg-zinc-100 dark:bg-zinc-900">
-          <MemoDetailSidebar className="py-4" memo={memo} parentPage={parentPage} />
-        </div>
-      </Drawer>
-    </>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" className="bg-transparent! px-2">
+          <GanttChartIcon className="w-5 h-auto text-muted-foreground" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full sm:w-80 px-4 bg-popover">
+        <MemoDetailSidebar className="py-4" memo={memo} parentPage={parentPage} />
+      </SheetContent>
+    </Sheet>
   );
 };
 

@@ -7,6 +7,7 @@ import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
 import "google/api/httpbody.proto";
+import "google/api/resource.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
@@ -18,21 +19,13 @@ service UserService {
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
     option (google.api.http) = {get: "/api/v1/users"};
   }
+
   // GetUser gets a user by name.
   rpc GetUser(GetUserRequest) returns (User) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
-  // GetUserByUsername gets a user by username.
-  rpc GetUserByUsername(GetUserByUsernameRequest) returns (User) {
-    option (google.api.http) = {get: "/api/v1/users:username"};
-    option (google.api.method_signature) = "username";
-  }
-  // GetUserAvatarBinary gets the avatar of a user.
-  rpc GetUserAvatarBinary(GetUserAvatarBinaryRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {get: "/file/{name=users/*}/avatar"};
-    option (google.api.method_signature) = "name";
-  }
+
   // CreateUser creates a new user.
   rpc CreateUser(CreateUserRequest) returns (User) {
     option (google.api.http) = {
@@ -41,6 +34,7 @@ service UserService {
     };
     option (google.api.method_signature) = "user";
   }
+
   // UpdateUser updates a user.
   rpc UpdateUser(UpdateUserRequest) returns (User) {
     option (google.api.http) = {
@@ -49,165 +43,294 @@ service UserService {
     };
     option (google.api.method_signature) = "user,update_mask";
   }
+
   // DeleteUser deletes a user.
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
-  // ListAllUserStats returns all user stats.
+
+  // SearchUsers searches for users based on query.
+  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {
+    option (google.api.http) = {get: "/api/v1/users:search"};
+    option (google.api.method_signature) = "query";
+  }
+
+  // GetUserAvatar gets the avatar of a user.
+  rpc GetUserAvatar(GetUserAvatarRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*}/avatar"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // ListAllUserStats returns statistics for all users.
   rpc ListAllUserStats(ListAllUserStatsRequest) returns (ListAllUserStatsResponse) {
-    option (google.api.http) = {post: "/api/v1/users/-/stats"};
+    option (google.api.http) = {get: "/api/v1/users:stats"};
   }
-  // GetUserStats returns the stats of a user.
+
+  // GetUserStats returns statistics for a specific user.
   rpc GetUserStats(GetUserStatsRequest) returns (UserStats) {
-    option (google.api.http) = {get: "/api/v1/{name=users/*}/stats"};
+    option (google.api.http) = {get: "/api/v1/{name=users/*}:getStats"};
     option (google.api.method_signature) = "name";
   }
-  // GetUserSetting gets the setting of a user.
+
+  // GetUserSetting returns the user setting.
   rpc GetUserSetting(GetUserSettingRequest) returns (UserSetting) {
-    option (google.api.http) = {get: "/api/v1/{name=users/*}/setting"};
+    option (google.api.http) = {get: "/api/v1/{name=users/*}:getSetting"};
     option (google.api.method_signature) = "name";
   }
-  // UpdateUserSetting updates the setting of a user.
+
+  // UpdateUserSetting updates the user setting.
   rpc UpdateUserSetting(UpdateUserSettingRequest) returns (UserSetting) {
     option (google.api.http) = {
-      patch: "/api/v1/{setting.name=users/*/setting}"
+      patch: "/api/v1/{setting.name=users/*}:updateSetting"
       body: "setting"
     };
     option (google.api.method_signature) = "setting,update_mask";
   }
+
   // ListUserAccessTokens returns a list of access tokens for a user.
   rpc ListUserAccessTokens(ListUserAccessTokensRequest) returns (ListUserAccessTokensResponse) {
-    option (google.api.http) = {get: "/api/v1/{name=users/*}/access_tokens"};
-    option (google.api.method_signature) = "name";
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/accessTokens"};
+    option (google.api.method_signature) = "parent";
   }
+
   // CreateUserAccessToken creates a new access token for a user.
   rpc CreateUserAccessToken(CreateUserAccessTokenRequest) returns (UserAccessToken) {
     option (google.api.http) = {
-      post: "/api/v1/{name=users/*}/access_tokens"
-      body: "*"
+      post: "/api/v1/{parent=users/*}/accessTokens"
+      body: "access_token"
     };
+    option (google.api.method_signature) = "parent,access_token";
+  }
+
+  // DeleteUserAccessToken deletes an access token.
+  rpc DeleteUserAccessToken(DeleteUserAccessTokenRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*/accessTokens/*}"};
     option (google.api.method_signature) = "name";
   }
-  // DeleteUserAccessToken deletes an access token for a user.
-  rpc DeleteUserAccessToken(DeleteUserAccessTokenRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/{name=users/*}/access_tokens/{access_token}"};
-    option (google.api.method_signature) = "name,access_token";
-  }
-  // ListShortcuts returns a list of shortcuts for a user.
-  rpc ListShortcuts(ListShortcutsRequest) returns (ListShortcutsResponse) {
-    option (google.api.http) = {get: "/api/v1/{parent=users/*}/shortcuts"};
+
+  // ListUserSessions returns a list of active sessions for a user.
+  rpc ListUserSessions(ListUserSessionsRequest) returns (ListUserSessionsResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/sessions"};
     option (google.api.method_signature) = "parent";
   }
-  // CreateShortcut creates a new shortcut for a user.
-  rpc CreateShortcut(CreateShortcutRequest) returns (Shortcut) {
-    option (google.api.http) = {
-      post: "/api/v1/{parent=users/*}/shortcuts"
-      body: "shortcut"
-    };
-    option (google.api.method_signature) = "parent,shortcut";
-  }
-  // UpdateShortcut updates a shortcut for a user.
-  rpc UpdateShortcut(UpdateShortcutRequest) returns (Shortcut) {
-    option (google.api.http) = {
-      patch: "/api/v1/{parent=users/*}/shortcuts/{shortcut.id}"
-      body: "shortcut"
-    };
-    option (google.api.method_signature) = "parent,shortcut,update_mask";
-  }
-  // DeleteShortcut deletes a shortcut for a user.
-  rpc DeleteShortcut(DeleteShortcutRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/{parent=users/*}/shortcuts/{id}"};
-    option (google.api.method_signature) = "parent,id";
+
+  // RevokeUserSession revokes a specific session for a user.
+  rpc RevokeUserSession(RevokeUserSessionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*/sessions/*}"};
+    option (google.api.method_signature) = "name";
   }
 }
 
 message User {
-  // The name of the user.
-  // Format: users/{id}, id is the system generated auto-incremented id.
-  string name = 1;
+  option (google.api.resource) = {
+    type: "memos.api.v1/User"
+    pattern: "users/{user}"
+    name_field: "name"
+    singular: "user"
+    plural: "users"
+  };
 
+  // The resource name of the user.
+  // Format: users/{user}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The role of the user.
+  Role role = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The unique username for login.
+  string username = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The email address of the user.
+  string email = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The display name of the user.
+  string display_name = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The avatar URL of the user.
+  string avatar_url = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The description of the user.
+  string description = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Input only. The password for the user.
+  string password = 8 [(google.api.field_behavior) = INPUT_ONLY];
+
+  // The state of the user.
+  State state = 9 [(google.api.field_behavior) = REQUIRED];
+
+  // Output only. The creation timestamp.
+  google.protobuf.Timestamp create_time = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The last update timestamp.
+  google.protobuf.Timestamp update_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // User role enumeration.
   enum Role {
+    // Unspecified role.
     ROLE_UNSPECIFIED = 0;
+    // Host role with full system access.
     HOST = 1;
+    // Admin role with administrative privileges.
     ADMIN = 2;
+    // Regular user role.
     USER = 3;
   }
-  Role role = 3;
-
-  string username = 4;
-
-  string email = 5;
-
-  string nickname = 6;
-
-  string avatar_url = 7;
-
-  string description = 8;
-
-  string password = 9 [(google.api.field_behavior) = INPUT_ONLY];
-
-  State state = 10;
-
-  google.protobuf.Timestamp create_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  google.protobuf.Timestamp update_time = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-message ListUsersRequest {}
+message ListUsersRequest {
+  // Optional. The maximum number of users to return.
+  // The service may return fewer than this value.
+  // If unspecified, at most 50 users will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token, received from a previous `ListUsers` call.
+  // Provide this to retrieve the subsequent page.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Filter to apply to the list results.
+  // Example: "state=ACTIVE" or "role=USER" or "email:@example.com"
+  // Supported operators: =, !=, <, <=, >, >=, :
+  // Supported fields: username, email, role, state, create_time, update_time
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The order to sort results by.
+  // Example: "create_time desc" or "username asc"
+  string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. If true, show deleted users in the response.
+  bool show_deleted = 5 [(google.api.field_behavior) = OPTIONAL];
+}
 
 message ListUsersResponse {
+  // The list of users.
   repeated User users = 1;
+
+  // A token that can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+
+  // The total count of users (may be approximate).
+  int32 total_size = 3;
 }
 
 message GetUserRequest {
-  // The name of the user.
-  string name = 1;
-}
+  // Required. The resource name of the user.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
 
-message GetUserByUsernameRequest {
-  // The username of the user.
-  string username = 1;
-}
-
-message GetUserAvatarBinaryRequest {
-  // The name of the user.
-  string name = 1;
-
-  // The raw HTTP body is bound to this field.
-  google.api.HttpBody http_body = 2;
+  // Optional. The fields to return in the response.
+  // If not specified, all fields are returned.
+  google.protobuf.FieldMask read_mask = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message CreateUserRequest {
-  User user = 1;
+  // Required. The user to create.
+  User user = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = INPUT_ONLY
+  ];
+
+  // Optional. The user ID to use for this user.
+  // If empty, a unique ID will be generated.
+  // Must match the pattern [a-z0-9-]+
+  string user_id = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. If set, validate the request but don't actually create the user.
+  bool validate_only = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. An idempotency token that can be used to ensure that multiple
+  // requests to create a user have the same result.
+  string request_id = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message UpdateUserRequest {
+  // Required. The user to update.
   User user = 1 [(google.api.field_behavior) = REQUIRED];
 
-  google.protobuf.FieldMask update_mask = 2;
+  // Required. The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. If set to true, allows updating sensitive fields.
+  bool allow_missing = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message DeleteUserRequest {
-  // The name of the user.
-  string name = 1;
+  // Required. The resource name of the user to delete.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+
+  // Optional. If set to true, the user will be deleted even if they have associated data.
+  bool force = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
+message SearchUsersRequest {
+  // Required. The search query.
+  string query = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The maximum number of users to return.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token for pagination.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message SearchUsersResponse {
+  // The list of users matching the search query.
+  repeated User users = 1;
+
+  // A token for the next page of results.
+  string next_page_token = 2;
+
+  // The total count of matching users.
+  int32 total_size = 3;
+}
+
+message GetUserAvatarRequest {
+  // Required. The resource name of the user.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+}
+
+// User statistics messages
 message UserStats {
-  // The name of the user.
-  string name = 1;
+  option (google.api.resource) = {
+    type: "memos.api.v1/UserStats"
+    pattern: "users/{user}"
+    singular: "userStats"
+    plural: "userStats"
+  };
+
+  // The resource name of the user whose stats these are.
+  // Format: users/{user}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   // The timestamps when the memos were displayed.
-  // We should return raw data to the client, and let the client format the data with the user's timezone.
   repeated google.protobuf.Timestamp memo_display_timestamps = 2;
 
   // The stats of memo types.
   MemoTypeStats memo_type_stats = 3;
 
   // The count of tags.
-  // Format: "tag1": 1, "tag2": 2
   map<string, int32> tag_count = 4;
 
+  // The pinned memos of the user.
+  repeated string pinned_memos = 5;
+
+  // Total memo count.
+  int32 total_memo_count = 6;
+
+  // Memo type statistics.
   message MemoTypeStats {
     int32 link_count = 1;
     int32 code_count = 2;
@@ -216,108 +339,216 @@ message UserStats {
   }
 }
 
-message ListAllUserStatsRequest {}
-
-message ListAllUserStatsResponse {
-  repeated UserStats user_stats = 1;
-}
-
 message GetUserStatsRequest {
-  // The name of the user.
-  string name = 1;
+  // Required. The resource name of the user.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
 }
 
+// User settings message
 message UserSetting {
-  // The name of the user.
-  string name = 1;
+  option (google.api.resource) = {
+    type: "memos.api.v1/UserSetting"
+    pattern: "users/{user}"
+    singular: "userSetting"
+    plural: "userSettings"
+  };
+
+  // The resource name of the user whose setting this is.
+  // Format: users/{user}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
   // The preferred locale of the user.
-  string locale = 2;
+  string locale = 2 [(google.api.field_behavior) = OPTIONAL];
+
   // The preferred appearance of the user.
-  string appearance = 3;
+  string appearance = 3 [(google.api.field_behavior) = OPTIONAL];
+
   // The default visibility of the memo.
-  string memo_visibility = 4;
+  string memo_visibility = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // The preferred theme of the user.
+  // This references a CSS file in the web/public/themes/ directory.
+  // If not set, the default theme will be used.
+  string theme = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message GetUserSettingRequest {
-  // The name of the user.
-  string name = 1;
+  // Required. The resource name of the user.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
 }
 
 message UpdateUserSettingRequest {
+  // Required. The user setting to update.
   UserSetting setting = 1 [(google.api.field_behavior) = REQUIRED];
 
-  google.protobuf.FieldMask update_mask = 2;
+  // Required. The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
+// User access token message
 message UserAccessToken {
-  string access_token = 1;
-  string description = 2;
-  google.protobuf.Timestamp issued_at = 3;
-  google.protobuf.Timestamp expires_at = 4;
+  option (google.api.resource) = {
+    type: "memos.api.v1/UserAccessToken"
+    pattern: "users/{user}/accessTokens/{access_token}"
+    singular: "userAccessToken"
+    plural: "userAccessTokens"
+  };
+
+  // The resource name of the access token.
+  // Format: users/{user}/accessTokens/{access_token}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Output only. The access token value.
+  string access_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The description of the access token.
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. The issued timestamp.
+  google.protobuf.Timestamp issued_at = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Optional. The expiration timestamp.
+  google.protobuf.Timestamp expires_at = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListUserAccessTokensRequest {
-  // The name of the user.
-  string name = 1;
+  // Required. The parent resource whose access tokens will be listed.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+
+  // Optional. The maximum number of access tokens to return.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token for pagination.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListUserAccessTokensResponse {
+  // The list of access tokens.
   repeated UserAccessToken access_tokens = 1;
+
+  // A token for the next page of results.
+  string next_page_token = 2;
+
+  // The total count of access tokens.
+  int32 total_size = 3;
 }
 
 message CreateUserAccessTokenRequest {
-  // The name of the user.
-  string name = 1;
+  // Required. The parent resource where this access token will be created.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
 
-  string description = 2;
+  // Required. The access token to create.
+  UserAccessToken access_token = 2 [(google.api.field_behavior) = REQUIRED];
 
-  optional google.protobuf.Timestamp expires_at = 3;
+  // Optional. The access token ID to use.
+  string access_token_id = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message DeleteUserAccessTokenRequest {
-  // The name of the user.
-  string name = 1;
-  // access_token is the access token to delete.
-  string access_token = 2;
+  // Required. The resource name of the access token to delete.
+  // Format: users/{user}/accessTokens/{access_token}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/UserAccessToken"}
+  ];
 }
 
-message Shortcut {
-  string id = 1;
-  string title = 2;
-  string filter = 3;
+message UserSession {
+  option (google.api.resource) = {
+    type: "memos.api.v1/UserSession"
+    pattern: "users/{user}/sessions/{session}"
+    name_field: "name"
+  };
+
+  // The resource name of the session.
+  // Format: users/{user}/sessions/{session}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The session ID.
+  string session_id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The timestamp when the session was created.
+  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The timestamp when the session was last accessed.
+  // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+  google.protobuf.Timestamp last_accessed_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Client information associated with this session.
+  ClientInfo client_info = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  message ClientInfo {
+    // User agent string of the client.
+    string user_agent = 1;
+
+    // IP address of the client.
+    string ip_address = 2;
+
+    // Optional. Device type (e.g., "mobile", "desktop", "tablet").
+    string device_type = 3 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
+    string os = 4 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. Browser name and version (e.g., "Chrome 119.0").
+    string browser = 5 [(google.api.field_behavior) = OPTIONAL];
+  }
 }
 
-message ListShortcutsRequest {
-  // The name of the user.
-  string parent = 1;
+message ListUserSessionsRequest {
+  // Required. The resource name of the parent.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
 }
 
-message ListShortcutsResponse {
-  repeated Shortcut shortcuts = 1;
+message ListUserSessionsResponse {
+  // The list of user sessions.
+  repeated UserSession sessions = 1;
 }
 
-message CreateShortcutRequest {
-  // The name of the user.
-  string parent = 1;
-
-  Shortcut shortcut = 2;
-
-  bool validate_only = 3;
+message RevokeUserSessionRequest {
+  // Required. The resource name of the session to revoke.
+  // Format: users/{user}/sessions/{session}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/UserSession"}
+  ];
 }
 
-message UpdateShortcutRequest {
-  // The name of the user.
-  string parent = 1;
+message ListAllUserStatsRequest {
+  // Optional. The maximum number of user stats to return.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
 
-  Shortcut shortcut = 2;
-
-  google.protobuf.FieldMask update_mask = 3;
+  // Optional. A page token for pagination.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
-message DeleteShortcutRequest {
-  // The name of the user.
-  string parent = 1;
+message ListAllUserStatsResponse {
+  // The list of user statistics.
+  repeated UserStats user_stats = 1;
 
-  // The id of the shortcut.
-  string id = 2;
+  // A token for the next page of results.
+  string next_page_token = 2;
+
+  // The total count of user statistics.
+  int32 total_size = 3;
 }

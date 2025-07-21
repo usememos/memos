@@ -3,7 +3,7 @@ import { MapPinIcon } from "lucide-react";
 import { useState } from "react";
 import { Location } from "@/types/proto/api/v1/memo_service";
 import LeafletMap from "./LeafletMap";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface Props {
   location: Location;
@@ -16,7 +16,7 @@ const MemoLocationView: React.FC<Props> = (props: Props) => {
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
-        <p className="w-full flex flex-row gap-0.5 items-center text-gray-500">
+        <p className="w-full flex flex-row gap-0.5 items-center text-muted-foreground hover:text-foreground cursor-pointer transition-colors">
           <MapPinIcon className="w-4 h-auto shrink-0" />
           <span className="text-sm font-normal text-ellipsis whitespace-nowrap overflow-hidden">
             {location.placeholder ? location.placeholder : `[${location.latitude}, ${location.longitude}]`}
@@ -24,7 +24,7 @@ const MemoLocationView: React.FC<Props> = (props: Props) => {
         </p>
       </PopoverTrigger>
       <PopoverContent align="start">
-        <div className="min-w-80 sm:w-128 flex flex-col justify-start items-start">
+        <div className="min-w-80 sm:w-lg flex flex-col justify-start items-start">
           <LeafletMap latlng={new LatLng(location.latitude, location.longitude)} readonly={true} />
         </div>
       </PopoverContent>

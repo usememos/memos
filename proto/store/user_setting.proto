@@ -2,32 +2,76 @@ syntax = "proto3";
 
 package memos.store;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "gen/store";
 
-enum UserSettingKey {
-  USER_SETTING_KEY_UNSPECIFIED = 0;
-  // Access tokens for the user.
-  ACCESS_TOKENS = 1;
-  // The locale of the user.
-  LOCALE = 2;
-  // The appearance of the user.
-  APPEARANCE = 3;
-  // The visibility of the memo.
-  MEMO_VISIBILITY = 4;
-  // The shortcuts of the user.
-  SHORTCUTS = 5;
+message UserSetting {
+  enum Key {
+    KEY_UNSPECIFIED = 0;
+    // General user settings.
+    GENERAL = 1;
+    // User authentication sessions.
+    SESSIONS = 2;
+    // Access tokens for the user.
+    ACCESS_TOKENS = 3;
+    // The shortcuts of the user.
+    SHORTCUTS = 4;
+    // The webhooks of the user.
+    WEBHOOKS = 5;
+  }
+
+  int32 user_id = 1;
+
+  Key key = 2;
+  oneof value {
+    GeneralUserSetting general = 3;
+    SessionsUserSetting sessions = 4;
+    AccessTokensUserSetting access_tokens = 5;
+    ShortcutsUserSetting shortcuts = 6;
+    WebhooksUserSetting webhooks = 7;
+  }
 }
 
-message UserSetting {
-  int32 user_id = 1;
-  UserSettingKey key = 2;
-  oneof value {
-    AccessTokensUserSetting access_tokens = 3;
-    string locale = 4;
-    string appearance = 5;
-    string memo_visibility = 6;
-    ShortcutsUserSetting shortcuts = 7;
+message GeneralUserSetting {
+  // The user's locale.
+  string locale = 1;
+  // The user's appearance setting.
+  string appearance = 2;
+  // The user's memo visibility setting.
+  string memo_visibility = 3;
+  // The user's theme preference.
+  // This references a CSS file in the web/public/themes/ directory.
+  string theme = 4;
+}
+
+message SessionsUserSetting {
+  message Session {
+    // Unique session identifier.
+    string session_id = 1;
+    // Timestamp when the session was created.
+    google.protobuf.Timestamp create_time = 2;
+    // Timestamp when the session was last accessed.
+    // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+    google.protobuf.Timestamp last_accessed_time = 3;
+    // Client information associated with this session.
+    ClientInfo client_info = 4;
   }
+
+  message ClientInfo {
+    // User agent string of the client.
+    string user_agent = 1;
+    // IP address of the client.
+    string ip_address = 2;
+    // Optional. Device type (e.g., "mobile", "desktop", "tablet").
+    string device_type = 3;
+    // Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
+    string os = 4;
+    // Optional. Browser name and version (e.g., "Chrome 119.0").
+    string browser = 5;
+  }
+
+  repeated Session sessions = 1;
 }
 
 message AccessTokensUserSetting {
@@ -48,4 +92,16 @@ message ShortcutsUserSetting {
     string filter = 3;
   }
   repeated Shortcut shortcuts = 1;
+}
+
+message WebhooksUserSetting {
+  message Webhook {
+    // Unique identifier for the webhook
+    string id = 1;
+    // Descriptive title for the webhook
+    string title = 2;
+    // The webhook URL endpoint
+    string url = 3;
+  }
+  repeated Webhook webhooks = 1;
 }

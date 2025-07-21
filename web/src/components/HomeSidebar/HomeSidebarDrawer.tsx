@@ -1,8 +1,8 @@
-import { Drawer } from "@mui/joy";
-import { Button } from "@usememos/mui";
-import { SearchIcon } from "lucide-react";
+import { MenuIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import HomeSidebar from "./HomeSidebar";
 
 const HomeSidebarDrawer = () => {
@@ -13,25 +13,20 @@ const HomeSidebarDrawer = () => {
     setOpen(false);
   }, [location.pathname]);
 
-  const toggleDrawer = (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (event.type === "keydown" && ((event as React.KeyboardEvent).key === "Tab" || (event as React.KeyboardEvent).key === "Shift")) {
-      return;
-    }
-
-    setOpen(inOpen);
-  };
-
   return (
-    <>
-      <Button variant="plain" className="!bg-transparent px-2" onClick={toggleDrawer(true)}>
-        <SearchIcon className="w-5 h-auto dark:text-gray-400" />
-      </Button>
-      <Drawer anchor="right" size="sm" open={open} onClose={toggleDrawer(false)}>
-        <div className="w-full h-full px-4 bg-zinc-100 dark:bg-zinc-900">
-          <HomeSidebar className="py-4" />
-        </div>
-      </Drawer>
-    </>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost">
+          <MenuIcon className="size-5 text-foreground" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-80 max-w-full bg-background">
+        <SheetHeader>
+          <SheetTitle />
+        </SheetHeader>
+        <HomeSidebar className="px-4" />
+      </SheetContent>
+    </Sheet>
   );
 };
 

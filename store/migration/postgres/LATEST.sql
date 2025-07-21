@@ -110,17 +110,6 @@ CREATE TABLE inbox (
   message TEXT NOT NULL
 );
 
--- webhook
-CREATE TABLE webhook (
-  id SERIAL PRIMARY KEY,
-  created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
-  updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
-  row_status TEXT NOT NULL DEFAULT 'NORMAL',
-  creator_id INTEGER NOT NULL,
-  name TEXT NOT NULL,
-  url TEXT NOT NULL
-);
-
 -- reaction
 CREATE TABLE reaction (
   id SERIAL PRIMARY KEY,

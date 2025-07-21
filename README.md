@@ -5,7 +5,7 @@
 *只保留深色模式的memos*    
 *Keep only the dark mode memos*    
 
-An open-source, self-hosted note-taking solution designed for seamless deployment and multi-platform access. Experience effortless plain text writing with pain-free, complemented by robust Markdown syntax support for enhanced formatting.
+A modern, open-source, self-hosted knowledge management and note-taking platform designed for privacy-conscious users and organizations. Memos provides a lightweight yet powerful solution for capturing, organizing, and sharing thoughts with comprehensive Markdown support and cross-platform accessibility.
 
 <a href="https://www.usememos.com">Home Page</a> •
 <a href="https://www.usememos.com/blog">Blogs</a> •
@@ -19,16 +19,105 @@ An open-source, self-hosted note-taking solution designed for seamless deploymen
 
 <!-- ![demo](https://www.usememos.com/demo.png) -->
 
-## Main Features
+</div>
 
-- **Privacy First** 🏠: Take control of your data. All runtime data is securely stored in your local database.
-- **Create at Speed** ✍️: Save content as plain text for quick access, with Markdown support for fast formatting and easy sharing.
-- **Lightweight but Powerful** 🤲: Built with Go, React.js, and a compact architecture, our application delivers powerful performance in a lightweight package.
-- **Customizable** 🧩: Easily customize your server name, icon, description, system style, and execution scripts to make it uniquely yours.
-- **Open Source** 🦦: Memos embraces the future of open source, with all code available on GitHub for transparency and collaboration.
-- **Free to Use** 💸: Enjoy all features completely free, with no charges ever for any content.
+![Memos Application Screenshot](https://www.usememos.com/demo.png)
 
-## Deploy with Docker in seconds
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Quick Start](#quick-start)
+- [Installation Methods](#installation-methods)
+- [Development Setup](#development-setup)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Overview
+
+Memos is a lightweight, self-hosted alternative to cloud-based note-taking services. Built with privacy and performance in mind, it offers a comprehensive platform for personal knowledge management without compromising data ownership or security.
+
+## Key Features
+
+### Data Privacy and Security
+
+- **Complete Data Ownership**: All application data is stored locally in your chosen database
+- **Self-Hosted Architecture**: Full control over your data infrastructure and access policies
+- **No External Dependencies**: Runtime operations require no third-party services or cloud connections
+
+### Content Creation and Management
+
+- **Plain Text Efficiency**: Streamlined text input with immediate save functionality
+- **Advanced Markdown Support**: Comprehensive Markdown rendering with syntax highlighting
+- **Rich Media Integration**: Support for images, links, and embedded content
+
+### Technical Excellence
+
+- **High-Performance Backend**: Built with Go for optimal resource utilization and scalability
+- **Modern Frontend**: React.js-based user interface with responsive design
+- **Lightweight Deployment**: Minimal system requirements with efficient resource consumption
+- **Cross-Platform Compatibility**: Supports Linux, macOS, Windows, and containerized environments
+
+### Customization and Extensibility
+
+- **Configurable Interface**: Customizable server branding, themes, and user interface elements
+- **API-First Design**: RESTful API with comprehensive documentation for third-party integrations
+- **Multi-Database Support**: Compatible with SQLite, PostgreSQL, and MySQL databases
+
+### Cost-Effective Solution
+
+- **Open Source License**: MIT licensed with full source code availability
+- **Zero Licensing Costs**: No subscription fees, usage limits, or premium tiers
+- **Community-Driven Development**: Active community contribution and transparent development process
+
+## Quick Start
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/) or Docker Compose installed on your system
+- Minimum 512MB RAM and 1GB available disk space
+
+### Docker Deployment
+
+Deploy Memos in production mode using Docker:
+
+```bash
+# Create data directory
+mkdir -p ~/.memos
+
+# Run Memos container
+docker run -d \
+  --name memos \
+  --restart unless-stopped \
+  -p 5230:5230 \
+  -v ~/.memos:/var/opt/memos \
+  neosmemo/memos:stable
+```
+
+Access the application at `http://localhost:5230` and complete the initial setup process.
+
+### Docker Compose Deployment
+
+For advanced configurations, use Docker Compose:
+
+```yaml
+# docker-compose.yml
+version: "3.8"
+services:
+  memos:
+    image: neosmemo/memos:stable
+    container_name: memos
+    restart: unless-stopped
+    ports:
+      - "5230:5230"
+    volumes:
+      - ./data:/var/opt/memos
+    environment:
+      - MEMOS_MODE=prod
+      - MEMOS_PORT=5230
+```
+
+Deploy with:
 
 ```
 # docker-compose.yml
@@ -51,29 +140,99 @@ services:
 docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos ctkghost/memos-dark:stable
 ```
 
-> [!NOTE]
-> This command is only applicable for Unix/Linux systems. For Windows, please refer to the detailed [documentation](https://www.usememos.com/docs/install/container-install#docker-on-windows).
+> **Note**: The data directory (`~/.memos/` or `./data/`) stores all application data including the database, uploaded files, and configuration. Ensure this directory is included in your backup strategy.
 >
-> The `~/.memos/` directory will be used as the data directory on your local machine, while `/var/opt/memos` is the directory of the volume in Docker and should not be modified.
+> **Platform Compatibility**: The above commands are optimized for Unix-like systems (Linux, macOS). For Windows deployments, please refer to the [Windows-specific documentation](https://www.usememos.com/docs/install/container-install#docker-on-windows).
 
-Learn more about [other installation methods](https://www.usememos.com/docs/install).
+## Installation Methods
 
-## Contribution
+Memos supports multiple installation approaches to accommodate different deployment scenarios:
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. We greatly appreciate any contributions you make. Thank you for being a part of our community! 🥰
+### Container Deployment
 
-## Sponsorship
+- **Docker Hub**: Official images available at `neosmemo/memos`
+- **GitHub Container Registry**: Alternative registry with the same image versions
+- **Kubernetes**: Helm charts and YAML manifests for cluster deployments
 
-If you find Memos helpful, please consider sponsoring us. Your support will help us to continue developing and maintaining the project.
+### Binary Installation
 
-❤️ Thanks to the following sponsors and backers: **[yourselfhosted](https://github.com/yourselfhosted)**, **[Burning_Wipf](https://github.com/KUKARAF)**, _[...see more](https://github.com/sponsors/usememos)_.
+- **Pre-compiled Binaries**: Available for Linux, macOS, and Windows on the releases page
 
-## Star history
+### Source Installation
 
 [![Star History Chart](https://api.star-history.com/svg?repos=CtkGHoSt/memos-dark&type=Date)](https://star-history.com/#CtkGHoSt/memos-dark&Date)
 
 
-## Other Projects
+- [Go 1.24](https://go.dev/) or later
+- [Node.js 22+](https://nodejs.org/en) and [pnpm](https://pnpm.io/)
+- [Git](https://git-scm.com/) for version control
 
-- [**Slash**](https://github.com/yourselfhosted/slash): An open source, self-hosted bookmarks and link sharing platform. Save and share your links very easily.
-- [**Gomark**](https://github.com/usememos/gomark): A markdown parser written in Go for Memos. And its [WebAssembly version](https://github.com/usememos/gomark-wasm) is also available.
+### Backend Development
+
+```bash
+# Clone the repository
+git clone https://github.com/usememos/memos.git
+cd memos
+
+# Install Go dependencies
+go mod download
+
+# Run the backend server
+go run ./bin/memos/main.go --mode dev --port 8081
+```
+
+### Frontend Development
+
+```bash
+# Navigate to web directory
+cd web
+
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+```
+
+The development servers will be available at:
+
+- Backend API: `http://localhost:8081`
+- Frontend: `http://localhost:3001`
+
+## Contributing
+
+Memos is an open-source project that welcomes contributions from developers, designers, and users worldwide. We maintain a collaborative and inclusive development environment that values quality, innovation, and community feedback.
+
+### Ways to Contribute
+
+- **Code Contributions**: Bug fixes, feature implementations, and performance improvements
+- **Documentation**: API documentation, user guides, and technical specifications
+- **Testing**: Quality assurance, test case development, and bug reporting
+- **Localization**: Translation support for multiple languages and regions
+- **Community Support**: Helping users on Discord, GitHub discussions, and forums
+
+## License
+
+Memos is released under the MIT License, providing maximum flexibility for both personal and commercial use. This license allows for:
+
+- **Commercial Use**: Deploy Memos in commercial environments without licensing fees
+- **Modification**: Adapt and customize the codebase for specific requirements
+- **Distribution**: Share modified versions while maintaining license attribution
+- **Private Use**: Use Memos internally without disclosure requirements
+
+See the [LICENSE](./LICENSE) file for complete licensing terms.
+
+## Project Status
+
+> **Development Status**: Memos is actively maintained and under continuous development. While the core functionality is stable and production-ready, users should expect regular updates, feature additions, and potential breaking changes as the project evolves.
+>
+> **Version Compatibility**: We maintain backward compatibility for data storage and API interfaces where possible. Migration guides are provided for major version transitions.
+
+## Support and Community
+
+- **Documentation**: [Official Documentation](https://www.usememos.com/docs)
+- **Community Chat**: [Discord Server](https://discord.gg/tfPJa4UmAv)
+- **Issue Tracking**: [GitHub Issues](https://github.com/usememos/memos/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/usememos/memos/discussions)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)

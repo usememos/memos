@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"log"
 
@@ -8,14 +9,13 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/store"
 )
 
 type DB struct {
 	db      *sql.DB
 	profile *profile.Profile
-	// Add any other fields as needed
 }
 
 func NewDB(profile *profile.Profile) (store.Driver, error) {
@@ -45,4 +45,13 @@ func (d *DB) GetDB() *sql.DB {
 
 func (d *DB) Close() error {
 	return d.db.Close()
+}
+
+func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
+	var exists bool
+	err := d.db.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'memo' AND table_type = 'BASE TABLE')").Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "failed to check if database is initialized")
+	}
+	return exists, nil
 }
