@@ -74,7 +74,7 @@ type FindMemo struct {
 	PayloadFind     *FindMemoPayload
 	ExcludeContent  bool
 	ExcludeComments bool
-	Filter          *string
+	Filters         []string
 
 	// Pagination
 	Limit  *int

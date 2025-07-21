@@ -135,7 +135,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		if err := s.validateFilter(ctx, request.Filter); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 		}
-		memoFind.Filter = &request.Filter
+		memoFind.Filters = append(memoFind.Filters, request.Filter)
 	}
 
 	currentUser, err := s.GetCurrentUser(ctx)
@@ -146,13 +146,8 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		memoFind.VisibilityList = []store.Visibility{store.Public}
 	} else {
 		if memoFind.CreatorID == nil {
-			internalFilter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
-			if memoFind.Filter != nil {
-				filter := fmt.Sprintf("(%s) && (%s)", *memoFind.Filter, internalFilter)
-				memoFind.Filter = &filter
-			} else {
-				memoFind.Filter = &internalFilter
-			}
+			filter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
+			memoFind.Filters = append(memoFind.Filters, filter)
 		} else if *memoFind.CreatorID != currentUser.ID {
 			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 		}
