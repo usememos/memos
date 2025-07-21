@@ -112,7 +112,6 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 			return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
 		}
 		memoFind.CreatorID = &userID
-		memoFind.OrderByPinned = true
 	}
 	if request.State == v1pb.State_ARCHIVED {
 		state := store.Archived

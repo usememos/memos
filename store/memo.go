@@ -82,7 +82,6 @@ type FindMemo struct {
 
 	// Ordering
 	OrderByUpdatedTs bool
-	OrderByPinned    bool
 	OrderByTimeAsc   bool
 }
 

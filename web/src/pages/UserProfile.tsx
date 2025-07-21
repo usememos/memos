@@ -107,7 +107,6 @@ const UserProfile = observer(() => {
                         ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
                         : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
                     )
-                    .sort((a, b) => Number(b.pinned) - Number(a.pinned))
                 }
                 owner={user.name}
                 orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
