@@ -97,7 +97,7 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 			if err != nil {
 				return err
 			}
-			if !slices.Contains([]string{"creator_id", "created_ts", "updated_ts", "visibility", "content", "has_task_list"}, identifier) {
+			if !slices.Contains([]string{"creator_id", "created_ts", "updated_ts", "visibility", "content", "has_task_list", "has_link", "has_code", "has_incomplete_tasks"}, identifier) {
 				return errors.Errorf("invalid identifier for %s", v.CallExpr.Function)
 			}
 			value, err := filter.GetExprValue(v.CallExpr.Args[1])
@@ -171,6 +171,44 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 						sqlTemplate = filter.GetSQL("boolean_not_true", dbType)
 					} else {
 						sqlTemplate = filter.GetSQL("boolean_not_false", dbType)
+					}
+				}
+				if _, err := ctx.Buffer.WriteString(sqlTemplate); err != nil {
+					return err
+				}
+			} else if identifier == "has_link" || identifier == "has_code" || identifier == "has_incomplete_tasks" {
+				if operator != "=" && operator != "!=" {
+					return errors.Errorf("invalid operator for %s", v.CallExpr.Function)
+				}
+				valueBool, ok := value.(bool)
+				if !ok {
+					return errors.Errorf("invalid boolean value for %s", identifier)
+				}
+				
+				// Map identifier to JSON path
+				var jsonPath string
+				switch identifier {
+				case "has_link":
+					jsonPath = "$.property.hasLink"
+				case "has_code":
+					jsonPath = "$.property.hasCode"
+				case "has_incomplete_tasks":
+					jsonPath = "$.property.hasIncompleteTasks"
+				}
+				
+				// Use JSON_EXTRACT for boolean comparison like has_task_list
+				var sqlTemplate string
+				if operator == "=" {
+					if valueBool {
+						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') = JSON('true')", jsonPath)
+					} else {
+						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') = JSON('false')", jsonPath)
+					}
+				} else { // operator == "!="
+					if valueBool {
+						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') != JSON('true')", jsonPath)
+					} else {
+						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') != JSON('false')", jsonPath)
 					}
 				}
 				if _, err := ctx.Buffer.WriteString(sqlTemplate); err != nil {
@@ -267,7 +305,7 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 		}
 	} else if v, ok := expr.ExprKind.(*exprv1.Expr_IdentExpr); ok {
 		identifier := v.IdentExpr.GetName()
-		if !slices.Contains([]string{"pinned", "has_task_list"}, identifier) {
+		if !slices.Contains([]string{"pinned", "has_task_list", "has_link", "has_code", "has_incomplete_tasks"}, identifier) {
 			return errors.Errorf("invalid identifier %s", identifier)
 		}
 		if identifier == "pinned" {
@@ -277,6 +315,21 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 		} else if identifier == "has_task_list" {
 			// Handle has_task_list as a standalone boolean identifier
 			if _, err := ctx.Buffer.WriteString(filter.GetSQL("boolean_check", dbType)); err != nil {
+				return err
+			}
+		} else if identifier == "has_link" {
+			// Handle has_link as a standalone boolean identifier
+			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = JSON('true')"); err != nil {
+				return err
+			}
+		} else if identifier == "has_code" {
+			// Handle has_code as a standalone boolean identifier  
+			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = JSON('true')"); err != nil {
+				return err
+			}
+		} else if identifier == "has_incomplete_tasks" {
+			// Handle has_incomplete_tasks as a standalone boolean identifier
+			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') = JSON('true')"); err != nil {
 				return err
 			}
 		}

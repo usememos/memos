@@ -21,6 +21,9 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("tags", cel.ListType(cel.StringType)),
 	cel.Variable("visibility", cel.StringType),
 	cel.Variable("has_task_list", cel.BoolType),
+	cel.Variable("has_link", cel.BoolType),
+	cel.Variable("has_code", cel.BoolType),
+	cel.Variable("has_incomplete_tasks", cel.BoolType),
 	// Current timestamp function.
 	cel.Function("now",
 		cel.Overload("now",

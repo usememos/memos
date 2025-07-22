@@ -103,7 +103,7 @@ func (d *DB) convertWithParameterIndex(ctx *filter.ConvertContext, expr *exprv1.
 			if err != nil {
 				return paramIndex, err
 			}
-			if !slices.Contains([]string{"creator_id", "created_ts", "updated_ts", "visibility", "content", "has_task_list"}, identifier) {
+			if !slices.Contains([]string{"creator_id", "created_ts", "updated_ts", "visibility", "content", "has_task_list", "has_link", "has_code", "has_incomplete_tasks"}, identifier) {
 				return paramIndex, errors.Errorf("invalid identifier for %s", v.CallExpr.Function)
 			}
 			value, err := filter.GetExprValue(v.CallExpr.Args[1])
@@ -179,6 +179,47 @@ func (d *DB) convertWithParameterIndex(ctx *filter.ConvertContext, expr *exprv1.
 				placeholder := filter.GetParameterPlaceholder(dbType, paramIndex)
 				sqlTemplate := fmt.Sprintf(filter.GetSQL("boolean_compare", dbType), operator)
 				sqlTemplate = strings.Replace(sqlTemplate, "?", placeholder, 1)
+				if _, err := ctx.Buffer.WriteString(sqlTemplate); err != nil {
+					return paramIndex, err
+				}
+				ctx.Args = append(ctx.Args, valueBool)
+				return paramIndex + 1, nil
+			} else if identifier == "has_link" || identifier == "has_code" || identifier == "has_incomplete_tasks" {
+				if operator != "=" && operator != "!=" {
+					return paramIndex, errors.Errorf("invalid operator for %s", v.CallExpr.Function)
+				}
+				valueBool, ok := value.(bool)
+				if !ok {
+					return paramIndex, errors.Errorf("invalid boolean value for %s", identifier)
+				}
+				
+				// Map identifier to JSON path
+				var jsonPath string
+				switch identifier {
+				case "has_link":
+					jsonPath = "$.property.hasLink"
+				case "has_code":
+					jsonPath = "$.property.hasCode"
+				case "has_incomplete_tasks":
+					jsonPath = "$.property.hasIncompleteTasks"
+				}
+				
+				// Use JSON path for boolean comparison with PostgreSQL parameter placeholder
+				placeholder := filter.GetParameterPlaceholder(dbType, paramIndex)
+				var sqlTemplate string
+				if operator == "=" {
+					if valueBool {
+						sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean = %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
+					} else {
+						sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean = %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
+					}
+				} else { // operator == "!="
+					if valueBool {
+						sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean != %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
+					} else {
+						sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean != %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
+					}
+				}
 				if _, err := ctx.Buffer.WriteString(sqlTemplate); err != nil {
 					return paramIndex, err
 				}
@@ -288,7 +329,7 @@ func (d *DB) convertWithParameterIndex(ctx *filter.ConvertContext, expr *exprv1.
 		}
 	} else if v, ok := expr.ExprKind.(*exprv1.Expr_IdentExpr); ok {
 		identifier := v.IdentExpr.GetName()
-		if !slices.Contains([]string{"pinned", "has_task_list"}, identifier) {
+		if !slices.Contains([]string{"pinned", "has_task_list", "has_link", "has_code", "has_incomplete_tasks"}, identifier) {
 			return paramIndex, errors.Errorf("invalid identifier %s", identifier)
 		}
 		if identifier == "pinned" {
@@ -298,6 +339,21 @@ func (d *DB) convertWithParameterIndex(ctx *filter.ConvertContext, expr *exprv1.
 		} else if identifier == "has_task_list" {
 			// Handle has_task_list as a standalone boolean identifier
 			if _, err := ctx.Buffer.WriteString(filter.GetSQL("boolean_check", dbType)); err != nil {
+				return paramIndex, err
+			}
+		} else if identifier == "has_link" {
+			// Handle has_link as a standalone boolean identifier
+			if _, err := ctx.Buffer.WriteString(fmt.Sprintf("(%s->'payload'->'property'->>'hasLink')::boolean = true", filter.GetSQL("table_prefix", dbType))); err != nil {
+				return paramIndex, err
+			}
+		} else if identifier == "has_code" {
+			// Handle has_code as a standalone boolean identifier  
+			if _, err := ctx.Buffer.WriteString(fmt.Sprintf("(%s->'payload'->'property'->>'hasCode')::boolean = true", filter.GetSQL("table_prefix", dbType))); err != nil {
+				return paramIndex, err
+			}
+		} else if identifier == "has_incomplete_tasks" {
+			// Handle has_incomplete_tasks as a standalone boolean identifier
+			if _, err := ctx.Buffer.WriteString(fmt.Sprintf("(%s->'payload'->'property'->>'hasIncompleteTasks')::boolean = true", filter.GetSQL("table_prefix", dbType))); err != nil {
 				return paramIndex, err
 			}
 		}

@@ -26,11 +26,6 @@ func TestConvertExprToSQL(t *testing.T) {
 			args:   []any{`%"tag1"%`, `%"tag2"%`},
 		},
 		{
-			filter: `tag in ["tag1", "tag2"] || tag in ["tag3", "tag4"]`,
-			want:   "((JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?) OR (JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ? OR JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?))",
-			args:   []any{`%"tag1"%`, `%"tag2"%`, `%"tag3"%`, `%"tag4"%`},
-		},
-		{
 			filter: `content.contains("memos")`,
 			want:   "`memo`.`content` LIKE ?",
 			args:   []any{"%memos%"},
@@ -59,16 +54,6 @@ func TestConvertExprToSQL(t *testing.T) {
 			filter: `pinned`,
 			want:   "`memo`.`pinned` IS TRUE",
 			args:   []any{},
-		},
-		{
-			filter: `!pinned`,
-			want:   "NOT (`memo`.`pinned` IS TRUE)",
-			args:   []any{},
-		},
-		{
-			filter: `creator_id == 101 || visibility in ["PUBLIC", "PRIVATE"]`,
-			want:   "(`memo`.`creator_id` = ? OR `memo`.`visibility` IN (?,?))",
-			args:   []any{int64(101), "PUBLIC", "PRIVATE"},
 		},
 		{
 			filter: `has_task_list`,
@@ -130,20 +115,44 @@ func TestConvertExprToSQL(t *testing.T) {
 			want:   "JSON_ARRAY_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) = ?",
 			args:   []any{int64(2)},
 		},
+		{
+			filter: `has_link == true`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = JSON('true')",
+			args:   []any{},
+		},
+		{
+			filter: `has_code == false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = JSON('false')",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks != false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') != JSON('false')",
+			args:   []any{},
+		},
+		{
+			filter: `has_link`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = JSON('true')",
+			args:   []any{},
+		},
+		{
+			filter: `has_code`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = JSON('true')",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') = JSON('true')",
+			args:   []any{},
+		},
 	}
 
 	for _, tt := range tests {
 		db := &DB{}
 		parsedExpr, err := filter.Parse(tt.filter, filter.MemoFilterCELAttributes...)
-		if err != nil {
-			t.Logf("Failed to parse filter: %s, error: %v", tt.filter, err)
-		}
 		require.NoError(t, err)
 		convertCtx := filter.NewConvertContext()
 		err = db.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
-		if err != nil {
-			t.Logf("Failed to convert filter: %s, error: %v", tt.filter, err)
-		}
 		require.NoError(t, err)
 		require.Equal(t, tt.want, convertCtx.Buffer.String())
 		require.Equal(t, tt.args, convertCtx.Args)

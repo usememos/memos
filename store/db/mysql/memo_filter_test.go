@@ -115,6 +115,36 @@ func TestConvertExprToSQL(t *testing.T) {
 			want:   "JSON_LENGTH(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.tags'), JSON_ARRAY())) = ?",
 			args:   []any{int64(2)},
 		},
+		{
+			filter: `has_link == true`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_code == false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = CAST('false' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks != false`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') != CAST('false' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_link`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_code`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
+		{
+			filter: `has_incomplete_tasks`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') = CAST('true' AS JSON)",
+			args:   []any{},
+		},
 	}
 
 	for _, tt := range tests {
