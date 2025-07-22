@@ -72,23 +72,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if v := find.RowStatus; v != nil {
 		where, args = append(where, "memo.row_status = "+placeholder(len(args)+1)), append(args, *v)
 	}
-	if v := find.CreatedTsBefore; v != nil {
-		where, args = append(where, "memo.created_ts < "+placeholder(len(args)+1)), append(args, *v)
-	}
-	if v := find.CreatedTsAfter; v != nil {
-		where, args = append(where, "memo.created_ts > "+placeholder(len(args)+1)), append(args, *v)
-	}
-	if v := find.UpdatedTsBefore; v != nil {
-		where, args = append(where, "memo.updated_ts < "+placeholder(len(args)+1)), append(args, *v)
-	}
-	if v := find.UpdatedTsAfter; v != nil {
-		where, args = append(where, "memo.updated_ts > "+placeholder(len(args)+1)), append(args, *v)
-	}
-	if v := find.ContentSearch; len(v) != 0 {
-		for _, s := range v {
-			where, args = append(where, "memo.content ILIKE "+placeholder(len(args)+1)), append(args, fmt.Sprintf("%%%s%%", s))
-		}
-	}
 	if v := find.VisibilityList; len(v) != 0 {
 		holders := []string{}
 		for _, visibility := range v {
@@ -96,31 +79,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			args = append(args, visibility.String())
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(holders, ", ")))
-	}
-	if v := find.Pinned; v != nil {
-		where, args = append(where, "memo.pinned = "+placeholder(len(args)+1)), append(args, *v)
-	}
-	if v := find.PayloadFind; v != nil {
-		if v.Raw != nil {
-			where, args = append(where, "memo.payload = "+placeholder(len(args)+1)), append(args, *v.Raw)
-		}
-		if len(v.TagSearch) != 0 {
-			for _, tag := range v.TagSearch {
-				where, args = append(where, "EXISTS (SELECT 1 FROM jsonb_array_elements(memo.payload->'tags') AS tag WHERE tag::text = "+placeholder(len(args)+1)+" OR tag::text LIKE "+placeholder(len(args)+2)+")"), append(args, fmt.Sprintf(`"%s"`, tag), fmt.Sprintf(`"%s/%%"`, tag))
-			}
-		}
-		if v.HasLink {
-			where = append(where, "(memo.payload->'property'->>'hasLink')::BOOLEAN IS TRUE")
-		}
-		if v.HasTaskList {
-			where = append(where, "(memo.payload->'property'->>'hasTaskList')::BOOLEAN IS TRUE")
-		}
-		if v.HasCode {
-			where = append(where, "(memo.payload->'property'->>'hasCode')::BOOLEAN IS TRUE")
-		}
-		if v.HasIncompleteTasks {
-			where = append(where, "(memo.payload->'property'->>'hasIncompleteTasks')::BOOLEAN IS TRUE")
-		}
 	}
 	if find.ExcludeComments {
 		where = append(where, "memo_relation.related_memo_id IS NULL")

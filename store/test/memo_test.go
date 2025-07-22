@@ -86,9 +86,7 @@ func TestMemoListByTags(t *testing.T) {
 	require.NotNil(t, memo)
 
 	memoList, err := ts.ListMemos(ctx, &store.FindMemo{
-		PayloadFind: &store.FindMemoPayload{
-			TagSearch: []string{"test_tag"},
-		},
+		Filters: []string{"tag in [\"test_tag\"]"},
 	})
 	require.NoError(t, err)
 	require.Equal(t, 1, len(memoList))

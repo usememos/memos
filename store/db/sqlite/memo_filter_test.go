@@ -61,6 +61,11 @@ func TestConvertExprToSQL(t *testing.T) {
 			args:   []any{},
 		},
 		{
+			filter: `has_code`,
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') IS TRUE",
+			args:   []any{},
+		},
+		{
 			filter: `has_task_list == true`,
 			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = 1",
 			args:   []any{},
@@ -117,32 +122,32 @@ func TestConvertExprToSQL(t *testing.T) {
 		},
 		{
 			filter: `has_link == true`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = JSON('true')",
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') IS TRUE",
 			args:   []any{},
 		},
 		{
 			filter: `has_code == false`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = JSON('false')",
+			want:   "NOT(JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') IS TRUE)",
 			args:   []any{},
 		},
 		{
 			filter: `has_incomplete_tasks != false`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') != JSON('false')",
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE",
 			args:   []any{},
 		},
 		{
 			filter: `has_link`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = JSON('true')",
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') IS TRUE",
 			args:   []any{},
 		},
 		{
 			filter: `has_code`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = JSON('true')",
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') IS TRUE",
 			args:   []any{},
 		},
 		{
 			filter: `has_incomplete_tasks`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') = JSON('true')",
+			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE",
 			args:   []any{},
 		},
 	}

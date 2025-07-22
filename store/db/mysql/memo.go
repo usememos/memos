@@ -80,23 +80,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if v := find.RowStatus; v != nil {
 		where, args = append(where, "`memo`.`row_status` = ?"), append(args, *v)
 	}
-	if v := find.CreatedTsBefore; v != nil {
-		where, args = append(where, "UNIX_TIMESTAMP(`memo`.`created_ts`) < ?"), append(args, *v)
-	}
-	if v := find.CreatedTsAfter; v != nil {
-		where, args = append(where, "UNIX_TIMESTAMP(`memo`.`created_ts`) > ?"), append(args, *v)
-	}
-	if v := find.UpdatedTsBefore; v != nil {
-		where, args = append(where, "UNIX_TIMESTAMP(`memo`.`updated_ts`) < ?"), append(args, *v)
-	}
-	if v := find.UpdatedTsAfter; v != nil {
-		where, args = append(where, "UNIX_TIMESTAMP(`memo`.`updated_ts`) > ?"), append(args, *v)
-	}
-	if v := find.ContentSearch; len(v) != 0 {
-		for _, s := range v {
-			where, args = append(where, "`memo`.`content` LIKE ?"), append(args, "%"+s+"%")
-		}
-	}
 	if v := find.VisibilityList; len(v) != 0 {
 		placeholder := []string{}
 		for _, visibility := range v {
@@ -104,31 +87,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			args = append(args, visibility.String())
 		}
 		where = append(where, fmt.Sprintf("`memo`.`visibility` in (%s)", strings.Join(placeholder, ",")))
-	}
-	if v := find.Pinned; v != nil {
-		where, args = append(where, "`memo`.`pinned` = ?"), append(args, *v)
-	}
-	if v := find.PayloadFind; v != nil {
-		if v.Raw != nil {
-			where, args = append(where, "`memo`.`payload` = ?"), append(args, *v.Raw)
-		}
-		if len(v.TagSearch) != 0 {
-			for _, tag := range v.TagSearch {
-				where, args = append(where, "(JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?) OR JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?))"), append(args, fmt.Sprintf(`"%s"`, tag), fmt.Sprintf(`"%s/"`, tag))
-			}
-		}
-		if v.HasLink {
-			where = append(where, "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') IS TRUE")
-		}
-		if v.HasTaskList {
-			where = append(where, "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') IS TRUE")
-		}
-		if v.HasCode {
-			where = append(where, "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') IS TRUE")
-		}
-		if v.HasIncompleteTasks {
-			where = append(where, "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE")
-		}
 	}
 	if find.ExcludeComments {
 		having = append(having, "`parent_id` IS NULL")

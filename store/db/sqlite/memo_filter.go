@@ -200,15 +200,15 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 				var sqlTemplate string
 				if operator == "=" {
 					if valueBool {
-						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') = JSON('true')", jsonPath)
+						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') IS TRUE", jsonPath)
 					} else {
-						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') = JSON('false')", jsonPath)
+						sqlTemplate = fmt.Sprintf("NOT(JSON_EXTRACT(`memo`.`payload`, '%s') IS TRUE)", jsonPath)
 					}
 				} else { // operator == "!="
 					if valueBool {
-						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') != JSON('true')", jsonPath)
+						sqlTemplate = fmt.Sprintf("NOT(JSON_EXTRACT(`memo`.`payload`, '%s') IS TRUE)", jsonPath)
 					} else {
-						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') != JSON('false')", jsonPath)
+						sqlTemplate = fmt.Sprintf("JSON_EXTRACT(`memo`.`payload`, '%s') IS TRUE", jsonPath)
 					}
 				}
 				if _, err := ctx.Buffer.WriteString(sqlTemplate); err != nil {
@@ -319,17 +319,17 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 			}
 		} else if identifier == "has_link" {
 			// Handle has_link as a standalone boolean identifier
-			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = JSON('true')"); err != nil {
+			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') IS TRUE"); err != nil {
 				return err
 			}
 		} else if identifier == "has_code" {
 			// Handle has_code as a standalone boolean identifier
-			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = JSON('true')"); err != nil {
+			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') IS TRUE"); err != nil {
 				return err
 			}
 		} else if identifier == "has_incomplete_tasks" {
 			// Handle has_incomplete_tasks as a standalone boolean identifier
-			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') = JSON('true')"); err != nil {
+			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') IS TRUE"); err != nil {
 				return err
 			}
 		}

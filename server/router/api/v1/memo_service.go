@@ -559,7 +559,7 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
-		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.OldTag}},
+		Filters:         []string{fmt.Sprintf("tag in [\"%s\"]", request.OldTag)},
 		ExcludeComments: true,
 	}
 	if (request.Parent) != "memos/-" {
@@ -609,7 +609,7 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
-		PayloadFind:     &store.FindMemoPayload{TagSearch: []string{request.Tag}},
+		Filters:         []string{fmt.Sprintf("tag in [\"%s\"]", request.Tag)},
 		ExcludeContent:  true,
 		ExcludeComments: true,
 	}
