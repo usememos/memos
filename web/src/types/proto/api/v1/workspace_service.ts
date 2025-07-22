@@ -41,6 +41,61 @@ export interface WorkspaceSetting {
   memoRelatedSetting?: WorkspaceMemoRelatedSetting | undefined;
 }
 
+export enum WorkspaceSetting_Key {
+  KEY_UNSPECIFIED = "KEY_UNSPECIFIED",
+  /** BASIC - BASIC is the key for basic settings. */
+  BASIC = "BASIC",
+  /** GENERAL - GENERAL is the key for general settings. */
+  GENERAL = "GENERAL",
+  /** STORAGE - STORAGE is the key for storage settings. */
+  STORAGE = "STORAGE",
+  /** MEMO_RELATED - MEMO_RELATED is the key for memo related settings. */
+  MEMO_RELATED = "MEMO_RELATED",
+  UNRECOGNIZED = "UNRECOGNIZED",
+}
+
+export function workspaceSetting_KeyFromJSON(object: any): WorkspaceSetting_Key {
+  switch (object) {
+    case 0:
+    case "KEY_UNSPECIFIED":
+      return WorkspaceSetting_Key.KEY_UNSPECIFIED;
+    case 1:
+    case "BASIC":
+      return WorkspaceSetting_Key.BASIC;
+    case 2:
+    case "GENERAL":
+      return WorkspaceSetting_Key.GENERAL;
+    case 3:
+    case "STORAGE":
+      return WorkspaceSetting_Key.STORAGE;
+    case 4:
+    case "MEMO_RELATED":
+      return WorkspaceSetting_Key.MEMO_RELATED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return WorkspaceSetting_Key.UNRECOGNIZED;
+  }
+}
+
+export function workspaceSetting_KeyToNumber(object: WorkspaceSetting_Key): number {
+  switch (object) {
+    case WorkspaceSetting_Key.KEY_UNSPECIFIED:
+      return 0;
+    case WorkspaceSetting_Key.BASIC:
+      return 1;
+    case WorkspaceSetting_Key.GENERAL:
+      return 2;
+    case WorkspaceSetting_Key.STORAGE:
+      return 3;
+    case WorkspaceSetting_Key.MEMO_RELATED:
+      return 4;
+    case WorkspaceSetting_Key.UNRECOGNIZED:
+    default:
+      return -1;
+  }
+}
+
 export interface WorkspaceGeneralSetting {
   /**
    * theme is the name of the selected theme.

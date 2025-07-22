@@ -9,8 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
-import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { WorkspaceMemoRelatedSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = observer(() => {
@@ -54,7 +53,7 @@ const MemoRelatedSettings = observer(() => {
 
     try {
       await workspaceStore.upsertWorkspaceSetting({
-        name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.MEMO_RELATED}`,
+        name: `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.MEMO_RELATED}`,
         memoRelatedSetting,
       });
       setOriginalSetting(memoRelatedSetting);

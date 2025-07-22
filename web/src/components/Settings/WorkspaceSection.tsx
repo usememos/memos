@@ -14,8 +14,7 @@ import useDialog from "@/hooks/useDialog";
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
-import { WorkspaceGeneralSetting } from "@/types/proto/api/v1/workspace_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { WorkspaceGeneralSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 import ThemeSelector from "../ThemeSelector";
 import UpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
@@ -24,14 +23,14 @@ const WorkspaceSection = observer(() => {
   const t = useTranslate();
   const customizeDialog = useDialog();
   const originalSetting = WorkspaceGeneralSetting.fromPartial(
-    workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)?.generalSetting || {},
+    workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.GENERAL)?.generalSetting || {},
   );
   const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(originalSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
     setWorkspaceGeneralSetting({ ...workspaceGeneralSetting, customProfile: originalSetting.customProfile });
-  }, [workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL)]);
+  }, [workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.GENERAL)]);
 
   const handleUpdateCustomizedProfileButtonClick = () => {
     customizeDialog.open();
@@ -49,7 +48,7 @@ const WorkspaceSection = observer(() => {
   const handleSaveGeneralSetting = async () => {
     try {
       await workspaceStore.upsertWorkspaceSetting({
-        name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
+        name: `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.GENERAL}`,
         generalSetting: workspaceGeneralSetting,
       });
     } catch (error: any) {

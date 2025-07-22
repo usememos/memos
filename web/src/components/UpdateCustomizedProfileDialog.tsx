@@ -7,8 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
-import { WorkspaceCustomProfile } from "@/types/proto/api/v1/workspace_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { WorkspaceCustomProfile, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "./AppearanceSelect";
 import LocaleSelect from "./LocaleSelect";
@@ -88,7 +87,7 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
     setIsLoading(true);
     try {
       await workspaceStore.upsertWorkspaceSetting({
-        name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.GENERAL}`,
+        name: `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.GENERAL}`,
         generalSetting: {
           ...workspaceGeneralSetting,
           customProfile: customProfile,

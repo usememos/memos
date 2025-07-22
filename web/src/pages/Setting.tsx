@@ -16,7 +16,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { workspaceStore } from "@/store";
 import { User_Role } from "@/types/proto/api/v1/user_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 
 type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso";
@@ -73,7 +73,7 @@ const Setting = observer(() => {
 
     // Initial fetch for workspace settings.
     (async () => {
-      [WorkspaceSettingKey.MEMO_RELATED, WorkspaceSettingKey.STORAGE].forEach(async (key) => {
+      [WorkspaceSetting_Key.MEMO_RELATED, WorkspaceSetting_Key.STORAGE].forEach(async (key) => {
         await workspaceStore.fetchWorkspaceSetting(key);
       });
     })();

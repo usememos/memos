@@ -23,6 +23,65 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type WorkspaceSetting_Key int32
+
+const (
+	WorkspaceSetting_KEY_UNSPECIFIED WorkspaceSetting_Key = 0
+	// BASIC is the key for basic settings.
+	WorkspaceSetting_BASIC WorkspaceSetting_Key = 1
+	// GENERAL is the key for general settings.
+	WorkspaceSetting_GENERAL WorkspaceSetting_Key = 2
+	// STORAGE is the key for storage settings.
+	WorkspaceSetting_STORAGE WorkspaceSetting_Key = 3
+	// MEMO_RELATED is the key for memo related settings.
+	WorkspaceSetting_MEMO_RELATED WorkspaceSetting_Key = 4
+)
+
+// Enum value maps for WorkspaceSetting_Key.
+var (
+	WorkspaceSetting_Key_name = map[int32]string{
+		0: "KEY_UNSPECIFIED",
+		1: "BASIC",
+		2: "GENERAL",
+		3: "STORAGE",
+		4: "MEMO_RELATED",
+	}
+	WorkspaceSetting_Key_value = map[string]int32{
+		"KEY_UNSPECIFIED": 0,
+		"BASIC":           1,
+		"GENERAL":         2,
+		"STORAGE":         3,
+		"MEMO_RELATED":    4,
+	}
+)
+
+func (x WorkspaceSetting_Key) Enum() *WorkspaceSetting_Key {
+	p := new(WorkspaceSetting_Key)
+	*p = x
+	return p
+}
+
+func (x WorkspaceSetting_Key) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (WorkspaceSetting_Key) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_v1_workspace_service_proto_enumTypes[0].Descriptor()
+}
+
+func (WorkspaceSetting_Key) Type() protoreflect.EnumType {
+	return &file_api_v1_workspace_service_proto_enumTypes[0]
+}
+
+func (x WorkspaceSetting_Key) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use WorkspaceSetting_Key.Descriptor instead.
+func (WorkspaceSetting_Key) EnumDescriptor() ([]byte, []int) {
+	return file_api_v1_workspace_service_proto_rawDescGZIP(), []int{2, 0}
+}
+
 type WorkspaceStorageSetting_StorageType int32
 
 const (
@@ -62,11 +121,11 @@ func (x WorkspaceStorageSetting_StorageType) String() string {
 }
 
 func (WorkspaceStorageSetting_StorageType) Descriptor() protoreflect.EnumDescriptor {
-	return file_api_v1_workspace_service_proto_enumTypes[0].Descriptor()
+	return file_api_v1_workspace_service_proto_enumTypes[1].Descriptor()
 }
 
 func (WorkspaceStorageSetting_StorageType) Type() protoreflect.EnumType {
-	return &file_api_v1_workspace_service_proto_enumTypes[0]
+	return &file_api_v1_workspace_service_proto_enumTypes[1]
 }
 
 func (x WorkspaceStorageSetting_StorageType) Number() protoreflect.EnumNumber {
@@ -890,12 +949,18 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1c\n" +
-	"\x1aGetWorkspaceProfileRequest\"\x9f\x03\n" +
+	"\x1aGetWorkspaceProfileRequest\"\xf2\x03\n" +
 	"\x10WorkspaceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12P\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2%.memos.api.v1.WorkspaceGeneralSettingH\x00R\x0egeneralSetting\x12P\n" +
 	"\x0fstorage_setting\x18\x03 \x01(\v2%.memos.api.v1.WorkspaceStorageSettingH\x00R\x0estorageSetting\x12]\n" +
-	"\x14memo_related_setting\x18\x04 \x01(\v2).memos.api.v1.WorkspaceMemoRelatedSettingH\x00R\x12memoRelatedSetting:f\xeaAc\n" +
+	"\x14memo_related_setting\x18\x04 \x01(\v2).memos.api.v1.WorkspaceMemoRelatedSettingH\x00R\x12memoRelatedSetting\"Q\n" +
+	"\x03Key\x12\x13\n" +
+	"\x0fKEY_UNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05BASIC\x10\x01\x12\v\n" +
+	"\aGENERAL\x10\x02\x12\v\n" +
+	"\aSTORAGE\x10\x03\x12\x10\n" +
+	"\fMEMO_RELATED\x10\x04:f\xeaAc\n" +
 	"\x1eapi.memos.dev/WorkspaceSetting\x12\x1cworkspace/settings/{setting}*\x11workspaceSettings2\x10workspaceSettingB\a\n" +
 	"\x05value\"\xef\x03\n" +
 	"\x17WorkspaceGeneralSetting\x12\x14\n" +
@@ -970,37 +1035,38 @@ func file_api_v1_workspace_service_proto_rawDescGZIP() []byte {
 	return file_api_v1_workspace_service_proto_rawDescData
 }
 
-var file_api_v1_workspace_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_api_v1_workspace_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_api_v1_workspace_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_api_v1_workspace_service_proto_goTypes = []any{
-	(WorkspaceStorageSetting_StorageType)(0), // 0: memos.api.v1.WorkspaceStorageSetting.StorageType
-	(*WorkspaceProfile)(nil),                 // 1: memos.api.v1.WorkspaceProfile
-	(*GetWorkspaceProfileRequest)(nil),       // 2: memos.api.v1.GetWorkspaceProfileRequest
-	(*WorkspaceSetting)(nil),                 // 3: memos.api.v1.WorkspaceSetting
-	(*WorkspaceGeneralSetting)(nil),          // 4: memos.api.v1.WorkspaceGeneralSetting
-	(*WorkspaceCustomProfile)(nil),           // 5: memos.api.v1.WorkspaceCustomProfile
-	(*WorkspaceStorageSetting)(nil),          // 6: memos.api.v1.WorkspaceStorageSetting
-	(*WorkspaceMemoRelatedSetting)(nil),      // 7: memos.api.v1.WorkspaceMemoRelatedSetting
-	(*GetWorkspaceSettingRequest)(nil),       // 8: memos.api.v1.GetWorkspaceSettingRequest
-	(*UpdateWorkspaceSettingRequest)(nil),    // 9: memos.api.v1.UpdateWorkspaceSettingRequest
-	(*WorkspaceStorageSetting_S3Config)(nil), // 10: memos.api.v1.WorkspaceStorageSetting.S3Config
-	(*fieldmaskpb.FieldMask)(nil),            // 11: google.protobuf.FieldMask
+	(WorkspaceSetting_Key)(0),                // 0: memos.api.v1.WorkspaceSetting.Key
+	(WorkspaceStorageSetting_StorageType)(0), // 1: memos.api.v1.WorkspaceStorageSetting.StorageType
+	(*WorkspaceProfile)(nil),                 // 2: memos.api.v1.WorkspaceProfile
+	(*GetWorkspaceProfileRequest)(nil),       // 3: memos.api.v1.GetWorkspaceProfileRequest
+	(*WorkspaceSetting)(nil),                 // 4: memos.api.v1.WorkspaceSetting
+	(*WorkspaceGeneralSetting)(nil),          // 5: memos.api.v1.WorkspaceGeneralSetting
+	(*WorkspaceCustomProfile)(nil),           // 6: memos.api.v1.WorkspaceCustomProfile
+	(*WorkspaceStorageSetting)(nil),          // 7: memos.api.v1.WorkspaceStorageSetting
+	(*WorkspaceMemoRelatedSetting)(nil),      // 8: memos.api.v1.WorkspaceMemoRelatedSetting
+	(*GetWorkspaceSettingRequest)(nil),       // 9: memos.api.v1.GetWorkspaceSettingRequest
+	(*UpdateWorkspaceSettingRequest)(nil),    // 10: memos.api.v1.UpdateWorkspaceSettingRequest
+	(*WorkspaceStorageSetting_S3Config)(nil), // 11: memos.api.v1.WorkspaceStorageSetting.S3Config
+	(*fieldmaskpb.FieldMask)(nil),            // 12: google.protobuf.FieldMask
 }
 var file_api_v1_workspace_service_proto_depIdxs = []int32{
-	4,  // 0: memos.api.v1.WorkspaceSetting.general_setting:type_name -> memos.api.v1.WorkspaceGeneralSetting
-	6,  // 1: memos.api.v1.WorkspaceSetting.storage_setting:type_name -> memos.api.v1.WorkspaceStorageSetting
-	7,  // 2: memos.api.v1.WorkspaceSetting.memo_related_setting:type_name -> memos.api.v1.WorkspaceMemoRelatedSetting
-	5,  // 3: memos.api.v1.WorkspaceGeneralSetting.custom_profile:type_name -> memos.api.v1.WorkspaceCustomProfile
-	0,  // 4: memos.api.v1.WorkspaceStorageSetting.storage_type:type_name -> memos.api.v1.WorkspaceStorageSetting.StorageType
-	10, // 5: memos.api.v1.WorkspaceStorageSetting.s3_config:type_name -> memos.api.v1.WorkspaceStorageSetting.S3Config
-	3,  // 6: memos.api.v1.UpdateWorkspaceSettingRequest.setting:type_name -> memos.api.v1.WorkspaceSetting
-	11, // 7: memos.api.v1.UpdateWorkspaceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	2,  // 8: memos.api.v1.WorkspaceService.GetWorkspaceProfile:input_type -> memos.api.v1.GetWorkspaceProfileRequest
-	8,  // 9: memos.api.v1.WorkspaceService.GetWorkspaceSetting:input_type -> memos.api.v1.GetWorkspaceSettingRequest
-	9,  // 10: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:input_type -> memos.api.v1.UpdateWorkspaceSettingRequest
-	1,  // 11: memos.api.v1.WorkspaceService.GetWorkspaceProfile:output_type -> memos.api.v1.WorkspaceProfile
-	3,  // 12: memos.api.v1.WorkspaceService.GetWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
-	3,  // 13: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
+	5,  // 0: memos.api.v1.WorkspaceSetting.general_setting:type_name -> memos.api.v1.WorkspaceGeneralSetting
+	7,  // 1: memos.api.v1.WorkspaceSetting.storage_setting:type_name -> memos.api.v1.WorkspaceStorageSetting
+	8,  // 2: memos.api.v1.WorkspaceSetting.memo_related_setting:type_name -> memos.api.v1.WorkspaceMemoRelatedSetting
+	6,  // 3: memos.api.v1.WorkspaceGeneralSetting.custom_profile:type_name -> memos.api.v1.WorkspaceCustomProfile
+	1,  // 4: memos.api.v1.WorkspaceStorageSetting.storage_type:type_name -> memos.api.v1.WorkspaceStorageSetting.StorageType
+	11, // 5: memos.api.v1.WorkspaceStorageSetting.s3_config:type_name -> memos.api.v1.WorkspaceStorageSetting.S3Config
+	4,  // 6: memos.api.v1.UpdateWorkspaceSettingRequest.setting:type_name -> memos.api.v1.WorkspaceSetting
+	12, // 7: memos.api.v1.UpdateWorkspaceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	3,  // 8: memos.api.v1.WorkspaceService.GetWorkspaceProfile:input_type -> memos.api.v1.GetWorkspaceProfileRequest
+	9,  // 9: memos.api.v1.WorkspaceService.GetWorkspaceSetting:input_type -> memos.api.v1.GetWorkspaceSettingRequest
+	10, // 10: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:input_type -> memos.api.v1.UpdateWorkspaceSettingRequest
+	2,  // 11: memos.api.v1.WorkspaceService.GetWorkspaceProfile:output_type -> memos.api.v1.WorkspaceProfile
+	4,  // 12: memos.api.v1.WorkspaceService.GetWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
+	4,  // 13: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
 	11, // [11:14] is the sub-list for method output_type
 	8,  // [8:11] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
@@ -1023,7 +1089,7 @@ func file_api_v1_workspace_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_workspace_service_proto_rawDesc), len(file_api_v1_workspace_service_proto_rawDesc)),
-			NumEnums:      1,
+			NumEnums:      2,
 			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,

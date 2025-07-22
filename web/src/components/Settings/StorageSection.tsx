@@ -14,24 +14,24 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import {
+  WorkspaceSetting_Key,
   WorkspaceStorageSetting,
   WorkspaceStorageSetting_S3Config,
   WorkspaceStorageSetting_StorageType,
 } from "@/types/proto/api/v1/workspace_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 const StorageSection = observer(() => {
   const t = useTranslate();
   const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceStorageSetting>(
-    WorkspaceStorageSetting.fromPartial(workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {}),
+    WorkspaceStorageSetting.fromPartial(workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {}),
   );
 
   useEffect(() => {
     setWorkspaceStorageSetting(
-      WorkspaceStorageSetting.fromPartial(workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {}),
+      WorkspaceStorageSetting.fromPartial(workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {}),
     );
-  }, [workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)]);
+  }, [workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)]);
 
   const allowSaveStorageSetting = useMemo(() => {
     if (workspaceStorageSetting.uploadSizeLimitMb <= 0) {
@@ -39,7 +39,7 @@ const StorageSection = observer(() => {
     }
 
     const origin = WorkspaceStorageSetting.fromPartial(
-      workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.STORAGE)?.storageSetting || {},
+      workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {},
     );
     if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.LOCAL) {
       if (workspaceStorageSetting.filepathTemplate.length === 0) {
@@ -126,7 +126,7 @@ const StorageSection = observer(() => {
 
   const saveWorkspaceStorageSetting = async () => {
     await workspaceStore.upsertWorkspaceSetting({
-      name: `${workspaceSettingNamePrefix}${WorkspaceSettingKey.STORAGE}`,
+      name: `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.STORAGE}`,
       storageSetting: workspaceStorageSetting,
     });
     toast.success("Updated");

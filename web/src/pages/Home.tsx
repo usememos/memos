@@ -8,7 +8,7 @@ import { viewStore, userStore, workspaceStore } from "@/store";
 import memoFilterStore from "@/store/memoFilter";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
-import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
+import { WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 
 // Helper function to extract shortcut ID from resource name
 // Format: users/{user}/shortcuts/{shortcut}
@@ -40,7 +40,7 @@ const Home = observer(() => {
       } else if (filter.factor === "property.hasCode") {
         conditions.push(`has_code`);
       } else if (filter.factor === "displayTime") {
-        const displayWithUpdateTime = workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting
+        const displayWithUpdateTime = workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.MEMO_RELATED).memoRelatedSetting
           ?.displayWithUpdateTime;
         const factor = displayWithUpdateTime ? "updated_ts" : "created_ts";
         const filterDate = new Date(filter.value);

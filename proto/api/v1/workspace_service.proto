@@ -69,6 +69,18 @@ message WorkspaceSetting {
     WorkspaceStorageSetting storage_setting = 3;
     WorkspaceMemoRelatedSetting memo_related_setting = 4;
   }
+
+  enum Key {
+    KEY_UNSPECIFIED = 0;
+    // BASIC is the key for basic settings.
+    BASIC = 1;
+    // GENERAL is the key for general settings.
+    GENERAL = 2;
+    // STORAGE is the key for storage settings.
+    STORAGE = 3;
+    // MEMO_RELATED is the key for memo related settings.
+    MEMO_RELATED = 4;
+  }
 }
 
 message WorkspaceGeneralSetting {
