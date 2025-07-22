@@ -12,25 +12,17 @@ import { Memo } from "@/types/proto/api/v1/memo_service";
 const Archived = observer(() => {
   const user = useCurrentUser();
 
-  const memoListFilter = useMemo(() => {
+  const memoFitler = useMemo(() => {
     const conditions = [];
-    const contentSearch: string[] = [];
-    const tagSearch: string[] = [];
     for (const filter of memoFilterStore.filters) {
       if (filter.factor === "contentSearch") {
-        contentSearch.push(`"${filter.value}"`);
+        conditions.push(`content.contains("${filter.value}")`);
       } else if (filter.factor === "tagSearch") {
-        tagSearch.push(`"${filter.value}"`);
+        conditions.push(`tag in ["${filter.value}"]`);
       }
     }
-    if (contentSearch.length > 0) {
-      conditions.push(`content_search == [${contentSearch.join(", ")}]`);
-    }
-    if (tagSearch.length > 0) {
-      conditions.push(`tag_search == [${tagSearch.join(", ")}]`);
-    }
-    return conditions.join(" && ");
-  }, [user, memoFilterStore.filters]);
+    return conditions.length > 0 ? conditions.join(" && ") : undefined;
+  }, [memoFilterStore.filters]);
 
   return (
     <PagedMemoList
@@ -47,7 +39,7 @@ const Archived = observer(() => {
       owner={user.name}
       state={State.ARCHIVED}
       orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
-      oldFilter={memoListFilter}
+      filter={memoFitler}
     />
   );
 });

@@ -575,10 +575,7 @@ type ListMemosRequest struct {
 	// Refer to `Shortcut.filter`.
 	Filter string `protobuf:"bytes,6,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. If true, show deleted memos in the response.
-	ShowDeleted bool `protobuf:"varint,7,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
-	// [Deprecated] Old filter contains some specific conditions to filter memos.
-	// Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
-	OldFilter     string `protobuf:"bytes,8,opt,name=old_filter,json=oldFilter,proto3" json:"old_filter,omitempty"`
+	ShowDeleted   bool `protobuf:"varint,7,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -660,13 +657,6 @@ func (x *ListMemosRequest) GetShowDeleted() bool {
 		return x.ShowDeleted
 	}
 	return false
-}
-
-func (x *ListMemosRequest) GetOldFilter() string {
-	if x != nil {
-		return x.OldFilter
-	}
-	return ""
 }
 
 type ListMemosResponse struct {
@@ -2074,7 +2064,7 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\amemo_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06memoId\x12(\n" +
 	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\"\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbf\x02\n" +
+	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xa0\x02\n" +
 	"\x10ListMemosRequest\x121\n" +
 	"\x06parent\x18\x01 \x01(\tB\x19\xe0A\x01\xfaA\x13\n" +
 	"\x11memos.api.v1/UserR\x06parent\x12 \n" +
@@ -2084,9 +2074,7 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x05state\x18\x04 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x01R\x05state\x12\x1e\n" +
 	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
 	"\x06filter\x18\x06 \x01(\tB\x03\xe0A\x01R\x06filter\x12&\n" +
-	"\fshow_deleted\x18\a \x01(\bB\x03\xe0A\x01R\vshowDeleted\x12\x1d\n" +
-	"\n" +
-	"old_filter\x18\b \x01(\tR\toldFilter\"\x84\x01\n" +
+	"\fshow_deleted\x18\a \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\x84\x01\n" +
 	"\x11ListMemosResponse\x12(\n" +
 	"\x05memos\x18\x01 \x03(\v2\x12.memos.api.v1.MemoR\x05memos\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +

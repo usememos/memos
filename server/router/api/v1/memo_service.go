@@ -99,13 +99,6 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		// Exclude comments by default.
 		ExcludeComments: true,
 	}
-	// Handle deprecated old_filter for backward compatibility
-	if request.OldFilter != "" && request.Filter == "" {
-		//nolint:staticcheck // SA1019: Using deprecated field for backward compatibility
-		if err := s.buildMemoFindWithFilter(ctx, memoFind, request.OldFilter); err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "failed to build find memos with filter: %v", err)
-		}
-	}
 	if request.Parent != "" && request.Parent != "users/-" {
 		userID, err := ExtractUserIDFromName(request.Parent)
 		if err != nil {

@@ -212,11 +212,6 @@ export interface ListMemosRequest {
   filter: string;
   /** Optional. If true, show deleted memos in the response. */
   showDeleted: boolean;
-  /**
-   * [Deprecated] Old filter contains some specific conditions to filter memos.
-   * Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
-   */
-  oldFilter: string;
 }
 
 export interface ListMemosResponse {
@@ -1103,7 +1098,6 @@ function createBaseListMemosRequest(): ListMemosRequest {
     orderBy: "",
     filter: "",
     showDeleted: false,
-    oldFilter: "",
   };
 }
 
@@ -1129,9 +1123,6 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
     }
     if (message.showDeleted !== false) {
       writer.uint32(56).bool(message.showDeleted);
-    }
-    if (message.oldFilter !== "") {
-      writer.uint32(66).string(message.oldFilter);
     }
     return writer;
   },
@@ -1199,14 +1190,6 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
           message.showDeleted = reader.bool();
           continue;
         }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.oldFilter = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1228,7 +1211,6 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
     message.orderBy = object.orderBy ?? "";
     message.filter = object.filter ?? "";
     message.showDeleted = object.showDeleted ?? false;
-    message.oldFilter = object.oldFilter ?? "";
     return message;
   },
 };

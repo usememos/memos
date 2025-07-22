@@ -48,12 +48,12 @@ const AddMemoRelationPopover = (props: Props) => {
       try {
         const conditions = [];
         if (searchText) {
-          conditions.push(`content_search == [${JSON.stringify(searchText)}]`);
+          conditions.push(`content.contains("${searchText}")`);
         }
         const { memos } = await memoServiceClient.listMemos({
           parent: user.name,
+          filter: conditions.length > 0 ? conditions.join(" AND ") : undefined,
           pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
-          oldFilter: conditions.length > 0 ? conditions.join(" && ") : undefined,
         });
         setFetchedMemos(memos);
       } catch (error: any) {

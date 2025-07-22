@@ -680,13 +680,6 @@ paths:
                   description: Optional. If true, show deleted memos in the response.
                   schema:
                     type: boolean
-                - name: oldFilter
-                  in: query
-                  description: |-
-                    [Deprecated] Old filter contains some specific conditions to filter memos.
-                     Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
-                  schema:
-                    type: string
             responses:
                 "200":
                     description: OK
@@ -1667,13 +1660,6 @@ paths:
                   description: Optional. If true, show deleted memos in the response.
                   schema:
                     type: boolean
-                - name: oldFilter
-                  in: query
-                  description: |-
-                    [Deprecated] Old filter contains some specific conditions to filter memos.
-                     Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
-                  schema:
-                    type: string
             responses:
                 "200":
                     description: OK

@@ -310,10 +310,6 @@ message ListMemosRequest {
 
   // Optional. If true, show deleted memos in the response.
   bool show_deleted = 7 [(google.api.field_behavior) = OPTIONAL];
-
-  // [Deprecated] Old filter contains some specific conditions to filter memos.
-  // Format: "creator == 'users/{user}' && visibilities == ['PUBLIC', 'PROTECTED']"
-  string old_filter = 8;
 }
 
 message ListMemosResponse {
