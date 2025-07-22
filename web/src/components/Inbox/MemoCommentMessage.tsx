@@ -1,4 +1,4 @@
-import { InboxIcon, LoaderIcon, MessageCircleIcon } from "lucide-react";
+import { InboxIcon, LoaderIcon, MessageCircleIcon, TrashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -24,24 +24,32 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
   const [relatedMemo, setRelatedMemo] = useState<Memo | undefined>(undefined);
   const [sender, setSender] = useState<User | undefined>(undefined);
   const [initialized, setInitialized] = useState<boolean>(false);
+  const [hasError, setHasError] = useState<boolean>(false);
 
   useAsyncEffect(async () => {
     if (!inbox.activityId) {
       return;
     }
 
-    const activity = await activityServiceClient.getActivity({
-      name: `${activityNamePrefix}${inbox.activityId}`,
-    });
-    if (activity.payload?.memoComment) {
-      const memoCommentPayload = activity.payload.memoComment;
-      const memo = await memoStore.getOrFetchMemoByName(memoCommentPayload.relatedMemo, {
-        skipStore: true,
+    try {
+      const activity = await activityServiceClient.getActivity({
+        name: `${activityNamePrefix}${inbox.activityId}`,
       });
-      setRelatedMemo(memo);
-      const sender = await userStore.getOrFetchUserByName(inbox.sender);
-      setSender(sender);
-      setInitialized(true);
+
+      if (activity.payload?.memoComment) {
+        const memoCommentPayload = activity.payload.memoComment;
+        const memo = await memoStore.getOrFetchMemoByName(memoCommentPayload.relatedMemo, {
+          skipStore: true,
+        });
+        setRelatedMemo(memo);
+        const sender = await userStore.getOrFetchUserByName(inbox.sender);
+        setSender(sender);
+        setInitialized(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch activity:", error);
+      setHasError(true);
+      return;
     }
   }, [inbox.activityId]);
 
@@ -68,6 +76,51 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
       toast.success(t("message.archived-successfully"));
     }
   };
+
+  const handleDeleteMessage = async () => {
+    await userStore.deleteInbox(inbox.name);
+    toast.success(t("message.deleted-successfully"));
+  };
+
+  const deleteButton = () => (
+    <>
+      <div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <TrashIcon
+                className="w-4 h-auto cursor-pointer text-muted-foreground hover:text-primary"
+                onClick={() => handleDeleteMessage()}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t("common.delete")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    </>
+  );
+
+  const archiveButton = () => (
+    <>
+      <div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <InboxIcon
+                className="w-4 h-auto cursor-pointer text-muted-foreground hover:text-primary"
+                onClick={() => handleArchiveMessage()}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t("common.archive")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    </>
+  );
 
   return (
     <div className="w-full flex flex-row justify-start items-start gap-3">
@@ -100,23 +153,7 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
           <>
             <div className="w-full flex flex-row justify-between items-center">
               <span className="text-sm text-muted-foreground">{inbox.createTime?.toLocaleString()}</span>
-              <div>
-                {inbox.status === Inbox_Status.UNREAD && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <InboxIcon
-                          className="w-4 h-auto cursor-pointer text-muted-foreground hover:text-primary"
-                          onClick={() => handleArchiveMessage()}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{t("common.archive")}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </div>
+              {inbox.status === Inbox_Status.UNREAD ? archiveButton() : deleteButton()}
             </div>
             <p
               className="text-base leading-tight cursor-pointer text-muted-foreground hover:underline hover:text-primary"
@@ -129,6 +166,11 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
               })}
             </p>
           </>
+        ) : hasError ? (
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm text-muted-foreground">{t("inbox.failed-to-load")}</span>
+            {deleteButton()}
+          </div>
         ) : (
           <div className="w-full flex flex-row justify-center items-center my-2">
             <LoaderIcon className="animate-spin text-muted-foreground" />
