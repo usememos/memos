@@ -192,7 +192,7 @@ func (d *DB) convertWithParameterIndex(ctx *filter.ConvertContext, expr *exprv1.
 				if !ok {
 					return paramIndex, errors.Errorf("invalid boolean value for %s", identifier)
 				}
-				
+
 				// Map identifier to JSON path
 				var jsonPath string
 				switch identifier {
@@ -203,22 +203,14 @@ func (d *DB) convertWithParameterIndex(ctx *filter.ConvertContext, expr *exprv1.
 				case "has_incomplete_tasks":
 					jsonPath = "$.property.hasIncompleteTasks"
 				}
-				
+
 				// Use JSON path for boolean comparison with PostgreSQL parameter placeholder
 				placeholder := filter.GetParameterPlaceholder(dbType, paramIndex)
 				var sqlTemplate string
 				if operator == "=" {
-					if valueBool {
-						sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean = %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
-					} else {
-						sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean = %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
-					}
+					sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean = %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
 				} else { // operator == "!="
-					if valueBool {
-						sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean != %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
-					} else {
-						sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean != %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
-					}
+					sqlTemplate = fmt.Sprintf("(%s->'payload'->'property'->>'%s')::boolean != %s", filter.GetSQL("table_prefix", dbType), strings.TrimPrefix(jsonPath, "$.property."), placeholder)
 				}
 				if _, err := ctx.Buffer.WriteString(sqlTemplate); err != nil {
 					return paramIndex, err
@@ -347,7 +339,7 @@ func (d *DB) convertWithParameterIndex(ctx *filter.ConvertContext, expr *exprv1.
 				return paramIndex, err
 			}
 		} else if identifier == "has_code" {
-			// Handle has_code as a standalone boolean identifier  
+			// Handle has_code as a standalone boolean identifier
 			if _, err := ctx.Buffer.WriteString(fmt.Sprintf("(%s->'payload'->'property'->>'hasCode')::boolean = true", filter.GetSQL("table_prefix", dbType))); err != nil {
 				return paramIndex, err
 			}

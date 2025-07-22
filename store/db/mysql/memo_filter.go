@@ -184,7 +184,7 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 				if !ok {
 					return errors.Errorf("invalid boolean value for %s", identifier)
 				}
-				
+
 				// Map identifier to JSON path
 				var jsonPath string
 				switch identifier {
@@ -195,7 +195,7 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 				case "has_incomplete_tasks":
 					jsonPath = "$.property.hasIncompleteTasks"
 				}
-				
+
 				// Use JSON_EXTRACT for boolean comparison like has_task_list
 				var sqlTemplate string
 				if operator == "=" {
@@ -323,7 +323,7 @@ func (d *DB) convertWithTemplates(ctx *filter.ConvertContext, expr *exprv1.Expr)
 				return err
 			}
 		} else if identifier == "has_code" {
-			// Handle has_code as a standalone boolean identifier  
+			// Handle has_code as a standalone boolean identifier
 			if _, err := ctx.Buffer.WriteString("JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = CAST('true' AS JSON)"); err != nil {
 				return err
 			}
