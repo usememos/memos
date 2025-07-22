@@ -52,7 +52,7 @@ const AddMemoRelationPopover = (props: Props) => {
         }
         const { memos } = await memoServiceClient.listMemos({
           parent: user.name,
-          filter: conditions.length > 0 ? conditions.join(" AND ") : undefined,
+          filter: conditions.length > 0 ? conditions.join(" && ") : undefined,
           pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
         });
         setFetchedMemos(memos);

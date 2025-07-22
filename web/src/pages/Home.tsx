@@ -4,10 +4,11 @@ import { useMemo } from "react";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { viewStore, userStore } from "@/store";
+import { viewStore, userStore, workspaceStore } from "@/store";
 import memoFilterStore from "@/store/memoFilter";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 
 // Helper function to extract shortcut ID from resource name
 // Format: users/{user}/shortcuts/{shortcut}
@@ -39,10 +40,13 @@ const Home = observer(() => {
       } else if (filter.factor === "property.hasCode") {
         conditions.push(`has_code`);
       } else if (filter.factor === "displayTime") {
+        const displayWithUpdateTime = workspaceStore.getWorkspaceSettingByKey(WorkspaceSettingKey.MEMO_RELATED).memoRelatedSetting
+          ?.displayWithUpdateTime;
+        const factor = displayWithUpdateTime ? "updated_ts" : "created_ts";
         const filterDate = new Date(filter.value);
         const filterUtcTimestamp = filterDate.getTime() + filterDate.getTimezoneOffset() * 60 * 1000;
         const timestampAfter = filterUtcTimestamp / 1000;
-        conditions.push(`created_ts >= ${timestampAfter} AND created_ts < ${timestampAfter + 60 * 60 * 24}`);
+        conditions.push(`${factor} >= ${timestampAfter} && ${factor} < ${timestampAfter + 60 * 60 * 24}`);
       }
     }
     return conditions.length > 0 ? conditions.join(" && ") : undefined;

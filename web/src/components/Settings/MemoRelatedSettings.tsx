@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
-import { WorkspaceSettingKey } from "@/store/workspace";
 import { WorkspaceMemoRelatedSetting } from "@/types/proto/api/v1/workspace_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = observer(() => {

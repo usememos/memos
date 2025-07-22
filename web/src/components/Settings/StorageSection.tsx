@@ -13,12 +13,12 @@ import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
-import { WorkspaceSettingKey } from "@/store/workspace";
 import {
   WorkspaceStorageSetting,
   WorkspaceStorageSetting_S3Config,
   WorkspaceStorageSetting_StorageType,
 } from "@/types/proto/api/v1/workspace_service";
+import { WorkspaceSettingKey } from "@/types/proto/store/workspace_setting";
 import { useTranslate } from "@/utils/i18n";
 
 const StorageSection = observer(() => {
