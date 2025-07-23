@@ -11,6 +11,7 @@ import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import useLoading from "@/hooks/useLoading";
 import { viewStore, userStore } from "@/store";
+import { extractUserIdFromName } from "@/store/common";
 import memoFilterStore from "@/store/memoFilter";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
@@ -46,7 +47,7 @@ const UserProfile = observer(() => {
       return undefined;
     }
 
-    const conditions = [];
+    const conditions = [`creator_id == "${extractUserIdFromName(user.name)}"`];
     for (const filter of memoFilterStore.filters) {
       if (filter.factor === "contentSearch") {
         conditions.push(`content.contains("${filter.value}")`);

@@ -85,7 +85,10 @@ func (*SQLiteDialect) GetBooleanValue(value bool) interface{} {
 }
 
 func (d *SQLiteDialect) GetBooleanComparison(path string, value bool) string {
-	return fmt.Sprintf("%s = %d", d.GetJSONExtract(path), d.GetBooleanValue(value))
+	if value {
+		return fmt.Sprintf("%s = 1", d.GetJSONExtract(path))
+	}
+	return fmt.Sprintf("%s = 0", d.GetJSONExtract(path))
 }
 
 func (d *SQLiteDialect) GetBooleanCheck(path string) string {
@@ -132,11 +135,10 @@ func (*MySQLDialect) GetBooleanValue(value bool) interface{} {
 }
 
 func (d *MySQLDialect) GetBooleanComparison(path string, value bool) string {
-	boolStr := "false"
 	if value {
-		boolStr = "true"
+		return fmt.Sprintf("%s = CAST('true' AS JSON)", d.GetJSONExtract(path))
 	}
-	return fmt.Sprintf("%s = CAST('%s' AS JSON)", d.GetJSONExtract(path), boolStr)
+	return fmt.Sprintf("%s != CAST('true' AS JSON)", d.GetJSONExtract(path))
 }
 
 func (d *MySQLDialect) GetBooleanCheck(path string) string {
@@ -163,7 +165,7 @@ func (*PostgreSQLDialect) GetParameterPlaceholder(index int) string {
 }
 
 func (d *PostgreSQLDialect) GetJSONExtract(path string) string {
-	// Convert $.property.hasTaskList to payload->'property'->>'hasTaskList'
+	// Convert $.property.hasTaskList to memo.payload->'property'->>'hasTaskList'
 	parts := strings.Split(strings.TrimPrefix(path, "$."), ".")
 	result := fmt.Sprintf("%s.payload", d.GetTablePrefix())
 	for i, part := range parts {
@@ -196,10 +198,26 @@ func (*PostgreSQLDialect) GetBooleanValue(value bool) interface{} {
 }
 
 func (d *PostgreSQLDialect) GetBooleanComparison(path string, _ bool) string {
+	// Note: The parameter placeholder will be replaced by the caller
 	return fmt.Sprintf("(%s)::boolean = ?", d.GetJSONExtract(path))
 }
 
 func (d *PostgreSQLDialect) GetBooleanCheck(path string) string {
+	// Special handling for standalone boolean identifiers
+	if strings.Contains(path, "hasLink") || strings.Contains(path, "hasCode") || strings.Contains(path, "hasIncompleteTasks") {
+		// Use memo-> instead of memo.payload-> for these fields
+		parts := strings.Split(strings.TrimPrefix(path, "$."), ".")
+		result := fmt.Sprintf("%s->'payload'", d.GetTablePrefix())
+		for i, part := range parts {
+			if i == len(parts)-1 {
+				result += fmt.Sprintf("->>'%s'", part)
+			} else {
+				result += fmt.Sprintf("->'%s'", part)
+			}
+		}
+		return fmt.Sprintf("(%s)::boolean = true", result)
+	}
+	// Use default format for other fields
 	return fmt.Sprintf("(%s)::boolean IS TRUE", d.GetJSONExtract(path))
 }
 

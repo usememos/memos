@@ -3,10 +3,6 @@ package store
 import (
 	"context"
 	"database/sql"
-
-	exprv1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
-
-	"github.com/usememos/memos/plugin/filter"
 )
 
 // Driver is an interface for store driver.
@@ -73,7 +69,4 @@ type Driver interface {
 	UpsertReaction(ctx context.Context, create *Reaction) (*Reaction, error)
 	ListReactions(ctx context.Context, find *FindReaction) ([]*Reaction, error)
 	DeleteReaction(ctx context.Context, delete *DeleteReaction) error
-
-	// Shortcut related methods.
-	ConvertExprToSQL(ctx *filter.ConvertContext, expr *exprv1.Expr) error
 }

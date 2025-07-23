@@ -23,6 +23,14 @@ func NewCommonSQLConverter(dialect SQLDialect) *CommonSQLConverter {
 	}
 }
 
+// NewCommonSQLConverterWithOffset creates a new converter with the specified dialect and parameter offset.
+func NewCommonSQLConverterWithOffset(dialect SQLDialect, offset int) *CommonSQLConverter {
+	return &CommonSQLConverter{
+		dialect:    dialect,
+		paramIndex: offset + 1,
+	}
+}
+
 // ConvertExprToSQL converts a CEL expression to SQL using the configured dialect.
 func (c *CommonSQLConverter) ConvertExprToSQL(ctx *ConvertContext, expr *exprv1.Expr) error {
 	if v, ok := expr.ExprKind.(*exprv1.Expr_CallExpr); ok {
@@ -114,7 +122,7 @@ func (c *CommonSQLConverter) handleComparisonOperator(ctx *ConvertContext, callE
 		return err
 	}
 
-	if !slices.Contains([]string{"creator_id", "created_ts", "updated_ts", "visibility", "content", "has_task_list"}, identifier) {
+	if !slices.Contains([]string{"creator_id", "created_ts", "updated_ts", "visibility", "content", "has_task_list", "has_link", "has_code", "has_incomplete_tasks"}, identifier) {
 		return errors.Errorf("invalid identifier for %s", callExpr.Function)
 	}
 
@@ -132,7 +140,7 @@ func (c *CommonSQLConverter) handleComparisonOperator(ctx *ConvertContext, callE
 		return c.handleStringComparison(ctx, identifier, operator, value)
 	case "creator_id":
 		return c.handleIntComparison(ctx, identifier, operator, value)
-	case "has_task_list":
+	case "has_task_list", "has_link", "has_code", "has_incomplete_tasks":
 		return c.handleBooleanComparison(ctx, identifier, operator, value)
 	}
 
@@ -226,15 +234,18 @@ func (c *CommonSQLConverter) handleElementInTags(ctx *ConvertContext, elementExp
 	}
 
 	// Use dialect-specific JSON contains logic
-	sqlExpr := c.dialect.GetJSONContains("$.tags", "element")
+	template := c.dialect.GetJSONContains("$.tags", "element")
+	sqlExpr := strings.Replace(template, "?", c.dialect.GetParameterPlaceholder(c.paramIndex), 1)
 	if _, err := ctx.Buffer.WriteString(sqlExpr); err != nil {
 		return err
 	}
 
-	// For SQLite, we need a different approach since it uses LIKE
+	// Handle args based on dialect
 	if _, ok := c.dialect.(*SQLiteDialect); ok {
+		// SQLite uses LIKE with pattern
 		ctx.Args = append(ctx.Args, fmt.Sprintf(`%%"%s"%%`, element))
 	} else {
+		// MySQL and PostgreSQL expect plain values
 		ctx.Args = append(ctx.Args, element)
 	}
 	c.paramIndex++
@@ -251,7 +262,10 @@ func (c *CommonSQLConverter) handleTagInList(ctx *ConvertContext, values []any) 
 			subconditions = append(subconditions, c.dialect.GetJSONLike("$.tags", "pattern"))
 			args = append(args, fmt.Sprintf(`%%"%s"%%`, v))
 		} else {
-			subconditions = append(subconditions, c.dialect.GetJSONContains("$.tags", "element"))
+			// Replace ? with proper placeholder for each dialect
+			template := c.dialect.GetJSONContains("$.tags", "element")
+			sql := strings.Replace(template, "?", c.dialect.GetParameterPlaceholder(c.paramIndex), 1)
+			subconditions = append(subconditions, sql)
 			args = append(args, v)
 		}
 		c.paramIndex++
@@ -279,8 +293,14 @@ func (c *CommonSQLConverter) handleVisibilityInList(ctx *ConvertContext, values 
 	}
 
 	tablePrefix := c.dialect.GetTablePrefix()
-	if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`visibility` IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
-		return err
+	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.visibility IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
+			return err
+		}
+	} else {
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`visibility` IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
+			return err
+		}
 	}
 
 	ctx.Args = append(ctx.Args, values...)
@@ -307,8 +327,16 @@ func (c *CommonSQLConverter) handleContainsOperator(ctx *ConvertContext, callExp
 	}
 
 	tablePrefix := c.dialect.GetTablePrefix()
-	if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`content` LIKE %s", tablePrefix, c.dialect.GetParameterPlaceholder(c.paramIndex))); err != nil {
-		return err
+
+	// PostgreSQL uses ILIKE and no backticks
+	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.content ILIKE %s", tablePrefix, c.dialect.GetParameterPlaceholder(c.paramIndex))); err != nil {
+			return err
+		}
+	} else {
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`content` LIKE %s", tablePrefix, c.dialect.GetParameterPlaceholder(c.paramIndex))); err != nil {
+			return err
+		}
 	}
 
 	ctx.Args = append(ctx.Args, fmt.Sprintf("%%%s%%", arg))
@@ -320,17 +348,35 @@ func (c *CommonSQLConverter) handleContainsOperator(ctx *ConvertContext, callExp
 func (c *CommonSQLConverter) handleIdentifier(ctx *ConvertContext, identExpr *exprv1.Expr_Ident) error {
 	identifier := identExpr.GetName()
 
-	if !slices.Contains([]string{"pinned", "has_task_list"}, identifier) {
+	if !slices.Contains([]string{"pinned", "has_task_list", "has_link", "has_code", "has_incomplete_tasks"}, identifier) {
 		return errors.Errorf("invalid identifier %s", identifier)
 	}
 
 	if identifier == "pinned" {
 		tablePrefix := c.dialect.GetTablePrefix()
-		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`pinned` IS TRUE", tablePrefix)); err != nil {
-			return err
+		if _, ok := c.dialect.(*PostgreSQLDialect); ok {
+			if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.pinned IS TRUE", tablePrefix)); err != nil {
+				return err
+			}
+		} else {
+			if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`pinned` IS TRUE", tablePrefix)); err != nil {
+				return err
+			}
 		}
 	} else if identifier == "has_task_list" {
 		if _, err := ctx.Buffer.WriteString(c.dialect.GetBooleanCheck("$.property.hasTaskList")); err != nil {
+			return err
+		}
+	} else if identifier == "has_link" {
+		if _, err := ctx.Buffer.WriteString(c.dialect.GetBooleanCheck("$.property.hasLink")); err != nil {
+			return err
+		}
+	} else if identifier == "has_code" {
+		if _, err := ctx.Buffer.WriteString(c.dialect.GetBooleanCheck("$.property.hasCode")); err != nil {
+			return err
+		}
+	} else if identifier == "has_incomplete_tasks" {
+		if _, err := ctx.Buffer.WriteString(c.dialect.GetBooleanCheck("$.property.hasIncompleteTasks")); err != nil {
 			return err
 		}
 	}
@@ -366,15 +412,23 @@ func (c *CommonSQLConverter) handleStringComparison(ctx *ConvertContext, field, 
 	}
 
 	tablePrefix := c.dialect.GetTablePrefix()
-	fieldName := field
-	if field == "visibility" {
-		fieldName = "`visibility`"
-	} else if field == "content" {
-		fieldName = "`content`"
-	}
 
-	if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.%s %s %s", tablePrefix, fieldName, operator, c.dialect.GetParameterPlaceholder(c.paramIndex))); err != nil {
-		return err
+	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
+		// PostgreSQL doesn't use backticks
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.%s %s %s", tablePrefix, field, operator, c.dialect.GetParameterPlaceholder(c.paramIndex))); err != nil {
+			return err
+		}
+	} else {
+		// MySQL and SQLite use backticks
+		fieldName := field
+		if field == "visibility" {
+			fieldName = "`visibility`"
+		} else if field == "content" {
+			fieldName = "`content`"
+		}
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.%s %s %s", tablePrefix, fieldName, operator, c.dialect.GetParameterPlaceholder(c.paramIndex))); err != nil {
+			return err
+		}
 	}
 
 	ctx.Args = append(ctx.Args, valueStr)
@@ -394,8 +448,17 @@ func (c *CommonSQLConverter) handleIntComparison(ctx *ConvertContext, field, ope
 	}
 
 	tablePrefix := c.dialect.GetTablePrefix()
-	if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`%s` %s %s", tablePrefix, field, operator, c.dialect.GetParameterPlaceholder(c.paramIndex))); err != nil {
-		return err
+
+	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
+		// PostgreSQL doesn't use backticks
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.%s %s %s", tablePrefix, field, operator, c.dialect.GetParameterPlaceholder(c.paramIndex))); err != nil {
+			return err
+		}
+	} else {
+		// MySQL and SQLite use backticks
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`%s` %s %s", tablePrefix, field, operator, c.dialect.GetParameterPlaceholder(c.paramIndex))); err != nil {
+			return err
+		}
 	}
 
 	ctx.Args = append(ctx.Args, valueInt)
@@ -411,18 +474,121 @@ func (c *CommonSQLConverter) handleBooleanComparison(ctx *ConvertContext, field,
 
 	valueBool, ok := value.(bool)
 	if !ok {
-		return errors.New("invalid boolean value for has_task_list")
+		return errors.Errorf("invalid boolean value for %s", field)
 	}
 
-	sqlExpr := c.dialect.GetBooleanComparison("$.property.hasTaskList", valueBool)
-	if _, err := ctx.Buffer.WriteString(sqlExpr); err != nil {
-		return err
+	// Map field name to JSON path
+	var jsonPath string
+	switch field {
+	case "has_task_list":
+		jsonPath = "$.property.hasTaskList"
+	case "has_link":
+		jsonPath = "$.property.hasLink"
+	case "has_code":
+		jsonPath = "$.property.hasCode"
+	case "has_incomplete_tasks":
+		jsonPath = "$.property.hasIncompleteTasks"
 	}
 
-	// For dialects that need parameters (PostgreSQL)
+	// Special handling for SQLite based on field
+	if _, ok := c.dialect.(*SQLiteDialect); ok {
+		if field == "has_task_list" {
+			// has_task_list uses = 1 / = 0 / != 1 / != 0
+			var sqlExpr string
+			if operator == "=" {
+				if valueBool {
+					sqlExpr = fmt.Sprintf("%s = 1", c.dialect.GetJSONExtract(jsonPath))
+				} else {
+					sqlExpr = fmt.Sprintf("%s = 0", c.dialect.GetJSONExtract(jsonPath))
+				}
+			} else { // operator == "!="
+				if valueBool {
+					sqlExpr = fmt.Sprintf("%s != 1", c.dialect.GetJSONExtract(jsonPath))
+				} else {
+					sqlExpr = fmt.Sprintf("%s != 0", c.dialect.GetJSONExtract(jsonPath))
+				}
+			}
+			if _, err := ctx.Buffer.WriteString(sqlExpr); err != nil {
+				return err
+			}
+			return nil
+		} else {
+			// Other fields use IS TRUE / NOT(... IS TRUE)
+			var sqlExpr string
+			if operator == "=" {
+				if valueBool {
+					sqlExpr = fmt.Sprintf("%s IS TRUE", c.dialect.GetJSONExtract(jsonPath))
+				} else {
+					sqlExpr = fmt.Sprintf("NOT(%s IS TRUE)", c.dialect.GetJSONExtract(jsonPath))
+				}
+			} else { // operator == "!="
+				if valueBool {
+					sqlExpr = fmt.Sprintf("NOT(%s IS TRUE)", c.dialect.GetJSONExtract(jsonPath))
+				} else {
+					sqlExpr = fmt.Sprintf("%s IS TRUE", c.dialect.GetJSONExtract(jsonPath))
+				}
+			}
+			if _, err := ctx.Buffer.WriteString(sqlExpr); err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+
+	// Special handling for MySQL - use raw operator with CAST
+	if _, ok := c.dialect.(*MySQLDialect); ok {
+		var sqlExpr string
+		boolStr := "false"
+		if valueBool {
+			boolStr = "true"
+		}
+		sqlExpr = fmt.Sprintf("%s %s CAST('%s' AS JSON)", c.dialect.GetJSONExtract(jsonPath), operator, boolStr)
+		if _, err := ctx.Buffer.WriteString(sqlExpr); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	// Handle PostgreSQL differently - it uses the raw operator
 	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
+		var jsonExtract string
+		// Special handling for has_link, has_code, has_incomplete_tasks
+		if field == "has_link" || field == "has_code" || field == "has_incomplete_tasks" {
+			// Use memo-> format for these fields
+			parts := strings.Split(strings.TrimPrefix(jsonPath, "$."), ".")
+			jsonExtract = "memo->'payload'"
+			for i, part := range parts {
+				if i == len(parts)-1 {
+					jsonExtract += fmt.Sprintf("->>'%s'", part)
+				} else {
+					jsonExtract += fmt.Sprintf("->'%s'", part)
+				}
+			}
+		} else {
+			// Use standard format for has_task_list
+			jsonExtract = c.dialect.GetJSONExtract(jsonPath)
+		}
+
+		sqlExpr := fmt.Sprintf("(%s)::boolean %s %s",
+			jsonExtract,
+			operator,
+			c.dialect.GetParameterPlaceholder(c.paramIndex))
+		if _, err := ctx.Buffer.WriteString(sqlExpr); err != nil {
+			return err
+		}
 		ctx.Args = append(ctx.Args, valueBool)
 		c.paramIndex++
+		return nil
+	}
+
+	// Handle other dialects
+	if operator == "!=" {
+		valueBool = !valueBool
+	}
+
+	sqlExpr := c.dialect.GetBooleanComparison(jsonPath, valueBool)
+	if _, err := ctx.Buffer.WriteString(sqlExpr); err != nil {
+		return err
 	}
 
 	return nil

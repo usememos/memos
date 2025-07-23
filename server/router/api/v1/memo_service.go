@@ -99,13 +99,6 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		// Exclude comments by default.
 		ExcludeComments: true,
 	}
-	if request.Parent != "" && request.Parent != "users/-" {
-		userID, err := ExtractUserIDFromName(request.Parent)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
-		}
-		memoFind.CreatorID = &userID
-	}
 	if request.State == v1pb.State_ARCHIVED {
 		state := store.Archived
 		memoFind.RowStatus = &state

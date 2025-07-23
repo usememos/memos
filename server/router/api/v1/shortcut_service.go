@@ -329,7 +329,23 @@ func (s *APIV1Service) validateFilter(_ context.Context, filterStr string) error
 		return errors.Wrap(err, "failed to parse filter")
 	}
 	convertCtx := filter.NewConvertContext()
-	err = s.Store.GetDriver().ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
+
+	// Determine the dialect based on the actual database driver
+	var dialect filter.SQLDialect
+	switch s.Profile.Driver {
+	case "sqlite":
+		dialect = &filter.SQLiteDialect{}
+	case "mysql":
+		dialect = &filter.MySQLDialect{}
+	case "postgres":
+		dialect = &filter.PostgreSQLDialect{}
+	default:
+		// Default to SQLite for unknown drivers
+		dialect = &filter.SQLiteDialect{}
+	}
+
+	converter := filter.NewCommonSQLConverter(dialect)
+	err = converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
 	if err != nil {
 		return errors.Wrap(err, "failed to convert filter to SQL")
 	}

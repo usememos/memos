@@ -551,21 +551,17 @@ func (x *CreateMemoRequest) GetRequestId() string {
 
 type ListMemosRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. The parent is the owner of the memos.
-	// If not specified or `users/-`, it will list all memos.
-	// Format: users/{user}
-	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of memos to return.
 	// The service may return fewer than this value.
 	// If unspecified, at most 50 memos will be returned.
 	// The maximum value is 1000; values above 1000 will be coerced to 1000.
-	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A page token, received from a previous `ListMemos` call.
 	// Provide this to retrieve the subsequent page.
-	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. The state of the memos to list.
 	// Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
-	State State `protobuf:"varint,4,opt,name=state,proto3,enum=memos.api.v1.State" json:"state,omitempty"`
+	State State `protobuf:"varint,3,opt,name=state,proto3,enum=memos.api.v1.State" json:"state,omitempty"`
 	// Optional. The order to sort results by.
 	// Default to "display_time desc".
 	// Example: "display_time desc" or "create_time asc"
@@ -608,13 +604,6 @@ func (x *ListMemosRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListMemosRequest.ProtoReflect.Descriptor instead.
 func (*ListMemosRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_memo_service_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *ListMemosRequest) GetParent() string {
-	if x != nil {
-		return x.Parent
-	}
-	return ""
 }
 
 func (x *ListMemosRequest) GetPageSize() int32 {
@@ -2064,14 +2053,12 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\amemo_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06memoId\x12(\n" +
 	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\"\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xa0\x02\n" +
-	"\x10ListMemosRequest\x121\n" +
-	"\x06parent\x18\x01 \x01(\tB\x19\xe0A\x01\xfaA\x13\n" +
-	"\x11memos.api.v1/UserR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xed\x01\n" +
+	"\x10ListMemosRequest\x12 \n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12.\n" +
-	"\x05state\x18\x04 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x01R\x05state\x12\x1e\n" +
+	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12.\n" +
+	"\x05state\x18\x03 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x01R\x05state\x12\x1e\n" +
 	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
 	"\x06filter\x18\x06 \x01(\tB\x03\xe0A\x01R\x06filter\x12&\n" +
 	"\fshow_deleted\x18\a \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\x84\x01\n" +
@@ -2187,11 +2174,11 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\aPRIVATE\x10\x01\x12\r\n" +
 	"\tPROTECTED\x10\x02\x12\n" +
 	"\n" +
-	"\x06PUBLIC\x10\x032\x97\x11\n" +
+	"\x06PUBLIC\x10\x032\xeb\x10\n" +
 	"\vMemoService\x12e\n" +
 	"\n" +
-	"CreateMemo\x12\x1f.memos.api.v1.CreateMemoRequest\x1a\x12.memos.api.v1.Memo\"\"\xdaA\x04memo\x82\xd3\xe4\x93\x02\x15:\x04memo\"\r/api/v1/memos\x12\x91\x01\n" +
-	"\tListMemos\x12\x1e.memos.api.v1.ListMemosRequest\x1a\x1f.memos.api.v1.ListMemosResponse\"C\xdaA\x00\xdaA\x06parent\x82\xd3\xe4\x93\x021Z \x12\x1e/api/v1/{parent=users/*}/memos\x12\r/api/v1/memos\x12b\n" +
+	"CreateMemo\x12\x1f.memos.api.v1.CreateMemoRequest\x1a\x12.memos.api.v1.Memo\"\"\xdaA\x04memo\x82\xd3\xe4\x93\x02\x15:\x04memo\"\r/api/v1/memos\x12f\n" +
+	"\tListMemos\x12\x1e.memos.api.v1.ListMemosRequest\x1a\x1f.memos.api.v1.ListMemosResponse\"\x18\xdaA\x00\x82\xd3\xe4\x93\x02\x0f\x12\r/api/v1/memos\x12b\n" +
 	"\aGetMemo\x12\x1c.memos.api.v1.GetMemoRequest\x1a\x12.memos.api.v1.Memo\"%\xdaA\x04name\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/{name=memos/*}\x12\x7f\n" +
 	"\n" +
 	"UpdateMemo\x12\x1f.memos.api.v1.UpdateMemoRequest\x1a\x12.memos.api.v1.Memo\"<\xdaA\x10memo,update_mask\x82\xd3\xe4\x93\x02#:\x04memo2\x1b/api/v1/{memo.name=memos/*}\x12l\n" +

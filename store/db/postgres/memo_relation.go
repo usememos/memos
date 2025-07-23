@@ -58,7 +58,8 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 		convertCtx := filter.NewConvertContext()
 		convertCtx.ArgsOffset = len(args)
 		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
-		if err := d.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
+		converter := filter.NewCommonSQLConverterWithOffset(&filter.PostgreSQLDialect{}, convertCtx.ArgsOffset+len(convertCtx.Args))
+		if err := converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
 			return nil, err
 		}
 		condition := convertCtx.Buffer.String()

@@ -47,11 +47,20 @@ const PagedMemoList = observer((props: Props) => {
     setIsRequesting(true);
 
     try {
+      const filters = [];
+      if (props.owner) {
+        // Extract user ID from owner name (format: users/{user_id})
+        const userId = props.owner.replace("users/", "");
+        filters.push(`creator_id == ${userId}`);
+      }
+      if (props.filter) {
+        filters.push(props.filter);
+      }
+
       const response = await memoStore.fetchMemos({
-        parent: props.owner || "",
         state: props.state || State.NORMAL,
         orderBy: props.orderBy || "display_time desc",
-        filter: props.filter || "",
+        filter: filters.length > 0 ? filters.join(" && ") : undefined,
         pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
         pageToken,
       });

@@ -622,14 +622,6 @@ paths:
             description: ListMemos lists memos with pagination and filter.
             operationId: MemoService_ListMemos
             parameters:
-                - name: parent
-                  in: query
-                  description: |-
-                    Optional. The parent is the owner of the memos.
-                     If not specified or `users/-`, it will list all memos.
-                     Format: users/{user}
-                  schema:
-                    type: string
                 - name: pageSize
                   in: query
                   description: |-
@@ -1591,82 +1583,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListInboxesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}/memos:
-        get:
-            tags:
-                - MemoService
-            description: ListMemos lists memos with pagination and filter.
-            operationId: MemoService_ListMemos
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-                - name: pageSize
-                  in: query
-                  description: |-
-                    Optional. The maximum number of memos to return.
-                     The service may return fewer than this value.
-                     If unspecified, at most 50 memos will be returned.
-                     The maximum value is 1000; values above 1000 will be coerced to 1000.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: pageToken
-                  in: query
-                  description: |-
-                    Optional. A page token, received from a previous `ListMemos` call.
-                     Provide this to retrieve the subsequent page.
-                  schema:
-                    type: string
-                - name: state
-                  in: query
-                  description: |-
-                    Optional. The state of the memos to list.
-                     Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
-                  schema:
-                    enum:
-                        - STATE_UNSPECIFIED
-                        - NORMAL
-                        - ARCHIVED
-                    type: string
-                    format: enum
-                - name: orderBy
-                  in: query
-                  description: |-
-                    Optional. The order to sort results by.
-                     Default to "display_time desc".
-                     Example: "display_time desc" or "create_time asc"
-                  schema:
-                    type: string
-                - name: filter
-                  in: query
-                  description: |-
-                    Optional. Filter to apply to the list results.
-                     Filter is a CEL expression to filter memos.
-                     Refer to `Shortcut.filter`.
-                  schema:
-                    type: string
-                - name: showDeleted
-                  in: query
-                  description: Optional. If true, show deleted memos in the response.
-                  schema:
-                    type: boolean
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListMemosResponse'
                 default:
                     description: Default error response
                     content:

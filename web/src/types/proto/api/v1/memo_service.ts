@@ -176,12 +176,6 @@ export interface CreateMemoRequest {
 
 export interface ListMemosRequest {
   /**
-   * Optional. The parent is the owner of the memos.
-   * If not specified or `users/-`, it will list all memos.
-   * Format: users/{user}
-   */
-  parent: string;
-  /**
    * Optional. The maximum number of memos to return.
    * The service may return fewer than this value.
    * If unspecified, at most 50 memos will be returned.
@@ -1090,30 +1084,19 @@ export const CreateMemoRequest: MessageFns<CreateMemoRequest> = {
 };
 
 function createBaseListMemosRequest(): ListMemosRequest {
-  return {
-    parent: "",
-    pageSize: 0,
-    pageToken: "",
-    state: State.STATE_UNSPECIFIED,
-    orderBy: "",
-    filter: "",
-    showDeleted: false,
-  };
+  return { pageSize: 0, pageToken: "", state: State.STATE_UNSPECIFIED, orderBy: "", filter: "", showDeleted: false };
 }
 
 export const ListMemosRequest: MessageFns<ListMemosRequest> = {
   encode(message: ListMemosRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.parent !== "") {
-      writer.uint32(10).string(message.parent);
-    }
     if (message.pageSize !== 0) {
-      writer.uint32(16).int32(message.pageSize);
+      writer.uint32(8).int32(message.pageSize);
     }
     if (message.pageToken !== "") {
-      writer.uint32(26).string(message.pageToken);
+      writer.uint32(18).string(message.pageToken);
     }
     if (message.state !== State.STATE_UNSPECIFIED) {
-      writer.uint32(32).int32(stateToNumber(message.state));
+      writer.uint32(24).int32(stateToNumber(message.state));
     }
     if (message.orderBy !== "") {
       writer.uint32(42).string(message.orderBy);
@@ -1135,31 +1118,23 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.parent = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
+          if (tag !== 8) {
             break;
           }
 
           message.pageSize = reader.int32();
           continue;
         }
-        case 3: {
-          if (tag !== 26) {
+        case 2: {
+          if (tag !== 18) {
             break;
           }
 
           message.pageToken = reader.string();
           continue;
         }
-        case 4: {
-          if (tag !== 32) {
+        case 3: {
+          if (tag !== 24) {
             break;
           }
 
@@ -1204,7 +1179,6 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
   },
   fromPartial(object: DeepPartial<ListMemosRequest>): ListMemosRequest {
     const message = createBaseListMemosRequest();
-    message.parent = object.parent ?? "";
     message.pageSize = object.pageSize ?? 0;
     message.pageToken = object.pageToken ?? "";
     message.state = object.state ?? State.STATE_UNSPECIFIED;
@@ -2662,61 +2636,8 @@ export const MemoServiceDefinition = {
       responseStream: false,
       options: {
         _unknownFields: {
-          8410: [new Uint8Array([0]), new Uint8Array([6, 112, 97, 114, 101, 110, 116])],
-          578365826: [
-            new Uint8Array([
-              49,
-              90,
-              32,
-              18,
-              30,
-              47,
-              97,
-              112,
-              105,
-              47,
-              118,
-              49,
-              47,
-              123,
-              112,
-              97,
-              114,
-              101,
-              110,
-              116,
-              61,
-              117,
-              115,
-              101,
-              114,
-              115,
-              47,
-              42,
-              125,
-              47,
-              109,
-              101,
-              109,
-              111,
-              115,
-              18,
-              13,
-              47,
-              97,
-              112,
-              105,
-              47,
-              118,
-              49,
-              47,
-              109,
-              101,
-              109,
-              111,
-              115,
-            ]),
-          ],
+          8410: [new Uint8Array([0])],
+          578365826: [new Uint8Array([15, 18, 13, 47, 97, 112, 105, 47, 118, 49, 47, 109, 101, 109, 111, 115])],
         },
       },
     },

@@ -57,7 +57,8 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 		}
 		convertCtx := filter.NewConvertContext()
 		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
-		if err := d.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
+		converter := filter.NewCommonSQLConverter(&filter.SQLiteDialect{})
+		if err := converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
 			return nil, err
 		}
 		condition := convertCtx.Buffer.String()

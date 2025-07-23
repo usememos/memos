@@ -47,12 +47,14 @@ const AddMemoRelationPopover = (props: Props) => {
       setIsFetching(true);
       try {
         const conditions = [];
+        // Extract user ID from user name (format: users/{user_id})
+        const userId = user.name.replace("users/", "");
+        conditions.push(`creator_id == ${userId}`);
         if (searchText) {
           conditions.push(`content.contains("${searchText}")`);
         }
         const { memos } = await memoServiceClient.listMemos({
-          parent: user.name,
-          filter: conditions.length > 0 ? conditions.join(" && ") : undefined,
+          filter: conditions.join(" && "),
           pageSize: DEFAULT_LIST_MEMOS_PAGE_SIZE,
         });
         setFetchedMemos(memos);

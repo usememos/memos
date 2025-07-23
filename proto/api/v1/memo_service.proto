@@ -26,12 +26,8 @@ service MemoService {
   }
   // ListMemos lists memos with pagination and filter.
   rpc ListMemos(ListMemosRequest) returns (ListMemosResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/memos"
-      additional_bindings: {get: "/api/v1/{parent=users/*}/memos"}
-    };
+    option (google.api.http) = {get: "/api/v1/memos"};
     option (google.api.method_signature) = "";
-    option (google.api.method_signature) = "parent";
   }
   // GetMemo gets a memo.
   rpc GetMemo(GetMemoRequest) returns (Memo) {
@@ -276,27 +272,19 @@ message CreateMemoRequest {
 }
 
 message ListMemosRequest {
-  // Optional. The parent is the owner of the memos.
-  // If not specified or `users/-`, it will list all memos.
-  // Format: users/{user}
-  string parent = 1 [
-    (google.api.field_behavior) = OPTIONAL,
-    (google.api.resource_reference) = {type: "memos.api.v1/User"}
-  ];
-
   // Optional. The maximum number of memos to return.
   // The service may return fewer than this value.
   // If unspecified, at most 50 memos will be returned.
   // The maximum value is 1000; values above 1000 will be coerced to 1000.
-  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. A page token, received from a previous `ListMemos` call.
   // Provide this to retrieve the subsequent page.
-  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The state of the memos to list.
   // Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
-  State state = 4 [(google.api.field_behavior) = OPTIONAL];
+  State state = 3 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The order to sort results by.
   // Default to "display_time desc".
