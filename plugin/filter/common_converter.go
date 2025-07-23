@@ -512,27 +512,26 @@ func (c *CommonSQLConverter) handleBooleanComparison(ctx *ConvertContext, field,
 				return err
 			}
 			return nil
-		} else {
-			// Other fields use IS TRUE / NOT(... IS TRUE)
-			var sqlExpr string
-			if operator == "=" {
-				if valueBool {
-					sqlExpr = fmt.Sprintf("%s IS TRUE", c.dialect.GetJSONExtract(jsonPath))
-				} else {
-					sqlExpr = fmt.Sprintf("NOT(%s IS TRUE)", c.dialect.GetJSONExtract(jsonPath))
-				}
-			} else { // operator == "!="
-				if valueBool {
-					sqlExpr = fmt.Sprintf("NOT(%s IS TRUE)", c.dialect.GetJSONExtract(jsonPath))
-				} else {
-					sqlExpr = fmt.Sprintf("%s IS TRUE", c.dialect.GetJSONExtract(jsonPath))
-				}
-			}
-			if _, err := ctx.Buffer.WriteString(sqlExpr); err != nil {
-				return err
-			}
-			return nil
 		}
+		// Other fields use IS TRUE / NOT(... IS TRUE)
+		var sqlExpr string
+		if operator == "=" {
+			if valueBool {
+				sqlExpr = fmt.Sprintf("%s IS TRUE", c.dialect.GetJSONExtract(jsonPath))
+			} else {
+				sqlExpr = fmt.Sprintf("NOT(%s IS TRUE)", c.dialect.GetJSONExtract(jsonPath))
+			}
+		} else { // operator == "!="
+			if valueBool {
+				sqlExpr = fmt.Sprintf("NOT(%s IS TRUE)", c.dialect.GetJSONExtract(jsonPath))
+			} else {
+				sqlExpr = fmt.Sprintf("%s IS TRUE", c.dialect.GetJSONExtract(jsonPath))
+			}
+		}
+		if _, err := ctx.Buffer.WriteString(sqlExpr); err != nil {
+			return err
+		}
+		return nil
 	}
 
 	// Special handling for MySQL - use raw operator with CAST
