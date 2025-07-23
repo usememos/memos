@@ -18,3 +18,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.pointer-events-auto {
+  pointer-events: auto;
+}
