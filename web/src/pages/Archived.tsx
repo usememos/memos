@@ -36,7 +36,6 @@ const Archived = observer(() => {
               : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
           )
       }
-      owner={user.name}
       state={State.ARCHIVED}
       orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
       filter={memoFitler}

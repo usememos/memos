@@ -47,7 +47,7 @@ const UserProfile = observer(() => {
       return undefined;
     }
 
-    const conditions = [`creator_id == "${extractUserIdFromName(user.name)}"`];
+    const conditions = [`creator_id == ${extractUserIdFromName(user.name)}`];
     for (const filter of memoFilterStore.filters) {
       if (filter.factor === "contentSearch") {
         conditions.push(`content.contains("${filter.value}")`);
@@ -101,7 +101,6 @@ const UserProfile = observer(() => {
                         : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
                     )
                 }
-                owner={user.name}
                 orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
                 filter={memoFilter}
               />

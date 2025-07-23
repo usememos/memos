@@ -18,7 +18,6 @@ import MemoEditor from "../MemoEditor";
 interface Props {
   renderer: (memo: Memo) => JSX.Element;
   listSort?: (list: Memo[]) => Memo[];
-  owner?: string;
   state?: State;
   orderBy?: string;
   filter?: string;
@@ -47,20 +46,10 @@ const PagedMemoList = observer((props: Props) => {
     setIsRequesting(true);
 
     try {
-      const filters = [];
-      if (props.owner) {
-        // Extract user ID from owner name (format: users/{user_id})
-        const userId = props.owner.replace("users/", "");
-        filters.push(`creator_id == ${userId}`);
-      }
-      if (props.filter) {
-        filters.push(props.filter);
-      }
-
       const response = await memoStore.fetchMemos({
         state: props.state || State.NORMAL,
         orderBy: props.orderBy || "display_time desc",
-        filter: filters.length > 0 ? filters.join(" && ") : undefined,
+        filter: props.filter,
         pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
         pageToken,
       });
@@ -110,7 +99,7 @@ const PagedMemoList = observer((props: Props) => {
   // Initial load and reload when props change
   useEffect(() => {
     refreshList();
-  }, [props.owner, props.state, props.orderBy, props.filter, props.pageSize]);
+  }, [props.state, props.orderBy, props.filter, props.pageSize]);
 
   // Auto-fetch more content when list changes and page isn't full
   useEffect(() => {

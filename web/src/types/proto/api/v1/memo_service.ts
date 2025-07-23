@@ -1099,13 +1099,13 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
       writer.uint32(24).int32(stateToNumber(message.state));
     }
     if (message.orderBy !== "") {
-      writer.uint32(42).string(message.orderBy);
+      writer.uint32(34).string(message.orderBy);
     }
     if (message.filter !== "") {
-      writer.uint32(50).string(message.filter);
+      writer.uint32(42).string(message.filter);
     }
     if (message.showDeleted !== false) {
-      writer.uint32(56).bool(message.showDeleted);
+      writer.uint32(48).bool(message.showDeleted);
     }
     return writer;
   },
@@ -1141,24 +1141,24 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
           message.state = stateFromJSON(reader.int32());
           continue;
         }
-        case 5: {
-          if (tag !== 42) {
+        case 4: {
+          if (tag !== 34) {
             break;
           }
 
           message.orderBy = reader.string();
           continue;
         }
-        case 6: {
-          if (tag !== 50) {
+        case 5: {
+          if (tag !== 42) {
             break;
           }
 
           message.filter = reader.string();
           continue;
         }
-        case 7: {
-          if (tag !== 56) {
+        case 6: {
+          if (tag !== 48) {
             break;
           }
 
