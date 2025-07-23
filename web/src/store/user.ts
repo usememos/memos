@@ -189,6 +189,13 @@ const userStore = (() => {
     return updatedInbox;
   };
 
+  const deleteInbox = async (name: string) => {
+    await inboxServiceClient.deleteInbox({ name });
+    state.setPartial({
+      inboxes: state.inboxes.filter((i) => i.name !== name),
+    });
+  };
+
   const fetchUserStats = async (user?: string) => {
     const userStatsByName: Record<string, UserStats> = {};
     if (!user) {
@@ -224,6 +231,7 @@ const userStore = (() => {
     fetchShortcuts,
     fetchInboxes,
     updateInbox,
+    deleteInbox,
     fetchUserStats,
     setStatsStateId,
   };

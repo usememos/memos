@@ -123,7 +123,8 @@
   },
   "inbox": {
     "memo-comment": "{{user}} has a comment on your {{memo}}.",
-    "version-update": "New version {{version}} is available now!"
+    "version-update": "New version {{version}} is available now!",
+    "failed-to-load": "Failed to load inbox item"
   },
   "markdown": {
     "checkbox": "Checkbox",

@@ -108,6 +108,9 @@ func (s *APIV1Service) convertActivityPayloadFromStore(ctx context.Context, payl
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
 		}
+		if memo == nil {
+			return nil, status.Errorf(codes.NotFound, "memo does not exist")
+		}
 		relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 			ID:             &payload.MemoComment.RelatedMemoId,
 			ExcludeContent: true,
