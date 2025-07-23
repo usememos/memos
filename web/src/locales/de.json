@@ -107,7 +107,8 @@
   },
   "inbox": {
     "memo-comment": "{{user}} hat einen Kommentar zu {{memo}} hinterlassen.",
-    "version-update": "Die neue Version {{version}} ist jetzt verfügbar!"
+    "version-update": "Die neue Version {{version}} ist jetzt verfügbar!",
+    "failed-to-load": "Fehler beim Laden des Eintrags"
   },
   "markdown": {
     "checkbox": "Checkbox",
