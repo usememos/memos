@@ -126,7 +126,7 @@ const MemoRelatedSettings = observer(() => {
               <Badge key={reactionType} variant="outline" className="flex items-center gap-1">
                 {reactionType}
                 <X
-                  className="w-3 h-3 cursor-pointer hover:text-destructive"
+                  className="w-3 h-3 cursor-pointer hover:text-destructive !pointer-events-auto"
                   onClick={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
                 />
               </Badge>
@@ -157,7 +157,7 @@ const MemoRelatedSettings = observer(() => {
               <Badge key={nsfwTag} variant="outline" className="flex items-center gap-1">
                 {nsfwTag}
                 <X
-                  className="w-3 h-3 cursor-pointer hover:text-destructive"
+                  className="w-3 h-3 cursor-pointer hover:text-destructive !pointer-events-auto"
                   onClick={() => updatePartialSetting({ nsfwTags: memoRelatedSetting.nsfwTags.filter((r) => r !== nsfwTag) })}
                 />
               </Badge>
