@@ -135,7 +135,7 @@ Memos supports multiple installation approaches to accommodate different deploym
 
 ### Binary Installation
 
-- **Pre-compiled Binaries**: Available for Linux, macOS, and Windows on the releases page
+- **Pre-compiled Binaries**: Available for Linux, macOS, and Windows on the [releases page](https://github.com/usememos/memos/releases)
 
 ### Source Installation
 
