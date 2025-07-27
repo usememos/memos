@@ -947,15 +947,15 @@ func (s *APIV1Service) DeleteUserWebhook(ctx context.Context, request *v1pb.Dele
 
 // Helper functions for webhook operations
 
-// generateUserWebhookID generates a unique ID for user webhooks
+// generateUserWebhookID generates a unique ID for user webhooks.
 func generateUserWebhookID() string {
 	b := make([]byte, 8)
 	rand.Read(b)
 	return hex.EncodeToString(b)
 }
 
-// parseUserWebhookName parses a webhook name and returns the webhook ID and user ID
-// Format: users/{user}/webhooks/{webhook}
+// parseUserWebhookName parses a webhook name and returns the webhook ID and user ID.
+// Format: users/{user}/webhooks/{webhook}.
 func parseUserWebhookName(name string) (string, int32, error) {
 	parts := strings.Split(name, "/")
 	if len(parts) != 4 || parts[0] != "users" || parts[2] != "webhooks" {
@@ -970,7 +970,7 @@ func parseUserWebhookName(name string) (string, int32, error) {
 	return parts[3], int32(userID), nil
 }
 
-// convertUserWebhookFromUserSetting converts a storepb webhook to a v1pb UserWebhook
+// convertUserWebhookFromUserSetting converts a storepb webhook to a v1pb UserWebhook.
 func convertUserWebhookFromUserSetting(webhook *storepb.WebhooksUserSetting_Webhook, userID int32) *v1pb.UserWebhook {
 	return &v1pb.UserWebhook{
 		Name:        fmt.Sprintf("users/%d/webhooks/%s", userID, webhook.Id),
@@ -1046,8 +1046,8 @@ func extractImageInfo(dataURI string) (string, string, error) {
 
 // Helper functions for user settings
 
-// ExtractUserIDAndSettingKeyFromName extracts user ID and setting key from resource name
-// e.g., "users/123/settings/general" -> 123, "general"
+// ExtractUserIDAndSettingKeyFromName extracts user ID and setting key from resource name.
+// e.g., "users/123/settings/general" -> 123, "general".
 func ExtractUserIDAndSettingKeyFromName(name string) (int32, string, error) {
 	// Expected format: users/{user}/settings/{setting}
 	parts := strings.Split(name, "/")
@@ -1064,7 +1064,7 @@ func ExtractUserIDAndSettingKeyFromName(name string) (int32, string, error) {
 	return userID, settingKey, nil
 }
 
-// convertSettingKeyToStore converts API setting key to store enum
+// convertSettingKeyToStore converts API setting key to store enum.
 func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
 	switch key {
 	case "general":
@@ -1082,7 +1082,7 @@ func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
 	}
 }
 
-// convertSettingKeyFromStore converts store enum to API setting key
+// convertSettingKeyFromStore converts store enum to API setting key.
 func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 	switch key {
 	case storepb.UserSetting_GENERAL:
@@ -1100,7 +1100,7 @@ func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 	}
 }
 
-// convertUserSettingFromStore converts store UserSetting to API UserSetting
+// convertUserSettingFromStore converts store UserSetting to API UserSetting.
 func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32, key storepb.UserSetting_Key) *v1pb.UserSetting {
 	if storeSetting == nil {
 		// Return default setting if none exists
@@ -1238,7 +1238,7 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 	return setting
 }
 
-// convertUserSettingToStore converts API UserSetting to store UserSetting
+// convertUserSettingToStore converts API UserSetting to store UserSetting.
 func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key storepb.UserSetting_Key) (*storepb.UserSetting, error) {
 	storeSetting := &storepb.UserSetting{
 		UserId: userID,
