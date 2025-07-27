@@ -17,7 +17,6 @@ import { memoStore, attachmentStore, userStore, workspaceStore } from "@/store";
 import { extractMemoIdFromName } from "@/store/common";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
-import { UserSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import DateTimeInput from "../DateTimeInput";
@@ -77,7 +76,7 @@ const MemoEditor = observer((props: Props) => {
   const [hasContent, setHasContent] = useState<boolean>(false);
   const [isVisibilitySelectorOpen, setIsVisibilitySelectorOpen] = useState(false);
   const editorRef = useRef<EditorRefActions>(null);
-  const userSetting = userStore.state.userSetting as UserSetting;
+  const userGeneralSetting = userStore.state.userGeneralSetting;
   const contentCacheKey = `${currentUser.name}-${cacheKey || ""}`;
   const [contentCache, setContentCache] = useLocalStorage<string>(contentCacheKey, "");
   const referenceRelations = memoName
@@ -99,7 +98,7 @@ const MemoEditor = observer((props: Props) => {
   }, [autoFocus]);
 
   useAsyncEffect(async () => {
-    let visibility = convertVisibilityFromString(userSetting.memoVisibility);
+    let visibility = convertVisibilityFromString(userGeneralSetting?.memoVisibility || "PRIVATE");
     if (workspaceMemoRelatedSetting.disallowPublicVisibility && visibility === Visibility.PUBLIC) {
       visibility = Visibility.PROTECTED;
     }
@@ -111,7 +110,7 @@ const MemoEditor = observer((props: Props) => {
       ...prevState,
       memoVisibility: convertVisibilityFromString(visibility),
     }));
-  }, [parentMemoName, userSetting.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
+  }, [parentMemoName, userGeneralSetting?.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
 
   useAsyncEffect(async () => {
     if (!memoName) {

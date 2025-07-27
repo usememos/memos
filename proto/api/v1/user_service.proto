@@ -75,17 +75,23 @@ service UserService {
 
   // GetUserSetting returns the user setting.
   rpc GetUserSetting(GetUserSettingRequest) returns (UserSetting) {
-    option (google.api.http) = {get: "/api/v1/{name=users/*}:getSetting"};
+    option (google.api.http) = {get: "/api/v1/{name=users/*/settings/*}"};
     option (google.api.method_signature) = "name";
   }
 
   // UpdateUserSetting updates the user setting.
   rpc UpdateUserSetting(UpdateUserSettingRequest) returns (UserSetting) {
     option (google.api.http) = {
-      patch: "/api/v1/{setting.name=users/*}:updateSetting"
+      patch: "/api/v1/{setting.name=users/*/settings/*}"
       body: "setting"
     };
     option (google.api.method_signature) = "setting,update_mask";
+  }
+
+  // ListUserSettings returns a list of user settings.
+  rpc ListUserSettings(ListUserSettingsRequest) returns (ListUserSettingsResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/settings"};
+    option (google.api.method_signature) = "parent";
   }
 
   // ListUserAccessTokens returns a list of access tokens for a user.
@@ -118,6 +124,36 @@ service UserService {
   // RevokeUserSession revokes a specific session for a user.
   rpc RevokeUserSession(RevokeUserSessionRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{name=users/*/sessions/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // ListUserWebhooks returns a list of webhooks for a user.
+  rpc ListUserWebhooks(ListUserWebhooksRequest) returns (ListUserWebhooksResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/webhooks"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // CreateUserWebhook creates a new webhook for a user.
+  rpc CreateUserWebhook(CreateUserWebhookRequest) returns (UserWebhook) {
+    option (google.api.http) = {
+      post: "/api/v1/{parent=users/*}/webhooks"
+      body: "webhook"
+    };
+    option (google.api.method_signature) = "parent,webhook";
+  }
+
+  // UpdateUserWebhook updates an existing webhook for a user.
+  rpc UpdateUserWebhook(UpdateUserWebhookRequest) returns (UserWebhook) {
+    option (google.api.http) = {
+      patch: "/api/v1/{webhook.name=users/*/webhooks/*}"
+      body: "webhook"
+    };
+    option (google.api.method_signature) = "webhook,update_mask";
+  }
+
+  // DeleteUserWebhook deletes a webhook for a user.
+  rpc DeleteUserWebhook(DeleteUserWebhookRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*/webhooks/*}"};
     option (google.api.method_signature) = "name";
   }
 }
@@ -348,40 +384,152 @@ message GetUserStatsRequest {
   ];
 }
 
+message ListAllUserStatsRequest {
+  // This endpoint doesn't take any parameters.
+}
+
+message ListAllUserStatsResponse {
+  // The list of user statistics.
+  repeated UserStats stats = 1;
+}
+
 // User settings message
 message UserSetting {
   option (google.api.resource) = {
     type: "memos.api.v1/UserSetting"
-    pattern: "users/{user}"
+    pattern: "users/{user}/settings/{setting}"
     singular: "userSetting"
     plural: "userSettings"
   };
 
-  // The resource name of the user whose setting this is.
-  // Format: users/{user}
+  // The name of the user setting.
+  // Format: users/{user}/settings/{setting}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // The preferred locale of the user.
-  string locale = 2 [(google.api.field_behavior) = OPTIONAL];
+  oneof value {
+    GeneralSetting general_setting = 2;
+    SessionsSetting sessions_setting = 3;
+    AccessTokensSetting access_tokens_setting = 4;
+    ShortcutsSetting shortcuts_setting = 5;
+    WebhooksSetting webhooks_setting = 6;
+  }
 
-  // The preferred appearance of the user.
-  string appearance = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Enumeration of user setting keys.
+  enum Key {
+    KEY_UNSPECIFIED = 0;
+    // GENERAL is the key for general user settings.
+    GENERAL = 1;
+    // SESSIONS is the key for user authentication sessions.
+    SESSIONS = 2;
+    // ACCESS_TOKENS is the key for access tokens.
+    ACCESS_TOKENS = 3;
+    // SHORTCUTS is the key for user shortcuts.
+    SHORTCUTS = 4;
+    // WEBHOOKS is the key for user webhooks.
+    WEBHOOKS = 5;
+  }
 
-  // The default visibility of the memo.
-  string memo_visibility = 4 [(google.api.field_behavior) = OPTIONAL];
+  // General user settings configuration.
+  message GeneralSetting {
+    // The preferred locale of the user.
+    string locale = 1 [(google.api.field_behavior) = OPTIONAL];
+    // The preferred appearance of the user.
+    string appearance = 2 [(google.api.field_behavior) = OPTIONAL];
+    // The default visibility of the memo.
+    string memo_visibility = 3 [(google.api.field_behavior) = OPTIONAL];
+    // The preferred theme of the user.
+    // This references a CSS file in the web/public/themes/ directory.
+    // If not set, the default theme will be used.
+    string theme = 4 [(google.api.field_behavior) = OPTIONAL];
+  }
 
-  // The preferred theme of the user.
-  // This references a CSS file in the web/public/themes/ directory.
-  // If not set, the default theme will be used.
-  string theme = 5 [(google.api.field_behavior) = OPTIONAL];
+  // User authentication sessions configuration.
+  message SessionsSetting {
+    // List of active user sessions.
+    repeated Session sessions = 1;
+
+    // User session information.
+    message Session {
+      // Unique session identifier.
+      string session_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+      // Timestamp when the session was created.
+      google.protobuf.Timestamp create_time = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+      // Timestamp when the session was last accessed.
+      // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+      google.protobuf.Timestamp last_accessed_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+      // Client information associated with this session.
+      ClientInfo client_info = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+    }
+
+    // Client information for a session.
+    message ClientInfo {
+      // User agent string of the client.
+      string user_agent = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+      // IP address of the client.
+      string ip_address = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+      // Optional. Device type (e.g., "mobile", "desktop", "tablet").
+      string device_type = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+      // Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
+      string os = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+      // Optional. Browser name and version (e.g., "Chrome 119.0").
+      string browser = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+    }
+  }
+
+  // User access tokens configuration.
+  message AccessTokensSetting {
+    // List of user access tokens.
+    repeated AccessToken access_tokens = 1;
+
+    // User access token information.
+    message AccessToken {
+      // The access token is a JWT token.
+      // Including expiration time, issuer, etc.
+      string access_token = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+      // A description for the access token.
+      string description = 2 [(google.api.field_behavior) = OPTIONAL];
+    }
+  }
+
+  // User shortcuts configuration.
+  message ShortcutsSetting {
+    // List of user shortcuts.
+    repeated Shortcut shortcuts = 1;
+
+    // User shortcut definition.
+    message Shortcut {
+      // Unique identifier for the shortcut.
+      string id = 1 [(google.api.field_behavior) = REQUIRED];
+      // Display title for the shortcut.
+      string title = 2 [(google.api.field_behavior) = REQUIRED];
+      // Filter expression for the shortcut.
+      string filter = 3 [(google.api.field_behavior) = REQUIRED];
+    }
+  }
+
+  // User webhooks configuration.
+  message WebhooksSetting {
+    // List of user webhooks.
+    repeated Webhook webhooks = 1;
+
+    // User webhook definition.
+    message Webhook {
+      // Unique identifier for the webhook.
+      string id = 1 [(google.api.field_behavior) = REQUIRED];
+      // Descriptive title for the webhook.
+      string title = 2 [(google.api.field_behavior) = REQUIRED];
+      // The webhook URL endpoint.
+      string url = 3 [(google.api.field_behavior) = REQUIRED];
+    }
+  }
 }
 
 message GetUserSettingRequest {
-  // Required. The resource name of the user.
-  // Format: users/{user}
+  // Required. The resource name of the user setting.
+  // Format: users/{user}/settings/{setting}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+    (google.api.resource_reference) = {type: "memos.api.v1/UserSetting"}
   ];
 }
 
@@ -391,6 +539,39 @@ message UpdateUserSettingRequest {
 
   // Required. The list of fields to update.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for ListUserSettings method.
+message ListUserSettingsRequest {
+  // Required. The parent resource whose settings will be listed.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+
+  // Optional. The maximum number of settings to return.
+  // The service may return fewer than this value.
+  // If unspecified, at most 50 settings will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token, received from a previous `ListUserSettings` call.
+  // Provide this to retrieve the subsequent page.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for ListUserSettings method.
+message ListUserSettingsResponse {
+  // The list of user settings.
+  repeated UserSetting settings = 1;
+
+  // A token that can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+
+  // The total count of settings (may be approximate).
+  int32 total_size = 3;
 }
 
 // User access token message
@@ -526,29 +707,60 @@ message ListUserSessionsResponse {
 }
 
 message RevokeUserSessionRequest {
-  // Required. The resource name of the session to revoke.
+  // The name of the session to revoke.
   // Format: users/{user}/sessions/{session}
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api.v1/UserSession"}
-  ];
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-message ListAllUserStatsRequest {
-  // Optional. The maximum number of user stats to return.
-  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+// UserWebhook represents a webhook owned by a user.
+message UserWebhook {
+  // The name of the webhook.
+  // Format: users/{user}/webhooks/{webhook}
+  string name = 1;
 
-  // Optional. A page token for pagination.
-  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The URL to send the webhook to.
+  string url = 2;
+
+  // Optional. Human-readable name for the webhook.
+  string display_name = 3;
+
+  // The creation time of the webhook.
+  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The last update time of the webhook.
+  google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-message ListAllUserStatsResponse {
-  // The list of user statistics.
-  repeated UserStats user_stats = 1;
+message ListUserWebhooksRequest {
+  // The parent user resource.
+  // Format: users/{user}
+  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+}
 
-  // A token for the next page of results.
-  string next_page_token = 2;
+message ListUserWebhooksResponse {
+  // The list of webhooks.
+  repeated UserWebhook webhooks = 1;
+}
 
-  // The total count of user statistics.
-  int32 total_size = 3;
+message CreateUserWebhookRequest {
+  // The parent user resource.
+  // Format: users/{user}
+  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The webhook to create.
+  UserWebhook webhook = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message UpdateUserWebhookRequest {
+  // The webhook to update.
+  UserWebhook webhook = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message DeleteUserWebhookRequest {
+  // The name of the webhook to delete.
+  // Format: users/{user}/webhooks/{webhook}
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
 }

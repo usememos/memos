@@ -32,11 +32,16 @@ const (
 	UserService_GetUserStats_FullMethodName          = "/memos.api.v1.UserService/GetUserStats"
 	UserService_GetUserSetting_FullMethodName        = "/memos.api.v1.UserService/GetUserSetting"
 	UserService_UpdateUserSetting_FullMethodName     = "/memos.api.v1.UserService/UpdateUserSetting"
+	UserService_ListUserSettings_FullMethodName      = "/memos.api.v1.UserService/ListUserSettings"
 	UserService_ListUserAccessTokens_FullMethodName  = "/memos.api.v1.UserService/ListUserAccessTokens"
 	UserService_CreateUserAccessToken_FullMethodName = "/memos.api.v1.UserService/CreateUserAccessToken"
 	UserService_DeleteUserAccessToken_FullMethodName = "/memos.api.v1.UserService/DeleteUserAccessToken"
 	UserService_ListUserSessions_FullMethodName      = "/memos.api.v1.UserService/ListUserSessions"
 	UserService_RevokeUserSession_FullMethodName     = "/memos.api.v1.UserService/RevokeUserSession"
+	UserService_ListUserWebhooks_FullMethodName      = "/memos.api.v1.UserService/ListUserWebhooks"
+	UserService_CreateUserWebhook_FullMethodName     = "/memos.api.v1.UserService/CreateUserWebhook"
+	UserService_UpdateUserWebhook_FullMethodName     = "/memos.api.v1.UserService/UpdateUserWebhook"
+	UserService_DeleteUserWebhook_FullMethodName     = "/memos.api.v1.UserService/DeleteUserWebhook"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -65,6 +70,8 @@ type UserServiceClient interface {
 	GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
 	// UpdateUserSetting updates the user setting.
 	UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
+	// ListUserSettings returns a list of user settings.
+	ListUserSettings(ctx context.Context, in *ListUserSettingsRequest, opts ...grpc.CallOption) (*ListUserSettingsResponse, error)
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(ctx context.Context, in *ListUserAccessTokensRequest, opts ...grpc.CallOption) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
@@ -75,6 +82,14 @@ type UserServiceClient interface {
 	ListUserSessions(ctx context.Context, in *ListUserSessionsRequest, opts ...grpc.CallOption) (*ListUserSessionsResponse, error)
 	// RevokeUserSession revokes a specific session for a user.
 	RevokeUserSession(ctx context.Context, in *RevokeUserSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// ListUserWebhooks returns a list of webhooks for a user.
+	ListUserWebhooks(ctx context.Context, in *ListUserWebhooksRequest, opts ...grpc.CallOption) (*ListUserWebhooksResponse, error)
+	// CreateUserWebhook creates a new webhook for a user.
+	CreateUserWebhook(ctx context.Context, in *CreateUserWebhookRequest, opts ...grpc.CallOption) (*UserWebhook, error)
+	// UpdateUserWebhook updates an existing webhook for a user.
+	UpdateUserWebhook(ctx context.Context, in *UpdateUserWebhookRequest, opts ...grpc.CallOption) (*UserWebhook, error)
+	// DeleteUserWebhook deletes a webhook for a user.
+	DeleteUserWebhook(ctx context.Context, in *DeleteUserWebhookRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type userServiceClient struct {
@@ -195,6 +210,16 @@ func (c *userServiceClient) UpdateUserSetting(ctx context.Context, in *UpdateUse
 	return out, nil
 }
 
+func (c *userServiceClient) ListUserSettings(ctx context.Context, in *ListUserSettingsRequest, opts ...grpc.CallOption) (*ListUserSettingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserSettingsResponse)
+	err := c.cc.Invoke(ctx, UserService_ListUserSettings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) ListUserAccessTokens(ctx context.Context, in *ListUserAccessTokensRequest, opts ...grpc.CallOption) (*ListUserAccessTokensResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUserAccessTokensResponse)
@@ -245,6 +270,46 @@ func (c *userServiceClient) RevokeUserSession(ctx context.Context, in *RevokeUse
 	return out, nil
 }
 
+func (c *userServiceClient) ListUserWebhooks(ctx context.Context, in *ListUserWebhooksRequest, opts ...grpc.CallOption) (*ListUserWebhooksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserWebhooksResponse)
+	err := c.cc.Invoke(ctx, UserService_ListUserWebhooks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateUserWebhook(ctx context.Context, in *CreateUserWebhookRequest, opts ...grpc.CallOption) (*UserWebhook, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserWebhook)
+	err := c.cc.Invoke(ctx, UserService_CreateUserWebhook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateUserWebhook(ctx context.Context, in *UpdateUserWebhookRequest, opts ...grpc.CallOption) (*UserWebhook, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserWebhook)
+	err := c.cc.Invoke(ctx, UserService_UpdateUserWebhook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DeleteUserWebhook(ctx context.Context, in *DeleteUserWebhookRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserService_DeleteUserWebhook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -271,6 +336,8 @@ type UserServiceServer interface {
 	GetUserSetting(context.Context, *GetUserSettingRequest) (*UserSetting, error)
 	// UpdateUserSetting updates the user setting.
 	UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UserSetting, error)
+	// ListUserSettings returns a list of user settings.
+	ListUserSettings(context.Context, *ListUserSettingsRequest) (*ListUserSettingsResponse, error)
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(context.Context, *ListUserAccessTokensRequest) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
@@ -281,6 +348,14 @@ type UserServiceServer interface {
 	ListUserSessions(context.Context, *ListUserSessionsRequest) (*ListUserSessionsResponse, error)
 	// RevokeUserSession revokes a specific session for a user.
 	RevokeUserSession(context.Context, *RevokeUserSessionRequest) (*emptypb.Empty, error)
+	// ListUserWebhooks returns a list of webhooks for a user.
+	ListUserWebhooks(context.Context, *ListUserWebhooksRequest) (*ListUserWebhooksResponse, error)
+	// CreateUserWebhook creates a new webhook for a user.
+	CreateUserWebhook(context.Context, *CreateUserWebhookRequest) (*UserWebhook, error)
+	// UpdateUserWebhook updates an existing webhook for a user.
+	UpdateUserWebhook(context.Context, *UpdateUserWebhookRequest) (*UserWebhook, error)
+	// DeleteUserWebhook deletes a webhook for a user.
+	DeleteUserWebhook(context.Context, *DeleteUserWebhookRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -324,6 +399,9 @@ func (UnimplementedUserServiceServer) GetUserSetting(context.Context, *GetUserSe
 func (UnimplementedUserServiceServer) UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UserSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserSetting not implemented")
 }
+func (UnimplementedUserServiceServer) ListUserSettings(context.Context, *ListUserSettingsRequest) (*ListUserSettingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserSettings not implemented")
+}
 func (UnimplementedUserServiceServer) ListUserAccessTokens(context.Context, *ListUserAccessTokensRequest) (*ListUserAccessTokensResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserAccessTokens not implemented")
 }
@@ -338,6 +416,18 @@ func (UnimplementedUserServiceServer) ListUserSessions(context.Context, *ListUse
 }
 func (UnimplementedUserServiceServer) RevokeUserSession(context.Context, *RevokeUserSessionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RevokeUserSession not implemented")
+}
+func (UnimplementedUserServiceServer) ListUserWebhooks(context.Context, *ListUserWebhooksRequest) (*ListUserWebhooksResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserWebhooks not implemented")
+}
+func (UnimplementedUserServiceServer) CreateUserWebhook(context.Context, *CreateUserWebhookRequest) (*UserWebhook, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserWebhook not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateUserWebhook(context.Context, *UpdateUserWebhookRequest) (*UserWebhook, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserWebhook not implemented")
+}
+func (UnimplementedUserServiceServer) DeleteUserWebhook(context.Context, *DeleteUserWebhookRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserWebhook not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -558,6 +648,24 @@ func _UserService_UpdateUserSetting_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ListUserSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserSettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListUserSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListUserSettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListUserSettings(ctx, req.(*ListUserSettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_ListUserAccessTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUserAccessTokensRequest)
 	if err := dec(in); err != nil {
@@ -648,6 +756,78 @@ func _UserService_RevokeUserSession_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ListUserWebhooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserWebhooksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListUserWebhooks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListUserWebhooks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListUserWebhooks(ctx, req.(*ListUserWebhooksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateUserWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserWebhookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUserWebhook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateUserWebhook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUserWebhook(ctx, req.(*CreateUserWebhookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateUserWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserWebhookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateUserWebhook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateUserWebhook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateUserWebhook(ctx, req.(*UpdateUserWebhookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DeleteUserWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserWebhookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DeleteUserWebhook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_DeleteUserWebhook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DeleteUserWebhook(ctx, req.(*DeleteUserWebhookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -700,6 +880,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_UpdateUserSetting_Handler,
 		},
 		{
+			MethodName: "ListUserSettings",
+			Handler:    _UserService_ListUserSettings_Handler,
+		},
+		{
 			MethodName: "ListUserAccessTokens",
 			Handler:    _UserService_ListUserAccessTokens_Handler,
 		},
@@ -718,6 +902,22 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RevokeUserSession",
 			Handler:    _UserService_RevokeUserSession_Handler,
+		},
+		{
+			MethodName: "ListUserWebhooks",
+			Handler:    _UserService_ListUserWebhooks_Handler,
+		},
+		{
+			MethodName: "CreateUserWebhook",
+			Handler:    _UserService_CreateUserWebhook_Handler,
+		},
+		{
+			MethodName: "UpdateUserWebhook",
+			Handler:    _UserService_UpdateUserWebhook_Handler,
+		},
+		{
+			MethodName: "DeleteUserWebhook",
+			Handler:    _UserService_DeleteUserWebhook_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

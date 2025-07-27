@@ -2,11 +2,14 @@ package v1
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +24,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/internal/base"
+	"github.com/usememos/memos/internal/util"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -329,9 +333,8 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	return &emptypb.Empty{}, nil
 }
 
-func getDefaultUserSetting() *v1pb.UserSetting {
-	return &v1pb.UserSetting{
-		Name:           "", // Will be set by caller
+func getDefaultUserGeneralSetting() *v1pb.UserSetting_GeneralSetting {
+	return &v1pb.UserSetting_GeneralSetting{
 		Locale:         "en",
 		Appearance:     "system",
 		MemoVisibility: "PRIVATE",
@@ -340,9 +343,10 @@ func getDefaultUserSetting() *v1pb.UserSetting {
 }
 
 func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUserSettingRequest) (*v1pb.UserSetting, error) {
-	userID, err := ExtractUserIDFromName(request.Name)
+	// Parse resource name: users/{user}/settings/{setting}
+	userID, settingKey, err := ExtractUserIDAndSettingKeyFromName(request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
 	}
 
 	currentUser, err := s.GetCurrentUser(ctx)
@@ -355,49 +359,28 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUser
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
+	// Convert setting key string to store enum
+	storeKey, err := convertSettingKeyToStore(settingKey)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid setting key: %v", err)
+	}
+
+	userSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &userID,
+		Key:    storeKey,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get user setting: %v", err)
 	}
 
-	userSettingMessage := getDefaultUserSetting()
-	userSettingMessage.Name = fmt.Sprintf("users/%d", userID)
-
-	for _, setting := range userSettings {
-		if setting.Key == storepb.UserSetting_GENERAL {
-			general := setting.GetGeneral()
-			if general != nil {
-				userSettingMessage.Locale = general.Locale
-				userSettingMessage.Appearance = general.Appearance
-				userSettingMessage.MemoVisibility = general.MemoVisibility
-				userSettingMessage.Theme = general.Theme
-			}
-		}
-	}
-
-	// Backfill theme if empty: use workspace theme or default to "default"
-	if userSettingMessage.Theme == "" {
-		workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
-		}
-		workspaceTheme := workspaceGeneralSetting.Theme
-		if workspaceTheme == "" {
-			workspaceTheme = "default"
-		}
-		userSettingMessage.Theme = workspaceTheme
-	}
-
-	return userSettingMessage, nil
+	return convertUserSettingFromStore(userSetting, userID, storeKey), nil
 }
 
 func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.UpdateUserSettingRequest) (*v1pb.UserSetting, error) {
-	// Extract user ID from the setting resource name
-	userID, err := ExtractUserIDFromName(request.Setting.Name)
+	// Parse resource name: users/{user}/settings/{setting}
+	userID, settingKey, err := ExtractUserIDAndSettingKeyFromName(request.Setting.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
 	}
 
 	currentUser, err := s.GetCurrentUser(ctx)
@@ -414,60 +397,81 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
 
-	// Get the current general setting
-	existingGeneralSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
-		UserID: &userID,
-		Key:    storepb.UserSetting_GENERAL,
-	})
+	// Convert setting key string to store enum
+	storeKey, err := convertSettingKeyToStore(settingKey)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get existing general setting: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid setting key: %v", err)
 	}
 
-	// Create or update the general setting
-	generalSetting := &storepb.GeneralUserSetting{
-		Locale:         "en",
-		Appearance:     "system",
-		MemoVisibility: "PRIVATE",
-		Theme:          "",
+	// Convert API setting to store setting
+	storeSetting, err := convertUserSettingToStore(request.Setting, userID, storeKey)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "failed to convert setting: %v", err)
 	}
 
-	// If there's an existing setting, use its values as defaults
-	if existingGeneralSetting != nil && existingGeneralSetting.GetGeneral() != nil {
-		existing := existingGeneralSetting.GetGeneral()
-		generalSetting.Locale = existing.Locale
-		generalSetting.Appearance = existing.Appearance
-		generalSetting.MemoVisibility = existing.MemoVisibility
-		generalSetting.Theme = existing.Theme
-	}
-
-	// Apply updates based on the update mask
-	for _, field := range request.UpdateMask.Paths {
-		switch field {
-		case "locale":
-			generalSetting.Locale = request.Setting.Locale
-		case "appearance":
-			generalSetting.Appearance = request.Setting.Appearance
-		case "memo_visibility":
-			generalSetting.MemoVisibility = request.Setting.MemoVisibility
-		case "theme":
-			generalSetting.Theme = request.Setting.Theme
-		default:
-			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", field)
-		}
-	}
-
-	// Upsert the general setting
-	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
-		UserId: userID,
-		Key:    storepb.UserSetting_GENERAL,
-		Value: &storepb.UserSetting_General{
-			General: generalSetting,
-		},
-	}); err != nil {
+	// Upsert the setting
+	if _, err := s.Store.UpsertUserSetting(ctx, storeSetting); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
 	}
 
 	return s.GetUserSetting(ctx, &v1pb.GetUserSettingRequest{Name: request.Setting.Name})
+}
+
+func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListUserSettingsRequest) (*v1pb.ListUserSettingsResponse, error) {
+	userID, err := ExtractUserIDFromName(request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid parent name: %v", err)
+	}
+
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+
+	// Only allow user to list their own settings
+	if currentUser.ID != userID {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
+		UserID: &userID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)
+	}
+
+	settings := make([]*v1pb.UserSetting, 0, len(userSettings))
+	for _, storeSetting := range userSettings {
+		apiSetting := convertUserSettingFromStore(storeSetting, userID, storeSetting.Key)
+		if apiSetting != nil {
+			settings = append(settings, apiSetting)
+		}
+	}
+
+	// If no general setting exists, add a default one
+	hasGeneral := false
+	for _, setting := range settings {
+		if setting.GetGeneralSetting() != nil {
+			hasGeneral = true
+			break
+		}
+	}
+	if !hasGeneral {
+		defaultGeneral := &v1pb.UserSetting{
+			Name: fmt.Sprintf("users/%d/settings/general", userID),
+			Value: &v1pb.UserSetting_GeneralSetting_{
+				GeneralSetting: getDefaultUserGeneralSetting(),
+			},
+		}
+		settings = append([]*v1pb.UserSetting{defaultGeneral}, settings...)
+	}
+
+	response := &v1pb.ListUserSettingsResponse{
+		Settings:  settings,
+		TotalSize: int32(len(settings)),
+	}
+
+	return response, nil
 }
 
 func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.ListUserAccessTokensRequest) (*v1pb.ListUserAccessTokensResponse, error) {
@@ -767,6 +771,216 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 	return nil
 }
 
+func (s *APIV1Service) ListUserWebhooks(ctx context.Context, request *v1pb.ListUserWebhooksRequest) (*v1pb.ListUserWebhooksResponse, error) {
+	userID, err := ExtractUserIDFromName(request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
+	}
+
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	webhooks, err := s.Store.GetUserWebhooks(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user webhooks: %v", err)
+	}
+
+	userWebhooks := make([]*v1pb.UserWebhook, 0, len(webhooks))
+	for _, webhook := range webhooks {
+		userWebhooks = append(userWebhooks, convertUserWebhookFromUserSetting(webhook, userID))
+	}
+
+	return &v1pb.ListUserWebhooksResponse{
+		Webhooks: userWebhooks,
+	}, nil
+}
+
+func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.CreateUserWebhookRequest) (*v1pb.UserWebhook, error) {
+	userID, err := ExtractUserIDFromName(request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
+	}
+
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	if request.Webhook.Url == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "webhook URL is required")
+	}
+
+	webhookID := generateUserWebhookID()
+	webhook := &storepb.WebhooksUserSetting_Webhook{
+		Id:    webhookID,
+		Title: request.Webhook.DisplayName,
+		Url:   strings.TrimSpace(request.Webhook.Url),
+	}
+
+	err = s.Store.AddUserWebhook(ctx, userID, webhook)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create webhook: %v", err)
+	}
+
+	return convertUserWebhookFromUserSetting(webhook, userID), nil
+}
+
+func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.UpdateUserWebhookRequest) (*v1pb.UserWebhook, error) {
+	if request.Webhook == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "webhook is required")
+	}
+
+	webhookID, userID, err := parseUserWebhookName(request.Webhook.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid webhook name: %v", err)
+	}
+
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	// Get existing webhooks
+	webhooks, err := s.Store.GetUserWebhooks(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user webhooks: %v", err)
+	}
+
+	// Find the webhook to update
+	var targetWebhook *storepb.WebhooksUserSetting_Webhook
+	for _, webhook := range webhooks {
+		if webhook.Id == webhookID {
+			targetWebhook = webhook
+			break
+		}
+	}
+
+	if targetWebhook == nil {
+		return nil, status.Errorf(codes.NotFound, "webhook not found")
+	}
+
+	// Update the webhook
+	updatedWebhook := &storepb.WebhooksUserSetting_Webhook{
+		Id:    webhookID,
+		Title: targetWebhook.Title,
+		Url:   targetWebhook.Url,
+	}
+
+	if request.UpdateMask != nil {
+		for _, path := range request.UpdateMask.Paths {
+			switch path {
+			case "url":
+				if request.Webhook.Url != "" {
+					updatedWebhook.Url = strings.TrimSpace(request.Webhook.Url)
+				}
+			case "display_name":
+				updatedWebhook.Title = request.Webhook.DisplayName
+			}
+		}
+	} else {
+		// If no update mask is provided, update all fields
+		if request.Webhook.Url != "" {
+			updatedWebhook.Url = strings.TrimSpace(request.Webhook.Url)
+		}
+		updatedWebhook.Title = request.Webhook.DisplayName
+	}
+
+	err = s.Store.UpdateUserWebhook(ctx, userID, updatedWebhook)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update webhook: %v", err)
+	}
+
+	return convertUserWebhookFromUserSetting(updatedWebhook, userID), nil
+}
+
+func (s *APIV1Service) DeleteUserWebhook(ctx context.Context, request *v1pb.DeleteUserWebhookRequest) (*emptypb.Empty, error) {
+	webhookID, userID, err := parseUserWebhookName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid webhook name: %v", err)
+	}
+
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	// Get existing webhooks to verify the webhook exists
+	webhooks, err := s.Store.GetUserWebhooks(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user webhooks: %v", err)
+	}
+
+	// Check if webhook exists
+	found := false
+	for _, webhook := range webhooks {
+		if webhook.Id == webhookID {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "webhook not found")
+	}
+
+	err = s.Store.RemoveUserWebhook(ctx, userID, webhookID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete webhook: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// Helper functions for webhook operations
+
+// generateUserWebhookID generates a unique ID for user webhooks
+func generateUserWebhookID() string {
+	b := make([]byte, 8)
+	rand.Read(b)
+	return hex.EncodeToString(b)
+}
+
+// parseUserWebhookName parses a webhook name and returns the webhook ID and user ID
+// Format: users/{user}/webhooks/{webhook}
+func parseUserWebhookName(name string) (string, int32, error) {
+	parts := strings.Split(name, "/")
+	if len(parts) != 4 || parts[0] != "users" || parts[2] != "webhooks" {
+		return "", 0, errors.New("invalid webhook name format")
+	}
+
+	userID, err := strconv.ParseInt(parts[1], 10, 32)
+	if err != nil {
+		return "", 0, errors.New("invalid user ID in webhook name")
+	}
+
+	return parts[3], int32(userID), nil
+}
+
+// convertUserWebhookFromUserSetting converts a storepb webhook to a v1pb UserWebhook
+func convertUserWebhookFromUserSetting(webhook *storepb.WebhooksUserSetting_Webhook, userID int32) *v1pb.UserWebhook {
+	return &v1pb.UserWebhook{
+		Name:        fmt.Sprintf("users/%d/webhooks/%s", userID, webhook.Id),
+		Url:         webhook.Url,
+		DisplayName: webhook.Title,
+		// Note: create_time and update_time are not available in the user setting webhook structure
+		// This is a limitation of storing webhooks in user settings vs the dedicated webhook table
+	}
+}
+
 func convertUserFromStore(user *store.User) *v1pb.User {
 	userpb := &v1pb.User{
 		Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
@@ -828,4 +1042,308 @@ func extractImageInfo(dataURI string) (string, string, error) {
 	imageType := matches[1]
 	base64Data := matches[2]
 	return imageType, base64Data, nil
+}
+
+// Helper functions for user settings
+
+// ExtractUserIDAndSettingKeyFromName extracts user ID and setting key from resource name
+// e.g., "users/123/settings/general" -> 123, "general"
+func ExtractUserIDAndSettingKeyFromName(name string) (int32, string, error) {
+	// Expected format: users/{user}/settings/{setting}
+	parts := strings.Split(name, "/")
+	if len(parts) != 4 || parts[0] != "users" || parts[2] != "settings" {
+		return 0, "", errors.Errorf("invalid resource name format: %s", name)
+	}
+
+	userID, err := util.ConvertStringToInt32(parts[1])
+	if err != nil {
+		return 0, "", errors.Errorf("invalid user ID: %s", parts[1])
+	}
+
+	settingKey := parts[3]
+	return userID, settingKey, nil
+}
+
+// convertSettingKeyToStore converts API setting key to store enum
+func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
+	switch key {
+	case "general":
+		return storepb.UserSetting_GENERAL, nil
+	case "sessions":
+		return storepb.UserSetting_SESSIONS, nil
+	case "access-tokens":
+		return storepb.UserSetting_ACCESS_TOKENS, nil
+	case "shortcuts":
+		return storepb.UserSetting_SHORTCUTS, nil
+	case "webhooks":
+		return storepb.UserSetting_WEBHOOKS, nil
+	default:
+		return storepb.UserSetting_KEY_UNSPECIFIED, errors.Errorf("unknown setting key: %s", key)
+	}
+}
+
+// convertSettingKeyFromStore converts store enum to API setting key
+func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
+	switch key {
+	case storepb.UserSetting_GENERAL:
+		return "general"
+	case storepb.UserSetting_SESSIONS:
+		return "sessions"
+	case storepb.UserSetting_ACCESS_TOKENS:
+		return "access-tokens"
+	case storepb.UserSetting_SHORTCUTS:
+		return "shortcuts"
+	case storepb.UserSetting_WEBHOOKS:
+		return "webhooks"
+	default:
+		return "unknown"
+	}
+}
+
+// convertUserSettingFromStore converts store UserSetting to API UserSetting
+func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32, key storepb.UserSetting_Key) *v1pb.UserSetting {
+	if storeSetting == nil {
+		// Return default setting if none exists
+		settingKey := convertSettingKeyFromStore(key)
+		setting := &v1pb.UserSetting{
+			Name: fmt.Sprintf("users/%d/settings/%s", userID, settingKey),
+		}
+
+		switch key {
+		case storepb.UserSetting_GENERAL:
+			setting.Value = &v1pb.UserSetting_GeneralSetting_{
+				GeneralSetting: getDefaultUserGeneralSetting(),
+			}
+		case storepb.UserSetting_SESSIONS:
+			setting.Value = &v1pb.UserSetting_SessionsSetting_{
+				SessionsSetting: &v1pb.UserSetting_SessionsSetting{
+					Sessions: []*v1pb.UserSetting_SessionsSetting_Session{},
+				},
+			}
+		case storepb.UserSetting_ACCESS_TOKENS:
+			setting.Value = &v1pb.UserSetting_AccessTokensSetting_{
+				AccessTokensSetting: &v1pb.UserSetting_AccessTokensSetting{
+					AccessTokens: []*v1pb.UserSetting_AccessTokensSetting_AccessToken{},
+				},
+			}
+		case storepb.UserSetting_SHORTCUTS:
+			setting.Value = &v1pb.UserSetting_ShortcutsSetting_{
+				ShortcutsSetting: &v1pb.UserSetting_ShortcutsSetting{
+					Shortcuts: []*v1pb.UserSetting_ShortcutsSetting_Shortcut{},
+				},
+			}
+		case storepb.UserSetting_WEBHOOKS:
+			setting.Value = &v1pb.UserSetting_WebhooksSetting_{
+				WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
+					Webhooks: []*v1pb.UserSetting_WebhooksSetting_Webhook{},
+				},
+			}
+		}
+		return setting
+	}
+
+	settingKey := convertSettingKeyFromStore(storeSetting.Key)
+	setting := &v1pb.UserSetting{
+		Name: fmt.Sprintf("users/%d/settings/%s", userID, settingKey),
+	}
+
+	switch storeSetting.Key {
+	case storepb.UserSetting_GENERAL:
+		if general := storeSetting.GetGeneral(); general != nil {
+			setting.Value = &v1pb.UserSetting_GeneralSetting_{
+				GeneralSetting: &v1pb.UserSetting_GeneralSetting{
+					Locale:         general.Locale,
+					Appearance:     general.Appearance,
+					MemoVisibility: general.MemoVisibility,
+					Theme:          general.Theme,
+				},
+			}
+		} else {
+			setting.Value = &v1pb.UserSetting_GeneralSetting_{
+				GeneralSetting: getDefaultUserGeneralSetting(),
+			}
+		}
+	case storepb.UserSetting_SESSIONS:
+		sessions := storeSetting.GetSessions()
+		apiSessions := make([]*v1pb.UserSetting_SessionsSetting_Session, 0, len(sessions.Sessions))
+		for _, session := range sessions.Sessions {
+			apiSession := &v1pb.UserSetting_SessionsSetting_Session{
+				SessionId:        session.SessionId,
+				CreateTime:       session.CreateTime,
+				LastAccessedTime: session.LastAccessedTime,
+				ClientInfo: &v1pb.UserSetting_SessionsSetting_ClientInfo{
+					UserAgent:  session.ClientInfo.UserAgent,
+					IpAddress:  session.ClientInfo.IpAddress,
+					DeviceType: session.ClientInfo.DeviceType,
+					Os:         session.ClientInfo.Os,
+					Browser:    session.ClientInfo.Browser,
+				},
+			}
+			apiSessions = append(apiSessions, apiSession)
+		}
+		setting.Value = &v1pb.UserSetting_SessionsSetting_{
+			SessionsSetting: &v1pb.UserSetting_SessionsSetting{
+				Sessions: apiSessions,
+			},
+		}
+	case storepb.UserSetting_ACCESS_TOKENS:
+		accessTokens := storeSetting.GetAccessTokens()
+		apiTokens := make([]*v1pb.UserSetting_AccessTokensSetting_AccessToken, 0, len(accessTokens.AccessTokens))
+		for _, token := range accessTokens.AccessTokens {
+			apiToken := &v1pb.UserSetting_AccessTokensSetting_AccessToken{
+				AccessToken: token.AccessToken,
+				Description: token.Description,
+			}
+			apiTokens = append(apiTokens, apiToken)
+		}
+		setting.Value = &v1pb.UserSetting_AccessTokensSetting_{
+			AccessTokensSetting: &v1pb.UserSetting_AccessTokensSetting{
+				AccessTokens: apiTokens,
+			},
+		}
+	case storepb.UserSetting_SHORTCUTS:
+		shortcuts := storeSetting.GetShortcuts()
+		apiShortcuts := make([]*v1pb.UserSetting_ShortcutsSetting_Shortcut, 0, len(shortcuts.Shortcuts))
+		for _, shortcut := range shortcuts.Shortcuts {
+			apiShortcut := &v1pb.UserSetting_ShortcutsSetting_Shortcut{
+				Id:     shortcut.Id,
+				Title:  shortcut.Title,
+				Filter: shortcut.Filter,
+			}
+			apiShortcuts = append(apiShortcuts, apiShortcut)
+		}
+		setting.Value = &v1pb.UserSetting_ShortcutsSetting_{
+			ShortcutsSetting: &v1pb.UserSetting_ShortcutsSetting{
+				Shortcuts: apiShortcuts,
+			},
+		}
+	case storepb.UserSetting_WEBHOOKS:
+		webhooks := storeSetting.GetWebhooks()
+		apiWebhooks := make([]*v1pb.UserSetting_WebhooksSetting_Webhook, 0, len(webhooks.Webhooks))
+		for _, webhook := range webhooks.Webhooks {
+			apiWebhook := &v1pb.UserSetting_WebhooksSetting_Webhook{
+				Id:    webhook.Id,
+				Title: webhook.Title,
+				Url:   webhook.Url,
+			}
+			apiWebhooks = append(apiWebhooks, apiWebhook)
+		}
+		setting.Value = &v1pb.UserSetting_WebhooksSetting_{
+			WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
+				Webhooks: apiWebhooks,
+			},
+		}
+	}
+
+	return setting
+}
+
+// convertUserSettingToStore converts API UserSetting to store UserSetting
+func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key storepb.UserSetting_Key) (*storepb.UserSetting, error) {
+	storeSetting := &storepb.UserSetting{
+		UserId: userID,
+		Key:    key,
+	}
+
+	switch key {
+	case storepb.UserSetting_GENERAL:
+		if general := apiSetting.GetGeneralSetting(); general != nil {
+			storeSetting.Value = &storepb.UserSetting_General{
+				General: &storepb.GeneralUserSetting{
+					Locale:         general.Locale,
+					Appearance:     general.Appearance,
+					MemoVisibility: general.MemoVisibility,
+					Theme:          general.Theme,
+				},
+			}
+		} else {
+			return nil, errors.Errorf("general setting is required")
+		}
+	case storepb.UserSetting_SESSIONS:
+		if sessions := apiSetting.GetSessionsSetting(); sessions != nil {
+			storeSessions := make([]*storepb.SessionsUserSetting_Session, 0, len(sessions.Sessions))
+			for _, session := range sessions.Sessions {
+				storeSession := &storepb.SessionsUserSetting_Session{
+					SessionId:        session.SessionId,
+					CreateTime:       session.CreateTime,
+					LastAccessedTime: session.LastAccessedTime,
+					ClientInfo: &storepb.SessionsUserSetting_ClientInfo{
+						UserAgent:  session.ClientInfo.UserAgent,
+						IpAddress:  session.ClientInfo.IpAddress,
+						DeviceType: session.ClientInfo.DeviceType,
+						Os:         session.ClientInfo.Os,
+						Browser:    session.ClientInfo.Browser,
+					},
+				}
+				storeSessions = append(storeSessions, storeSession)
+			}
+			storeSetting.Value = &storepb.UserSetting_Sessions{
+				Sessions: &storepb.SessionsUserSetting{
+					Sessions: storeSessions,
+				},
+			}
+		} else {
+			return nil, errors.Errorf("sessions setting is required")
+		}
+	case storepb.UserSetting_ACCESS_TOKENS:
+		if accessTokens := apiSetting.GetAccessTokensSetting(); accessTokens != nil {
+			storeTokens := make([]*storepb.AccessTokensUserSetting_AccessToken, 0, len(accessTokens.AccessTokens))
+			for _, token := range accessTokens.AccessTokens {
+				storeToken := &storepb.AccessTokensUserSetting_AccessToken{
+					AccessToken: token.AccessToken,
+					Description: token.Description,
+				}
+				storeTokens = append(storeTokens, storeToken)
+			}
+			storeSetting.Value = &storepb.UserSetting_AccessTokens{
+				AccessTokens: &storepb.AccessTokensUserSetting{
+					AccessTokens: storeTokens,
+				},
+			}
+		} else {
+			return nil, errors.Errorf("access tokens setting is required")
+		}
+	case storepb.UserSetting_SHORTCUTS:
+		if shortcuts := apiSetting.GetShortcutsSetting(); shortcuts != nil {
+			storeShortcuts := make([]*storepb.ShortcutsUserSetting_Shortcut, 0, len(shortcuts.Shortcuts))
+			for _, shortcut := range shortcuts.Shortcuts {
+				storeShortcut := &storepb.ShortcutsUserSetting_Shortcut{
+					Id:     shortcut.Id,
+					Title:  shortcut.Title,
+					Filter: shortcut.Filter,
+				}
+				storeShortcuts = append(storeShortcuts, storeShortcut)
+			}
+			storeSetting.Value = &storepb.UserSetting_Shortcuts{
+				Shortcuts: &storepb.ShortcutsUserSetting{
+					Shortcuts: storeShortcuts,
+				},
+			}
+		} else {
+			return nil, errors.Errorf("shortcuts setting is required")
+		}
+	case storepb.UserSetting_WEBHOOKS:
+		if webhooks := apiSetting.GetWebhooksSetting(); webhooks != nil {
+			storeWebhooks := make([]*storepb.WebhooksUserSetting_Webhook, 0, len(webhooks.Webhooks))
+			for _, webhook := range webhooks.Webhooks {
+				storeWebhook := &storepb.WebhooksUserSetting_Webhook{
+					Id:    webhook.Id,
+					Title: webhook.Title,
+					Url:   webhook.Url,
+				}
+				storeWebhooks = append(storeWebhooks, storeWebhook)
+			}
+			storeSetting.Value = &storepb.UserSetting_Webhooks{
+				Webhooks: &storepb.WebhooksUserSetting{
+					Webhooks: storeWebhooks,
+				},
+			}
+		} else {
+			return nil, errors.Errorf("webhooks setting is required")
+		}
+	default:
+		return nil, errors.Errorf("unsupported setting key: %v", key)
+	}
+
+	return storeSetting, nil
 }

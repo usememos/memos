@@ -79,7 +79,7 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
         toast.success("Update shortcut successfully");
       }
       // Refresh shortcuts.
-      await userStore.fetchShortcuts();
+      await userStore.fetchUserSettings();
       requestState.setFinish();
       onSuccess?.();
       onOpenChange(false);

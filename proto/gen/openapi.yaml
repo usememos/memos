@@ -1644,6 +1644,124 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/settings:
+        get:
+            tags:
+                - UserService
+            description: ListUserSettings returns a list of user settings.
+            operationId: UserService_ListUserSettings
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: |-
+                    Optional. The maximum number of settings to return.
+                     The service may return fewer than this value.
+                     If unspecified, at most 50 settings will be returned.
+                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: |-
+                    Optional. A page token, received from a previous `ListUserSettings` call.
+                     Provide this to retrieve the subsequent page.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUserSettingsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/settings/{setting}:
+        get:
+            tags:
+                - UserService
+            description: GetUserSetting returns the user setting.
+            operationId: UserService_GetUserSetting
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: setting
+                  in: path
+                  description: The setting id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserSetting'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - UserService
+            description: UpdateUserSetting updates the user setting.
+            operationId: UserService_UpdateUserSetting
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: setting
+                  in: path
+                  description: The setting id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserSetting'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserSetting'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}/shortcuts:
         get:
             tags:
@@ -1812,9 +1930,9 @@ paths:
     /api/v1/users/{user}/webhooks:
         get:
             tags:
-                - WebhookService
-            description: ListWebhooks returns a list of webhooks for a user.
-            operationId: WebhookService_ListWebhooks
+                - UserService
+            description: ListUserWebhooks returns a list of webhooks for a user.
+            operationId: UserService_ListUserWebhooks
             parameters:
                 - name: user
                   in: path
@@ -1828,7 +1946,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListWebhooksResponse'
+                                $ref: '#/components/schemas/ListUserWebhooksResponse'
                 default:
                     description: Default error response
                     content:
@@ -1837,9 +1955,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         post:
             tags:
-                - WebhookService
-            description: CreateWebhook creates a new webhook for a user.
-            operationId: WebhookService_CreateWebhook
+                - UserService
+            description: CreateUserWebhook creates a new webhook for a user.
+            operationId: UserService_CreateUserWebhook
             parameters:
                 - name: user
                   in: path
@@ -1847,16 +1965,11 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: validateOnly
-                  in: query
-                  description: Optional. If set, validate the request, but do not actually create the webhook.
-                  schema:
-                    type: boolean
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/Webhook'
+                            $ref: '#/components/schemas/UserWebhook'
                 required: true
             responses:
                 "200":
@@ -1864,7 +1977,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/Webhook'
+                                $ref: '#/components/schemas/UserWebhook'
                 default:
                     description: Default error response
                     content:
@@ -1872,42 +1985,11 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Status'
     /api/v1/users/{user}/webhooks/{webhook}:
-        get:
-            tags:
-                - WebhookService
-            description: GetWebhook gets a webhook by name.
-            operationId: WebhookService_GetWebhook
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-                - name: webhook
-                  in: path
-                  description: The webhook id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Webhook'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
         delete:
             tags:
-                - WebhookService
-            description: DeleteWebhook deletes a webhook for a user.
-            operationId: WebhookService_DeleteWebhook
+                - UserService
+            description: DeleteUserWebhook deletes a webhook for a user.
+            operationId: UserService_DeleteUserWebhook
             parameters:
                 - name: user
                   in: path
@@ -1933,9 +2015,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         patch:
             tags:
-                - WebhookService
-            description: UpdateWebhook updates a webhook for a user.
-            operationId: WebhookService_UpdateWebhook
+                - UserService
+            description: UpdateUserWebhook updates an existing webhook for a user.
+            operationId: UserService_UpdateUserWebhook
             parameters:
                 - name: user
                   in: path
@@ -1951,7 +2033,7 @@ paths:
                     type: string
                 - name: updateMask
                   in: query
-                  description: Optional. The list of fields to update.
+                  description: The list of fields to update.
                   schema:
                     type: string
                     format: field-mask
@@ -1959,7 +2041,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/Webhook'
+                            $ref: '#/components/schemas/UserWebhook'
                 required: true
             responses:
                 "200":
@@ -1967,33 +2049,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/Webhook'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}:getSetting:
-        get:
-            tags:
-                - UserService
-            description: GetUserSetting returns the user setting.
-            operationId: UserService_GetUserSetting
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UserSetting'
+                                $ref: '#/components/schemas/UserWebhook'
                 default:
                     description: Default error response
                     content:
@@ -2020,44 +2076,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UserStats'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}:updateSetting:
-        patch:
-            tags:
-                - UserService
-            description: UpdateUserSetting updates the user setting.
-            operationId: UserService_UpdateUserSetting
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-                - name: updateMask
-                  in: query
-                  description: Required. The list of fields to update.
-                  schema:
-                    type: string
-                    format: field-mask
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UserSetting'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UserSetting'
                 default:
                     description: Default error response
                     content:
@@ -2106,18 +2124,6 @@ paths:
                 - UserService
             description: ListAllUserStats returns statistics for all users.
             operationId: UserService_ListAllUserStats
-            parameters:
-                - name: pageSize
-                  in: query
-                  description: Optional. The maximum number of user stats to return.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: pageToken
-                  in: query
-                  description: Optional. A page token for pagination.
-                  schema:
-                    type: string
             responses:
                 "200":
                     description: OK
@@ -2250,6 +2256,19 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        AccessTokensSetting_AccessToken:
+            type: object
+            properties:
+                accessToken:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The access token is a JWT token.
+                         Including expiration time, issuer, etc.
+                description:
+                    type: string
+                    description: A description for the access token.
+            description: User access token information.
         Activity:
             type: object
             properties:
@@ -2685,18 +2704,11 @@ components:
         ListAllUserStatsResponse:
             type: object
             properties:
-                userStats:
+                stats:
                     type: array
                     items:
                         $ref: '#/components/schemas/UserStats'
                     description: The list of user statistics.
-                nextPageToken:
-                    type: string
-                    description: A token for the next page of results.
-                totalSize:
-                    type: integer
-                    description: The total count of user statistics.
-                    format: int32
         ListAttachmentsResponse:
             type: object
             properties:
@@ -2865,6 +2877,32 @@ components:
                     items:
                         $ref: '#/components/schemas/UserSession'
                     description: The list of user sessions.
+        ListUserSettingsResponse:
+            type: object
+            properties:
+                settings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserSetting'
+                    description: The list of user settings.
+                nextPageToken:
+                    type: string
+                    description: |-
+                        A token that can be sent as `page_token` to retrieve the next page.
+                         If this field is omitted, there are no subsequent pages.
+                totalSize:
+                    type: integer
+                    description: The total count of settings (may be approximate).
+                    format: int32
+            description: Response message for ListUserSettings method.
+        ListUserWebhooksResponse:
+            type: object
+            properties:
+                webhooks:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserWebhook'
+                    description: The list of webhooks.
         ListUsersResponse:
             type: object
             properties:
@@ -2882,14 +2920,6 @@ components:
                     type: integer
                     description: The total count of users (may be approximate).
                     format: int32
-        ListWebhooksResponse:
-            type: object
-            properties:
-                webhooks:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Webhook'
-                    description: The list of webhooks.
         Location:
             type: object
             properties:
@@ -3314,6 +3344,55 @@ components:
                     type: integer
                     description: The total count of matching users.
                     format: int32
+        SessionsSetting_ClientInfo:
+            type: object
+            properties:
+                userAgent:
+                    readOnly: true
+                    type: string
+                    description: User agent string of the client.
+                ipAddress:
+                    readOnly: true
+                    type: string
+                    description: IP address of the client.
+                deviceType:
+                    readOnly: true
+                    type: string
+                    description: Optional. Device type (e.g., "mobile", "desktop", "tablet").
+                os:
+                    readOnly: true
+                    type: string
+                    description: Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
+                browser:
+                    readOnly: true
+                    type: string
+                    description: Optional. Browser name and version (e.g., "Chrome 119.0").
+            description: Client information for a session.
+        SessionsSetting_Session:
+            type: object
+            properties:
+                sessionId:
+                    readOnly: true
+                    type: string
+                    description: Unique session identifier.
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Timestamp when the session was created.
+                    format: date-time
+                lastAccessedTime:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        Timestamp when the session was last accessed.
+                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+                    format: date-time
+                clientInfo:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/SessionsSetting_ClientInfo'
+                    description: Client information associated with this session.
+            description: User session information.
         SetMemoAttachmentsRequest:
             required:
                 - name
@@ -3362,6 +3441,23 @@ components:
                 filter:
                     type: string
                     description: The filter expression for the shortcut.
+        ShortcutsSetting_Shortcut:
+            required:
+                - id
+                - title
+                - filter
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Unique identifier for the shortcut.
+                title:
+                    type: string
+                    description: Display title for the shortcut.
+                filter:
+                    type: string
+                    description: Filter expression for the shortcut.
+            description: User shortcut definition.
         SpoilerNode:
             type: object
             properties:
@@ -3641,8 +3737,31 @@ components:
                 name:
                     type: string
                     description: |-
-                        The resource name of the user whose setting this is.
-                         Format: users/{user}
+                        The name of the user setting.
+                         Format: users/{user}/settings/{setting}
+                generalSetting:
+                    $ref: '#/components/schemas/UserSetting_GeneralSetting'
+                sessionsSetting:
+                    $ref: '#/components/schemas/UserSetting_SessionsSetting'
+                accessTokensSetting:
+                    $ref: '#/components/schemas/UserSetting_AccessTokensSetting'
+                shortcutsSetting:
+                    $ref: '#/components/schemas/UserSetting_ShortcutsSetting'
+                webhooksSetting:
+                    $ref: '#/components/schemas/UserSetting_WebhooksSetting'
+            description: User settings message
+        UserSetting_AccessTokensSetting:
+            type: object
+            properties:
+                accessTokens:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AccessTokensSetting_AccessToken'
+                    description: List of user access tokens.
+            description: User access tokens configuration.
+        UserSetting_GeneralSetting:
+            type: object
+            properties:
                 locale:
                     type: string
                     description: The preferred locale of the user.
@@ -3658,7 +3777,34 @@ components:
                         The preferred theme of the user.
                          This references a CSS file in the web/public/themes/ directory.
                          If not set, the default theme will be used.
-            description: User settings message
+            description: General user settings configuration.
+        UserSetting_SessionsSetting:
+            type: object
+            properties:
+                sessions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SessionsSetting_Session'
+                    description: List of active user sessions.
+            description: User authentication sessions configuration.
+        UserSetting_ShortcutsSetting:
+            type: object
+            properties:
+                shortcuts:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ShortcutsSetting_Shortcut'
+                    description: List of user shortcuts.
+            description: User shortcuts configuration.
+        UserSetting_WebhooksSetting:
+            type: object
+            properties:
+                webhooks:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/WebhooksSetting_Webhook'
+                    description: List of user webhooks.
+            description: User webhooks configuration.
         UserStats:
             type: object
             properties:
@@ -3709,23 +3855,48 @@ components:
                     type: integer
                     format: int32
             description: Memo type statistics.
-        Webhook:
-            required:
-                - displayName
-                - url
+        UserWebhook:
             type: object
             properties:
                 name:
                     type: string
                     description: |-
-                        The resource name of the webhook.
+                        The name of the webhook.
                          Format: users/{user}/webhooks/{webhook}
-                displayName:
-                    type: string
-                    description: The display name of the webhook.
                 url:
                     type: string
-                    description: The target URL for the webhook.
+                    description: The URL to send the webhook to.
+                displayName:
+                    type: string
+                    description: Optional. Human-readable name for the webhook.
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: The creation time of the webhook.
+                    format: date-time
+                updateTime:
+                    readOnly: true
+                    type: string
+                    description: The last update time of the webhook.
+                    format: date-time
+            description: UserWebhook represents a webhook owned by a user.
+        WebhooksSetting_Webhook:
+            required:
+                - id
+                - title
+                - url
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Unique identifier for the webhook.
+                title:
+                    type: string
+                    description: Descriptive title for the webhook.
+                url:
+                    type: string
+                    description: The webhook URL endpoint.
+            description: User webhook definition.
         WorkspaceProfile:
             type: object
             properties:
@@ -3871,5 +4042,4 @@ tags:
     - name: MemoService
     - name: ShortcutService
     - name: UserService
-    - name: WebhookService
     - name: WorkspaceService

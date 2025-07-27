@@ -1,15 +1,28 @@
 import { uniqueId } from "lodash-es";
 import { makeAutoObservable } from "mobx";
-import { authServiceClient, inboxServiceClient, shortcutServiceClient, userServiceClient } from "@/grpcweb";
+import { authServiceClient, inboxServiceClient, userServiceClient } from "@/grpcweb";
 import { Inbox } from "@/types/proto/api/v1/inbox_service";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
-import { User, UserSetting, UserStats } from "@/types/proto/api/v1/user_service";
+import {
+  User,
+  UserSetting,
+  UserSetting_GeneralSetting,
+  UserSetting_SessionsSetting,
+  UserSetting_AccessTokensSetting,
+  UserSetting_ShortcutsSetting,
+  UserSetting_WebhooksSetting,
+  UserStats,
+} from "@/types/proto/api/v1/user_service";
 import { findNearestMatchedLanguage } from "@/utils/i18n";
 import workspaceStore from "./workspace";
 
 class LocalState {
   currentUser?: string;
-  userSetting?: UserSetting;
+  userGeneralSetting?: UserSetting_GeneralSetting;
+  userSessionsSetting?: UserSetting_SessionsSetting;
+  userAccessTokensSetting?: UserSetting_AccessTokensSetting;
+  userShortcutsSetting?: UserSetting_ShortcutsSetting;
+  userWebhooksSetting?: UserSetting_WebhooksSetting;
   shortcuts: Shortcut[] = [];
   inboxes: Inbox[] = [];
   userMapByName: Record<string, User> = {};
@@ -127,37 +140,76 @@ const userStore = (() => {
     });
   };
 
-  const updateUserSetting = async (userSetting: Partial<UserSetting>, updateMask: string[]) => {
+  const updateUserGeneralSetting = async (generalSetting: Partial<UserSetting_GeneralSetting>, updateMask: string[]) => {
     if (!state.currentUser) {
       throw new Error("No current user");
     }
-    // Ensure the setting has the proper resource name
-    const settingWithName = {
-      ...userSetting,
-      name: state.currentUser,
+
+    const settingName = `${state.currentUser}/settings/general`;
+    const userSetting: UserSetting = {
+      name: settingName,
+      generalSetting: generalSetting as UserSetting_GeneralSetting,
     };
+
     const updatedUserSetting = await userServiceClient.updateUserSetting({
-      setting: settingWithName,
+      setting: userSetting,
       updateMask: updateMask,
     });
+
     state.setPartial({
-      userSetting: UserSetting.fromPartial({
-        ...state.userSetting,
-        ...updatedUserSetting,
-      }),
+      userGeneralSetting: updatedUserSetting.generalSetting,
     });
   };
 
-  const fetchShortcuts = async () => {
+  const getUserGeneralSetting = async () => {
+    if (!state.currentUser) {
+      throw new Error("No current user");
+    }
+
+    const settingName = `${state.currentUser}/settings/general`;
+    const userSetting = await userServiceClient.getUserSetting({ name: settingName });
+
+    state.setPartial({
+      userGeneralSetting: userSetting.generalSetting,
+    });
+
+    return userSetting.generalSetting;
+  };
+
+  const fetchUserSettings = async () => {
     if (!state.currentUser) {
       return;
     }
 
-    const { shortcuts } = await shortcutServiceClient.listShortcuts({ parent: state.currentUser });
+    const { settings } = await userServiceClient.listUserSettings({ parent: state.currentUser });
+
+    // Extract and store each setting type
+    const generalSetting = settings.find((s) => s.generalSetting)?.generalSetting;
+    const sessionsSetting = settings.find((s) => s.sessionsSetting)?.sessionsSetting;
+    const accessTokensSetting = settings.find((s) => s.accessTokensSetting)?.accessTokensSetting;
+    const shortcutsSetting = settings.find((s) => s.shortcutsSetting)?.shortcutsSetting;
+    const webhooksSetting = settings.find((s) => s.webhooksSetting)?.webhooksSetting;
+
+    // Convert user setting shortcuts to proper Shortcut format
+    const shortcuts: Shortcut[] =
+      shortcutsSetting?.shortcuts.map((shortcut) => ({
+        name: `${state.currentUser}/shortcuts/${shortcut.id}`,
+        title: shortcut.title,
+        filter: shortcut.filter,
+      })) || [];
+
     state.setPartial({
+      userGeneralSetting: generalSetting,
+      userSessionsSetting: sessionsSetting,
+      userAccessTokensSetting: accessTokensSetting,
+      userShortcutsSetting: shortcutsSetting,
+      userWebhooksSetting: webhooksSetting,
       shortcuts,
     });
   };
+
+  // Note: fetchShortcuts is now handled by fetchUserSettings
+  // The shortcuts are extracted from the user shortcuts setting
 
   const fetchInboxes = async () => {
     if (!state.currentUser) {
@@ -199,9 +251,9 @@ const userStore = (() => {
   const fetchUserStats = async (user?: string) => {
     const userStatsByName: Record<string, UserStats> = {};
     if (!user) {
-      const { userStats } = await userServiceClient.listAllUserStats({});
-      for (const stats of userStats) {
-        userStatsByName[stats.name] = stats;
+      const { stats } = await userServiceClient.listAllUserStats({});
+      for (const userStats of stats) {
+        userStatsByName[userStats.name] = userStats;
       }
     } else {
       const userStats = await userServiceClient.getUserStats({ name: user });
@@ -227,8 +279,9 @@ const userStore = (() => {
     fetchUsers,
     updateUser,
     deleteUser,
-    updateUserSetting,
-    fetchShortcuts,
+    updateUserGeneralSetting,
+    getUserGeneralSetting,
+    fetchUserSettings,
     fetchInboxes,
     updateInbox,
     deleteInbox,
@@ -244,25 +297,30 @@ export const initialUserStore = async () => {
       // If no user is authenticated, we can skip the rest of the initialization.
       userStore.state.setPartial({
         currentUser: undefined,
-        userSetting: undefined,
+        userGeneralSetting: undefined,
         userMapByName: {},
       });
       return;
     }
-    const userSetting = await userServiceClient.getUserSetting({ name: currentUser.name });
+
+    // Fetch all user settings
+    await userStore.fetchUserSettings();
+
     userStore.state.setPartial({
       currentUser: currentUser.name,
-      userSetting: UserSetting.fromPartial({
-        ...userSetting,
-      }),
       userMapByName: {
         [currentUser.name]: currentUser,
       },
     });
-    workspaceStore.state.setPartial({
-      locale: userSetting.locale,
-      appearance: userSetting.appearance,
-    });
+
+    // Apply general settings to workspace if available
+    const generalSetting = userStore.state.userGeneralSetting;
+    if (generalSetting) {
+      workspaceStore.state.setPartial({
+        locale: generalSetting.locale,
+        appearance: generalSetting.appearance,
+      });
+    }
   } catch {
     // find the nearest matched lang based on the `navigator.language` if the user is unauthenticated or settings retrieval fails.
     const locale = findNearestMatchedLanguage(navigator.language);

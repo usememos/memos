@@ -28,14 +28,14 @@ const ShortcutsSection = observer(() => {
   const [editingShortcut, setEditingShortcut] = useState<Shortcut | undefined>();
 
   useAsyncEffect(async () => {
-    await userStore.fetchShortcuts();
+    await userStore.fetchUserSettings();
   }, []);
 
   const handleDeleteShortcut = async (shortcut: Shortcut) => {
     const confirmed = window.confirm("Are you sure you want to delete this shortcut?");
     if (confirmed) {
       await shortcutServiceClient.deleteShortcut({ name: shortcut.name });
-      await userStore.fetchShortcuts();
+      await userStore.fetchUserSettings();
     }
   };
 

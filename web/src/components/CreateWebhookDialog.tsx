@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { webhookServiceClient } from "@/grpcweb";
+import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useTranslate } from "@/utils/i18n";
@@ -32,19 +32,24 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
   const isCreating = webhookName === undefined;
 
   useEffect(() => {
-    if (webhookName) {
-      webhookServiceClient
-        .getWebhook({
-          name: webhookName,
+    if (webhookName && currentUser) {
+      // For editing, we need to get the webhook data
+      // Since we're using user webhooks now, we need to list all webhooks and find the one we want
+      userServiceClient
+        .listUserWebhooks({
+          parent: currentUser.name,
         })
-        .then((webhook) => {
-          setState({
-            displayName: webhook.displayName,
-            url: webhook.url,
-          });
+        .then((response) => {
+          const webhook = response.webhooks.find((w) => w.name === webhookName);
+          if (webhook) {
+            setState({
+              displayName: webhook.displayName,
+              url: webhook.url,
+            });
+          }
         });
     }
-  }, [webhookName]);
+  }, [webhookName, currentUser]);
 
   const setPartialState = (partialState: Partial<State>) => {
     setState({
@@ -79,7 +84,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
     try {
       requestState.setLoading();
       if (isCreating) {
-        await webhookServiceClient.createWebhook({
+        await userServiceClient.createUserWebhook({
           parent: currentUser.name,
           webhook: {
             displayName: state.displayName,
@@ -87,7 +92,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
           },
         });
       } else {
-        await webhookServiceClient.updateWebhook({
+        await userServiceClient.updateUserWebhook({
           webhook: {
             name: webhookName,
             displayName: state.displayName,

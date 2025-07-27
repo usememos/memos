@@ -12,7 +12,7 @@ const App = observer(() => {
   const navigateTo = useNavigateTo();
   const [mode, setMode] = useState<"light" | "dark">("light");
   const workspaceProfile = workspaceStore.state.profile;
-  const userSetting = userStore.state.userSetting;
+  const userGeneralSetting = userStore.state.userGeneralSetting;
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
 
   // Redirect to sign up page if no instance owner.
@@ -94,22 +94,22 @@ const App = observer(() => {
   }, [mode]);
 
   useEffect(() => {
-    if (!userSetting) {
+    if (!userGeneralSetting) {
       return;
     }
 
     workspaceStore.state.setPartial({
-      locale: userSetting.locale || workspaceStore.state.locale,
-      appearance: userSetting.appearance || workspaceStore.state.appearance,
+      locale: userGeneralSetting.locale || workspaceStore.state.locale,
+      appearance: userGeneralSetting.appearance || workspaceStore.state.appearance,
     });
-  }, [userSetting?.locale, userSetting?.appearance]);
+  }, [userGeneralSetting?.locale, userGeneralSetting?.appearance]);
 
   // Load theme when user setting changes (user theme is already backfilled with workspace theme)
   useEffect(() => {
-    if (userSetting?.theme) {
-      loadTheme(userSetting.theme);
+    if (userGeneralSetting?.theme) {
+      loadTheme(userGeneralSetting.theme);
     }
-  }, [userSetting?.theme]);
+  }, [userGeneralSetting?.theme]);
 
   return <Outlet />;
 });

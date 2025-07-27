@@ -8,7 +8,6 @@ import { MarkdownServiceDefinition } from "./types/proto/api/v1/markdown_service
 import { MemoServiceDefinition } from "./types/proto/api/v1/memo_service";
 import { ShortcutServiceDefinition } from "./types/proto/api/v1/shortcut_service";
 import { UserServiceDefinition } from "./types/proto/api/v1/user_service";
-import { WebhookServiceDefinition } from "./types/proto/api/v1/webhook_service";
 import { WorkspaceServiceDefinition } from "./types/proto/api/v1/workspace_service";
 
 const channel = createChannel(
@@ -35,8 +34,6 @@ export const shortcutServiceClient = clientFactory.create(ShortcutServiceDefinit
 export const inboxServiceClient = clientFactory.create(InboxServiceDefinition, channel);
 
 export const activityServiceClient = clientFactory.create(ActivityServiceDefinition, channel);
-
-export const webhookServiceClient = clientFactory.create(WebhookServiceDefinition, channel);
 
 export const markdownServiceClient = clientFactory.create(MarkdownServiceDefinition, channel);
 

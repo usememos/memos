@@ -65,7 +65,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 	}
 
 	response := &v1pb.ListAllUserStatsResponse{
-		UserStats: userMemoStats,
+		Stats: userMemoStats,
 	}
 	return response, nil
 }
