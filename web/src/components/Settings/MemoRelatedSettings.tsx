@@ -9,18 +9,18 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
-import { WorkspaceMemoRelatedSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
+import { WorkspaceSetting_MemoRelatedSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = observer(() => {
   const t = useTranslate();
-  const [originalSetting, setOriginalSetting] = useState<WorkspaceMemoRelatedSetting>(workspaceStore.state.memoRelatedSetting);
-  const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceMemoRelatedSetting>(originalSetting);
+  const [originalSetting, setOriginalSetting] = useState<WorkspaceSetting_MemoRelatedSetting>(workspaceStore.state.memoRelatedSetting);
+  const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceSetting_MemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
   const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
 
-  const updatePartialSetting = (partial: Partial<WorkspaceMemoRelatedSetting>) => {
-    const newWorkspaceMemoRelatedSetting = WorkspaceMemoRelatedSetting.fromPartial({
+  const updatePartialSetting = (partial: Partial<WorkspaceSetting_MemoRelatedSetting>) => {
+    const newWorkspaceMemoRelatedSetting = WorkspaceSetting_MemoRelatedSetting.fromPartial({
       ...memoRelatedSetting,
       ...partial,
     });

@@ -15,21 +15,25 @@ import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import {
   WorkspaceSetting_Key,
-  WorkspaceStorageSetting,
-  WorkspaceStorageSetting_S3Config,
-  WorkspaceStorageSetting_StorageType,
+  WorkspaceSetting_StorageSetting,
+  WorkspaceSetting_StorageSetting_S3Config,
+  WorkspaceSetting_StorageSetting_StorageType,
 } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 
 const StorageSection = observer(() => {
   const t = useTranslate();
-  const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceStorageSetting>(
-    WorkspaceStorageSetting.fromPartial(workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {}),
+  const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceSetting_StorageSetting>(
+    WorkspaceSetting_StorageSetting.fromPartial(
+      workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {},
+    ),
   );
 
   useEffect(() => {
     setWorkspaceStorageSetting(
-      WorkspaceStorageSetting.fromPartial(workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {}),
+      WorkspaceSetting_StorageSetting.fromPartial(
+        workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {},
+      ),
     );
   }, [workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)]);
 
@@ -38,14 +42,14 @@ const StorageSection = observer(() => {
       return false;
     }
 
-    const origin = WorkspaceStorageSetting.fromPartial(
+    const origin = WorkspaceSetting_StorageSetting.fromPartial(
       workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {},
     );
-    if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.LOCAL) {
+    if (workspaceStorageSetting.storageType === WorkspaceSetting_StorageSetting_StorageType.LOCAL) {
       if (workspaceStorageSetting.filepathTemplate.length === 0) {
         return false;
       }
-    } else if (workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.S3) {
+    } else if (workspaceStorageSetting.storageType === WorkspaceSetting_StorageSetting_StorageType.S3) {
       if (
         workspaceStorageSetting.s3Config?.accessKeyId.length === 0 ||
         workspaceStorageSetting.s3Config?.accessKeySecret.length === 0 ||
@@ -64,7 +68,7 @@ const StorageSection = observer(() => {
     if (Number.isNaN(num)) {
       num = 0;
     }
-    const update: WorkspaceStorageSetting = {
+    const update: WorkspaceSetting_StorageSetting = {
       ...workspaceStorageSetting,
       uploadSizeLimitMb: num,
     };
@@ -72,17 +76,17 @@ const StorageSection = observer(() => {
   };
 
   const handleFilepathTemplateChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
-    const update: WorkspaceStorageSetting = {
+    const update: WorkspaceSetting_StorageSetting = {
       ...workspaceStorageSetting,
       filepathTemplate: event.target.value,
     };
     setWorkspaceStorageSetting(update);
   };
 
-  const handlePartialS3ConfigChanged = async (s3Config: Partial<WorkspaceStorageSetting_S3Config>) => {
-    const update: WorkspaceStorageSetting = {
+  const handlePartialS3ConfigChanged = async (s3Config: Partial<WorkspaceSetting_StorageSetting_S3Config>) => {
+    const update: WorkspaceSetting_StorageSetting = {
       ...workspaceStorageSetting,
-      s3Config: WorkspaceStorageSetting_S3Config.fromPartial({
+      s3Config: WorkspaceSetting_StorageSetting_S3Config.fromPartial({
         ...workspaceStorageSetting.s3Config,
         ...s3Config,
       }),
@@ -116,8 +120,8 @@ const StorageSection = observer(() => {
     });
   };
 
-  const handleStorageTypeChanged = async (storageType: WorkspaceStorageSetting_StorageType) => {
-    const update: WorkspaceStorageSetting = {
+  const handleStorageTypeChanged = async (storageType: WorkspaceSetting_StorageSetting_StorageType) => {
+    const update: WorkspaceSetting_StorageSetting = {
       ...workspaceStorageSetting,
       storageType: storageType,
     };
@@ -138,20 +142,20 @@ const StorageSection = observer(() => {
       <RadioGroup
         value={workspaceStorageSetting.storageType}
         onValueChange={(value) => {
-          handleStorageTypeChanged(value as WorkspaceStorageSetting_StorageType);
+          handleStorageTypeChanged(value as WorkspaceSetting_StorageSetting_StorageType);
         }}
         className="flex flex-row gap-4"
       >
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value={WorkspaceStorageSetting_StorageType.DATABASE} id="database" />
+          <RadioGroupItem value={WorkspaceSetting_StorageSetting_StorageType.DATABASE} id="database" />
           <Label htmlFor="database">{t("setting.storage-section.type-database")}</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value={WorkspaceStorageSetting_StorageType.LOCAL} id="local" />
+          <RadioGroupItem value={WorkspaceSetting_StorageSetting_StorageType.LOCAL} id="local" />
           <Label htmlFor="local">{t("setting.storage-section.type-local")}</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value={WorkspaceStorageSetting_StorageType.S3} id="s3" />
+          <RadioGroupItem value={WorkspaceSetting_StorageSetting_StorageType.S3} id="s3" />
           <Label htmlFor="s3">S3</Label>
         </div>
       </RadioGroup>
@@ -171,7 +175,7 @@ const StorageSection = observer(() => {
         </div>
         <Input className="w-16 font-mono" value={workspaceStorageSetting.uploadSizeLimitMb} onChange={handleMaxUploadSizeChanged} />
       </div>
-      {workspaceStorageSetting.storageType !== WorkspaceStorageSetting_StorageType.DATABASE && (
+      {workspaceStorageSetting.storageType !== WorkspaceSetting_StorageSetting_StorageType.DATABASE && (
         <div className="w-full flex flex-row justify-between items-center">
           <span className="text-muted-foreground mr-1">{t("setting.storage-section.filepath-template")}</span>
           <Input
@@ -182,7 +186,7 @@ const StorageSection = observer(() => {
           />
         </div>
       )}
-      {workspaceStorageSetting.storageType === WorkspaceStorageSetting_StorageType.S3 && (
+      {workspaceStorageSetting.storageType === WorkspaceSetting_StorageSetting_StorageType.S3 && (
         <>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-muted-foreground mr-1">Access key id</span>

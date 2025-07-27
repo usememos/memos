@@ -36,15 +36,14 @@ export interface WorkspaceSetting {
    * Format: workspace/settings/{setting}
    */
   name: string;
-  generalSetting?: WorkspaceGeneralSetting | undefined;
-  storageSetting?: WorkspaceStorageSetting | undefined;
-  memoRelatedSetting?: WorkspaceMemoRelatedSetting | undefined;
+  generalSetting?: WorkspaceSetting_GeneralSetting | undefined;
+  storageSetting?: WorkspaceSetting_StorageSetting | undefined;
+  memoRelatedSetting?: WorkspaceSetting_MemoRelatedSetting | undefined;
 }
 
+/** Enumeration of workspace setting keys. */
 export enum WorkspaceSetting_Key {
   KEY_UNSPECIFIED = "KEY_UNSPECIFIED",
-  /** BASIC - BASIC is the key for basic settings. */
-  BASIC = "BASIC",
   /** GENERAL - GENERAL is the key for general settings. */
   GENERAL = "GENERAL",
   /** STORAGE - STORAGE is the key for storage settings. */
@@ -60,15 +59,12 @@ export function workspaceSetting_KeyFromJSON(object: any): WorkspaceSetting_Key 
     case "KEY_UNSPECIFIED":
       return WorkspaceSetting_Key.KEY_UNSPECIFIED;
     case 1:
-    case "BASIC":
-      return WorkspaceSetting_Key.BASIC;
-    case 2:
     case "GENERAL":
       return WorkspaceSetting_Key.GENERAL;
-    case 3:
+    case 2:
     case "STORAGE":
       return WorkspaceSetting_Key.STORAGE;
-    case 4:
+    case 3:
     case "MEMO_RELATED":
       return WorkspaceSetting_Key.MEMO_RELATED;
     case -1:
@@ -82,21 +78,20 @@ export function workspaceSetting_KeyToNumber(object: WorkspaceSetting_Key): numb
   switch (object) {
     case WorkspaceSetting_Key.KEY_UNSPECIFIED:
       return 0;
-    case WorkspaceSetting_Key.BASIC:
-      return 1;
     case WorkspaceSetting_Key.GENERAL:
-      return 2;
+      return 1;
     case WorkspaceSetting_Key.STORAGE:
-      return 3;
+      return 2;
     case WorkspaceSetting_Key.MEMO_RELATED:
-      return 4;
+      return 3;
     case WorkspaceSetting_Key.UNRECOGNIZED:
     default:
       return -1;
   }
 }
 
-export interface WorkspaceGeneralSetting {
+/** General workspace settings configuration. */
+export interface WorkspaceSetting_GeneralSetting {
   /**
    * theme is the name of the selected theme.
    * This references a CSS file in the web/public/themes/ directory.
@@ -112,7 +107,7 @@ export interface WorkspaceGeneralSetting {
   additionalStyle: string;
   /** custom_profile is the custom profile. */
   customProfile?:
-    | WorkspaceCustomProfile
+    | WorkspaceSetting_GeneralSetting_CustomProfile
     | undefined;
   /**
    * week_start_day_offset is the week start day offset from Sunday.
@@ -126,7 +121,8 @@ export interface WorkspaceGeneralSetting {
   disallowChangeNickname: boolean;
 }
 
-export interface WorkspaceCustomProfile {
+/** Custom profile configuration for workspace branding. */
+export interface WorkspaceSetting_GeneralSetting_CustomProfile {
   title: string;
   description: string;
   logoUrl: string;
@@ -134,9 +130,10 @@ export interface WorkspaceCustomProfile {
   appearance: string;
 }
 
-export interface WorkspaceStorageSetting {
+/** Storage configuration settings for workspace attachments. */
+export interface WorkspaceSetting_StorageSetting {
   /** storage_type is the storage type. */
-  storageType: WorkspaceStorageSetting_StorageType;
+  storageType: WorkspaceSetting_StorageSetting_StorageType;
   /**
    * The template of file path.
    * e.g. assets/{timestamp}_{filename}
@@ -145,10 +142,11 @@ export interface WorkspaceStorageSetting {
   /** The max upload size in megabytes. */
   uploadSizeLimitMb: number;
   /** The S3 config. */
-  s3Config?: WorkspaceStorageSetting_S3Config | undefined;
+  s3Config?: WorkspaceSetting_StorageSetting_S3Config | undefined;
 }
 
-export enum WorkspaceStorageSetting_StorageType {
+/** Storage type enumeration for different storage backends. */
+export enum WorkspaceSetting_StorageSetting_StorageType {
   STORAGE_TYPE_UNSPECIFIED = "STORAGE_TYPE_UNSPECIFIED",
   /** DATABASE - DATABASE is the database storage type. */
   DATABASE = "DATABASE",
@@ -159,45 +157,52 @@ export enum WorkspaceStorageSetting_StorageType {
   UNRECOGNIZED = "UNRECOGNIZED",
 }
 
-export function workspaceStorageSetting_StorageTypeFromJSON(object: any): WorkspaceStorageSetting_StorageType {
+export function workspaceSetting_StorageSetting_StorageTypeFromJSON(
+  object: any,
+): WorkspaceSetting_StorageSetting_StorageType {
   switch (object) {
     case 0:
     case "STORAGE_TYPE_UNSPECIFIED":
-      return WorkspaceStorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED;
+      return WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED;
     case 1:
     case "DATABASE":
-      return WorkspaceStorageSetting_StorageType.DATABASE;
+      return WorkspaceSetting_StorageSetting_StorageType.DATABASE;
     case 2:
     case "LOCAL":
-      return WorkspaceStorageSetting_StorageType.LOCAL;
+      return WorkspaceSetting_StorageSetting_StorageType.LOCAL;
     case 3:
     case "S3":
-      return WorkspaceStorageSetting_StorageType.S3;
+      return WorkspaceSetting_StorageSetting_StorageType.S3;
     case -1:
     case "UNRECOGNIZED":
     default:
-      return WorkspaceStorageSetting_StorageType.UNRECOGNIZED;
+      return WorkspaceSetting_StorageSetting_StorageType.UNRECOGNIZED;
   }
 }
 
-export function workspaceStorageSetting_StorageTypeToNumber(object: WorkspaceStorageSetting_StorageType): number {
+export function workspaceSetting_StorageSetting_StorageTypeToNumber(
+  object: WorkspaceSetting_StorageSetting_StorageType,
+): number {
   switch (object) {
-    case WorkspaceStorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED:
+    case WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED:
       return 0;
-    case WorkspaceStorageSetting_StorageType.DATABASE:
+    case WorkspaceSetting_StorageSetting_StorageType.DATABASE:
       return 1;
-    case WorkspaceStorageSetting_StorageType.LOCAL:
+    case WorkspaceSetting_StorageSetting_StorageType.LOCAL:
       return 2;
-    case WorkspaceStorageSetting_StorageType.S3:
+    case WorkspaceSetting_StorageSetting_StorageType.S3:
       return 3;
-    case WorkspaceStorageSetting_StorageType.UNRECOGNIZED:
+    case WorkspaceSetting_StorageSetting_StorageType.UNRECOGNIZED:
     default:
       return -1;
   }
 }
 
-/** Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/ */
-export interface WorkspaceStorageSetting_S3Config {
+/**
+ * S3 configuration for cloud storage backend.
+ * Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+ */
+export interface WorkspaceSetting_StorageSetting_S3Config {
   accessKeyId: string;
   accessKeySecret: string;
   endpoint: string;
@@ -206,7 +211,8 @@ export interface WorkspaceStorageSetting_S3Config {
   usePathStyle: boolean;
 }
 
-export interface WorkspaceMemoRelatedSetting {
+/** Memo-related workspace settings and policies. */
+export interface WorkspaceSetting_MemoRelatedSetting {
   /** disallow_public_visibility disallows set memo as public visibility. */
   disallowPublicVisibility: boolean;
   /** display_with_update_time orders and displays memo with update time. */
@@ -374,13 +380,13 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
       writer.uint32(10).string(message.name);
     }
     if (message.generalSetting !== undefined) {
-      WorkspaceGeneralSetting.encode(message.generalSetting, writer.uint32(18).fork()).join();
+      WorkspaceSetting_GeneralSetting.encode(message.generalSetting, writer.uint32(18).fork()).join();
     }
     if (message.storageSetting !== undefined) {
-      WorkspaceStorageSetting.encode(message.storageSetting, writer.uint32(26).fork()).join();
+      WorkspaceSetting_StorageSetting.encode(message.storageSetting, writer.uint32(26).fork()).join();
     }
     if (message.memoRelatedSetting !== undefined) {
-      WorkspaceMemoRelatedSetting.encode(message.memoRelatedSetting, writer.uint32(34).fork()).join();
+      WorkspaceSetting_MemoRelatedSetting.encode(message.memoRelatedSetting, writer.uint32(34).fork()).join();
     }
     return writer;
   },
@@ -405,7 +411,7 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
             break;
           }
 
-          message.generalSetting = WorkspaceGeneralSetting.decode(reader, reader.uint32());
+          message.generalSetting = WorkspaceSetting_GeneralSetting.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -413,7 +419,7 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
             break;
           }
 
-          message.storageSetting = WorkspaceStorageSetting.decode(reader, reader.uint32());
+          message.storageSetting = WorkspaceSetting_StorageSetting.decode(reader, reader.uint32());
           continue;
         }
         case 4: {
@@ -421,7 +427,7 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
             break;
           }
 
-          message.memoRelatedSetting = WorkspaceMemoRelatedSetting.decode(reader, reader.uint32());
+          message.memoRelatedSetting = WorkspaceSetting_MemoRelatedSetting.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -440,19 +446,19 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
     const message = createBaseWorkspaceSetting();
     message.name = object.name ?? "";
     message.generalSetting = (object.generalSetting !== undefined && object.generalSetting !== null)
-      ? WorkspaceGeneralSetting.fromPartial(object.generalSetting)
+      ? WorkspaceSetting_GeneralSetting.fromPartial(object.generalSetting)
       : undefined;
     message.storageSetting = (object.storageSetting !== undefined && object.storageSetting !== null)
-      ? WorkspaceStorageSetting.fromPartial(object.storageSetting)
+      ? WorkspaceSetting_StorageSetting.fromPartial(object.storageSetting)
       : undefined;
     message.memoRelatedSetting = (object.memoRelatedSetting !== undefined && object.memoRelatedSetting !== null)
-      ? WorkspaceMemoRelatedSetting.fromPartial(object.memoRelatedSetting)
+      ? WorkspaceSetting_MemoRelatedSetting.fromPartial(object.memoRelatedSetting)
       : undefined;
     return message;
   },
 };
 
-function createBaseWorkspaceGeneralSetting(): WorkspaceGeneralSetting {
+function createBaseWorkspaceSetting_GeneralSetting(): WorkspaceSetting_GeneralSetting {
   return {
     theme: "",
     disallowUserRegistration: false,
@@ -466,8 +472,8 @@ function createBaseWorkspaceGeneralSetting(): WorkspaceGeneralSetting {
   };
 }
 
-export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
-  encode(message: WorkspaceGeneralSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const WorkspaceSetting_GeneralSetting: MessageFns<WorkspaceSetting_GeneralSetting> = {
+  encode(message: WorkspaceSetting_GeneralSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.theme !== "") {
       writer.uint32(10).string(message.theme);
     }
@@ -484,7 +490,7 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
       writer.uint32(42).string(message.additionalStyle);
     }
     if (message.customProfile !== undefined) {
-      WorkspaceCustomProfile.encode(message.customProfile, writer.uint32(50).fork()).join();
+      WorkspaceSetting_GeneralSetting_CustomProfile.encode(message.customProfile, writer.uint32(50).fork()).join();
     }
     if (message.weekStartDayOffset !== 0) {
       writer.uint32(56).int32(message.weekStartDayOffset);
@@ -498,10 +504,10 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceGeneralSetting {
+  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_GeneralSetting {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceGeneralSetting();
+    const message = createBaseWorkspaceSetting_GeneralSetting();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -550,7 +556,7 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
             break;
           }
 
-          message.customProfile = WorkspaceCustomProfile.decode(reader, reader.uint32());
+          message.customProfile = WorkspaceSetting_GeneralSetting_CustomProfile.decode(reader, reader.uint32());
           continue;
         }
         case 7: {
@@ -586,18 +592,18 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceGeneralSetting>): WorkspaceGeneralSetting {
-    return WorkspaceGeneralSetting.fromPartial(base ?? {});
+  create(base?: DeepPartial<WorkspaceSetting_GeneralSetting>): WorkspaceSetting_GeneralSetting {
+    return WorkspaceSetting_GeneralSetting.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceGeneralSetting>): WorkspaceGeneralSetting {
-    const message = createBaseWorkspaceGeneralSetting();
+  fromPartial(object: DeepPartial<WorkspaceSetting_GeneralSetting>): WorkspaceSetting_GeneralSetting {
+    const message = createBaseWorkspaceSetting_GeneralSetting();
     message.theme = object.theme ?? "";
     message.disallowUserRegistration = object.disallowUserRegistration ?? false;
     message.disallowPasswordAuth = object.disallowPasswordAuth ?? false;
     message.additionalScript = object.additionalScript ?? "";
     message.additionalStyle = object.additionalStyle ?? "";
     message.customProfile = (object.customProfile !== undefined && object.customProfile !== null)
-      ? WorkspaceCustomProfile.fromPartial(object.customProfile)
+      ? WorkspaceSetting_GeneralSetting_CustomProfile.fromPartial(object.customProfile)
       : undefined;
     message.weekStartDayOffset = object.weekStartDayOffset ?? 0;
     message.disallowChangeUsername = object.disallowChangeUsername ?? false;
@@ -606,113 +612,121 @@ export const WorkspaceGeneralSetting: MessageFns<WorkspaceGeneralSetting> = {
   },
 };
 
-function createBaseWorkspaceCustomProfile(): WorkspaceCustomProfile {
+function createBaseWorkspaceSetting_GeneralSetting_CustomProfile(): WorkspaceSetting_GeneralSetting_CustomProfile {
   return { title: "", description: "", logoUrl: "", locale: "", appearance: "" };
 }
 
-export const WorkspaceCustomProfile: MessageFns<WorkspaceCustomProfile> = {
-  encode(message: WorkspaceCustomProfile, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.title !== "") {
-      writer.uint32(10).string(message.title);
-    }
-    if (message.description !== "") {
-      writer.uint32(18).string(message.description);
-    }
-    if (message.logoUrl !== "") {
-      writer.uint32(26).string(message.logoUrl);
-    }
-    if (message.locale !== "") {
-      writer.uint32(34).string(message.locale);
-    }
-    if (message.appearance !== "") {
-      writer.uint32(42).string(message.appearance);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceCustomProfile {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceCustomProfile();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.title = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.description = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.logoUrl = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.locale = reader.string();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.appearance = reader.string();
-          continue;
-        }
+export const WorkspaceSetting_GeneralSetting_CustomProfile: MessageFns<WorkspaceSetting_GeneralSetting_CustomProfile> =
+  {
+    encode(
+      message: WorkspaceSetting_GeneralSetting_CustomProfile,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.title !== "") {
+        writer.uint32(10).string(message.title);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.description !== "") {
+        writer.uint32(18).string(message.description);
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      if (message.logoUrl !== "") {
+        writer.uint32(26).string(message.logoUrl);
+      }
+      if (message.locale !== "") {
+        writer.uint32(34).string(message.locale);
+      }
+      if (message.appearance !== "") {
+        writer.uint32(42).string(message.appearance);
+      }
+      return writer;
+    },
 
-  create(base?: DeepPartial<WorkspaceCustomProfile>): WorkspaceCustomProfile {
-    return WorkspaceCustomProfile.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<WorkspaceCustomProfile>): WorkspaceCustomProfile {
-    const message = createBaseWorkspaceCustomProfile();
-    message.title = object.title ?? "";
-    message.description = object.description ?? "";
-    message.logoUrl = object.logoUrl ?? "";
-    message.locale = object.locale ?? "";
-    message.appearance = object.appearance ?? "";
-    return message;
-  },
-};
+    decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_GeneralSetting_CustomProfile {
+      const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+      let end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseWorkspaceSetting_GeneralSetting_CustomProfile();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-function createBaseWorkspaceStorageSetting(): WorkspaceStorageSetting {
+            message.title = reader.string();
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
+
+            message.description = reader.string();
+            continue;
+          }
+          case 3: {
+            if (tag !== 26) {
+              break;
+            }
+
+            message.logoUrl = reader.string();
+            continue;
+          }
+          case 4: {
+            if (tag !== 34) {
+              break;
+            }
+
+            message.locale = reader.string();
+            continue;
+          }
+          case 5: {
+            if (tag !== 42) {
+              break;
+            }
+
+            message.appearance = reader.string();
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    create(
+      base?: DeepPartial<WorkspaceSetting_GeneralSetting_CustomProfile>,
+    ): WorkspaceSetting_GeneralSetting_CustomProfile {
+      return WorkspaceSetting_GeneralSetting_CustomProfile.fromPartial(base ?? {});
+    },
+    fromPartial(
+      object: DeepPartial<WorkspaceSetting_GeneralSetting_CustomProfile>,
+    ): WorkspaceSetting_GeneralSetting_CustomProfile {
+      const message = createBaseWorkspaceSetting_GeneralSetting_CustomProfile();
+      message.title = object.title ?? "";
+      message.description = object.description ?? "";
+      message.logoUrl = object.logoUrl ?? "";
+      message.locale = object.locale ?? "";
+      message.appearance = object.appearance ?? "";
+      return message;
+    },
+  };
+
+function createBaseWorkspaceSetting_StorageSetting(): WorkspaceSetting_StorageSetting {
   return {
-    storageType: WorkspaceStorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED,
+    storageType: WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED,
     filepathTemplate: "",
     uploadSizeLimitMb: 0,
     s3Config: undefined,
   };
 }
 
-export const WorkspaceStorageSetting: MessageFns<WorkspaceStorageSetting> = {
-  encode(message: WorkspaceStorageSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.storageType !== WorkspaceStorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED) {
-      writer.uint32(8).int32(workspaceStorageSetting_StorageTypeToNumber(message.storageType));
+export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_StorageSetting> = {
+  encode(message: WorkspaceSetting_StorageSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.storageType !== WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED) {
+      writer.uint32(8).int32(workspaceSetting_StorageSetting_StorageTypeToNumber(message.storageType));
     }
     if (message.filepathTemplate !== "") {
       writer.uint32(18).string(message.filepathTemplate);
@@ -721,15 +735,15 @@ export const WorkspaceStorageSetting: MessageFns<WorkspaceStorageSetting> = {
       writer.uint32(24).int64(message.uploadSizeLimitMb);
     }
     if (message.s3Config !== undefined) {
-      WorkspaceStorageSetting_S3Config.encode(message.s3Config, writer.uint32(34).fork()).join();
+      WorkspaceSetting_StorageSetting_S3Config.encode(message.s3Config, writer.uint32(34).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceStorageSetting {
+  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_StorageSetting {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceStorageSetting();
+    const message = createBaseWorkspaceSetting_StorageSetting();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -738,7 +752,7 @@ export const WorkspaceStorageSetting: MessageFns<WorkspaceStorageSetting> = {
             break;
           }
 
-          message.storageType = workspaceStorageSetting_StorageTypeFromJSON(reader.int32());
+          message.storageType = workspaceSetting_StorageSetting_StorageTypeFromJSON(reader.int32());
           continue;
         }
         case 2: {
@@ -762,7 +776,7 @@ export const WorkspaceStorageSetting: MessageFns<WorkspaceStorageSetting> = {
             break;
           }
 
-          message.s3Config = WorkspaceStorageSetting_S3Config.decode(reader, reader.uint32());
+          message.s3Config = WorkspaceSetting_StorageSetting_S3Config.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -774,27 +788,27 @@ export const WorkspaceStorageSetting: MessageFns<WorkspaceStorageSetting> = {
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceStorageSetting>): WorkspaceStorageSetting {
-    return WorkspaceStorageSetting.fromPartial(base ?? {});
+  create(base?: DeepPartial<WorkspaceSetting_StorageSetting>): WorkspaceSetting_StorageSetting {
+    return WorkspaceSetting_StorageSetting.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceStorageSetting>): WorkspaceStorageSetting {
-    const message = createBaseWorkspaceStorageSetting();
-    message.storageType = object.storageType ?? WorkspaceStorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED;
+  fromPartial(object: DeepPartial<WorkspaceSetting_StorageSetting>): WorkspaceSetting_StorageSetting {
+    const message = createBaseWorkspaceSetting_StorageSetting();
+    message.storageType = object.storageType ?? WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED;
     message.filepathTemplate = object.filepathTemplate ?? "";
     message.uploadSizeLimitMb = object.uploadSizeLimitMb ?? 0;
     message.s3Config = (object.s3Config !== undefined && object.s3Config !== null)
-      ? WorkspaceStorageSetting_S3Config.fromPartial(object.s3Config)
+      ? WorkspaceSetting_StorageSetting_S3Config.fromPartial(object.s3Config)
       : undefined;
     return message;
   },
 };
 
-function createBaseWorkspaceStorageSetting_S3Config(): WorkspaceStorageSetting_S3Config {
+function createBaseWorkspaceSetting_StorageSetting_S3Config(): WorkspaceSetting_StorageSetting_S3Config {
   return { accessKeyId: "", accessKeySecret: "", endpoint: "", region: "", bucket: "", usePathStyle: false };
 }
 
-export const WorkspaceStorageSetting_S3Config: MessageFns<WorkspaceStorageSetting_S3Config> = {
-  encode(message: WorkspaceStorageSetting_S3Config, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const WorkspaceSetting_StorageSetting_S3Config: MessageFns<WorkspaceSetting_StorageSetting_S3Config> = {
+  encode(message: WorkspaceSetting_StorageSetting_S3Config, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.accessKeyId !== "") {
       writer.uint32(10).string(message.accessKeyId);
     }
@@ -816,10 +830,10 @@ export const WorkspaceStorageSetting_S3Config: MessageFns<WorkspaceStorageSettin
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceStorageSetting_S3Config {
+  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_StorageSetting_S3Config {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceStorageSetting_S3Config();
+    const message = createBaseWorkspaceSetting_StorageSetting_S3Config();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -880,11 +894,11 @@ export const WorkspaceStorageSetting_S3Config: MessageFns<WorkspaceStorageSettin
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceStorageSetting_S3Config>): WorkspaceStorageSetting_S3Config {
-    return WorkspaceStorageSetting_S3Config.fromPartial(base ?? {});
+  create(base?: DeepPartial<WorkspaceSetting_StorageSetting_S3Config>): WorkspaceSetting_StorageSetting_S3Config {
+    return WorkspaceSetting_StorageSetting_S3Config.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceStorageSetting_S3Config>): WorkspaceStorageSetting_S3Config {
-    const message = createBaseWorkspaceStorageSetting_S3Config();
+  fromPartial(object: DeepPartial<WorkspaceSetting_StorageSetting_S3Config>): WorkspaceSetting_StorageSetting_S3Config {
+    const message = createBaseWorkspaceSetting_StorageSetting_S3Config();
     message.accessKeyId = object.accessKeyId ?? "";
     message.accessKeySecret = object.accessKeySecret ?? "";
     message.endpoint = object.endpoint ?? "";
@@ -895,7 +909,7 @@ export const WorkspaceStorageSetting_S3Config: MessageFns<WorkspaceStorageSettin
   },
 };
 
-function createBaseWorkspaceMemoRelatedSetting(): WorkspaceMemoRelatedSetting {
+function createBaseWorkspaceSetting_MemoRelatedSetting(): WorkspaceSetting_MemoRelatedSetting {
   return {
     disallowPublicVisibility: false,
     displayWithUpdateTime: false,
@@ -910,8 +924,8 @@ function createBaseWorkspaceMemoRelatedSetting(): WorkspaceMemoRelatedSetting {
   };
 }
 
-export const WorkspaceMemoRelatedSetting: MessageFns<WorkspaceMemoRelatedSetting> = {
-  encode(message: WorkspaceMemoRelatedSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_MemoRelatedSetting> = {
+  encode(message: WorkspaceSetting_MemoRelatedSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.disallowPublicVisibility !== false) {
       writer.uint32(8).bool(message.disallowPublicVisibility);
     }
@@ -945,10 +959,10 @@ export const WorkspaceMemoRelatedSetting: MessageFns<WorkspaceMemoRelatedSetting
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceMemoRelatedSetting {
+  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_MemoRelatedSetting {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceMemoRelatedSetting();
+    const message = createBaseWorkspaceSetting_MemoRelatedSetting();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1041,11 +1055,11 @@ export const WorkspaceMemoRelatedSetting: MessageFns<WorkspaceMemoRelatedSetting
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceMemoRelatedSetting>): WorkspaceMemoRelatedSetting {
-    return WorkspaceMemoRelatedSetting.fromPartial(base ?? {});
+  create(base?: DeepPartial<WorkspaceSetting_MemoRelatedSetting>): WorkspaceSetting_MemoRelatedSetting {
+    return WorkspaceSetting_MemoRelatedSetting.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceMemoRelatedSetting>): WorkspaceMemoRelatedSetting {
-    const message = createBaseWorkspaceMemoRelatedSetting();
+  fromPartial(object: DeepPartial<WorkspaceSetting_MemoRelatedSetting>): WorkspaceSetting_MemoRelatedSetting {
+    const message = createBaseWorkspaceSetting_MemoRelatedSetting();
     message.disallowPublicVisibility = object.disallowPublicVisibility ?? false;
     message.displayWithUpdateTime = object.displayWithUpdateTime ?? false;
     message.contentLengthLimit = object.contentLengthLimit ?? 0;

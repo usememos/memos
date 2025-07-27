@@ -2,7 +2,11 @@ import { uniqBy } from "lodash-es";
 import { makeAutoObservable } from "mobx";
 import { workspaceServiceClient } from "@/grpcweb";
 import { WorkspaceProfile, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
-import { WorkspaceGeneralSetting, WorkspaceMemoRelatedSetting, WorkspaceSetting } from "@/types/proto/api/v1/workspace_service";
+import {
+  WorkspaceSetting_GeneralSetting,
+  WorkspaceSetting_MemoRelatedSetting,
+  WorkspaceSetting,
+} from "@/types/proto/api/v1/workspace_service";
 import { isValidateLocale } from "@/utils/i18n";
 import { workspaceSettingNamePrefix } from "./common";
 
@@ -15,14 +19,14 @@ class LocalState {
   get generalSetting() {
     return (
       this.settings.find((setting) => setting.name === `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.GENERAL}`)?.generalSetting ||
-      WorkspaceGeneralSetting.fromPartial({})
+      WorkspaceSetting_GeneralSetting.fromPartial({})
     );
   }
 
   get memoRelatedSetting() {
     return (
       this.settings.find((setting) => setting.name === `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.MEMO_RELATED}`)
-        ?.memoRelatedSetting || WorkspaceMemoRelatedSetting.fromPartial({})
+        ?.memoRelatedSetting || WorkspaceSetting_MemoRelatedSetting.fromPartial({})
     );
   }
 

@@ -105,15 +105,15 @@ func convertWorkspaceSettingFromStore(setting *storepb.WorkspaceSetting) *v1pb.W
 	}
 	switch setting.Value.(type) {
 	case *storepb.WorkspaceSetting_GeneralSetting:
-		workspaceSetting.Value = &v1pb.WorkspaceSetting_GeneralSetting{
+		workspaceSetting.Value = &v1pb.WorkspaceSetting_GeneralSetting_{
 			GeneralSetting: convertWorkspaceGeneralSettingFromStore(setting.GetGeneralSetting()),
 		}
 	case *storepb.WorkspaceSetting_StorageSetting:
-		workspaceSetting.Value = &v1pb.WorkspaceSetting_StorageSetting{
+		workspaceSetting.Value = &v1pb.WorkspaceSetting_StorageSetting_{
 			StorageSetting: convertWorkspaceStorageSettingFromStore(setting.GetStorageSetting()),
 		}
 	case *storepb.WorkspaceSetting_MemoRelatedSetting:
-		workspaceSetting.Value = &v1pb.WorkspaceSetting_MemoRelatedSetting{
+		workspaceSetting.Value = &v1pb.WorkspaceSetting_MemoRelatedSetting_{
 			MemoRelatedSetting: convertWorkspaceMemoRelatedSettingFromStore(setting.GetMemoRelatedSetting()),
 		}
 	}
@@ -145,7 +145,7 @@ func convertWorkspaceSettingToStore(setting *v1pb.WorkspaceSetting) *storepb.Wor
 	return workspaceSetting
 }
 
-func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSetting) *v1pb.WorkspaceGeneralSetting {
+func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSetting) *v1pb.WorkspaceSetting_GeneralSetting {
 	if setting == nil {
 		return nil
 	}
@@ -155,7 +155,7 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 		theme = "default"
 	}
 
-	generalSetting := &v1pb.WorkspaceGeneralSetting{
+	generalSetting := &v1pb.WorkspaceSetting_GeneralSetting{
 		Theme:                    theme,
 		DisallowUserRegistration: setting.DisallowUserRegistration,
 		DisallowPasswordAuth:     setting.DisallowPasswordAuth,
@@ -166,7 +166,7 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 		DisallowChangeNickname:   setting.DisallowChangeNickname,
 	}
 	if setting.CustomProfile != nil {
-		generalSetting.CustomProfile = &v1pb.WorkspaceCustomProfile{
+		generalSetting.CustomProfile = &v1pb.WorkspaceSetting_GeneralSetting_CustomProfile{
 			Title:       setting.CustomProfile.Title,
 			Description: setting.CustomProfile.Description,
 			LogoUrl:     setting.CustomProfile.LogoUrl,
@@ -177,7 +177,7 @@ func convertWorkspaceGeneralSettingFromStore(setting *storepb.WorkspaceGeneralSe
 	return generalSetting
 }
 
-func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting) *storepb.WorkspaceGeneralSetting {
+func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceSetting_GeneralSetting) *storepb.WorkspaceGeneralSetting {
 	if setting == nil {
 		return nil
 	}
@@ -203,17 +203,17 @@ func convertWorkspaceGeneralSettingToStore(setting *v1pb.WorkspaceGeneralSetting
 	return generalSetting
 }
 
-func convertWorkspaceStorageSettingFromStore(settingpb *storepb.WorkspaceStorageSetting) *v1pb.WorkspaceStorageSetting {
+func convertWorkspaceStorageSettingFromStore(settingpb *storepb.WorkspaceStorageSetting) *v1pb.WorkspaceSetting_StorageSetting {
 	if settingpb == nil {
 		return nil
 	}
-	setting := &v1pb.WorkspaceStorageSetting{
-		StorageType:       v1pb.WorkspaceStorageSetting_StorageType(settingpb.StorageType),
+	setting := &v1pb.WorkspaceSetting_StorageSetting{
+		StorageType:       v1pb.WorkspaceSetting_StorageSetting_StorageType(settingpb.StorageType),
 		FilepathTemplate:  settingpb.FilepathTemplate,
 		UploadSizeLimitMb: settingpb.UploadSizeLimitMb,
 	}
 	if settingpb.S3Config != nil {
-		setting.S3Config = &v1pb.WorkspaceStorageSetting_S3Config{
+		setting.S3Config = &v1pb.WorkspaceSetting_StorageSetting_S3Config{
 			AccessKeyId:     settingpb.S3Config.AccessKeyId,
 			AccessKeySecret: settingpb.S3Config.AccessKeySecret,
 			Endpoint:        settingpb.S3Config.Endpoint,
@@ -225,7 +225,7 @@ func convertWorkspaceStorageSettingFromStore(settingpb *storepb.WorkspaceStorage
 	return setting
 }
 
-func convertWorkspaceStorageSettingToStore(setting *v1pb.WorkspaceStorageSetting) *storepb.WorkspaceStorageSetting {
+func convertWorkspaceStorageSettingToStore(setting *v1pb.WorkspaceSetting_StorageSetting) *storepb.WorkspaceStorageSetting {
 	if setting == nil {
 		return nil
 	}
@@ -247,11 +247,11 @@ func convertWorkspaceStorageSettingToStore(setting *v1pb.WorkspaceStorageSetting
 	return settingpb
 }
 
-func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoRelatedSetting) *v1pb.WorkspaceMemoRelatedSetting {
+func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoRelatedSetting) *v1pb.WorkspaceSetting_MemoRelatedSetting {
 	if setting == nil {
 		return nil
 	}
-	return &v1pb.WorkspaceMemoRelatedSetting{
+	return &v1pb.WorkspaceSetting_MemoRelatedSetting{
 		DisallowPublicVisibility: setting.DisallowPublicVisibility,
 		DisplayWithUpdateTime:    setting.DisplayWithUpdateTime,
 		ContentLengthLimit:       setting.ContentLengthLimit,
@@ -265,7 +265,7 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 	}
 }
 
-func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceMemoRelatedSetting) *storepb.WorkspaceMemoRelatedSetting {
+func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceSetting_MemoRelatedSetting) *storepb.WorkspaceMemoRelatedSetting {
 	if setting == nil {
 		return nil
 	}

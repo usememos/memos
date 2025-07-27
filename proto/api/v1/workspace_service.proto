@@ -65,108 +65,114 @@ message WorkspaceSetting {
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   oneof value {
-    WorkspaceGeneralSetting general_setting = 2;
-    WorkspaceStorageSetting storage_setting = 3;
-    WorkspaceMemoRelatedSetting memo_related_setting = 4;
+    GeneralSetting general_setting = 2;
+    StorageSetting storage_setting = 3;
+    MemoRelatedSetting memo_related_setting = 4;
   }
 
+  // Enumeration of workspace setting keys.
   enum Key {
     KEY_UNSPECIFIED = 0;
-    // BASIC is the key for basic settings.
-    BASIC = 1;
     // GENERAL is the key for general settings.
-    GENERAL = 2;
+    GENERAL = 1;
     // STORAGE is the key for storage settings.
-    STORAGE = 3;
+    STORAGE = 2;
     // MEMO_RELATED is the key for memo related settings.
-    MEMO_RELATED = 4;
+    MEMO_RELATED = 3;
   }
-}
 
-message WorkspaceGeneralSetting {
-  // theme is the name of the selected theme.
-  // This references a CSS file in the web/public/themes/ directory.
-  string theme = 1;
-  // disallow_user_registration disallows user registration.
-  bool disallow_user_registration = 2;
-  // disallow_password_auth disallows password authentication.
-  bool disallow_password_auth = 3;
-  // additional_script is the additional script.
-  string additional_script = 4;
-  // additional_style is the additional style.
-  string additional_style = 5;
-  // custom_profile is the custom profile.
-  WorkspaceCustomProfile custom_profile = 6;
-  // week_start_day_offset is the week start day offset from Sunday.
-  // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
-  // Default is Sunday.
-  int32 week_start_day_offset = 7;
+  // General workspace settings configuration.
+  message GeneralSetting {
+    // theme is the name of the selected theme.
+    // This references a CSS file in the web/public/themes/ directory.
+    string theme = 1;
+    // disallow_user_registration disallows user registration.
+    bool disallow_user_registration = 2;
+    // disallow_password_auth disallows password authentication.
+    bool disallow_password_auth = 3;
+    // additional_script is the additional script.
+    string additional_script = 4;
+    // additional_style is the additional style.
+    string additional_style = 5;
+    // custom_profile is the custom profile.
+    CustomProfile custom_profile = 6;
+    // week_start_day_offset is the week start day offset from Sunday.
+    // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+    // Default is Sunday.
+    int32 week_start_day_offset = 7;
 
-  // disallow_change_username disallows changing username.
-  bool disallow_change_username = 8;
-  // disallow_change_nickname disallows changing nickname.
-  bool disallow_change_nickname = 9;
-}
+    // disallow_change_username disallows changing username.
+    bool disallow_change_username = 8;
+    // disallow_change_nickname disallows changing nickname.
+    bool disallow_change_nickname = 9;
 
-message WorkspaceCustomProfile {
-  string title = 1;
-  string description = 2;
-  string logo_url = 3;
-  string locale = 4;
-  string appearance = 5;
-}
-
-message WorkspaceStorageSetting {
-  enum StorageType {
-    STORAGE_TYPE_UNSPECIFIED = 0;
-    // DATABASE is the database storage type.
-    DATABASE = 1;
-    // LOCAL is the local storage type.
-    LOCAL = 2;
-    // S3 is the S3 storage type.
-    S3 = 3;
+    // Custom profile configuration for workspace branding.
+    message CustomProfile {
+      string title = 1;
+      string description = 2;
+      string logo_url = 3;
+      string locale = 4;
+      string appearance = 5;
+    }
   }
-  // storage_type is the storage type.
-  StorageType storage_type = 1;
-  // The template of file path.
-  // e.g. assets/{timestamp}_{filename}
-  string filepath_template = 2;
-  // The max upload size in megabytes.
-  int64 upload_size_limit_mb = 3;
-  // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
-  message S3Config {
-    string access_key_id = 1;
-    string access_key_secret = 2;
-    string endpoint = 3;
-    string region = 4;
-    string bucket = 5;
-    bool use_path_style = 6;
-  }
-  // The S3 config.
-  S3Config s3_config = 4;
-}
 
-message WorkspaceMemoRelatedSetting {
-  // disallow_public_visibility disallows set memo as public visibility.
-  bool disallow_public_visibility = 1;
-  // display_with_update_time orders and displays memo with update time.
-  bool display_with_update_time = 2;
-  // content_length_limit is the limit of content length. Unit is byte.
-  int32 content_length_limit = 3;
-  // enable_double_click_edit enables editing on double click.
-  bool enable_double_click_edit = 4;
-  // enable_link_preview enables links preview.
-  bool enable_link_preview = 5;
-  // enable_comment enables comment.
-  bool enable_comment = 6;
-  // reactions is the list of reactions.
-  repeated string reactions = 7;
-  // disable_markdown_shortcuts disallow the registration of markdown shortcuts.
-  bool disable_markdown_shortcuts = 8;
-  // enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
-  bool enable_blur_nsfw_content = 9;
-  // nsfw_tags is the list of tags that mark content as NSFW for blurring.
-  repeated string nsfw_tags = 10;
+  // Storage configuration settings for workspace attachments.
+  message StorageSetting {
+    // Storage type enumeration for different storage backends.
+    enum StorageType {
+      STORAGE_TYPE_UNSPECIFIED = 0;
+      // DATABASE is the database storage type.
+      DATABASE = 1;
+      // LOCAL is the local storage type.
+      LOCAL = 2;
+      // S3 is the S3 storage type.
+      S3 = 3;
+    }
+    // storage_type is the storage type.
+    StorageType storage_type = 1;
+    // The template of file path.
+    // e.g. assets/{timestamp}_{filename}
+    string filepath_template = 2;
+    // The max upload size in megabytes.
+    int64 upload_size_limit_mb = 3;
+
+    // S3 configuration for cloud storage backend.
+    // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+    message S3Config {
+      string access_key_id = 1;
+      string access_key_secret = 2;
+      string endpoint = 3;
+      string region = 4;
+      string bucket = 5;
+      bool use_path_style = 6;
+    }
+    // The S3 config.
+    S3Config s3_config = 4;
+  }
+
+  // Memo-related workspace settings and policies.
+  message MemoRelatedSetting {
+    // disallow_public_visibility disallows set memo as public visibility.
+    bool disallow_public_visibility = 1;
+    // display_with_update_time orders and displays memo with update time.
+    bool display_with_update_time = 2;
+    // content_length_limit is the limit of content length. Unit is byte.
+    int32 content_length_limit = 3;
+    // enable_double_click_edit enables editing on double click.
+    bool enable_double_click_edit = 4;
+    // enable_link_preview enables links preview.
+    bool enable_link_preview = 5;
+    // enable_comment enables comment.
+    bool enable_comment = 6;
+    // reactions is the list of reactions.
+    repeated string reactions = 7;
+    // disable_markdown_shortcuts disallow the registration of markdown shortcuts.
+    bool disable_markdown_shortcuts = 8;
+    // enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
+    bool enable_blur_nsfw_content = 9;
+    // nsfw_tags is the list of tags that mark content as NSFW for blurring.
+    repeated string nsfw_tags = 10;
+  }
 }
 
 // Request message for GetWorkspaceSetting method.

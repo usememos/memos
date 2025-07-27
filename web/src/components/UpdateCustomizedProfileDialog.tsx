@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
-import { WorkspaceCustomProfile, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
+import { WorkspaceSetting_GeneralSetting_CustomProfile, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "./AppearanceSelect";
 import LocaleSelect from "./LocaleSelect";
@@ -21,13 +21,13 @@ interface Props {
 function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
-  const [customProfile, setCustomProfile] = useState<WorkspaceCustomProfile>(
-    WorkspaceCustomProfile.fromPartial(workspaceGeneralSetting.customProfile || {}),
+  const [customProfile, setCustomProfile] = useState<WorkspaceSetting_GeneralSetting_CustomProfile>(
+    WorkspaceSetting_GeneralSetting_CustomProfile.fromPartial(workspaceGeneralSetting.customProfile || {}),
   );
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const setPartialState = (partialState: Partial<WorkspaceCustomProfile>) => {
+  const setPartialState = (partialState: Partial<WorkspaceSetting_GeneralSetting_CustomProfile>) => {
     setCustomProfile((state) => ({
       ...state,
       ...partialState,

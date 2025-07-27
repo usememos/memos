@@ -14,7 +14,7 @@ import useDialog from "@/hooks/useDialog";
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
-import { WorkspaceGeneralSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
+import { WorkspaceSetting_GeneralSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 import ThemeSelector from "../ThemeSelector";
 import UpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
@@ -22,10 +22,10 @@ import UpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 const WorkspaceSection = observer(() => {
   const t = useTranslate();
   const customizeDialog = useDialog();
-  const originalSetting = WorkspaceGeneralSetting.fromPartial(
+  const originalSetting = WorkspaceSetting_GeneralSetting.fromPartial(
     workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.GENERAL)?.generalSetting || {},
   );
-  const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceGeneralSetting>(originalSetting);
+  const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceSetting_GeneralSetting>(originalSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
@@ -36,9 +36,9 @@ const WorkspaceSection = observer(() => {
     customizeDialog.open();
   };
 
-  const updatePartialSetting = (partial: Partial<WorkspaceGeneralSetting>) => {
+  const updatePartialSetting = (partial: Partial<WorkspaceSetting_GeneralSetting>) => {
     setWorkspaceGeneralSetting(
-      WorkspaceGeneralSetting.fromPartial({
+      WorkspaceSetting_GeneralSetting.fromPartial({
         ...workspaceGeneralSetting,
         ...partial,
       }),
