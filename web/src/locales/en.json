@@ -443,5 +443,14 @@
     "rename-success": "Renamed tag successfully",
     "rename-tag": "Rename tag",
     "rename-tip": "All your memos with this tag will be updated."
+  },
+  "tooltip": {
+    "codeblock-checkbox": "Code Block & Checkbox", 
+    "tags": "Tags",
+    "link-memo": "Link Memo", 
+    "select-location": "Select Location",
+    "select-visibility": "Select Visibility",
+    "upload-attachment":  "Upload Attachment"
+
   }
 }
