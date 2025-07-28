@@ -445,11 +445,11 @@
     "rename-tip": "All your memos with this tag will be updated."
   },
   "tooltip": {
-    "codeblock-checkbox": "Code Block & Checkbox", 
+    "codeblock-checkbox": "Markdown Menu", 
     "tags": "Tags",
     "link-memo": "Link Memo", 
-    "select-location": "Select Location",
-    "select-visibility": "Select Visibility",
+    "select-location": "Location",
+    "select-visibility": "Visibility",
     "upload-attachment":  "Upload Attachment"
 
   }
