@@ -73,7 +73,7 @@ const MarkdownMenu = (props: Props) => {
             </DropdownMenuTrigger>
           </TooltipTrigger>
           <TooltipContent side="bottom">
-            <p>{t("tooltip.codeblock-checkbox")}</p>
+            <p>{t("tooltip.markdown-menu")}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
