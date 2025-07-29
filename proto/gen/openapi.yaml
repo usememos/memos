@@ -3881,9 +3881,6 @@ components:
                 enableLinkPreview:
                     type: boolean
                     description: enable_link_preview enables links preview.
-                enableComment:
-                    type: boolean
-                    description: enable_comment enables comment.
                 reactions:
                     type: array
                     items:

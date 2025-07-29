@@ -223,8 +223,6 @@ export interface WorkspaceSetting_MemoRelatedSetting {
   enableDoubleClickEdit: boolean;
   /** enable_link_preview enables links preview. */
   enableLinkPreview: boolean;
-  /** enable_comment enables comment. */
-  enableComment: boolean;
   /** reactions is the list of reactions. */
   reactions: string[];
   /** disable_markdown_shortcuts disallow the registration of markdown shortcuts. */
@@ -916,7 +914,6 @@ function createBaseWorkspaceSetting_MemoRelatedSetting(): WorkspaceSetting_MemoR
     contentLengthLimit: 0,
     enableDoubleClickEdit: false,
     enableLinkPreview: false,
-    enableComment: false,
     reactions: [],
     disableMarkdownShortcuts: false,
     enableBlurNsfwContent: false,
@@ -940,9 +937,6 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
     }
     if (message.enableLinkPreview !== false) {
       writer.uint32(40).bool(message.enableLinkPreview);
-    }
-    if (message.enableComment !== false) {
-      writer.uint32(48).bool(message.enableComment);
     }
     for (const v of message.reactions) {
       writer.uint32(58).string(v!);
@@ -1006,14 +1000,6 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
           message.enableLinkPreview = reader.bool();
           continue;
         }
-        case 6: {
-          if (tag !== 48) {
-            break;
-          }
-
-          message.enableComment = reader.bool();
-          continue;
-        }
         case 7: {
           if (tag !== 58) {
             break;
@@ -1065,7 +1051,6 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
     message.contentLengthLimit = object.contentLengthLimit ?? 0;
     message.enableDoubleClickEdit = object.enableDoubleClickEdit ?? false;
     message.enableLinkPreview = object.enableLinkPreview ?? false;
-    message.enableComment = object.enableComment ?? false;
     message.reactions = object.reactions?.map((e) => e) || [];
     message.disableMarkdownShortcuts = object.disableMarkdownShortcuts ?? false;
     message.enableBlurNsfwContent = object.enableBlurNsfwContent ?? false;

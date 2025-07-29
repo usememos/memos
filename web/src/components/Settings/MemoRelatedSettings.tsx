@@ -89,13 +89,6 @@ const MemoRelatedSettings = observer(() => {
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.memo-related-settings.enable-memo-comments")}</span>
-        <Switch
-          checked={memoRelatedSetting.enableComment}
-          onCheckedChange={(checked) => updatePartialSetting({ enableComment: checked })}
-        />
-      </div>
-      <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.system-section.enable-double-click-to-edit")}</span>
         <Switch
           checked={memoRelatedSetting.enableDoubleClickEdit}

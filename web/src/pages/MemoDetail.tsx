@@ -14,7 +14,6 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
 import { memoStore } from "@/store";
-import { workspaceStore } from "@/store";
 import { memoNamePrefix } from "@/store/common";
 import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -29,13 +28,12 @@ const MemoDetail = observer(() => {
   const uid = params.uid;
   const memoName = `${memoNamePrefix}${uid}`;
   const memo = memoStore.getMemoByName(memoName);
-  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const [showCommentEditor, setShowCommentEditor] = useState(false);
   const commentRelations =
     memo?.relations.filter((relation) => relation.relatedMemo?.name === memo.name && relation.type === MemoRelation_Type.COMMENT) || [];
   const comments = commentRelations.map((relation) => memoStore.getMemoByName(relation.memo!.name)).filter((memo) => memo) as any as Memo[];
-  const showCreateCommentButton = workspaceMemoRelatedSetting.enableComment && currentUser && !showCommentEditor;
+  const showCreateCommentButton = currentUser && !showCommentEditor;
 
   // Prepare memo.
   useEffect(() => {

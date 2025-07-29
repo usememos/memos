@@ -107,8 +107,6 @@ message WorkspaceMemoRelatedSetting {
   bool enable_double_click_edit = 4;
   // enable_link_preview enables links preview.
   bool enable_link_preview = 5;
-  // enable_comment enables comment.
-  bool enable_comment = 6;
   // reactions is the list of reactions.
   repeated string reactions = 7;
   // disable markdown shortcuts

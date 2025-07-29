@@ -665,8 +665,6 @@ type WorkspaceSetting_MemoRelatedSetting struct {
 	EnableDoubleClickEdit bool `protobuf:"varint,4,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
 	// enable_link_preview enables links preview.
 	EnableLinkPreview bool `protobuf:"varint,5,opt,name=enable_link_preview,json=enableLinkPreview,proto3" json:"enable_link_preview,omitempty"`
-	// enable_comment enables comment.
-	EnableComment bool `protobuf:"varint,6,opt,name=enable_comment,json=enableComment,proto3" json:"enable_comment,omitempty"`
 	// reactions is the list of reactions.
 	Reactions []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	// disable_markdown_shortcuts disallow the registration of markdown shortcuts.
@@ -740,13 +738,6 @@ func (x *WorkspaceSetting_MemoRelatedSetting) GetEnableDoubleClickEdit() bool {
 func (x *WorkspaceSetting_MemoRelatedSetting) GetEnableLinkPreview() bool {
 	if x != nil {
 		return x.EnableLinkPreview
-	}
-	return false
-}
-
-func (x *WorkspaceSetting_MemoRelatedSetting) GetEnableComment() bool {
-	if x != nil {
-		return x.EnableComment
 	}
 	return false
 }
@@ -952,7 +943,7 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1c\n" +
-	"\x1aGetWorkspaceProfileRequest\"\xdf\x11\n" +
+	"\x1aGetWorkspaceProfileRequest\"\xb8\x11\n" +
 	"\x10WorkspaceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12X\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2-.memos.api.v1.WorkspaceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12X\n" +
@@ -992,14 +983,13 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\x1a\xff\x03\n" +
+	"\x02S3\x10\x03\x1a\xd8\x03\n" +
 	"\x12MemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12.\n" +
-	"\x13enable_link_preview\x18\x05 \x01(\bR\x11enableLinkPreview\x12%\n" +
-	"\x0eenable_comment\x18\x06 \x01(\bR\renableComment\x12\x1c\n" +
+	"\x13enable_link_preview\x18\x05 \x01(\bR\x11enableLinkPreview\x12\x1c\n" +
 	"\treactions\x18\a \x03(\tR\treactions\x12<\n" +
 	"\x1adisable_markdown_shortcuts\x18\b \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +

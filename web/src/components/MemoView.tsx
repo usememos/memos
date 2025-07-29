@@ -190,7 +190,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
             )}
             {currentUser && !isArchived && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
           </div>
-          {!isInMemoDetailPage && (workspaceMemoRelatedSetting.enableComment || commentAmount > 0) && (
+          {!isInMemoDetailPage && commentAmount > 0 && (
             <Link
               className={cn(
                 "flex flex-row justify-start items-center rounded-md p-1 hover:opacity-80",
