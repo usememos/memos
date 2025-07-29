@@ -86,31 +86,27 @@ const LocationSelector = (props: Props) => {
     setState({ ...state, position });
   };
 
-  const removeLocation = () => {
+  const removeLocation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     props.onChange(undefined);
   };
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      {props.location ? (
-        <div className="flex items-center">
-          <PopoverTrigger asChild>
-            <Button variant="ghost" className="rounded-r-none">
-              <MapPinIcon className="size-5 shrink-0" />
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size={props.location ? undefined : "icon"}>
+          <MapPinIcon className="size-5 shrink-0" />
+          {props.location && (
+            <>
               <span className="ml-0.5 text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-28">{props.location.placeholder}</span>
-            </Button>
-          </PopoverTrigger>
-          <Button variant="ghost" size="icon" className="rounded-l-none opacity-60 hover:opacity-80" onClick={removeLocation}>
-            <XIcon className="size-4 shrink-0" />
-          </Button>
-        </div>
-      ) : (
-        <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MapPinIcon className="size-5 shrink-0" />
-          </Button>
-        </PopoverTrigger>
-      )}
+              <span className="cursor-pointer hover:text-primary" onClick={removeLocation}>
+                <XIcon className="size-4 shrink-0" />
+              </span>
+            </>
+          )}
+        </Button>
+      </PopoverTrigger>
       <PopoverContent align="center">
         <div className="min-w-80 sm:w-lg p-1 flex flex-col justify-start items-start">
           <LeafletMap key={JSON.stringify(state.initilized)} latlng={state.position} onChange={onPositionChanged} />

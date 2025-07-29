@@ -125,10 +125,12 @@ const MemoRelatedSettings = observer(() => {
             return (
               <Badge key={reactionType} variant="outline" className="flex items-center gap-1">
                 {reactionType}
-                <X
-                  className="w-3 h-3 cursor-pointer hover:text-destructive"
+                <span
+                  className="cursor-pointer text-muted-foreground hover:text-primary"
                   onClick={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
-                />
+                >
+                  <X className="w-4 h-4" />
+                </span>
               </Badge>
             );
           })}
@@ -139,7 +141,9 @@ const MemoRelatedSettings = observer(() => {
               value={editingReaction}
               onChange={(event) => setEditingReaction(event.target.value.trim())}
             />
-            <CheckIcon className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary" onClick={() => upsertReaction()} />
+            <span className="text-muted-foreground cursor-pointer hover:text-primary" onClick={() => upsertReaction()}>
+              <CheckIcon className="w-5 h-5" />
+            </span>
           </div>
         </div>
       </div>
@@ -156,10 +160,12 @@ const MemoRelatedSettings = observer(() => {
             return (
               <Badge key={nsfwTag} variant="outline" className="flex items-center gap-1">
                 {nsfwTag}
-                <X
-                  className="w-3 h-3 cursor-pointer hover:text-destructive"
+                <span
+                  className="cursor-pointer text-muted-foreground hover:text-primary"
                   onClick={() => updatePartialSetting({ nsfwTags: memoRelatedSetting.nsfwTags.filter((r) => r !== nsfwTag) })}
-                />
+                >
+                  <X className="w-4 h-4" />
+                </span>
               </Badge>
             );
           })}
@@ -170,7 +176,9 @@ const MemoRelatedSettings = observer(() => {
               value={editingNsfwTag}
               onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
             />
-            <CheckIcon className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-primary" onClick={() => upsertNsfwTags()} />
+            <span className="text-muted-foreground cursor-pointer hover:text-primary" onClick={() => upsertNsfwTags()}>
+              <CheckIcon className="w-5 h-5" />
+            </span>
           </div>
         </div>
       </div>
