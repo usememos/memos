@@ -272,13 +272,13 @@ export interface ListAllUserStatsResponse {
 export interface UserSetting {
   /**
    * The name of the user setting.
-   * Format: users/{user}/settings/{setting}
+   * Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
+   * For example, "users/123/settings/GENERAL" for general settings.
    */
   name: string;
   generalSetting?: UserSetting_GeneralSetting | undefined;
   sessionsSetting?: UserSetting_SessionsSetting | undefined;
   accessTokensSetting?: UserSetting_AccessTokensSetting | undefined;
-  shortcutsSetting?: UserSetting_ShortcutsSetting | undefined;
   webhooksSetting?: UserSetting_WebhooksSetting | undefined;
 }
 
@@ -291,8 +291,6 @@ export enum UserSetting_Key {
   SESSIONS = "SESSIONS",
   /** ACCESS_TOKENS - ACCESS_TOKENS is the key for access tokens. */
   ACCESS_TOKENS = "ACCESS_TOKENS",
-  /** SHORTCUTS - SHORTCUTS is the key for user shortcuts. */
-  SHORTCUTS = "SHORTCUTS",
   /** WEBHOOKS - WEBHOOKS is the key for user webhooks. */
   WEBHOOKS = "WEBHOOKS",
   UNRECOGNIZED = "UNRECOGNIZED",
@@ -313,9 +311,6 @@ export function userSetting_KeyFromJSON(object: any): UserSetting_Key {
     case "ACCESS_TOKENS":
       return UserSetting_Key.ACCESS_TOKENS;
     case 4:
-    case "SHORTCUTS":
-      return UserSetting_Key.SHORTCUTS;
-    case 5:
     case "WEBHOOKS":
       return UserSetting_Key.WEBHOOKS;
     case -1:
@@ -335,10 +330,8 @@ export function userSetting_KeyToNumber(object: UserSetting_Key): number {
       return 2;
     case UserSetting_Key.ACCESS_TOKENS:
       return 3;
-    case UserSetting_Key.SHORTCUTS:
-      return 4;
     case UserSetting_Key.WEBHOOKS:
-      return 5;
+      return 4;
     case UserSetting_Key.UNRECOGNIZED:
     default:
       return -1;
@@ -364,89 +357,19 @@ export interface UserSetting_GeneralSetting {
 /** User authentication sessions configuration. */
 export interface UserSetting_SessionsSetting {
   /** List of active user sessions. */
-  sessions: UserSetting_SessionsSetting_Session[];
-}
-
-/** User session information. */
-export interface UserSetting_SessionsSetting_Session {
-  /** Unique session identifier. */
-  sessionId: string;
-  /** Timestamp when the session was created. */
-  createTime?:
-    | Date
-    | undefined;
-  /**
-   * Timestamp when the session was last accessed.
-   * Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-   */
-  lastAccessedTime?:
-    | Date
-    | undefined;
-  /** Client information associated with this session. */
-  clientInfo?: UserSetting_SessionsSetting_ClientInfo | undefined;
-}
-
-/** Client information for a session. */
-export interface UserSetting_SessionsSetting_ClientInfo {
-  /** User agent string of the client. */
-  userAgent: string;
-  /** IP address of the client. */
-  ipAddress: string;
-  /** Optional. Device type (e.g., "mobile", "desktop", "tablet"). */
-  deviceType: string;
-  /** Optional. Operating system (e.g., "iOS 17.0", "Windows 11"). */
-  os: string;
-  /** Optional. Browser name and version (e.g., "Chrome 119.0"). */
-  browser: string;
+  sessions: UserSession[];
 }
 
 /** User access tokens configuration. */
 export interface UserSetting_AccessTokensSetting {
   /** List of user access tokens. */
-  accessTokens: UserSetting_AccessTokensSetting_AccessToken[];
-}
-
-/** User access token information. */
-export interface UserSetting_AccessTokensSetting_AccessToken {
-  /**
-   * The access token is a JWT token.
-   * Including expiration time, issuer, etc.
-   */
-  accessToken: string;
-  /** A description for the access token. */
-  description: string;
-}
-
-/** User shortcuts configuration. */
-export interface UserSetting_ShortcutsSetting {
-  /** List of user shortcuts. */
-  shortcuts: UserSetting_ShortcutsSetting_Shortcut[];
-}
-
-/** User shortcut definition. */
-export interface UserSetting_ShortcutsSetting_Shortcut {
-  /** Unique identifier for the shortcut. */
-  id: string;
-  /** Display title for the shortcut. */
-  title: string;
-  /** Filter expression for the shortcut. */
-  filter: string;
+  accessTokens: UserAccessToken[];
 }
 
 /** User webhooks configuration. */
 export interface UserSetting_WebhooksSetting {
   /** List of user webhooks. */
-  webhooks: UserSetting_WebhooksSetting_Webhook[];
-}
-
-/** User webhook definition. */
-export interface UserSetting_WebhooksSetting_Webhook {
-  /** Unique identifier for the webhook. */
-  id: string;
-  /** Descriptive title for the webhook. */
-  title: string;
-  /** The webhook URL endpoint. */
-  url: string;
+  webhooks: UserWebhook[];
 }
 
 export interface GetUserSettingRequest {
@@ -1869,7 +1792,6 @@ function createBaseUserSetting(): UserSetting {
     generalSetting: undefined,
     sessionsSetting: undefined,
     accessTokensSetting: undefined,
-    shortcutsSetting: undefined,
     webhooksSetting: undefined,
   };
 }
@@ -1888,11 +1810,8 @@ export const UserSetting: MessageFns<UserSetting> = {
     if (message.accessTokensSetting !== undefined) {
       UserSetting_AccessTokensSetting.encode(message.accessTokensSetting, writer.uint32(34).fork()).join();
     }
-    if (message.shortcutsSetting !== undefined) {
-      UserSetting_ShortcutsSetting.encode(message.shortcutsSetting, writer.uint32(42).fork()).join();
-    }
     if (message.webhooksSetting !== undefined) {
-      UserSetting_WebhooksSetting.encode(message.webhooksSetting, writer.uint32(50).fork()).join();
+      UserSetting_WebhooksSetting.encode(message.webhooksSetting, writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -1941,14 +1860,6 @@ export const UserSetting: MessageFns<UserSetting> = {
             break;
           }
 
-          message.shortcutsSetting = UserSetting_ShortcutsSetting.decode(reader, reader.uint32());
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
           message.webhooksSetting = UserSetting_WebhooksSetting.decode(reader, reader.uint32());
           continue;
         }
@@ -1975,9 +1886,6 @@ export const UserSetting: MessageFns<UserSetting> = {
       : undefined;
     message.accessTokensSetting = (object.accessTokensSetting !== undefined && object.accessTokensSetting !== null)
       ? UserSetting_AccessTokensSetting.fromPartial(object.accessTokensSetting)
-      : undefined;
-    message.shortcutsSetting = (object.shortcutsSetting !== undefined && object.shortcutsSetting !== null)
-      ? UserSetting_ShortcutsSetting.fromPartial(object.shortcutsSetting)
       : undefined;
     message.webhooksSetting = (object.webhooksSetting !== undefined && object.webhooksSetting !== null)
       ? UserSetting_WebhooksSetting.fromPartial(object.webhooksSetting)
@@ -2075,7 +1983,7 @@ function createBaseUserSetting_SessionsSetting(): UserSetting_SessionsSetting {
 export const UserSetting_SessionsSetting: MessageFns<UserSetting_SessionsSetting> = {
   encode(message: UserSetting_SessionsSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.sessions) {
-      UserSetting_SessionsSetting_Session.encode(v!, writer.uint32(10).fork()).join();
+      UserSession.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -2092,7 +2000,7 @@ export const UserSetting_SessionsSetting: MessageFns<UserSetting_SessionsSetting
             break;
           }
 
-          message.sessions.push(UserSetting_SessionsSetting_Session.decode(reader, reader.uint32()));
+          message.sessions.push(UserSession.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -2109,185 +2017,7 @@ export const UserSetting_SessionsSetting: MessageFns<UserSetting_SessionsSetting
   },
   fromPartial(object: DeepPartial<UserSetting_SessionsSetting>): UserSetting_SessionsSetting {
     const message = createBaseUserSetting_SessionsSetting();
-    message.sessions = object.sessions?.map((e) => UserSetting_SessionsSetting_Session.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseUserSetting_SessionsSetting_Session(): UserSetting_SessionsSetting_Session {
-  return { sessionId: "", createTime: undefined, lastAccessedTime: undefined, clientInfo: undefined };
-}
-
-export const UserSetting_SessionsSetting_Session: MessageFns<UserSetting_SessionsSetting_Session> = {
-  encode(message: UserSetting_SessionsSetting_Session, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.sessionId !== "") {
-      writer.uint32(10).string(message.sessionId);
-    }
-    if (message.createTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(18).fork()).join();
-    }
-    if (message.lastAccessedTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.lastAccessedTime), writer.uint32(26).fork()).join();
-    }
-    if (message.clientInfo !== undefined) {
-      UserSetting_SessionsSetting_ClientInfo.encode(message.clientInfo, writer.uint32(34).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UserSetting_SessionsSetting_Session {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserSetting_SessionsSetting_Session();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.sessionId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.lastAccessedTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.clientInfo = UserSetting_SessionsSetting_ClientInfo.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<UserSetting_SessionsSetting_Session>): UserSetting_SessionsSetting_Session {
-    return UserSetting_SessionsSetting_Session.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<UserSetting_SessionsSetting_Session>): UserSetting_SessionsSetting_Session {
-    const message = createBaseUserSetting_SessionsSetting_Session();
-    message.sessionId = object.sessionId ?? "";
-    message.createTime = object.createTime ?? undefined;
-    message.lastAccessedTime = object.lastAccessedTime ?? undefined;
-    message.clientInfo = (object.clientInfo !== undefined && object.clientInfo !== null)
-      ? UserSetting_SessionsSetting_ClientInfo.fromPartial(object.clientInfo)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseUserSetting_SessionsSetting_ClientInfo(): UserSetting_SessionsSetting_ClientInfo {
-  return { userAgent: "", ipAddress: "", deviceType: "", os: "", browser: "" };
-}
-
-export const UserSetting_SessionsSetting_ClientInfo: MessageFns<UserSetting_SessionsSetting_ClientInfo> = {
-  encode(message: UserSetting_SessionsSetting_ClientInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userAgent !== "") {
-      writer.uint32(10).string(message.userAgent);
-    }
-    if (message.ipAddress !== "") {
-      writer.uint32(18).string(message.ipAddress);
-    }
-    if (message.deviceType !== "") {
-      writer.uint32(26).string(message.deviceType);
-    }
-    if (message.os !== "") {
-      writer.uint32(34).string(message.os);
-    }
-    if (message.browser !== "") {
-      writer.uint32(42).string(message.browser);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UserSetting_SessionsSetting_ClientInfo {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserSetting_SessionsSetting_ClientInfo();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.userAgent = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.ipAddress = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.deviceType = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.os = reader.string();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.browser = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<UserSetting_SessionsSetting_ClientInfo>): UserSetting_SessionsSetting_ClientInfo {
-    return UserSetting_SessionsSetting_ClientInfo.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<UserSetting_SessionsSetting_ClientInfo>): UserSetting_SessionsSetting_ClientInfo {
-    const message = createBaseUserSetting_SessionsSetting_ClientInfo();
-    message.userAgent = object.userAgent ?? "";
-    message.ipAddress = object.ipAddress ?? "";
-    message.deviceType = object.deviceType ?? "";
-    message.os = object.os ?? "";
-    message.browser = object.browser ?? "";
+    message.sessions = object.sessions?.map((e) => UserSession.fromPartial(e)) || [];
     return message;
   },
 };
@@ -2299,7 +2029,7 @@ function createBaseUserSetting_AccessTokensSetting(): UserSetting_AccessTokensSe
 export const UserSetting_AccessTokensSetting: MessageFns<UserSetting_AccessTokensSetting> = {
   encode(message: UserSetting_AccessTokensSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.accessTokens) {
-      UserSetting_AccessTokensSetting_AccessToken.encode(v!, writer.uint32(10).fork()).join();
+      UserAccessToken.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -2316,7 +2046,7 @@ export const UserSetting_AccessTokensSetting: MessageFns<UserSetting_AccessToken
             break;
           }
 
-          message.accessTokens.push(UserSetting_AccessTokensSetting_AccessToken.decode(reader, reader.uint32()));
+          message.accessTokens.push(UserAccessToken.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -2333,187 +2063,7 @@ export const UserSetting_AccessTokensSetting: MessageFns<UserSetting_AccessToken
   },
   fromPartial(object: DeepPartial<UserSetting_AccessTokensSetting>): UserSetting_AccessTokensSetting {
     const message = createBaseUserSetting_AccessTokensSetting();
-    message.accessTokens =
-      object.accessTokens?.map((e) => UserSetting_AccessTokensSetting_AccessToken.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseUserSetting_AccessTokensSetting_AccessToken(): UserSetting_AccessTokensSetting_AccessToken {
-  return { accessToken: "", description: "" };
-}
-
-export const UserSetting_AccessTokensSetting_AccessToken: MessageFns<UserSetting_AccessTokensSetting_AccessToken> = {
-  encode(
-    message: UserSetting_AccessTokensSetting_AccessToken,
-    writer: BinaryWriter = new BinaryWriter(),
-  ): BinaryWriter {
-    if (message.accessToken !== "") {
-      writer.uint32(10).string(message.accessToken);
-    }
-    if (message.description !== "") {
-      writer.uint32(18).string(message.description);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UserSetting_AccessTokensSetting_AccessToken {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserSetting_AccessTokensSetting_AccessToken();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.accessToken = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.description = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<UserSetting_AccessTokensSetting_AccessToken>): UserSetting_AccessTokensSetting_AccessToken {
-    return UserSetting_AccessTokensSetting_AccessToken.fromPartial(base ?? {});
-  },
-  fromPartial(
-    object: DeepPartial<UserSetting_AccessTokensSetting_AccessToken>,
-  ): UserSetting_AccessTokensSetting_AccessToken {
-    const message = createBaseUserSetting_AccessTokensSetting_AccessToken();
-    message.accessToken = object.accessToken ?? "";
-    message.description = object.description ?? "";
-    return message;
-  },
-};
-
-function createBaseUserSetting_ShortcutsSetting(): UserSetting_ShortcutsSetting {
-  return { shortcuts: [] };
-}
-
-export const UserSetting_ShortcutsSetting: MessageFns<UserSetting_ShortcutsSetting> = {
-  encode(message: UserSetting_ShortcutsSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.shortcuts) {
-      UserSetting_ShortcutsSetting_Shortcut.encode(v!, writer.uint32(10).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UserSetting_ShortcutsSetting {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserSetting_ShortcutsSetting();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.shortcuts.push(UserSetting_ShortcutsSetting_Shortcut.decode(reader, reader.uint32()));
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<UserSetting_ShortcutsSetting>): UserSetting_ShortcutsSetting {
-    return UserSetting_ShortcutsSetting.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<UserSetting_ShortcutsSetting>): UserSetting_ShortcutsSetting {
-    const message = createBaseUserSetting_ShortcutsSetting();
-    message.shortcuts = object.shortcuts?.map((e) => UserSetting_ShortcutsSetting_Shortcut.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseUserSetting_ShortcutsSetting_Shortcut(): UserSetting_ShortcutsSetting_Shortcut {
-  return { id: "", title: "", filter: "" };
-}
-
-export const UserSetting_ShortcutsSetting_Shortcut: MessageFns<UserSetting_ShortcutsSetting_Shortcut> = {
-  encode(message: UserSetting_ShortcutsSetting_Shortcut, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
-    if (message.title !== "") {
-      writer.uint32(18).string(message.title);
-    }
-    if (message.filter !== "") {
-      writer.uint32(26).string(message.filter);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UserSetting_ShortcutsSetting_Shortcut {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserSetting_ShortcutsSetting_Shortcut();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.id = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.title = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.filter = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<UserSetting_ShortcutsSetting_Shortcut>): UserSetting_ShortcutsSetting_Shortcut {
-    return UserSetting_ShortcutsSetting_Shortcut.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<UserSetting_ShortcutsSetting_Shortcut>): UserSetting_ShortcutsSetting_Shortcut {
-    const message = createBaseUserSetting_ShortcutsSetting_Shortcut();
-    message.id = object.id ?? "";
-    message.title = object.title ?? "";
-    message.filter = object.filter ?? "";
+    message.accessTokens = object.accessTokens?.map((e) => UserAccessToken.fromPartial(e)) || [];
     return message;
   },
 };
@@ -2525,7 +2075,7 @@ function createBaseUserSetting_WebhooksSetting(): UserSetting_WebhooksSetting {
 export const UserSetting_WebhooksSetting: MessageFns<UserSetting_WebhooksSetting> = {
   encode(message: UserSetting_WebhooksSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.webhooks) {
-      UserSetting_WebhooksSetting_Webhook.encode(v!, writer.uint32(10).fork()).join();
+      UserWebhook.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -2542,7 +2092,7 @@ export const UserSetting_WebhooksSetting: MessageFns<UserSetting_WebhooksSetting
             break;
           }
 
-          message.webhooks.push(UserSetting_WebhooksSetting_Webhook.decode(reader, reader.uint32()));
+          message.webhooks.push(UserWebhook.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -2559,77 +2109,7 @@ export const UserSetting_WebhooksSetting: MessageFns<UserSetting_WebhooksSetting
   },
   fromPartial(object: DeepPartial<UserSetting_WebhooksSetting>): UserSetting_WebhooksSetting {
     const message = createBaseUserSetting_WebhooksSetting();
-    message.webhooks = object.webhooks?.map((e) => UserSetting_WebhooksSetting_Webhook.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseUserSetting_WebhooksSetting_Webhook(): UserSetting_WebhooksSetting_Webhook {
-  return { id: "", title: "", url: "" };
-}
-
-export const UserSetting_WebhooksSetting_Webhook: MessageFns<UserSetting_WebhooksSetting_Webhook> = {
-  encode(message: UserSetting_WebhooksSetting_Webhook, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
-    if (message.title !== "") {
-      writer.uint32(18).string(message.title);
-    }
-    if (message.url !== "") {
-      writer.uint32(26).string(message.url);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UserSetting_WebhooksSetting_Webhook {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserSetting_WebhooksSetting_Webhook();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.id = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.title = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.url = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<UserSetting_WebhooksSetting_Webhook>): UserSetting_WebhooksSetting_Webhook {
-    return UserSetting_WebhooksSetting_Webhook.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<UserSetting_WebhooksSetting_Webhook>): UserSetting_WebhooksSetting_Webhook {
-    const message = createBaseUserSetting_WebhooksSetting_Webhook();
-    message.id = object.id ?? "";
-    message.title = object.title ?? "";
-    message.url = object.url ?? "";
+    message.webhooks = object.webhooks?.map((e) => UserWebhook.fromPartial(e)) || [];
     return message;
   },
 };

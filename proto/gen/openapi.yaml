@@ -2256,19 +2256,6 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
-        AccessTokensSetting_AccessToken:
-            type: object
-            properties:
-                accessToken:
-                    readOnly: true
-                    type: string
-                    description: |-
-                        The access token is a JWT token.
-                         Including expiration time, issuer, etc.
-                description:
-                    type: string
-                    description: A description for the access token.
-            description: User access token information.
         Activity:
             type: object
             properties:
@@ -3344,55 +3331,6 @@ components:
                     type: integer
                     description: The total count of matching users.
                     format: int32
-        SessionsSetting_ClientInfo:
-            type: object
-            properties:
-                userAgent:
-                    readOnly: true
-                    type: string
-                    description: User agent string of the client.
-                ipAddress:
-                    readOnly: true
-                    type: string
-                    description: IP address of the client.
-                deviceType:
-                    readOnly: true
-                    type: string
-                    description: Optional. Device type (e.g., "mobile", "desktop", "tablet").
-                os:
-                    readOnly: true
-                    type: string
-                    description: Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
-                browser:
-                    readOnly: true
-                    type: string
-                    description: Optional. Browser name and version (e.g., "Chrome 119.0").
-            description: Client information for a session.
-        SessionsSetting_Session:
-            type: object
-            properties:
-                sessionId:
-                    readOnly: true
-                    type: string
-                    description: Unique session identifier.
-                createTime:
-                    readOnly: true
-                    type: string
-                    description: Timestamp when the session was created.
-                    format: date-time
-                lastAccessedTime:
-                    readOnly: true
-                    type: string
-                    description: |-
-                        Timestamp when the session was last accessed.
-                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-                    format: date-time
-                clientInfo:
-                    readOnly: true
-                    allOf:
-                        - $ref: '#/components/schemas/SessionsSetting_ClientInfo'
-                    description: Client information associated with this session.
-            description: User session information.
         SetMemoAttachmentsRequest:
             required:
                 - name
@@ -3441,23 +3379,6 @@ components:
                 filter:
                     type: string
                     description: The filter expression for the shortcut.
-        ShortcutsSetting_Shortcut:
-            required:
-                - id
-                - title
-                - filter
-            type: object
-            properties:
-                id:
-                    type: string
-                    description: Unique identifier for the shortcut.
-                title:
-                    type: string
-                    description: Display title for the shortcut.
-                filter:
-                    type: string
-                    description: Filter expression for the shortcut.
-            description: User shortcut definition.
         SpoilerNode:
             type: object
             properties:
@@ -3738,15 +3659,14 @@ components:
                     type: string
                     description: |-
                         The name of the user setting.
-                         Format: users/{user}/settings/{setting}
+                         Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
+                         For example, "users/123/settings/GENERAL" for general settings.
                 generalSetting:
                     $ref: '#/components/schemas/UserSetting_GeneralSetting'
                 sessionsSetting:
                     $ref: '#/components/schemas/UserSetting_SessionsSetting'
                 accessTokensSetting:
                     $ref: '#/components/schemas/UserSetting_AccessTokensSetting'
-                shortcutsSetting:
-                    $ref: '#/components/schemas/UserSetting_ShortcutsSetting'
                 webhooksSetting:
                     $ref: '#/components/schemas/UserSetting_WebhooksSetting'
             description: User settings message
@@ -3756,7 +3676,7 @@ components:
                 accessTokens:
                     type: array
                     items:
-                        $ref: '#/components/schemas/AccessTokensSetting_AccessToken'
+                        $ref: '#/components/schemas/UserAccessToken'
                     description: List of user access tokens.
             description: User access tokens configuration.
         UserSetting_GeneralSetting:
@@ -3784,25 +3704,16 @@ components:
                 sessions:
                     type: array
                     items:
-                        $ref: '#/components/schemas/SessionsSetting_Session'
+                        $ref: '#/components/schemas/UserSession'
                     description: List of active user sessions.
             description: User authentication sessions configuration.
-        UserSetting_ShortcutsSetting:
-            type: object
-            properties:
-                shortcuts:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/ShortcutsSetting_Shortcut'
-                    description: List of user shortcuts.
-            description: User shortcuts configuration.
         UserSetting_WebhooksSetting:
             type: object
             properties:
                 webhooks:
                     type: array
                     items:
-                        $ref: '#/components/schemas/WebhooksSetting_Webhook'
+                        $ref: '#/components/schemas/UserWebhook'
                     description: List of user webhooks.
             description: User webhooks configuration.
         UserStats:
@@ -3880,23 +3791,6 @@ components:
                     description: The last update time of the webhook.
                     format: date-time
             description: UserWebhook represents a webhook owned by a user.
-        WebhooksSetting_Webhook:
-            required:
-                - id
-                - title
-                - url
-            type: object
-            properties:
-                id:
-                    type: string
-                    description: Unique identifier for the webhook.
-                title:
-                    type: string
-                    description: Descriptive title for the webhook.
-                url:
-                    type: string
-                    description: The webhook URL endpoint.
-            description: User webhook definition.
         WorkspaceProfile:
             type: object
             properties:

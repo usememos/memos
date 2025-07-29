@@ -403,15 +403,15 @@ message UserSetting {
   };
 
   // The name of the user setting.
-  // Format: users/{user}/settings/{setting}
+  // Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
+  // For example, "users/123/settings/GENERAL" for general settings.
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   oneof value {
     GeneralSetting general_setting = 2;
     SessionsSetting sessions_setting = 3;
     AccessTokensSetting access_tokens_setting = 4;
-    ShortcutsSetting shortcuts_setting = 5;
-    WebhooksSetting webhooks_setting = 6;
+    WebhooksSetting webhooks_setting = 5;
   }
 
   // Enumeration of user setting keys.
@@ -423,10 +423,8 @@ message UserSetting {
     SESSIONS = 2;
     // ACCESS_TOKENS is the key for access tokens.
     ACCESS_TOKENS = 3;
-    // SHORTCUTS is the key for user shortcuts.
-    SHORTCUTS = 4;
     // WEBHOOKS is the key for user webhooks.
-    WEBHOOKS = 5;
+    WEBHOOKS = 4;
   }
 
   // General user settings configuration.
@@ -446,81 +444,19 @@ message UserSetting {
   // User authentication sessions configuration.
   message SessionsSetting {
     // List of active user sessions.
-    repeated Session sessions = 1;
-
-    // User session information.
-    message Session {
-      // Unique session identifier.
-      string session_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-      // Timestamp when the session was created.
-      google.protobuf.Timestamp create_time = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-      // Timestamp when the session was last accessed.
-      // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-      google.protobuf.Timestamp last_accessed_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-      // Client information associated with this session.
-      ClientInfo client_info = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-    }
-
-    // Client information for a session.
-    message ClientInfo {
-      // User agent string of the client.
-      string user_agent = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-      // IP address of the client.
-      string ip_address = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-      // Optional. Device type (e.g., "mobile", "desktop", "tablet").
-      string device_type = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-      // Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
-      string os = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-      // Optional. Browser name and version (e.g., "Chrome 119.0").
-      string browser = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-    }
+    repeated UserSession sessions = 1;
   }
 
   // User access tokens configuration.
   message AccessTokensSetting {
     // List of user access tokens.
-    repeated AccessToken access_tokens = 1;
-
-    // User access token information.
-    message AccessToken {
-      // The access token is a JWT token.
-      // Including expiration time, issuer, etc.
-      string access_token = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-      // A description for the access token.
-      string description = 2 [(google.api.field_behavior) = OPTIONAL];
-    }
-  }
-
-  // User shortcuts configuration.
-  message ShortcutsSetting {
-    // List of user shortcuts.
-    repeated Shortcut shortcuts = 1;
-
-    // User shortcut definition.
-    message Shortcut {
-      // Unique identifier for the shortcut.
-      string id = 1 [(google.api.field_behavior) = REQUIRED];
-      // Display title for the shortcut.
-      string title = 2 [(google.api.field_behavior) = REQUIRED];
-      // Filter expression for the shortcut.
-      string filter = 3 [(google.api.field_behavior) = REQUIRED];
-    }
+    repeated UserAccessToken access_tokens = 1;
   }
 
   // User webhooks configuration.
   message WebhooksSetting {
     // List of user webhooks.
-    repeated Webhook webhooks = 1;
-
-    // User webhook definition.
-    message Webhook {
-      // Unique identifier for the webhook.
-      string id = 1 [(google.api.field_behavior) = REQUIRED];
-      // Descriptive title for the webhook.
-      string title = 2 [(google.api.field_behavior) = REQUIRED];
-      // The webhook URL endpoint.
-      string url = 3 [(google.api.field_behavior) = REQUIRED];
-    }
+    repeated UserWebhook webhooks = 1;
   }
 }
 

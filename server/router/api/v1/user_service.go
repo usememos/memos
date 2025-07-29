@@ -1067,15 +1067,13 @@ func ExtractUserIDAndSettingKeyFromName(name string) (int32, string, error) {
 // convertSettingKeyToStore converts API setting key to store enum.
 func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
 	switch key {
-	case "general":
+	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_GENERAL)]:
 		return storepb.UserSetting_GENERAL, nil
-	case "sessions":
+	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_SESSIONS)]:
 		return storepb.UserSetting_SESSIONS, nil
-	case "access-tokens":
+	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_ACCESS_TOKENS)]:
 		return storepb.UserSetting_ACCESS_TOKENS, nil
-	case "shortcuts":
-		return storepb.UserSetting_SHORTCUTS, nil
-	case "webhooks":
+	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_WEBHOOKS)]:
 		return storepb.UserSetting_WEBHOOKS, nil
 	default:
 		return storepb.UserSetting_KEY_UNSPECIFIED, errors.Errorf("unknown setting key: %s", key)
@@ -1086,15 +1084,15 @@ func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
 func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 	switch key {
 	case storepb.UserSetting_GENERAL:
-		return "general"
+		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_GENERAL)]
 	case storepb.UserSetting_SESSIONS:
-		return "sessions"
+		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_SESSIONS)]
 	case storepb.UserSetting_ACCESS_TOKENS:
-		return "access-tokens"
+		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_ACCESS_TOKENS)]
 	case storepb.UserSetting_SHORTCUTS:
-		return "shortcuts"
+		return "SHORTCUTS" // Not defined in API proto
 	case storepb.UserSetting_WEBHOOKS:
-		return "webhooks"
+		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_WEBHOOKS)]
 	default:
 		return "unknown"
 	}
@@ -1117,25 +1115,19 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 		case storepb.UserSetting_SESSIONS:
 			setting.Value = &v1pb.UserSetting_SessionsSetting_{
 				SessionsSetting: &v1pb.UserSetting_SessionsSetting{
-					Sessions: []*v1pb.UserSetting_SessionsSetting_Session{},
+					Sessions: []*v1pb.UserSession{},
 				},
 			}
 		case storepb.UserSetting_ACCESS_TOKENS:
 			setting.Value = &v1pb.UserSetting_AccessTokensSetting_{
 				AccessTokensSetting: &v1pb.UserSetting_AccessTokensSetting{
-					AccessTokens: []*v1pb.UserSetting_AccessTokensSetting_AccessToken{},
-				},
-			}
-		case storepb.UserSetting_SHORTCUTS:
-			setting.Value = &v1pb.UserSetting_ShortcutsSetting_{
-				ShortcutsSetting: &v1pb.UserSetting_ShortcutsSetting{
-					Shortcuts: []*v1pb.UserSetting_ShortcutsSetting_Shortcut{},
+					AccessTokens: []*v1pb.UserAccessToken{},
 				},
 			}
 		case storepb.UserSetting_WEBHOOKS:
 			setting.Value = &v1pb.UserSetting_WebhooksSetting_{
 				WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
-					Webhooks: []*v1pb.UserSetting_WebhooksSetting_Webhook{},
+					Webhooks: []*v1pb.UserWebhook{},
 				},
 			}
 		}
@@ -1165,13 +1157,14 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 		}
 	case storepb.UserSetting_SESSIONS:
 		sessions := storeSetting.GetSessions()
-		apiSessions := make([]*v1pb.UserSetting_SessionsSetting_Session, 0, len(sessions.Sessions))
+		apiSessions := make([]*v1pb.UserSession, 0, len(sessions.Sessions))
 		for _, session := range sessions.Sessions {
-			apiSession := &v1pb.UserSetting_SessionsSetting_Session{
+			apiSession := &v1pb.UserSession{
+				Name:             fmt.Sprintf("users/%d/sessions/%s", userID, session.SessionId),
 				SessionId:        session.SessionId,
 				CreateTime:       session.CreateTime,
 				LastAccessedTime: session.LastAccessedTime,
-				ClientInfo: &v1pb.UserSetting_SessionsSetting_ClientInfo{
+				ClientInfo: &v1pb.UserSession_ClientInfo{
 					UserAgent:  session.ClientInfo.UserAgent,
 					IpAddress:  session.ClientInfo.IpAddress,
 					DeviceType: session.ClientInfo.DeviceType,
@@ -1188,9 +1181,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 		}
 	case storepb.UserSetting_ACCESS_TOKENS:
 		accessTokens := storeSetting.GetAccessTokens()
-		apiTokens := make([]*v1pb.UserSetting_AccessTokensSetting_AccessToken, 0, len(accessTokens.AccessTokens))
+		apiTokens := make([]*v1pb.UserAccessToken, 0, len(accessTokens.AccessTokens))
 		for _, token := range accessTokens.AccessTokens {
-			apiToken := &v1pb.UserSetting_AccessTokensSetting_AccessToken{
+			apiToken := &v1pb.UserAccessToken{
+				Name:        fmt.Sprintf("users/%d/accessTokens/%s", userID, token.AccessToken),
 				AccessToken: token.AccessToken,
 				Description: token.Description,
 			}
@@ -1201,30 +1195,14 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 				AccessTokens: apiTokens,
 			},
 		}
-	case storepb.UserSetting_SHORTCUTS:
-		shortcuts := storeSetting.GetShortcuts()
-		apiShortcuts := make([]*v1pb.UserSetting_ShortcutsSetting_Shortcut, 0, len(shortcuts.Shortcuts))
-		for _, shortcut := range shortcuts.Shortcuts {
-			apiShortcut := &v1pb.UserSetting_ShortcutsSetting_Shortcut{
-				Id:     shortcut.Id,
-				Title:  shortcut.Title,
-				Filter: shortcut.Filter,
-			}
-			apiShortcuts = append(apiShortcuts, apiShortcut)
-		}
-		setting.Value = &v1pb.UserSetting_ShortcutsSetting_{
-			ShortcutsSetting: &v1pb.UserSetting_ShortcutsSetting{
-				Shortcuts: apiShortcuts,
-			},
-		}
 	case storepb.UserSetting_WEBHOOKS:
 		webhooks := storeSetting.GetWebhooks()
-		apiWebhooks := make([]*v1pb.UserSetting_WebhooksSetting_Webhook, 0, len(webhooks.Webhooks))
+		apiWebhooks := make([]*v1pb.UserWebhook, 0, len(webhooks.Webhooks))
 		for _, webhook := range webhooks.Webhooks {
-			apiWebhook := &v1pb.UserSetting_WebhooksSetting_Webhook{
-				Id:    webhook.Id,
-				Title: webhook.Title,
-				Url:   webhook.Url,
+			apiWebhook := &v1pb.UserWebhook{
+				Name:        fmt.Sprintf("users/%d/webhooks/%s", userID, webhook.Id),
+				Url:         webhook.Url,
+				DisplayName: webhook.Title,
 			}
 			apiWebhooks = append(apiWebhooks, apiWebhook)
 		}
@@ -1303,32 +1281,13 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 		} else {
 			return nil, errors.Errorf("access tokens setting is required")
 		}
-	case storepb.UserSetting_SHORTCUTS:
-		if shortcuts := apiSetting.GetShortcutsSetting(); shortcuts != nil {
-			storeShortcuts := make([]*storepb.ShortcutsUserSetting_Shortcut, 0, len(shortcuts.Shortcuts))
-			for _, shortcut := range shortcuts.Shortcuts {
-				storeShortcut := &storepb.ShortcutsUserSetting_Shortcut{
-					Id:     shortcut.Id,
-					Title:  shortcut.Title,
-					Filter: shortcut.Filter,
-				}
-				storeShortcuts = append(storeShortcuts, storeShortcut)
-			}
-			storeSetting.Value = &storepb.UserSetting_Shortcuts{
-				Shortcuts: &storepb.ShortcutsUserSetting{
-					Shortcuts: storeShortcuts,
-				},
-			}
-		} else {
-			return nil, errors.Errorf("shortcuts setting is required")
-		}
 	case storepb.UserSetting_WEBHOOKS:
 		if webhooks := apiSetting.GetWebhooksSetting(); webhooks != nil {
 			storeWebhooks := make([]*storepb.WebhooksUserSetting_Webhook, 0, len(webhooks.Webhooks))
 			for _, webhook := range webhooks.Webhooks {
 				storeWebhook := &storepb.WebhooksUserSetting_Webhook{
-					Id:    webhook.Id,
-					Title: webhook.Title,
+					Id:    extractWebhookIDFromName(webhook.Name),
+					Title: webhook.DisplayName,
 					Url:   webhook.Url,
 				}
 				storeWebhooks = append(storeWebhooks, storeWebhook)
@@ -1346,4 +1305,14 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 	}
 
 	return storeSetting, nil
+}
+
+// extractWebhookIDFromName extracts webhook ID from resource name.
+// e.g., "users/123/webhooks/webhook-id" -> "webhook-id".
+func extractWebhookIDFromName(name string) string {
+	parts := strings.Split(name, "/")
+	if len(parts) >= 4 && parts[0] == "users" && parts[2] == "webhooks" {
+		return parts[3]
+	}
+	return ""
 }

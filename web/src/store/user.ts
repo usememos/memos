@@ -6,10 +6,10 @@ import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import {
   User,
   UserSetting,
+  UserSetting_Key,
   UserSetting_GeneralSetting,
   UserSetting_SessionsSetting,
   UserSetting_AccessTokensSetting,
-  UserSetting_ShortcutsSetting,
   UserSetting_WebhooksSetting,
   UserStats,
 } from "@/types/proto/api/v1/user_service";
@@ -21,7 +21,6 @@ class LocalState {
   userGeneralSetting?: UserSetting_GeneralSetting;
   userSessionsSetting?: UserSetting_SessionsSetting;
   userAccessTokensSetting?: UserSetting_AccessTokensSetting;
-  userShortcutsSetting?: UserSetting_ShortcutsSetting;
   userWebhooksSetting?: UserSetting_WebhooksSetting;
   shortcuts: Shortcut[] = [];
   inboxes: Inbox[] = [];
@@ -145,7 +144,7 @@ const userStore = (() => {
       throw new Error("No current user");
     }
 
-    const settingName = `${state.currentUser}/settings/general`;
+    const settingName = `${state.currentUser}/settings/${UserSetting_Key.GENERAL}`;
     const userSetting: UserSetting = {
       name: settingName,
       generalSetting: generalSetting as UserSetting_GeneralSetting,
@@ -166,7 +165,7 @@ const userStore = (() => {
       throw new Error("No current user");
     }
 
-    const settingName = `${state.currentUser}/settings/general`;
+    const settingName = `${state.currentUser}/settings/${UserSetting_Key.GENERAL}`;
     const userSetting = await userServiceClient.getUserSetting({ name: settingName });
 
     state.setPartial({
@@ -187,24 +186,13 @@ const userStore = (() => {
     const generalSetting = settings.find((s) => s.generalSetting)?.generalSetting;
     const sessionsSetting = settings.find((s) => s.sessionsSetting)?.sessionsSetting;
     const accessTokensSetting = settings.find((s) => s.accessTokensSetting)?.accessTokensSetting;
-    const shortcutsSetting = settings.find((s) => s.shortcutsSetting)?.shortcutsSetting;
     const webhooksSetting = settings.find((s) => s.webhooksSetting)?.webhooksSetting;
-
-    // Convert user setting shortcuts to proper Shortcut format
-    const shortcuts: Shortcut[] =
-      shortcutsSetting?.shortcuts.map((shortcut) => ({
-        name: `${state.currentUser}/shortcuts/${shortcut.id}`,
-        title: shortcut.title,
-        filter: shortcut.filter,
-      })) || [];
 
     state.setPartial({
       userGeneralSetting: generalSetting,
       userSessionsSetting: sessionsSetting,
       userAccessTokensSetting: accessTokensSetting,
-      userShortcutsSetting: shortcutsSetting,
       userWebhooksSetting: webhooksSetting,
-      shortcuts,
     });
   };
 
