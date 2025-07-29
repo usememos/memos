@@ -52,10 +52,12 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	echoServer.Use(middleware.Recover())
 	s.echoServer = echoServer
 
-	// Initialize profiler
-	s.profiler = profiler.NewProfiler()
-	s.profiler.RegisterRoutes(echoServer)
-	s.profiler.StartMemoryMonitor(ctx)
+	if profile.Mode != "prod" {
+		// Initialize profiler
+		s.profiler = profiler.NewProfiler()
+		s.profiler.RegisterRoutes(echoServer)
+		s.profiler.StartMemoryMonitor(ctx)
+	}
 
 	workspaceBasicSetting, err := s.getOrUpsertWorkspaceBasicSetting(ctx)
 	if err != nil {
