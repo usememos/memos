@@ -44,8 +44,8 @@ const VisibilitySelector = (props: Props) => {
             </SelectContent>
           </Select>
         </TooltipTrigger>
-        <TooltipContent side="top">
-          <p>{t("memo.visibility-tooltip")}</p>
+        <TooltipContent side="bottom">
+          <p>{t("tooltip.select-visibility")}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
