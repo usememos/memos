@@ -2,6 +2,7 @@ import VisibilityIcon from "@/components/VisibilityIcon";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"; // ⬅️ ADD this line
 
 interface Props {
   value: Visibility;
@@ -26,19 +27,28 @@ const VisibilitySelector = (props: Props) => {
   };
 
   return (
-    <Select value={value.toString()} onValueChange={onChange} onOpenChange={handleOpenChange}>
-      <SelectTrigger size="xs" className="!bg-background">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent align="end">
-        {visibilityOptions.map((option) => (
-          <SelectItem key={option.value} value={option.value.toString()}>
-            <VisibilityIcon className="size-3.5" visibility={option.value} />
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Select value={value.toString()} onValueChange={onChange} onOpenChange={handleOpenChange}>
+            <SelectTrigger size="xs" className="!bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end">
+              {visibilityOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value.toString()}>
+                  <VisibilityIcon className="size-3.5" visibility={option.value} />
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </TooltipTrigger>
+        <TooltipContent side="top">
+          <p>{t("memo.visibility-tooltip")}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
