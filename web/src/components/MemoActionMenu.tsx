@@ -16,8 +16,8 @@ import { useLocation } from "react-router-dom";
 import { markdownServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { memoStore, userStore } from "@/store";
-import { State } from "@/types/proto/api/v1/common";
 import { workspaceStore } from "@/store";
+import { State } from "@/types/proto/api/v1/common";
 import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -115,8 +115,11 @@ const MemoActionMenu = observer((props: Props) => {
   };
 
   const handleCopyLink = () => {
-    let instanceUrl = workspaceStore.state.profile.instanceUrl;
-    copy(`${instanceUrl}/${memo.name}`);
+    let host = workspaceStore.state.profile.instanceUrl;
+    if (host === "") {
+      host = window.location.origin;
+    }
+    copy(`${host}/${memo.name}`);
     toast.success(t("message.succeed-copy-link"));
   };
 
