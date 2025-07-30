@@ -181,13 +181,13 @@ const userStore = (() => {
     }
 
     const { settings } = await userServiceClient.listUserSettings({ parent: state.currentUser });
+    const { shortcuts } = await shortcutServiceClient.listShortcuts({ parent: state.currentUser });
 
     // Extract and store each setting type
     const generalSetting = settings.find((s) => s.generalSetting)?.generalSetting;
     const sessionsSetting = settings.find((s) => s.sessionsSetting)?.sessionsSetting;
     const accessTokensSetting = settings.find((s) => s.accessTokensSetting)?.accessTokensSetting;
     const webhooksSetting = settings.find((s) => s.webhooksSetting)?.webhooksSetting;
-    const { shortcuts } = await shortcutServiceClient.listShortcuts({ parent: state.currentUser });
 
     state.setPartial({
       userGeneralSetting: generalSetting,
