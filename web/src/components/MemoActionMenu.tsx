@@ -17,6 +17,7 @@ import { markdownServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { memoStore, userStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
+import { workspaceStore } from "@/store";
 import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -114,7 +115,8 @@ const MemoActionMenu = observer((props: Props) => {
   };
 
   const handleCopyLink = () => {
-    copy(`${window.location.origin}/${memo.name}`);
+    let instanceUrl = workspaceStore.state.profile.instanceUrl;
+    copy(`${instanceUrl}/${memo.name}`);
     toast.success(t("message.succeed-copy-link"));
   };
 
