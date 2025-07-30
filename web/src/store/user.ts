@@ -1,6 +1,6 @@
 import { uniqueId } from "lodash-es";
 import { makeAutoObservable } from "mobx";
-import { authServiceClient, inboxServiceClient, userServiceClient } from "@/grpcweb";
+import { authServiceClient, inboxServiceClient, userServiceClient, shortcutServiceClient } from "@/grpcweb";
 import { Inbox } from "@/types/proto/api/v1/inbox_service";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import {
@@ -187,12 +187,14 @@ const userStore = (() => {
     const sessionsSetting = settings.find((s) => s.sessionsSetting)?.sessionsSetting;
     const accessTokensSetting = settings.find((s) => s.accessTokensSetting)?.accessTokensSetting;
     const webhooksSetting = settings.find((s) => s.webhooksSetting)?.webhooksSetting;
+    const { shortcuts } = await shortcutServiceClient.listShortcuts({ parent: state.currentUser });
 
     state.setPartial({
       userGeneralSetting: generalSetting,
       userSessionsSetting: sessionsSetting,
       userAccessTokensSetting: accessTokensSetting,
       userWebhooksSetting: webhooksSetting,
+      shortcuts: shortcuts,
     });
   };
 
