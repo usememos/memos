@@ -235,6 +235,8 @@
   },
   "setting": {
     "access-token-section": {
+      "access-token-copied-to-clipboard": "访问令牌已复制到剪贴板",
+      "access-token-deletion": "你确定要删除访问令牌{{accessToken}}吗？此操作不可逆。",
       "create-dialog": {
         "create-access-token": "创建令牌",
         "created-at": "创建时间",
@@ -247,7 +249,8 @@
         "some-description": "请输入描述..."
       },
       "description": "该账号下全部的访问令牌",
-      "title": "访问令牌"
+      "title": "访问令牌",
+      "token": "令牌"
     },
     "user-sessions-section": {
       "title": "用户会话",
