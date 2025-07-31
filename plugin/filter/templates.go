@@ -35,12 +35,12 @@ var SQLTemplates = map[string]SQLTemplate{
 	"json_contains_element": {
 		SQLite:     "JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?",
 		MySQL:      "JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?)",
-		PostgreSQL: "memo.payload->'tags' @> jsonb_build_array(?)",
+		PostgreSQL: "memo.payload->'tags' @> jsonb_build_array(?::text)",
 	},
 	"json_contains_tag": {
 		SQLite:     "JSON_EXTRACT(`memo`.`payload`, '$.tags') LIKE ?",
 		MySQL:      "JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?)",
-		PostgreSQL: "memo.payload->'tags' @> jsonb_build_array(?)",
+		PostgreSQL: "memo.payload->'tags' @> jsonb_build_array(?::text)",
 	},
 	"boolean_true": {
 		SQLite:     "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = 1",
