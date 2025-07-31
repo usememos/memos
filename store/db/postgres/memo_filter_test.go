@@ -92,7 +92,7 @@ func TestConvertExprToSQL(t *testing.T) {
 		},
 		{
 			filter: `created_ts > now() - 60 * 60 * 24`,
-			want:   "EXTRACT(EPOCH FROM memo.created_ts) > $1",
+			want:   "EXTRACT(EPOCH FROM TO_TIMESTAMP(memo.created_ts)) > $1",
 			args:   []any{time.Now().Unix() - 60*60*24},
 		},
 		{
