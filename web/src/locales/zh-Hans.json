@@ -123,7 +123,8 @@
   },
   "inbox": {
     "memo-comment": "{{user}} 评论了您的“{{memo}}”。",
-    "version-update": "新版本 {{version}} 现已推出！"
+    "version-update": "新版本 {{version}} 现已推出！",
+    "failed-to-load": "加载失败"
   },
   "markdown": {
     "checkbox": "复选框",
@@ -173,7 +174,10 @@
     "change-memo-created-time": "更改备忘录创建时间",
     "copied": "已复制",
     "deleted-successfully": "成功删除！",
+    "description-is-required": "请填写说明",
+    "failed-to-embed-memo": "嵌入备忘录失败",
     "fill-all": "请填写所有栏目。",
+    "fill-all-required-fields": "请填写所有必填项。",
     "maximum-upload-size-is": "允许的最大上传大小为 {{size}} MiB",
     "memo-not-found": "找不到备忘录",
     "new-password-not-match": "新密码不一致。",
