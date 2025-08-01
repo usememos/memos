@@ -266,7 +266,7 @@ func (c *CommonSQLConverter) handleTagInList(ctx *ConvertContext, values []any) 
 			template := c.dialect.GetJSONContains("$.tags", "element")
 			sql := strings.Replace(template, "?", c.dialect.GetParameterPlaceholder(c.paramIndex), 1)
 			subconditions = append(subconditions, sql)
-			args = append(args, v)
+			args = append(args, fmt.Sprintf(`"%s"`, v))
 		}
 		c.paramIndex++
 	}
