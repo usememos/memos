@@ -309,7 +309,6 @@ func (c *Cache) cleanupOldest() {
 	// Update count
 	if deletedCount > 0 {
 		(&c.itemCount).Add(-int64(deletedCount))
-
 	}
 }
 
