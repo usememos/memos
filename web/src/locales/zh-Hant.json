@@ -81,8 +81,8 @@
     "select": "選擇",
     "settings": "設定",
     "share": "分享",
-    "shortcut-filter": "快捷鍵篩選",
-    "shortcuts": "快捷鍵",
+    "shortcut-filter": "篩選條件表達式",
+    "shortcuts": "快捷篩選",
     "sign-in": "登入",
     "sign-in-with": "使用 {{provider}} 登入",
     "sign-out": "登出",
@@ -122,6 +122,7 @@
     "has-task-list": "有待辦事項"
   },
   "inbox": {
+    "failed-to-load": "載入通知失敗",
     "memo-comment": "{{user}} 對您的 {{memo}} 發表了評論。",
     "version-update": "新版本 {{version}} 現已推出！"
   },
@@ -142,7 +143,7 @@
     "copy-link": "複製連結",
     "count-memos-in-date": "{{date}}的{{count}}條備忘錄",
     "delete-confirm": "您確定要刪除此備忘錄？（此操作無法恢復）",
-    "direction": "方向",
+    "direction": "排序",
     "direction-asc": "升序",
     "direction-desc": "降序",
     "display-time": "顯示時間",
