@@ -65,9 +65,9 @@ func DefaultConfig() Config {
 
 // Cache is a thread-safe in-memory cache with TTL and memory management.
 type Cache struct {
+	itemCount  atomic.Int64 // Use atomic operations to track item count
 	data       sync.Map
 	config     Config
-	itemCount  int64 // Use atomic operations to track item count
 	stopChan   chan struct{}
 	closedChan chan struct{}
 }
@@ -104,7 +104,7 @@ func (c *Cache) SetWithTTL(_ context.Context, key string, value any, ttl time.Du
 		c.data.Delete(key)
 	} else {
 		// Only increment if this is a new key.
-		atomic.AddInt64(&c.itemCount, 1)
+		(&c.itemCount).Add(1)
 	}
 
 	c.data.Store(key, item{
@@ -114,7 +114,7 @@ func (c *Cache) SetWithTTL(_ context.Context, key string, value any, ttl time.Du
 	})
 
 	// If we're over the max items, clean up old items.
-	if c.config.MaxItems > 0 && atomic.LoadInt64(&c.itemCount) > int64(c.config.MaxItems) {
+	if c.config.MaxItems > 0 && (&c.itemCount).Load() > int64(c.config.MaxItems) {
 		c.cleanupOldest()
 	}
 }
@@ -134,7 +134,7 @@ func (c *Cache) Get(_ context.Context, key string) (any, bool) {
 	}
 	if time.Now().After(itm.expiration) {
 		c.data.Delete(key)
-		atomic.AddInt64(&c.itemCount, -1)
+		(&c.itemCount).Add(-1)
 
 		if c.config.OnEviction != nil {
 			c.config.OnEviction(key, itm.value)
@@ -149,7 +149,7 @@ func (c *Cache) Get(_ context.Context, key string) (any, bool) {
 // Delete removes a value from the cache.
 func (c *Cache) Delete(_ context.Context, key string) {
 	if value, loaded := c.data.LoadAndDelete(key); loaded {
-		atomic.AddInt64(&c.itemCount, -1)
+		(&c.itemCount).Add(-1)
 
 		if c.config.OnEviction != nil {
 			if itm, ok := value.(item); ok {
@@ -175,12 +175,12 @@ func (c *Cache) Clear(_ context.Context) {
 	}
 
 	c.data = sync.Map{}
-	atomic.StoreInt64(&c.itemCount, 0)
+	(&c.itemCount).Store(0)
 }
 
 // Size returns the number of items in the cache.
 func (c *Cache) Size() int64 {
-	return atomic.LoadInt64(&c.itemCount)
+	return (&c.itemCount).Load()
 }
 
 // Close stops the cache cleanup goroutine.
@@ -238,7 +238,7 @@ func (c *Cache) cleanup() {
 	})
 
 	if count > 0 {
-		atomic.AddInt64(&c.itemCount, -int64(count))
+		(&c.itemCount).Add(-int64(count))
 
 		// Call eviction callbacks outside the loop to avoid blocking the range
 		if c.config.OnEviction != nil {
@@ -254,7 +254,7 @@ func (c *Cache) cleanupOldest() {
 	// Remove 20% of max items at once
 	threshold := max(c.config.MaxItems/5, 1)
 
-	currentCount := atomic.LoadInt64(&c.itemCount)
+	currentCount := (&c.itemCount).Load()
 
 	// If we're not over the threshold, don't do anything
 	if currentCount <= int64(c.config.MaxItems) {
@@ -308,7 +308,8 @@ func (c *Cache) cleanupOldest() {
 
 	// Update count
 	if deletedCount > 0 {
-		atomic.AddInt64(&c.itemCount, -int64(deletedCount))
+		(&c.itemCount).Add(-int64(deletedCount))
+
 	}
 }
 
