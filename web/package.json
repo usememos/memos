@@ -71,7 +71,7 @@
     "@types/textarea-caret": "^3.0.4",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.7.0",
-    "code-inspector-plugin": "^0.18.3",
+    "code-inspector-plugin": "^1.0.4",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
