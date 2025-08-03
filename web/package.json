@@ -64,7 +64,7 @@
     "@types/katex": "^0.16.7",
     "@types/leaflet": "^1.9.19",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^24.0.10",
+    "@types/node": "^24.1.0",
     "@types/qs": "^6.14.0",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
