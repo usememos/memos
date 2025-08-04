@@ -52,7 +52,7 @@ type Memo struct {
 	Payload    *storepb.MemoPayload
 
 	// Composed fields
-	ParentID *int32
+	ParentUID *string
 }
 
 type FindMemo struct {

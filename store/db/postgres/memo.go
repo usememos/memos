@@ -105,7 +105,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		`memo.visibility AS visibility`,
 		`memo.pinned AS pinned`,
 		`memo.payload AS payload`,
-		`memo_relation.related_memo_id AS parent_id`,
+		`CASE WHEN parent_memo.uid IS NOT NULL THEN parent_memo.uid ELSE NULL END AS parent_uid`,
 	}
 	if !find.ExcludeContent {
 		fields = append(fields, `memo.content AS content`)
@@ -114,6 +114,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	query := `SELECT ` + strings.Join(fields, ", ") + `
 		FROM memo
 		LEFT JOIN memo_relation ON memo.id = memo_relation.memo_id AND memo_relation.type = 'COMMENT'
+		LEFT JOIN memo AS parent_memo ON memo_relation.related_memo_id = parent_memo.id
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY ` + strings.Join(orderBy, ", ")
 	if find.Limit != nil {
@@ -143,7 +144,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.Visibility,
 			&memo.Pinned,
 			&payloadBytes,
-			&memo.ParentID,
+			&memo.ParentUID,
 		}
 		if !find.ExcludeContent {
 			dests = append(dests, &memo.Content)

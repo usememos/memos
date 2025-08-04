@@ -43,15 +43,9 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
 		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
 	}
-	if memo.ParentID != nil {
-		parent, err := s.Store.GetMemo(ctx, &store.FindMemo{
-			ID:             memo.ParentID,
-			ExcludeContent: true,
-		})
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to get parent memo")
-		}
-		parentName := fmt.Sprintf("%s%s", MemoNamePrefix, parent.UID)
+
+	if memo.ParentUID != nil {
+		parentName := fmt.Sprintf("%s%s", MemoNamePrefix, *memo.ParentUID)
 		memoMessage.Parent = &parentName
 	}
 
