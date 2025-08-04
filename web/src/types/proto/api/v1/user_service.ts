@@ -114,11 +114,6 @@ export interface ListUsersRequest {
    * Supported fields: username, email, role, state, create_time, update_time
    */
   filter: string;
-  /**
-   * Optional. The order to sort results by.
-   * Example: "create_time desc" or "username asc"
-   */
-  orderBy: string;
   /** Optional. If true, show deleted users in the response. */
   showDeleted: boolean;
 }
@@ -189,24 +184,6 @@ export interface DeleteUserRequest {
   name: string;
   /** Optional. If set to true, the user will be deleted even if they have associated data. */
   force: boolean;
-}
-
-export interface SearchUsersRequest {
-  /** Required. The search query. */
-  query: string;
-  /** Optional. The maximum number of users to return. */
-  pageSize: number;
-  /** Optional. A page token for pagination. */
-  pageToken: string;
-}
-
-export interface SearchUsersResponse {
-  /** The list of users matching the search query. */
-  users: User[];
-  /** A token for the next page of results. */
-  nextPageToken: string;
-  /** The total count of matching users. */
-  totalSize: number;
 }
 
 export interface GetUserAvatarRequest {
@@ -780,7 +757,7 @@ export const User: MessageFns<User> = {
 };
 
 function createBaseListUsersRequest(): ListUsersRequest {
-  return { pageSize: 0, pageToken: "", filter: "", orderBy: "", showDeleted: false };
+  return { pageSize: 0, pageToken: "", filter: "", showDeleted: false };
 }
 
 export const ListUsersRequest: MessageFns<ListUsersRequest> = {
@@ -794,11 +771,8 @@ export const ListUsersRequest: MessageFns<ListUsersRequest> = {
     if (message.filter !== "") {
       writer.uint32(26).string(message.filter);
     }
-    if (message.orderBy !== "") {
-      writer.uint32(34).string(message.orderBy);
-    }
     if (message.showDeleted !== false) {
-      writer.uint32(40).bool(message.showDeleted);
+      writer.uint32(32).bool(message.showDeleted);
     }
     return writer;
   },
@@ -835,15 +809,7 @@ export const ListUsersRequest: MessageFns<ListUsersRequest> = {
           continue;
         }
         case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.orderBy = reader.string();
-          continue;
-        }
-        case 5: {
-          if (tag !== 40) {
+          if (tag !== 32) {
             break;
           }
 
@@ -867,7 +833,6 @@ export const ListUsersRequest: MessageFns<ListUsersRequest> = {
     message.pageSize = object.pageSize ?? 0;
     message.pageToken = object.pageToken ?? "";
     message.filter = object.filter ?? "";
-    message.orderBy = object.orderBy ?? "";
     message.showDeleted = object.showDeleted ?? false;
     return message;
   },
@@ -1207,146 +1172,6 @@ export const DeleteUserRequest: MessageFns<DeleteUserRequest> = {
     const message = createBaseDeleteUserRequest();
     message.name = object.name ?? "";
     message.force = object.force ?? false;
-    return message;
-  },
-};
-
-function createBaseSearchUsersRequest(): SearchUsersRequest {
-  return { query: "", pageSize: 0, pageToken: "" };
-}
-
-export const SearchUsersRequest: MessageFns<SearchUsersRequest> = {
-  encode(message: SearchUsersRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.query !== "") {
-      writer.uint32(10).string(message.query);
-    }
-    if (message.pageSize !== 0) {
-      writer.uint32(16).int32(message.pageSize);
-    }
-    if (message.pageToken !== "") {
-      writer.uint32(26).string(message.pageToken);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): SearchUsersRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSearchUsersRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.query = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.pageSize = reader.int32();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.pageToken = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<SearchUsersRequest>): SearchUsersRequest {
-    return SearchUsersRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<SearchUsersRequest>): SearchUsersRequest {
-    const message = createBaseSearchUsersRequest();
-    message.query = object.query ?? "";
-    message.pageSize = object.pageSize ?? 0;
-    message.pageToken = object.pageToken ?? "";
-    return message;
-  },
-};
-
-function createBaseSearchUsersResponse(): SearchUsersResponse {
-  return { users: [], nextPageToken: "", totalSize: 0 };
-}
-
-export const SearchUsersResponse: MessageFns<SearchUsersResponse> = {
-  encode(message: SearchUsersResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.users) {
-      User.encode(v!, writer.uint32(10).fork()).join();
-    }
-    if (message.nextPageToken !== "") {
-      writer.uint32(18).string(message.nextPageToken);
-    }
-    if (message.totalSize !== 0) {
-      writer.uint32(24).int32(message.totalSize);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): SearchUsersResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSearchUsersResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.users.push(User.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.nextPageToken = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.totalSize = reader.int32();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<SearchUsersResponse>): SearchUsersResponse {
-    return SearchUsersResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<SearchUsersResponse>): SearchUsersResponse {
-    const message = createBaseSearchUsersResponse();
-    message.users = object.users?.map((e) => User.fromPartial(e)) || [];
-    message.nextPageToken = object.nextPageToken ?? "";
-    message.totalSize = object.totalSize ?? 0;
     return message;
   },
 };
@@ -3581,46 +3406,6 @@ export const UserServiceDefinition = {
               47,
               42,
               125,
-            ]),
-          ],
-        },
-      },
-    },
-    /** SearchUsers searches for users based on query. */
-    searchUsers: {
-      name: "SearchUsers",
-      requestType: SearchUsersRequest,
-      requestStream: false,
-      responseType: SearchUsersResponse,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          8410: [new Uint8Array([5, 113, 117, 101, 114, 121])],
-          578365826: [
-            new Uint8Array([
-              22,
-              18,
-              20,
-              47,
-              97,
-              112,
-              105,
-              47,
-              118,
-              49,
-              47,
-              117,
-              115,
-              101,
-              114,
-              115,
-              58,
-              115,
-              101,
-              97,
-              114,
-              99,
-              104,
             ]),
           ],
         },

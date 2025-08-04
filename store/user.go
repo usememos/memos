@@ -83,6 +83,9 @@ type FindUser struct {
 	Email     *string
 	Nickname  *string
 
+	// Domain specific fields
+	Filters []string
+
 	// The maximum number of users to return.
 	Limit *int
 }

@@ -25,12 +25,13 @@ import (
 
 	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/plugin/filter"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV1Service) ListUsers(ctx context.Context, _ *v1pb.ListUsersRequest) (*v1pb.ListUsersResponse, error) {
+func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersRequest) (*v1pb.ListUsersResponse, error) {
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -39,12 +40,21 @@ func (s *APIV1Service) ListUsers(ctx context.Context, _ *v1pb.ListUsersRequest) 
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	users, err := s.Store.ListUsers(ctx, &store.FindUser{})
+	userFind := &store.FindUser{}
+
+	if request.Filter != "" {
+		if err := s.validateUserFilter(ctx, request.Filter); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		}
+		userFind.Filters = append(userFind.Filters, request.Filter)
+	}
+
+	users, err := s.Store.ListUsers(ctx, userFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
 	}
 
-	// TODO: Implement proper filtering, ordering, and pagination
+	// TODO: Implement proper ordering, and pagination
 	// For now, return all users with basic structure
 	response := &v1pb.ListUsersResponse{
 		Users:     []*v1pb.User{},
@@ -70,47 +80,7 @@ func (s *APIV1Service) GetUser(ctx context.Context, request *v1pb.GetUserRequest
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
-	userPb := convertUserFromStore(user)
-
-	// TODO: Implement read_mask field filtering
-	// For now, return all fields
-
-	return userPb, nil
-}
-
-func (s *APIV1Service) SearchUsers(ctx context.Context, request *v1pb.SearchUsersRequest) (*v1pb.SearchUsersResponse, error) {
-	currentUser, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
-	}
-	if currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-
-	// Search users by username, email, or display name
-	users, err := s.Store.ListUsers(ctx, &store.FindUser{})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
-	}
-
-	var filteredUsers []*store.User
-	query := strings.ToLower(request.Query)
-	for _, user := range users {
-		if strings.Contains(strings.ToLower(user.Username), query) ||
-			strings.Contains(strings.ToLower(user.Email), query) ||
-			strings.Contains(strings.ToLower(user.Nickname), query) {
-			filteredUsers = append(filteredUsers, user)
-		}
-	}
-
-	response := &v1pb.SearchUsersResponse{
-		Users:     []*v1pb.User{},
-		TotalSize: int32(len(filteredUsers)),
-	}
-	for _, user := range filteredUsers {
-		response.Users = append(response.Users, convertUserFromStore(user))
-	}
-	return response, nil
+	return convertUserFromStore(user), nil
 }
 
 func (s *APIV1Service) GetUserAvatar(ctx context.Context, request *v1pb.GetUserAvatarRequest) (*httpbody.HttpBody, error) {
@@ -1315,4 +1285,38 @@ func extractWebhookIDFromName(name string) string {
 		return parts[3]
 	}
 	return ""
+}
+
+// validateUserFilter validates the user filter string.
+func (s *APIV1Service) validateUserFilter(_ context.Context, filterStr string) error {
+	if filterStr == "" {
+		return errors.New("filter cannot be empty")
+	}
+	// Validate the filter.
+	parsedExpr, err := filter.Parse(filterStr, filter.UserFilterCELAttributes...)
+	if err != nil {
+		return errors.Wrap(err, "failed to parse filter")
+	}
+	convertCtx := filter.NewConvertContext()
+
+	// Determine the dialect based on the actual database driver
+	var dialect filter.SQLDialect
+	switch s.Profile.Driver {
+	case "sqlite":
+		dialect = &filter.SQLiteDialect{}
+	case "mysql":
+		dialect = &filter.MySQLDialect{}
+	case "postgres":
+		dialect = &filter.PostgreSQLDialect{}
+	default:
+		// Default to SQLite for unknown drivers
+		dialect = &filter.SQLiteDialect{}
+	}
+
+	converter := filter.NewCommonSQLConverter(dialect)
+	err = converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
+	if err != nil {
+		return errors.Wrap(err, "failed to convert filter to SQL")
+	}
+	return nil
 }

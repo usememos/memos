@@ -36,6 +36,11 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	),
 }
 
+// UserFilterCELAttributes are the CEL attributes for user.
+var UserFilterCELAttributes = []cel.EnvOption{
+	cel.Variable("username", cel.StringType),
+}
+
 // Parse parses the filter string and returns the parsed expression.
 // The filter string should be a CEL expression.
 func Parse(filter string, opts ...cel.EnvOption) (expr *exprv1.ParsedExpr, err error) {

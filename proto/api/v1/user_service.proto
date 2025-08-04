@@ -50,12 +50,6 @@ service UserService {
     option (google.api.method_signature) = "name";
   }
 
-  // SearchUsers searches for users based on query.
-  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {
-    option (google.api.http) = {get: "/api/v1/users:search"};
-    option (google.api.method_signature) = "query";
-  }
-
   // GetUserAvatar gets the avatar of a user.
   rpc GetUserAvatar(GetUserAvatarRequest) returns (google.api.HttpBody) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}/avatar"};
@@ -231,12 +225,8 @@ message ListUsersRequest {
   // Supported fields: username, email, role, state, create_time, update_time
   string filter = 3 [(google.api.field_behavior) = OPTIONAL];
 
-  // Optional. The order to sort results by.
-  // Example: "create_time desc" or "username asc"
-  string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
-
   // Optional. If true, show deleted users in the response.
-  bool show_deleted = 5 [(google.api.field_behavior) = OPTIONAL];
+  bool show_deleted = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListUsersResponse {
@@ -305,28 +295,6 @@ message DeleteUserRequest {
 
   // Optional. If set to true, the user will be deleted even if they have associated data.
   bool force = 2 [(google.api.field_behavior) = OPTIONAL];
-}
-
-message SearchUsersRequest {
-  // Required. The search query.
-  string query = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Optional. The maximum number of users to return.
-  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. A page token for pagination.
-  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
-}
-
-message SearchUsersResponse {
-  // The list of users matching the search query.
-  repeated User users = 1;
-
-  // A token for the next page of results.
-  string next_page_token = 2;
-
-  // The total count of matching users.
-  int32 total_size = 3;
 }
 
 message GetUserAvatarRequest {
