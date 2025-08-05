@@ -67,7 +67,11 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
 	var target string
 	if len(s.Profile.UNIXSock) == 0 {
-		target = fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port)
+		addr := s.Profile.Addr
+		if addr == "" {
+			addr = "localhost"
+		}
+		target = fmt.Sprintf("%s:%d", addr, s.Profile.Port)
 	} else {
 		target = fmt.Sprintf("unix:%s", s.Profile.UNIXSock)
 	}
