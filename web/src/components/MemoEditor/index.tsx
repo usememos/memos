@@ -1,12 +1,14 @@
 import copy from "copy-to-clipboard";
 import { isEqual } from "lodash-es";
-import { LoaderIcon, SendIcon } from "lucide-react";
+import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
+import VisibilityIcon from "@/components/VisibilityIcon";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
@@ -25,7 +27,6 @@ import LocationSelector from "./ActionButton/LocationSelector";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
 import TagSelector from "./ActionButton/TagSelector";
 import UploadAttachmentButton from "./ActionButton/UploadAttachmentButton";
-import VisibilitySelector from "./ActionButton/VisibilitySelector";
 import AttachmentListView from "./AttachmentListView";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
@@ -74,7 +75,6 @@ const MemoEditor = observer((props: Props) => {
   const [createTime, setCreateTime] = useState<Date | undefined>();
   const [updateTime, setUpdateTime] = useState<Date | undefined>();
   const [hasContent, setHasContent] = useState<boolean>(false);
-  const [isVisibilitySelectorOpen, setIsVisibilitySelectorOpen] = useState(false);
   const editorRef = useRef<EditorRefActions>(null);
   const userGeneralSetting = userStore.state.userGeneralSetting;
   const contentCacheKey = `${currentUser.name}-${cacheKey || ""}`;
@@ -515,33 +515,41 @@ const MemoEditor = observer((props: Props) => {
               }
             />
           </div>
-          <div className="shrink-0 flex flex-row justify-end items-center gap-1">
+          <div className="shrink-0 -mr-1 flex flex-row justify-end items-center gap-1">
             {props.onCancel && (
               <Button variant="ghost" className="opacity-60" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
                 {t("common.cancel")}
               </Button>
             )}
-            <Button color="primary" disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick}>
+            <Button disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick}>
               {t("editor.save")}
-              {!state.isRequesting ? <SendIcon className="w-4 h-auto ml-1" /> : <LoaderIcon className="w-4 h-auto ml-1 animate-spin" />}
+              {!state.isRequesting ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                    <span className="pointer-events-auto">
+                      <VisibilityIcon visibility={state.memoVisibility} className="w-4 h-auto ml-1 text-primary-foreground opacity-80" />
+                    </span>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" alignOffset={-12} sideOffset={12} onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenuItem onClick={() => handleMemoVisibilityChange(Visibility.PRIVATE)}>
+                      <VisibilityIcon visibility={Visibility.PRIVATE} className="w-4 h-4" />
+                      {t("memo.visibility.private")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleMemoVisibilityChange(Visibility.PROTECTED)}>
+                      <VisibilityIcon visibility={Visibility.PROTECTED} className="w-4 h-4" />
+                      {t("memo.visibility.protected")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleMemoVisibilityChange(Visibility.PUBLIC)}>
+                      <VisibilityIcon visibility={Visibility.PUBLIC} className="w-4 h-4" />
+                      {t("memo.visibility.public")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <LoaderIcon className="w-4 h-auto ml-1 animate-spin" />
+              )}
             </Button>
           </div>
-        </div>
-        <div
-          className={cn(
-            "absolute right-1 top-1",
-            "flex flex-row justify-end items-center gap-1",
-            "invisible group-focus-within:visible group-hover:visible hover:visible focus-within:visible",
-            (isVisibilitySelectorOpen || memoName) && "visible",
-          )}
-          onFocus={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          <VisibilitySelector
-            value={state.memoVisibility}
-            onChange={handleMemoVisibilityChange}
-            onOpenChange={setIsVisibilitySelectorOpen}
-          />
         </div>
       </div>
 
