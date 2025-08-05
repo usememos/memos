@@ -50,7 +50,6 @@ const Home = observer(() => {
         conditions.push(`${factor} >= ${timestampAfter} && ${factor} < ${timestampAfter + 60 * 60 * 24}`);
       }
     }
-    console.log("conditions", conditions);
     return conditions.length > 0 ? conditions.join(" && ") : undefined;
   }, [memoFilterStore.filters, selectedShortcut?.filter]);
 
