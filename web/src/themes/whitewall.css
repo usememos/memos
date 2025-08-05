@@ -66,8 +66,8 @@
   --accent-foreground: oklch(0.9 0.01 270);
   --destructive: oklch(0.6 0.15 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.2 0.015 270);
-  --input: oklch(0.25 0.02 270);
+  --border: oklch(0.35 0.02 270);
+  --input: oklch(0.4 0.025 270);
   --ring: oklch(0.65 0.12 250);
   --chart-1: oklch(0.7 0.15 30);
   --chart-2: oklch(0.7 0.15 260);
@@ -80,7 +80,7 @@
   --sidebar-primary-foreground: oklch(0.08 0.005 270);
   --sidebar-accent: oklch(0.18 0.015 270);
   --sidebar-accent-foreground: oklch(0.9 0.01 270);
-  --sidebar-border: oklch(0.2 0.015 270);
+  --sidebar-border: oklch(0.35 0.02 270);
   --sidebar-ring: oklch(0.65 0.12 250);
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
@@ -96,6 +96,22 @@
   --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
   --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+}
+
+/* Enhanced checkbox visibility for dark mode */
+.dark [data-slot="checkbox"] {
+  border-color: oklch(0.5 0.03 270);
+  background-color: oklch(0.15 0.01 270);
+}
+
+.dark [data-slot="checkbox"]:hover {
+  border-color: oklch(0.6 0.05 270);
+  background-color: oklch(0.2 0.015 270);
+}
+
+.dark [data-slot="checkbox"][data-state="checked"] {
+  background-color: var(--primary);
+  border-color: var(--primary);
 }
 
 @theme inline {
