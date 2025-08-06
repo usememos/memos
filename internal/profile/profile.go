@@ -32,6 +32,8 @@ type Profile struct {
 	Version string
 	// InstanceURL is the url of your memos instance.
 	InstanceURL string
+	// LogStacktraces determines if panic logs should include stacktraces
+	LogStacktraces bool
 }
 
 func (p *Profile) IsDev() bool {

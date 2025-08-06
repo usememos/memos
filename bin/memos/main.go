@@ -36,15 +36,16 @@ var (
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		Run: func(_ *cobra.Command, _ []string) {
 			instanceProfile := &profile.Profile{
-				Mode:        viper.GetString("mode"),
-				Addr:        viper.GetString("addr"),
-				Port:        viper.GetInt("port"),
-				UNIXSock:    viper.GetString("unix-sock"),
-				Data:        viper.GetString("data"),
-				Driver:      viper.GetString("driver"),
-				DSN:         viper.GetString("dsn"),
-				InstanceURL: viper.GetString("instance-url"),
-				Version:     version.GetCurrentVersion(viper.GetString("mode")),
+				Mode:           viper.GetString("mode"),
+				Addr:           viper.GetString("addr"),
+				Port:           viper.GetInt("port"),
+				UNIXSock:       viper.GetString("unix-sock"),
+				Data:           viper.GetString("data"),
+				Driver:         viper.GetString("driver"),
+				DSN:            viper.GetString("dsn"),
+				InstanceURL:    viper.GetString("instance-url"),
+				LogStacktraces: viper.GetBool("log-stacktraces"),
+				Version:        version.GetCurrentVersion(viper.GetString("mode")),
 			}
 			if err := instanceProfile.Validate(); err != nil {
 				panic(err)
@@ -112,6 +113,7 @@ func init() {
 	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
+	rootCmd.PersistentFlags().Bool("log-stacktraces", false, "if true, log stacktraces when requests panic")
 
 	if err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode")); err != nil {
 		panic(err)
@@ -137,10 +139,16 @@ func init() {
 	if err := viper.BindPFlag("instance-url", rootCmd.PersistentFlags().Lookup("instance-url")); err != nil {
 		panic(err)
 	}
+	if err := viper.BindPFlag("log-stacktraces", rootCmd.PersistentFlags().Lookup("log-stacktraces")); err != nil {
+		panic(err)
+	}
 
 	viper.SetEnvPrefix("memos")
 	viper.AutomaticEnv()
 	if err := viper.BindEnv("instance-url", "MEMOS_INSTANCE_URL"); err != nil {
+		panic(err)
+	}
+	if err := viper.BindEnv("log-stacktraces", "MEMOS_LOG_STACKTRACES"); err != nil {
 		panic(err)
 	}
 }
@@ -159,8 +167,9 @@ port: %d
 unix-sock: %s
 mode: %s
 driver: %s
+log-stacktraces: %t
 ---
-`, profile.Version, profile.Data, profile.Addr, profile.Port, profile.UNIXSock, profile.Mode, profile.Driver)
+`, profile.Version, profile.Data, profile.Addr, profile.Port, profile.UNIXSock, profile.Mode, profile.Driver, profile.LogStacktraces)
 
 	print(greetingBanner)
 	if len(profile.UNIXSock) == 0 {
