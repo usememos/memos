@@ -550,23 +550,7 @@ func (c *CommonSQLConverter) handleBooleanComparison(ctx *ConvertContext, field,
 
 	// Handle PostgreSQL differently - it uses the raw operator
 	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
-		var jsonExtract string
-		// Special handling for has_link, has_code, has_incomplete_tasks
-		if field == "has_link" || field == "has_code" || field == "has_incomplete_tasks" {
-			// Use memo-> format for these fields
-			parts := strings.Split(strings.TrimPrefix(jsonPath, "$."), ".")
-			jsonExtract = "memo->'payload'"
-			for i, part := range parts {
-				if i == len(parts)-1 {
-					jsonExtract += fmt.Sprintf("->>'%s'", part)
-				} else {
-					jsonExtract += fmt.Sprintf("->'%s'", part)
-				}
-			}
-		} else {
-			// Use standard format for has_task_list
-			jsonExtract = c.dialect.GetJSONExtract(jsonPath)
-		}
+		var jsonExtract = c.dialect.GetJSONExtract(jsonPath)
 
 		sqlExpr := fmt.Sprintf("(%s)::boolean %s %s",
 			jsonExtract,

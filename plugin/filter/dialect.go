@@ -203,21 +203,6 @@ func (d *PostgreSQLDialect) GetBooleanComparison(path string, _ bool) string {
 }
 
 func (d *PostgreSQLDialect) GetBooleanCheck(path string) string {
-	// Special handling for standalone boolean identifiers
-	if strings.Contains(path, "hasLink") || strings.Contains(path, "hasCode") || strings.Contains(path, "hasIncompleteTasks") {
-		// Use memo-> instead of memo.payload-> for these fields
-		parts := strings.Split(strings.TrimPrefix(path, "$."), ".")
-		result := fmt.Sprintf("%s->'payload'", d.GetTablePrefix())
-		for i, part := range parts {
-			if i == len(parts)-1 {
-				result += fmt.Sprintf("->>'%s'", part)
-			} else {
-				result += fmt.Sprintf("->'%s'", part)
-			}
-		}
-		return fmt.Sprintf("(%s)::boolean = true", result)
-	}
-	// Use default format for other fields
 	return fmt.Sprintf("(%s)::boolean IS TRUE", d.GetJSONExtract(path))
 }
 

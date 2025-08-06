@@ -117,32 +117,32 @@ func TestConvertExprToSQL(t *testing.T) {
 		},
 		{
 			filter: `has_link == true`,
-			want:   "(memo->'payload'->'property'->>'hasLink')::boolean = $1",
+			want:   "(memo.payload->'property'->>'hasLink')::boolean = $1",
 			args:   []any{true},
 		},
 		{
 			filter: `has_code == false`,
-			want:   "(memo->'payload'->'property'->>'hasCode')::boolean = $1",
+			want:   "(memo.payload->'property'->>'hasCode')::boolean = $1",
 			args:   []any{false},
 		},
 		{
 			filter: `has_incomplete_tasks != false`,
-			want:   "(memo->'payload'->'property'->>'hasIncompleteTasks')::boolean != $1",
+			want:   "(memo.payload->'property'->>'hasIncompleteTasks')::boolean != $1",
 			args:   []any{false},
 		},
 		{
 			filter: `has_link`,
-			want:   "(memo->'payload'->'property'->>'hasLink')::boolean = true",
+			want:   "(memo.payload->'property'->>'hasLink')::boolean IS TRUE",
 			args:   []any{},
 		},
 		{
 			filter: `has_code`,
-			want:   "(memo->'payload'->'property'->>'hasCode')::boolean = true",
+			want:   "(memo.payload->'property'->>'hasCode')::boolean IS TRUE",
 			args:   []any{},
 		},
 		{
 			filter: `has_incomplete_tasks`,
-			want:   "(memo->'payload'->'property'->>'hasIncompleteTasks')::boolean = true",
+			want:   "(memo.payload->'property'->>'hasIncompleteTasks')::boolean IS TRUE",
 			args:   []any{},
 		},
 	}
