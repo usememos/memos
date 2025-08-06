@@ -1,10 +1,9 @@
 import { CheckSquareIcon, Code2Icon, SquareSlashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { useTranslate } from "@/utils/i18n";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { EditorRefActions } from "../Editor";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
-
 
 interface Props {
   editorRef: React.RefObject<EditorRefActions>;
