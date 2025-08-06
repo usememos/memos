@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Location } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Props {
   location?: Location;
@@ -94,19 +95,32 @@ const LocationSelector = (props: Props) => {
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size={props.location ? undefined : "icon"}>
-          <MapPinIcon className="size-5 shrink-0" />
-          {props.location && (
-            <>
-              <span className="ml-0.5 text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-28">{props.location.placeholder}</span>
-              <span className="cursor-pointer hover:text-primary" onClick={removeLocation}>
-                <XIcon className="size-4 shrink-0" />
-              </span>
-            </>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size={props.location ? undefined : "icon"}>
+                <MapPinIcon className="size-5 shrink-0" />
+                {props.location && (
+                  <>
+                    <span className="ml-0.5 text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-28">
+                      {props.location.placeholder}
+                    </span>
+                    <span className="ml-1 cursor-pointer hover:text-primary" onClick={removeLocation}>
+                      <XIcon className="size-4 shrink-0" />
+                    </span>
+                  </>
+                )}
+              </Button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          {!props.location && (
+            <TooltipContent side="bottom">
+              <p>{t("tooltip.select-location")}</p>
+            </TooltipContent>
           )}
-        </Button>
-      </PopoverTrigger>
+        </Tooltip>
+      </TooltipProvider>
       <PopoverContent align="center">
         <div className="min-w-80 sm:w-lg p-1 flex flex-col justify-start items-start">
           <LeafletMap key={JSON.stringify(state.initilized)} latlng={state.position} onChange={onPositionChanged} />

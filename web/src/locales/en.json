@@ -443,5 +443,13 @@
     "rename-success": "Renamed tag successfully",
     "rename-tag": "Rename tag",
     "rename-tip": "All your memos with this tag will be updated."
+  },
+  "tooltip": {
+    "link-memo": "Link Memo", 
+    "markdown-menu": "Markdown",
+    "select-location": "Location",
+    "select-visibility": "Visibility", 
+    "tags": "Tags",
+    "upload-attachment":  "Upload Attachment(s)"
   }
 }

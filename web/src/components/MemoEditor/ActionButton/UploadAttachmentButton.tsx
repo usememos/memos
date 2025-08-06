@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { attachmentStore } from "@/store";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { MemoEditorContext } from "../types";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { t } from "i18next";
 
 interface Props {
   isUploading?: boolean;
@@ -73,19 +75,28 @@ const UploadAttachmentButton = observer((props: Props) => {
   const isUploading = state.uploadingFlag || props.isUploading;
 
   return (
-    <Button className="relative" variant="ghost" size="icon" disabled={isUploading}>
-      {isUploading ? <LoaderIcon className="size-5 animate-spin" /> : <PaperclipIcon className="size-5" />}
-      <input
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        ref={fileInputRef}
-        disabled={isUploading}
-        onChange={handleFileInputChange}
-        type="file"
-        id="files"
-        multiple={true}
-        accept="*"
-      />
-    </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button className="relative" variant="ghost" size="icon" disabled={isUploading}>
+            {isUploading ? <LoaderIcon className="size-5 animate-spin" /> : <PaperclipIcon className="size-5" />}
+            <input
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              ref={fileInputRef}
+              disabled={isUploading}
+              onChange={handleFileInputChange}
+              type="file"
+              id="files"
+              multiple={true}
+              accept="*"
+            />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          <p>{t("tooltip.upload-attachment")}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 });
 

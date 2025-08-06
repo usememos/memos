@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useTranslate } from "@/utils/i18n";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { EditorRefActions } from "../Editor";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+
 
 interface Props {
   editorRef: React.RefObject<EditorRefActions>;
@@ -61,11 +63,20 @@ const MarkdownMenu = (props: Props) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <SquareSlashIcon className="size-5" />
-        </Button>
-      </DropdownMenuTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <SquareSlashIcon className="size-5" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <p>{t("tooltip.markdown-menu")}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DropdownMenuContent align="start">
         <DropdownMenuItem onClick={handleCodeBlockClick}>
           <Code2Icon className="w-4 h-auto text-muted-foreground" />

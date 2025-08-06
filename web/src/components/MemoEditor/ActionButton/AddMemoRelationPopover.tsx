@@ -13,6 +13,7 @@ import { extractUserIdFromName } from "@/store/common";
 import { Memo, MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { MemoEditorContext } from "../types";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const AddMemoRelationPopover = () => {
   const t = useTranslate();
@@ -95,11 +96,20 @@ const AddMemoRelationPopover = () => {
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <LinkIcon className="size-5" />
-        </Button>
-      </PopoverTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <LinkIcon className="size-5" />
+              </Button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <p>{t("tooltip.link-memo")}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <PopoverContent align="center">
         <div className="w-[16rem] p-1 flex flex-col justify-start items-start">
           {/* Search and selection interface */}
