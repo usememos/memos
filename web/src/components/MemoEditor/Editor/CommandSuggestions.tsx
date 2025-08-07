@@ -50,7 +50,7 @@ const CommandSuggestions = observer(({ editorRef, editorActions, commands }: Pro
     editorActions.current.removeText(index, word.length);
     editorActions.current.insertText(cmd.run());
     if (cmd.cursorOffset) {
-      editorActions.current.setCursorPosition(cmd.cursorOffset);
+      editorActions.current.setCursorPosition(editorActions.current.getCursorPosition() + cmd.cursorOffset);
     }
     hide();
   };
