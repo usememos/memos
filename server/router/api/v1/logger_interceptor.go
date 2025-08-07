@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"google.golang.org/grpc"
@@ -10,10 +11,11 @@ import (
 )
 
 type LoggerInterceptor struct {
+	logStacktrace bool
 }
 
-func NewLoggerInterceptor() *LoggerInterceptor {
-	return &LoggerInterceptor{}
+func NewLoggerInterceptor(logStacktrace bool) *LoggerInterceptor {
+	return &LoggerInterceptor{logStacktrace: logStacktrace}
 }
 
 func (in *LoggerInterceptor) LoggerInterceptor(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
@@ -22,7 +24,7 @@ func (in *LoggerInterceptor) LoggerInterceptor(ctx context.Context, request any,
 	return resp, err
 }
 
-func (*LoggerInterceptor) loggerInterceptorDo(ctx context.Context, fullMethod string, err error) {
+func (in *LoggerInterceptor) loggerInterceptorDo(ctx context.Context, fullMethod string, err error) {
 	st := status.Convert(err)
 	var logLevel slog.Level
 	var logMsg string
@@ -43,6 +45,9 @@ func (*LoggerInterceptor) loggerInterceptorDo(ctx context.Context, fullMethod st
 	logAttrs := []slog.Attr{slog.String("method", fullMethod)}
 	if err != nil {
 		logAttrs = append(logAttrs, slog.String("error", err.Error()))
+		if in.logStacktrace {
+			logAttrs = append(logAttrs, slog.String("stacktrace", fmt.Sprintf("%v", err)))
+		}
 	}
 	slog.LogAttrs(ctx, logLevel, logMsg, logAttrs...)
 }

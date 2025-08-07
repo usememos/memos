@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"runtime"
+	"runtime/debug"
 	"time"
 
 	"github.com/google/uuid"
@@ -83,12 +84,15 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	// Create and register RSS routes.
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
+	// Log full stacktraces if we're in dev
+	logStacktraces := profile.IsDev()
+
 	grpcServer := grpc.NewServer(
 		// Override the maximum receiving message size to math.MaxInt32 for uploading large attachments.
 		grpc.MaxRecvMsgSize(math.MaxInt32),
 		grpc.ChainUnaryInterceptor(
-			apiv1.NewLoggerInterceptor().LoggerInterceptor,
-			grpcrecovery.UnaryServerInterceptor(),
+			apiv1.NewLoggerInterceptor(logStacktraces).LoggerInterceptor,
+			newRecoveryInterceptor(logStacktraces),
 			apiv1.NewGRPCAuthInterceptor(store, secret).AuthenticationInterceptor,
 		))
 	s.grpcServer = grpcServer
@@ -100,6 +104,26 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 
 	return s, nil
+}
+
+func newRecoveryInterceptor(logStacktraces bool) grpc.UnaryServerInterceptor {
+	var recoveryOptions []grpcrecovery.Option
+	if logStacktraces {
+		recoveryOptions = append(recoveryOptions, grpcrecovery.WithRecoveryHandler(func(p any) error {
+			if p == nil {
+				return nil
+			}
+
+			switch val := p.(type) {
+			case runtime.Error:
+				return &stacktraceError{err: val, stacktrace: debug.Stack()}
+			default:
+				return nil
+			}
+		}))
+	}
+
+	return grpcrecovery.UnaryServerInterceptor(recoveryOptions...)
 }
 
 func (s *Server) Start(ctx context.Context) error {
@@ -226,4 +250,24 @@ func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb
 		workspaceBasicSetting = workspaceSetting.GetBasicSetting()
 	}
 	return workspaceBasicSetting, nil
+}
+
+// stacktraceError wraps an underlying error and captures the stacktrace. It
+// implements fmt.Formatter, so it'll be rendered when invoked by something like
+// `fmt.Sprint("%v", err)`.
+type stacktraceError struct {
+	err        error
+	stacktrace []byte
+}
+
+func (e *stacktraceError) Error() string {
+	return e.err.Error()
+}
+
+func (e *stacktraceError) Unwrap() error {
+	return e.err
+}
+
+func (e *stacktraceError) Format(f fmt.State, _ rune) {
+	f.Write(e.stacktrace)
 }
