@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/gomark/parser"
@@ -16,7 +18,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*v1pb.Memo, error) {
+func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction) (*v1pb.Memo, error) {
 	displayTs := memo.CreatedTs
 	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
@@ -61,11 +63,24 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 	memoMessage.Attachments = listMemoAttachmentsResponse.Attachments
 
-	listMemoReactionsResponse, err := s.ListMemoReactions(ctx, &v1pb.ListMemoReactionsRequest{Name: name})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to list memo reactions")
+	if len(reactions) > 0 {
+		for _, reaction := range reactions {
+			reactionMessage, err := s.convertReactionFromStore(ctx, reaction)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to convert reaction")
+			}
+			memoMessage.Reactions = append(memoMessage.Reactions, reactionMessage)
+		}
+	} else {
+		// done for backwards compatibility
+		// can remove once convertMemoFromStore is only responsible for mapping
+		// and all related DB entities are passed in as arguments purely for converting to request entities
+		listMemoReactionsResponse, err := s.ListMemoReactions(ctx, &v1pb.ListMemoReactionsRequest{Name: name})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to list memo reactions")
+		}
+		memoMessage.Reactions = listMemoReactionsResponse.Reactions
 	}
-	memoMessage.Reactions = listMemoReactionsResponse.Reactions
 
 	nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
 	if err != nil {

@@ -17,6 +17,7 @@ type FindReaction struct {
 	ID        *int32
 	CreatorID *int32
 	ContentID *string
+	Filters   []string
 }
 
 type DeleteReaction struct {

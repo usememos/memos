@@ -205,7 +205,7 @@ func (c *CommonSQLConverter) handleInOperator(ctx *ConvertContext, callExpr *exp
 		return err
 	}
 
-	if !slices.Contains([]string{"tag", "visibility"}, identifier) {
+	if !slices.Contains([]string{"tag", "visibility", "content_id"}, identifier) {
 		return errors.Errorf("invalid identifier for %s", callExpr.Function)
 	}
 
@@ -222,6 +222,8 @@ func (c *CommonSQLConverter) handleInOperator(ctx *ConvertContext, callExpr *exp
 		return c.handleTagInList(ctx, values)
 	} else if identifier == "visibility" {
 		return c.handleVisibilityInList(ctx, values)
+	} else if identifier == "content_id" {
+		return c.handleContentIDInList(ctx, values)
 	}
 
 	return nil
@@ -292,13 +294,35 @@ func (c *CommonSQLConverter) handleVisibilityInList(ctx *ConvertContext, values 
 		c.paramIndex++
 	}
 
-	tablePrefix := c.dialect.GetTablePrefix()
+	tablePrefix := c.dialect.GetTablePrefix("memo")
 	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
 		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.visibility IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
 			return err
 		}
 	} else {
 		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`visibility` IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
+			return err
+		}
+	}
+
+	ctx.Args = append(ctx.Args, values...)
+	return nil
+}
+
+func (c *CommonSQLConverter) handleContentIDInList(ctx *ConvertContext, values []any) error {
+	placeholders := []string{}
+	for range values {
+		placeholders = append(placeholders, c.dialect.GetParameterPlaceholder(c.paramIndex))
+		c.paramIndex++
+	}
+
+	tablePrefix := c.dialect.GetTablePrefix("reaction")
+	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.content_id IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
+			return err
+		}
+	} else {
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`content_id` IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
 			return err
 		}
 	}
@@ -326,7 +350,7 @@ func (c *CommonSQLConverter) handleContainsOperator(ctx *ConvertContext, callExp
 		return err
 	}
 
-	tablePrefix := c.dialect.GetTablePrefix()
+	tablePrefix := c.dialect.GetTablePrefix("memo")
 
 	// PostgreSQL uses ILIKE and no backticks
 	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
@@ -353,7 +377,7 @@ func (c *CommonSQLConverter) handleIdentifier(ctx *ConvertContext, identExpr *ex
 	}
 
 	if identifier == "pinned" {
-		tablePrefix := c.dialect.GetTablePrefix()
+		tablePrefix := c.dialect.GetTablePrefix("memo")
 		if _, ok := c.dialect.(*PostgreSQLDialect); ok {
 			if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.pinned IS TRUE", tablePrefix)); err != nil {
 				return err
@@ -411,7 +435,7 @@ func (c *CommonSQLConverter) handleStringComparison(ctx *ConvertContext, field, 
 		return errors.New("invalid string value")
 	}
 
-	tablePrefix := c.dialect.GetTablePrefix()
+	tablePrefix := c.dialect.GetTablePrefix("memo")
 
 	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
 		// PostgreSQL doesn't use backticks
@@ -447,7 +471,7 @@ func (c *CommonSQLConverter) handleIntComparison(ctx *ConvertContext, field, ope
 		return errors.New("invalid int value")
 	}
 
-	tablePrefix := c.dialect.GetTablePrefix()
+	tablePrefix := c.dialect.GetTablePrefix("memo")
 
 	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
 		// PostgreSQL doesn't use backticks
