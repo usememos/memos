@@ -36,6 +36,11 @@ var MemoFilterCELAttributes = []cel.EnvOption{
 	),
 }
 
+// ReactionFilterCELAttributes are the CEL attributes for reaction.
+var ReactionFilterCELAttributes = []cel.EnvOption{
+	cel.Variable("content_id", cel.StringType),
+}
+
 // UserFilterCELAttributes are the CEL attributes for user.
 var UserFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("username", cel.StringType),
