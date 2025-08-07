@@ -24,7 +24,7 @@ func (in *LoggerInterceptor) LoggerInterceptor(ctx context.Context, request any,
 	return resp, err
 }
 
-func (li *LoggerInterceptor) loggerInterceptorDo(ctx context.Context, fullMethod string, err error) {
+func (in *LoggerInterceptor) loggerInterceptorDo(ctx context.Context, fullMethod string, err error) {
 	st := status.Convert(err)
 	var logLevel slog.Level
 	var logMsg string
@@ -45,7 +45,7 @@ func (li *LoggerInterceptor) loggerInterceptorDo(ctx context.Context, fullMethod
 	logAttrs := []slog.Attr{slog.String("method", fullMethod)}
 	if err != nil {
 		logAttrs = append(logAttrs, slog.String("error", err.Error()))
-		if li.logStacktrace {
+		if in.logStacktrace {
 			logAttrs = append(logAttrs, slog.String("stacktrace", fmt.Sprintf("%v", err)))
 		}
 	}
