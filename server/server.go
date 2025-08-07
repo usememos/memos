@@ -84,12 +84,15 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	// Create and register RSS routes.
 	rss.NewRSSService(s.Profile, s.Store).RegisterRoutes(rootGroup)
 
+	// Log full stacktraces if we're in dev
+	logStacktraces := profile.IsDev()
+
 	grpcServer := grpc.NewServer(
 		// Override the maximum receiving message size to math.MaxInt32 for uploading large attachments.
 		grpc.MaxRecvMsgSize(math.MaxInt32),
 		grpc.ChainUnaryInterceptor(
-			apiv1.NewLoggerInterceptor(profile.LogStacktraces).LoggerInterceptor,
-			newRecoveryInterceptor(profile.LogStacktraces),
+			apiv1.NewLoggerInterceptor(logStacktraces).LoggerInterceptor,
+			newRecoveryInterceptor(logStacktraces),
 			apiv1.NewGRPCAuthInterceptor(store, secret).AuthenticationInterceptor,
 		))
 	s.grpcServer = grpcServer
