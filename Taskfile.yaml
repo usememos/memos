@@ -1,0 +1,24 @@
+version: '3'
+tasks:
+  backend:test:
+    desc: Run backend tests
+    cmds:
+      - ./mvnw test
+
+  backend:run:
+    desc: Run the backend
+    cmds:
+      - go run ./bin/memos/main.go --mode dev --port 8081
+
+  web:lint:
+    desc: Run prettier and eslint
+    dir: web
+    cmds:
+      - pnpm lint:fix
+      - pnpm lint
+
+  web:run:
+    desc: Run web frontend
+    dir: web
+    cmds:
+      - pnpm dev

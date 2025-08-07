@@ -20,15 +20,9 @@ export const editorCommands: Command[] = [
     cursorOffset: 1,
   },
   {
-    name: "table-2",
+    name: "table",
     description: "Insert a table",
     run: () => "| Header | Header |\n| ------ | ------ |\n| Cell   | Cell |",
-    cursorOffset: 1,
-  },
-  {
-    name: "table-3",
-    description: "Insert a table",
-    run: () => "| Header | Header | Header |\n| ------ | ------ | ------ |\n| Cell   | Cell | Cell |",
     cursorOffset: 1,
   },
   {

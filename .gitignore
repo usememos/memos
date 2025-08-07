@@ -19,3 +19,5 @@ dist
 
 # VSCode settings
 .vscode
+
+test.log

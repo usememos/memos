@@ -5,7 +5,8 @@
     "dev": "vite",
     "build": "vite build",
     "release": "vite build --mode release --outDir=../server/router/frontend/dist --emptyOutDir",
-    "lint": "tsc --noEmit --skipLibCheck && eslint --ext .js,.ts,.tsx, src"
+    "lint": "tsc --noEmit --skipLibCheck && eslint --ext .js,.ts,.tsx, src",
+    "lint:fix": "eslint src --fix && prettier -w src"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
