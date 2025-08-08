@@ -57,7 +57,10 @@ service MemoService {
   }
   // DeleteMemoTag deletes a tag for a memo.
   rpc DeleteMemoTag(DeleteMemoTagRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/{parent=memos/*}/tags/{tag}"};
+    option (google.api.http) = {
+      post: "/api/v1/{parent=memos/*}/tags:delete"
+      body: "*"
+    };
     option (google.api.method_signature) = "parent,tag";
   }
   // SetMemoAttachments sets attachments for a memo.
