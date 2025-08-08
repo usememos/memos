@@ -1,5 +1,6 @@
 import { t } from "i18next";
 import { LoaderIcon, PaperclipIcon } from "lucide-react";
+import mime from "mime";
 import { observer } from "mobx-react-lite";
 import { useContext, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -46,12 +47,13 @@ const UploadAttachmentButton = observer((props: Props) => {
       }
       for (const file of fileInputRef.current.files) {
         const { name: filename, size, type } = file;
+        console.log(type, type || mime.getType(filename) || "");
         const buffer = new Uint8Array(await file.arrayBuffer());
         const attachment = await attachmentStore.createAttachment({
           attachment: Attachment.fromPartial({
             filename,
             size,
-            type,
+            type: type || mime.getType(filename) || "",
             content: buffer,
           }),
           attachmentId: "",
