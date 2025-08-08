@@ -273,12 +273,12 @@ export interface RenameMemoTagRequest {
 
 export interface DeleteMemoTagRequest {
   /**
-   * Required. The parent, who owns the tags.
+   * Required. The memo that owns the tag.
    * Format: memos/{memo}. Use "memos/-" to delete all tags.
    */
-  parent: string;
+  memo: string;
   /** Required. The tag name to delete. */
-  tag: string;
+  tagName: string;
   /** Optional. Whether to delete related memos. */
   deleteRelatedMemos: boolean;
 }
@@ -1516,16 +1516,16 @@ export const RenameMemoTagRequest: MessageFns<RenameMemoTagRequest> = {
 };
 
 function createBaseDeleteMemoTagRequest(): DeleteMemoTagRequest {
-  return { parent: "", tag: "", deleteRelatedMemos: false };
+  return { memo: "", tagName: "", deleteRelatedMemos: false };
 }
 
 export const DeleteMemoTagRequest: MessageFns<DeleteMemoTagRequest> = {
   encode(message: DeleteMemoTagRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.parent !== "") {
-      writer.uint32(10).string(message.parent);
+    if (message.memo !== "") {
+      writer.uint32(10).string(message.memo);
     }
-    if (message.tag !== "") {
-      writer.uint32(18).string(message.tag);
+    if (message.tagName !== "") {
+      writer.uint32(18).string(message.tagName);
     }
     if (message.deleteRelatedMemos !== false) {
       writer.uint32(24).bool(message.deleteRelatedMemos);
@@ -1545,7 +1545,7 @@ export const DeleteMemoTagRequest: MessageFns<DeleteMemoTagRequest> = {
             break;
           }
 
-          message.parent = reader.string();
+          message.memo = reader.string();
           continue;
         }
         case 2: {
@@ -1553,7 +1553,7 @@ export const DeleteMemoTagRequest: MessageFns<DeleteMemoTagRequest> = {
             break;
           }
 
-          message.tag = reader.string();
+          message.tagName = reader.string();
           continue;
         }
         case 3: {
@@ -1578,8 +1578,8 @@ export const DeleteMemoTagRequest: MessageFns<DeleteMemoTagRequest> = {
   },
   fromPartial(object: DeepPartial<DeleteMemoTagRequest>): DeleteMemoTagRequest {
     const message = createBaseDeleteMemoTagRequest();
-    message.parent = object.parent ?? "";
-    message.tag = object.tag ?? "";
+    message.memo = object.memo ?? "";
+    message.tagName = object.tagName ?? "";
     message.deleteRelatedMemos = object.deleteRelatedMemos ?? false;
     return message;
   },
@@ -2872,12 +2872,12 @@ export const MemoServiceDefinition = {
       responseStream: false,
       options: {
         _unknownFields: {
-          8410: [new Uint8Array([10, 112, 97, 114, 101, 110, 116, 44, 116, 97, 103])],
+          8410: [new Uint8Array([13, 109, 101, 109, 111, 44, 116, 97, 103, 95, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              37,
+              38,
               42,
-              35,
+              36,
               47,
               97,
               112,
@@ -2886,21 +2886,17 @@ export const MemoServiceDefinition = {
               118,
               49,
               47,
-              123,
-              112,
-              97,
-              114,
-              101,
-              110,
-              116,
-              61,
               109,
               101,
               109,
               111,
               115,
               47,
-              42,
+              123,
+              109,
+              101,
+              109,
+              111,
               125,
               47,
               116,
@@ -2912,6 +2908,11 @@ export const MemoServiceDefinition = {
               116,
               97,
               103,
+              95,
+              110,
+              97,
+              109,
+              101,
               125,
             ]),
           ],

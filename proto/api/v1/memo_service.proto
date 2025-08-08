@@ -57,8 +57,8 @@ service MemoService {
   }
   // DeleteMemoTag deletes a tag for a memo.
   rpc DeleteMemoTag(DeleteMemoTagRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/{parent=memos/*}/tags/{tag}"};
-    option (google.api.method_signature) = "parent,tag";
+    option (google.api.http) = {delete: "/api/v1/memos/{memo}/tags/{tag_name}"};
+    option (google.api.method_signature) = "memo,tag_name";
   }
   // SetMemoAttachments sets attachments for a memo.
   rpc SetMemoAttachments(SetMemoAttachmentsRequest) returns (google.protobuf.Empty) {
@@ -365,15 +365,15 @@ message RenameMemoTagRequest {
 }
 
 message DeleteMemoTagRequest {
-  // Required. The parent, who owns the tags.
+  // Required. The memo that owns the tag.
   // Format: memos/{memo}. Use "memos/-" to delete all tags.
-  string parent = 1 [
+  string memo = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
   ];
 
   // Required. The tag name to delete.
-  string tag = 2 [(google.api.field_behavior) = REQUIRED];
+  string tag_name = 2 [(google.api.field_behavior) = REQUIRED];
 
   // Optional. Whether to delete related memos.
   bool delete_related_memos = 3 [(google.api.field_behavior) = OPTIONAL];
