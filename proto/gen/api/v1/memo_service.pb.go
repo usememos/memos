@@ -953,11 +953,11 @@ func (x *RenameMemoTagRequest) GetNewTag() string {
 
 type DeleteMemoTagRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent, who owns the tags.
+	// Required. The memo that owns the tag.
 	// Format: memos/{memo}. Use "memos/-" to delete all tags.
-	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	Memo string `protobuf:"bytes,1,opt,name=memo,proto3" json:"memo,omitempty"`
 	// Required. The tag name to delete.
-	Tag string `protobuf:"bytes,2,opt,name=tag,proto3" json:"tag,omitempty"`
+	TagName string `protobuf:"bytes,2,opt,name=tag_name,json=tagName,proto3" json:"tag_name,omitempty"`
 	// Optional. Whether to delete related memos.
 	DeleteRelatedMemos bool `protobuf:"varint,3,opt,name=delete_related_memos,json=deleteRelatedMemos,proto3" json:"delete_related_memos,omitempty"`
 	unknownFields      protoimpl.UnknownFields
@@ -994,16 +994,16 @@ func (*DeleteMemoTagRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_memo_service_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *DeleteMemoTagRequest) GetParent() string {
+func (x *DeleteMemoTagRequest) GetMemo() string {
 	if x != nil {
-		return x.Parent
+		return x.Memo
 	}
 	return ""
 }
 
-func (x *DeleteMemoTagRequest) GetTag() string {
+func (x *DeleteMemoTagRequest) GetTagName() string {
 	if x != nil {
-		return x.Tag
+		return x.TagName
 	}
 	return ""
 }
@@ -2084,11 +2084,11 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x06parent\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
 	"\x11memos.api.v1/MemoR\x06parent\x12\x1c\n" +
 	"\aold_tag\x18\x02 \x01(\tB\x03\xe0A\x02R\x06oldTag\x12\x1c\n" +
-	"\anew_tag\x18\x03 \x01(\tB\x03\xe0A\x02R\x06newTag\"\x97\x01\n" +
-	"\x14DeleteMemoTagRequest\x121\n" +
-	"\x06parent\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
-	"\x11memos.api.v1/MemoR\x06parent\x12\x15\n" +
-	"\x03tag\x18\x02 \x01(\tB\x03\xe0A\x02R\x03tag\x125\n" +
+	"\anew_tag\x18\x03 \x01(\tB\x03\xe0A\x02R\x06newTag\"\x9c\x01\n" +
+	"\x14DeleteMemoTagRequest\x12-\n" +
+	"\x04memo\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
+	"\x11memos.api.v1/MemoR\x04memo\x12\x1e\n" +
+	"\btag_name\x18\x02 \x01(\tB\x03\xe0A\x02R\atagName\x125\n" +
 	"\x14delete_related_memos\x18\x03 \x01(\bB\x03\xe0A\x01R\x12deleteRelatedMemos\"\x8b\x01\n" +
 	"\x19SetMemoAttachmentsRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
@@ -2174,7 +2174,7 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\aPRIVATE\x10\x01\x12\r\n" +
 	"\tPROTECTED\x10\x02\x12\n" +
 	"\n" +
-	"\x06PUBLIC\x10\x032\xeb\x10\n" +
+	"\x06PUBLIC\x10\x032\xef\x10\n" +
 	"\vMemoService\x12e\n" +
 	"\n" +
 	"CreateMemo\x12\x1f.memos.api.v1.CreateMemoRequest\x1a\x12.memos.api.v1.Memo\"\"\xdaA\x04memo\x82\xd3\xe4\x93\x02\x15:\x04memo\"\r/api/v1/memos\x12f\n" +
@@ -2184,9 +2184,8 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"UpdateMemo\x12\x1f.memos.api.v1.UpdateMemoRequest\x1a\x12.memos.api.v1.Memo\"<\xdaA\x10memo,update_mask\x82\xd3\xe4\x93\x02#:\x04memo2\x1b/api/v1/{memo.name=memos/*}\x12l\n" +
 	"\n" +
 	"DeleteMemo\x12\x1f.memos.api.v1.DeleteMemoRequest\x1a\x16.google.protobuf.Empty\"%\xdaA\x04name\x82\xd3\xe4\x93\x02\x18*\x16/api/v1/{name=memos/*}\x12\x95\x01\n" +
-	"\rRenameMemoTag\x12\".memos.api.v1.RenameMemoTagRequest\x1a\x16.google.protobuf.Empty\"H\xdaA\x16parent,old_tag,new_tag\x82\xd3\xe4\x93\x02):\x01*2$/api/v1/{parent=memos/*}/tags:rename\x12\x85\x01\n" +
-	"\rDeleteMemoTag\x12\".memos.api.v1.DeleteMemoTagRequest\x1a\x16.google.protobuf.Empty\"8\xdaA\n" +
-	"parent,tag\x82\xd3\xe4\x93\x02%*#/api/v1/{parent=memos/*}/tags/{tag}\x12\x8b\x01\n" +
+	"\rRenameMemoTag\x12\".memos.api.v1.RenameMemoTagRequest\x1a\x16.google.protobuf.Empty\"H\xdaA\x16parent,old_tag,new_tag\x82\xd3\xe4\x93\x02):\x01*2$/api/v1/{parent=memos/*}/tags:rename\x12\x89\x01\n" +
+	"\rDeleteMemoTag\x12\".memos.api.v1.DeleteMemoTagRequest\x1a\x16.google.protobuf.Empty\"<\xdaA\rmemo,tag_name\x82\xd3\xe4\x93\x02&*$/api/v1/memos/{memo}/tags/{tag_name}\x12\x8b\x01\n" +
 	"\x12SetMemoAttachments\x12'.memos.api.v1.SetMemoAttachmentsRequest\x1a\x16.google.protobuf.Empty\"4\xdaA\x04name\x82\xd3\xe4\x93\x02':\x01*2\"/api/v1/{name=memos/*}/attachments\x12\x9d\x01\n" +
 	"\x13ListMemoAttachments\x12(.memos.api.v1.ListMemoAttachmentsRequest\x1a).memos.api.v1.ListMemoAttachmentsResponse\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$\x12\"/api/v1/{name=memos/*}/attachments\x12\x85\x01\n" +
 	"\x10SetMemoRelations\x12%.memos.api.v1.SetMemoRelationsRequest\x1a\x16.google.protobuf.Empty\"2\xdaA\x04name\x82\xd3\xe4\x93\x02%:\x01*2 /api/v1/{name=memos/*}/relations\x12\x95\x01\n" +

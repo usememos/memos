@@ -622,12 +622,12 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
-		Filters:         []string{fmt.Sprintf("tag in [\"%s\"]", request.Tag)},
+		Filters:         []string{fmt.Sprintf("tag in [\"%s\"]", request.TagName)},
 		ExcludeContent:  true,
 		ExcludeComments: true,
 	}
-	if request.Parent != "memos/-" {
-		memoUID, err := ExtractMemoUIDFromName(request.Parent)
+	if request.Memo != "memos/-" {
+		memoUID, err := ExtractMemoUIDFromName(request.Memo)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
 		}

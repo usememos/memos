@@ -343,7 +343,7 @@ func local_request_MemoService_RenameMemoTag_0(ctx context.Context, marshaler ru
 	return msg, metadata, err
 }
 
-var filter_MemoService_DeleteMemoTag_0 = &utilities.DoubleArray{Encoding: map[string]int{"parent": 0, "tag": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+var filter_MemoService_DeleteMemoTag_0 = &utilities.DoubleArray{Encoding: map[string]int{"memo": 0, "tag_name": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
 
 func request_MemoService_DeleteMemoTag_0(ctx context.Context, marshaler runtime.Marshaler, client MemoServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
@@ -354,21 +354,21 @@ func request_MemoService_DeleteMemoTag_0(ctx context.Context, marshaler runtime.
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	val, ok := pathParams["parent"]
+	val, ok := pathParams["memo"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "parent")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memo")
 	}
-	protoReq.Parent, err = runtime.String(val)
+	protoReq.Memo, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "parent", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memo", err)
 	}
-	val, ok = pathParams["tag"]
+	val, ok = pathParams["tag_name"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "tag")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "tag_name")
 	}
-	protoReq.Tag, err = runtime.String(val)
+	protoReq.TagName, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "tag", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "tag_name", err)
 	}
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
@@ -386,21 +386,21 @@ func local_request_MemoService_DeleteMemoTag_0(ctx context.Context, marshaler ru
 		metadata runtime.ServerMetadata
 		err      error
 	)
-	val, ok := pathParams["parent"]
+	val, ok := pathParams["memo"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "parent")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memo")
 	}
-	protoReq.Parent, err = runtime.String(val)
+	protoReq.Memo, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "parent", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memo", err)
 	}
-	val, ok = pathParams["tag"]
+	val, ok = pathParams["tag_name"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "tag")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "tag_name")
 	}
-	protoReq.Tag, err = runtime.String(val)
+	protoReq.TagName, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "tag", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "tag_name", err)
 	}
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
@@ -989,7 +989,7 @@ func RegisterMemoServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.MemoService/DeleteMemoTag", runtime.WithHTTPPathPattern("/api/v1/{parent=memos/*}/tags/{tag}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.MemoService/DeleteMemoTag", runtime.WithHTTPPathPattern("/api/v1/memos/{memo}/tags/{tag_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1329,7 +1329,7 @@ func RegisterMemoServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.MemoService/DeleteMemoTag", runtime.WithHTTPPathPattern("/api/v1/{parent=memos/*}/tags/{tag}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.MemoService/DeleteMemoTag", runtime.WithHTTPPathPattern("/api/v1/memos/{memo}/tags/{tag_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1505,7 +1505,7 @@ var (
 	pattern_MemoService_UpdateMemo_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "memos", "memo.name"}, ""))
 	pattern_MemoService_DeleteMemo_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "memos", "name"}, ""))
 	pattern_MemoService_RenameMemoTag_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "parent", "tags"}, "rename"))
-	pattern_MemoService_DeleteMemoTag_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "v1", "memos", "parent", "tags", "tag"}, ""))
+	pattern_MemoService_DeleteMemoTag_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "v1", "memos", "memo", "tags", "tag_name"}, ""))
 	pattern_MemoService_SetMemoAttachments_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "attachments"}, ""))
 	pattern_MemoService_ListMemoAttachments_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "attachments"}, ""))
 	pattern_MemoService_SetMemoRelations_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "relations"}, ""))
