@@ -177,8 +177,6 @@ const userStore = (() => {
 
   const fetchUserSettings = async () => {
     if (!state.currentUser) {
-      console.error("No current user");
-
       return;
     }
 
