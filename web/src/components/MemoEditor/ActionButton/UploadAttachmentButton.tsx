@@ -47,7 +47,6 @@ const UploadAttachmentButton = observer((props: Props) => {
       }
       for (const file of fileInputRef.current.files) {
         const { name: filename, size, type } = file;
-        console.log(type, type || mime.getType(filename) || "");
         const buffer = new Uint8Array(await file.arrayBuffer());
         const attachment = await attachmentStore.createAttachment({
           attachment: Attachment.fromPartial({
