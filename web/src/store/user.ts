@@ -280,6 +280,10 @@ const userStore = (() => {
   };
 })();
 
+// TODO: refactor initialUserStore as it has temporal coupling
+// need to make it more clear that the order of the body is important
+// or it leads to false positives
+// See: https://github.com/usememos/memos/issues/4978
 export const initialUserStore = async () => {
   try {
     const { user: currentUser } = await authServiceClient.getCurrentSession({});
@@ -293,9 +297,6 @@ export const initialUserStore = async () => {
       return;
     }
 
-    // Fetch all user settings
-    await userStore.fetchUserSettings();
-
     userStore.state.setPartial({
       currentUser: currentUser.name,
       userMapByName: {
@@ -303,6 +304,10 @@ export const initialUserStore = async () => {
       },
     });
 
+    // must be called after user is set in store
+    await userStore.fetchUserSettings();
+
+    // must be run after fetchUserSettings is called.
     // Apply general settings to workspace if available
     const generalSetting = userStore.state.userGeneralSetting;
     if (generalSetting) {
