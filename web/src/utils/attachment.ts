@@ -13,7 +13,7 @@ export const getAttachmentType = (attachment: Attachment) => {
     return "image/*";
   } else if (attachment.type.startsWith("video")) {
     return "video/*";
-  } else if (attachment.type.startsWith("audio")) {
+  } else if (attachment.type.startsWith("audio") && !isMidiFile(attachment.type)) {
     return "audio/*";
   } else if (attachment.type.startsWith("text")) {
     return "text/*";
@@ -38,6 +38,11 @@ export const getAttachmentType = (attachment: Attachment) => {
 export const isImage = (t: string) => {
   // Don't show PSDs as images.
   return t.startsWith("image/") && !isPSD(t);
+};
+
+// isMidiFile returns true if the given mime type is a MIDI file.
+export const isMidiFile = (mimeType: string): boolean => {
+  return mimeType === "audio/midi" || mimeType === "audio/mid" || mimeType === "audio/x-midi" || mimeType === "application/x-midi";
 };
 
 const isPSD = (t: string) => {
