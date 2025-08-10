@@ -22,9 +22,9 @@ const OrderedListItem: React.FC<Props> = ({ children, number }: Props) => {
 
   return (
     <li style={ml}>
-      {children.map((child, index) => {
-        return <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />;
-      })}
+      {children.map((child, index) => (
+        <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />
+      ))}
     </li>
   );
 };
