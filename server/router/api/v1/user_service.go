@@ -373,8 +373,23 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		return nil, status.Errorf(codes.InvalidArgument, "invalid setting key: %v", err)
 	}
 
+	// get existing user setting
+	existingUserSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
+		UserID: &userID,
+		Key:    storeKey,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if existingUserSetting == nil {
+		return nil, status.Errorf(codes.NotFound, "%s not found", storeKey.String())
+	}
+
+	// merge only the fields specified by UpdateMask
+	merged := mergeUserSettingWithMask(existingUserSetting, request.Setting, storeKey, request.UpdateMask.Paths)
+
 	// Convert API setting to store setting
-	storeSetting, err := convertUserSettingToStore(request.Setting, userID, storeKey)
+	storeSetting, err := convertUserSettingToStore(merged, userID, storeKey)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to convert setting: %v", err)
 	}
@@ -1319,4 +1334,73 @@ func (s *APIV1Service) validateUserFilter(_ context.Context, filterStr string) e
 		return errors.Wrap(err, "failed to convert filter to SQL")
 	}
 	return nil
+}
+
+func mergeUserSettingWithMask(existing *storepb.UserSetting, incoming *v1pb.UserSetting, key storepb.UserSetting_Key, paths []string) *v1pb.UserSetting {
+	if incoming == nil {
+		return &v1pb.UserSetting{}
+	}
+
+	switch key {
+	case storepb.UserSetting_GENERAL:
+		var gs *v1pb.UserSetting_GeneralSetting
+
+		if existing == nil {
+			gs = &v1pb.UserSetting_GeneralSetting{
+				Locale:         "en",
+				Appearance:     "system",
+				MemoVisibility: "PRIVATE",
+				Theme:          "",
+			}
+		} else {
+			gs = &v1pb.UserSetting_GeneralSetting{
+				Appearance:     existing.GetGeneral().GetAppearance(),
+				MemoVisibility: existing.GetGeneral().GetMemoVisibility(),
+				Locale:         existing.GetGeneral().GetLocale(),
+				Theme:          existing.GetGeneral().GetTheme(),
+			}
+		}
+
+		for _, field := range paths {
+			switch field {
+			case "appearance":
+				gs.Appearance = incoming.GetGeneralSetting().Appearance
+			case "memoVisibility":
+				gs.MemoVisibility = incoming.GetGeneralSetting().MemoVisibility
+			case "theme":
+				gs.Theme = incoming.GetGeneralSetting().Theme
+			case "locale":
+				gs.Locale = incoming.GetGeneralSetting().Locale
+			}
+		}
+
+		return &v1pb.UserSetting{
+			Name: incoming.Name,
+			Value: &v1pb.UserSetting_GeneralSetting_{
+				GeneralSetting: gs,
+			},
+		}
+
+	case storepb.UserSetting_SHORTCUTS:
+		// handled by the FE calling shortcut_service.CreateShortcut
+		// if the FE wants to modify shortcuts by calling the user_service we need to handle below
+
+		return incoming
+	case storepb.UserSetting_WEBHOOKS:
+		// handled by the FE calling user_service.CreateUserWebhook
+		// if the FE wants to modify webhooks by calling the user_service we need to handle below
+
+		return incoming
+	case storepb.UserSetting_ACCESS_TOKENS:
+		// handled by the FE calling user_service.CreateUserAccessToken
+		// if the FE wants to modify access tokens by calling the user_service we need to handle below
+
+		return incoming
+	case storepb.UserSetting_SESSIONS:
+		// handled by the FE calling auth_service.CreateSession
+		// if the FE wants to modify sessions by calling the user_service we need to handle below
+		return incoming
+	default:
+		return incoming
+	}
 }
