@@ -186,15 +186,17 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		memoNames = append(memoNames, fmt.Sprintf("'%s/%s'", MemoNamePrefix, m.UID))
 	}
 
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		Filters: []string{fmt.Sprintf("content_id in [%s]", strings.Join(memoNames, ", "))},
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list reactions")
-	}
+	if len(memoNames) > 0 {
+		reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
+			Filters: []string{fmt.Sprintf("content_id in [%s]", strings.Join(memoNames, ", "))},
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		}
 
-	for _, reaction := range reactions {
-		reactionMap[reaction.ContentID] = append(reactionMap[reaction.ContentID], reaction)
+		for _, reaction := range reactions {
+			reactionMap[reaction.ContentID] = append(reactionMap[reaction.ContentID], reaction)
+		}
 	}
 
 	for _, memo := range memos {
