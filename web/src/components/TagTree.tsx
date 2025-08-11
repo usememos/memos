@@ -13,9 +13,10 @@ interface Tag {
 
 interface Props {
   tagAmounts: [tag: string, amount: number][];
+  expandSubTags: boolean;
 }
 
-const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
+const TagTree = ({ tagAmounts: rawTagAmounts, expandSubTags }: Props) => {
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
   return (
     <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap gap-2 mt-1">
       {tags.map((t, idx) => (
-        <TagItemContainer key={t.text + "-" + idx} tag={t} />
+        <TagItemContainer key={t.text + "-" + idx} tag={t} expandSubTags={expandSubTags} />
       ))}
     </div>
   );
@@ -82,14 +83,19 @@ const TagTree = ({ tagAmounts: rawTagAmounts }: Props) => {
 
 interface TagItemContainerProps {
   tag: Tag;
+  expandSubTags: boolean;
 }
 
 const TagItemContainer = observer((props: TagItemContainerProps) => {
-  const { tag } = props;
+  const { tag, expandSubTags } = props;
   const tagFilters = memoFilterStore.getFiltersByFactor("tagSearch");
   const isActive = tagFilters.some((f: MemoFilter) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
   const [showSubTags, toggleSubTags] = useToggle(false);
+
+  useEffect(() => {
+    toggleSubTags(expandSubTags);
+  }, [expandSubTags]);
 
   const handleTagClick = () => {
     if (isActive) {
@@ -140,7 +146,7 @@ const TagItemContainer = observer((props: TagItemContainerProps) => {
           }`}
         >
           {tag.subTags.map((st, idx) => (
-            <TagItemContainer key={st.text + "-" + idx} tag={st} />
+            <TagItemContainer key={st.text + "-" + idx} tag={st} expandSubTags={expandSubTags} />
           ))}
         </div>
       ) : null}

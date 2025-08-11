@@ -22,6 +22,7 @@ interface Props {
 const TagsSection = observer((props: Props) => {
   const t = useTranslate();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
+  const [treeAutoExpand, setTreeAutoExpand] = useLocalStorage<boolean>("tag-tree-auto-expand", false);
   const renameTagDialog = useDialog();
   const [selectedTag, setSelectedTag] = useState<string>("");
   const tags = Object.entries(userStore.state.tagCount)
@@ -75,13 +76,17 @@ const TagsSection = observer((props: Props) => {
                 <span className="text-sm shrink-0">{t("common.tree-mode")}</span>
                 <Switch checked={treeMode} onCheckedChange={(checked) => setTreeMode(checked)} />
               </div>
+              <div className="w-auto flex flex-row justify-between items-center gap-2 p-1">
+                <span className="text-sm shrink-0">{t("common.auto-expand")}</span>
+                <Switch disabled={!treeMode} checked={treeAutoExpand} onCheckedChange={(checked) => setTreeAutoExpand(checked)} />
+              </div>
             </PopoverContent>
           </Popover>
         )}
       </div>
       {tags.length > 0 ? (
         treeMode ? (
-          <TagTree tagAmounts={tags} />
+          <TagTree tagAmounts={tags} expandSubTags={!!treeAutoExpand} />
         ) : (
           <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1">
             {tags.map(([tag, amount]) => (
