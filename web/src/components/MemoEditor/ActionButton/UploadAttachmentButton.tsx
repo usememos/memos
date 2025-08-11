@@ -10,7 +10,6 @@ import { attachmentStore } from "@/store";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { MemoEditorContext } from "../types";
 
-
 interface Props {
   isUploading?: boolean;
 }
