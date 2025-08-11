@@ -20,7 +20,7 @@ const HomeSidebarDrawer = () => {
           <MenuIcon className="size-5 text-foreground" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-80 max-w-full bg-background">
+      <SheetContent side="right" className="w-80 max-w-full bg-background" onOpenAutoFocus={(e) => e.preventDefault()}>
         <SheetHeader>
           <SheetTitle />
         </SheetHeader>
