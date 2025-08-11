@@ -385,11 +385,46 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		return nil, status.Errorf(codes.NotFound, "%s not found", storeKey.String())
 	}
 
-	// merge only the fields specified by UpdateMask
-	merged := mergeUserSettingWithMask(existingUserSetting, request.Setting, storeKey, request.UpdateMask.Paths)
+	// Only GENERAL settings are supported via UpdateUserSetting
+	// Other setting types have dedicated service methods
+	if storeKey != storepb.UserSetting_GENERAL {
+		return nil, status.Errorf(codes.InvalidArgument, "setting type %s should not be updated via UpdateUserSetting", storeKey.String())
+	}
+
+	// Start with existing general setting values
+	existingGeneral := existingUserSetting.GetGeneral()
+	updatedGeneral := &v1pb.UserSetting_GeneralSetting{
+		Appearance:     existingGeneral.GetAppearance(),
+		MemoVisibility: existingGeneral.GetMemoVisibility(),
+		Locale:         existingGeneral.GetLocale(),
+		Theme:          existingGeneral.GetTheme(),
+	}
+
+	// Apply updates for fields specified in the update mask
+	incomingGeneral := request.Setting.GetGeneralSetting()
+	for _, field := range request.UpdateMask.Paths {
+		switch field {
+		case "appearance":
+			updatedGeneral.Appearance = incomingGeneral.Appearance
+		case "memoVisibility":
+			updatedGeneral.MemoVisibility = incomingGeneral.MemoVisibility
+		case "theme":
+			updatedGeneral.Theme = incomingGeneral.Theme
+		case "locale":
+			updatedGeneral.Locale = incomingGeneral.Locale
+		}
+	}
+
+	// Create the updated setting
+	updatedSetting := &v1pb.UserSetting{
+		Name: request.Setting.Name,
+		Value: &v1pb.UserSetting_GeneralSetting_{
+			GeneralSetting: updatedGeneral,
+		},
+	}
 
 	// Convert API setting to store setting
-	storeSetting, err := convertUserSettingToStore(merged, userID, storeKey)
+	storeSetting, err := convertUserSettingToStore(updatedSetting, userID, storeKey)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to convert setting: %v", err)
 	}
@@ -1334,73 +1369,4 @@ func (s *APIV1Service) validateUserFilter(_ context.Context, filterStr string) e
 		return errors.Wrap(err, "failed to convert filter to SQL")
 	}
 	return nil
-}
-
-func mergeUserSettingWithMask(existing *storepb.UserSetting, incoming *v1pb.UserSetting, key storepb.UserSetting_Key, paths []string) *v1pb.UserSetting {
-	if incoming == nil {
-		return &v1pb.UserSetting{}
-	}
-
-	switch key {
-	case storepb.UserSetting_GENERAL:
-		var gs *v1pb.UserSetting_GeneralSetting
-
-		if existing == nil {
-			gs = &v1pb.UserSetting_GeneralSetting{
-				Locale:         "en",
-				Appearance:     "system",
-				MemoVisibility: "PRIVATE",
-				Theme:          "",
-			}
-		} else {
-			gs = &v1pb.UserSetting_GeneralSetting{
-				Appearance:     existing.GetGeneral().GetAppearance(),
-				MemoVisibility: existing.GetGeneral().GetMemoVisibility(),
-				Locale:         existing.GetGeneral().GetLocale(),
-				Theme:          existing.GetGeneral().GetTheme(),
-			}
-		}
-
-		for _, field := range paths {
-			switch field {
-			case "appearance":
-				gs.Appearance = incoming.GetGeneralSetting().Appearance
-			case "memoVisibility":
-				gs.MemoVisibility = incoming.GetGeneralSetting().MemoVisibility
-			case "theme":
-				gs.Theme = incoming.GetGeneralSetting().Theme
-			case "locale":
-				gs.Locale = incoming.GetGeneralSetting().Locale
-			}
-		}
-
-		return &v1pb.UserSetting{
-			Name: incoming.Name,
-			Value: &v1pb.UserSetting_GeneralSetting_{
-				GeneralSetting: gs,
-			},
-		}
-
-	case storepb.UserSetting_SHORTCUTS:
-		// handled by the FE calling shortcut_service.CreateShortcut
-		// if the FE wants to modify shortcuts by calling the user_service we need to handle below
-
-		return incoming
-	case storepb.UserSetting_WEBHOOKS:
-		// handled by the FE calling user_service.CreateUserWebhook
-		// if the FE wants to modify webhooks by calling the user_service we need to handle below
-
-		return incoming
-	case storepb.UserSetting_ACCESS_TOKENS:
-		// handled by the FE calling user_service.CreateUserAccessToken
-		// if the FE wants to modify access tokens by calling the user_service we need to handle below
-
-		return incoming
-	case storepb.UserSetting_SESSIONS:
-		// handled by the FE calling auth_service.CreateSession
-		// if the FE wants to modify sessions by calling the user_service we need to handle below
-		return incoming
-	default:
-		return incoming
-	}
 }
