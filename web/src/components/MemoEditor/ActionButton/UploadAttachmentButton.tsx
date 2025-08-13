@@ -52,7 +52,7 @@ const UploadAttachmentButton = observer((props: Props) => {
           attachment: Attachment.fromPartial({
             filename,
             size,
-            type: type || mime.getType(filename) || "",
+            type: type || mime.getType(filename) || "text/plain",
             content: buffer,
           }),
           attachmentId: "",
