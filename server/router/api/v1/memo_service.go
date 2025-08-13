@@ -82,7 +82,7 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		}
 	}
 
-	memoMessage, err := s.convertMemoFromStore(ctx, memo, nil)
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, []*store.Reaction{})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -179,32 +179,39 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		}
 	}
 
-	reactionMap := make(map[string][]*store.Reaction)
-
-	memoNames := make([]string, 0, len(memos))
-	for _, m := range memos {
-		memoNames = append(memoNames, fmt.Sprintf("'%s/%s'", MemoNamePrefix, m.UID))
+	if len(memos) == 0 {
+		response := &v1pb.ListMemosResponse{
+			Memos:         memoMessages,
+			NextPageToken: nextPageToken,
+		}
+		return response, nil
 	}
 
-	if len(memoNames) > 0 {
-		reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-			Filters: []string{fmt.Sprintf("content_id in [%s]", strings.Join(memoNames, ", "))},
-		})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to list reactions")
-		}
+	reactionMap := make(map[string][]*store.Reaction)
+	memoNames := make([]string, 0, len(memos))
 
-		for _, reaction := range reactions {
-			reactionMap[reaction.ContentID] = append(reactionMap[reaction.ContentID], reaction)
-		}
+	for _, m := range memos {
+		memoNames = append(memoNames, fmt.Sprintf("'%s%s'", MemoNamePrefix, m.UID))
+	}
+
+	// REACTIONS
+	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
+		Filters: []string{fmt.Sprintf("content_id in [%s]", strings.Join(memoNames, ", "))},
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+	}
+	for _, reaction := range reactions {
+		reactionMap[reaction.ContentID] = append(reactionMap[reaction.ContentID], reaction)
 	}
 
 	for _, memo := range memos {
-		name := fmt.Sprintf("'%s/%s'", MemoNamePrefix, memo.UID)
+		name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 		memoMessage, err := s.convertMemoFromStore(ctx, memo, reactionMap[name])
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
+
 		memoMessages = append(memoMessages, memoMessage)
 	}
 
@@ -242,7 +249,14 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 		}
 	}
 
-	memoMessage, err := s.convertMemoFromStore(ctx, memo, nil)
+	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
+		ContentID: &request.Name,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+	}
+
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -361,7 +375,14 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get memo")
 	}
-	memoMessage, err := s.convertMemoFromStore(ctx, memo, nil)
+	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
+		ContentID: &request.Memo.Name,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+	}
+
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -397,7 +418,14 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	if memoMessage, err := s.convertMemoFromStore(ctx, memo, nil); err == nil {
+	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
+		ContentID: &request.Name,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+	}
+
+	if memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions); err == nil {
 		// Try to dispatch webhook when memo is deleted.
 		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
 			slog.Warn("Failed to dispatch memo deleted webhook", slog.Any("err", err))
@@ -543,6 +571,22 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		return nil, status.Errorf(codes.Internal, "failed to list memo relations")
 	}
 
+	reactionMap := make(map[string][]*store.Reaction)
+	memoNames := make([]string, 0, len(memoRelations))
+	for _, m := range memoRelations {
+		memoNames = append(memoNames, fmt.Sprintf("'%s%d'", MemoNamePrefix, m.MemoID))
+	}
+
+	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
+		Filters: []string{fmt.Sprintf("content_id in [%s]", strings.Join(memoNames, ", "))},
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+	}
+	for _, reaction := range reactions {
+		reactionMap[reaction.ContentID] = append(reactionMap[reaction.ContentID], reaction)
+	}
+
 	var memos []*v1pb.Memo
 	for _, memoRelation := range memoRelations {
 		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
@@ -552,7 +596,8 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 			return nil, status.Errorf(codes.Internal, "failed to get memo")
 		}
 		if memo != nil {
-			memoMessage, err := s.convertMemoFromStore(ctx, memo, nil)
+			name := fmt.Sprintf("'%s%d'", MemoNamePrefix, memo.ID)
+			memoMessage, err := s.convertMemoFromStore(ctx, memo, reactionMap[name])
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to convert memo")
 			}
