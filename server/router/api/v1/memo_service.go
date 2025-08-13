@@ -571,42 +571,58 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		return nil, status.Errorf(codes.Internal, "failed to list memo relations")
 	}
 
-	reactionMap := make(map[string][]*store.Reaction)
-	memoNames := make([]string, 0, len(memoRelations))
-	for _, m := range memoRelations {
-		memoNames = append(memoNames, fmt.Sprintf("'%s%d'", MemoNamePrefix, m.MemoID))
+	if len(memoRelations) == 0 {
+		response := &v1pb.ListMemoCommentsResponse{
+			Memos: []*v1pb.Memo{},
+		}
+		return response, nil
 	}
 
+	memoRelationIDs := make([]string, 0, len(memoRelations))
+	for _, m := range memoRelations {
+		memoRelationIDs = append(memoRelationIDs, fmt.Sprintf("%d", m.MemoID))
+	}
+	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
+		Filters: []string{fmt.Sprintf("id in [%s]", strings.Join(memoRelationIDs, ", "))},
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list memos")
+	}
+
+	memoIDToNameMap := make(map[int32]string)
+	memoNamesForQuery := make([]string, 0, len(memos))
+
+	for _, memo := range memos {
+		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
+		memoIDToNameMap[memo.ID] = memoName
+		memoNamesForQuery = append(memoNamesForQuery, fmt.Sprintf("'%s'", memoName))
+	}
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		Filters: []string{fmt.Sprintf("content_id in [%s]", strings.Join(memoNames, ", "))},
+		Filters: []string{fmt.Sprintf("content_id in [%s]", strings.Join(memoNamesForQuery, ", "))},
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list reactions")
 	}
+
+	memoReactionsMap := make(map[string][]*store.Reaction)
 	for _, reaction := range reactions {
-		reactionMap[reaction.ContentID] = append(reactionMap[reaction.ContentID], reaction)
+		memoReactionsMap[reaction.ContentID] = append(memoReactionsMap[reaction.ContentID], reaction)
 	}
 
-	var memos []*v1pb.Memo
-	for _, memoRelation := range memoRelations {
-		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-			ID: &memoRelation.MemoID,
-		})
+	var memosResponse []*v1pb.Memo
+	for _, m := range memos {
+		memoName := memoIDToNameMap[m.ID]
+		reactions := memoReactionsMap[memoName]
+
+		memoMessage, err := s.convertMemoFromStore(ctx, m, reactions)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get memo")
+			return nil, errors.Wrap(err, "failed to convert memo")
 		}
-		if memo != nil {
-			name := fmt.Sprintf("'%s%d'", MemoNamePrefix, memo.ID)
-			memoMessage, err := s.convertMemoFromStore(ctx, memo, reactionMap[name])
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to convert memo")
-			}
-			memos = append(memos, memoMessage)
-		}
+		memosResponse = append(memosResponse, memoMessage)
 	}
 
 	response := &v1pb.ListMemoCommentsResponse{
-		Memos: memos,
+		Memos: memosResponse,
 	}
 	return response, nil
 }
