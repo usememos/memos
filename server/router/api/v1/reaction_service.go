@@ -26,10 +26,7 @@ func (s *APIV1Service) ListMemoReactions(ctx context.Context, request *v1pb.List
 		Reactions: []*v1pb.Reaction{},
 	}
 	for _, reaction := range reactions {
-		reactionMessage, err := s.convertReactionFromStore(ctx, reaction)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to convert reaction")
-		}
+		reactionMessage := convertReactionFromStore(reaction)
 		response.Reactions = append(response.Reactions, reactionMessage)
 	}
 	return response, nil
@@ -49,10 +46,8 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 		return nil, status.Errorf(codes.Internal, "failed to upsert reaction")
 	}
 
-	reactionMessage, err := s.convertReactionFromStore(ctx, reaction)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to convert reaction")
-	}
+	reactionMessage := convertReactionFromStore(reaction)
+
 	return reactionMessage, nil
 }
 
@@ -71,20 +66,13 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) convertReactionFromStore(ctx context.Context, reaction *store.Reaction) (*v1pb.Reaction, error) {
-	creator, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &reaction.CreatorID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
+func convertReactionFromStore(reaction *store.Reaction) *v1pb.Reaction {
 	reactionUID := fmt.Sprintf("%d", reaction.ID)
 	return &v1pb.Reaction{
 		Name:         fmt.Sprintf("%s%s", ReactionNamePrefix, reactionUID),
-		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
+		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, reaction.CreatorID),
 		ContentId:    reaction.ContentID,
 		ReactionType: reaction.ReactionType,
 		CreateTime:   timestamppb.New(time.Unix(reaction.CreatedTs, 0)),
-	}, nil
+	}
 }
