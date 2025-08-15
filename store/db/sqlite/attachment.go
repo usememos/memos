@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/usememos/memos/plugin/filter"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -41,37 +42,74 @@ func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*s
 func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([]*store.Attachment, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
+	for _, filterStr := range find.Filters {
+		// Parse filter string and return the parsed expression.
+		// The filter string should be a CEL expression.
+		parsedExpr, err := filter.Parse(filterStr, filter.AttachmentFilterCELAttributes...)
+		if err != nil {
+			return nil, err
+		}
+		convertCtx := filter.NewConvertContext()
+		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
+		converter := filter.NewCommonSQLConverter(&filter.SQLiteDialect{})
+		if err := converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
+			return nil, err
+		}
+		condition := convertCtx.Buffer.String()
+		if condition != "" {
+			where = append(where, fmt.Sprintf("(%s)", condition))
+			args = append(args, convertCtx.Args...)
+		}
+	}
+
 	if v := find.ID; v != nil {
-		where, args = append(where, "`id` = ?"), append(args, *v)
+		where, args = append(where, "`resource`.`id` = ?"), append(args, *v)
 	}
 	if v := find.UID; v != nil {
-		where, args = append(where, "`uid` = ?"), append(args, *v)
+		where, args = append(where, "`resource`.`uid` = ?"), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
-		where, args = append(where, "`creator_id` = ?"), append(args, *v)
+		where, args = append(where, "`resource`.`creator_id` = ?"), append(args, *v)
 	}
 	if v := find.Filename; v != nil {
-		where, args = append(where, "`filename` = ?"), append(args, *v)
+		where, args = append(where, "`resource`.`filename` = ?"), append(args, *v)
 	}
 	if v := find.FilenameSearch; v != nil {
-		where, args = append(where, "`filename` LIKE ?"), append(args, fmt.Sprintf("%%%s%%", *v))
+		where, args = append(where, "`resource`.`filename` LIKE ?"), append(args, fmt.Sprintf("%%%s%%", *v))
 	}
 	if v := find.MemoID; v != nil {
-		where, args = append(where, "`memo_id` = ?"), append(args, *v)
+		where, args = append(where, "`resource`.`memo_id` = ?"), append(args, *v)
 	}
 	if find.HasRelatedMemo {
-		where = append(where, "`memo_id` IS NOT NULL")
+		where = append(where, "`resource`.`memo_id` IS NOT NULL")
 	}
 	if find.StorageType != nil {
-		where, args = append(where, "`storage_type` = ?"), append(args, find.StorageType.String())
+		where, args = append(where, "`resource`.`storage_type` = ?"), append(args, find.StorageType.String())
 	}
 
-	fields := []string{"`id`", "`uid`", "`filename`", "`type`", "`size`", "`creator_id`", "`created_ts`", "`updated_ts`", "`memo_id`", "`storage_type`", "`reference`", "`payload`"}
+	fields := []string{
+		"`resource`.`id` AS `id`",
+		"`resource`.`uid` AS `uid`",
+		"`resource`.`filename` AS `filename`",
+		"`resource`.`type` AS `type`",
+		"`resource`.`size` AS `size`",
+		"`resource`.`creator_id` AS `creator_id`",
+		"`resource`.`created_ts` AS `created_ts`",
+		"`resource`.`updated_ts` AS `updated_ts`",
+		"`resource`.`memo_id` AS `memo_id`",
+		"`resource`.`storage_type` AS `storage_type`",
+		"`resource`.`reference` AS `reference`",
+		"`resource`.`payload` AS `payload`",
+		"CASE WHEN `memo`.`uid` IS NOT NULL THEN `memo`.`uid` ELSE NULL END AS `memo_uid`",
+	}
 	if find.GetBlob {
-		fields = append(fields, "`blob`")
+		fields = append(fields, "`resource`.`blob` AS `blob`")
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM `resource` WHERE %s ORDER BY `updated_ts` DESC", strings.Join(fields, ", "), strings.Join(where, " AND "))
+	query := "SELECT " + strings.Join(fields, ", ") + " FROM `resource`" + " " +
+		"LEFT JOIN `memo` ON `resource`.`memo_id` = `memo`.`id`" + " " +
+		"WHERE " + strings.Join(where, " AND ") + " " +
+		"ORDER BY `resource`.`updated_ts` DESC"
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {
@@ -104,6 +142,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 			&storageType,
 			&attachment.Reference,
 			&payloadBytes,
+			&attachment.MemoUID,
 		}
 		if find.GetBlob {
 			dests = append(dests, &attachment.Blob)

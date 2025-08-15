@@ -46,6 +46,11 @@ var UserFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("username", cel.StringType),
 }
 
+// AttachmentFilterCELAttributes are the CEL attributes for user.
+var AttachmentFilterCELAttributes = []cel.EnvOption{
+	cel.Variable("memo_id", cel.StringType),
+}
+
 // Parse parses the filter string and returns the parsed expression.
 // The filter string should be a CEL expression.
 func Parse(filter string, opts ...cel.EnvOption) (expr *exprv1.ParsedExpr, err error) {

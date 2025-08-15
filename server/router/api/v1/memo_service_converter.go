@@ -16,7 +16,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction) (*v1pb.Memo, error) {
+func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment) (*v1pb.Memo, error) {
 	displayTs := memo.CreatedTs
 	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
@@ -62,11 +62,12 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 	memoMessage.Relations = listMemoRelationsResponse.Relations
 
-	listMemoAttachmentsResponse, err := s.ListMemoAttachments(ctx, &v1pb.ListMemoAttachmentsRequest{Name: name})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to list memo attachments")
+	memoMessage.Attachments = []*v1pb.Attachment{}
+
+	for _, attachment := range attachments {
+		attachmentResponse := convertAttachmentFromStore(attachment)
+		memoMessage.Attachments = append(memoMessage.Attachments, attachmentResponse)
 	}
-	memoMessage.Attachments = listMemoAttachmentsResponse.Attachments
 
 	nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
 	if err != nil {

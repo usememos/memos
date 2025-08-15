@@ -35,6 +35,9 @@ type Attachment struct {
 
 	// The related memo ID.
 	MemoID *int32
+
+	// Composed field
+	MemoUID *string
 }
 
 type FindAttachment struct {
@@ -49,6 +52,7 @@ type FindAttachment struct {
 	StorageType    *storepb.AttachmentStorageType
 	Limit          *int
 	Offset         *int
+	Filters        []string
 }
 
 type UpdateAttachment struct {
