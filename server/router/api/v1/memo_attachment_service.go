@@ -96,7 +96,7 @@ func (s *APIV1Service) ListMemoAttachments(ctx context.Context, request *v1pb.Li
 		Attachments: []*v1pb.Attachment{},
 	}
 	for _, attachment := range attachments {
-		response.Attachments = append(response.Attachments, s.convertAttachmentFromStore(ctx, attachment))
+		response.Attachments = append(response.Attachments, convertAttachmentFromStore(attachment))
 	}
 	return response, nil
 }

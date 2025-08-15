@@ -116,7 +116,7 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		return nil, status.Errorf(codes.Internal, "failed to create attachment: %v", err)
 	}
 
-	return s.convertAttachmentFromStore(ctx, attachment), nil
+	return convertAttachmentFromStore(attachment), nil
 }
 
 func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAttachmentsRequest) (*v1pb.ListAttachmentsResponse, error) {
@@ -182,7 +182,7 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 	response := &v1pb.ListAttachmentsResponse{}
 
 	for _, attachment := range attachments {
-		response.Attachments = append(response.Attachments, s.convertAttachmentFromStore(ctx, attachment))
+		response.Attachments = append(response.Attachments, convertAttachmentFromStore(attachment))
 	}
 
 	// For simplicity, set total size to the number of returned attachments.
@@ -209,7 +209,7 @@ func (s *APIV1Service) GetAttachment(ctx context.Context, request *v1pb.GetAttac
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
-	return s.convertAttachmentFromStore(ctx, attachment), nil
+	return convertAttachmentFromStore(attachment), nil
 }
 
 func (s *APIV1Service) GetAttachmentBinary(ctx context.Context, request *v1pb.GetAttachmentBinaryRequest) (*httpbody.HttpBody, error) {
@@ -383,7 +383,7 @@ func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.Delet
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) convertAttachmentFromStore(ctx context.Context, attachment *store.Attachment) *v1pb.Attachment {
+func convertAttachmentFromStore(attachment *store.Attachment) *v1pb.Attachment {
 	attachmentMessage := &v1pb.Attachment{
 		Name:       fmt.Sprintf("%s%s", AttachmentNamePrefix, attachment.UID),
 		CreateTime: timestamppb.New(time.Unix(attachment.CreatedTs, 0)),
@@ -391,17 +391,12 @@ func (s *APIV1Service) convertAttachmentFromStore(ctx context.Context, attachmen
 		Type:       attachment.Type,
 		Size:       attachment.Size,
 	}
+	if attachment.MemoUID != nil && *attachment.MemoUID != "" {
+		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, *attachment.MemoUID)
+		attachmentMessage.Memo = &memoName
+	}
 	if attachment.StorageType == storepb.AttachmentStorageType_EXTERNAL || attachment.StorageType == storepb.AttachmentStorageType_S3 {
 		attachmentMessage.ExternalLink = attachment.Reference
-	}
-	if attachment.MemoID != nil {
-		memo, _ := s.Store.GetMemo(ctx, &store.FindMemo{
-			ID: attachment.MemoID,
-		})
-		if memo != nil {
-			memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
-			attachmentMessage.Memo = &memoName
-		}
 	}
 
 	return attachmentMessage

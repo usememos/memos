@@ -207,7 +207,7 @@ func (c *CommonSQLConverter) handleInOperator(ctx *ConvertContext, callExpr *exp
 		return err
 	}
 
-	if !slices.Contains([]string{"tag", "visibility", "content_id"}, identifier) {
+	if !slices.Contains([]string{"tag", "visibility", "content_id", "memo_id"}, identifier) {
 		return errors.Errorf("invalid identifier for %s", callExpr.Function)
 	}
 
@@ -226,6 +226,8 @@ func (c *CommonSQLConverter) handleInOperator(ctx *ConvertContext, callExpr *exp
 		return c.handleVisibilityInList(ctx, values)
 	} else if identifier == "content_id" {
 		return c.handleContentIDInList(ctx, values)
+	} else if identifier == "memo_id" {
+		return c.handleMemoIDInList(ctx, values)
 	}
 
 	return nil
@@ -325,6 +327,28 @@ func (c *CommonSQLConverter) handleContentIDInList(ctx *ConvertContext, values [
 		}
 	} else {
 		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`content_id` IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
+			return err
+		}
+	}
+
+	ctx.Args = append(ctx.Args, values...)
+	return nil
+}
+
+func (c *CommonSQLConverter) handleMemoIDInList(ctx *ConvertContext, values []any) error {
+	placeholders := []string{}
+	for range values {
+		placeholders = append(placeholders, c.dialect.GetParameterPlaceholder(c.paramIndex))
+		c.paramIndex++
+	}
+
+	tablePrefix := c.dialect.GetTablePrefix("resource")
+	if _, ok := c.dialect.(*PostgreSQLDialect); ok {
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.memo_id IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
+			return err
+		}
+	} else {
+		if _, err := ctx.Buffer.WriteString(fmt.Sprintf("%s.`memo_id` IN (%s)", tablePrefix, strings.Join(placeholders, ","))); err != nil {
 			return err
 		}
 	}
