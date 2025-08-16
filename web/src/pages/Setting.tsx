@@ -1,8 +1,9 @@
-import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon } from "lucide-react";
+import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, SparklesIcon, UserIcon, UsersIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
+import AISettings from "@/components/Settings/AISettings";
 import MemberSection from "@/components/Settings/MemberSection";
 import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
 import MyAccountSection from "@/components/Settings/MyAccountSection";
@@ -19,14 +20,14 @@ import { User_Role } from "@/types/proto/api/v1/user_service";
 import { WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso";
+type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso" | "ai";
 
 interface State {
   selectedSection: SettingSection;
 }
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo-related", "storage", "sso"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo-related", "storage", "ai", "sso"];
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": UserIcon,
   preference: CogIcon,
@@ -34,6 +35,7 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   system: Settings2Icon,
   "memo-related": LibraryIcon,
   storage: DatabaseIcon,
+  ai: SparklesIcon,
   sso: KeyIcon,
 };
 
@@ -73,7 +75,7 @@ const Setting = observer(() => {
 
     // Initial fetch for workspace settings.
     (async () => {
-      [WorkspaceSetting_Key.MEMO_RELATED, WorkspaceSetting_Key.STORAGE].forEach(async (key) => {
+      [WorkspaceSetting_Key.MEMO_RELATED, WorkspaceSetting_Key.STORAGE, WorkspaceSetting_Key.AI].forEach(async (key) => {
         await workspaceStore.fetchWorkspaceSetting(key);
       });
     })();
@@ -148,6 +150,8 @@ const Setting = observer(() => {
               <MemoRelatedSettings />
             ) : state.selectedSection === "storage" ? (
               <StorageSection />
+            ) : state.selectedSection === "ai" ? (
+              <AISettings />
             ) : state.selectedSection === "sso" ? (
               <SSOSection />
             ) : null}

@@ -14,6 +14,8 @@ enum WorkspaceSettingKey {
   STORAGE = 3;
   // MEMO_RELATED is the key for memo related settings.
   MEMO_RELATED = 4;
+  // AI is the key for AI settings.
+  AI = 5;
 }
 
 message WorkspaceSetting {
@@ -23,6 +25,7 @@ message WorkspaceSetting {
     WorkspaceGeneralSetting general_setting = 3;
     WorkspaceStorageSetting storage_setting = 4;
     WorkspaceMemoRelatedSetting memo_related_setting = 5;
+    WorkspaceAISetting ai_setting = 6;
   }
 }
 
@@ -114,4 +117,17 @@ message WorkspaceMemoRelatedSetting {
   bool enable_blur_nsfw_content = 9;
   // nsfw_tags is the list of tags that mark content as NSFW for blurring.
   repeated string nsfw_tags = 10;
+}
+
+message WorkspaceAISetting {
+  // enable_ai enables AI features.
+  bool enable_ai = 1;
+  // base_url is the base URL for AI API.
+  string base_url = 2;
+  // api_key is the API key for AI service.
+  string api_key = 3;
+  // model is the AI model to use.
+  string model = 4;
+  // timeout_seconds is the timeout for AI requests in seconds.
+  int32 timeout_seconds = 5;
 }

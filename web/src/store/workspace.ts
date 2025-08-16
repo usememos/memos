@@ -5,6 +5,7 @@ import { WorkspaceProfile, WorkspaceSetting_Key } from "@/types/proto/api/v1/wor
 import {
   WorkspaceSetting_GeneralSetting,
   WorkspaceSetting_MemoRelatedSetting,
+  WorkspaceSetting_AiSetting,
   WorkspaceSetting,
 } from "@/types/proto/api/v1/workspace_service";
 import { isValidateLocale } from "@/utils/i18n";
@@ -27,6 +28,19 @@ class LocalState {
     return (
       this.settings.find((setting) => setting.name === `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.MEMO_RELATED}`)
         ?.memoRelatedSetting || WorkspaceSetting_MemoRelatedSetting.fromPartial({})
+    );
+  }
+
+  get aiSetting() {
+    return (
+      this.settings.find((setting) => setting.name === `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.AI}`)?.aiSetting ||
+      WorkspaceSetting_AiSetting.fromPartial({
+        enableAi: false,
+        baseUrl: "",
+        apiKey: "",
+        model: "",
+        timeoutSeconds: 10,
+      })
     );
   }
 
@@ -66,6 +80,14 @@ const workspaceStore = (() => {
     });
   };
 
+  const updateWorkspaceSetting = async (setting: WorkspaceSetting) => {
+    const response = await workspaceServiceClient.updateWorkspaceSetting({ setting });
+    state.setPartial({
+      settings: uniqBy([response, ...state.settings], "name"),
+    });
+    return response;
+  };
+
   const getWorkspaceSettingByKey = (settingKey: WorkspaceSetting_Key) => {
     return (
       state.settings.find((setting) => setting.name === `${workspaceSettingNamePrefix}${settingKey}`) || WorkspaceSetting.fromPartial({})
@@ -96,6 +118,7 @@ const workspaceStore = (() => {
     state,
     fetchWorkspaceSetting,
     upsertWorkspaceSetting,
+    updateWorkspaceSetting,
     getWorkspaceSettingByKey,
     setTheme,
   };
@@ -104,7 +127,7 @@ const workspaceStore = (() => {
 export const initialWorkspaceStore = async () => {
   const workspaceProfile = await workspaceServiceClient.getWorkspaceProfile({});
   // Prepare workspace settings.
-  for (const key of [WorkspaceSetting_Key.GENERAL, WorkspaceSetting_Key.MEMO_RELATED]) {
+  for (const key of [WorkspaceSetting_Key.GENERAL, WorkspaceSetting_Key.MEMO_RELATED, WorkspaceSetting_Key.AI]) {
     await workspaceStore.fetchWorkspaceSetting(key);
   }
 

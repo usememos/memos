@@ -68,6 +68,7 @@ message WorkspaceSetting {
     GeneralSetting general_setting = 2;
     StorageSetting storage_setting = 3;
     MemoRelatedSetting memo_related_setting = 4;
+    AiSetting ai_setting = 5;
   }
 
   // Enumeration of workspace setting keys.
@@ -79,6 +80,8 @@ message WorkspaceSetting {
     STORAGE = 2;
     // MEMO_RELATED is the key for memo related settings.
     MEMO_RELATED = 3;
+    // AI is the key for AI settings.
+    AI = 4;
   }
 
   // General workspace settings configuration.
@@ -169,6 +172,20 @@ message WorkspaceSetting {
     bool enable_blur_nsfw_content = 9;
     // nsfw_tags is the list of tags that mark content as NSFW for blurring.
     repeated string nsfw_tags = 10;
+  }
+
+  // AI configuration settings for workspace AI features.
+  message AiSetting {
+    // enable_ai enables AI features.
+    bool enable_ai = 1;
+    // base_url is the base URL for AI API.
+    string base_url = 2;
+    // api_key is the API key for AI service.
+    string api_key = 3;
+    // model is the AI model to use.
+    string model = 4;
+    // timeout_seconds is the timeout for AI requests in seconds.
+    int32 timeout_seconds = 5;
   }
 }
 

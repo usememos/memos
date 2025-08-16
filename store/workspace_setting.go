@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+	"os"
+	"strconv"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -37,6 +39,8 @@ func (s *Store) UpsertWorkspaceSetting(ctx context.Context, upsert *storepb.Work
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
 	} else if upsert.Key == storepb.WorkspaceSettingKey_MEMO_RELATED {
 		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
+	} else if upsert.Key == storepb.WorkspaceSettingKey_AI {
+		valueBytes, err = protojson.Marshal(upsert.GetAiSetting())
 	} else {
 		return nil, errors.Errorf("unsupported workspace setting key: %v", upsert.Key)
 	}
@@ -208,6 +212,64 @@ func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.Worksp
 	return workspaceStorageSetting, nil
 }
 
+const (
+	defaultAIEnabled       = false
+	defaultAITimeoutSeconds = int32(15)
+)
+
+func (s *Store) GetWorkspaceAISetting(ctx context.Context) (*storepb.WorkspaceAISetting, error) {
+	workspaceSetting, err := s.GetWorkspaceSetting(ctx, &FindWorkspaceSetting{
+		Name: storepb.WorkspaceSettingKey_AI.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace AI setting")
+	}
+
+	workspaceAISetting := &storepb.WorkspaceAISetting{}
+	if workspaceSetting != nil {
+		workspaceAISetting = workspaceSetting.GetAiSetting()
+	} else {
+		// If no database setting exists, use environment variables as defaults
+		workspaceAISetting = loadAISettingFromEnv()
+	}
+
+	// Set default timeout if not configured
+	if workspaceAISetting.TimeoutSeconds <= 0 {
+		workspaceAISetting.TimeoutSeconds = defaultAITimeoutSeconds
+	}
+
+	s.workspaceSettingCache.Set(ctx, storepb.WorkspaceSettingKey_AI.String(), &storepb.WorkspaceSetting{
+		Key:   storepb.WorkspaceSettingKey_AI,
+		Value: &storepb.WorkspaceSetting_AiSetting{AiSetting: workspaceAISetting},
+	})
+	return workspaceAISetting, nil
+}
+
+// loadAISettingFromEnv loads AI configuration from environment variables
+func loadAISettingFromEnv() *storepb.WorkspaceAISetting {
+	timeoutSeconds := defaultAITimeoutSeconds
+	if timeoutStr := os.Getenv("AI_TIMEOUT_SECONDS"); timeoutStr != "" {
+		if timeout, err := strconv.Atoi(timeoutStr); err == nil && timeout > 0 {
+			timeoutSeconds = int32(timeout)
+		}
+	}
+
+	baseURL := os.Getenv("AI_BASE_URL")
+	apiKey := os.Getenv("AI_API_KEY")
+	model := os.Getenv("AI_MODEL")
+
+	// Enable AI if all required fields are provided via environment variables
+	enableAI := baseURL != "" && apiKey != "" && model != ""
+
+	return &storepb.WorkspaceAISetting{
+		EnableAi:       enableAI,
+		BaseUrl:        baseURL,
+		ApiKey:         apiKey,
+		Model:          model,
+		TimeoutSeconds: timeoutSeconds,
+	}
+}
+
 func convertWorkspaceSettingFromRaw(workspaceSettingRaw *WorkspaceSetting) (*storepb.WorkspaceSetting, error) {
 	workspaceSetting := &storepb.WorkspaceSetting{
 		Key: storepb.WorkspaceSettingKey(storepb.WorkspaceSettingKey_value[workspaceSettingRaw.Name]),
@@ -237,6 +299,12 @@ func convertWorkspaceSettingFromRaw(workspaceSettingRaw *WorkspaceSetting) (*sto
 			return nil, err
 		}
 		workspaceSetting.Value = &storepb.WorkspaceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
+	case storepb.WorkspaceSettingKey_AI.String():
+		aiSetting := &storepb.WorkspaceAISetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(workspaceSettingRaw.Value), aiSetting); err != nil {
+			return nil, err
+		}
+		workspaceSetting.Value = &storepb.WorkspaceSetting_AiSetting{AiSetting: aiSetting}
 	default:
 		// Skip unsupported workspace setting key.
 		return nil, nil
