@@ -3766,7 +3766,29 @@ components:
                     $ref: '#/components/schemas/WorkspaceSetting_StorageSetting'
                 memoRelatedSetting:
                     $ref: '#/components/schemas/WorkspaceSetting_MemoRelatedSetting'
+                aiSetting:
+                    $ref: '#/components/schemas/WorkspaceSetting_AiSetting'
             description: A workspace setting resource.
+        WorkspaceSetting_AiSetting:
+            type: object
+            properties:
+                enableAi:
+                    type: boolean
+                    description: enable_ai enables AI features.
+                baseUrl:
+                    type: string
+                    description: base_url is the base URL for AI API.
+                apiKey:
+                    type: string
+                    description: api_key is the API key for AI service.
+                model:
+                    type: string
+                    description: model is the AI model to use.
+                timeoutSeconds:
+                    type: integer
+                    description: timeout_seconds is the timeout for AI requests in seconds.
+                    format: int32
+            description: AI configuration settings for workspace AI features.
         WorkspaceSetting_GeneralSetting:
             type: object
             properties:

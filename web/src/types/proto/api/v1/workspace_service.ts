@@ -39,6 +39,7 @@ export interface WorkspaceSetting {
   generalSetting?: WorkspaceSetting_GeneralSetting | undefined;
   storageSetting?: WorkspaceSetting_StorageSetting | undefined;
   memoRelatedSetting?: WorkspaceSetting_MemoRelatedSetting | undefined;
+  aiSetting?: WorkspaceSetting_AiSetting | undefined;
 }
 
 /** Enumeration of workspace setting keys. */
@@ -50,6 +51,8 @@ export enum WorkspaceSetting_Key {
   STORAGE = "STORAGE",
   /** MEMO_RELATED - MEMO_RELATED is the key for memo related settings. */
   MEMO_RELATED = "MEMO_RELATED",
+  /** AI - AI is the key for AI settings. */
+  AI = "AI",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
 
@@ -67,6 +70,9 @@ export function workspaceSetting_KeyFromJSON(object: any): WorkspaceSetting_Key 
     case 3:
     case "MEMO_RELATED":
       return WorkspaceSetting_Key.MEMO_RELATED;
+    case 4:
+    case "AI":
+      return WorkspaceSetting_Key.AI;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -84,6 +90,8 @@ export function workspaceSetting_KeyToNumber(object: WorkspaceSetting_Key): numb
       return 2;
     case WorkspaceSetting_Key.MEMO_RELATED:
       return 3;
+    case WorkspaceSetting_Key.AI:
+      return 4;
     case WorkspaceSetting_Key.UNRECOGNIZED:
     default:
       return -1;
@@ -232,6 +240,20 @@ export interface WorkspaceSetting_MemoRelatedSetting {
   nsfwTags: string[];
 }
 
+/** AI configuration settings for workspace AI features. */
+export interface WorkspaceSetting_AiSetting {
+  /** enable_ai enables AI features. */
+  enableAi: boolean;
+  /** base_url is the base URL for AI API. */
+  baseUrl: string;
+  /** api_key is the API key for AI service. */
+  apiKey: string;
+  /** model is the AI model to use. */
+  model: string;
+  /** timeout_seconds is the timeout for AI requests in seconds. */
+  timeoutSeconds: number;
+}
+
 /** Request message for GetWorkspaceSetting method. */
 export interface GetWorkspaceSettingRequest {
   /**
@@ -368,7 +390,13 @@ export const GetWorkspaceProfileRequest: MessageFns<GetWorkspaceProfileRequest> 
 };
 
 function createBaseWorkspaceSetting(): WorkspaceSetting {
-  return { name: "", generalSetting: undefined, storageSetting: undefined, memoRelatedSetting: undefined };
+  return {
+    name: "",
+    generalSetting: undefined,
+    storageSetting: undefined,
+    memoRelatedSetting: undefined,
+    aiSetting: undefined,
+  };
 }
 
 export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
@@ -384,6 +412,9 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
     }
     if (message.memoRelatedSetting !== undefined) {
       WorkspaceSetting_MemoRelatedSetting.encode(message.memoRelatedSetting, writer.uint32(34).fork()).join();
+    }
+    if (message.aiSetting !== undefined) {
+      WorkspaceSetting_AiSetting.encode(message.aiSetting, writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -427,6 +458,14 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
           message.memoRelatedSetting = WorkspaceSetting_MemoRelatedSetting.decode(reader, reader.uint32());
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.aiSetting = WorkspaceSetting_AiSetting.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -450,6 +489,9 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
       : undefined;
     message.memoRelatedSetting = (object.memoRelatedSetting !== undefined && object.memoRelatedSetting !== null)
       ? WorkspaceSetting_MemoRelatedSetting.fromPartial(object.memoRelatedSetting)
+      : undefined;
+    message.aiSetting = (object.aiSetting !== undefined && object.aiSetting !== null)
+      ? WorkspaceSetting_AiSetting.fromPartial(object.aiSetting)
       : undefined;
     return message;
   },
@@ -1042,6 +1084,100 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
     message.disableMarkdownShortcuts = object.disableMarkdownShortcuts ?? false;
     message.enableBlurNsfwContent = object.enableBlurNsfwContent ?? false;
     message.nsfwTags = object.nsfwTags?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseWorkspaceSetting_AiSetting(): WorkspaceSetting_AiSetting {
+  return { enableAi: false, baseUrl: "", apiKey: "", model: "", timeoutSeconds: 0 };
+}
+
+export const WorkspaceSetting_AiSetting: MessageFns<WorkspaceSetting_AiSetting> = {
+  encode(message: WorkspaceSetting_AiSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.enableAi !== false) {
+      writer.uint32(8).bool(message.enableAi);
+    }
+    if (message.baseUrl !== "") {
+      writer.uint32(18).string(message.baseUrl);
+    }
+    if (message.apiKey !== "") {
+      writer.uint32(26).string(message.apiKey);
+    }
+    if (message.model !== "") {
+      writer.uint32(34).string(message.model);
+    }
+    if (message.timeoutSeconds !== 0) {
+      writer.uint32(40).int32(message.timeoutSeconds);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_AiSetting {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseWorkspaceSetting_AiSetting();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.enableAi = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.baseUrl = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.apiKey = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.model = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.timeoutSeconds = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<WorkspaceSetting_AiSetting>): WorkspaceSetting_AiSetting {
+    return WorkspaceSetting_AiSetting.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<WorkspaceSetting_AiSetting>): WorkspaceSetting_AiSetting {
+    const message = createBaseWorkspaceSetting_AiSetting();
+    message.enableAi = object.enableAi ?? false;
+    message.baseUrl = object.baseUrl ?? "";
+    message.apiKey = object.apiKey ?? "";
+    message.model = object.model ?? "";
+    message.timeoutSeconds = object.timeoutSeconds ?? 0;
     return message;
   },
 };

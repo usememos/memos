@@ -34,6 +34,8 @@ const (
 	WorkspaceSetting_STORAGE WorkspaceSetting_Key = 2
 	// MEMO_RELATED is the key for memo related settings.
 	WorkspaceSetting_MEMO_RELATED WorkspaceSetting_Key = 3
+	// AI is the key for AI settings.
+	WorkspaceSetting_AI WorkspaceSetting_Key = 4
 )
 
 // Enum value maps for WorkspaceSetting_Key.
@@ -43,12 +45,14 @@ var (
 		1: "GENERAL",
 		2: "STORAGE",
 		3: "MEMO_RELATED",
+		4: "AI",
 	}
 	WorkspaceSetting_Key_value = map[string]int32{
 		"KEY_UNSPECIFIED": 0,
 		"GENERAL":         1,
 		"STORAGE":         2,
 		"MEMO_RELATED":    3,
+		"AI":              4,
 	}
 )
 
@@ -257,6 +261,7 @@ type WorkspaceSetting struct {
 	//	*WorkspaceSetting_GeneralSetting_
 	//	*WorkspaceSetting_StorageSetting_
 	//	*WorkspaceSetting_MemoRelatedSetting_
+	//	*WorkspaceSetting_AiSetting_
 	Value         isWorkspaceSetting_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -333,6 +338,15 @@ func (x *WorkspaceSetting) GetMemoRelatedSetting() *WorkspaceSetting_MemoRelated
 	return nil
 }
 
+func (x *WorkspaceSetting) GetAiSetting() *WorkspaceSetting_AiSetting {
+	if x != nil {
+		if x, ok := x.Value.(*WorkspaceSetting_AiSetting_); ok {
+			return x.AiSetting
+		}
+	}
+	return nil
+}
+
 type isWorkspaceSetting_Value interface {
 	isWorkspaceSetting_Value()
 }
@@ -349,11 +363,17 @@ type WorkspaceSetting_MemoRelatedSetting_ struct {
 	MemoRelatedSetting *WorkspaceSetting_MemoRelatedSetting `protobuf:"bytes,4,opt,name=memo_related_setting,json=memoRelatedSetting,proto3,oneof"`
 }
 
+type WorkspaceSetting_AiSetting_ struct {
+	AiSetting *WorkspaceSetting_AiSetting `protobuf:"bytes,5,opt,name=ai_setting,json=aiSetting,proto3,oneof"`
+}
+
 func (*WorkspaceSetting_GeneralSetting_) isWorkspaceSetting_Value() {}
 
 func (*WorkspaceSetting_StorageSetting_) isWorkspaceSetting_Value() {}
 
 func (*WorkspaceSetting_MemoRelatedSetting_) isWorkspaceSetting_Value() {}
+
+func (*WorkspaceSetting_AiSetting_) isWorkspaceSetting_Value() {}
 
 // Request message for GetWorkspaceSetting method.
 type GetWorkspaceSettingRequest struct {
@@ -770,6 +790,88 @@ func (x *WorkspaceSetting_MemoRelatedSetting) GetNsfwTags() []string {
 	return nil
 }
 
+// AI configuration settings for workspace AI features.
+type WorkspaceSetting_AiSetting struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// enable_ai enables AI features.
+	EnableAi bool `protobuf:"varint,1,opt,name=enable_ai,json=enableAi,proto3" json:"enable_ai,omitempty"`
+	// base_url is the base URL for AI API.
+	BaseUrl string `protobuf:"bytes,2,opt,name=base_url,json=baseUrl,proto3" json:"base_url,omitempty"`
+	// api_key is the API key for AI service.
+	ApiKey string `protobuf:"bytes,3,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	// model is the AI model to use.
+	Model string `protobuf:"bytes,4,opt,name=model,proto3" json:"model,omitempty"`
+	// timeout_seconds is the timeout for AI requests in seconds.
+	TimeoutSeconds int32 `protobuf:"varint,5,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *WorkspaceSetting_AiSetting) Reset() {
+	*x = WorkspaceSetting_AiSetting{}
+	mi := &file_api_v1_workspace_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkspaceSetting_AiSetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkspaceSetting_AiSetting) ProtoMessage() {}
+
+func (x *WorkspaceSetting_AiSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_workspace_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkspaceSetting_AiSetting.ProtoReflect.Descriptor instead.
+func (*WorkspaceSetting_AiSetting) Descriptor() ([]byte, []int) {
+	return file_api_v1_workspace_service_proto_rawDescGZIP(), []int{2, 3}
+}
+
+func (x *WorkspaceSetting_AiSetting) GetEnableAi() bool {
+	if x != nil {
+		return x.EnableAi
+	}
+	return false
+}
+
+func (x *WorkspaceSetting_AiSetting) GetBaseUrl() string {
+	if x != nil {
+		return x.BaseUrl
+	}
+	return ""
+}
+
+func (x *WorkspaceSetting_AiSetting) GetApiKey() string {
+	if x != nil {
+		return x.ApiKey
+	}
+	return ""
+}
+
+func (x *WorkspaceSetting_AiSetting) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *WorkspaceSetting_AiSetting) GetTimeoutSeconds() int32 {
+	if x != nil {
+		return x.TimeoutSeconds
+	}
+	return 0
+}
+
 // Custom profile configuration for workspace branding.
 type WorkspaceSetting_GeneralSetting_CustomProfile struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -783,7 +885,7 @@ type WorkspaceSetting_GeneralSetting_CustomProfile struct {
 
 func (x *WorkspaceSetting_GeneralSetting_CustomProfile) Reset() {
 	*x = WorkspaceSetting_GeneralSetting_CustomProfile{}
-	mi := &file_api_v1_workspace_service_proto_msgTypes[8]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -795,7 +897,7 @@ func (x *WorkspaceSetting_GeneralSetting_CustomProfile) String() string {
 func (*WorkspaceSetting_GeneralSetting_CustomProfile) ProtoMessage() {}
 
 func (x *WorkspaceSetting_GeneralSetting_CustomProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_workspace_service_proto_msgTypes[8]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -855,7 +957,7 @@ type WorkspaceSetting_StorageSetting_S3Config struct {
 
 func (x *WorkspaceSetting_StorageSetting_S3Config) Reset() {
 	*x = WorkspaceSetting_StorageSetting_S3Config{}
-	mi := &file_api_v1_workspace_service_proto_msgTypes[9]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -867,7 +969,7 @@ func (x *WorkspaceSetting_StorageSetting_S3Config) String() string {
 func (*WorkspaceSetting_StorageSetting_S3Config) ProtoMessage() {}
 
 func (x *WorkspaceSetting_StorageSetting_S3Config) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_workspace_service_proto_msgTypes[9]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -935,12 +1037,14 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1c\n" +
-	"\x1aGetWorkspaceProfileRequest\"\x97\x11\n" +
+	"\x1aGetWorkspaceProfileRequest\"\x88\x13\n" +
 	"\x10WorkspaceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12X\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2-.memos.api.v1.WorkspaceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12X\n" +
 	"\x0fstorage_setting\x18\x03 \x01(\v2-.memos.api.v1.WorkspaceSetting.StorageSettingH\x00R\x0estorageSetting\x12e\n" +
-	"\x14memo_related_setting\x18\x04 \x01(\v21.memos.api.v1.WorkspaceSetting.MemoRelatedSettingH\x00R\x12memoRelatedSetting\x1a\xf9\x04\n" +
+	"\x14memo_related_setting\x18\x04 \x01(\v21.memos.api.v1.WorkspaceSetting.MemoRelatedSettingH\x00R\x12memoRelatedSetting\x12I\n" +
+	"\n" +
+	"ai_setting\x18\x05 \x01(\v2(.memos.api.v1.WorkspaceSetting.AiSettingH\x00R\taiSetting\x1a\xf9\x04\n" +
 	"\x0eGeneralSetting\x12\x14\n" +
 	"\x05theme\x18\x01 \x01(\tR\x05theme\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
@@ -983,12 +1087,19 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x1adisable_markdown_shortcuts\x18\b \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
 	"\tnsfw_tags\x18\n" +
-	" \x03(\tR\bnsfwTags\"F\n" +
+	" \x03(\tR\bnsfwTags\x1a\x9b\x01\n" +
+	"\tAiSetting\x12\x1b\n" +
+	"\tenable_ai\x18\x01 \x01(\bR\benableAi\x12\x19\n" +
+	"\bbase_url\x18\x02 \x01(\tR\abaseUrl\x12\x17\n" +
+	"\aapi_key\x18\x03 \x01(\tR\x06apiKey\x12\x14\n" +
+	"\x05model\x18\x04 \x01(\tR\x05model\x12'\n" +
+	"\x0ftimeout_seconds\x18\x05 \x01(\x05R\x0etimeoutSeconds\"N\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\v\n" +
 	"\aSTORAGE\x10\x02\x12\x10\n" +
-	"\fMEMO_RELATED\x10\x03:f\xeaAc\n" +
+	"\fMEMO_RELATED\x10\x03\x12\x06\n" +
+	"\x02AI\x10\x04:f\xeaAc\n" +
 	"\x1eapi.memos.dev/WorkspaceSetting\x12\x1cworkspace/settings/{setting}*\x11workspaceSettings2\x10workspaceSettingB\a\n" +
 	"\x05value\"X\n" +
 	"\x1aGetWorkspaceSettingRequest\x12:\n" +
@@ -1017,7 +1128,7 @@ func file_api_v1_workspace_service_proto_rawDescGZIP() []byte {
 }
 
 var file_api_v1_workspace_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_api_v1_workspace_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_api_v1_workspace_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_api_v1_workspace_service_proto_goTypes = []any{
 	(WorkspaceSetting_Key)(0),                             // 0: memos.api.v1.WorkspaceSetting.Key
 	(WorkspaceSetting_StorageSetting_StorageType)(0),      // 1: memos.api.v1.WorkspaceSetting.StorageSetting.StorageType
@@ -1029,30 +1140,32 @@ var file_api_v1_workspace_service_proto_goTypes = []any{
 	(*WorkspaceSetting_GeneralSetting)(nil),               // 7: memos.api.v1.WorkspaceSetting.GeneralSetting
 	(*WorkspaceSetting_StorageSetting)(nil),               // 8: memos.api.v1.WorkspaceSetting.StorageSetting
 	(*WorkspaceSetting_MemoRelatedSetting)(nil),           // 9: memos.api.v1.WorkspaceSetting.MemoRelatedSetting
-	(*WorkspaceSetting_GeneralSetting_CustomProfile)(nil), // 10: memos.api.v1.WorkspaceSetting.GeneralSetting.CustomProfile
-	(*WorkspaceSetting_StorageSetting_S3Config)(nil),      // 11: memos.api.v1.WorkspaceSetting.StorageSetting.S3Config
-	(*fieldmaskpb.FieldMask)(nil),                         // 12: google.protobuf.FieldMask
+	(*WorkspaceSetting_AiSetting)(nil),                    // 10: memos.api.v1.WorkspaceSetting.AiSetting
+	(*WorkspaceSetting_GeneralSetting_CustomProfile)(nil), // 11: memos.api.v1.WorkspaceSetting.GeneralSetting.CustomProfile
+	(*WorkspaceSetting_StorageSetting_S3Config)(nil),      // 12: memos.api.v1.WorkspaceSetting.StorageSetting.S3Config
+	(*fieldmaskpb.FieldMask)(nil),                         // 13: google.protobuf.FieldMask
 }
 var file_api_v1_workspace_service_proto_depIdxs = []int32{
 	7,  // 0: memos.api.v1.WorkspaceSetting.general_setting:type_name -> memos.api.v1.WorkspaceSetting.GeneralSetting
 	8,  // 1: memos.api.v1.WorkspaceSetting.storage_setting:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting
 	9,  // 2: memos.api.v1.WorkspaceSetting.memo_related_setting:type_name -> memos.api.v1.WorkspaceSetting.MemoRelatedSetting
-	4,  // 3: memos.api.v1.UpdateWorkspaceSettingRequest.setting:type_name -> memos.api.v1.WorkspaceSetting
-	12, // 4: memos.api.v1.UpdateWorkspaceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	10, // 5: memos.api.v1.WorkspaceSetting.GeneralSetting.custom_profile:type_name -> memos.api.v1.WorkspaceSetting.GeneralSetting.CustomProfile
-	1,  // 6: memos.api.v1.WorkspaceSetting.StorageSetting.storage_type:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting.StorageType
-	11, // 7: memos.api.v1.WorkspaceSetting.StorageSetting.s3_config:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting.S3Config
-	3,  // 8: memos.api.v1.WorkspaceService.GetWorkspaceProfile:input_type -> memos.api.v1.GetWorkspaceProfileRequest
-	5,  // 9: memos.api.v1.WorkspaceService.GetWorkspaceSetting:input_type -> memos.api.v1.GetWorkspaceSettingRequest
-	6,  // 10: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:input_type -> memos.api.v1.UpdateWorkspaceSettingRequest
-	2,  // 11: memos.api.v1.WorkspaceService.GetWorkspaceProfile:output_type -> memos.api.v1.WorkspaceProfile
-	4,  // 12: memos.api.v1.WorkspaceService.GetWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
-	4,  // 13: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
-	11, // [11:14] is the sub-list for method output_type
-	8,  // [8:11] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	10, // 3: memos.api.v1.WorkspaceSetting.ai_setting:type_name -> memos.api.v1.WorkspaceSetting.AiSetting
+	4,  // 4: memos.api.v1.UpdateWorkspaceSettingRequest.setting:type_name -> memos.api.v1.WorkspaceSetting
+	13, // 5: memos.api.v1.UpdateWorkspaceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	11, // 6: memos.api.v1.WorkspaceSetting.GeneralSetting.custom_profile:type_name -> memos.api.v1.WorkspaceSetting.GeneralSetting.CustomProfile
+	1,  // 7: memos.api.v1.WorkspaceSetting.StorageSetting.storage_type:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting.StorageType
+	12, // 8: memos.api.v1.WorkspaceSetting.StorageSetting.s3_config:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting.S3Config
+	3,  // 9: memos.api.v1.WorkspaceService.GetWorkspaceProfile:input_type -> memos.api.v1.GetWorkspaceProfileRequest
+	5,  // 10: memos.api.v1.WorkspaceService.GetWorkspaceSetting:input_type -> memos.api.v1.GetWorkspaceSettingRequest
+	6,  // 11: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:input_type -> memos.api.v1.UpdateWorkspaceSettingRequest
+	2,  // 12: memos.api.v1.WorkspaceService.GetWorkspaceProfile:output_type -> memos.api.v1.WorkspaceProfile
+	4,  // 13: memos.api.v1.WorkspaceService.GetWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
+	4,  // 14: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
+	12, // [12:15] is the sub-list for method output_type
+	9,  // [9:12] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_workspace_service_proto_init() }
@@ -1064,6 +1177,7 @@ func file_api_v1_workspace_service_proto_init() {
 		(*WorkspaceSetting_GeneralSetting_)(nil),
 		(*WorkspaceSetting_StorageSetting_)(nil),
 		(*WorkspaceSetting_MemoRelatedSetting_)(nil),
+		(*WorkspaceSetting_AiSetting_)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1071,7 +1185,7 @@ func file_api_v1_workspace_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_workspace_service_proto_rawDesc), len(file_api_v1_workspace_service_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
