@@ -117,7 +117,17 @@
     "add-your-comment-here": "Add your comment here...",
     "any-thoughts": "Any thoughts...",
     "save": "Save",
-    "no-changes-detected": "No changes detected"
+    "no-changes-detected": "No changes detected",
+    "tag-recommend": {
+      "tooltip": "Recommend tags",
+      "too-short": "Content too short (min 15 characters)",
+      "loading": "Loading recommendations...",
+      "suggested-tags": "Suggested tags",
+      "add-all": "Add all",
+      "no-suggestions": "No tag suggestions found",
+      "timeout": "Tag recommendation timed out. Please try again.",
+      "error": "Failed to get tag recommendations"
+    }
   },
   "filters": {
     "has-code": "hasCode",

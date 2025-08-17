@@ -13,6 +13,7 @@ import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { WorkspaceSetting_AiSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
+import TagRecommendationSection from "./TagRecommendationSection";
 
 const AISettings = observer(() => {
   const t = useTranslate();
@@ -79,6 +80,10 @@ const AISettings = observer(() => {
     },
   );
 
+  const handleTagRecommendationChange = (newSetting: WorkspaceSetting_AiSetting) => {
+    setOriginalSetting(newSetting);
+    setAiSetting(newSetting);
+  };
 
   return (
     <div className="w-full flex flex-col gap-6 pt-2 pb-4">
@@ -193,6 +198,24 @@ const AISettings = observer(() => {
           </div>
         )}
       </div>
+
+      {/* AI Features Section */}
+      {aiSetting.enableAi && (
+        <>
+          <Separator />
+          <div className="w-full flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm text-gray-400">{t("setting.ai-features")}</span>
+            </div>
+
+            <TagRecommendationSection
+              aiSetting={workspaceStore.state.aiSetting}
+              onSettingChange={handleTagRecommendationChange}
+              disabled={!aiSetting.enableAi}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 });

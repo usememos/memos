@@ -25,11 +25,13 @@ import DateTimeInput from "../DateTimeInput";
 import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
 import LocationSelector from "./ActionButton/LocationSelector";
 import MarkdownMenu from "./ActionButton/MarkdownMenu";
+import TagRecommendButton from "./ActionButton/TagRecommendButton";
 import TagSelector from "./ActionButton/TagSelector";
 import UploadAttachmentButton from "./ActionButton/UploadAttachmentButton";
 import AttachmentListView from "./AttachmentListView";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
+import TagRecommendationPanel from "./TagRecommendationPanel";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
 
@@ -46,6 +48,11 @@ export interface Props {
   onCancel?: () => void;
 }
 
+interface TagSuggestion {
+  tag: string;
+  reason: string;
+}
+
 interface State {
   memoVisibility: Visibility;
   attachmentList: Attachment[];
@@ -55,6 +62,9 @@ interface State {
   isRequesting: boolean;
   isComposing: boolean;
   isDraggingFile: boolean;
+  isRecommendationVisible: boolean;
+  recommendedTags: TagSuggestion[];
+  isLoadingRecommendation: boolean;
 }
 
 const MemoEditor = observer((props: Props) => {
@@ -71,6 +81,9 @@ const MemoEditor = observer((props: Props) => {
     isRequesting: false,
     isComposing: false,
     isDraggingFile: false,
+    isRecommendationVisible: false,
+    recommendedTags: [],
+    isLoadingRecommendation: false,
   });
   const [createTime, setCreateTime] = useState<Date | undefined>();
   const [updateTime, setUpdateTime] = useState<Date | undefined>();
@@ -432,6 +445,9 @@ const MemoEditor = observer((props: Props) => {
         relationList: [],
         location: undefined,
         isDraggingFile: false,
+        isRecommendationVisible: false,
+        recommendedTags: [],
+        isLoadingRecommendation: false,
       };
     });
   };
@@ -446,6 +462,64 @@ const MemoEditor = observer((props: Props) => {
 
   const handleEditorFocus = () => {
     editorRef.current?.focus();
+  };
+
+  const handleTagRecommend = (tags: TagSuggestion[]) => {
+    setState((prevState) => ({
+      ...prevState,
+      isRecommendationVisible: true,
+      recommendedTags: tags,
+    }));
+  };
+
+  const handleRecommendedTagClick = (tag: string) => {
+    if (!editorRef.current) return;
+
+    const content = editorRef.current.getContent();
+    const lastChar = content.slice(-1);
+
+    // Move cursor to end of content
+    editorRef.current.setCursorPosition(content.length);
+
+    if (content !== "" && lastChar !== "\n") {
+      editorRef.current.insertText("\n");
+    }
+
+    editorRef.current.insertText("\n");
+    editorRef.current.insertText(`#${tag} `);
+
+    // Remove the tag from recommendations after adding it
+    setState((prevState) => ({
+      ...prevState,
+      recommendedTags: prevState.recommendedTags.filter((t) => t.tag !== tag),
+    }));
+  };
+
+  const handleAddAllRecommendedTags = () => {
+    if (!editorRef.current || state.recommendedTags.length === 0) return;
+
+    const content = editorRef.current.getContent();
+    const lastChar = content.slice(-1);
+
+    // Move cursor to end of content
+    editorRef.current.setCursorPosition(content.length);
+
+    if (content !== "" && lastChar !== "\n") {
+      editorRef.current.insertText("\n");
+    }
+
+    editorRef.current.insertText("\n");
+
+    // Add all tags
+    const tagsText = state.recommendedTags.map((tagSuggestion) => `#${tagSuggestion.tag}`).join(" ") + " ";
+    editorRef.current.insertText(tagsText);
+
+    // Clear recommendations
+    setState((prevState) => ({
+      ...prevState,
+      isRecommendationVisible: false,
+      recommendedTags: [],
+    }));
   };
 
   const editorConfig = useMemo(
@@ -499,6 +573,14 @@ const MemoEditor = observer((props: Props) => {
         <Editor ref={editorRef} {...editorConfig} />
         <AttachmentListView attachmentList={state.attachmentList} setAttachmentList={handleSetAttachmentList} />
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
+        {state.isRecommendationVisible && (
+          <TagRecommendationPanel
+            tags={state.recommendedTags}
+            onTagClick={handleRecommendedTagClick}
+            onAddAll={handleAddAllRecommendedTags}
+            onClose={() => setState({ ...state, isRecommendationVisible: false })}
+          />
+        )}
         <div className="relative w-full flex flex-row justify-between items-center py-1 gap-2" onFocus={(e) => e.stopPropagation()}>
           <div className="flex flex-row justify-start items-center opacity-60 shrink-1">
             <TagSelector editorRef={editorRef} />
@@ -516,6 +598,11 @@ const MemoEditor = observer((props: Props) => {
             />
           </div>
           <div className="shrink-0 -mr-1 flex flex-row justify-end items-center gap-1">
+            <TagRecommendButton
+              editorRef={editorRef}
+              contentLength={hasContent ? editorRef.current?.getContent().length || 0 : 0}
+              onRecommend={handleTagRecommend}
+            />
             {props.onCancel && (
               <Button variant="ghost" className="opacity-60" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
                 {t("common.cancel")}

@@ -116,7 +116,17 @@
     "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",
     "save": "保存",
-    "no-changes-detected": "未检测到更改"
+    "no-changes-detected": "未检测到更改",
+    "tag-recommend": {
+      "tooltip": "推荐标签",
+      "too-short": "内容太短（至少15个字符）",
+      "loading": "正在加载推荐...",
+      "suggested-tags": "推荐标签",
+      "add-all": "添加全部",
+      "no-suggestions": "未找到标签推荐",
+      "timeout": "标签推荐超时，请重试",
+      "error": "获取标签推荐失败"
+    }
   },
   "filters": {
     "has-code": "有代码",
