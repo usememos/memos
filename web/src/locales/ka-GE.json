@@ -279,11 +279,6 @@
       "update-information": "ინფორმაციის განახლება",
       "username-note": "გამოიყენება შესასვლელად"
     },
-    "appearance-option": {
-      "dark": "ყოველთვის ბნელი",
-      "light": "ყოველთვის ნათელი",
-      "system": "მიჰყვეს სისტემას"
-    },
     "member": "წევრი",
     "member-list": "წევრების სია",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "მემოს ჩვენების დრო",
       "default-memo-visibility": "მემოს ნაგულისხმევი ხილვადობა",
-      "apperance": "გარეგნობა",
       "theme": "თემა"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "დამატებითი CSS კოდი",
       "allow-user-signup": "მომხმარებლის რეგისტრაციის ნებართვა",
       "customize-server": {
-        "appearance": "სერვერის გამოჩენა",
         "description": "აღწერა",
         "icon-url": "ხატულას URL",
         "locale": "სერვერის ლოკალიზაცია",

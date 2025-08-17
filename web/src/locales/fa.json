@@ -254,11 +254,6 @@
       "update-information": "بروزرسانی اطلاعات",
       "username-note": "برای ورود استفاده می‌شود"
     },
-    "appearance-option": {
-      "dark": "همیشه تاریک",
-      "light": "همیشه روشن",
-      "system": "مطابق سیستم"
-    },
     "member": "عضو",
     "member-list": "لیست اعضا",
     "member-section": {
@@ -355,7 +350,6 @@
       "additional-style-placeholder": "کد CSS اضافی",
       "allow-user-signup": "اجازه ثبت‌نام کاربر",
       "customize-server": {
-        "appearance": "ظاهر سرور",
         "description": "توضیحات",
         "icon-url": "آدرس آیکون",
         "locale": "زبان سرور",

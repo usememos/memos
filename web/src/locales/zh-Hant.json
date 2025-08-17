@@ -280,11 +280,6 @@
       "update-information": "更新個人資訊",
       "username-note": "用於登入"
     },
-    "appearance-option": {
-      "dark": "深色",
-      "light": "淺色",
-      "system": "跟隨系統"
-    },
     "member": "使用者",
     "member-list": "使用者列表",
     "member-section": {
@@ -311,7 +306,6 @@
     "preference-section": {
       "default-memo-sort-option": "備忘錄顯示時間",
       "default-memo-visibility": "備忘錄預設瀏覽權限",
-      "apperance": "外觀",
       "theme": "主題"
     },
     "sso": "SSO",
@@ -382,7 +376,6 @@
       "additional-style-placeholder": "自訂 CSS 代碼",
       "allow-user-signup": "允許使用者註冊",
       "customize-server": {
-        "appearance": "外觀",
         "description": "說明",
         "icon-url": "圖示網址",
         "locale": "語言",

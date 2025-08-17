@@ -399,8 +399,6 @@ message UserSetting {
   message GeneralSetting {
     // The preferred locale of the user.
     string locale = 1 [(google.api.field_behavior) = OPTIONAL];
-    // The preferred appearance of the user.
-    string appearance = 2 [(google.api.field_behavior) = OPTIONAL];
     // The default visibility of the memo.
     string memo_visibility = 3 [(google.api.field_behavior) = OPTIONAL];
     // The preferred theme of the user.

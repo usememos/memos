@@ -279,11 +279,6 @@
       "update-information": "Oppdater informasjon",
       "username-note": "Brukes til innlogging"
     },
-    "appearance-option": {
-      "dark": "Alltid mørkt",
-      "light": "Alltid lyst",
-      "system": "Samme som system"
-    },
     "member": "Medlem",
     "member-list": "Medlemsliste",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Memo visningstid",
       "default-memo-visibility": "Standard synlighet for memoer",
-      "apperance": "Utseende",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Ekstra CSS-kode",
       "allow-user-signup": "Tillat registrering av brukere",
       "customize-server": {
-        "appearance": "Serverutseende",
         "description": "Beskrivelse",
         "icon-url": "Ikon-URL",
         "locale": "Serverlokalisering",

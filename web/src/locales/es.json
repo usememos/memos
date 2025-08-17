@@ -275,11 +275,6 @@
       "update-information": "Actualizar información",
       "username-note": "Usado para iniciar sesión"
     },
-    "appearance-option": {
-      "dark": "Siempre oscuro",
-      "light": "Siempre claro",
-      "system": "Seguir el sistema"
-    },
     "member": "Miembro",
     "member-list": "Lista de miembros",
     "member-section": {
@@ -376,7 +371,6 @@
       "additional-style-placeholder": "Código CSS adicional",
       "allow-user-signup": "Permitir registro de usuarios",
       "customize-server": {
-        "appearance": "Apariencia del servidor",
         "description": "Descripción",
         "icon-url": "URL del icono",
         "locale": "Idioma del servidor",

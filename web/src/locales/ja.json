@@ -279,11 +279,6 @@
       "update-information": "プロフィールを編集",
       "username-note": "ログインに使用します"
     },
-    "appearance-option": {
-      "dark": "ダークモード",
-      "light": "ライトモード",
-      "system": "システム設定に従う"
-    },
     "member": "メンバー",
     "member-list": "メンバーリスト",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "メモの表示時間",
       "default-memo-visibility": "公開範囲の初期設定",
-      "apperance": "外観",
       "theme": "テーマ"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "追加CSSコード",
       "allow-user-signup": "ユーザー登録を許可",
       "customize-server": {
-        "appearance": "サーバーの外観",
         "description": "説明",
         "icon-url": "アイコンURL",
         "locale": "サーバーのロケール",

@@ -279,11 +279,6 @@
       "update-information": "Bilgileri Güncelle",
       "username-note": "Giriş yapmak için kullanılır"
     },
-    "appearance-option": {
-      "dark": "Her zaman koyu",
-      "light": "Her zaman açık",
-      "system": "Sistemi takip et"
-    },
     "member": "Üye",
     "member-list": "Üye listesi",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Not görüntüleme zamanı",
       "default-memo-visibility": "Varsayılan not görünürlüğü",
-      "apperance": "Görünüm",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Ek CSS kodu",
       "allow-user-signup": "Kullanıcı kaydına izin ver",
       "customize-server": {
-        "appearance": "Sunucu Görünümü",
         "description": "Açıklama",
         "icon-url": "İkon URL'si",
         "locale": "Sunucu Yerel Ayarı",

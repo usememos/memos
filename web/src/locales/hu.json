@@ -280,11 +280,6 @@
       "update-information": "Információ frissítése",
       "username-note": "Bejelentkezéshez használt"
     },
-    "appearance-option": {
-      "dark": "Mindig sötét",
-      "light": "Mindig világos",
-      "system": "Rendszer követése"
-    },
     "member": "Tag",
     "member-list": "Taglista",
     "member-section": {
@@ -309,7 +304,6 @@
     "preference-section": {
       "default-memo-sort-option": "Jegyzet megjelenítési ideje",
       "default-memo-visibility": "Jegyzetek alapértelmezett láthatósága",
-      "apperance": "Megjelenés",
       "theme": "Téma"
     },
     "sso": "SSO",
@@ -380,7 +374,6 @@
       "additional-style-placeholder": "Egyedi CSS kód",
       "allow-user-signup": "Regisztráció engedélyezése",
       "customize-server": {
-        "appearance": "Szerver megjelenése",
         "description": "Leírás",
         "icon-url": "Ikon URL",
         "locale": "Szerver nyelve",

@@ -36,13 +36,11 @@ message UserSetting {
 message GeneralUserSetting {
   // The user's locale.
   string locale = 1;
-  // The user's appearance setting.
-  string appearance = 2;
   // The user's memo visibility setting.
-  string memo_visibility = 3;
+  string memo_visibility = 2;
   // The user's theme preference.
   // This references a CSS file in the web/public/themes/ directory.
-  string theme = 4;
+  string theme = 3;
 }
 
 message SessionsUserSetting {

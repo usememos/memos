@@ -279,11 +279,6 @@
       "update-information": "Atualizar Informações",
       "username-note": "Usado para iniciar sessão"
     },
-    "appearance-option": {
-      "dark": "Sempre escuro",
-      "light": "Sempre claro",
-      "system": "Seguir sistema"
-    },
     "member": "Membro",
     "member-list": "Lista de membros",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Ordenação padrão dos memos",
       "default-memo-visibility": "Visibilidade padrão dos memos",
-      "apperance": "Aparência",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Código CSS adicional",
       "allow-user-signup": "Permitir registo de utilizadores",
       "customize-server": {
-        "appearance": "Aparência do Servidor",
         "description": "Descrição",
         "icon-url": "URL do Ícone",
         "locale": "Localização do Servidor",

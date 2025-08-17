@@ -1,1 +1,1 @@
-type Appearance = "system" | "light" | "dark";
+type Theme = "default" | "default-dark" | "paper" | "whitewall";

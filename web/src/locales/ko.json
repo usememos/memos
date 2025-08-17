@@ -279,11 +279,6 @@
       "update-information": "정보 변경",
       "username-note": "로그인하는 데 사용됨"
     },
-    "appearance-option": {
-      "dark": "항상 다크",
-      "light": "항상 라이트",
-      "system": "시스템 따라감"
-    },
     "member": "멤버",
     "member-list": "멤버 목록",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "메모에 표시할 시각",
       "default-memo-visibility": "메모 공개 범위 기본값",
-      "apperance": "외관",
       "theme": "테마"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "추가 CSS 코드",
       "allow-user-signup": "회원가입 허용",
       "customize-server": {
-        "appearance": "서버 외관",
         "description": "설명",
         "icon-url": "아이콘 URL",
         "locale": "서버 언어",

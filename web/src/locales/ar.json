@@ -279,11 +279,6 @@
       "update-information": "تحديث المعلومات",
       "username-note": "تستخدم لتسجيل الدخول"
     },
-    "appearance-option": {
-      "dark": "دائماً داكن",
-      "light": "دائماً فاتح",
-      "system": "اتبع النظام"
-    },
     "member": "عضو",
     "member-list": "قائمة الأعضاء",
     "member-section": {
@@ -380,7 +375,6 @@
       "additional-style-placeholder": "كود CSS إضافي",
       "allow-user-signup": "السماح بتسجيل المستخدمين",
       "customize-server": {
-        "appearance": "مظهر الخادم",
         "description": "الوصف",
         "icon-url": "رابط الأيقونة",
         "locale": "لغة الخادم",

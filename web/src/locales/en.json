@@ -281,11 +281,6 @@
       "update-information": "Update Information",
       "username-note": "Used to sign in"
     },
-    "appearance-option": {
-      "dark": "Always dark",
-      "light": "Always light",
-      "system": "Follow system"
-    },
     "member": "Member",
     "member-list": "Member list",
     "member-section": {
@@ -312,7 +307,6 @@
     "preference-section": {
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
-      "apperance": "Appearance",
       "theme": "Theme"
     },
     "sso": "SSO",
@@ -383,7 +377,6 @@
       "additional-style-placeholder": "Additional CSS code",
       "allow-user-signup": "Allow user signup",
       "customize-server": {
-        "appearance": "Server Appearance",
         "description": "Description",
         "icon-url": "Icon URL",
         "locale": "Server Locale",
@@ -446,11 +439,11 @@
     "rename-tip": "All your memos with this tag will be updated."
   },
   "tooltip": {
-    "link-memo": "Link Memo", 
+    "link-memo": "Link Memo",
     "markdown-menu": "Markdown",
     "select-location": "Location",
-    "select-visibility": "Visibility", 
+    "select-visibility": "Visibility",
     "tags": "Tags",
-    "upload-attachment":  "Upload Attachment(s)"
+    "upload-attachment": "Upload Attachment(s)"
   }
 }

@@ -313,7 +313,7 @@ export const initialUserStore = async () => {
     if (generalSetting) {
       workspaceStore.state.setPartial({
         locale: generalSetting.locale,
-        appearance: generalSetting.appearance,
+        theme: generalSetting.theme || "default",
       });
     }
   } catch {

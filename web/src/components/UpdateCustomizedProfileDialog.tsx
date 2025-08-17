@@ -9,8 +9,8 @@ import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { WorkspaceSetting_GeneralSetting_CustomProfile, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
-import AppearanceSelect from "./AppearanceSelect";
 import LocaleSelect from "./LocaleSelect";
+import ThemeSelect from "./ThemeSelect";
 
 interface Props {
   open: boolean;
@@ -58,19 +58,12 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
     });
   };
 
-  const handleAppearanceSelectChange = (appearance: Appearance) => {
-    setPartialState({
-      appearance: appearance,
-    });
-  };
-
   const handleRestoreButtonClick = () => {
     setPartialState({
       title: "Memos",
       logoUrl: "/logo.webp",
       description: "",
       locale: "en",
-      appearance: "system",
     });
   };
 
@@ -140,8 +133,8 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
           </div>
 
           <div className="grid gap-2">
-            <Label>{t("setting.system-section.customize-server.appearance")}</Label>
-            <AppearanceSelect value={customProfile.appearance as Appearance} onChange={handleAppearanceSelectChange} />
+            <Label>Theme</Label>
+            <ThemeSelect />
           </div>
         </div>
 

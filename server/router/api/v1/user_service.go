@@ -306,7 +306,6 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 func getDefaultUserGeneralSetting() *v1pb.UserSetting_GeneralSetting {
 	return &v1pb.UserSetting_GeneralSetting{
 		Locale:         "en",
-		Appearance:     "system",
 		MemoVisibility: "PRIVATE",
 		Theme:          "",
 	}
@@ -394,7 +393,6 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 	// Start with existing general setting values
 	existingGeneral := existingUserSetting.GetGeneral()
 	updatedGeneral := &v1pb.UserSetting_GeneralSetting{
-		Appearance:     existingGeneral.GetAppearance(),
 		MemoVisibility: existingGeneral.GetMemoVisibility(),
 		Locale:         existingGeneral.GetLocale(),
 		Theme:          existingGeneral.GetTheme(),
@@ -404,8 +402,6 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 	incomingGeneral := request.Setting.GetGeneralSetting()
 	for _, field := range request.UpdateMask.Paths {
 		switch field {
-		case "appearance":
-			updatedGeneral.Appearance = incomingGeneral.Appearance
 		case "memoVisibility":
 			updatedGeneral.MemoVisibility = incomingGeneral.MemoVisibility
 		case "theme":
@@ -1165,7 +1161,6 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 			setting.Value = &v1pb.UserSetting_GeneralSetting_{
 				GeneralSetting: &v1pb.UserSetting_GeneralSetting{
 					Locale:         general.Locale,
-					Appearance:     general.Appearance,
 					MemoVisibility: general.MemoVisibility,
 					Theme:          general.Theme,
 				},
@@ -1249,7 +1244,6 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 			storeSetting.Value = &storepb.UserSetting_General{
 				General: &storepb.GeneralUserSetting{
 					Locale:         general.Locale,
-					Appearance:     general.Appearance,
 					MemoVisibility: general.MemoVisibility,
 					Theme:          general.Theme,
 				},

@@ -262,11 +262,6 @@
       "update-information": "Aktualizovat informace",
       "username-note": "Slouží k přihlášení"
     },
-    "appearance-option": {
-      "dark": "Vždy tmavý",
-      "light": "Vždy světlý",
-      "system": "Podle systému"
-    },
     "member": "Uživatel",
     "member-list": "Seznam uživatelů",
     "member-section": {
@@ -363,7 +358,6 @@
       "additional-style-placeholder": "Vlastní rozšíření kódu CSS",
       "allow-user-signup": "Povolit registraci uživatele",
       "customize-server": {
-        "appearance": "Vzhled serveru",
         "description": "Popis",
         "icon-url": "URL ikony",
         "locale": "Lokalizace serveru",

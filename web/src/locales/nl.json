@@ -279,11 +279,6 @@
       "update-information": "Informatie wijzigen",
       "username-note": "Gebruikt om in te loggen"
     },
-    "appearance-option": {
-      "dark": "Altijd donker",
-      "light": "Altijd licht",
-      "system": "Systeem volgen"
-    },
     "member": "Gebruiker",
     "member-list": "Gebruikers",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Memo weergavetijd",
       "default-memo-visibility": "Standaard memo zichtbaarheid",
-      "apperance": "Uiterlijk",
       "theme": "Thema"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Optionele CSS code",
       "allow-user-signup": "Registratie toestaan",
       "customize-server": {
-        "appearance": "Serveruiterlijk",
         "description": "Beschrijving",
         "icon-url": "Pictogram-URL",
         "locale": "Servertaal",

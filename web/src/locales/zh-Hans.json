@@ -280,11 +280,6 @@
       "update-information": "更新个人信息",
       "username-note": "用于登录"
     },
-    "appearance-option": {
-      "dark": "深色",
-      "light": "浅色",
-      "system": "跟随系统"
-    },
     "member": "成员",
     "member-list": "成员列表",
     "member-section": {
@@ -380,7 +375,6 @@
       "additional-style-placeholder": "自定义 CSS 代码",
       "allow-user-signup": "允许用户注册",
       "customize-server": {
-        "appearance": "服务器外观",
         "description": "描述",
         "icon-url": "图标链接",
         "locale": "服务器语言环境",

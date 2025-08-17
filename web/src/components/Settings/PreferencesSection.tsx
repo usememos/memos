@@ -6,9 +6,8 @@ import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { UserSetting_GeneralSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
-import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
-import ThemeSelector from "../ThemeSelector";
+import ThemeSelect from "../ThemeSelect";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
 
@@ -18,10 +17,6 @@ const PreferencesSection = observer(() => {
 
   const handleLocaleSelectChange = async (locale: Locale) => {
     await userStore.updateUserGeneralSetting({ locale }, ["locale"]);
-  };
-
-  const handleAppearanceSelectChange = async (appearance: Appearance) => {
-    await userStore.updateUserGeneralSetting({ appearance }, ["appearance"]);
   };
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {
@@ -35,9 +30,8 @@ const PreferencesSection = observer(() => {
   // Provide default values if setting is not loaded yet
   const setting: UserSetting_GeneralSetting = generalSetting || {
     locale: "en",
-    appearance: "system",
     memoVisibility: "PRIVATE",
-    theme: "",
+    theme: "default",
   };
 
   return (
@@ -50,13 +44,8 @@ const PreferencesSection = observer(() => {
       </div>
 
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.preference-section.apperance")}</span>
-        <AppearanceSelect value={setting.appearance as Appearance} onChange={handleAppearanceSelectChange} />
-      </div>
-
-      <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.preference-section.theme")}</span>
-        <ThemeSelector value={setting.theme} onValueChange={handleThemeChange} />
+        <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
       </div>
 
       <p className="font-medium text-muted-foreground">{t("setting.preference")}</p>

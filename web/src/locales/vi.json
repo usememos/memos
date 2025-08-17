@@ -206,11 +206,6 @@
       "update-information": "Cập nhật thông tin",
       "username-note": "Dùng để đăng nhập"
     },
-    "appearance-option": {
-      "dark": "Luôn tối",
-      "light": "Luôn sáng",
-      "system": "Theo hệ thống"
-    },
     "member": "Thành viên",
     "member-list": "Danh sách thành viên",
     "member-section": {
@@ -303,7 +298,6 @@
       "additional-style-placeholder": "Mã CSS bổ sung",
       "allow-user-signup": "Cho phép đăng ký người dùng",
       "customize-server": {
-        "appearance": "Giao diện máy chủ",
         "description": "Mô tả",
         "icon-url": "URL biểu tượng",
         "locale": "Ngôn ngữ máy chủ",

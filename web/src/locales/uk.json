@@ -279,11 +279,6 @@
       "update-information": "Оновити інформацію",
       "username-note": "Використовується для входу"
     },
-    "appearance-option": {
-      "dark": "Завжди темний",
-      "light": "Завжди світлий",
-      "system": "Слідувати системі"
-    },
     "member": "Учасник",
     "member-list": "Список учасників",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Час відображення нотаток",
       "default-memo-visibility": "Типова видимість нотаток",
-      "apperance": "Зовнішній вигляд",
       "theme": "Тема"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Додатковий CSS код",
       "allow-user-signup": "Дозволити реєстрацію користувачів",
       "customize-server": {
-        "appearance": "Зовнішній вигляд сервера",
         "description": "Опис",
         "icon-url": "URL значка",
         "locale": "Мова сервера",

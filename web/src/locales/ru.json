@@ -260,11 +260,6 @@
       "update-information": "Обновить информацию",
       "username-note": "Используется для входа"
     },
-    "appearance-option": {
-      "dark": "Тёмная",
-      "light": "Светлая",
-      "system": "Системная"
-    },
     "member": "Пользователи",
     "member-list": "Список пользователей",
     "member-section": {
@@ -352,7 +347,6 @@
       "additional-style-placeholder": "Напишите сюда ваш CSS код",
       "allow-user-signup": "Разрешить регистрацию пользователей",
       "customize-server": {
-        "appearance": "Тема",
         "description": "Описание",
         "icon-url": "URL иконки",
         "locale": "Локализация",

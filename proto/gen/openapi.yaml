@@ -2466,8 +2466,6 @@ components:
                     type: string
                 locale:
                     type: string
-                appearance:
-                    type: string
             description: Custom profile configuration for workspace branding.
         GetCurrentSessionResponse:
             type: object
@@ -3633,9 +3631,6 @@ components:
                 locale:
                     type: string
                     description: The preferred locale of the user.
-                appearance:
-                    type: string
-                    description: The preferred appearance of the user.
                 memoVisibility:
                     type: string
                     description: The default visibility of the memo.

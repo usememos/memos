@@ -279,11 +279,6 @@
       "update-information": "Atualizar informações",
       "username-note": "Usado para entrar"
     },
-    "appearance-option": {
-      "dark": "Sempre escuro",
-      "light": "Sempre claro",
-      "system": "Seguir sistema"
-    },
     "member": "Membro",
     "member-list": "Lista de membros",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Exibição de tempo do memo",
       "default-memo-visibility": "Visibilidade padrão do memo",
-      "apperance": "Aparência",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Código CSS adicional",
       "allow-user-signup": "Permitir registro de usuário",
       "customize-server": {
-        "appearance": "Aparência da instância",
         "description": "Descrição",
         "icon-url": "URL do ícone",
         "locale": "Localização da instância",

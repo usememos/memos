@@ -279,11 +279,6 @@
       "update-information": "อัปเดทข้อมูล",
       "username-note": "ใช้เพื่อเข้าสู่ระบบ"
     },
-    "appearance-option": {
-      "dark": "มืดอยู่เสมอ",
-      "light": "สว่างอยู่เสมอ",
-      "system": "ทำตามระบบ"
-    },
     "member": "สมาชิก",
     "member-list": "รายชื่อสมาชิก",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "เวลาแสดงบันทึกช่วยจำ",
       "default-memo-visibility": "การมองเห็นบันทึกเริ่มต้น",
-      "apperance": "ลักษณะ",
       "theme": "ธีม"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "โค้ด CSS เพิ่มเติม",
       "allow-user-signup": "อนุญาตให้ผู้ใช้ลงทะเบียน",
       "customize-server": {
-        "appearance": "ลักษณะที่ปรากฏของเซิร์ฟเวอร์",
         "description": "คำอธิบาย",
         "icon-url": "Icon URL",
         "locale": "ตำแหน่งเซิร์ฟเวอร์",

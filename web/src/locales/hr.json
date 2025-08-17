@@ -279,11 +279,6 @@
       "update-information": "Ažuriraj informacije",
       "username-note": "Koristi se za prijavu"
     },
-    "appearance-option": {
-      "dark": "Uvijek tamno",
-      "light": "Uvijek svijetlo",
-      "system": "Prema sustavu"
-    },
     "member": "Član",
     "member-list": "Popis članova",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Vrijeme prikaza memoa",
       "default-memo-visibility": "Zadana vidljivost memoa",
-      "apperance": "Izgled",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Dodatni CSS kod",
       "allow-user-signup": "Dopusti registraciju korisnika",
       "customize-server": {
-        "appearance": "Izgled servera",
         "description": "Opis",
         "icon-url": "URL ikone",
         "locale": "Lokalizacija servera",

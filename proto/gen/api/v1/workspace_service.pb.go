@@ -777,7 +777,6 @@ type WorkspaceSetting_GeneralSetting_CustomProfile struct {
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	LogoUrl       string                 `protobuf:"bytes,3,opt,name=logo_url,json=logoUrl,proto3" json:"logo_url,omitempty"`
 	Locale        string                 `protobuf:"bytes,4,opt,name=locale,proto3" json:"locale,omitempty"`
-	Appearance    string                 `protobuf:"bytes,5,opt,name=appearance,proto3" json:"appearance,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -836,13 +835,6 @@ func (x *WorkspaceSetting_GeneralSetting_CustomProfile) GetLogoUrl() string {
 func (x *WorkspaceSetting_GeneralSetting_CustomProfile) GetLocale() string {
 	if x != nil {
 		return x.Locale
-	}
-	return ""
-}
-
-func (x *WorkspaceSetting_GeneralSetting_CustomProfile) GetAppearance() string {
-	if x != nil {
-		return x.Appearance
 	}
 	return ""
 }
@@ -943,12 +935,12 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1c\n" +
-	"\x1aGetWorkspaceProfileRequest\"\xb8\x11\n" +
+	"\x1aGetWorkspaceProfileRequest\"\x97\x11\n" +
 	"\x10WorkspaceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12X\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2-.memos.api.v1.WorkspaceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12X\n" +
 	"\x0fstorage_setting\x18\x03 \x01(\v2-.memos.api.v1.WorkspaceSetting.StorageSettingH\x00R\x0estorageSetting\x12e\n" +
-	"\x14memo_related_setting\x18\x04 \x01(\v21.memos.api.v1.WorkspaceSetting.MemoRelatedSettingH\x00R\x12memoRelatedSetting\x1a\x9a\x05\n" +
+	"\x14memo_related_setting\x18\x04 \x01(\v21.memos.api.v1.WorkspaceSetting.MemoRelatedSettingH\x00R\x12memoRelatedSetting\x1a\xf9\x04\n" +
 	"\x0eGeneralSetting\x12\x14\n" +
 	"\x05theme\x18\x01 \x01(\tR\x05theme\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
@@ -958,15 +950,12 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x0ecustom_profile\x18\x06 \x01(\v2;.memos.api.v1.WorkspaceSetting.GeneralSetting.CustomProfileR\rcustomProfile\x121\n" +
 	"\x15week_start_day_offset\x18\a \x01(\x05R\x12weekStartDayOffset\x128\n" +
 	"\x18disallow_change_username\x18\b \x01(\bR\x16disallowChangeUsername\x128\n" +
-	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\x1a\x9a\x01\n" +
+	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\x1az\n" +
 	"\rCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
 	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x12\x16\n" +
-	"\x06locale\x18\x04 \x01(\tR\x06locale\x12\x1e\n" +
-	"\n" +
-	"appearance\x18\x05 \x01(\tR\n" +
-	"appearance\x1a\xbe\x04\n" +
+	"\x06locale\x18\x04 \x01(\tR\x06locale\x1a\xbe\x04\n" +
 	"\x0eStorageSetting\x12\\\n" +
 	"\fstorage_type\x18\x01 \x01(\x0e29.memos.api.v1.WorkspaceSetting.StorageSetting.StorageTypeR\vstorageType\x12+\n" +
 	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +

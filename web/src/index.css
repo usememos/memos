@@ -2,13 +2,9 @@
 @import "tw-animate-css";
 @import "./themes/default.css";
 
-@custom-variant dark (&: is(.dark *));
-
 @theme {
   --default-transition-duration: 150ms;
 }
-
-@variant dark (&:is(.dark *));
 
 @layer base {
   * {

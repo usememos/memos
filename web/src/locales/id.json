@@ -279,11 +279,6 @@
       "update-information": "Perbarui Informasi",
       "username-note": "Digunakan untuk masuk"
     },
-    "appearance-option": {
-      "dark": "Selalu gelap",
-      "light": "Selalu terang",
-      "system": "Ikuti sistem"
-    },
     "member": "Anggota",
     "member-list": "Daftar Anggota",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Waktu tampil memo",
       "default-memo-visibility": "Visibilitas memo default",
-      "apperance": "Tampilan",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Kode CSS tambahan",
       "allow-user-signup": "Izinkan pendaftaran pengguna",
       "customize-server": {
-        "appearance": "Tampilan Server",
         "description": "Deskripsi",
         "icon-url": "URL Ikon",
         "locale": "Locale Server",

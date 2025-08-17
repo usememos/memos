@@ -437,7 +437,6 @@ type WorkspaceCustomProfile struct {
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	LogoUrl       string                 `protobuf:"bytes,3,opt,name=logo_url,json=logoUrl,proto3" json:"logo_url,omitempty"`
 	Locale        string                 `protobuf:"bytes,4,opt,name=locale,proto3" json:"locale,omitempty"`
-	Appearance    string                 `protobuf:"bytes,5,opt,name=appearance,proto3" json:"appearance,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -496,13 +495,6 @@ func (x *WorkspaceCustomProfile) GetLogoUrl() string {
 func (x *WorkspaceCustomProfile) GetLocale() string {
 	if x != nil {
 		return x.Locale
-	}
-	return ""
-}
-
-func (x *WorkspaceCustomProfile) GetAppearance() string {
-	if x != nil {
-		return x.Appearance
 	}
 	return ""
 }
@@ -807,15 +799,12 @@ const file_store_workspace_setting_proto_rawDesc = "" +
 	"\x0ecustom_profile\x18\x06 \x01(\v2#.memos.store.WorkspaceCustomProfileR\rcustomProfile\x121\n" +
 	"\x15week_start_day_offset\x18\a \x01(\x05R\x12weekStartDayOffset\x128\n" +
 	"\x18disallow_change_username\x18\b \x01(\bR\x16disallowChangeUsername\x128\n" +
-	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\"\xa3\x01\n" +
+	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\"\x83\x01\n" +
 	"\x16WorkspaceCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
 	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x12\x16\n" +
-	"\x06locale\x18\x04 \x01(\tR\x06locale\x12\x1e\n" +
-	"\n" +
-	"appearance\x18\x05 \x01(\tR\n" +
-	"appearance\"\xd5\x02\n" +
+	"\x06locale\x18\x04 \x01(\tR\x06locale\"\xd5\x02\n" +
 	"\x17WorkspaceStorageSetting\x12S\n" +
 	"\fstorage_type\x18\x01 \x01(\x0e20.memos.store.WorkspaceStorageSetting.StorageTypeR\vstorageType\x12+\n" +
 	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +

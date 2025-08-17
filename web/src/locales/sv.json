@@ -279,11 +279,6 @@
       "update-information": "Uppdatera informationen",
       "username-note": "Används för att logga in"
     },
-    "appearance-option": {
-      "dark": "Alltid mörk",
-      "light": "Alltid ljus",
-      "system": "Följ systemet"
-    },
     "member": "Medlem",
     "member-list": "Medlemslista",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Anteckning visningstid",
       "default-memo-visibility": "Standard synlighet för anteckningar",
-      "apperance": "Utseende",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Ytterligare CSS kod",
       "allow-user-signup": "Tillåt användarregistrering",
       "customize-server": {
-        "appearance": "Serverutseende",
         "description": "Beskrivning",
         "icon-url": "Ikon-URL",
         "locale": "Serverns språk",

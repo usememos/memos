@@ -279,11 +279,6 @@
       "update-information": "Zaktualizuj informacje",
       "username-note": "Używane do logowania"
     },
-    "appearance-option": {
-      "dark": "Zawsze ciemny",
-      "light": "Zawsze jasny",
-      "system": "Zgodnie z systemem"
-    },
     "member": "Członek",
     "member-list": "Lista członków",
     "member-section": {
@@ -310,7 +305,6 @@
     "preference-section": {
       "default-memo-sort-option": "Domyślny czas wyświetlania notatek",
       "default-memo-visibility": "Domyślna widoczność notatek",
-      "apperance": "Wygląd",
       "theme": "Motyw"
     },
     "sso": "SSO",
@@ -381,7 +375,6 @@
       "additional-style-placeholder": "Dodatkowy kod CSS",
       "allow-user-signup": "Zezwól na rejestrację użytkowników",
       "customize-server": {
-        "appearance": "Wygląd serwera",
         "description": "Opis",
         "icon-url": "URL ikony",
         "locale": "Język serwera",

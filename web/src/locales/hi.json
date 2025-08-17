@@ -280,11 +280,6 @@
       "update-information": "जानकारी अपडेट करें",
       "username-note": "साइन इन के लिए उपयोग किया जाता है"
     },
-    "appearance-option": {
-      "dark": "हमेशा डार्क",
-      "light": "हमेशा लाइट",
-      "system": "सिस्टम के अनुसार"
-    },
     "member": "सदस्य",
     "member-list": "सदस्य सूची",
     "member-section": {
@@ -311,7 +306,6 @@
     "preference-section": {
       "default-memo-sort-option": "मेमो प्रदर्शन समय",
       "default-memo-visibility": "डिफ़ॉल्ट मेमो दृश्यता",
-      "apperance": "रूप",
       "theme": "थीम"
     },
     "sso": "एसएसओ",
@@ -382,7 +376,6 @@
       "additional-style-placeholder": "अतिरिक्त CSS कोड",
       "allow-user-signup": "यूज़र साइनअप की अनुमति दें",
       "customize-server": {
-        "appearance": "सर्वर रूप",
         "description": "विवरण",
         "icon-url": "आइकन URL",
         "locale": "सर्वर लोकेल",

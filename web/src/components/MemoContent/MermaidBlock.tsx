@@ -9,9 +9,8 @@ const MermaidBlock: React.FC<Props> = ({ content }: Props) => {
 
   useEffect(() => {
     const initializeMermaid = async () => {
-      const isDark = document.documentElement.classList.contains("dark");
       const mermaid = (await import("mermaid")).default;
-      mermaid.initialize({ startOnLoad: false, theme: isDark ? "dark" : "default" });
+      mermaid.initialize({ startOnLoad: false, theme: "default" });
       if (mermaidDockBlock.current) {
         mermaid.run({
           nodes: [mermaidDockBlock.current],

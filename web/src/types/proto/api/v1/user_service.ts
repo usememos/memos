@@ -319,8 +319,6 @@ export function userSetting_KeyToNumber(object: UserSetting_Key): number {
 export interface UserSetting_GeneralSetting {
   /** The preferred locale of the user. */
   locale: string;
-  /** The preferred appearance of the user. */
-  appearance: string;
   /** The default visibility of the memo. */
   memoVisibility: string;
   /**
@@ -1720,16 +1718,13 @@ export const UserSetting: MessageFns<UserSetting> = {
 };
 
 function createBaseUserSetting_GeneralSetting(): UserSetting_GeneralSetting {
-  return { locale: "", appearance: "", memoVisibility: "", theme: "" };
+  return { locale: "", memoVisibility: "", theme: "" };
 }
 
 export const UserSetting_GeneralSetting: MessageFns<UserSetting_GeneralSetting> = {
   encode(message: UserSetting_GeneralSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.locale !== "") {
       writer.uint32(10).string(message.locale);
-    }
-    if (message.appearance !== "") {
-      writer.uint32(18).string(message.appearance);
     }
     if (message.memoVisibility !== "") {
       writer.uint32(26).string(message.memoVisibility);
@@ -1753,14 +1748,6 @@ export const UserSetting_GeneralSetting: MessageFns<UserSetting_GeneralSetting> 
           }
 
           message.locale = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.appearance = reader.string();
           continue;
         }
         case 3: {
@@ -1794,7 +1781,6 @@ export const UserSetting_GeneralSetting: MessageFns<UserSetting_GeneralSetting> 
   fromPartial(object: DeepPartial<UserSetting_GeneralSetting>): UserSetting_GeneralSetting {
     const message = createBaseUserSetting_GeneralSetting();
     message.locale = object.locale ?? "";
-    message.appearance = object.appearance ?? "";
     message.memoVisibility = object.memoVisibility ?? "";
     message.theme = object.theme ?? "";
     return message;

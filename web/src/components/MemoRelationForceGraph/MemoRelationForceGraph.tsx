@@ -18,29 +18,10 @@ const DEFAULT_NODE_COLOR = "#a1a1aa";
 
 const MemoRelationForceGraph = ({ className, memo, parentPage }: Props) => {
   const navigateTo = useNavigateTo();
-  const [mode, setMode] = useState<"light" | "dark">("light");
+  const [mode] = useState<"light">("light");
   const containerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<ForceGraphMethods<NodeObject<NodeType>, LinkObject<NodeType, LinkType>> | undefined>(undefined);
   const [graphSize, setGraphSize] = useState({ width: 0, height: 0 });
-
-  // Simple dark mode detection
-  useEffect(() => {
-    const updateMode = () => {
-      const isDark = document.documentElement.classList.contains("dark");
-      setMode(isDark ? "dark" : "light");
-    };
-
-    updateMode();
-
-    // Watch for changes to the dark class
-    const observer = new MutationObserver(updateMode);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;

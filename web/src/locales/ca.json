@@ -279,11 +279,6 @@
       "update-information": "Actualitza la informació",
       "username-note": "Utilitzat per iniciar sessió"
     },
-    "appearance-option": {
-      "dark": "Sempre fosc",
-      "light": "Sempre clar",
-      "system": "Seguir el sistema"
-    },
     "member": "Membre",
     "member-list": "Llista de membres",
     "member-section": {
@@ -380,7 +375,6 @@
       "additional-style-placeholder": "Codi CSS addicional",
       "allow-user-signup": "Permet el registre d'usuaris",
       "customize-server": {
-        "appearance": "Aparença del servidor",
         "description": "Descripció",
         "icon-url": "URL de la icona",
         "locale": "Llengua del servidor",

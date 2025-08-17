@@ -127,7 +127,6 @@ export interface WorkspaceSetting_GeneralSetting_CustomProfile {
   description: string;
   logoUrl: string;
   locale: string;
-  appearance: string;
 }
 
 /** Storage configuration settings for workspace attachments. */
@@ -611,7 +610,7 @@ export const WorkspaceSetting_GeneralSetting: MessageFns<WorkspaceSetting_Genera
 };
 
 function createBaseWorkspaceSetting_GeneralSetting_CustomProfile(): WorkspaceSetting_GeneralSetting_CustomProfile {
-  return { title: "", description: "", logoUrl: "", locale: "", appearance: "" };
+  return { title: "", description: "", logoUrl: "", locale: "" };
 }
 
 export const WorkspaceSetting_GeneralSetting_CustomProfile: MessageFns<WorkspaceSetting_GeneralSetting_CustomProfile> =
@@ -631,9 +630,6 @@ export const WorkspaceSetting_GeneralSetting_CustomProfile: MessageFns<Workspace
       }
       if (message.locale !== "") {
         writer.uint32(34).string(message.locale);
-      }
-      if (message.appearance !== "") {
-        writer.uint32(42).string(message.appearance);
       }
       return writer;
     },
@@ -677,14 +673,6 @@ export const WorkspaceSetting_GeneralSetting_CustomProfile: MessageFns<Workspace
             message.locale = reader.string();
             continue;
           }
-          case 5: {
-            if (tag !== 42) {
-              break;
-            }
-
-            message.appearance = reader.string();
-            continue;
-          }
         }
         if ((tag & 7) === 4 || tag === 0) {
           break;
@@ -707,7 +695,6 @@ export const WorkspaceSetting_GeneralSetting_CustomProfile: MessageFns<Workspace
       message.description = object.description ?? "";
       message.logoUrl = object.logoUrl ?? "";
       message.locale = object.locale ?? "";
-      message.appearance = object.appearance ?? "";
       return message;
     },
   };
