@@ -130,4 +130,15 @@ message WorkspaceAISetting {
   string model = 4;
   // timeout_seconds is the timeout for AI requests in seconds.
   int32 timeout_seconds = 5;
+  // tag_recommendation contains tag recommendation specific settings.
+  TagRecommendationConfig tag_recommendation = 6;
+}
+
+message TagRecommendationConfig {
+  // enabled controls whether tag recommendation is enabled.
+  bool enabled = 1;
+  // system_prompt is the custom system prompt for tag recommendation.
+  string system_prompt = 2;
+  // requests_per_minute is the rate limit for tag recommendation requests.
+  int32 requests_per_minute = 3;
 }

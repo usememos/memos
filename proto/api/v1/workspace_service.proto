@@ -30,6 +30,11 @@ service WorkspaceService {
     };
     option (google.api.method_signature) = "setting,update_mask";
   }
+
+  // Gets the default system prompt for AI tag recommendations.
+  rpc GetDefaultTagRecommendationPrompt(GetDefaultTagRecommendationPromptRequest) returns (GetDefaultTagRecommendationPromptResponse) {
+    option (google.api.http) = {get: "/api/v1/workspace/ai/tag-recommendation/default-prompt"};
+  }
 }
 
 // Workspace profile message containing basic workspace information.
@@ -186,6 +191,18 @@ message WorkspaceSetting {
     string model = 4;
     // timeout_seconds is the timeout for AI requests in seconds.
     int32 timeout_seconds = 5;
+    // tag_recommendation contains tag recommendation specific settings.
+    TagRecommendationConfig tag_recommendation = 6;
+  }
+
+  // Tag recommendation configuration.
+  message TagRecommendationConfig {
+    // enabled controls whether tag recommendation is enabled.
+    bool enabled = 1;
+    // system_prompt is the custom system prompt for tag recommendation.
+    string system_prompt = 2;
+    // requests_per_minute is the rate limit for tag recommendation requests.
+    int32 requests_per_minute = 3;
   }
 }
 
@@ -206,4 +223,13 @@ message UpdateWorkspaceSettingRequest {
 
   // The list of fields to update.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Request message for GetDefaultTagRecommendationPrompt method.
+message GetDefaultTagRecommendationPromptRequest {}
+
+// Response message for GetDefaultTagRecommendationPrompt method.
+message GetDefaultTagRecommendationPromptResponse {
+  // The default system prompt for tag recommendation.
+  string system_prompt = 1;
 }

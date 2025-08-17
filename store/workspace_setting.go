@@ -238,6 +238,15 @@ func (s *Store) GetWorkspaceAISetting(ctx context.Context) (*storepb.WorkspaceAI
 		workspaceAISetting.TimeoutSeconds = defaultAITimeoutSeconds
 	}
 
+	// Set default tag recommendation config if not configured
+	if workspaceAISetting.TagRecommendation == nil {
+		workspaceAISetting.TagRecommendation = &storepb.TagRecommendationConfig{
+			Enabled:           workspaceAISetting.EnableAi,
+			SystemPrompt:      "",
+			RequestsPerMinute: 10,
+		}
+	}
+
 	s.workspaceSettingCache.Set(ctx, storepb.WorkspaceSettingKey_AI.String(), &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_AI,
 		Value: &storepb.WorkspaceSetting_AiSetting{AiSetting: workspaceAISetting},
@@ -267,6 +276,11 @@ func loadAISettingFromEnv() *storepb.WorkspaceAISetting {
 		ApiKey:         apiKey,
 		Model:          model,
 		TimeoutSeconds: timeoutSeconds,
+		TagRecommendation: &storepb.TagRecommendationConfig{
+			Enabled:           enableAI,
+			SystemPrompt:      "",
+			RequestsPerMinute: 10,
+		},
 	}
 }
 

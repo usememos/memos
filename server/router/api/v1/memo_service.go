@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"sort"
 	"strings"
+	"sync"
 	"time"
 	"unicode/utf8"
 
@@ -19,12 +21,54 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/plugin/ai"
 	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/runner/memopayload"
 	"github.com/usememos/memos/store"
 )
+
+// tagRecommendationRateLimit tracks user request counts for rate limiting
+type tagRecommendationRateLimit struct {
+	mu       sync.RWMutex
+	requests map[int32][]time.Time // userID -> request times
+}
+
+var tagRateLimit = &tagRecommendationRateLimit{
+	requests: make(map[int32][]time.Time),
+}
+
+// checkRateLimit checks if user has exceeded rate limit
+func (rl *tagRecommendationRateLimit) checkRateLimit(userID int32, maxRequestsPerMinute int32) bool {
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+
+	now := time.Now()
+	oneMinuteAgo := now.Add(-time.Minute)
+
+	// Get user's request history
+	requests := rl.requests[userID]
+
+	// Remove requests older than 1 minute
+	var recentRequests []time.Time
+	for _, reqTime := range requests {
+		if reqTime.After(oneMinuteAgo) {
+			recentRequests = append(recentRequests, reqTime)
+		}
+	}
+
+	// Check if user has exceeded rate limit
+	if int32(len(recentRequests)) >= maxRequestsPerMinute {
+		return false // Rate limit exceeded
+	}
+
+	// Add current request
+	recentRequests = append(recentRequests, now)
+	rl.requests[userID] = recentRequests
+
+	return true // Within rate limit
+}
 
 func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoRequest) (*v1pb.Memo, error) {
 	user, err := s.GetCurrentUser(ctx)
@@ -904,4 +948,135 @@ func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) 
 	}
 
 	return nil
+}
+
+func (s *APIV1Service) SuggestMemoTags(ctx context.Context, request *v1pb.SuggestMemoTagsRequest) (*v1pb.SuggestMemoTagsResponse, error) {
+	// Validate request
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "request cannot be nil")
+	}
+
+	if strings.TrimSpace(request.Content) == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "content cannot be empty")
+	}
+
+	user, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user")
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "authentication required")
+	}
+
+	// Validate content length (minimum 15 characters as specified in design)
+	if utf8.RuneCountInString(strings.TrimSpace(request.Content)) < 15 {
+		return nil, status.Errorf(codes.InvalidArgument, "content too short for tag recommendation (minimum 15 characters)")
+	}
+
+	// Get user's existing tags from statistics
+	userStats, err := s.GetUserStats(ctx, &v1pb.GetUserStatsRequest{
+		Name: fmt.Sprintf("users/%d", user.ID),
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user stats: %v", err)
+	}
+
+	// Extract existing tags from user's history, sorted by frequency
+	existingTags := make([]string, 0, len(userStats.TagCount))
+	for tag := range userStats.TagCount {
+		existingTags = append(existingTags, tag)
+	}
+
+	// Sort tags by frequency (most used first)
+	sort.Slice(existingTags, func(i, j int) bool {
+		return userStats.TagCount[existingTags[i]] > userStats.TagCount[existingTags[j]]
+	})
+
+	// Extract existing tags from memo content and combine with request existing tags
+	existingTagSet := make(map[string]bool)
+	// Add tags from request
+	for _, tag := range request.ExistingTags {
+		existingTagSet[tag] = true
+	}
+	// Add tags from content (extract #tag patterns)
+	existingContentTags := memopayload.ExtractTagsFromContent(request.Content)
+	for _, tag := range existingContentTags {
+		existingTagSet[tag] = true
+	}
+
+	// Try AI-based recommendation first
+	// Load AI configuration from database first, fallback to environment variables
+	aiSetting, err := s.Store.GetWorkspaceAISetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get AI setting: %v", err)
+	}
+	
+	// Check if tag recommendation is enabled
+	if !aiSetting.EnableAi || aiSetting.TagRecommendation == nil || !aiSetting.TagRecommendation.Enabled {
+		return &v1pb.SuggestMemoTagsResponse{
+			SuggestedTags: []*v1pb.TagSuggestion{},
+		}, nil
+	}
+
+	// Check rate limit
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
+	}
+
+	maxRequestsPerMinute := aiSetting.TagRecommendation.RequestsPerMinute
+	if maxRequestsPerMinute <= 0 {
+		maxRequestsPerMinute = 10 // Default rate limit
+	}
+
+	if !tagRateLimit.checkRateLimit(currentUser.ID, maxRequestsPerMinute) {
+		return nil, status.Errorf(codes.ResourceExhausted, "标签推荐请求频率超限，每分钟最多 %d 次", maxRequestsPerMinute)
+	}
+	
+	aiConfig := ai.LoadConfigFromDatabase(aiSetting)
+	if !aiConfig.IsConfigured() {
+		// Fallback to environment variables if database config is not complete
+		aiConfig = aiConfig.MergeWithEnv()
+	}
+	
+	if aiConfig.IsConfigured() {
+		aiClient, err := ai.NewClient(aiConfig)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to create AI client: %v", err)
+		}
+
+		aiRequest := &ai.TagSuggestionRequest{
+			Content:      request.Content,
+			UserTags:     existingTags,
+			ExistingTags: request.ExistingTags,
+			SystemPrompt: aiSetting.TagRecommendation.SystemPrompt,
+		}
+
+		aiResponse, err := aiClient.SuggestTags(ctx, aiRequest)
+		if err != nil {
+			// Log error - no fallback since we removed simple algorithm
+			slog.Warn("AI tag suggestion failed, returning empty list", "error", err)
+		} else {
+			// Filter out existing tags and convert to proto format
+			filteredTags := make([]*v1pb.TagSuggestion, 0)
+			for _, tagSuggestion := range aiResponse.Tags {
+				if !existingTagSet[tagSuggestion.Tag] && len(filteredTags) < 5 {
+					filteredTags = append(filteredTags, &v1pb.TagSuggestion{
+						Tag:    tagSuggestion.Tag,
+						Reason: tagSuggestion.Reason,
+					})
+				}
+			}
+			if len(filteredTags) > 0 {
+				return &v1pb.SuggestMemoTagsResponse{
+					SuggestedTags: filteredTags,
+				}, nil
+			}
+		}
+	}
+
+	// No AI configured - return empty suggestions
+	return &v1pb.SuggestMemoTagsResponse{
+		SuggestedTags: []*v1pb.TagSuggestion{},
+	}, nil
 }

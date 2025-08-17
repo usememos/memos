@@ -120,6 +120,13 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=reactions/*}"};
     option (google.api.method_signature) = "name";
   }
+  // SuggestMemoTags suggests tags for memo content.
+  rpc SuggestMemoTags(SuggestMemoTagsRequest) returns (SuggestMemoTagsResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/memos:suggest-tags"
+      body: "*"
+    };
+  }
 }
 
 enum Visibility {
@@ -576,4 +583,23 @@ message DeleteMemoReactionRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Reaction"}
   ];
+}
+
+message SuggestMemoTagsRequest {
+  // Required. The content of the memo for tag suggestion.
+  string content = 1 [(google.api.field_behavior) = REQUIRED];
+  // Optional. The existing tags for the memo.
+  repeated string existing_tags = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message TagSuggestion {
+  // The suggested tag name.
+  string tag = 1 [(google.api.field_behavior) = REQUIRED];
+  // The reason why this tag is recommended.
+  string reason = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message SuggestMemoTagsResponse {
+  // The suggested tags with reasons for the memo.
+  repeated TagSuggestion suggested_tags = 1;
 }

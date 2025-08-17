@@ -109,6 +109,28 @@ func RebuildMemoPayload(memo *store.Memo) error {
 	return nil
 }
 
+// ExtractTagsFromContent extracts tags from content string using the same logic as RebuildMemoPayload
+// This function is exported for use in other packages (e.g., for tag recommendations)
+func ExtractTagsFromContent(content string) []string {
+	nodes, err := parser.Parse(tokenizer.Tokenize(content))
+	if err != nil {
+		return []string{}
+	}
+
+	tags := []string{}
+	TraverseASTNodes(nodes, func(node ast.Node) {
+		switch n := node.(type) {
+		case *ast.Tag:
+			tag := n.Content
+			if !slices.Contains(tags, tag) {
+				tags = append(tags, tag)
+			}
+		}
+	})
+
+	return tags
+}
+
 func TraverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {
 	for _, node := range nodes {
 		fn(node)

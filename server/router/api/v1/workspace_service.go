@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/plugin/ai"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -308,6 +309,14 @@ func convertWorkspaceAISettingFromStore(setting *storepb.WorkspaceAISetting) *v1
 		TimeoutSeconds: setting.TimeoutSeconds,
 	}
 
+	if setting.TagRecommendation != nil {
+		result.TagRecommendation = &v1pb.WorkspaceSetting_TagRecommendationConfig{
+			Enabled:           setting.TagRecommendation.Enabled,
+			SystemPrompt:      setting.TagRecommendation.SystemPrompt,
+			RequestsPerMinute: setting.TagRecommendation.RequestsPerMinute,
+		}
+	}
+
 	return result
 }
 
@@ -328,6 +337,14 @@ func convertWorkspaceAISettingToStore(setting *v1pb.WorkspaceSetting_AiSetting) 
 		ApiKey:         setting.ApiKey,
 		Model:          setting.Model,
 		TimeoutSeconds: setting.TimeoutSeconds,
+	}
+
+	if setting.TagRecommendation != nil {
+		result.TagRecommendation = &storepb.TagRecommendationConfig{
+			Enabled:           setting.TagRecommendation.Enabled,
+			SystemPrompt:      setting.TagRecommendation.SystemPrompt,
+			RequestsPerMinute: setting.TagRecommendation.RequestsPerMinute,
+		}
 	}
 
 	return result
@@ -353,4 +370,11 @@ func (s *APIV1Service) GetInstanceOwner(ctx context.Context) (*v1pb.User, error)
 
 	ownerCache = convertUserFromStore(user)
 	return ownerCache, nil
+}
+
+// GetDefaultTagRecommendationPrompt returns the default system prompt for AI tag recommendations.
+func (s *APIV1Service) GetDefaultTagRecommendationPrompt(ctx context.Context, _ *v1pb.GetDefaultTagRecommendationPromptRequest) (*v1pb.GetDefaultTagRecommendationPromptResponse, error) {
+	return &v1pb.GetDefaultTagRecommendationPromptResponse{
+		SystemPrompt: ai.GetDefaultSystemPrompt(),
+	}, nil
 }
