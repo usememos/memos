@@ -488,6 +488,9 @@ const MemoEditor = observer((props: Props) => {
     editorRef.current.insertText("\n");
     editorRef.current.insertText(`#${tag} `);
 
+    // Scroll to the bottom to show the newly added tag
+    editorRef.current.scrollToCursor();
+
     // Remove the tag from recommendations after adding it
     setState((prevState) => ({
       ...prevState,
@@ -513,6 +516,9 @@ const MemoEditor = observer((props: Props) => {
     // Add all tags
     const tagsText = state.recommendedTags.map((tagSuggestion) => `#${tagSuggestion.tag}`).join(" ") + " ";
     editorRef.current.insertText(tagsText);
+
+    // Scroll to the bottom to show the newly added tags
+    editorRef.current.scrollToCursor();
 
     // Clear recommendations
     setState((prevState) => ({
