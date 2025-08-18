@@ -1,4 +1,6 @@
 import defaultDarkThemeContent from "../themes/default-dark.css?raw";
+import paperThemeContent from "../themes/paper.css?raw";
+import whitewallThemeContent from "../themes/whitewall.css?raw";
 
 const VALID_THEMES = ["default", "default-dark", "paper", "whitewall"] as const;
 type ValidTheme = (typeof VALID_THEMES)[number];
@@ -6,8 +8,8 @@ type ValidTheme = (typeof VALID_THEMES)[number];
 const THEME_CONTENT: Record<ValidTheme, string | null> = {
   default: null,
   "default-dark": defaultDarkThemeContent,
-  paper: null,
-  whitewall: null,
+  paper: paperThemeContent,
+  whitewall: whitewallThemeContent,
 };
 
 const validateTheme = (theme: string): ValidTheme => {
