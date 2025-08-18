@@ -1,6 +1,5 @@
 import { Moon, Palette, Sun, Wallpaper } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { workspaceStore } from "@/store";
 
 interface ThemeSelectProps {
@@ -27,25 +26,24 @@ const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {})
     }
   };
 
-  const currentThemeOption = themeOptions.find((option) => option.value === currentTheme);
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className={`justify-start ${className || ""}`}>
-          {currentThemeOption?.icon}
-          <span className="ml-2">{currentThemeOption?.label}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
+    <Select value={currentTheme} onValueChange={handleThemeChange}>
+      <SelectTrigger className={className}>
+        <div className="flex items-center gap-2">
+          <SelectValue placeholder="Select theme" />
+        </div>
+      </SelectTrigger>
+      <SelectContent>
         {themeOptions.map((option) => (
-          <DropdownMenuItem key={option.value} onClick={() => handleThemeChange(option.value)}>
-            {option.icon}
-            <span className="ml-2">{option.label}</span>
-          </DropdownMenuItem>
+          <SelectItem key={option.value} value={option.value}>
+            <div className="flex items-center gap-2">
+              {option.icon}
+              <span>{option.label}</span>
+            </div>
+          </SelectItem>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </SelectContent>
+    </Select>
   );
 };
 
