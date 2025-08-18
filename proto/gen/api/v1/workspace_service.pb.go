@@ -477,6 +477,226 @@ func (x *UpdateWorkspaceSettingRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+// Request message for GetDefaultTagRecommendationPrompt method.
+type GetDefaultTagRecommendationPromptRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDefaultTagRecommendationPromptRequest) Reset() {
+	*x = GetDefaultTagRecommendationPromptRequest{}
+	mi := &file_api_v1_workspace_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDefaultTagRecommendationPromptRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDefaultTagRecommendationPromptRequest) ProtoMessage() {}
+
+func (x *GetDefaultTagRecommendationPromptRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_workspace_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDefaultTagRecommendationPromptRequest.ProtoReflect.Descriptor instead.
+func (*GetDefaultTagRecommendationPromptRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_workspace_service_proto_rawDescGZIP(), []int{5}
+}
+
+// Response message for GetDefaultTagRecommendationPrompt method.
+type GetDefaultTagRecommendationPromptResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The default system prompt for tag recommendation.
+	SystemPrompt  string `protobuf:"bytes,1,opt,name=system_prompt,json=systemPrompt,proto3" json:"system_prompt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDefaultTagRecommendationPromptResponse) Reset() {
+	*x = GetDefaultTagRecommendationPromptResponse{}
+	mi := &file_api_v1_workspace_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDefaultTagRecommendationPromptResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDefaultTagRecommendationPromptResponse) ProtoMessage() {}
+
+func (x *GetDefaultTagRecommendationPromptResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_workspace_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDefaultTagRecommendationPromptResponse.ProtoReflect.Descriptor instead.
+func (*GetDefaultTagRecommendationPromptResponse) Descriptor() ([]byte, []int) {
+	return file_api_v1_workspace_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetDefaultTagRecommendationPromptResponse) GetSystemPrompt() string {
+	if x != nil {
+		return x.SystemPrompt
+	}
+	return ""
+}
+
+// Request message for TestAiConnection method.
+type TestAiConnectionRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// base_url is the base URL for AI API.
+	BaseUrl string `protobuf:"bytes,1,opt,name=base_url,json=baseUrl,proto3" json:"base_url,omitempty"`
+	// api_key is the API key for AI service.
+	ApiKey string `protobuf:"bytes,2,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	// model is the AI model to use.
+	Model string `protobuf:"bytes,3,opt,name=model,proto3" json:"model,omitempty"`
+	// timeout_seconds is the timeout for AI requests in seconds.
+	TimeoutSeconds int32 `protobuf:"varint,4,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *TestAiConnectionRequest) Reset() {
+	*x = TestAiConnectionRequest{}
+	mi := &file_api_v1_workspace_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TestAiConnectionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestAiConnectionRequest) ProtoMessage() {}
+
+func (x *TestAiConnectionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_workspace_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestAiConnectionRequest.ProtoReflect.Descriptor instead.
+func (*TestAiConnectionRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_workspace_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *TestAiConnectionRequest) GetBaseUrl() string {
+	if x != nil {
+		return x.BaseUrl
+	}
+	return ""
+}
+
+func (x *TestAiConnectionRequest) GetApiKey() string {
+	if x != nil {
+		return x.ApiKey
+	}
+	return ""
+}
+
+func (x *TestAiConnectionRequest) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *TestAiConnectionRequest) GetTimeoutSeconds() int32 {
+	if x != nil {
+		return x.TimeoutSeconds
+	}
+	return 0
+}
+
+// Response message for TestAiConnection method.
+type TestAiConnectionResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// success indicates whether the connection test was successful.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// message provides additional information about the test result.
+	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// model_info contains information about the tested model (if successful).
+	ModelInfo     string `protobuf:"bytes,3,opt,name=model_info,json=modelInfo,proto3" json:"model_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TestAiConnectionResponse) Reset() {
+	*x = TestAiConnectionResponse{}
+	mi := &file_api_v1_workspace_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TestAiConnectionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestAiConnectionResponse) ProtoMessage() {}
+
+func (x *TestAiConnectionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_workspace_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestAiConnectionResponse.ProtoReflect.Descriptor instead.
+func (*TestAiConnectionResponse) Descriptor() ([]byte, []int) {
+	return file_api_v1_workspace_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *TestAiConnectionResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *TestAiConnectionResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *TestAiConnectionResponse) GetModelInfo() string {
+	if x != nil {
+		return x.ModelInfo
+	}
+	return ""
+}
+
 // General workspace settings configuration.
 type WorkspaceSetting_GeneralSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -507,7 +727,7 @@ type WorkspaceSetting_GeneralSetting struct {
 
 func (x *WorkspaceSetting_GeneralSetting) Reset() {
 	*x = WorkspaceSetting_GeneralSetting{}
-	mi := &file_api_v1_workspace_service_proto_msgTypes[5]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -519,7 +739,7 @@ func (x *WorkspaceSetting_GeneralSetting) String() string {
 func (*WorkspaceSetting_GeneralSetting) ProtoMessage() {}
 
 func (x *WorkspaceSetting_GeneralSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_workspace_service_proto_msgTypes[5]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -616,7 +836,7 @@ type WorkspaceSetting_StorageSetting struct {
 
 func (x *WorkspaceSetting_StorageSetting) Reset() {
 	*x = WorkspaceSetting_StorageSetting{}
-	mi := &file_api_v1_workspace_service_proto_msgTypes[6]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -628,7 +848,7 @@ func (x *WorkspaceSetting_StorageSetting) String() string {
 func (*WorkspaceSetting_StorageSetting) ProtoMessage() {}
 
 func (x *WorkspaceSetting_StorageSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_workspace_service_proto_msgTypes[6]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -699,7 +919,7 @@ type WorkspaceSetting_MemoRelatedSetting struct {
 
 func (x *WorkspaceSetting_MemoRelatedSetting) Reset() {
 	*x = WorkspaceSetting_MemoRelatedSetting{}
-	mi := &file_api_v1_workspace_service_proto_msgTypes[7]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -711,7 +931,7 @@ func (x *WorkspaceSetting_MemoRelatedSetting) String() string {
 func (*WorkspaceSetting_MemoRelatedSetting) ProtoMessage() {}
 
 func (x *WorkspaceSetting_MemoRelatedSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_workspace_service_proto_msgTypes[7]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -803,13 +1023,15 @@ type WorkspaceSetting_AiSetting struct {
 	Model string `protobuf:"bytes,4,opt,name=model,proto3" json:"model,omitempty"`
 	// timeout_seconds is the timeout for AI requests in seconds.
 	TimeoutSeconds int32 `protobuf:"varint,5,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// tag_recommendation contains tag recommendation specific settings.
+	TagRecommendation *WorkspaceSetting_TagRecommendationConfig `protobuf:"bytes,6,opt,name=tag_recommendation,json=tagRecommendation,proto3" json:"tag_recommendation,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *WorkspaceSetting_AiSetting) Reset() {
 	*x = WorkspaceSetting_AiSetting{}
-	mi := &file_api_v1_workspace_service_proto_msgTypes[8]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -821,7 +1043,7 @@ func (x *WorkspaceSetting_AiSetting) String() string {
 func (*WorkspaceSetting_AiSetting) ProtoMessage() {}
 
 func (x *WorkspaceSetting_AiSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_workspace_service_proto_msgTypes[8]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -872,6 +1094,77 @@ func (x *WorkspaceSetting_AiSetting) GetTimeoutSeconds() int32 {
 	return 0
 }
 
+func (x *WorkspaceSetting_AiSetting) GetTagRecommendation() *WorkspaceSetting_TagRecommendationConfig {
+	if x != nil {
+		return x.TagRecommendation
+	}
+	return nil
+}
+
+// Tag recommendation configuration.
+type WorkspaceSetting_TagRecommendationConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// enabled controls whether tag recommendation is enabled.
+	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// system_prompt is the custom system prompt for tag recommendation.
+	SystemPrompt string `protobuf:"bytes,2,opt,name=system_prompt,json=systemPrompt,proto3" json:"system_prompt,omitempty"`
+	// requests_per_minute is the rate limit for tag recommendation requests.
+	RequestsPerMinute int32 `protobuf:"varint,3,opt,name=requests_per_minute,json=requestsPerMinute,proto3" json:"requests_per_minute,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *WorkspaceSetting_TagRecommendationConfig) Reset() {
+	*x = WorkspaceSetting_TagRecommendationConfig{}
+	mi := &file_api_v1_workspace_service_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkspaceSetting_TagRecommendationConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkspaceSetting_TagRecommendationConfig) ProtoMessage() {}
+
+func (x *WorkspaceSetting_TagRecommendationConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_workspace_service_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkspaceSetting_TagRecommendationConfig.ProtoReflect.Descriptor instead.
+func (*WorkspaceSetting_TagRecommendationConfig) Descriptor() ([]byte, []int) {
+	return file_api_v1_workspace_service_proto_rawDescGZIP(), []int{2, 4}
+}
+
+func (x *WorkspaceSetting_TagRecommendationConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *WorkspaceSetting_TagRecommendationConfig) GetSystemPrompt() string {
+	if x != nil {
+		return x.SystemPrompt
+	}
+	return ""
+}
+
+func (x *WorkspaceSetting_TagRecommendationConfig) GetRequestsPerMinute() int32 {
+	if x != nil {
+		return x.RequestsPerMinute
+	}
+	return 0
+}
+
 // Custom profile configuration for workspace branding.
 type WorkspaceSetting_GeneralSetting_CustomProfile struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -885,7 +1178,7 @@ type WorkspaceSetting_GeneralSetting_CustomProfile struct {
 
 func (x *WorkspaceSetting_GeneralSetting_CustomProfile) Reset() {
 	*x = WorkspaceSetting_GeneralSetting_CustomProfile{}
-	mi := &file_api_v1_workspace_service_proto_msgTypes[9]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -897,7 +1190,7 @@ func (x *WorkspaceSetting_GeneralSetting_CustomProfile) String() string {
 func (*WorkspaceSetting_GeneralSetting_CustomProfile) ProtoMessage() {}
 
 func (x *WorkspaceSetting_GeneralSetting_CustomProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_workspace_service_proto_msgTypes[9]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -957,7 +1250,7 @@ type WorkspaceSetting_StorageSetting_S3Config struct {
 
 func (x *WorkspaceSetting_StorageSetting_S3Config) Reset() {
 	*x = WorkspaceSetting_StorageSetting_S3Config{}
-	mi := &file_api_v1_workspace_service_proto_msgTypes[10]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -969,7 +1262,7 @@ func (x *WorkspaceSetting_StorageSetting_S3Config) String() string {
 func (*WorkspaceSetting_StorageSetting_S3Config) ProtoMessage() {}
 
 func (x *WorkspaceSetting_StorageSetting_S3Config) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_workspace_service_proto_msgTypes[10]
+	mi := &file_api_v1_workspace_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1037,7 +1330,7 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1c\n" +
-	"\x1aGetWorkspaceProfileRequest\"\x88\x13\n" +
+	"\x1aGetWorkspaceProfileRequest\"\xfa\x14\n" +
 	"\x10WorkspaceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12X\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2-.memos.api.v1.WorkspaceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12X\n" +
@@ -1087,13 +1380,18 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x1adisable_markdown_shortcuts\x18\b \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
 	"\tnsfw_tags\x18\n" +
-	" \x03(\tR\bnsfwTags\x1a\x9b\x01\n" +
+	" \x03(\tR\bnsfwTags\x1a\x82\x02\n" +
 	"\tAiSetting\x12\x1b\n" +
 	"\tenable_ai\x18\x01 \x01(\bR\benableAi\x12\x19\n" +
 	"\bbase_url\x18\x02 \x01(\tR\abaseUrl\x12\x17\n" +
 	"\aapi_key\x18\x03 \x01(\tR\x06apiKey\x12\x14\n" +
 	"\x05model\x18\x04 \x01(\tR\x05model\x12'\n" +
-	"\x0ftimeout_seconds\x18\x05 \x01(\x05R\x0etimeoutSeconds\"N\n" +
+	"\x0ftimeout_seconds\x18\x05 \x01(\x05R\x0etimeoutSeconds\x12e\n" +
+	"\x12tag_recommendation\x18\x06 \x01(\v26.memos.api.v1.WorkspaceSetting.TagRecommendationConfigR\x11tagRecommendation\x1a\x88\x01\n" +
+	"\x17TagRecommendationConfig\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12#\n" +
+	"\rsystem_prompt\x18\x02 \x01(\tR\fsystemPrompt\x12.\n" +
+	"\x13requests_per_minute\x18\x03 \x01(\x05R\x11requestsPerMinute\"N\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\v\n" +
@@ -1108,11 +1406,26 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x1dUpdateWorkspaceSettingRequest\x12=\n" +
 	"\asetting\x18\x01 \x01(\v2\x1e.memos.api.v1.WorkspaceSettingB\x03\xe0A\x02R\asetting\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask2\xe9\x03\n" +
+	"updateMask\"*\n" +
+	"(GetDefaultTagRecommendationPromptRequest\"P\n" +
+	")GetDefaultTagRecommendationPromptResponse\x12#\n" +
+	"\rsystem_prompt\x18\x01 \x01(\tR\fsystemPrompt\"\x8c\x01\n" +
+	"\x17TestAiConnectionRequest\x12\x19\n" +
+	"\bbase_url\x18\x01 \x01(\tR\abaseUrl\x12\x17\n" +
+	"\aapi_key\x18\x02 \x01(\tR\x06apiKey\x12\x14\n" +
+	"\x05model\x18\x03 \x01(\tR\x05model\x12'\n" +
+	"\x0ftimeout_seconds\x18\x04 \x01(\x05R\x0etimeoutSeconds\"m\n" +
+	"\x18TestAiConnectionResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1d\n" +
+	"\n" +
+	"model_info\x18\x03 \x01(\tR\tmodelInfo2\xd5\x06\n" +
 	"\x10WorkspaceService\x12\x82\x01\n" +
 	"\x13GetWorkspaceProfile\x12(.memos.api.v1.GetWorkspaceProfileRequest\x1a\x1e.memos.api.v1.WorkspaceProfile\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/v1/workspace/profile\x12\x93\x01\n" +
 	"\x13GetWorkspaceSetting\x12(.memos.api.v1.GetWorkspaceSettingRequest\x1a\x1e.memos.api.v1.WorkspaceSetting\"2\xdaA\x04name\x82\xd3\xe4\x93\x02%\x12#/api/v1/{name=workspace/settings/*}\x12\xb9\x01\n" +
-	"\x16UpdateWorkspaceSetting\x12+.memos.api.v1.UpdateWorkspaceSettingRequest\x1a\x1e.memos.api.v1.WorkspaceSetting\"R\xdaA\x13setting,update_mask\x82\xd3\xe4\x93\x026:\asetting2+/api/v1/{setting.name=workspace/settings/*}B\xad\x01\n" +
+	"\x16UpdateWorkspaceSetting\x12+.memos.api.v1.UpdateWorkspaceSettingRequest\x1a\x1e.memos.api.v1.WorkspaceSetting\"R\xdaA\x13setting,update_mask\x82\xd3\xe4\x93\x026:\asetting2+/api/v1/{setting.name=workspace/settings/*}\x12\xd4\x01\n" +
+	"!GetDefaultTagRecommendationPrompt\x126.memos.api.v1.GetDefaultTagRecommendationPromptRequest\x1a7.memos.api.v1.GetDefaultTagRecommendationPromptResponse\">\x82\xd3\xe4\x93\x028\x126/api/v1/workspace/ai/tag-recommendation/default-prompt\x12\x92\x01\n" +
+	"\x10TestAiConnection\x12%.memos.api.v1.TestAiConnectionRequest\x1a&.memos.api.v1.TestAiConnectionResponse\"/\x82\xd3\xe4\x93\x02):\x01*\"$/api/v1/workspace/ai/test-connectionB\xad\x01\n" +
 	"\x10com.memos.api.v1B\x15WorkspaceServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (
@@ -1128,7 +1441,7 @@ func file_api_v1_workspace_service_proto_rawDescGZIP() []byte {
 }
 
 var file_api_v1_workspace_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_api_v1_workspace_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_api_v1_workspace_service_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_api_v1_workspace_service_proto_goTypes = []any{
 	(WorkspaceSetting_Key)(0),                             // 0: memos.api.v1.WorkspaceSetting.Key
 	(WorkspaceSetting_StorageSetting_StorageType)(0),      // 1: memos.api.v1.WorkspaceSetting.StorageSetting.StorageType
@@ -1137,35 +1450,45 @@ var file_api_v1_workspace_service_proto_goTypes = []any{
 	(*WorkspaceSetting)(nil),                              // 4: memos.api.v1.WorkspaceSetting
 	(*GetWorkspaceSettingRequest)(nil),                    // 5: memos.api.v1.GetWorkspaceSettingRequest
 	(*UpdateWorkspaceSettingRequest)(nil),                 // 6: memos.api.v1.UpdateWorkspaceSettingRequest
-	(*WorkspaceSetting_GeneralSetting)(nil),               // 7: memos.api.v1.WorkspaceSetting.GeneralSetting
-	(*WorkspaceSetting_StorageSetting)(nil),               // 8: memos.api.v1.WorkspaceSetting.StorageSetting
-	(*WorkspaceSetting_MemoRelatedSetting)(nil),           // 9: memos.api.v1.WorkspaceSetting.MemoRelatedSetting
-	(*WorkspaceSetting_AiSetting)(nil),                    // 10: memos.api.v1.WorkspaceSetting.AiSetting
-	(*WorkspaceSetting_GeneralSetting_CustomProfile)(nil), // 11: memos.api.v1.WorkspaceSetting.GeneralSetting.CustomProfile
-	(*WorkspaceSetting_StorageSetting_S3Config)(nil),      // 12: memos.api.v1.WorkspaceSetting.StorageSetting.S3Config
-	(*fieldmaskpb.FieldMask)(nil),                         // 13: google.protobuf.FieldMask
+	(*GetDefaultTagRecommendationPromptRequest)(nil),      // 7: memos.api.v1.GetDefaultTagRecommendationPromptRequest
+	(*GetDefaultTagRecommendationPromptResponse)(nil),     // 8: memos.api.v1.GetDefaultTagRecommendationPromptResponse
+	(*TestAiConnectionRequest)(nil),                       // 9: memos.api.v1.TestAiConnectionRequest
+	(*TestAiConnectionResponse)(nil),                      // 10: memos.api.v1.TestAiConnectionResponse
+	(*WorkspaceSetting_GeneralSetting)(nil),               // 11: memos.api.v1.WorkspaceSetting.GeneralSetting
+	(*WorkspaceSetting_StorageSetting)(nil),               // 12: memos.api.v1.WorkspaceSetting.StorageSetting
+	(*WorkspaceSetting_MemoRelatedSetting)(nil),           // 13: memos.api.v1.WorkspaceSetting.MemoRelatedSetting
+	(*WorkspaceSetting_AiSetting)(nil),                    // 14: memos.api.v1.WorkspaceSetting.AiSetting
+	(*WorkspaceSetting_TagRecommendationConfig)(nil),      // 15: memos.api.v1.WorkspaceSetting.TagRecommendationConfig
+	(*WorkspaceSetting_GeneralSetting_CustomProfile)(nil), // 16: memos.api.v1.WorkspaceSetting.GeneralSetting.CustomProfile
+	(*WorkspaceSetting_StorageSetting_S3Config)(nil),      // 17: memos.api.v1.WorkspaceSetting.StorageSetting.S3Config
+	(*fieldmaskpb.FieldMask)(nil),                         // 18: google.protobuf.FieldMask
 }
 var file_api_v1_workspace_service_proto_depIdxs = []int32{
-	7,  // 0: memos.api.v1.WorkspaceSetting.general_setting:type_name -> memos.api.v1.WorkspaceSetting.GeneralSetting
-	8,  // 1: memos.api.v1.WorkspaceSetting.storage_setting:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting
-	9,  // 2: memos.api.v1.WorkspaceSetting.memo_related_setting:type_name -> memos.api.v1.WorkspaceSetting.MemoRelatedSetting
-	10, // 3: memos.api.v1.WorkspaceSetting.ai_setting:type_name -> memos.api.v1.WorkspaceSetting.AiSetting
+	11, // 0: memos.api.v1.WorkspaceSetting.general_setting:type_name -> memos.api.v1.WorkspaceSetting.GeneralSetting
+	12, // 1: memos.api.v1.WorkspaceSetting.storage_setting:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting
+	13, // 2: memos.api.v1.WorkspaceSetting.memo_related_setting:type_name -> memos.api.v1.WorkspaceSetting.MemoRelatedSetting
+	14, // 3: memos.api.v1.WorkspaceSetting.ai_setting:type_name -> memos.api.v1.WorkspaceSetting.AiSetting
 	4,  // 4: memos.api.v1.UpdateWorkspaceSettingRequest.setting:type_name -> memos.api.v1.WorkspaceSetting
-	13, // 5: memos.api.v1.UpdateWorkspaceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11, // 6: memos.api.v1.WorkspaceSetting.GeneralSetting.custom_profile:type_name -> memos.api.v1.WorkspaceSetting.GeneralSetting.CustomProfile
+	18, // 5: memos.api.v1.UpdateWorkspaceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	16, // 6: memos.api.v1.WorkspaceSetting.GeneralSetting.custom_profile:type_name -> memos.api.v1.WorkspaceSetting.GeneralSetting.CustomProfile
 	1,  // 7: memos.api.v1.WorkspaceSetting.StorageSetting.storage_type:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting.StorageType
-	12, // 8: memos.api.v1.WorkspaceSetting.StorageSetting.s3_config:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting.S3Config
-	3,  // 9: memos.api.v1.WorkspaceService.GetWorkspaceProfile:input_type -> memos.api.v1.GetWorkspaceProfileRequest
-	5,  // 10: memos.api.v1.WorkspaceService.GetWorkspaceSetting:input_type -> memos.api.v1.GetWorkspaceSettingRequest
-	6,  // 11: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:input_type -> memos.api.v1.UpdateWorkspaceSettingRequest
-	2,  // 12: memos.api.v1.WorkspaceService.GetWorkspaceProfile:output_type -> memos.api.v1.WorkspaceProfile
-	4,  // 13: memos.api.v1.WorkspaceService.GetWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
-	4,  // 14: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
-	12, // [12:15] is the sub-list for method output_type
-	9,  // [9:12] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	17, // 8: memos.api.v1.WorkspaceSetting.StorageSetting.s3_config:type_name -> memos.api.v1.WorkspaceSetting.StorageSetting.S3Config
+	15, // 9: memos.api.v1.WorkspaceSetting.AiSetting.tag_recommendation:type_name -> memos.api.v1.WorkspaceSetting.TagRecommendationConfig
+	3,  // 10: memos.api.v1.WorkspaceService.GetWorkspaceProfile:input_type -> memos.api.v1.GetWorkspaceProfileRequest
+	5,  // 11: memos.api.v1.WorkspaceService.GetWorkspaceSetting:input_type -> memos.api.v1.GetWorkspaceSettingRequest
+	6,  // 12: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:input_type -> memos.api.v1.UpdateWorkspaceSettingRequest
+	7,  // 13: memos.api.v1.WorkspaceService.GetDefaultTagRecommendationPrompt:input_type -> memos.api.v1.GetDefaultTagRecommendationPromptRequest
+	9,  // 14: memos.api.v1.WorkspaceService.TestAiConnection:input_type -> memos.api.v1.TestAiConnectionRequest
+	2,  // 15: memos.api.v1.WorkspaceService.GetWorkspaceProfile:output_type -> memos.api.v1.WorkspaceProfile
+	4,  // 16: memos.api.v1.WorkspaceService.GetWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
+	4,  // 17: memos.api.v1.WorkspaceService.UpdateWorkspaceSetting:output_type -> memos.api.v1.WorkspaceSetting
+	8,  // 18: memos.api.v1.WorkspaceService.GetDefaultTagRecommendationPrompt:output_type -> memos.api.v1.GetDefaultTagRecommendationPromptResponse
+	10, // 19: memos.api.v1.WorkspaceService.TestAiConnection:output_type -> memos.api.v1.TestAiConnectionResponse
+	15, // [15:20] is the sub-list for method output_type
+	10, // [10:15] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_workspace_service_proto_init() }
@@ -1185,7 +1508,7 @@ func file_api_v1_workspace_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_workspace_service_proto_rawDesc), len(file_api_v1_workspace_service_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   11,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

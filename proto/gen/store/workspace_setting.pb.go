@@ -806,8 +806,10 @@ type WorkspaceAISetting struct {
 	Model string `protobuf:"bytes,4,opt,name=model,proto3" json:"model,omitempty"`
 	// timeout_seconds is the timeout for AI requests in seconds.
 	TimeoutSeconds int32 `protobuf:"varint,5,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// tag_recommendation contains tag recommendation specific settings.
+	TagRecommendation *TagRecommendationConfig `protobuf:"bytes,6,opt,name=tag_recommendation,json=tagRecommendation,proto3" json:"tag_recommendation,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *WorkspaceAISetting) Reset() {
@@ -875,6 +877,76 @@ func (x *WorkspaceAISetting) GetTimeoutSeconds() int32 {
 	return 0
 }
 
+func (x *WorkspaceAISetting) GetTagRecommendation() *TagRecommendationConfig {
+	if x != nil {
+		return x.TagRecommendation
+	}
+	return nil
+}
+
+type TagRecommendationConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// enabled controls whether tag recommendation is enabled.
+	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// system_prompt is the custom system prompt for tag recommendation.
+	SystemPrompt string `protobuf:"bytes,2,opt,name=system_prompt,json=systemPrompt,proto3" json:"system_prompt,omitempty"`
+	// requests_per_minute is the rate limit for tag recommendation requests.
+	RequestsPerMinute int32 `protobuf:"varint,3,opt,name=requests_per_minute,json=requestsPerMinute,proto3" json:"requests_per_minute,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *TagRecommendationConfig) Reset() {
+	*x = TagRecommendationConfig{}
+	mi := &file_store_workspace_setting_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TagRecommendationConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TagRecommendationConfig) ProtoMessage() {}
+
+func (x *TagRecommendationConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_store_workspace_setting_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TagRecommendationConfig.ProtoReflect.Descriptor instead.
+func (*TagRecommendationConfig) Descriptor() ([]byte, []int) {
+	return file_store_workspace_setting_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *TagRecommendationConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *TagRecommendationConfig) GetSystemPrompt() string {
+	if x != nil {
+		return x.SystemPrompt
+	}
+	return ""
+}
+
+func (x *TagRecommendationConfig) GetRequestsPerMinute() int32 {
+	if x != nil {
+		return x.RequestsPerMinute
+	}
+	return 0
+}
+
 var File_store_workspace_setting_proto protoreflect.FileDescriptor
 
 const file_store_workspace_setting_proto_rawDesc = "" +
@@ -935,13 +1007,18 @@ const file_store_workspace_setting_proto_rawDesc = "" +
 	"\x1adisable_markdown_shortcuts\x18\b \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
 	"\tnsfw_tags\x18\n" +
-	" \x03(\tR\bnsfwTags\"\xa4\x01\n" +
+	" \x03(\tR\bnsfwTags\"\xf9\x01\n" +
 	"\x12WorkspaceAISetting\x12\x1b\n" +
 	"\tenable_ai\x18\x01 \x01(\bR\benableAi\x12\x19\n" +
 	"\bbase_url\x18\x02 \x01(\tR\abaseUrl\x12\x17\n" +
 	"\aapi_key\x18\x03 \x01(\tR\x06apiKey\x12\x14\n" +
 	"\x05model\x18\x04 \x01(\tR\x05model\x12'\n" +
-	"\x0ftimeout_seconds\x18\x05 \x01(\x05R\x0etimeoutSeconds*{\n" +
+	"\x0ftimeout_seconds\x18\x05 \x01(\x05R\x0etimeoutSeconds\x12S\n" +
+	"\x12tag_recommendation\x18\x06 \x01(\v2$.memos.store.TagRecommendationConfigR\x11tagRecommendation\"\x88\x01\n" +
+	"\x17TagRecommendationConfig\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12#\n" +
+	"\rsystem_prompt\x18\x02 \x01(\tR\fsystemPrompt\x12.\n" +
+	"\x13requests_per_minute\x18\x03 \x01(\x05R\x11requestsPerMinute*{\n" +
 	"\x13WorkspaceSettingKey\x12%\n" +
 	"!WORKSPACE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\v\n" +
@@ -964,7 +1041,7 @@ func file_store_workspace_setting_proto_rawDescGZIP() []byte {
 }
 
 var file_store_workspace_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_store_workspace_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_store_workspace_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_store_workspace_setting_proto_goTypes = []any{
 	(WorkspaceSettingKey)(0),                 // 0: memos.store.WorkspaceSettingKey
 	(WorkspaceStorageSetting_StorageType)(0), // 1: memos.store.WorkspaceStorageSetting.StorageType
@@ -976,22 +1053,24 @@ var file_store_workspace_setting_proto_goTypes = []any{
 	(*StorageS3Config)(nil),                  // 7: memos.store.StorageS3Config
 	(*WorkspaceMemoRelatedSetting)(nil),      // 8: memos.store.WorkspaceMemoRelatedSetting
 	(*WorkspaceAISetting)(nil),               // 9: memos.store.WorkspaceAISetting
+	(*TagRecommendationConfig)(nil),          // 10: memos.store.TagRecommendationConfig
 }
 var file_store_workspace_setting_proto_depIdxs = []int32{
-	0, // 0: memos.store.WorkspaceSetting.key:type_name -> memos.store.WorkspaceSettingKey
-	3, // 1: memos.store.WorkspaceSetting.basic_setting:type_name -> memos.store.WorkspaceBasicSetting
-	4, // 2: memos.store.WorkspaceSetting.general_setting:type_name -> memos.store.WorkspaceGeneralSetting
-	6, // 3: memos.store.WorkspaceSetting.storage_setting:type_name -> memos.store.WorkspaceStorageSetting
-	8, // 4: memos.store.WorkspaceSetting.memo_related_setting:type_name -> memos.store.WorkspaceMemoRelatedSetting
-	9, // 5: memos.store.WorkspaceSetting.ai_setting:type_name -> memos.store.WorkspaceAISetting
-	5, // 6: memos.store.WorkspaceGeneralSetting.custom_profile:type_name -> memos.store.WorkspaceCustomProfile
-	1, // 7: memos.store.WorkspaceStorageSetting.storage_type:type_name -> memos.store.WorkspaceStorageSetting.StorageType
-	7, // 8: memos.store.WorkspaceStorageSetting.s3_config:type_name -> memos.store.StorageS3Config
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	0,  // 0: memos.store.WorkspaceSetting.key:type_name -> memos.store.WorkspaceSettingKey
+	3,  // 1: memos.store.WorkspaceSetting.basic_setting:type_name -> memos.store.WorkspaceBasicSetting
+	4,  // 2: memos.store.WorkspaceSetting.general_setting:type_name -> memos.store.WorkspaceGeneralSetting
+	6,  // 3: memos.store.WorkspaceSetting.storage_setting:type_name -> memos.store.WorkspaceStorageSetting
+	8,  // 4: memos.store.WorkspaceSetting.memo_related_setting:type_name -> memos.store.WorkspaceMemoRelatedSetting
+	9,  // 5: memos.store.WorkspaceSetting.ai_setting:type_name -> memos.store.WorkspaceAISetting
+	5,  // 6: memos.store.WorkspaceGeneralSetting.custom_profile:type_name -> memos.store.WorkspaceCustomProfile
+	1,  // 7: memos.store.WorkspaceStorageSetting.storage_type:type_name -> memos.store.WorkspaceStorageSetting.StorageType
+	7,  // 8: memos.store.WorkspaceStorageSetting.s3_config:type_name -> memos.store.StorageS3Config
+	10, // 9: memos.store.WorkspaceAISetting.tag_recommendation:type_name -> memos.store.TagRecommendationConfig
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_store_workspace_setting_proto_init() }
@@ -1012,7 +1091,7 @@ func file_store_workspace_setting_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_workspace_setting_proto_rawDesc), len(file_store_workspace_setting_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

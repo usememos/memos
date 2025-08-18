@@ -252,6 +252,18 @@ export interface WorkspaceSetting_AiSetting {
   model: string;
   /** timeout_seconds is the timeout for AI requests in seconds. */
   timeoutSeconds: number;
+  /** tag_recommendation contains tag recommendation specific settings. */
+  tagRecommendation?: WorkspaceSetting_TagRecommendationConfig | undefined;
+}
+
+/** Tag recommendation configuration. */
+export interface WorkspaceSetting_TagRecommendationConfig {
+  /** enabled controls whether tag recommendation is enabled. */
+  enabled: boolean;
+  /** system_prompt is the custom system prompt for tag recommendation. */
+  systemPrompt: string;
+  /** requests_per_minute is the rate limit for tag recommendation requests. */
+  requestsPerMinute: number;
 }
 
 /** Request message for GetWorkspaceSetting method. */
@@ -271,6 +283,38 @@ export interface UpdateWorkspaceSettingRequest {
     | undefined;
   /** The list of fields to update. */
   updateMask?: string[] | undefined;
+}
+
+/** Request message for GetDefaultTagRecommendationPrompt method. */
+export interface GetDefaultTagRecommendationPromptRequest {
+}
+
+/** Response message for GetDefaultTagRecommendationPrompt method. */
+export interface GetDefaultTagRecommendationPromptResponse {
+  /** The default system prompt for tag recommendation. */
+  systemPrompt: string;
+}
+
+/** Request message for TestAiConnection method. */
+export interface TestAiConnectionRequest {
+  /** base_url is the base URL for AI API. */
+  baseUrl: string;
+  /** api_key is the API key for AI service. */
+  apiKey: string;
+  /** model is the AI model to use. */
+  model: string;
+  /** timeout_seconds is the timeout for AI requests in seconds. */
+  timeoutSeconds: number;
+}
+
+/** Response message for TestAiConnection method. */
+export interface TestAiConnectionResponse {
+  /** success indicates whether the connection test was successful. */
+  success: boolean;
+  /** message provides additional information about the test result. */
+  message: string;
+  /** model_info contains information about the tested model (if successful). */
+  modelInfo: string;
 }
 
 function createBaseWorkspaceProfile(): WorkspaceProfile {
@@ -1089,7 +1133,7 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
 };
 
 function createBaseWorkspaceSetting_AiSetting(): WorkspaceSetting_AiSetting {
-  return { enableAi: false, baseUrl: "", apiKey: "", model: "", timeoutSeconds: 0 };
+  return { enableAi: false, baseUrl: "", apiKey: "", model: "", timeoutSeconds: 0, tagRecommendation: undefined };
 }
 
 export const WorkspaceSetting_AiSetting: MessageFns<WorkspaceSetting_AiSetting> = {
@@ -1108,6 +1152,9 @@ export const WorkspaceSetting_AiSetting: MessageFns<WorkspaceSetting_AiSetting> 
     }
     if (message.timeoutSeconds !== 0) {
       writer.uint32(40).int32(message.timeoutSeconds);
+    }
+    if (message.tagRecommendation !== undefined) {
+      WorkspaceSetting_TagRecommendationConfig.encode(message.tagRecommendation, writer.uint32(50).fork()).join();
     }
     return writer;
   },
@@ -1159,6 +1206,14 @@ export const WorkspaceSetting_AiSetting: MessageFns<WorkspaceSetting_AiSetting> 
           message.timeoutSeconds = reader.int32();
           continue;
         }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.tagRecommendation = WorkspaceSetting_TagRecommendationConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1178,6 +1233,79 @@ export const WorkspaceSetting_AiSetting: MessageFns<WorkspaceSetting_AiSetting> 
     message.apiKey = object.apiKey ?? "";
     message.model = object.model ?? "";
     message.timeoutSeconds = object.timeoutSeconds ?? 0;
+    message.tagRecommendation = (object.tagRecommendation !== undefined && object.tagRecommendation !== null)
+      ? WorkspaceSetting_TagRecommendationConfig.fromPartial(object.tagRecommendation)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseWorkspaceSetting_TagRecommendationConfig(): WorkspaceSetting_TagRecommendationConfig {
+  return { enabled: false, systemPrompt: "", requestsPerMinute: 0 };
+}
+
+export const WorkspaceSetting_TagRecommendationConfig: MessageFns<WorkspaceSetting_TagRecommendationConfig> = {
+  encode(message: WorkspaceSetting_TagRecommendationConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.enabled !== false) {
+      writer.uint32(8).bool(message.enabled);
+    }
+    if (message.systemPrompt !== "") {
+      writer.uint32(18).string(message.systemPrompt);
+    }
+    if (message.requestsPerMinute !== 0) {
+      writer.uint32(24).int32(message.requestsPerMinute);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_TagRecommendationConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseWorkspaceSetting_TagRecommendationConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.enabled = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.systemPrompt = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.requestsPerMinute = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<WorkspaceSetting_TagRecommendationConfig>): WorkspaceSetting_TagRecommendationConfig {
+    return WorkspaceSetting_TagRecommendationConfig.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<WorkspaceSetting_TagRecommendationConfig>): WorkspaceSetting_TagRecommendationConfig {
+    const message = createBaseWorkspaceSetting_TagRecommendationConfig();
+    message.enabled = object.enabled ?? false;
+    message.systemPrompt = object.systemPrompt ?? "";
+    message.requestsPerMinute = object.requestsPerMinute ?? 0;
     return message;
   },
 };
@@ -1284,6 +1412,240 @@ export const UpdateWorkspaceSettingRequest: MessageFns<UpdateWorkspaceSettingReq
       ? WorkspaceSetting.fromPartial(object.setting)
       : undefined;
     message.updateMask = object.updateMask ?? undefined;
+    return message;
+  },
+};
+
+function createBaseGetDefaultTagRecommendationPromptRequest(): GetDefaultTagRecommendationPromptRequest {
+  return {};
+}
+
+export const GetDefaultTagRecommendationPromptRequest: MessageFns<GetDefaultTagRecommendationPromptRequest> = {
+  encode(_: GetDefaultTagRecommendationPromptRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetDefaultTagRecommendationPromptRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetDefaultTagRecommendationPromptRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<GetDefaultTagRecommendationPromptRequest>): GetDefaultTagRecommendationPromptRequest {
+    return GetDefaultTagRecommendationPromptRequest.fromPartial(base ?? {});
+  },
+  fromPartial(_: DeepPartial<GetDefaultTagRecommendationPromptRequest>): GetDefaultTagRecommendationPromptRequest {
+    const message = createBaseGetDefaultTagRecommendationPromptRequest();
+    return message;
+  },
+};
+
+function createBaseGetDefaultTagRecommendationPromptResponse(): GetDefaultTagRecommendationPromptResponse {
+  return { systemPrompt: "" };
+}
+
+export const GetDefaultTagRecommendationPromptResponse: MessageFns<GetDefaultTagRecommendationPromptResponse> = {
+  encode(message: GetDefaultTagRecommendationPromptResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.systemPrompt !== "") {
+      writer.uint32(10).string(message.systemPrompt);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetDefaultTagRecommendationPromptResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetDefaultTagRecommendationPromptResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.systemPrompt = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<GetDefaultTagRecommendationPromptResponse>): GetDefaultTagRecommendationPromptResponse {
+    return GetDefaultTagRecommendationPromptResponse.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<GetDefaultTagRecommendationPromptResponse>,
+  ): GetDefaultTagRecommendationPromptResponse {
+    const message = createBaseGetDefaultTagRecommendationPromptResponse();
+    message.systemPrompt = object.systemPrompt ?? "";
+    return message;
+  },
+};
+
+function createBaseTestAiConnectionRequest(): TestAiConnectionRequest {
+  return { baseUrl: "", apiKey: "", model: "", timeoutSeconds: 0 };
+}
+
+export const TestAiConnectionRequest: MessageFns<TestAiConnectionRequest> = {
+  encode(message: TestAiConnectionRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.baseUrl !== "") {
+      writer.uint32(10).string(message.baseUrl);
+    }
+    if (message.apiKey !== "") {
+      writer.uint32(18).string(message.apiKey);
+    }
+    if (message.model !== "") {
+      writer.uint32(26).string(message.model);
+    }
+    if (message.timeoutSeconds !== 0) {
+      writer.uint32(32).int32(message.timeoutSeconds);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TestAiConnectionRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTestAiConnectionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.baseUrl = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.apiKey = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.model = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.timeoutSeconds = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<TestAiConnectionRequest>): TestAiConnectionRequest {
+    return TestAiConnectionRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<TestAiConnectionRequest>): TestAiConnectionRequest {
+    const message = createBaseTestAiConnectionRequest();
+    message.baseUrl = object.baseUrl ?? "";
+    message.apiKey = object.apiKey ?? "";
+    message.model = object.model ?? "";
+    message.timeoutSeconds = object.timeoutSeconds ?? 0;
+    return message;
+  },
+};
+
+function createBaseTestAiConnectionResponse(): TestAiConnectionResponse {
+  return { success: false, message: "", modelInfo: "" };
+}
+
+export const TestAiConnectionResponse: MessageFns<TestAiConnectionResponse> = {
+  encode(message: TestAiConnectionResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.success !== false) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    if (message.modelInfo !== "") {
+      writer.uint32(26).string(message.modelInfo);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TestAiConnectionResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTestAiConnectionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.modelInfo = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<TestAiConnectionResponse>): TestAiConnectionResponse {
+    return TestAiConnectionResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<TestAiConnectionResponse>): TestAiConnectionResponse {
+    const message = createBaseTestAiConnectionResponse();
+    message.success = object.success ?? false;
+    message.message = object.message ?? "";
+    message.modelInfo = object.modelInfo ?? "";
     return message;
   },
 };
@@ -1482,6 +1844,137 @@ export const WorkspaceServiceDefinition = {
               47,
               42,
               125,
+            ]),
+          ],
+        },
+      },
+    },
+    /** Gets the default system prompt for AI tag recommendations. */
+    getDefaultTagRecommendationPrompt: {
+      name: "GetDefaultTagRecommendationPrompt",
+      requestType: GetDefaultTagRecommendationPromptRequest,
+      requestStream: false,
+      responseType: GetDefaultTagRecommendationPromptResponse,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          578365826: [
+            new Uint8Array([
+              56,
+              18,
+              54,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              119,
+              111,
+              114,
+              107,
+              115,
+              112,
+              97,
+              99,
+              101,
+              47,
+              97,
+              105,
+              47,
+              116,
+              97,
+              103,
+              45,
+              114,
+              101,
+              99,
+              111,
+              109,
+              109,
+              101,
+              110,
+              100,
+              97,
+              116,
+              105,
+              111,
+              110,
+              47,
+              100,
+              101,
+              102,
+              97,
+              117,
+              108,
+              116,
+              45,
+              112,
+              114,
+              111,
+              109,
+              112,
+              116,
+            ]),
+          ],
+        },
+      },
+    },
+    /** Tests AI API connection and configuration. */
+    testAiConnection: {
+      name: "TestAiConnection",
+      requestType: TestAiConnectionRequest,
+      requestStream: false,
+      responseType: TestAiConnectionResponse,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          578365826: [
+            new Uint8Array([
+              41,
+              58,
+              1,
+              42,
+              34,
+              36,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              119,
+              111,
+              114,
+              107,
+              115,
+              112,
+              97,
+              99,
+              101,
+              47,
+              97,
+              105,
+              47,
+              116,
+              101,
+              115,
+              116,
+              45,
+              99,
+              111,
+              110,
+              110,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
             ]),
           ],
         },

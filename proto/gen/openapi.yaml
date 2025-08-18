@@ -1164,6 +1164,31 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/memos:suggest-tags:
+        post:
+            tags:
+                - MemoService
+            description: SuggestMemoTags suggests tags for memo content.
+            operationId: MemoService_SuggestMemoTags
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SuggestMemoTagsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SuggestMemoTagsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/reactions/{reaction}:
         delete:
             tags:
@@ -2083,6 +2108,50 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/workspace/ai/tag-recommendation/default-prompt:
+        get:
+            tags:
+                - WorkspaceService
+            description: Gets the default system prompt for AI tag recommendations.
+            operationId: WorkspaceService_GetDefaultTagRecommendationPrompt
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetDefaultTagRecommendationPromptResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/workspace/ai/test-connection:
+        post:
+            tags:
+                - WorkspaceService
+            description: Tests AI API connection and configuration.
+            operationId: WorkspaceService_TestAiConnection
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TestAiConnectionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TestAiConnectionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/workspace/profile:
         get:
             tags:
@@ -2478,6 +2547,13 @@ components:
                         Last time the session was accessed.
                          Used for sliding expiration calculation (last_accessed_time + 2 weeks).
                     format: date-time
+        GetDefaultTagRecommendationPromptResponse:
+            type: object
+            properties:
+                systemPrompt:
+                    type: string
+                    description: The default system prompt for tag recommendation.
+            description: Response message for GetDefaultTagRecommendationPrompt method.
         GoogleProtobufAny:
             type: object
             properties:
@@ -3390,6 +3466,27 @@ components:
             properties:
                 content:
                     type: string
+        SuggestMemoTagsRequest:
+            required:
+                - content
+            type: object
+            properties:
+                content:
+                    type: string
+                    description: Required. The content of the memo for tag suggestion.
+                existingTags:
+                    type: array
+                    items:
+                        type: string
+                    description: Optional. The existing tags for the memo.
+        SuggestMemoTagsResponse:
+            type: object
+            properties:
+                suggestedTags:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/TagSuggestion'
+                    description: The suggested tags with reasons for the memo.
         SuperscriptNode:
             type: object
             properties:
@@ -3422,6 +3519,18 @@ components:
             properties:
                 content:
                     type: string
+        TagSuggestion:
+            required:
+                - tag
+                - reason
+            type: object
+            properties:
+                tag:
+                    type: string
+                    description: The suggested tag name.
+                reason:
+                    type: string
+                    description: The reason why this tag is recommended.
         TaskListItemNode:
             type: object
             properties:
@@ -3436,6 +3545,36 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Node'
+        TestAiConnectionRequest:
+            type: object
+            properties:
+                baseUrl:
+                    type: string
+                    description: base_url is the base URL for AI API.
+                apiKey:
+                    type: string
+                    description: api_key is the API key for AI service.
+                model:
+                    type: string
+                    description: model is the AI model to use.
+                timeoutSeconds:
+                    type: integer
+                    description: timeout_seconds is the timeout for AI requests in seconds.
+                    format: int32
+            description: Request message for TestAiConnection method.
+        TestAiConnectionResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    description: success indicates whether the connection test was successful.
+                message:
+                    type: string
+                    description: message provides additional information about the test result.
+                modelInfo:
+                    type: string
+                    description: model_info contains information about the tested model (if successful).
+            description: Response message for TestAiConnection method.
         TextNode:
             type: object
             properties:
@@ -3788,6 +3927,10 @@ components:
                     type: integer
                     description: timeout_seconds is the timeout for AI requests in seconds.
                     format: int32
+                tagRecommendation:
+                    allOf:
+                        - $ref: '#/components/schemas/WorkspaceSetting_TagRecommendationConfig'
+                    description: tag_recommendation contains tag recommendation specific settings.
             description: AI configuration settings for workspace AI features.
         WorkspaceSetting_GeneralSetting:
             type: object
@@ -3888,6 +4031,20 @@ components:
                         - $ref: '#/components/schemas/StorageSetting_S3Config'
                     description: The S3 config.
             description: Storage configuration settings for workspace attachments.
+        WorkspaceSetting_TagRecommendationConfig:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                    description: enabled controls whether tag recommendation is enabled.
+                systemPrompt:
+                    type: string
+                    description: system_prompt is the custom system prompt for tag recommendation.
+                requestsPerMinute:
+                    type: integer
+                    description: requests_per_minute is the rate limit for tag recommendation requests.
+                    format: int32
+            description: Tag recommendation configuration.
 tags:
     - name: ActivityService
     - name: AttachmentService

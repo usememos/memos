@@ -482,6 +482,25 @@ export interface DeleteMemoReactionRequest {
   name: string;
 }
 
+export interface SuggestMemoTagsRequest {
+  /** Required. The content of the memo for tag suggestion. */
+  content: string;
+  /** Optional. The existing tags for the memo. */
+  existingTags: string[];
+}
+
+export interface TagSuggestion {
+  /** The suggested tag name. */
+  tag: string;
+  /** The reason why this tag is recommended. */
+  reason: string;
+}
+
+export interface SuggestMemoTagsResponse {
+  /** The suggested tags with reasons for the memo. */
+  suggestedTags: TagSuggestion[];
+}
+
 function createBaseReaction(): Reaction {
   return { name: "", creator: "", contentId: "", reactionType: "", createTime: undefined };
 }
@@ -2583,6 +2602,168 @@ export const DeleteMemoReactionRequest: MessageFns<DeleteMemoReactionRequest> = 
   },
 };
 
+function createBaseSuggestMemoTagsRequest(): SuggestMemoTagsRequest {
+  return { content: "", existingTags: [] };
+}
+
+export const SuggestMemoTagsRequest: MessageFns<SuggestMemoTagsRequest> = {
+  encode(message: SuggestMemoTagsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.content !== "") {
+      writer.uint32(10).string(message.content);
+    }
+    for (const v of message.existingTags) {
+      writer.uint32(18).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SuggestMemoTagsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSuggestMemoTagsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.content = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.existingTags.push(reader.string());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<SuggestMemoTagsRequest>): SuggestMemoTagsRequest {
+    return SuggestMemoTagsRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<SuggestMemoTagsRequest>): SuggestMemoTagsRequest {
+    const message = createBaseSuggestMemoTagsRequest();
+    message.content = object.content ?? "";
+    message.existingTags = object.existingTags?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseTagSuggestion(): TagSuggestion {
+  return { tag: "", reason: "" };
+}
+
+export const TagSuggestion: MessageFns<TagSuggestion> = {
+  encode(message: TagSuggestion, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.tag !== "") {
+      writer.uint32(10).string(message.tag);
+    }
+    if (message.reason !== "") {
+      writer.uint32(18).string(message.reason);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TagSuggestion {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTagSuggestion();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.tag = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.reason = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<TagSuggestion>): TagSuggestion {
+    return TagSuggestion.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<TagSuggestion>): TagSuggestion {
+    const message = createBaseTagSuggestion();
+    message.tag = object.tag ?? "";
+    message.reason = object.reason ?? "";
+    return message;
+  },
+};
+
+function createBaseSuggestMemoTagsResponse(): SuggestMemoTagsResponse {
+  return { suggestedTags: [] };
+}
+
+export const SuggestMemoTagsResponse: MessageFns<SuggestMemoTagsResponse> = {
+  encode(message: SuggestMemoTagsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.suggestedTags) {
+      TagSuggestion.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SuggestMemoTagsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSuggestMemoTagsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.suggestedTags.push(TagSuggestion.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<SuggestMemoTagsResponse>): SuggestMemoTagsResponse {
+    return SuggestMemoTagsResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<SuggestMemoTagsResponse>): SuggestMemoTagsResponse {
+    const message = createBaseSuggestMemoTagsResponse();
+    message.suggestedTags = object.suggestedTags?.map((e) => TagSuggestion.fromPartial(e)) || [];
+    return message;
+  },
+};
+
 export type MemoServiceDefinition = typeof MemoServiceDefinition;
 export const MemoServiceDefinition = {
   name: "MemoService",
@@ -3399,6 +3580,54 @@ export const MemoServiceDefinition = {
               47,
               42,
               125,
+            ]),
+          ],
+        },
+      },
+    },
+    /** SuggestMemoTags suggests tags for memo content. */
+    suggestMemoTags: {
+      name: "SuggestMemoTags",
+      requestType: SuggestMemoTagsRequest,
+      requestStream: false,
+      responseType: SuggestMemoTagsResponse,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          578365826: [
+            new Uint8Array([
+              31,
+              58,
+              1,
+              42,
+              34,
+              26,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              109,
+              101,
+              109,
+              111,
+              115,
+              58,
+              115,
+              117,
+              103,
+              103,
+              101,
+              115,
+              116,
+              45,
+              116,
+              97,
+              103,
+              115,
             ]),
           ],
         },
