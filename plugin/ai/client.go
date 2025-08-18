@@ -11,7 +11,7 @@ import (
 
 	"github.com/openai/openai-go/v2"
 	"github.com/openai/openai-go/v2/option"
-	
+
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -51,9 +51,9 @@ func LoadConfigFromEnv() *Config {
 		TimeoutSeconds: timeoutSeconds,
 	}
 
-	// Enable AI if all required fields are provided
-	config.Enabled = config.BaseURL != "" && config.APIKey != "" && config.Model != ""
-	
+	// Enable AI if all required fields are provided (API Key is optional for local services like Ollama)
+	config.Enabled = config.BaseURL != "" && config.Model != ""
+
 	return config
 }
 
@@ -81,7 +81,7 @@ func LoadConfigFromDatabase(aiSetting *storepb.WorkspaceAISetting) *Config {
 // Environment variables take precedence if they are set
 func (c *Config) MergeWithEnv() *Config {
 	envConfig := LoadConfigFromEnv()
-	
+
 	// Start with current config
 	merged := &Config{
 		Enabled:        c.Enabled,
@@ -90,7 +90,7 @@ func (c *Config) MergeWithEnv() *Config {
 		Model:          c.Model,
 		TimeoutSeconds: c.TimeoutSeconds,
 	}
-	
+
 	// Override with env vars if they are set
 	if envConfig.BaseURL != "" {
 		merged.BaseURL = envConfig.BaseURL
@@ -104,16 +104,16 @@ func (c *Config) MergeWithEnv() *Config {
 	if os.Getenv("AI_TIMEOUT_SECONDS") != "" {
 		merged.TimeoutSeconds = envConfig.TimeoutSeconds
 	}
-	
-	// Enable if all required fields are present
-	merged.Enabled = merged.BaseURL != "" && merged.APIKey != "" && merged.Model != ""
-	
+
+	// Enable if all required fields are present (API Key is optional for local services like Ollama)
+	merged.Enabled = merged.BaseURL != "" && merged.Model != ""
+
 	return merged
 }
 
 // IsConfigured returns true if AI is properly configured
 func (c *Config) IsConfigured() bool {
-	return c.Enabled && c.BaseURL != "" && c.APIKey != "" && c.Model != ""
+	return c.Enabled && c.BaseURL != "" && c.Model != ""
 }
 
 // Client wraps OpenAI client with convenience methods

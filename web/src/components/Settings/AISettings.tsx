@@ -48,8 +48,8 @@ const AISettings = observer(() => {
   };
 
   const updateSetting = async () => {
-    if (aiSetting.enableAi && (!aiSetting.apiKey || !aiSetting.model)) {
-      toast.error(t("setting.ai-section.api-key-model-required"));
+    if (aiSetting.enableAi && !aiSetting.model) {
+      toast.error(t("setting.ai-section.model-required"));
       return;
     }
 
@@ -65,7 +65,7 @@ const AISettings = observer(() => {
   const resetSetting = () => setAiSetting(originalSetting);
 
   const testConnection = async () => {
-    if (!aiSetting.baseUrl || !aiSetting.apiKey || !aiSetting.model) {
+    if (!aiSetting.baseUrl || !aiSetting.model) {
       toast.error(t("setting.ai-section.test-connection-incomplete"));
       return;
     }
@@ -222,7 +222,7 @@ const AISettings = observer(() => {
             <Button
               variant="outline"
               onClick={testConnection}
-              disabled={isTestingConnection || !aiSetting.baseUrl || !aiSetting.apiKey || !aiSetting.model}
+              disabled={isTestingConnection || !aiSetting.baseUrl || !aiSetting.model}
             >
               {isTestingConnection ? t("setting.ai-section.testing-connection") : t("setting.ai-section.test-connection")}
             </Button>

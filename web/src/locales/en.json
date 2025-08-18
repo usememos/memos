@@ -331,7 +331,7 @@
       "base-url": "Base URL",
       "base-url-description": "API endpoint for your AI service (e.g., https://api.openai.com/v1)",
       "api-key": "API Key",
-      "api-key-description": "Authentication key for your AI service",
+      "api-key-description": "Authentication key for your AI service (optional for local services like Ollama)",
       "model": "Model",
       "model-description": "AI model to use for processing requests (e.g., gpt-4o, claude-3-5-sonnet-20241022)",
       "timeout": "Timeout (seconds)",
@@ -341,9 +341,8 @@
       "test-connection-description": "Verify that your AI service configuration is working",
       "test-connection-success": "Connection successful! AI service is properly configured.",
       "test-connection-failed": "Connection failed. Please check your configuration.",
-      "test-connection-incomplete": "Please fill in all required fields before testing.",
-      "fields-required": "All fields are required when AI is enabled.",
-      "api-key-model-required": "API key and model are required when AI is enabled."
+      "test-connection-incomplete": "Please fill in Base URL and Model before testing.",
+      "model-required": "Model is required when AI is enabled."
     },
     "tag-recommendation": {
       "title": "Tag Recommendation",

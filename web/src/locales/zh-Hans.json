@@ -329,7 +329,7 @@
       "base-url": "基础 URL",
       "base-url-description": "AI 服务的 API 端点（例如：https://api.openai.com/v1）",
       "api-key": "API 密钥",
-      "api-key-description": "AI 服务的身份验证密钥",
+      "api-key-description": "AI 服务的身份验证密钥（本地服务如 Ollama 可选）",
       "model": "模型",
       "model-description": "用于处理请求的 AI 模型（例如：gpt-4o, claude-3-5-sonnet-20241022）",
       "timeout": "超时（秒）",
@@ -339,9 +339,8 @@
       "test-connection-description": "验证您的 AI 服务配置是否正常工作",
       "test-connection-success": "连接成功！AI 服务配置正确。",
       "test-connection-failed": "连接失败。请检查您的配置。",
-      "test-connection-incomplete": "请在测试前填写所有必填字段。",
-      "fields-required": "启用 AI 时，所有字段都是必填的。",
-      "api-key-model-required": "启用 AI 时，API 密钥和模型是必填的。"
+      "test-connection-incomplete": "请在测试前填写基础 URL 和模型。",
+      "model-required": "启用 AI 时，模型是必填的。"
     },
     "sso": "单点登录",
     "sso-section": {

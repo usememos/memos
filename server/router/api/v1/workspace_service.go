@@ -397,12 +397,6 @@ func (s *APIV1Service) TestAiConnection(ctx context.Context, request *v1pb.TestA
 			Message: "Base URL is required",
 		}, nil
 	}
-	if request.ApiKey == "" {
-		return &v1pb.TestAiConnectionResponse{
-			Success: false,
-			Message: "API Key is required",
-		}, nil
-	}
 	if request.Model == "" {
 		return &v1pb.TestAiConnectionResponse{
 			Success: false,
