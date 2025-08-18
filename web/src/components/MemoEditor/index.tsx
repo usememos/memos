@@ -476,17 +476,24 @@ const MemoEditor = observer((props: Props) => {
     if (!editorRef.current) return;
 
     const content = editorRef.current.getContent();
-    const lastChar = content.slice(-1);
 
     // Move cursor to end of content
     editorRef.current.setCursorPosition(content.length);
 
-    if (content !== "" && lastChar !== "\n") {
-      editorRef.current.insertText("\n");
-    }
+    // Check if content ends with a tag
+    const tagAtEndRegex = /#[a-zA-Z0-9_\-\u4e00-\u9fa5]+\s*$/;
 
-    editorRef.current.insertText("\n");
-    editorRef.current.insertText(`#${tag} `);
+    if (tagAtEndRegex.test(content)) {
+      // Content ends with a tag, just add a space and the new tag
+      editorRef.current.insertText(` #${tag} `);
+    } else {
+      // Content ends with regular text, add newline then tag
+      const lastChar = content.slice(-1);
+      if (content !== "" && lastChar !== "\n") {
+        editorRef.current.insertText("\n");
+      }
+      editorRef.current.insertText(`#${tag} `);
+    }
 
     // Scroll to the bottom to show the newly added tag
     editorRef.current.scrollToCursor();
@@ -502,20 +509,27 @@ const MemoEditor = observer((props: Props) => {
     if (!editorRef.current || state.recommendedTags.length === 0) return;
 
     const content = editorRef.current.getContent();
-    const lastChar = content.slice(-1);
 
     // Move cursor to end of content
     editorRef.current.setCursorPosition(content.length);
 
-    if (content !== "" && lastChar !== "\n") {
-      editorRef.current.insertText("\n");
-    }
-
-    editorRef.current.insertText("\n");
+    // Check if content ends with a tag
+    const tagAtEndRegex = /#[a-zA-Z0-9_\-\u4e00-\u9fa5]+\s*$/;
 
     // Add all tags
-    const tagsText = state.recommendedTags.map((tagSuggestion) => `#${tagSuggestion.tag}`).join(" ") + " ";
-    editorRef.current.insertText(tagsText);
+    const tagsText = state.recommendedTags.map((tagSuggestion) => `#${tagSuggestion.tag}`).join(" ");
+
+    if (tagAtEndRegex.test(content)) {
+      // Content ends with a tag, just add a space and the new tags
+      editorRef.current.insertText(` ${tagsText} `);
+    } else {
+      // Content ends with regular text, add newline then tags
+      const lastChar = content.slice(-1);
+      if (content !== "" && lastChar !== "\n") {
+        editorRef.current.insertText("\n");
+      }
+      editorRef.current.insertText(`${tagsText} `);
+    }
 
     // Scroll to the bottom to show the newly added tags
     editorRef.current.scrollToCursor();
