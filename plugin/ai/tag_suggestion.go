@@ -21,6 +21,7 @@ Guidelines:
 - Focus on the main topics, concepts, and keywords in the content
 - If the note mentions specific people, places, projects, or tools, consider including them as tags
 - Keep tags concise and practical for search and organization
+- When existing tags are provided, prefer to reuse similar or synonymous tags
 
 Output format: Provide your suggestions as a list in this format:
 [tag1](reason for this tag) [tag2](reason for this tag) [tag3](reason for this tag)
