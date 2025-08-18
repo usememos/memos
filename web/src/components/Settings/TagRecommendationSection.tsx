@@ -46,7 +46,7 @@ const TagRecommendationSection = observer(({ aiSetting, onSettingChange, disable
         systemPrompt: "",
         requestsPerMinute: 10,
       });
-    
+
     setOriginalTagConfig(newTagConfig);
     setTagConfig(newTagConfig);
   }, [aiSetting]);
@@ -80,7 +80,7 @@ const TagRecommendationSection = observer(({ aiSetting, onSettingChange, disable
         name: `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.AI}`,
         aiSetting: newAiSetting,
       });
-      
+
       setOriginalTagConfig(newTagConfig);
       setTagConfig(newTagConfig);
       onSettingChange(newAiSetting);

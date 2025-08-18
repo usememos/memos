@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { workspaceServiceClient } from "@/grpcweb";
 import { workspaceStore } from "@/store";
 import { workspaceSettingNamePrefix } from "@/store/common";
 import { WorkspaceSetting_AiSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
@@ -20,6 +21,7 @@ const AISettings = observer(() => {
   const [originalSetting, setOriginalSetting] = useState<WorkspaceSetting_AiSetting>(workspaceStore.state.aiSetting);
   const [aiSetting, setAiSetting] = useState<WorkspaceSetting_AiSetting>(originalSetting);
   const [showApiKey, setShowApiKey] = useState(false);
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
 
   const updatePartialSetting = (partial: Partial<WorkspaceSetting_AiSetting>) => {
     setAiSetting(WorkspaceSetting_AiSetting.fromPartial({ ...aiSetting, ...partial }));
@@ -61,6 +63,34 @@ const AISettings = observer(() => {
   };
 
   const resetSetting = () => setAiSetting(originalSetting);
+
+  const testConnection = async () => {
+    if (!aiSetting.baseUrl || !aiSetting.apiKey || !aiSetting.model) {
+      toast.error(t("setting.ai-section.test-connection-incomplete"));
+      return;
+    }
+
+    setIsTestingConnection(true);
+    try {
+      const response = await workspaceServiceClient.testAiConnection({
+        baseUrl: aiSetting.baseUrl || "https://api.openai.com/v1",
+        apiKey: aiSetting.apiKey,
+        model: aiSetting.model,
+        timeoutSeconds: aiSetting.timeoutSeconds || 10,
+      });
+
+      if (response.success) {
+        toast.success(t("setting.ai-section.test-connection-success"));
+      } else {
+        toast.error(`${t("setting.ai-section.test-connection-failed")}: ${response.message}`);
+      }
+    } catch (error: any) {
+      console.error("AI connection test failed:", error);
+      toast.error(`${t("setting.ai-section.test-connection-failed")}: ${error.message || error}`);
+    } finally {
+      setIsTestingConnection(false);
+    }
+  };
 
   // 只比较全局AI配置的变化，不包括子功能配置
   const globalSettingChanged = !isEqual(
@@ -188,13 +218,22 @@ const AISettings = observer(() => {
 
         {/* Action Buttons */}
         {aiSetting.enableAi && (
-          <div className="w-full flex flex-row justify-end items-center gap-2 mt-4">
-            <Button variant="outline" onClick={resetSetting} disabled={!globalSettingChanged}>
-              {t("common.cancel")}
+          <div className="w-full flex flex-row justify-between items-center gap-2 mt-4">
+            <Button
+              variant="outline"
+              onClick={testConnection}
+              disabled={isTestingConnection || !aiSetting.baseUrl || !aiSetting.apiKey || !aiSetting.model}
+            >
+              {isTestingConnection ? t("setting.ai-section.testing-connection") : t("setting.ai-section.test-connection")}
             </Button>
-            <Button onClick={updateSetting} disabled={!globalSettingChanged}>
-              {t("common.save")}
-            </Button>
+            <div className="flex flex-row items-center gap-2">
+              <Button variant="outline" onClick={resetSetting} disabled={!globalSettingChanged}>
+                {t("common.cancel")}
+              </Button>
+              <Button onClick={updateSetting} disabled={!globalSettingChanged}>
+                {t("common.save")}
+              </Button>
+            </div>
           </div>
         )}
       </div>
