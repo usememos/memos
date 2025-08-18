@@ -19,13 +19,23 @@ A modern, open-source, self-hosted knowledge management and note-taking platform
 
 ![Memos Application Screenshot](https://www.usememos.com/demo.png)
 
+<!-- Premium Sponsors -->
+<!--
+<div align="center">
+  <p><em>Support Memos development and get your brand featured here</em></p>
+  <a href="https://sponsor-website.com" target="_blank">
+    <img src="https://sponsor-logo-url.com/logo.png" alt="Sponsor Name" height="60" style="margin: 10px;">
+  </a>
+</div>
+-->
+
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Overview](#overview)
 - [Key Features](#key-features)
 - [Quick Start](#quick-start)
-- [Installation Methods](#installation-methods)
-- [Development Setup](#development-setup)
+- [Sponsors](#sponsors)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -35,53 +45,42 @@ Memos is a lightweight, self-hosted alternative to cloud-based note-taking servi
 
 ## Key Features
 
-### Data Privacy and Security
+### Privacy & Security
 
-- **Complete Data Ownership**: All application data is stored locally in your chosen database
-- **Self-Hosted Architecture**: Full control over your data infrastructure and access policies
-- **No External Dependencies**: Runtime operations require no third-party services or cloud connections
+- **Complete Data Ownership** — All data stored locally in your chosen database
+- **Self-Hosted Architecture** — Full control over infrastructure and access policies
+- **No External Dependencies** — Zero third-party services or cloud connections required
 
-### Content Creation and Management
+### Content Creation
 
-- **Plain Text Efficiency**: Streamlined text input with immediate save functionality
-- **Advanced Markdown Support**: Comprehensive Markdown rendering with syntax highlighting
-- **Rich Media Integration**: Support for images, links, and embedded content
+- **Instant Save** — Streamlined plain text input with automatic persistence
+- **Rich Markdown Support** — Full Markdown rendering with syntax highlighting
+- **Media Integration** — Native support for images, links, and embedded content
 
-### Technical Excellence
+### Performance & Technology
 
-- **High-Performance Backend**: Built with Go for optimal resource utilization and scalability
-- **Modern Frontend**: React.js-based user interface with responsive design
-- **Lightweight Deployment**: Minimal system requirements with efficient resource consumption
-- **Cross-Platform Compatibility**: Supports Linux, macOS, Windows, and containerized environments
+- **High-Performance Backend** — Built with Go for optimal resource utilization
+- **Modern React Frontend** — Responsive, intuitive user interface
+- **Lightweight Deployment** — Minimal system requirements, maximum efficiency
+- **Cross-Platform** — Linux, macOS, Windows, and containerized environments
 
-### Customization and Extensibility
+### Customization
 
-- **Configurable Interface**: Customizable server branding, themes, and user interface elements
-- **API-First Design**: RESTful API with comprehensive documentation for third-party integrations
-- **Multi-Database Support**: Compatible with SQLite, PostgreSQL, and MySQL databases
+- **Configurable Interface** — Custom branding, themes, and UI elements
+- **API-First Design** — RESTful API for seamless third-party integrations
+- **Multi-Database Support** — SQLite, PostgreSQL, and MySQL compatibility
 
-### Cost-Effective Solution
+### Cost-Effective
 
-- **Open Source License**: MIT licensed with full source code availability
-- **Zero Licensing Costs**: No subscription fees, usage limits, or premium tiers
-- **Community-Driven Development**: Active community contribution and transparent development process
+- **Open Source (MIT)** — Full source code availability with permissive licensing
+- **Zero Subscription Fees** — No usage limits, premium tiers, or hidden costs
+- **Community-Driven** — Transparent development with active community support
 
 ## Quick Start
 
-### Prerequisites
-
-- [Docker](https://www.docker.com/) or Docker Compose installed on your system
-- Minimum 512MB RAM and 1GB available disk space
-
-### Docker Deployment
-
-Deploy Memos in production mode using Docker:
+Get Memos running in under 1 minutes with Docker:
 
 ```bash
-# Create data directory
-mkdir -p ~/.memos
-
-# Run Memos container
 docker run -d \
   --name memos \
   --restart unless-stopped \
@@ -90,134 +89,46 @@ docker run -d \
   neosmemo/memos:stable
 ```
 
-Access the application at `http://localhost:5230` and complete the initial setup process.
+Access Memos at `http://localhost:5230` and complete the initial setup.
 
-### Docker Compose Deployment
+**Alternative methods**: For Docker Compose, Kubernetes, binary installation, or building from source, see our [Installation Guide](https://www.usememos.com/docs/install).
 
-For advanced configurations, use Docker Compose:
+**Pro Tip**: The data directory stores all your notes, uploads, and settings. Include it in your backup strategy!
 
-```yaml
-# docker-compose.yml
-version: "3.8"
-services:
-  memos:
-    image: neosmemo/memos:stable
-    container_name: memos
-    restart: unless-stopped
-    ports:
-      - "5230:5230"
-    volumes:
-      - ./data:/var/opt/memos
-    environment:
-      - MEMOS_MODE=prod
-      - MEMOS_PORT=5230
-```
+## Sponsors
 
-Deploy with:
+Memos is made possible by the generous support of our sponsors. Their contributions help ensure the project's continued development, maintenance, and growth.
 
-```bash
-docker-compose up -d
-```
+<a href="https://github.com/yourselfhosted" target="_blank"><img src="https://avatars.githubusercontent.com/u/140182318?v=4" alt="yourselfhosted" height="60" /></a>
+<a href="https://github.com/fixermark" target="_blank"><img src="https://avatars.githubusercontent.com/u/169982?v=4" alt="fixermark" height="60" /></a>
+<a href="https://github.com/alik-agaev" target="_blank"><img src="https://avatars.githubusercontent.com/u/2662697?v=4" alt="alik-agaev" height="60" /></a>
 
-> **Note**: The data directory (`~/.memos/` or `./data/`) stores all application data including the database, uploaded files, and configuration. Ensure this directory is included in your backup strategy.
->
-> **Platform Compatibility**: The above commands are optimized for Unix-like systems (Linux, macOS). For Windows deployments, please refer to the [Windows-specific documentation](https://www.usememos.com/docs/install/container-install#docker-on-windows).
+<p><strong>Every contribution, no matter the size, makes a difference!</strong></p>
 
-## Installation Methods
-
-Memos supports multiple installation approaches to accommodate different deployment scenarios:
-
-### Container Deployment
-
-- **Docker Hub**: Official images available at `neosmemo/memos`
-- **GitHub Container Registry**: Alternative registry with the same image versions
-- **Kubernetes**: Helm charts and YAML manifests for cluster deployments
-
-### Binary Installation
-
-- **Pre-compiled Binaries**: Available for Linux, macOS, and Windows on the [releases page](https://github.com/usememos/memos/releases)
-
-### Source Installation
-
-- **Go Build**: Compile from source using Go 1.24 or later
-- **Development Mode**: Local development setup with hot reloading
-
-For detailed installation instructions, refer to the [comprehensive installation guide](https://www.usememos.com/docs/install).
-
-## Development Setup
-
-### Prerequisites
-
-- [Go 1.24](https://go.dev/) or later
-- [Node.js 22+](https://nodejs.org/en) and [pnpm](https://pnpm.io/)
-- [Git](https://git-scm.com/) for version control
-
-### Backend Development
-
-```bash
-# Clone the repository
-git clone https://github.com/usememos/memos.git
-cd memos
-
-# Install Go dependencies
-go mod download
-
-# Run the backend server
-go run ./bin/memos/main.go --mode dev --port 8081
-```
-
-### Frontend Development
-
-```bash
-# Navigate to web directory
-cd web
-
-# Install dependencies
-pnpm install
-
-# Start development server
-pnpm dev
-```
-
-The development servers will be available at:
-
-- Backend API: `http://localhost:8081`
-- Frontend: `http://localhost:3001`
+<a href="https://github.com/sponsors/usememos" target="_blank">
+  <img src="https://img.shields.io/badge/Sponsor-❤️-red?style=for-the-badge" alt="Sponsor Memos">
+</a>
 
 ## Contributing
 
-Memos is an open-source project that welcomes contributions from developers, designers, and users worldwide. We maintain a collaborative and inclusive development environment that values quality, innovation, and community feedback.
+Memos welcomes contributions from developers, designers, and users worldwide. We value quality, innovation, and community feedback.
 
-### Ways to Contribute
+**Ways to Contribute:**
 
-- **Code Contributions**: Bug fixes, feature implementations, and performance improvements
-- **Documentation**: API documentation, user guides, and technical specifications
-- **Testing**: Quality assurance, test case development, and bug reporting
-- **Localization**: Translation support for multiple languages and regions
-- **Community Support**: Helping users on Discord, GitHub discussions, and forums
+- Code contributions (bug fixes, features, performance improvements)
+- Documentation and user guides
+- Testing and bug reporting
+- Localization and translation
+- Community support
+
+**Get Started**: [Contributing Guide](https://github.com/usememos/memos/blob/main/CONTRIBUTING.md) • [Development Workflow](https://www.usememos.com/docs/development) • [Code of Conduct](https://github.com/usememos/memos/blob/main/CODE_OF_CONDUCT.md)
 
 ## License
 
-Memos is released under the MIT License, providing maximum flexibility for both personal and commercial use. This license allows for:
+Memos is released under the [MIT License](./LICENSE).
 
-- **Commercial Use**: Deploy Memos in commercial environments without licensing fees
-- **Modification**: Adapt and customize the codebase for specific requirements
-- **Distribution**: Share modified versions while maintaining license attribution
-- **Private Use**: Use Memos internally without disclosure requirements
+---
 
-See the [LICENSE](./LICENSE) file for complete licensing terms.
-
-## Project Status
-
-> **Development Status**: Memos is actively maintained and under continuous development. While the core functionality is stable and production-ready, users should expect regular updates, feature additions, and potential breaking changes as the project evolves.
->
-> **Version Compatibility**: We maintain backward compatibility for data storage and API interfaces where possible. Migration guides are provided for major version transitions.
-
-## Support and Community
-
-- **Documentation**: [Official Documentation](https://www.usememos.com/docs)
-- **Community Chat**: [Discord Server](https://discord.gg/tfPJa4UmAv)
-- **Issue Tracking**: [GitHub Issues](https://github.com/usememos/memos/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/usememos/memos/discussions)
+**Links**: [Documentation](https://www.usememos.com/docs) • [Discord](https://discord.gg/tfPJa4UmAv) • [GitHub Issues](https://github.com/usememos/memos/issues)
 
 [![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
