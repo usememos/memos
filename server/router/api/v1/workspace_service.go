@@ -378,3 +378,85 @@ func (s *APIV1Service) GetDefaultTagRecommendationPrompt(ctx context.Context, _ 
 		SystemPrompt: ai.GetDefaultSystemPrompt(),
 	}, nil
 }
+
+// TestAiConnection tests the AI API connection and configuration.
+func (s *APIV1Service) TestAiConnection(ctx context.Context, request *v1pb.TestAiConnectionRequest) (*v1pb.TestAiConnectionResponse, error) {
+	// Check permissions - only host can test AI connection
+	user, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if user == nil || user.Role != store.RoleHost {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	// Validate request
+	if request.BaseUrl == "" {
+		return &v1pb.TestAiConnectionResponse{
+			Success: false,
+			Message: "Base URL is required",
+		}, nil
+	}
+	if request.ApiKey == "" {
+		return &v1pb.TestAiConnectionResponse{
+			Success: false,
+			Message: "API Key is required",
+		}, nil
+	}
+	if request.Model == "" {
+		return &v1pb.TestAiConnectionResponse{
+			Success: false,
+			Message: "Model is required",
+		}, nil
+	}
+
+	// Create AI config for testing
+	config := &ai.Config{
+		Enabled:        true,
+		BaseURL:        request.BaseUrl,
+		APIKey:         request.ApiKey,
+		Model:          request.Model,
+		TimeoutSeconds: int(request.TimeoutSeconds),
+	}
+
+	// Default timeout if not specified
+	if config.TimeoutSeconds <= 0 {
+		config.TimeoutSeconds = 10
+	}
+
+	// Create AI client
+	client, err := ai.NewClient(config)
+	if err != nil {
+		return &v1pb.TestAiConnectionResponse{
+			Success: false,
+			Message: fmt.Sprintf("Failed to create AI client: %v", err),
+		}, nil
+	}
+
+	// Test with a simple chat request
+	chatRequest := &ai.ChatRequest{
+		Messages: []ai.Message{
+			{
+				Role:    "user",
+				Content: "Hello, please respond with 'AI connection test successful'",
+			},
+		},
+		MaxTokens:   50,
+		Temperature: 0.1,
+	}
+
+	response, err := client.Chat(ctx, chatRequest)
+	if err != nil {
+		return &v1pb.TestAiConnectionResponse{
+			Success: false,
+			Message: fmt.Sprintf("AI API test failed: %v", err),
+		}, nil
+	}
+
+	// Test successful
+	return &v1pb.TestAiConnectionResponse{
+		Success:   true,
+		Message:   "AI connection test successful",
+		ModelInfo: fmt.Sprintf("Model: %s, Response: %s", request.Model, response.Content),
+	}, nil
+}

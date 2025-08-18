@@ -35,6 +35,14 @@ service WorkspaceService {
   rpc GetDefaultTagRecommendationPrompt(GetDefaultTagRecommendationPromptRequest) returns (GetDefaultTagRecommendationPromptResponse) {
     option (google.api.http) = {get: "/api/v1/workspace/ai/tag-recommendation/default-prompt"};
   }
+
+  // Tests AI API connection and configuration.
+  rpc TestAiConnection(TestAiConnectionRequest) returns (TestAiConnectionResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/workspace/ai/test-connection"
+      body: "*"
+    };
+  }
 }
 
 // Workspace profile message containing basic workspace information.
@@ -232,4 +240,26 @@ message GetDefaultTagRecommendationPromptRequest {}
 message GetDefaultTagRecommendationPromptResponse {
   // The default system prompt for tag recommendation.
   string system_prompt = 1;
+}
+
+// Request message for TestAiConnection method.
+message TestAiConnectionRequest {
+  // base_url is the base URL for AI API.
+  string base_url = 1;
+  // api_key is the API key for AI service.
+  string api_key = 2;
+  // model is the AI model to use.
+  string model = 3;
+  // timeout_seconds is the timeout for AI requests in seconds.
+  int32 timeout_seconds = 4;
+}
+
+// Response message for TestAiConnection method.
+message TestAiConnectionResponse {
+  // success indicates whether the connection test was successful.
+  bool success = 1;
+  // message provides additional information about the test result.
+  string message = 2;
+  // model_info contains information about the tested model (if successful).
+  string model_info = 3;
 }
