@@ -36,6 +36,7 @@ const TagRecommendationSection = observer(({ aiSetting, onSettingChange, disable
   );
   const [tagConfig, setTagConfig] = useState<WorkspaceSetting_TagRecommendationConfig>(originalTagConfig);
   const [defaultPrompt, setDefaultPrompt] = useState<string>("");
+  const [hasAutoFilledDefault, setHasAutoFilledDefault] = useState<boolean>(false);
 
   // Sync local state when aiSetting changes
   useEffect(() => {
@@ -49,6 +50,8 @@ const TagRecommendationSection = observer(({ aiSetting, onSettingChange, disable
 
     setOriginalTagConfig(newTagConfig);
     setTagConfig(newTagConfig);
+    // Reset auto-fill state when aiSetting changes
+    setHasAutoFilledDefault(false);
   }, [aiSetting]);
 
   // Fetch default system prompt on component mount
@@ -93,6 +96,28 @@ const TagRecommendationSection = observer(({ aiSetting, onSettingChange, disable
 
   const updateTagConfig = (partial: Partial<WorkspaceSetting_TagRecommendationConfig>) => {
     setTagConfig(WorkspaceSetting_TagRecommendationConfig.fromPartial({ ...tagConfig, ...partial }));
+
+    // Reset auto-fill state when user manually changes the content
+    if (partial.systemPrompt !== undefined && partial.systemPrompt.trim() === "") {
+      setHasAutoFilledDefault(false);
+    }
+  };
+
+  const handleTextareaFocus = async (e: React.FocusEvent<HTMLTextAreaElement>) => {
+    // Only auto-fill if the textarea is empty and we haven't already auto-filled
+    if (!tagConfig.systemPrompt.trim() && !hasAutoFilledDefault && defaultPrompt) {
+      // Set the default prompt
+      updateTagConfig({ systemPrompt: defaultPrompt });
+      setHasAutoFilledDefault(true);
+
+      // Move cursor to the end after the content is set
+      setTimeout(() => {
+        const textarea = e.target;
+        const length = defaultPrompt.length;
+        textarea.setSelectionRange(length, length);
+        textarea.focus();
+      }, 0);
+    }
   };
 
   const saveTagConfig = async () => {
@@ -153,10 +178,11 @@ const TagRecommendationSection = observer(({ aiSetting, onSettingChange, disable
               <Label htmlFor="system-prompt">{t("setting.tag-recommendation.system-prompt")}</Label>
               <Textarea
                 id="system-prompt"
+                rows={20}
                 placeholder={defaultPrompt || t("setting.tag-recommendation.system-prompt-placeholder")}
                 value={tagConfig.systemPrompt}
                 onChange={(e) => updateTagConfig({ systemPrompt: e.target.value })}
-                className="min-h-[100px]"
+                onFocus={handleTextareaFocus}
               />
               <span className="text-sm text-gray-500">{t("setting.tag-recommendation.system-prompt-description")}</span>
             </div>
