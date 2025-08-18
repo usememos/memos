@@ -372,30 +372,27 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		return nil, status.Errorf(codes.InvalidArgument, "invalid setting key: %v", err)
 	}
 
-	// get existing user setting
-	existingUserSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
-		UserID: &userID,
-		Key:    storeKey,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if existingUserSetting == nil {
-		return nil, status.Errorf(codes.NotFound, "%s not found", storeKey.String())
-	}
-
 	// Only GENERAL settings are supported via UpdateUserSetting
 	// Other setting types have dedicated service methods
 	if storeKey != storepb.UserSetting_GENERAL {
 		return nil, status.Errorf(codes.InvalidArgument, "setting type %s should not be updated via UpdateUserSetting", storeKey.String())
 	}
 
-	// Start with existing general setting values
-	existingGeneral := existingUserSetting.GetGeneral()
+	existingUserSetting, _ := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
+		UserID: &userID,
+		Key:    storeKey,
+	})
+
+	generalSetting := &storepb.GeneralUserSetting{}
+	if existingUserSetting != nil {
+		// Start with existing general setting values
+		generalSetting = existingUserSetting.GetGeneral()
+	}
+
 	updatedGeneral := &v1pb.UserSetting_GeneralSetting{
-		MemoVisibility: existingGeneral.GetMemoVisibility(),
-		Locale:         existingGeneral.GetLocale(),
-		Theme:          existingGeneral.GetTheme(),
+		MemoVisibility: generalSetting.GetMemoVisibility(),
+		Locale:         generalSetting.GetLocale(),
+		Theme:          generalSetting.GetTheme(),
 	}
 
 	// Apply updates for fields specified in the update mask
