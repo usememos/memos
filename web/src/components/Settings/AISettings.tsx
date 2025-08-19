@@ -206,8 +206,24 @@ const AISettings = observer(() => {
                   min="5"
                   max="60"
                   placeholder="10"
-                  value={aiSetting.timeoutSeconds}
-                  onChange={(e) => updatePartialSetting({ timeoutSeconds: parseInt(e.target.value) || 10 })}
+                  value={aiSetting.timeoutSeconds || ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "") {
+                      updatePartialSetting({ timeoutSeconds: undefined });
+                    } else {
+                      const numValue = parseInt(value);
+                      if (!isNaN(numValue)) {
+                        updatePartialSetting({ timeoutSeconds: numValue });
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (isNaN(value) || value < 5 || value > 60) {
+                      updatePartialSetting({ timeoutSeconds: 10 });
+                    }
+                  }}
                 />
                 <span className="text-sm text-gray-500">{t("setting.ai-section.timeout-description")}</span>
               </div>
