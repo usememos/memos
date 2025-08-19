@@ -213,8 +213,10 @@ func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.Worksp
 }
 
 const (
-	defaultAIEnabled       = false
 	defaultAITimeoutSeconds = int32(15)
+	defaultAITagRecommandationEnabled = false
+	defaultAITagRecommandationPrompt = ""
+	defaultAITagRecommandationRPM = int32(10)
 )
 
 func (s *Store) GetWorkspaceAISetting(ctx context.Context) (*storepb.WorkspaceAISetting, error) {
@@ -241,9 +243,9 @@ func (s *Store) GetWorkspaceAISetting(ctx context.Context) (*storepb.WorkspaceAI
 	// Set default tag recommendation config if not configured
 	if workspaceAISetting.TagRecommendation == nil {
 		workspaceAISetting.TagRecommendation = &storepb.TagRecommendationConfig{
-			Enabled:           workspaceAISetting.EnableAi,
-			SystemPrompt:      "",
-			RequestsPerMinute: 10,
+			Enabled:           defaultAITagRecommandationEnabled,
+			SystemPrompt:      defaultAITagRecommandationPrompt,
+			RequestsPerMinute: defaultAITagRecommandationRPM,
 		}
 	}
 
@@ -267,8 +269,7 @@ func loadAISettingFromEnv() *storepb.WorkspaceAISetting {
 	apiKey := os.Getenv("AI_API_KEY")
 	model := os.Getenv("AI_MODEL")
 
-	// Enable AI if all required fields are provided via environment variables
-	enableAI := baseURL != "" && apiKey != "" && model != ""
+	enableAI := baseURL != "" && model != ""
 
 	return &storepb.WorkspaceAISetting{
 		EnableAi:       enableAI,
@@ -276,11 +277,6 @@ func loadAISettingFromEnv() *storepb.WorkspaceAISetting {
 		ApiKey:         apiKey,
 		Model:          model,
 		TimeoutSeconds: timeoutSeconds,
-		TagRecommendation: &storepb.TagRecommendationConfig{
-			Enabled:           enableAI,
-			SystemPrompt:      "",
-			RequestsPerMinute: 10,
-		},
 	}
 }
 
