@@ -92,7 +92,6 @@ const AISettings = observer(() => {
     }
   };
 
-  // 只比较全局AI配置的变化，不包括子功能配置
   const globalSettingChanged = !isEqual(
     {
       enableAi: originalSetting.enableAi,
@@ -110,7 +109,7 @@ const AISettings = observer(() => {
     },
   );
 
-  const handleTagRecommendationChange = (newSetting: WorkspaceSetting_AiSetting) => {
+  const handleAiFeatureSettingChange = (newSetting: WorkspaceSetting_AiSetting) => {
     setOriginalSetting(newSetting);
     setAiSetting(newSetting);
   };
@@ -249,7 +248,7 @@ const AISettings = observer(() => {
 
             <TagRecommendationSection
               aiSetting={workspaceStore.state.aiSetting}
-              onSettingChange={handleTagRecommendationChange}
+              onSettingChange={handleAiFeatureSettingChange}
               disabled={!aiSetting.enableAi}
             />
           </div>
