@@ -245,6 +245,11 @@ func TestClient_Chat_RequestDefaults(t *testing.T) {
 	assert.Equal(t, 0, req.MaxTokens)              // Should become 8192
 	assert.Equal(t, float64(0), req.Temperature)   // Should become 0.3
 	assert.Equal(t, time.Duration(0), req.Timeout) // Should become 10s
+
+	// Verify the Messages field is properly structured
+	assert.Len(t, req.Messages, 1)
+	assert.Equal(t, "user", req.Messages[0].Role)
+	assert.Equal(t, "Hello", req.Messages[0].Content)
 }
 
 func TestMessage_Roles(t *testing.T) {
@@ -275,6 +280,7 @@ func TestMessage_Roles(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.valid, validRoles[msg.Role])
+			assert.Equal(t, "test content", msg.Content)
 		})
 	}
 }

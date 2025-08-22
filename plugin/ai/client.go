@@ -2,8 +2,6 @@ package ai
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -11,11 +9,12 @@ import (
 
 	"github.com/openai/openai-go/v2"
 	"github.com/openai/openai-go/v2/option"
+	"github.com/pkg/errors"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
-// Common AI errors
+// Common AI errors.
 var (
 	ErrConfigIncomplete = errors.New("AI configuration incomplete - missing BaseURL, APIKey, or Model")
 	ErrEmptyRequest     = errors.New("chat request cannot be empty")
@@ -125,7 +124,7 @@ type Client struct {
 // NewClient creates a new AI client
 func NewClient(config *Config) (*Client, error) {
 	if config == nil {
-		return nil, fmt.Errorf("config cannot be nil")
+		return nil, errors.New("config cannot be nil")
 	}
 
 	if !config.IsConfigured() {
@@ -182,10 +181,10 @@ func (c *Client) Chat(ctx context.Context, req *ChatRequest) (*ChatResponse, err
 	// Validate messages
 	for i, msg := range req.Messages {
 		if msg.Role != "system" && msg.Role != "user" && msg.Role != "assistant" {
-			return nil, fmt.Errorf("message %d: %w", i, ErrInvalidMessage)
+			return nil, errors.Wrapf(ErrInvalidMessage, "message %d", i)
 		}
 		if strings.TrimSpace(msg.Content) == "" {
-			return nil, fmt.Errorf("message %d: %w", i, ErrEmptyContent)
+			return nil, errors.Wrapf(ErrEmptyContent, "message %d", i)
 		}
 	}
 
@@ -235,7 +234,7 @@ func (c *Client) Chat(ctx context.Context, req *ChatRequest) (*ChatResponse, err
 		Temperature: openai.Float(req.Temperature),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrAPICallFailed, err)
+		return nil, errors.Wrapf(ErrAPICallFailed, "%v", err)
 	}
 
 	if len(completion.Choices) == 0 {

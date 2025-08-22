@@ -373,7 +373,7 @@ func (s *APIV1Service) GetInstanceOwner(ctx context.Context) (*v1pb.User, error)
 }
 
 // GetDefaultTagRecommendationPrompt returns the default system prompt for AI tag recommendations.
-func (s *APIV1Service) GetDefaultTagRecommendationPrompt(ctx context.Context, _ *v1pb.GetDefaultTagRecommendationPromptRequest) (*v1pb.GetDefaultTagRecommendationPromptResponse, error) {
+func (_ *APIV1Service) GetDefaultTagRecommendationPrompt(ctx context.Context, _ *v1pb.GetDefaultTagRecommendationPromptRequest) (*v1pb.GetDefaultTagRecommendationPromptResponse, error) {
 	return &v1pb.GetDefaultTagRecommendationPromptResponse{
 		SystemPrompt: ai.GetDefaultSystemPrompt(),
 	}, nil

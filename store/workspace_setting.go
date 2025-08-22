@@ -213,10 +213,10 @@ func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.Worksp
 }
 
 const (
-	defaultAITimeoutSeconds = int32(15)
+	defaultAITimeoutSeconds           = int32(15)
 	defaultAITagRecommandationEnabled = false
-	defaultAITagRecommandationPrompt = ""
-	defaultAITagRecommandationRPM = int32(10)
+	defaultAITagRecommandationPrompt  = ""
+	defaultAITagRecommandationRPM     = int32(10)
 )
 
 func (s *Store) GetWorkspaceAISetting(ctx context.Context) (*storepb.WorkspaceAISetting, error) {
@@ -256,7 +256,7 @@ func (s *Store) GetWorkspaceAISetting(ctx context.Context) (*storepb.WorkspaceAI
 	return workspaceAISetting, nil
 }
 
-// loadAISettingFromEnv loads AI configuration from environment variables
+// loadAISettingFromEnv loads AI configuration from environment variables.
 func loadAISettingFromEnv() *storepb.WorkspaceAISetting {
 	timeoutSeconds := defaultAITimeoutSeconds
 	if timeoutStr := os.Getenv("AI_TIMEOUT_SECONDS"); timeoutStr != "" {

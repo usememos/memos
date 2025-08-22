@@ -8,6 +8,8 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // defaultSystemPrompt contains the core instructions for tag recommendation.
@@ -38,10 +40,10 @@ const userMessageTemplate = `{{if .ExistingTags}}Existing Tags: {{.ExistingTags}
 
 // TagSuggestionRequest represents a tag suggestion request
 type TagSuggestionRequest struct {
-	Content       string   // The memo content to analyze
-	UserTags      []string // User's frequently used tags (optional)
-	ExistingTags  []string // Tags already in the memo (optional)
-	SystemPrompt  string   // Custom system prompt (optional, uses default if empty)
+	Content      string   // The memo content to analyze
+	UserTags     []string // User's frequently used tags (optional)
+	ExistingTags []string // Tags already in the memo (optional)
+	SystemPrompt string   // Custom system prompt (optional, uses default if empty)
 }
 
 // TagSuggestion represents a single tag suggestion with reason
@@ -64,11 +66,11 @@ func GetDefaultSystemPrompt() string {
 func (c *Client) SuggestTags(ctx context.Context, req *TagSuggestionRequest) (*TagSuggestionResponse, error) {
 	// Validate request
 	if req == nil {
-		return nil, fmt.Errorf("request cannot be nil")
+		return nil, errors.New("request cannot be nil")
 	}
 
 	if strings.TrimSpace(req.Content) == "" {
-		return nil, fmt.Errorf("content cannot be empty")
+		return nil, errors.New("content cannot be empty")
 	}
 
 	// Prepare user tags context
@@ -131,7 +133,7 @@ func (c *Client) SuggestTags(ctx context.Context, req *TagSuggestionRequest) (*T
 }
 
 // parseTagResponse parses AI response for [tag](reason) patterns
-func (c *Client) parseTagResponse(responseText string) []TagSuggestion {
+func (_ *Client) parseTagResponse(responseText string) []TagSuggestion {
 	tags := make([]TagSuggestion, 0)
 
 	// Match [tag](reason) format using regex across response

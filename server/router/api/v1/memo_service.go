@@ -1010,7 +1010,7 @@ func (s *APIV1Service) SuggestMemoTags(ctx context.Context, request *v1pb.Sugges
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get AI setting: %v", err)
 	}
-	
+
 	// Check if tag recommendation is enabled
 	if !aiSetting.EnableAi || aiSetting.TagRecommendation == nil || !aiSetting.TagRecommendation.Enabled {
 		return &v1pb.SuggestMemoTagsResponse{
@@ -1032,13 +1032,13 @@ func (s *APIV1Service) SuggestMemoTags(ctx context.Context, request *v1pb.Sugges
 	if !tagRateLimit.checkRateLimit(currentUser.ID, maxRequestsPerMinute) {
 		return nil, status.Errorf(codes.ResourceExhausted, "标签推荐请求频率超限，每分钟最多 %d 次", maxRequestsPerMinute)
 	}
-	
+
 	aiConfig := ai.LoadConfigFromDatabase(aiSetting)
 	if !aiConfig.IsConfigured() {
 		// Fallback to environment variables if database config is not complete
 		aiConfig = aiConfig.MergeWithEnv()
 	}
-	
+
 	if aiConfig.IsConfigured() {
 		aiClient, err := ai.NewClient(aiConfig)
 		if err != nil {
