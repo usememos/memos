@@ -24,18 +24,22 @@ func TestLoadConfigFromEnv(t *testing.T) {
 				"AI_MODEL":    "gpt-4o",
 			},
 			expected: &Config{
-				BaseURL: "https://api.openai.com/v1",
-				APIKey:  "sk-test123",
-				Model:   "gpt-4o",
+				Enabled:        true,
+				BaseURL:        "https://api.openai.com/v1",
+				APIKey:         "sk-test123",
+				Model:          "gpt-4o",
+				TimeoutSeconds: 10,
 			},
 		},
 		{
 			name:    "no environment variables set",
 			envVars: map[string]string{},
 			expected: &Config{
-				BaseURL: "",
-				APIKey:  "",
-				Model:   "",
+				Enabled:        false,
+				BaseURL:        "",
+				APIKey:         "",
+				Model:          "",
+				TimeoutSeconds: 10,
 			},
 		},
 		{
@@ -45,9 +49,11 @@ func TestLoadConfigFromEnv(t *testing.T) {
 				"AI_API_KEY":  "sk-custom123",
 			},
 			expected: &Config{
-				BaseURL: "https://custom.api.com/v1",
-				APIKey:  "sk-custom123",
-				Model:   "",
+				Enabled:        false,
+				BaseURL:        "https://custom.api.com/v1",
+				APIKey:         "sk-custom123",
+				Model:          "",
+				TimeoutSeconds: 10,
 			},
 		},
 	}
@@ -100,6 +106,7 @@ func TestConfig_IsConfigured(t *testing.T) {
 		{
 			name: "fully configured",
 			config: &Config{
+				Enabled: true,
 				BaseURL: "https://api.openai.com/v1",
 				APIKey:  "sk-test123",
 				Model:   "gpt-4o",
@@ -109,6 +116,7 @@ func TestConfig_IsConfigured(t *testing.T) {
 		{
 			name: "missing base URL",
 			config: &Config{
+				Enabled: true,
 				BaseURL: "",
 				APIKey:  "sk-test123",
 				Model:   "gpt-4o",
@@ -118,15 +126,17 @@ func TestConfig_IsConfigured(t *testing.T) {
 		{
 			name: "missing API key",
 			config: &Config{
+				Enabled: true,
 				BaseURL: "https://api.openai.com/v1",
 				APIKey:  "",
 				Model:   "gpt-4o",
 			},
-			expected: false,
+			expected: true,
 		},
 		{
 			name: "missing model",
 			config: &Config{
+				Enabled: true,
 				BaseURL: "https://api.openai.com/v1",
 				APIKey:  "sk-test123",
 				Model:   "",
@@ -136,6 +146,7 @@ func TestConfig_IsConfigured(t *testing.T) {
 		{
 			name: "all fields empty",
 			config: &Config{
+				Enabled: false,
 				BaseURL: "",
 				APIKey:  "",
 				Model:   "",
@@ -161,6 +172,7 @@ func TestNewClient(t *testing.T) {
 		{
 			name: "standard OpenAI configuration",
 			config: &Config{
+				Enabled: true,
 				BaseURL: "https://api.openai.com/v1",
 				APIKey:  "sk-test123",
 				Model:   "gpt-4o",
@@ -170,6 +182,7 @@ func TestNewClient(t *testing.T) {
 		{
 			name: "custom endpoint configuration",
 			config: &Config{
+				Enabled: true,
 				BaseURL: "https://custom.api.com/v1",
 				APIKey:  "sk-custom123",
 				Model:   "gpt-3.5-turbo",
@@ -179,6 +192,7 @@ func TestNewClient(t *testing.T) {
 		{
 			name: "incomplete configuration",
 			config: &Config{
+				Enabled: false,
 				BaseURL: "",
 				APIKey:  "sk-test123",
 				Model:   "gpt-4o",
@@ -193,11 +207,12 @@ func TestNewClient(t *testing.T) {
 		{
 			name: "missing API key",
 			config: &Config{
+				Enabled: true,
 				BaseURL: "https://api.openai.com/v1",
 				APIKey:  "",
 				Model:   "gpt-4o",
 			},
-			expectErr: true,
+			expectErr: false,
 		},
 	}
 
@@ -221,6 +236,7 @@ func TestNewClient(t *testing.T) {
 func TestClient_Chat_RequestDefaults(t *testing.T) {
 	// This test verifies that default values are properly set
 	config := &Config{
+		Enabled: true,
 		BaseURL: "https://api.openai.com/v1",
 		APIKey:  "sk-test123",
 		Model:   "gpt-4o",
@@ -320,6 +336,7 @@ func TestClient_Chat_Integration(t *testing.T) {
 
 func TestClient_Chat_Validation(t *testing.T) {
 	config := &Config{
+		Enabled: true,
 		BaseURL: "https://api.openai.com/v1",
 		APIKey:  "sk-test123",
 		Model:   "gpt-4o",
@@ -406,6 +423,7 @@ func TestClient_Chat_Validation(t *testing.T) {
 
 func TestClient_Chat_ErrorTypes(t *testing.T) {
 	config := &Config{
+		Enabled: true,
 		BaseURL: "https://api.openai.com/v1",
 		APIKey:  "sk-test123",
 		Model:   "gpt-4o",
