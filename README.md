@@ -37,7 +37,7 @@ A modern, open-source, self-hosted knowledge management and note-taking platform
 - [Quick Start](#quick-start)
 - [Sponsors](#sponsors)
 - [Contributing](#contributing)
-- [License](#license)
+- [Star History](#star-history)
 
 ## Overview
 
@@ -91,7 +91,7 @@ docker run -d \
 
 Access Memos at `http://localhost:5230` and complete the initial setup.
 
-**Alternative methods**: For Docker Compose, Kubernetes, binary installation, or building from source, see our [Installation Guide](https://www.usememos.com/docs/installation).
+**Alternative methods**: For Docker Compose, binary installation, or building from source, see our [Installation Guide](https://www.usememos.com/docs/installation).
 
 **Pro Tip**: The data directory stores all your notes, uploads, and settings. Include it in your backup strategy!
 
@@ -121,14 +121,8 @@ Memos welcomes contributions from developers, designers, and users worldwide. We
 - Localization and translation
 - Community support
 
-**Get Started**: [Contributing Guide](https://github.com/usememos/memos/blob/main/CONTRIBUTING.md) • [Development Workflow](https://www.usememos.com/docs/development) • [Code of Conduct](https://github.com/usememos/memos/blob/main/CODE_OF_CONDUCT.md)
+**Get Started**: [Contributing Guide](https://github.com/usememos/memos/blob/main/CONTRIBUTING.md) • [Code of Conduct](https://github.com/usememos/memos/blob/main/CODE_OF_CONDUCT.md)
 
-## License
-
-Memos is released under the [MIT License](./LICENSE).
-
----
-
-**Links**: [Documentation](https://www.usememos.com/docs) • [Discord](https://discord.gg/tfPJa4UmAv) • [GitHub Issues](https://github.com/usememos/memos/issues)
+## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
