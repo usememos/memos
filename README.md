@@ -91,7 +91,7 @@ docker run -d \
 
 Access Memos at `http://localhost:5230` and complete the initial setup.
 
-**Alternative methods**: For Docker Compose, Kubernetes, binary installation, or building from source, see our [Installation Guide](https://www.usememos.com/docs/install).
+**Alternative methods**: For Docker Compose, Kubernetes, binary installation, or building from source, see our [Installation Guide](https://www.usememos.com/docs/installation).
 
 **Pro Tip**: The data directory stores all your notes, uploads, and settings. Include it in your backup strategy!
 
