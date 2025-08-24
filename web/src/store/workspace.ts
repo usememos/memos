@@ -126,9 +126,28 @@ const workspaceStore = (() => {
 
 export const initialWorkspaceStore = async () => {
   const workspaceProfile = await workspaceServiceClient.getWorkspaceProfile({});
+
+  // Set profile first to check if we have an owner
+  workspaceStore.state.setPartial({
+    profile: workspaceProfile,
+  });
+
+  // Only fetch settings that don't require special permissions when no owner exists
+  const settingsToFetch = [WorkspaceSetting_Key.GENERAL, WorkspaceSetting_Key.MEMO_RELATED];
+
+  // Only fetch AI setting if we have an owner (HOST user)
+  if (workspaceProfile.owner) {
+    settingsToFetch.push(WorkspaceSetting_Key.AI);
+  }
+
   // Prepare workspace settings.
-  for (const key of [WorkspaceSetting_Key.GENERAL, WorkspaceSetting_Key.MEMO_RELATED, WorkspaceSetting_Key.AI]) {
-    await workspaceStore.fetchWorkspaceSetting(key);
+  for (const key of settingsToFetch) {
+    try {
+      await workspaceStore.fetchWorkspaceSetting(key);
+    } catch (error) {
+      console.warn(`Failed to fetch workspace setting ${key}:`, error);
+      // Continue with other settings even if one fails
+    }
   }
 
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
