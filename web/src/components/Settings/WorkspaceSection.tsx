@@ -110,16 +110,6 @@ const WorkspaceSection = observer(() => {
         value={workspaceGeneralSetting.additionalScript}
         onChange={(event) => updatePartialSetting({ additionalScript: event.target.value })}
       />
-      <div className="w-full">
-        <Link
-          className="text-muted-foreground text-sm flex flex-row justify-start items-center hover:underline hover:text-primary"
-          to="https://usememos.com/docs/advanced-settings/custom-style-and-script"
-          target="_blank"
-        >
-          {t("common.learn-more")}
-          <ExternalLinkIcon className="inline w-4 h-auto ml-1" />
-        </Link>
-      </div>
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.workspace-section.disallow-user-registration")}</span>
         <Switch

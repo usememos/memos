@@ -88,7 +88,7 @@ const MarkdownMenu = (props: Props) => {
         <div className="px-2 -mt-1">
           <a
             className="text-xs text-primary hover:underline"
-            href="https://www.usememos.com/docs/getting-started/content-syntax"
+            href="https://www.usememos.com/docs/guides/content-syntax"
             target="_blank"
             rel="noopener noreferrer"
           >

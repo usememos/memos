@@ -74,7 +74,6 @@ const UserSessionsSection = () => {
           <div className="sm:flex-auto space-y-1">
             <p className="flex flex-row justify-start items-center font-medium text-muted-foreground">
               {t("setting.user-sessions-section.title")}
-              <LearnMore className="ml-2" url="https://usememos.com/docs/security/sessions" />
             </p>
             <p className="text-sm text-muted-foreground">{t("setting.user-sessions-section.description")}</p>
           </div>
