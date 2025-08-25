@@ -9,7 +9,6 @@ import { useDialog } from "@/hooks/useDialog";
 import { UserAccessToken } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
-import LearnMore from "../LearnMore";
 
 const listAccessTokens = async (parent: string) => {
   const { accessTokens } = await userServiceClient.listUserAccessTokens({ parent });

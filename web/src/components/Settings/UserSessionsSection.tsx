@@ -6,7 +6,6 @@ import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { UserSession } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import LearnMore from "../LearnMore";
 
 const listUserSessions = async (parent: string) => {
   const { sessions } = await userServiceClient.listUserSessions({ parent });
