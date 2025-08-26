@@ -89,10 +89,17 @@ const MemoActionMenu = observer((props: Props) => {
       return;
     }
   };
-
+                                      //
   const handleToggleMemoStatusClick = async () => {
-    const state = memo.state === State.ARCHIVED ? State.NORMAL : State.ARCHIVED;
-    const message = memo.state === State.ARCHIVED ? t("message.restored-successfully") : t("message.archived-successfully");
+    //just review async in notes
+    //changing the state
+    const state = memo.state === State.ARCHIVED 
+                  ? State.NORMAL 
+                  : State.ARCHIVED;
+    //showing message depending on state
+    const message = memo.state === State.ARCHIVED 
+                    ? t("message.restored-successfully") 
+                    : t("message.archived-successfully");
     try {
       await memoStore.updateMemo(
         {
@@ -101,7 +108,32 @@ const MemoActionMenu = observer((props: Props) => {
         },
         ["state"],
       );
-      toast(message);
+
+    // Show toast with Undo button
+    toast.custom((tToast) => (
+      <div className="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl shadow">
+        <span>{message}</span>
+        <button
+          className="ml-auto text-blue-600 hover:underline"
+          onClick={async () => {
+            // Undo action: revert to previous state
+            await memoStore.updateMemo(
+              {
+                name: memo.name,
+                state: memo.state, // revert to old state
+              },
+              ["state"],
+            );
+            toast.dismiss(tToast.id); // close the toast
+            toast.success(t("message.undo-successful")); // optional success toast
+            memoUpdatedCallback();
+          }}
+        >
+          {t("common.undo")}
+        </button>
+      </div>
+    ));
+
     } catch (error: any) {
       toast.error(error.details);
       console.error(error);
