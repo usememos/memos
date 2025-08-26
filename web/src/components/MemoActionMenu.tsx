@@ -89,7 +89,7 @@ const MemoActionMenu = observer((props: Props) => {
       return;
     }
   };
-                                      //
+                                      //() => Promise.resolve(42)
   const handleToggleMemoStatusClick = async () => {
     //just review async in notes
     //changing the state
@@ -104,7 +104,7 @@ const MemoActionMenu = observer((props: Props) => {
       await memoStore.updateMemo(
         {
           name: memo.name,
-          state,
+          state
         },
         ["state"],
       );
