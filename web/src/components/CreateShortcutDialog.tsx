@@ -124,16 +124,6 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
                   Docs - Shortcuts
                 </a>
               </li>
-              <li>
-                <a
-                  className="text-primary hover:underline"
-                  href="https://www.usememos.com/docs/guides/shortcuts#how-to-write-a-filter"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  How to Write a Filter?
-                </a>
-              </li>
             </ul>
           </div>
         </div>
