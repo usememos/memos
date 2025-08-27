@@ -1,8 +1,10 @@
 import defaultDarkThemeContent from "../themes/default-dark.css?raw";
 import paperThemeContent from "../themes/paper.css?raw";
 import whitewallThemeContent from "../themes/whitewall.css?raw";
+import nauticalBlueThemeContent from "../themes/nauticalblue.css?raw";
+import nauticalBlueDarkThemeContent from "../themes/nauticalblue-dark.css?raw";
 
-const VALID_THEMES = ["default", "default-dark", "paper", "whitewall"] as const;
+const VALID_THEMES = ["default", "default-dark", "paper", "whitewall", "nauticalblue", "nauticalblue-dark"] as const;
 type ValidTheme = (typeof VALID_THEMES)[number];
 
 const THEME_CONTENT: Record<ValidTheme, string | null> = {
@@ -10,6 +12,8 @@ const THEME_CONTENT: Record<ValidTheme, string | null> = {
   "default-dark": defaultDarkThemeContent,
   paper: paperThemeContent,
   whitewall: whitewallThemeContent,
+  nauticalblue: nauticalBlueThemeContent,
+  "nauticalblue-dark": nauticalBlueDarkThemeContent
 };
 
 const validateTheme = (theme: string): ValidTheme => {

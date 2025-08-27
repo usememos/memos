@@ -1,1 +1,1 @@
-type Theme = "default" | "default-dark" | "paper" | "whitewall";
+type Theme = "default" | "default-dark" | "paper" | "whitewall" | "nauticalblue" | "nauticalblue-dark";

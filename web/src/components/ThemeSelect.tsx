@@ -1,4 +1,4 @@
-import { Moon, Palette, Sun, Wallpaper } from "lucide-react";
+import { Moon, Palette, Sun, Wallpaper, Anchor } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { workspaceStore } from "@/store";
 
@@ -16,6 +16,8 @@ const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {})
     { value: "default-dark", icon: <Moon className="w-4 h-4" />, label: "Default Dark" },
     { value: "paper", icon: <Palette className="w-4 h-4" />, label: "Paper" },
     { value: "whitewall", icon: <Wallpaper className="w-4 h-4" />, label: "Whitewall" },
+    { value: "nauticalblue", icon: <Anchor className="w-4 h-4" strokeWidth={1.3} />, label: "Nautical Blue Light" },
+    { value: "nauticalblue-dark", icon: <Anchor className="w-4 h-4" strokeWidth={2.57} />, label: "Nautical Blue Dark" }
   ];
 
   const handleThemeChange = (newTheme: Theme) => {

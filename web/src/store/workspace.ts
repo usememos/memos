@@ -42,7 +42,7 @@ class LocalState {
     if (!isValidateLocale(finalState.locale)) {
       finalState.locale = "en";
     }
-    if (!["default", "default-dark", "paper", "whitewall"].includes(finalState.theme)) {
+    if (!["default", "default-dark", "paper", "whitewall", "nauticalblue", "nauticalblue-dark"].includes(finalState.theme)) {
       finalState.theme = "default";
     }
     Object.assign(this, finalState);
