@@ -89,13 +89,17 @@ const MemoActionMenu = observer((props: Props) => {
       return;
     }
   };
-  //() => Promise.resolve({})
+
+  //async () => {}  =  () => Promise.resolve({})
+  //await promiseFunc, this just waits for the promise to be fulfilled
+  //use async just so we can use await inside, dont care about returned Promise
   const handleToggleMemoStatusClick = async () => {
     //changing the state
     const state = memo.state === State.ARCHIVED ? State.NORMAL : State.ARCHIVED;
     //showing message depending on state
     const message = memo.state === State.ARCHIVED ? t("message.restored-successfully") : t("message.archived-successfully");
     try {
+      //must wait for this promise returned by updateMemo to be fulfileld before continuing
       await memoStore.updateMemo(
         {
           name: memo.name,
@@ -104,31 +108,38 @@ const MemoActionMenu = observer((props: Props) => {
         ["state"],
       );
 
-      // Show toast with Undo button
+      //Show toast with Undo button
       //input is function that takes in the toast object we will work with and it will be used in the output of the higher order function
-      toast.custom((tToast) => ( 
-        <div className="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl shadow"> 
-          <span>{message}</span> 
-          <button
-            className="ml-auto text-blue-600 hover:underline" 
-            onClick={async () => {
-              // Undo action: revert to previous state
-              await memoStore.updateMemo(
-                {
-                  name: memo.name,
-                  state: memo.state, // revert to old state
-                },
-                ["state"],
-              );
-              toast.dismiss(tToast.id); // close the toast
-              toast.success(t("message.undo-successful")); // optional success toast
-              memoUpdatedCallback();
-            }}
-          >
-            {t("common.undo")}
-          </button>
-        </div>
-      ));
+      toast.custom(
+        (
+          tToast, 
+        ) => (
+          //div container
+          <div className="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl shadow"> 
+            <span>{message}</span>
+            <button
+              //attributes
+              className="ml-auto text-blue-600 hover:underline"
+              //onClick attribute is using async only so we can use await
+              onClick={async () => {
+                //must wait for this promise returned by updateMemo to be fulfileld before continuing
+                await memoStore.updateMemo(
+                  {
+                    name: memo.name,
+                    state: memo.state, // revert to old state
+                  },
+                  ["state"],
+                );
+                toast.dismiss(tToast.id); // close the toast
+                toast.success(t("message.undo-successful")); // optional success toast
+                memoUpdatedCallback();
+              }}
+            >
+              {t("common.undo")}
+            </button>
+          </div>
+        ),
+      );
     } catch (error: any) {
       toast.error(error.details);
       console.error(error);
