@@ -115,7 +115,7 @@ const MemoActionMenu = observer((props: Props) => {
           tToast, 
         ) => (
           //div container
-          <div className="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl shadow"> 
+          <div className="flex items-center gap-3 ml-auto bg-white dark:bg-gray-800 p-3 rounded-xl shadow"> 
             <span>{message}</span>
             <button
               //attributes
