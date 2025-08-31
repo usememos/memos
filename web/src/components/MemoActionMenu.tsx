@@ -115,11 +115,11 @@ const MemoActionMenu = observer((props: Props) => {
           tToast, 
         ) => (
           //div container
-          <div className="flex items-center gap-3 ml-auto bg-white dark:bg-gray-800 p-3 rounded-xl shadow"> 
-            <span>{message}</span>
+          <div className="flex items-center gap-3 ml-auto bg-primary dark:bg-primary p-3 rounded-xl shadow"> 
+            <span className="text-background">{message}</span>
             <button
               //attributes
-              className="ml-auto text-blue-600 hover:underline"
+              className="ml-auto text-background italic hover:underline"
               //onClick attribute is using async only so we can use await
               onClick={async () => {
                 //must wait for this promise returned by updateMemo to be fulfileld before continuing
@@ -135,7 +135,7 @@ const MemoActionMenu = observer((props: Props) => {
                 memoUpdatedCallback();
               }}
             >
-              {t("common.undo")}
+              ({t("common.undo")})
             </button>
           </div>
         ),
