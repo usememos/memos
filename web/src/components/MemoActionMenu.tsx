@@ -133,7 +133,7 @@ const MemoActionMenu = observer((props: Props) => {
                 toast.dismiss(tToast.id); // close the toast
                 toast.custom(
                   (tToast) => (
-                    <div className="flex items-center gap-3 ml-auto bg-primary dark:bg-primary px-2 py-1 rounded-xl shadow text-sm">
+                    <div className="flex items-center gap-3 ml-auto bg-primary dark:bg-primary p-3 rounded-xl shadow">
                       <span className="text-background">{t("message.undo-successful")}</span>
                     </div>
                   )
