@@ -1,4 +1,4 @@
-package util
+package util //nolint:revive // util is an appropriate package name for utility functions
 
 import (
 	"testing"

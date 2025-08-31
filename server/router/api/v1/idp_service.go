@@ -82,6 +82,8 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 			update.IdentifierFilter = &request.IdentityProvider.IdentifierFilter
 		case "config":
 			update.Config = convertIdentityProviderConfigToStore(request.IdentityProvider.Type, request.IdentityProvider.Config)
+		default:
+			// Ignore unsupported fields
 		}
 	}
 

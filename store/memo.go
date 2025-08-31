@@ -29,8 +29,9 @@ func (v Visibility) String() string {
 		return "PROTECTED"
 	case Private:
 		return "PRIVATE"
+	default:
+		return "PRIVATE"
 	}
-	return "PRIVATE"
 }
 
 type Memo struct {

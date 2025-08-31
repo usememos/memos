@@ -12,23 +12,17 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/usememos/memos/internal/profile"
+	"github.com/usem	fmt.Println()
+	fmt.Printf("Documentation: %s\n", "https://usememos.com")
+	fmt.Printf("Source code: %s\n", "https://github.com/usememos/memos")
+	fmt.Println("\nHappy note-taking!")/memos/internal/profile"
 	"github.com/usememos/memos/internal/version"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 )
 
-const (
-	greetingBanner = `
-███╗   ███╗███████╗███╗   ███╗ ██████╗ ███████╗
-████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔════╝
-██╔████╔██║█████╗  ██╔████╔██║██║   ██║███████╗
-██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║╚════██║
-██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝███████║
-╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚══════╝
-`
-)
+
 
 var (
 	rootCmd = &cobra.Command{
@@ -146,38 +140,37 @@ func init() {
 }
 
 func printGreetings(profile *profile.Profile) {
+	fmt.Printf("Memos %s started successfully!\n", profile.Version)
+	
 	if profile.IsDev() {
-		println("Development mode is enabled")
-		println("DSN: ", profile.DSN)
+		fmt.Fprintf(os.Stderr, "Development mode is enabled\n")
+		if profile.DSN != "" {
+			fmt.Fprintf(os.Stderr, "Database: %s\n", profile.DSN)
+		}
 	}
-	fmt.Printf(`---
-Server profile
-version: %s
-data: %s
-addr: %s
-port: %d
-unix-sock: %s
-mode: %s
-driver: %s
----
-`, profile.Version, profile.Data, profile.Addr, profile.Port, profile.UNIXSock, profile.Mode, profile.Driver)
-
-	print(greetingBanner)
+	
+	// Server information
+	fmt.Printf("Data directory: %s\n", profile.Data)
+	fmt.Printf("Database driver: %s\n", profile.Driver)
+	fmt.Printf("Mode: %s\n", profile.Mode)
+	
+	// Connection information
 	if len(profile.UNIXSock) == 0 {
 		if len(profile.Addr) == 0 {
-			fmt.Printf("Version %s has been started on port %d\n", profile.Version, profile.Port)
+			fmt.Printf("Server running on port %d\n", profile.Port)
+			fmt.Printf("Access your memos at: http://localhost:%d\n", profile.Port)
 		} else {
-			fmt.Printf("Version %s has been started on address '%s' and port %d\n", profile.Version, profile.Addr, profile.Port)
+			fmt.Printf("Server running on %s:%d\n", profile.Addr, profile.Port)
+			fmt.Printf("Access your memos at: http://%s:%d\n", profile.Addr, profile.Port)
 		}
 	} else {
-		fmt.Printf("Version %s has been started on unix socket %s\n", profile.Version, profile.UNIXSock)
+		fmt.Printf("Server running on unix socket: %s\n", profile.UNIXSock)
 	}
-	fmt.Printf(`---
-See more in:
-👉Website: %s
-👉GitHub: %s
----
-`, "https://usememos.com", "https://github.com/usememos/memos")
+	
+	fmt.Println()
+	fmt.Printf("� Documentation: %s\n", "https://usememos.com")
+	fmt.Printf("💻 Source code: %s\n", "https://github.com/usememos/memos")
+	fmt.Println("\n✨ Happy note-taking!")
 }
 
 func main() {
