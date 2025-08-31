@@ -189,6 +189,7 @@
     "remove-completed-task-list-items-successfully": "The removal was successful",
     "restored-successfully": "Restored successfully",
     "succeed-copy-link": "Link copied successfully.",
+    "undo-successful": "Undo successful",
     "update-succeed": "Update succeeded",
     "user-not-found": "User not found"
   },

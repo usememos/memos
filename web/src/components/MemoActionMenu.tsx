@@ -131,7 +131,13 @@ const MemoActionMenu = observer((props: Props) => {
                   ["state"],
                 );
                 toast.dismiss(tToast.id); // close the toast
-                toast.success(t("message.undo-successful")); // optional success toast
+                toast.custom(
+                  (tToast) => (
+                    <div className="flex items-center gap-3 ml-auto bg-primary dark:bg-primary px-2 py-1 rounded-xl shadow text-sm">
+                      <span className="text-background">{t("message.undo-successful")}</span>
+                    </div>
+                  )
+                ); // optional success toast
                 memoUpdatedCallback();
               }}
             >
