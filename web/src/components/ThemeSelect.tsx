@@ -17,7 +17,7 @@ const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {})
     { value: "paper", icon: <Palette className="w-4 h-4" />, label: "Paper" },
     { value: "whitewall", icon: <Wallpaper className="w-4 h-4" />, label: "Whitewall" },
     { value: "nauticalblue", icon: <Anchor className="w-4 h-4" strokeWidth={1.3} />, label: "Nautical Blue Light" },
-    { value: "nauticalblue-dark", icon: <Anchor className="w-4 h-4" strokeWidth={2.57} />, label: "Nautical Blue Dark" }
+    { value: "nauticalblue-dark", icon: <Anchor className="w-4 h-4" strokeWidth={2.57} />, label: "Nautical Blue Dark" },
   ];
 
   const handleThemeChange = (newTheme: Theme) => {
