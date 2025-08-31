@@ -12,17 +12,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/usem	fmt.Println()
-	fmt.Printf("Documentation: %s\n", "https://usememos.com")
-	fmt.Printf("Source code: %s\n", "https://github.com/usememos/memos")
-	fmt.Println("\nHappy note-taking!")/memos/internal/profile"
+	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/version"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 )
-
-
 
 var (
 	rootCmd = &cobra.Command{
@@ -141,19 +136,19 @@ func init() {
 
 func printGreetings(profile *profile.Profile) {
 	fmt.Printf("Memos %s started successfully!\n", profile.Version)
-	
+
 	if profile.IsDev() {
 		fmt.Fprintf(os.Stderr, "Development mode is enabled\n")
 		if profile.DSN != "" {
 			fmt.Fprintf(os.Stderr, "Database: %s\n", profile.DSN)
 		}
 	}
-	
+
 	// Server information
 	fmt.Printf("Data directory: %s\n", profile.Data)
 	fmt.Printf("Database driver: %s\n", profile.Driver)
 	fmt.Printf("Mode: %s\n", profile.Mode)
-	
+
 	// Connection information
 	if len(profile.UNIXSock) == 0 {
 		if len(profile.Addr) == 0 {
@@ -166,11 +161,11 @@ func printGreetings(profile *profile.Profile) {
 	} else {
 		fmt.Printf("Server running on unix socket: %s\n", profile.UNIXSock)
 	}
-	
+
 	fmt.Println()
-	fmt.Printf("� Documentation: %s\n", "https://usememos.com")
-	fmt.Printf("💻 Source code: %s\n", "https://github.com/usememos/memos")
-	fmt.Println("\n✨ Happy note-taking!")
+	fmt.Printf("Documentation: %s\n", "https://usememos.com")
+	fmt.Printf("Source code: %s\n", "https://github.com/usememos/memos")
+	fmt.Println("\nHappy note-taking!")
 }
 
 func main() {
