@@ -138,7 +138,7 @@ func printGreetings(profile *profile.Profile) {
 	fmt.Printf("Memos %s started successfully!\n", profile.Version)
 
 	if profile.IsDev() {
-		fmt.Fprintf(os.Stderr, "Development mode is enabled\n")
+		fmt.Fprint(os.Stderr, "Development mode is enabled\n")
 		if profile.DSN != "" {
 			fmt.Fprintf(os.Stderr, "Database: %s\n", profile.DSN)
 		}
