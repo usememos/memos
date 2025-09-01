@@ -3459,6 +3459,9 @@ components:
                 theme:
                     type: string
                     description: "The preferred theme of the user.\r\n This references a CSS file in the web/public/themes/ directory.\r\n If not set, the default theme will be used."
+                mapTileLayerProvider:
+                    type: string
+                    description: The user's map tile layer provider.
             description: General user settings configuration.
         UserSetting_SessionsSetting:
             type: object

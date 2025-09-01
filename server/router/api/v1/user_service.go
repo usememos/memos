@@ -305,9 +305,10 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 
 func getDefaultUserGeneralSetting() *v1pb.UserSetting_GeneralSetting {
 	return &v1pb.UserSetting_GeneralSetting{
-		Locale:         "en",
-		MemoVisibility: "PRIVATE",
-		Theme:          "",
+		Locale:               "en",
+		MemoVisibility:       "PRIVATE",
+		Theme:                "",
+		MapTileLayerProvider: "",
 	}
 }
 
@@ -390,9 +391,10 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 	}
 
 	updatedGeneral := &v1pb.UserSetting_GeneralSetting{
-		MemoVisibility: generalSetting.GetMemoVisibility(),
-		Locale:         generalSetting.GetLocale(),
-		Theme:          generalSetting.GetTheme(),
+		MemoVisibility:       generalSetting.GetMemoVisibility(),
+		Locale:               generalSetting.GetLocale(),
+		Theme:                generalSetting.GetTheme(),
+		MapTileLayerProvider: generalSetting.GetMapTileLayerProvider(),
 	}
 
 	// Apply updates for fields specified in the update mask
@@ -405,6 +407,8 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 			updatedGeneral.Theme = incomingGeneral.Theme
 		case "locale":
 			updatedGeneral.Locale = incomingGeneral.Locale
+		case "mapTileLayerProvider":
+			updatedGeneral.MapTileLayerProvider = incomingGeneral.MapTileLayerProvider
 		default:
 			// Ignore unsupported fields
 		}
@@ -1166,9 +1170,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 		if general := storeSetting.GetGeneral(); general != nil {
 			setting.Value = &v1pb.UserSetting_GeneralSetting_{
 				GeneralSetting: &v1pb.UserSetting_GeneralSetting{
-					Locale:         general.Locale,
-					MemoVisibility: general.MemoVisibility,
-					Theme:          general.Theme,
+					Locale:               general.Locale,
+					MemoVisibility:       general.MemoVisibility,
+					Theme:                general.Theme,
+					MapTileLayerProvider: general.MapTileLayerProvider,
 				},
 			}
 		} else {
@@ -1254,9 +1259,10 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 		if general := apiSetting.GetGeneralSetting(); general != nil {
 			storeSetting.Value = &storepb.UserSetting_General{
 				General: &storepb.GeneralUserSetting{
-					Locale:         general.Locale,
-					MemoVisibility: general.MemoVisibility,
-					Theme:          general.Theme,
+					Locale:               general.Locale,
+					MemoVisibility:       general.MemoVisibility,
+					Theme:                general.Theme,
+					MapTileLayerProvider: general.MapTileLayerProvider,
 				},
 			}
 		} else {

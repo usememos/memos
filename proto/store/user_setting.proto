@@ -41,6 +41,8 @@ message GeneralUserSetting {
   // The user's theme preference.
   // This references a CSS file in the web/public/themes/ directory.
   string theme = 3;
+  // The user's map tile layer provider.
+  string map_tile_layer_provider = 4;
 }
 
 message SessionsUserSetting {

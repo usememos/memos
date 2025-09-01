@@ -327,6 +327,8 @@ export interface UserSetting_GeneralSetting {
    * If not set, the default theme will be used.
    */
   theme: string;
+  /** The user's map tile layer provider. */
+  mapTileLayerProvider: string;
 }
 
 /** User authentication sessions configuration. */
@@ -1718,7 +1720,7 @@ export const UserSetting: MessageFns<UserSetting> = {
 };
 
 function createBaseUserSetting_GeneralSetting(): UserSetting_GeneralSetting {
-  return { locale: "", memoVisibility: "", theme: "" };
+  return { locale: "", memoVisibility: "", theme: "", mapTileLayerProvider: "" };
 }
 
 export const UserSetting_GeneralSetting: MessageFns<UserSetting_GeneralSetting> = {
@@ -1731,6 +1733,9 @@ export const UserSetting_GeneralSetting: MessageFns<UserSetting_GeneralSetting> 
     }
     if (message.theme !== "") {
       writer.uint32(34).string(message.theme);
+    }
+    if (message.mapTileLayerProvider !== "") {
+      writer.uint32(42).string(message.mapTileLayerProvider);
     }
     return writer;
   },
@@ -1766,6 +1771,14 @@ export const UserSetting_GeneralSetting: MessageFns<UserSetting_GeneralSetting> 
           message.theme = reader.string();
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.mapTileLayerProvider = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1783,6 +1796,7 @@ export const UserSetting_GeneralSetting: MessageFns<UserSetting_GeneralSetting> 
     message.locale = object.locale ?? "";
     message.memoVisibility = object.memoVisibility ?? "";
     message.theme = object.theme ?? "";
+    message.mapTileLayerProvider = object.mapTileLayerProvider ?? "";
     return message;
   },
 };
