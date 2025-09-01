@@ -45,6 +45,8 @@ func (c *CommonSQLConverter) ConvertExprToSQL(ctx *ConvertContext, expr *exprv1.
 			return c.handleInOperator(ctx, v.CallExpr)
 		case "contains":
 			return c.handleContainsOperator(ctx, v.CallExpr)
+		default:
+			return errors.Errorf("unsupported call expression function: %s", v.CallExpr.Function)
 		}
 	} else if v, ok := expr.ExprKind.(*exprv1.Expr_IdentExpr); ok {
 		return c.handleIdentifier(ctx, v.IdentExpr)
@@ -144,9 +146,9 @@ func (c *CommonSQLConverter) handleComparisonOperator(ctx *ConvertContext, callE
 		return c.handlePinnedComparison(ctx, operator, value)
 	case "has_task_list", "has_link", "has_code", "has_incomplete_tasks":
 		return c.handleBooleanComparison(ctx, identifier, operator, value)
+	default:
+		return errors.Errorf("unsupported identifier in comparison: %s", identifier)
 	}
-
-	return nil
 }
 
 func (c *CommonSQLConverter) handleSizeComparison(ctx *ConvertContext, callExpr *exprv1.Expr_Call, sizeCall *exprv1.Expr_Call) error {
@@ -567,6 +569,8 @@ func (c *CommonSQLConverter) handleBooleanComparison(ctx *ConvertContext, field,
 		jsonPath = "$.property.hasCode"
 	case "has_incomplete_tasks":
 		jsonPath = "$.property.hasIncompleteTasks"
+	default:
+		return errors.Errorf("unsupported boolean field: %s", field)
 	}
 
 	// Special handling for SQLite based on field

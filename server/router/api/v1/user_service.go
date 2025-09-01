@@ -405,6 +405,8 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 			updatedGeneral.Theme = incomingGeneral.Theme
 		case "locale":
 			updatedGeneral.Locale = incomingGeneral.Locale
+		default:
+			// Ignore unsupported fields
 		}
 	}
 
@@ -899,6 +901,8 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 				}
 			case "display_name":
 				updatedWebhook.Title = request.Webhook.DisplayName
+			default:
+				// Ignore unsupported fields
 			}
 		}
 	} else {
@@ -1143,6 +1147,11 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 					Webhooks: []*v1pb.UserWebhook{},
 				},
 			}
+		default:
+			// Default to general setting
+			setting.Value = &v1pb.UserSetting_GeneralSetting_{
+				GeneralSetting: getDefaultUserGeneralSetting(),
+			}
 		}
 		return setting
 	}
@@ -1222,6 +1231,11 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 			WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
 				Webhooks: apiWebhooks,
 			},
+		}
+	default:
+		// Default to general setting if unknown key
+		setting.Value = &v1pb.UserSetting_GeneralSetting_{
+			GeneralSetting: getDefaultUserGeneralSetting(),
 		}
 	}
 

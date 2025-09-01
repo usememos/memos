@@ -162,7 +162,7 @@ func TestClientInfoExamples(t *testing.T) {
 			t.Logf("Device Type: %s", clientInfo.DeviceType)
 			t.Logf("Operating System: %s", clientInfo.Os)
 			t.Logf("Browser: %s", clientInfo.Browser)
-			t.Logf("---")
+			t.Log("---")
 
 			// Ensure all fields are populated
 			if clientInfo.DeviceType == "" {

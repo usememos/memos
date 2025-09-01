@@ -6,7 +6,6 @@ import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { UserSession } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
-import LearnMore from "../LearnMore";
 
 const listUserSessions = async (parent: string) => {
   const { sessions } = await userServiceClient.listUserSessions({ parent });
@@ -74,7 +73,6 @@ const UserSessionsSection = () => {
           <div className="sm:flex-auto space-y-1">
             <p className="flex flex-row justify-start items-center font-medium text-muted-foreground">
               {t("setting.user-sessions-section.title")}
-              <LearnMore className="ml-2" url="https://usememos.com/docs/security/sessions" />
             </p>
             <p className="text-sm text-muted-foreground">{t("setting.user-sessions-section.description")}</p>
           </div>

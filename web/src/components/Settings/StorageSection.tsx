@@ -3,12 +3,10 @@ import { HelpCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { workspaceStore } from "@/store";
@@ -246,30 +244,6 @@ const StorageSection = observer(() => {
         <Button disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>
           {t("common.save")}
         </Button>
-      </div>
-      <Separator className="my-2" />
-      <div className="w-full mt-4">
-        <p className="text-sm">{t("common.learn-more")}:</p>
-        <ul className="text-sm list-disc ml-4 space-y-1">
-          <li>
-            <Link
-              className="text-sm text-primary hover:underline"
-              to="https://www.usememos.com/docs/advanced-settings/local-storage"
-              target="_blank"
-            >
-              Docs - Local storage
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="text-sm text-primary hover:underline"
-              to="https://www.usememos.com/blog/choosing-a-storage-for-your-resource"
-              target="_blank"
-            >
-              Choosing a Storage for Your Resource: Database, S3 or Local Storage?
-            </Link>
-          </li>
-        </ul>
       </div>
     </div>
   );

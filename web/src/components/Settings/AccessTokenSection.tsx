@@ -9,7 +9,6 @@ import { useDialog } from "@/hooks/useDialog";
 import { UserAccessToken } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
-import LearnMore from "../LearnMore";
 
 const listAccessTokens = async (parent: string) => {
   const { accessTokens } = await userServiceClient.listUserAccessTokens({ parent });
@@ -62,7 +61,6 @@ const AccessTokenSection = () => {
           <div className="sm:flex-auto space-y-1">
             <p className="flex flex-row justify-start items-center font-medium text-muted-foreground">
               {t("setting.access-token-section.title")}
-              <LearnMore className="ml-2" url="https://usememos.com/docs/security/access-tokens" />
             </p>
             <p className="text-sm text-muted-foreground">{t("setting.access-token-section.description")}</p>
           </div>

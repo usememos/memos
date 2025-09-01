@@ -31,30 +31,30 @@ func TestCacheBasicOperations(t *testing.T) {
 	// Test Delete
 	cache.Delete(ctx, "key1")
 	if _, ok := cache.Get(ctx, "key1"); ok {
-		t.Errorf("Key 'key1' should have been deleted")
+		t.Error("Key 'key1' should have been deleted")
 	}
 
 	// Test automatic expiration
 	time.Sleep(150 * time.Millisecond)
 	if _, ok := cache.Get(ctx, "key1"); ok {
-		t.Errorf("Key 'key1' should have expired")
+		t.Error("Key 'key1' should have expired")
 	}
 	// key2 should still be valid (200ms TTL)
 	if _, ok := cache.Get(ctx, "key2"); !ok {
-		t.Errorf("Key 'key2' should still be valid")
+		t.Error("Key 'key2' should still be valid")
 	}
 
 	// Wait for key2 to expire
 	time.Sleep(100 * time.Millisecond)
 	if _, ok := cache.Get(ctx, "key2"); ok {
-		t.Errorf("Key 'key2' should have expired")
+		t.Error("Key 'key2' should have expired")
 	}
 
 	// Test Clear
 	cache.Set(ctx, "key3", "value3")
 	cache.Clear(ctx)
 	if _, ok := cache.Get(ctx, "key3"); ok {
-		t.Errorf("Cache should be empty after Clear()")
+		t.Error("Cache should be empty after Clear()")
 	}
 }
 
@@ -98,15 +98,15 @@ func TestCacheEviction(t *testing.T) {
 	}
 
 	if evictedCount == 0 {
-		t.Errorf("No keys were evicted despite exceeding max items")
+		t.Error("No keys were evicted despite exceeding max items")
 	}
 
 	// The newer keys should still be present
 	if _, ok := cache.Get(ctx, "keyA"); !ok {
-		t.Errorf("Key 'keyA' should be in the cache")
+		t.Error("Key 'keyA' should be in the cache")
 	}
 	if _, ok := cache.Get(ctx, "keyB"); !ok {
-		t.Errorf("Key 'keyB' should be in the cache")
+		t.Error("Key 'keyB' should be in the cache")
 	}
 }
 
@@ -193,7 +193,7 @@ func TestEvictionCallback(t *testing.T) {
 	time.Sleep(10 * time.Millisecond) // Small delay to ensure callback processed
 	evictedMu.Lock()
 	if evicted["key1"] != "value1" {
-		t.Errorf("Eviction callback not triggered for manual deletion")
+		t.Error("Eviction callback not triggered for manual deletion")
 	}
 	evictedMu.Unlock()
 
@@ -203,7 +203,7 @@ func TestEvictionCallback(t *testing.T) {
 	// Verify TTL expiration triggered callback
 	evictedMu.Lock()
 	if evicted["key2"] != "value2" {
-		t.Errorf("Eviction callback not triggered for TTL expiration")
+		t.Error("Eviction callback not triggered for TTL expiration")
 	}
 	evictedMu.Unlock()
 }

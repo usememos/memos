@@ -420,6 +420,8 @@ func parseDescriptor(descriptor string, loc *time.Location) (Schedule, error) {
 			Dow:      all(dow),
 			Location: loc,
 		}, nil
+	default:
+		// Continue to check @every prefix below
 	}
 
 	const every = "@every "

@@ -102,6 +102,8 @@ func (s *Store) Migrate(ctx context.Context) error {
 		if err := s.seed(ctx); err != nil {
 			return errors.Wrap(err, "failed to seed")
 		}
+	default:
+		// For other modes (like dev), no special migration handling needed
 	}
 	return nil
 }
