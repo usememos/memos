@@ -81,7 +81,7 @@
     "nice-grpc-web": "^3.3.7",
     "prettier": "^3.6.2",
     "terser": "^5.43.1",
-    "tw-animate-css": "^1.3.6",
+    "tw-animate-css": "^1.3.7",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.41.0",
     "vite": "^7.0.6"
