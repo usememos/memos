@@ -116,7 +116,7 @@ const MemoRelatedSettings = observer(() => {
         <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
           {memoRelatedSetting.reactions.map((reactionType) => {
             return (
-              <Badge key={reactionType} variant="outline" className="flex items-center gap-1">
+              <Badge key={reactionType} variant="outline" className="flex items-center gap-1 h-8">
                 {reactionType}
                 <span
                   className="cursor-pointer text-muted-foreground hover:text-primary"
@@ -151,7 +151,7 @@ const MemoRelatedSettings = observer(() => {
         <div className="mt-2 w-full flex flex-row flex-wrap gap-1">
           {memoRelatedSetting.nsfwTags.map((nsfwTag) => {
             return (
-              <Badge key={nsfwTag} variant="outline" className="flex items-center gap-1">
+              <Badge key={nsfwTag} variant="outline" className="flex items-center gap-1 h-8">
                 {nsfwTag}
                 <span
                   className="cursor-pointer text-muted-foreground hover:text-primary"
