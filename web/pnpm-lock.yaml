@@ -214,8 +214,8 @@ importers:
         specifier: ^5.3.2
         version: 5.3.2
       nice-grpc-web:
-        specifier: ^3.3.7
-        version: 3.3.7(ws@8.18.3)
+        specifier: ^3.3.8
+        version: 3.3.8(ws@8.18.3)
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -2529,8 +2529,8 @@ packages:
     resolution: {integrity: sha512-twQoecYPiVA5K/h6SxtORw/Bs3ar+mLUtoPSc7iMXzQzK8d7eJ/R09wmTwAjiamETn1cXYPGfNnu7DMoHgu12w==}
     hasBin: true
 
-  js-base64@3.7.7:
-    resolution: {integrity: sha512-7rCnleh0z2CkXhH67J8K1Ytz0b2Y+yxTPL+/KOJoa20hfnVQ/3/T6W/KflYI4bRHRagNeXeU2bkNGI3v1oS/lw==}
+  js-base64@3.7.8:
+    resolution: {integrity: sha512-hNngCeKxIUQiEUN3GPJOkz4wF/YvdUdbNL9hsBcMQTkKzboD7T/q3OYOuuPZLUE6dBxSGpwhk5mwuDud7JVAow==}
 
   js-cookie@2.2.1:
     resolution: {integrity: sha512-HvdH2LzI/EAZcUwA8+0nKNtWHqS+ZmijLA30RwZA0bo7ToCckjK5MkGhjED9KoRcXO6BaGI3I9UIzSA1FKFPOQ==}
@@ -2794,8 +2794,8 @@ packages:
   nice-grpc-common@2.0.2:
     resolution: {integrity: sha512-7RNWbls5kAL1QVUOXvBsv1uO0wPQK3lHv+cY1gwkTzirnG1Nop4cBJZubpgziNbaVc/bl9QJcyvsf/NQxa3rjQ==}
 
-  nice-grpc-web@3.3.7:
-    resolution: {integrity: sha512-9RyOGxmPm5rCLizn2uNFSSnlBPU/2n1i8inaNSAT52QAcOITKvCTFmOUnU+1CAJrKlxiGV64KFfcxJG77JDV5w==}
+  nice-grpc-web@3.3.8:
+    resolution: {integrity: sha512-VOVzjcgl90lhoZgjXDg9hG8clIxe6NBk84R3p0P21CGitMesHMTV8g5adnDKQ4i60FJT1uk2EwepSyv1cND8JQ==}
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
@@ -6036,7 +6036,7 @@ snapshots:
 
   jiti@2.5.1: {}
 
-  js-base64@3.7.7: {}
+  js-base64@3.7.8: {}
 
   js-cookie@2.2.1: {}
 
@@ -6282,11 +6282,11 @@ snapshots:
     dependencies:
       ts-error: 1.0.6
 
-  nice-grpc-web@3.3.7(ws@8.18.3):
+  nice-grpc-web@3.3.8(ws@8.18.3):
     dependencies:
       abort-controller-x: 0.4.3
       isomorphic-ws: 5.0.0(ws@8.18.3)
-      js-base64: 3.7.7
+      js-base64: 3.7.8
       nice-grpc-common: 2.0.2
     transitivePeerDependencies:
       - ws

@@ -78,7 +78,7 @@
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-react": "^7.37.5",
     "long": "^5.3.2",
-    "nice-grpc-web": "^3.3.7",
+    "nice-grpc-web": "^3.3.8",
     "prettier": "^3.6.2",
     "terser": "^5.43.1",
     "tw-animate-css": "^1.3.7",
