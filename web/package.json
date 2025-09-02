@@ -49,7 +49,7 @@
     "react-hot-toast": "^2.5.2",
     "react-i18next": "^15.6.1",
     "react-leaflet": "^4.2.1",
-    "react-router-dom": "^7.7.1",
+    "react-router-dom": "^7.8.2",
     "react-simple-pull-to-refresh": "^1.3.3",
     "react-use": "^17.6.0",
     "tailwind-merge": "^3.3.1",
