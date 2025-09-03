@@ -7,6 +7,7 @@ import { UserSetting_GeneralSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import LocaleSelect from "../LocaleSelect";
+import MapTileLayerProviderSelect from "../MapTileLayerProviderSelect";
 import ThemeSelect from "../ThemeSelect";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
@@ -27,11 +28,16 @@ const PreferencesSection = observer(() => {
     await userStore.updateUserGeneralSetting({ theme }, ["theme"]);
   };
 
+  const handleMapApiProviderChange = async (mapApiProvider: string) => {
+    await userStore.updateUserGeneralSetting({ mapTileLayerProvider: mapApiProvider }, ["mapTileLayerProvider"]);
+  };
+
   // Provide default values if setting is not loaded yet
   const setting: UserSetting_GeneralSetting = generalSetting || {
     locale: "en",
     memoVisibility: "PRIVATE",
     theme: "default",
+    mapTileLayerProvider: "",
   };
 
   return (
@@ -69,6 +75,11 @@ const PreferencesSection = observer(() => {
               ))}
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="w-full flex flex-row justify-between items-center mt-2">
+        <span className="truncate">{t("setting.preference-section.map-tile-layer-provider")}</span>
+        <MapTileLayerProviderSelect value={setting.mapTileLayerProvider} onValueChange={handleMapApiProviderChange} />
       </div>
 
       <Separator className="my-3" />
