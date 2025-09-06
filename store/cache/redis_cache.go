@@ -60,7 +60,7 @@ func NewRedisCache(redisConfig RedisConfig, cacheConfig Config) (*RedisCache, er
 	// Test connection
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	if err := client.Ping(ctx).Err(); err != nil {
 		return nil, fmt.Errorf("failed to connect to Redis: %w", err)
 	}
@@ -89,7 +89,6 @@ func (r *RedisCache) Set(ctx context.Context, key string, value any) {
 
 // SetWithTTL adds a value to the cache with a custom TTL.
 func (r *RedisCache) SetWithTTL(ctx context.Context, key string, value any, ttl time.Duration) {
-	// Serialize the value to JSON
 	data, err := json.Marshal(value)
 	if err != nil {
 		slog.Error("failed to marshal cache value", "key", key, "error", err)
@@ -99,10 +98,7 @@ func (r *RedisCache) SetWithTTL(ctx context.Context, key string, value any, ttl 
 	redisKey := r.buildKey(key)
 	if err := r.client.Set(ctx, redisKey, data, ttl).Err(); err != nil {
 		slog.Error("failed to set cache value in Redis", "key", redisKey, "error", err)
-		return
 	}
-
-	slog.Debug("cache value set in Redis", "key", redisKey, "ttl", ttl)
 }
 
 // Get retrieves a value from the cache.
@@ -111,22 +107,18 @@ func (r *RedisCache) Get(ctx context.Context, key string) (any, bool) {
 	data, err := r.client.Get(ctx, redisKey).Bytes()
 	if err != nil {
 		if err == redis.Nil {
-			// Key not found
 			return nil, false
 		}
 		slog.Error("failed to get cache value from Redis", "key", redisKey, "error", err)
 		return nil, false
 	}
 
-	// We need to unmarshal to interface{} since we don't know the original type
-	// The caller should know what type to expect and can cast accordingly
 	var value any
 	if err := json.Unmarshal(data, &value); err != nil {
 		slog.Error("failed to unmarshal cache value", "key", redisKey, "error", err)
 		return nil, false
 	}
 
-	slog.Debug("cache value retrieved from Redis", "key", redisKey)
 	return value, true
 }
 
@@ -135,24 +127,21 @@ func (r *RedisCache) Delete(ctx context.Context, key string) {
 	redisKey := r.buildKey(key)
 	if err := r.client.Del(ctx, redisKey).Err(); err != nil {
 		slog.Error("failed to delete cache value from Redis", "key", redisKey, "error", err)
-		return
 	}
-
-	slog.Debug("cache value deleted from Redis", "key", redisKey)
 }
 
 // Clear removes all values from the cache with the configured prefix.
 func (r *RedisCache) Clear(ctx context.Context) {
 	// Use SCAN to find all keys with our prefix
 	pattern := fmt.Sprintf("%s:*", r.prefix)
-	
+
 	iter := r.client.Scan(ctx, 0, pattern, 0).Iterator()
 	keys := make([]string, 0)
-	
+
 	for iter.Next(ctx) {
 		keys = append(keys, iter.Val())
 	}
-	
+
 	if err := iter.Err(); err != nil {
 		slog.Error("failed to scan Redis keys", "pattern", pattern, "error", err)
 		return
@@ -161,9 +150,7 @@ func (r *RedisCache) Clear(ctx context.Context) {
 	if len(keys) > 0 {
 		if err := r.client.Del(ctx, keys...).Err(); err != nil {
 			slog.Error("failed to delete Redis keys", "pattern", pattern, "error", err)
-			return
 		}
-		slog.Debug("cleared cache keys from Redis", "pattern", pattern, "count", len(keys))
 	}
 }
 
@@ -174,14 +161,14 @@ func (r *RedisCache) Size() int64 {
 	defer cancel()
 
 	pattern := fmt.Sprintf("%s:*", r.prefix)
-	
+
 	iter := r.client.Scan(ctx, 0, pattern, 0).Iterator()
 	count := int64(0)
-	
+
 	for iter.Next(ctx) {
 		count++
 	}
-	
+
 	if err := iter.Err(); err != nil {
 		slog.Error("failed to count Redis keys", "pattern", pattern, "error", err)
 		return 0
@@ -213,15 +200,15 @@ func (r *RedisCache) Publish(ctx context.Context, event CacheEvent) error {
 // Subscribe subscribes to cache invalidation events from other instances.
 func (r *RedisCache) Subscribe(ctx context.Context, handler func(CacheEvent)) error {
 	channel := fmt.Sprintf("%s:events", r.prefix)
-	
+
 	pubsub := r.client.Subscribe(ctx, channel)
 	defer pubsub.Close()
 
 	// Start receiving messages
 	ch := pubsub.Channel()
-	
+
 	slog.Info("subscribed to Redis cache events", "channel", channel)
-	
+
 	for {
 		select {
 		case msg := <-ch:
@@ -230,10 +217,10 @@ func (r *RedisCache) Subscribe(ctx context.Context, handler func(CacheEvent)) er
 				slog.Error("failed to unmarshal cache event", "error", err)
 				continue
 			}
-			
+
 			slog.Debug("received cache event", "event", event)
 			handler(event)
-			
+
 		case <-ctx.Done():
 			slog.Info("cache event subscription cancelled")
 			return ctx.Err()
@@ -248,4 +235,3 @@ type CacheEvent struct {
 	Timestamp time.Time `json:"timestamp"` // when the event occurred
 	Source    string    `json:"source"`    // identifier of the pod that generated the event
 }
-

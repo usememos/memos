@@ -12,11 +12,11 @@ import (
 // HybridCache provides a Redis-backed cache with in-memory fallback.
 // It automatically handles Redis failures by falling back to local cache.
 type HybridCache struct {
-	redis    *RedisCache
-	local    *Cache
-	config   Config
-	podID    string
-	
+	redis  *RedisCache
+	local  *Cache
+	config Config
+	podID  string
+
 	// Event handling
 	mu           sync.RWMutex
 	subscription context.CancelFunc
@@ -116,12 +116,8 @@ func (h *HybridCache) processEvent(event CacheEvent) {
 	switch event.Type {
 	case "delete":
 		h.local.Delete(context.Background(), event.Key)
-		slog.Debug("processed cache delete event", "key", event.Key, "source", event.Source)
 	case "clear":
 		h.local.Clear(context.Background())
-		slog.Debug("processed cache clear event", "source", event.Source)
-	default:
-		slog.Debug("unknown cache event type", "type", event.Type)
 	}
 }
 
@@ -132,40 +128,32 @@ func (h *HybridCache) Set(ctx context.Context, key string, value any) {
 
 // SetWithTTL adds a value to both Redis and local cache with custom TTL.
 func (h *HybridCache) SetWithTTL(ctx context.Context, key string, value any, ttl time.Duration) {
-	// Always set in local cache
+	// Always set in local cache first
 	h.local.SetWithTTL(ctx, key, value, ttl)
 
-	// Try to set in Redis
+	// Try to set in Redis (no event needed - other pods will get it on demand)
 	if h.redis != nil {
 		h.redis.SetWithTTL(ctx, key, value, ttl)
-		
-		// Publish set event (optional, mainly for monitoring)
-		event := CacheEvent{
-			Type:      "set",
-			Key:       key,
-			Timestamp: time.Now(),
-			Source:    h.podID,
-		}
-		
-		if err := h.redis.Publish(ctx, event); err != nil {
-			slog.Debug("failed to publish cache set event", "key", key, "error", err)
-		}
 	}
 }
 
-// Get retrieves a value from cache, trying Redis first, then local cache.
+// Get retrieves a value from cache, trying local first for speed, then Redis.
 func (h *HybridCache) Get(ctx context.Context, key string) (any, bool) {
-	// Try Redis first if available
+	// Try local cache first for speed
+	if value, ok := h.local.Get(ctx, key); ok {
+		return value, true
+	}
+
+	// Try Redis if local cache miss and Redis is available
 	if h.redis != nil {
 		if value, ok := h.redis.Get(ctx, key); ok {
-			// Also update local cache for faster subsequent access
+			// Populate local cache for faster subsequent access
 			h.local.SetWithTTL(ctx, key, value, h.config.DefaultTTL)
 			return value, true
 		}
 	}
 
-	// Fallback to local cache
-	return h.local.Get(ctx, key)
+	return nil, false
 }
 
 // Delete removes a value from both Redis and local cache.
@@ -176,7 +164,7 @@ func (h *HybridCache) Delete(ctx context.Context, key string) {
 	// Try to delete from Redis and notify other pods
 	if h.redis != nil {
 		h.redis.Delete(ctx, key)
-		
+
 		// Publish delete event to other pods
 		event := CacheEvent{
 			Type:      "delete",
@@ -184,7 +172,7 @@ func (h *HybridCache) Delete(ctx context.Context, key string) {
 			Timestamp: time.Now(),
 			Source:    h.podID,
 		}
-		
+
 		if err := h.redis.Publish(ctx, event); err != nil {
 			slog.Debug("failed to publish cache delete event", "key", key, "error", err)
 		}
@@ -199,7 +187,7 @@ func (h *HybridCache) Clear(ctx context.Context) {
 	// Try to clear Redis and notify other pods
 	if h.redis != nil {
 		h.redis.Clear(ctx)
-		
+
 		// Publish clear event to other pods
 		event := CacheEvent{
 			Type:      "clear",
@@ -207,7 +195,7 @@ func (h *HybridCache) Clear(ctx context.Context) {
 			Timestamp: time.Now(),
 			Source:    h.podID,
 		}
-		
+
 		if err := h.redis.Publish(ctx, event); err != nil {
 			slog.Debug("failed to publish cache clear event", "error", err)
 		}
@@ -254,10 +242,10 @@ func (h *HybridCache) IsRedisAvailable() bool {
 // GetStats returns cache statistics.
 func (h *HybridCache) GetStats() CacheStats {
 	stats := CacheStats{
-		LocalSize:        h.local.Size(),
-		RedisAvailable:   h.redis != nil,
-		PodID:           h.podID,
-		EventQueueSize:  int64(len(h.eventCh)),
+		LocalSize:      h.local.Size(),
+		RedisAvailable: h.redis != nil,
+		PodID:          h.podID,
+		EventQueueSize: int64(len(h.eventCh)),
 	}
 
 	if h.redis != nil {
@@ -270,10 +258,9 @@ func (h *HybridCache) GetStats() CacheStats {
 
 // CacheStats provides information about cache state.
 type CacheStats struct {
-	LocalSize        int64 `json:"local_size"`
-	RedisSize        int64 `json:"redis_size"`
-	RedisAvailable   bool  `json:"redis_available"`
-	PodID           string `json:"pod_id"`
-	EventQueueSize  int64  `json:"event_queue_size"`
+	LocalSize      int64  `json:"local_size"`
+	RedisSize      int64  `json:"redis_size"`
+	RedisAvailable bool   `json:"redis_available"`
+	PodID          string `json:"pod_id"`
+	EventQueueSize int64  `json:"event_queue_size"`
 }
-
