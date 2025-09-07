@@ -1,13 +1,10 @@
 import { t } from "i18next";
 import { LoaderIcon, PaperclipIcon } from "lucide-react";
-import mime from "mime";
 import { observer } from "mobx-react-lite";
 import { useContext, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { attachmentStore } from "@/store";
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { MemoEditorContext } from "../types";
 
 interface Props {
@@ -39,32 +36,15 @@ const UploadAttachmentButton = observer((props: Props) => {
         uploadingFlag: true,
       };
     });
-
-    const createdAttachmentList: Attachment[] = [];
     try {
-      if (!fileInputRef.current || !fileInputRef.current.files) {
-        return;
-      }
-      for (const file of fileInputRef.current.files) {
-        const { name: filename, size, type } = file;
-        const buffer = new Uint8Array(await file.arrayBuffer());
-        const attachment = await attachmentStore.createAttachment({
-          attachment: Attachment.fromPartial({
-            filename,
-            size,
-            type: type || mime.getType(filename) || "text/plain",
-            content: buffer,
-          }),
-          attachmentId: "",
-        });
-        createdAttachmentList.push(attachment);
+      // Delegate to editor's upload handler so progress UI is consistent
+      if (context.uploadFiles) {
+        await context.uploadFiles(fileInputRef.current.files);
       }
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
     }
-
-    context.setAttachmentList([...context.attachmentList, ...createdAttachmentList]);
     setState((state) => {
       return {
         ...state,

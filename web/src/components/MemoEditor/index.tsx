@@ -52,6 +52,8 @@ interface State {
   relationList: MemoRelation[];
   location: Location | undefined;
   isUploadingAttachment: boolean;
+  // Track in-flight uploads for UI progress bars
+  uploadTasks: { id: string; name: string; progress: number }[];
   isRequesting: boolean;
   isComposing: boolean;
   isDraggingFile: boolean;
@@ -68,6 +70,7 @@ const MemoEditor = observer((props: Props) => {
     relationList: [],
     location: undefined,
     isUploadingAttachment: false,
+    uploadTasks: [],
     isRequesting: false,
     isComposing: false,
     isDraggingFile: false,
@@ -199,16 +202,52 @@ const MemoEditor = observer((props: Props) => {
   };
 
   const handleUploadResource = async (file: File) => {
-    setState((state) => {
-      return {
-        ...state,
-        isUploadingAttachment: true,
-      };
+    const taskId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    // Add task entry
+    setState((prev) => ({ ...prev, uploadTasks: [...prev.uploadTasks, { id: taskId, name: file.name, progress: 0 }] }));
+
+    const setTaskProgress = (progress: number) => {
+      setState((prev) => ({
+        ...prev,
+        uploadTasks: prev.uploadTasks.map((t) => (t.id === taskId ? { ...t, progress } : t)),
+      }));
+    };
+    const removeTask = () => {
+      setState((prev) => ({
+        ...prev,
+        uploadTasks: prev.uploadTasks.filter((t) => t.id !== taskId),
+      }));
+    };
+
+    // Read file with progress (up to 30%)
+    const buffer = await new Promise<Uint8Array>((resolve, reject) => {
+      try {
+        const reader = new FileReader();
+        reader.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const frac = e.loaded / e.total;
+            setTaskProgress(Math.min(0.3, frac * 0.3));
+          }
+        };
+        reader.onerror = () => reject(reader.error ?? new Error("Failed to read file"));
+        reader.onload = () => {
+          setTaskProgress(0.3);
+          resolve(new Uint8Array(reader.result as ArrayBuffer));
+        };
+        reader.readAsArrayBuffer(file);
+      } catch (err) {
+        reject(err);
+      }
     });
 
-    const { name: filename, size, type } = file;
-    const buffer = new Uint8Array(await file.arrayBuffer());
+    // Simulate upload progress while the request is in-flight (30% -> 95%)
+    let current = 0.3;
+    const interval = window.setInterval(() => {
+      current = Math.min(0.95, current + 0.02);
+      setTaskProgress(current);
+    }, 200);
 
+    const { name: filename, size, type } = file;
     try {
       const attachment = await attachmentStore.createAttachment({
         attachment: Attachment.fromPartial({
@@ -219,26 +258,22 @@ const MemoEditor = observer((props: Props) => {
         }),
         attachmentId: "",
       });
-      setState((state) => {
-        return {
-          ...state,
-          isUploadingAttachment: false,
-        };
-      });
+      window.clearInterval(interval);
+      setTaskProgress(1);
+      // Remove task shortly after completion
+      window.setTimeout(removeTask, 500);
       return attachment;
     } catch (error: any) {
+      window.clearInterval(interval);
       console.error(error);
-      toast.error(error.details);
-      setState((state) => {
-        return {
-          ...state,
-          isUploadingAttachment: false,
-        };
-      });
+      toast.error(error.details ?? "Upload failed");
+      // Remove task on error as well
+      removeTask();
     }
   };
 
   const uploadMultiFiles = async (files: FileList) => {
+    setState((prev) => ({ ...prev, isUploadingAttachment: true }));
     const uploadedAttachmentList: Attachment[] = [];
     for (const file of files) {
       const attachment = await handleUploadResource(file);
@@ -261,6 +296,8 @@ const MemoEditor = observer((props: Props) => {
         attachmentList: [...prevState.attachmentList, ...uploadedAttachmentList],
       }));
     }
+    // If no more tasks in-flight, clear uploading flag
+    setState((prev) => ({ ...prev, isUploadingAttachment: false }));
   };
 
   const handleDropEvent = async (event: React.DragEvent) => {
@@ -478,6 +515,9 @@ const MemoEditor = observer((props: Props) => {
             relationList,
           }));
         },
+        uploadFiles: async (files: FileList) => {
+          await uploadMultiFiles(files);
+        },
         memoName,
       }}
     >
@@ -497,6 +537,24 @@ const MemoEditor = observer((props: Props) => {
         onCompositionEnd={handleCompositionEnd}
       >
         <Editor ref={editorRef} {...editorConfig} />
+        {state.uploadTasks.length > 0 && (
+          <div className="w-full mt-2 space-y-2">
+            {state.uploadTasks.map((task) => (
+              <div key={task.id} className="w-full">
+                <div className="flex items-center justify-between text-xs opacity-70 mb-1">
+                  <span className="truncate max-w-[70%]">{task.name}</span>
+                  <span className="tabular-nums">{Math.round(task.progress * 100)}%</span>
+                </div>
+                <div className="w-full h-1.5 rounded bg-muted">
+                  <div
+                    className="h-1.5 rounded bg-primary transition-[width] duration-200"
+                    style={{ width: `${Math.max(2, Math.round(task.progress * 100))}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         <AttachmentListView attachmentList={state.attachmentList} setAttachmentList={handleSetAttachmentList} />
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
         <div className="relative w-full flex flex-row justify-between items-center py-1 gap-2" onFocus={(e) => e.stopPropagation()}>
