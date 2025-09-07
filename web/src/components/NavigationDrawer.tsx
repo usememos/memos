@@ -16,7 +16,7 @@ const NavigationDrawer = observer(() => {
 
   useEffect(() => {
     setOpen(false);
-  }, [location.pathname]);
+  }, [location.key]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
