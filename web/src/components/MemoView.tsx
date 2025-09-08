@@ -136,7 +136,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   ) : (
     <div
       className={cn(
-        "group relative flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-lg border border-border transition-colors",
+        "relative flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-lg border border-border transition-colors",
         className,
       )}
     >
@@ -177,7 +177,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           )}
         </div>
         <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
-          <div className="w-auto invisible group-hover:visible flex flex-row justify-between items-center gap-2">
+          <div className="w-auto flex flex-row justify-between items-center gap-2">
             {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
               <Tooltip>
                 <TooltipTrigger>
@@ -192,10 +192,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           </div>
           {!isInMemoDetailPage && commentAmount > 0 && (
             <Link
-              className={cn(
-                "flex flex-row justify-start items-center rounded-md p-1 hover:opacity-80",
-                commentAmount === 0 && "invisible group-hover:visible",
-              )}
+              className={cn("flex flex-row justify-start items-center rounded-md p-1 hover:opacity-80", commentAmount === 0 && "invisible")}
               to={`/${memo.name}#comments`}
               viewTransition
               state={{
