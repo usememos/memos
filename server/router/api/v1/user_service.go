@@ -1368,7 +1368,7 @@ func (s *APIV1Service) validateUserFilter(_ context.Context, filterStr string) e
 		dialect = &filter.SQLiteDialect{}
 	}
 
-	converter := filter.NewCommonSQLConverter(dialect)
+	converter := filter.NewUserSQLConverter(dialect)
 	err = converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
 	if err != nil {
 		return errors.Wrap(err, "failed to convert filter to SQL")

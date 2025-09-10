@@ -94,7 +94,7 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		}
 		convertCtx := filter.NewConvertContext()
 		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
-		converter := filter.NewCommonSQLConverter(&filter.MySQLDialect{})
+		converter := filter.NewUserSQLConverter(&filter.MySQLDialect{})
 		if err := converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
 			return nil, err
 		}
