@@ -32,6 +32,7 @@
     "cmdk": "^1.1.1",
     "copy-to-clipboard": "^3.3.3",
     "dayjs": "^1.11.13",
+    "dompurify": "^3.2.6",
     "fuse.js": "^7.1.0",
     "highlight.js": "^11.11.1",
     "i18next": "^25.4.2",

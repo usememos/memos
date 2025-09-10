@@ -80,6 +80,9 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      dompurify:
+        specifier: ^3.2.6
+        version: 3.2.6
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
