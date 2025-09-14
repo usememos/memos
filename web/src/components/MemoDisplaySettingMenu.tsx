@@ -1,5 +1,6 @@
 import { Settings2Icon } from "lucide-react";
 import { observer } from "mobx-react-lite";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { viewStore } from "@/store";
@@ -58,6 +59,18 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
                 <SelectItem value="MASONRY">{t("memo.masonry")}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("common.show-comments")}</span>
+            <Checkbox
+              id="show-comments"
+              checked={viewStore.state.showComments}
+              onCheckedChange={(value) =>
+                viewStore.state.setPartial({
+                  showComments: Boolean(value),
+                })
+              }
+            />
           </div>
         </div>
       </PopoverContent>

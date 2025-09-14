@@ -39,6 +39,8 @@ const Archived = observer(() => {
       }
       state={State.ARCHIVED}
       orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
+      // It does not support show comments now
+      // showComments={viewStore.state.showComments}
       filter={memoFitler}
     />
   );

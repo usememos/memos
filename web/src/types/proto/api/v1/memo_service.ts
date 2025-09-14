@@ -206,6 +206,8 @@ export interface ListMemosRequest {
   filter: string;
   /** Optional. If true, show deleted memos in the response. */
   showDeleted: boolean;
+  /** Optional. If true, include comment memos in the response. */
+  showComments: boolean;
 }
 
 export interface ListMemosResponse {
@@ -1084,7 +1086,15 @@ export const CreateMemoRequest: MessageFns<CreateMemoRequest> = {
 };
 
 function createBaseListMemosRequest(): ListMemosRequest {
-  return { pageSize: 0, pageToken: "", state: State.STATE_UNSPECIFIED, orderBy: "", filter: "", showDeleted: false };
+  return {
+    pageSize: 0,
+    pageToken: "",
+    state: State.STATE_UNSPECIFIED,
+    orderBy: "",
+    filter: "",
+    showDeleted: false,
+    showComments: false,
+  };
 }
 
 export const ListMemosRequest: MessageFns<ListMemosRequest> = {
@@ -1106,6 +1116,9 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
     }
     if (message.showDeleted !== false) {
       writer.uint32(48).bool(message.showDeleted);
+    }
+    if (message.showComments !== false) {
+      writer.uint32(56).bool(message.showComments);
     }
     return writer;
   },
@@ -1165,6 +1178,14 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
           message.showDeleted = reader.bool();
           continue;
         }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.showComments = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1185,6 +1206,7 @@ export const ListMemosRequest: MessageFns<ListMemosRequest> = {
     message.orderBy = object.orderBy ?? "";
     message.filter = object.filter ?? "";
     message.showDeleted = object.showDeleted ?? false;
+    message.showComments = object.showComments ?? false;
     return message;
   },
 };
