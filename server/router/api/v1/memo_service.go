@@ -107,7 +107,6 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 
 func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosRequest) (*v1pb.ListMemosResponse, error) {
 	memoFind := &store.FindMemo{
-		// Exclude comments by default.
 		ExcludeComments: !request.ShowComments,
 	}
 	if request.State == v1pb.State_ARCHIVED {
