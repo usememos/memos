@@ -108,7 +108,7 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosRequest) (*v1pb.ListMemosResponse, error) {
 	memoFind := &store.FindMemo{
 		// Exclude comments by default.
-		ExcludeComments: true,
+		ExcludeComments: !request.ShowComments,
 	}
 	if request.State == v1pb.State_ARCHIVED {
 		state := store.Archived
@@ -695,7 +695,7 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
 		Filters:         []string{fmt.Sprintf("tag in [\"%s\"]", request.OldTag)},
-		ExcludeComments: true,
+		ExcludeComments: false,
 	}
 	if (request.Parent) != "memos/-" {
 		memoUID, err := ExtractMemoUIDFromName(request.Parent)
@@ -746,7 +746,7 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 		CreatorID:       &user.ID,
 		Filters:         []string{fmt.Sprintf("tag in [\"%s\"]", request.Tag)},
 		ExcludeContent:  true,
-		ExcludeComments: true,
+		ExcludeComments: false,
 	}
 	if request.Parent != "memos/-" {
 		memoUID, err := ExtractMemoUIDFromName(request.Parent)
