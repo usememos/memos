@@ -89,7 +89,10 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if find.OrderByTimeAsc {
 		order = "ASC"
 	}
-	orderBy := []string{}
+
+	// Prioritize pinned memos first
+	orderBy := []string{"`pinned` DESC"}
+
 	if find.OrderByUpdatedTs {
 		orderBy = append(orderBy, "`updated_ts` "+order)
 	} else {
