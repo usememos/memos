@@ -2,9 +2,11 @@ import copy from "copy-to-clipboard";
 import DOMPurify from "dompurify";
 import hljs from "highlight.js";
 import { CopyIcon } from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { workspaceStore } from "@/store";
 import MermaidBlock from "./MermaidBlock";
 import { BaseProps } from "./types";
 
@@ -87,6 +89,9 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
     return <MermaidBlock content={content} />;
   }
 
+  const appTheme = workspaceStore.state.theme;
+  const isDarkTheme = appTheme.includes("dark");
+
   useEffect(() => {
     const dynamicImportStyle = async () => {
       // Remove any existing highlight.js style
@@ -96,13 +101,14 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
       }
 
       try {
-        // Always use the github light theme
-        const cssModule = await import("highlight.js/styles/github.css?inline");
+        const cssModule = isDarkTheme
+          ? await import("highlight.js/styles/github-dark-dimmed.css?inline")
+          : await import("highlight.js/styles/github.css?inline");
 
         // Create and inject the style
         const style = document.createElement("style");
         style.textContent = cssModule.default;
-        style.setAttribute("data-hljs-theme", "light");
+        style.setAttribute("data-hljs-theme", isDarkTheme ? "dark" : "light");
         document.head.appendChild(style);
       } catch (error) {
         console.warn("Failed to load highlight.js theme:", error);
@@ -110,7 +116,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
     };
 
     dynamicImportStyle();
-  }, []);
+  }, [appTheme, isDarkTheme]);
 
   const highlightedCode = useMemo(() => {
     try {
@@ -154,4 +160,4 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   );
 };
 
-export default CodeBlock;
+export default observer(CodeBlock);
