@@ -129,8 +129,36 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
   const [selectedTemplate, setSelectedTemplate] = useState<string>("GitHub");
   const isCreating = identityProvider === undefined;
 
+  // Reset state when dialog is closed
   useEffect(() => {
-    if (identityProvider) {
+    if (!open) {
+      // Reset to default state when dialog is closed
+      setBasicInfo({
+        title: "",
+        identifierFilter: "",
+      });
+      setType(IdentityProvider_Type.OAUTH2);
+      setOAuth2Config({
+        clientId: "",
+        clientSecret: "",
+        authUrl: "",
+        tokenUrl: "",
+        userInfoUrl: "",
+        scopes: [],
+        fieldMapping: FieldMapping.fromPartial({
+          identifier: "",
+          displayName: "",
+          email: "",
+        }),
+      });
+      setOAuth2Scopes("");
+      setSelectedTemplate("GitHub");
+    }
+  }, [open]);
+
+  // Load existing identity provider data when editing
+  useEffect(() => {
+    if (open && identityProvider) {
       setBasicInfo({
         title: identityProvider.title,
         identifierFilter: identityProvider.identifierFilter,
@@ -142,10 +170,11 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
         setOAuth2Scopes(oauth2Config.scopes.join(" "));
       }
     }
-  }, [identityProvider]);
+  }, [open, identityProvider]);
 
+  // Load template data when creating new IDP
   useEffect(() => {
-    if (!isCreating) {
+    if (!isCreating || !open) {
       return;
     }
 
@@ -162,7 +191,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
         setOAuth2Scopes(oauth2Config.scopes.join(" "));
       }
     }
-  }, [selectedTemplate]);
+  }, [selectedTemplate, isCreating, open]);
 
   const handleCloseBtnClick = () => {
     onOpenChange(false);

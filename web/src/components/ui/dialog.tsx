@@ -74,7 +74,18 @@ const DialogContent = React.forwardRef<
 >(({ className, children, showCloseButton = true, size, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
-    <DialogPrimitive.Content ref={ref} className={cn(dialogContentVariants({ size }), className)} {...props}>
+    <DialogPrimitive.Content
+      ref={ref}
+      className={cn(dialogContentVariants({ size }), className)}
+      onOpenAutoFocus={(e) => {
+        e.preventDefault();
+      }}
+      onCloseAutoFocus={(e) => {
+        e.preventDefault();
+        document.body.style.pointerEvents = "auto";
+      }}
+      {...props}
+    >
       <div className="overflow-y-auto overflow-x-hidden flex-1 flex flex-col gap-4">{children}</div>
       {showCloseButton && (
         <DialogPrimitive.Close className="ring-offset-background data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">

@@ -54,6 +54,14 @@ const SSOSection = () => {
     setEditingIdentityProvider(undefined);
   };
 
+  const handleDialogOpenChange = (open: boolean) => {
+    setIsCreateDialogOpen(open);
+    // Clear editing state when dialog is closed
+    if (!open) {
+      setEditingIdentityProvider(undefined);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <div className="w-full flex flex-row justify-between items-center gap-1">
@@ -100,7 +108,7 @@ const SSOSection = () => {
 
       <CreateIdentityProviderDialog
         open={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
+        onOpenChange={handleDialogOpenChange}
         identityProvider={editingIdentityProvider}
         onSuccess={handleDialogSuccess}
       />
