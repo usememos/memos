@@ -31,11 +31,14 @@ const Archived = observer(() => {
       listSort={(memos: Memo[]) =>
         memos
           .filter((memo) => memo.state === State.ARCHIVED)
-          .sort((a, b) =>
-            viewStore.state.orderByTimeAsc
+          .sort((a, b) => {
+            if (a.pinned && !b.pinned) return -1;
+            if (b.pinned && !a.pinned) return 1;
+
+            return viewStore.state.orderByTimeAsc
               ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
-              : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
-          )
+              : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix();
+          })
       }
       state={State.ARCHIVED}
       orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
