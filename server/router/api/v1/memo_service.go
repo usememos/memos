@@ -10,11 +10,9 @@ import (
 
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
+	"github.com/usememos/gomark"
 	"github.com/usememos/gomark/ast"
-	"github.com/usememos/gomark/parser"
-	"github.com/usememos/gomark/parser/tokenizer"
 	"github.com/usememos/gomark/renderer"
-	"github.com/usememos/gomark/restore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -711,16 +709,16 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 	}
 
 	for _, memo := range memos {
-		nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
+		doc, err := gomark.Parse(memo.Content)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to parse memo: %v", err)
 		}
-		memopayload.TraverseASTNodes(nodes, func(node ast.Node) {
+		memopayload.TraverseASTDocument(doc, func(node ast.Node) {
 			if tag, ok := node.(*ast.Tag); ok && tag.Content == request.OldTag {
 				tag.Content = request.NewTag
 			}
 		})
-		memo.Content = restore.Restore(nodes)
+		memo.Content = gomark.Restore(doc)
 		if err := memopayload.RebuildMemoPayload(memo); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 		}
@@ -840,12 +838,12 @@ func convertMemoToWebhookPayload(memo *v1pb.Memo) (*webhook.WebhookRequestPayloa
 }
 
 func getMemoContentSnippet(content string) (string, error) {
-	nodes, err := parser.Parse(tokenizer.Tokenize(content))
+	doc, err := gomark.Parse(content)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to parse content")
 	}
 
-	plainText := renderer.NewStringRenderer().Render(nodes)
+	plainText := renderer.NewStringRenderer().RenderDocument(doc)
 	if len(plainText) > 64 {
 		return substring(plainText, 64) + "...", nil
 	}

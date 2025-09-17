@@ -1,29 +1,32 @@
 #!/bin/sh
 
-# Exit when any command fails
 set -e
 
-# Get the script directory and change to the project root
+# Change to repo root
 cd "$(dirname "$0")/../"
 
-# Detect the operating system
 OS=$(uname -s)
 
-# Set output file name based on the OS
-if [[ "$OS" == *"CYGWIN"* || "$OS" == *"MINGW"* || "$OS" == *"MSYS"* ]]; then
-  OUTPUT="./build/memos.exe"
-else
-  OUTPUT="./build/memos"
-fi
+# Determine output binary name
+case "$OS" in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    OUTPUT="./build/memos.exe"
+    ;;
+  *)
+    OUTPUT="./build/memos"
+    ;;
+esac
 
 echo "Building for $OS..."
 
+# Ensure build directories exist and configure a writable Go build cache
+mkdir -p ./build/.gocache ./build/.gomodcache
+export GOCACHE="$(pwd)/build/.gocache"
+export GOMODCACHE="$(pwd)/build/.gomodcache"
+
 # Build the executable
-go build -o "$OUTPUT" ./bin/memos/main.go
+go build -o "$OUTPUT" ./bin/memos
 
-# Output the success message
 echo "Build successful!"
-
-# Output the command to run
 echo "To run the application, execute the following command:"
 echo "$OUTPUT --mode dev"
