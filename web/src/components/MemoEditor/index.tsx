@@ -1,6 +1,7 @@
 import copy from "copy-to-clipboard";
 import { isEqual } from "lodash-es";
 import { LoaderIcon } from "lucide-react";
+import mime from "mime";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -214,7 +215,7 @@ const MemoEditor = observer((props: Props) => {
         attachment: Attachment.fromPartial({
           filename,
           size,
-          type,
+          type || mime.getType(filename) || "text/plain",
           content: buffer,
         }),
         attachmentId: "",
