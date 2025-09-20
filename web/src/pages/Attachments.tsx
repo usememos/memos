@@ -7,6 +7,7 @@ import AttachmentIcon from "@/components/AttachmentIcon";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -47,6 +48,7 @@ const Attachments = observer(() => {
   const filteredAttachments = attachments.filter((attachment) => includes(attachment.filename, state.searchQuery));
   const groupedAttachments = groupAttachmentsByDate(filteredAttachments.filter((attachment) => attachment.memo));
   const unusedAttachments = filteredAttachments.filter((attachment) => !attachment.memo);
+  const [deleteUnusedOpen, setDeleteUnusedOpen] = useState(false);
 
   useEffect(() => {
     attachmentServiceClient.listAttachments({}).then(({ attachments }) => {
@@ -57,17 +59,19 @@ const Attachments = observer(() => {
   }, []);
 
   const handleDeleteUnusedAttachments = async () => {
-    const confirmed = window.confirm("Are you sure to delete all unused attachments? This action cannot be undone.");
-    if (confirmed) {
-      for (const attachment of unusedAttachments) {
-        await attachmentServiceClient.deleteAttachment({ name: attachment.name });
-      }
-      setAttachments(attachments.filter((attachment) => attachment.memo));
+    setDeleteUnusedOpen(true);
+  };
+
+  const confirmDeleteUnusedAttachments = async () => {
+    for (const attachment of unusedAttachments) {
+      await attachmentServiceClient.deleteAttachment({ name: attachment.name });
     }
+    setAttachments(attachments.filter((attachment) => attachment.memo));
   };
 
   return (
-    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
+    <>
+      <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && <MobileHeader />}
       <div className="w-full px-4 sm:px-6">
         <div className="w-full border border-border flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-background text-foreground">
@@ -141,12 +145,17 @@ const Attachments = observer(() => {
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="sm" onClick={handleDeleteUnusedAttachments}>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={handleDeleteUnusedAttachments}
+                                      aria-label={t("resource.delete-all-unused")}
+                                    >
                                       <TrashIcon className="w-4 h-auto opacity-60" />
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>Delete all</p>
+                                    <p>{t("resource.delete-all-unused")}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -174,8 +183,19 @@ const Attachments = observer(() => {
           </div>
         </div>
       </div>
-    </section>
+      </section>
+      <ConfirmDialog
+        open={deleteUnusedOpen}
+        onOpenChange={setDeleteUnusedOpen}
+        title={t("resource.delete-all-unused-confirm")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmDeleteUnusedAttachments}
+        confirmVariant="destructive"
+      />
+    </>
   );
 });
 
 export default Attachments;
+
