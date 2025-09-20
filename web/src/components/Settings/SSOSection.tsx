@@ -2,6 +2,7 @@ import { MoreVerticalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/grpcweb";
@@ -15,6 +16,7 @@ const SSOSection = () => {
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingIdentityProvider, setEditingIdentityProvider] = useState<IdentityProvider | undefined>();
+  const [deleteTarget, setDeleteTarget] = useState<IdentityProvider | undefined>(undefined);
 
   useEffect(() => {
     fetchIdentityProviderList();
@@ -26,16 +28,19 @@ const SSOSection = () => {
   };
 
   const handleDeleteIdentityProvider = async (identityProvider: IdentityProvider) => {
-    const confirmed = window.confirm(t("setting.sso-section.confirm-delete", { name: identityProvider.title }));
-    if (confirmed) {
-      try {
-        await identityProviderServiceClient.deleteIdentityProvider({ name: identityProvider.name });
-      } catch (error: any) {
-        console.error(error);
-        toast.error(error.details);
-      }
-      await fetchIdentityProviderList();
+    setDeleteTarget(identityProvider);
+  };
+
+  const confirmDeleteIdentityProvider = async () => {
+    if (!deleteTarget) return;
+    try {
+      await identityProviderServiceClient.deleteIdentityProvider({ name: deleteTarget.name });
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.details);
     }
+    await fetchIdentityProviderList();
+    setDeleteTarget(undefined);
   };
 
   const handleCreateIdentityProvider = () => {
@@ -111,6 +116,16 @@ const SSOSection = () => {
         onOpenChange={handleDialogOpenChange}
         identityProvider={editingIdentityProvider}
         onSuccess={handleDialogSuccess}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
+        title={deleteTarget ? t("setting.sso-section.confirm-delete", { name: deleteTarget.title }) : ""}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmDeleteIdentityProvider}
+        confirmVariant="destructive"
       />
     </div>
   );

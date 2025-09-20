@@ -12,6 +12,8 @@ import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import CreateUserDialog from "../CreateUserDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import toast from "react-hot-toast";
 
 const MemberSection = observer(() => {
   const t = useTranslate();
@@ -21,6 +23,8 @@ const MemberSection = observer(() => {
   const editDialog = useDialog();
   const [editingUser, setEditingUser] = useState<User | undefined>();
   const sortedUsers = sortBy(users, "id");
+  const [archiveTarget, setArchiveTarget] = useState<User | undefined>(undefined);
+  const [deleteTarget, setDeleteTarget] = useState<User | undefined>(undefined);
 
   useEffect(() => {
     fetchUsers();
@@ -52,17 +56,21 @@ const MemberSection = observer(() => {
   };
 
   const handleArchiveUserClick = async (user: User) => {
-    const confirmed = window.confirm(t("setting.member-section.archive-warning", { username: user.displayName }));
-    if (confirmed) {
-      await userServiceClient.updateUser({
-        user: {
-          name: user.name,
-          state: State.ARCHIVED,
-        },
-        updateMask: ["state"],
-      });
-      fetchUsers();
-    }
+    setArchiveTarget(user);
+  };
+
+  const confirmArchiveUser = async () => {
+    if (!archiveTarget) return;
+    await userServiceClient.updateUser({
+      user: {
+        name: archiveTarget.name,
+        state: State.ARCHIVED,
+      },
+      updateMask: ["state"],
+    });
+    setArchiveTarget(undefined);
+    toast.success(t("setting.member-section.archive-success", { username: archiveTarget.username }));
+    fetchUsers();
   };
 
   const handleRestoreUserClick = async (user: User) => {
@@ -73,15 +81,20 @@ const MemberSection = observer(() => {
       },
       updateMask: ["state"],
     });
+    toast.success(t("setting.member-section.restore-success", { username: user.username }));
     fetchUsers();
   };
 
   const handleDeleteUserClick = async (user: User) => {
-    const confirmed = window.confirm(t("setting.member-section.delete-warning", { username: user.displayName }));
-    if (confirmed) {
-      await userStore.deleteUser(user.name);
-      fetchUsers();
-    }
+    setDeleteTarget(user);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!deleteTarget) return;
+    await userStore.deleteUser(deleteTarget.name);
+    setDeleteTarget(undefined);
+    toast.success(t("setting.member-section.delete-success", { username: deleteTarget.username }));
+    fetchUsers();
   };
 
   return (
@@ -169,6 +182,28 @@ const MemberSection = observer(() => {
 
       {/* Edit User Dialog */}
       <CreateUserDialog open={editDialog.isOpen} onOpenChange={editDialog.setOpen} user={editingUser} onSuccess={fetchUsers} />
+
+      <ConfirmDialog
+        open={!!archiveTarget}
+        onOpenChange={(open) => !open && setArchiveTarget(undefined)}
+        title={archiveTarget ? t("setting.member-section.archive-warning", { username: archiveTarget.username }) : ""}
+        description={archiveTarget ? t("setting.member-section.archive-warning-description") : ""}
+        confirmLabel={t("common.confirm")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmArchiveUser}
+        confirmVariant="default"
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
+        title={deleteTarget ? t("setting.member-section.delete-warning", { username: deleteTarget.username }) : ""}
+        descriptionMarkdown={deleteTarget ? t("setting.member-section.delete-warning-description") : ""}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmDeleteUser}
+        confirmVariant="destructive"
+      />
     </div>
   );
 });
