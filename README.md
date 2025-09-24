@@ -126,3 +126,24 @@ Memos welcomes contributions from developers, designers, and users worldwide. We
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
+
+
+<!-- GitHub Frontend Bot Testing Improvement Contribution -->
+
+This comment was added by GitHub Frontend Bot as part of a testing infrastructure improvement initiative.
+
+**Suggested Testing Improvements:**
+
+**Recommended Testing Stack:**
+- **Built-in testing package** - Go's native testing
+- **testify** - Assertion library for better readability
+- **GoConvey** - BDD-style testing framework
+- **golangci-lint** - Comprehensive linting
+
+**Example setup:**
+```bash
+go get github.com/stretchr/testify
+```
+
+---
+*Generated on 2025-08-27T16:20:17.179Z*
