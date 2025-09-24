@@ -151,7 +151,7 @@ const AccessTokenSection = () => {
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
         title={deleteTarget ? t("setting.access-token-section.access-token-deletion", { description: deleteTarget.description }) : ""}
-        descriptionMarkdown={t("setting.access-token-section.access-token-deletion-description")}
+        description={t("setting.access-token-section.access-token-deletion-description")}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteAccessToken}

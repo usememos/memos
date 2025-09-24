@@ -162,7 +162,7 @@ const UserSessionsSection = () => {
                 })
               : ""
           }
-          descriptionMarkdown={revokeTarget ? t("setting.user-sessions-section.session-revocation-description") : ""}
+          description={revokeTarget ? t("setting.user-sessions-section.session-revocation-description") : ""}
           confirmLabel={t("setting.user-sessions-section.revoke-session-button")}
           cancelLabel={t("common.cancel")}
           onConfirm={confirmRevokeSession}

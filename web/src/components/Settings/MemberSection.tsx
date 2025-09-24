@@ -201,7 +201,7 @@ const MemberSection = observer(() => {
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
         title={deleteTarget ? t("setting.member-section.delete-warning", { username: deleteTarget.username }) : ""}
-        descriptionMarkdown={deleteTarget ? t("setting.member-section.delete-warning-description") : ""}
+        description={deleteTarget ? t("setting.member-section.delete-warning-description") : ""}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteUser}

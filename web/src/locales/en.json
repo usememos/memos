@@ -144,7 +144,7 @@
     "copy-link": "Copy Link",
     "count-memos-in-date": "{{count}} {{memos}} in {{date}}",
     "delete-confirm": "Are you sure you want to delete this memo?",
-    "delete-confirm-description": "**THIS ACTION IS IRREVERSIBLE**\n\nAttachments, links, and references will also be removed.",
+    "delete-confirm-description": "This action is irreversible. Attachments, links, and references will also be removed.",
     "direction": "Direction",
     "direction-asc": "Ascending",
     "direction-desc": "Descending",
@@ -240,11 +240,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Access token copied to clipboard",
-      "access-token-deletion": "Are you sure you want to delete access token \"{{description}}\"?",
-      "access-token-deletion-description": "**THIS ACTION IS IRREVERSIBLE**\n\nYou will need to update any services using this token to use a new token.",
-      "access-token-deleted": "Access token \"{{description}}\" deleted",
+      "access-token-deletion": "Are you sure you want to delete access token `{{description}}`?",
+      "access-token-deletion-description": "This action is irreversible. You will need to update any services using this token to use a new token.",
+      "access-token-deleted": "Access token `{{description}}` deleted",
       "create-dialog": {
-        "access-token-created": "Access token \"{{description}}\" created",
+        "access-token-created": "Access token `{{description}}` created",
         "access-token-created-default": "Access token created",
         "create-access-token": "Create Access Token",
         "created-at": "Created At",
@@ -302,7 +302,7 @@
       "create-a-member": "Create a member",
       "delete-member": "Delete Member",
       "delete-warning": "Are you sure you want to delete {{username}}?",
-      "delete-warning-description": "**THIS ACTION IS IRREVERSIBLE**",
+      "delete-warning-description": "THIS ACTION IS IRREVERSIBLE",
       "delete-success": "{{username}} deleted successfully",
       "user": "User"
     },
@@ -324,15 +324,15 @@
       "theme": "Theme"
     },
     "shortcut": {
-      "delete-confirm": "Are you sure you want to delete shortcut \"{{title}}\"?",
-      "delete-success": "Shortcut \"{{title}}\" deleted successfully"
+      "delete-confirm": "Are you sure you want to delete shortcut `{{title}}`?",
+      "delete-success": "Shortcut `{{title}}` deleted successfully"
     },
     "sso": "SSO",
     "sso-section": {
       "authorization-endpoint": "Authorization endpoint",
       "client-id": "Client ID",
       "client-secret": "Client secret",
-      "confirm-delete": "Are you sure you want to delete \"{{name}}\" SSO configuration? THIS ACTION IS IRREVERSIBLE",
+      "confirm-delete": "Are you sure you want to delete `{{name}}` SSO configuration? THIS ACTION IS IRREVERSIBLE",
       "create-sso": "Create SSO",
       "custom": "Custom",
       "delete-sso": "Confirm delete",
@@ -385,7 +385,7 @@
       "url-prefix-placeholder": "Custom URL prefix, optional",
       "url-suffix": "URL suffix",
       "url-suffix-placeholder": "Custom URL suffix, optional",
-      "warning-text": "Are you sure you want to delete storage service \"{{name}}\"? THIS ACTION IS IRREVERSIBLE"
+      "warning-text": "Are you sure you want to delete storage service `{{name}}`? THIS ACTION IS IRREVERSIBLE"
     },
     "system": "System",
     "system-section": {
@@ -402,7 +402,7 @@
       },
       "disable-markdown-shortcuts-in-editor": "Disable Markdown shortcuts in editor",
       "disable-password-login": "Disable password login",
-      "disable-password-login-final-warning": "Please type \"CONFIRM\" if you know what you are doing.",
+      "disable-password-login-final-warning": "Please type `CONFIRM` if you know what you are doing.",
       "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra careful when removing an identity provider",
       "disable-public-memos": "Disable public memos",
       "display-with-updated-time": "Display with updated time",
@@ -421,13 +421,14 @@
       "create-dialog": {
         "an-easy-to-remember-name": "An easy-to-remember name",
         "create-webhook": "Create webhook",
+        "create-webhook-success": "Webhook `{{name}}` created",
         "edit-webhook": "Edit webhook",
         "payload-url": "Payload URL",
         "title": "Title",
         "url-example-post-receive": "https://example.com/postreceive"
       },
       "delete-dialog": {
-        "delete-webhook-description": "**THIS ACTION IS IRREVERSIBLE**",
+        "delete-webhook-description": "This action is irreversible.",
         "delete-webhook-title": "Are you sure you want to delete webhook `{{name}}`?",
         "delete-webhook-success": "Webhook `{{name}}` deleted successfully"
       },

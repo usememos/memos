@@ -33,8 +33,10 @@ const WebhookSection = () => {
 
   const handleCreateWebhookDialogConfirm = async () => {
     const webhooks = await listWebhooks();
+    const name = webhooks[webhooks.length - 1]?.displayName || "";
     setWebhooks(webhooks);
     setIsCreateWebhookDialogOpen(false);
+    toast.success(t("setting.webhook-section.create-dialog.create-webhook-success", { name }));
   };
 
   const handleDeleteWebhook = async (webhook: UserWebhook) => {
@@ -45,8 +47,8 @@ const WebhookSection = () => {
     if (!deleteTarget) return;
     await userServiceClient.deleteUserWebhook({ name: deleteTarget.name });
     setWebhooks(webhooks.filter((item) => item.name !== deleteTarget.name));
-    toast.success(t("setting.webhook-section.delete-dialog.delete-webhook-success", { name: deleteTarget?.displayName || "" }));
     setDeleteTarget(undefined);
+    toast.success(t("setting.webhook-section.delete-dialog.delete-webhook-success", { name: deleteTarget.displayName }));
   };
 
   return (
@@ -124,7 +126,7 @@ const WebhookSection = () => {
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
         title={t("setting.webhook-section.delete-dialog.delete-webhook-title", { name: deleteTarget?.displayName || "" })}
-        descriptionMarkdown={t("setting.webhook-section.delete-dialog.delete-webhook-description")}
+        description={t("setting.webhook-section.delete-dialog.delete-webhook-description")}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteWebhook}

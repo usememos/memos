@@ -228,7 +228,7 @@ const MemoActionMenu = observer((props: Props) => {
         onOpenChange={setDeleteDialogOpen}
         title={t("memo.delete-confirm")}
         confirmLabel={t("common.delete")}
-        descriptionMarkdown={t("memo.delete-confirm-description")}
+        description={t("memo.delete-confirm-description")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteMemo}
         confirmVariant="destructive"

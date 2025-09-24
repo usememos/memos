@@ -1,5 +1,3 @@
-import DOMPurify from "dompurify";
-import { marked } from "marked";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,10 +9,8 @@ export interface ConfirmDialogProps {
   onOpenChange: (open: boolean) => void;
   /** Title content (plain text or React nodes) */
   title: React.ReactNode;
-  /** Optional description as React nodes (ignored if descriptionMarkdown provided) */
+  /** Optional description (plain text or React nodes) */
   description?: React.ReactNode;
-  /** Optional description in Markdown. Sanitized & rendered as HTML if provided */
-  descriptionMarkdown?: string;
   /** Confirm / primary action button label */
   confirmLabel: string;
   /** Cancel button label */
@@ -26,8 +22,8 @@ export interface ConfirmDialogProps {
 }
 
 /**
- * Accessible confirmation dialog with optional Markdown description.
- * - Renders description from either React nodes or sanitized Markdown
+ * Accessible confirmation dialog.
+ * - Renders optional description content
  * - Prevents closing while async confirm action is in-flight
  * - Minimal opinionated styling; leverages existing UI primitives
  */
@@ -36,7 +32,6 @@ export default function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  descriptionMarkdown,
   confirmLabel,
   cancelLabel,
   onConfirm,
@@ -59,26 +54,12 @@ export default function ConfirmDialog({
     }
   };
 
-  // Prepare sanitized HTML if Markdown was provided, memoized for performance
-  const descriptionHtml = React.useMemo(() => {
-    return typeof descriptionMarkdown === "string" ? DOMPurify.sanitize(String(marked.parse(descriptionMarkdown))) : null;
-  }, [descriptionMarkdown]);
-
   return (
     <Dialog open={open} onOpenChange={(o: boolean) => !loading && onOpenChange(o)}>
       <DialogContent size="sm">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          {/* 
-            Rendering sanitized Markdown as HTML.
-            This is considered safe because DOMPurify removes any potentially dangerous content.
-            Ensure that Markdown input is trusted or validated upstream.
-          */}
-          {descriptionHtml ? (
-            <DialogDescription dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
-          ) : description ? (
-            <DialogDescription>{description}</DialogDescription>
-          ) : null}
+          {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
         <DialogFooter>
           <Button variant="ghost" disabled={loading} onClick={() => onOpenChange(false)}>
