@@ -2,8 +2,8 @@ import copy from "copy-to-clipboard";
 import { ClipboardIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
@@ -30,8 +30,15 @@ const AccessTokenSection = () => {
   }, []);
 
   const handleCreateAccessTokenDialogConfirm = async () => {
+    const prevTokensSet = new Set(userAccessTokens.map((token) => token.accessToken));
     const accessTokens = await listAccessTokens(currentUser.name);
     setUserAccessTokens(accessTokens);
+    const newToken = accessTokens.find((token) => !prevTokensSet.has(token.accessToken));
+    toast.success(
+      t("setting.access-token-section.create-dialog.access-token-created", {
+        description: newToken?.description ?? t("setting.access-token-section.create-dialog.access-token-created-default"),
+      }),
+    );
   };
 
   const handleCreateToken = () => {
@@ -49,10 +56,11 @@ const AccessTokenSection = () => {
 
   const confirmDeleteAccessToken = async () => {
     if (!deleteTarget) return;
-    await userServiceClient.deleteUserAccessToken({ name: deleteTarget.name });
-    setUserAccessTokens(userAccessTokens.filter((token) => token.accessToken !== deleteTarget.accessToken));
+    const { name, accessToken, description } = deleteTarget;
+    await userServiceClient.deleteUserAccessToken({ name });
+    setUserAccessTokens((prev) => prev.filter((token) => token.accessToken !== accessToken));
     setDeleteTarget(undefined);
-    toast.success(t("setting.access-token-section.access-token-deleted", { description: deleteTarget.description }));
+    toast.success(t("setting.access-token-section.access-token-deleted", { description }));
   };
 
   const getFormatedAccessToken = (accessToken: string) => {
@@ -142,11 +150,7 @@ const AccessTokenSection = () => {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-        title={
-          deleteTarget
-            ? t("setting.access-token-section.access-token-deletion", { description: deleteTarget.description })
-            : ""
-        }
+        title={deleteTarget ? t("setting.access-token-section.access-token-deletion", { description: deleteTarget.description }) : ""}
         descriptionMarkdown={t("setting.access-token-section.access-token-deletion-description")}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}

@@ -2,6 +2,8 @@ import { sortBy } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -12,8 +14,6 @@ import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import CreateUserDialog from "../CreateUserDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import ConfirmDialog from "@/components/ConfirmDialog";
-import toast from "react-hot-toast";
 
 const MemberSection = observer(() => {
   const t = useTranslate();
@@ -74,6 +74,7 @@ const MemberSection = observer(() => {
   };
 
   const handleRestoreUserClick = async (user: User) => {
+    const { username } = user;
     await userServiceClient.updateUser({
       user: {
         name: user.name,
@@ -81,7 +82,7 @@ const MemberSection = observer(() => {
       },
       updateMask: ["state"],
     });
-    toast.success(t("setting.member-section.restore-success", { username: user.username }));
+    toast.success(t("setting.member-section.restore-success", { username }));
     fetchUsers();
   };
 
@@ -91,9 +92,10 @@ const MemberSection = observer(() => {
 
   const confirmDeleteUser = async () => {
     if (!deleteTarget) return;
-    await userStore.deleteUser(deleteTarget.name);
+    const { username, name } = deleteTarget;
+    await userStore.deleteUser(name);
     setDeleteTarget(undefined);
-    toast.success(t("setting.member-section.delete-success", { username: deleteTarget.username }));
+    toast.success(t("setting.member-section.delete-success", { username }));
     fetchUsers();
   };
 

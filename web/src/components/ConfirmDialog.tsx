@@ -1,8 +1,8 @@
+import DOMPurify from "dompurify";
+import { marked } from "marked";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import DOMPurify from "dompurify";
-import { marked } from "marked";
 
 export interface ConfirmDialogProps {
   open: boolean;
@@ -42,10 +42,7 @@ export default function ConfirmDialog({
   };
 
   // prepare sanitized HTML if Markdown was provided
-  const descriptionHtml =
-    typeof descriptionMarkdown === "string"
-      ? DOMPurify.sanitize(String(marked.parse(descriptionMarkdown)))
-      : null;
+  const descriptionHtml = typeof descriptionMarkdown === "string" ? DOMPurify.sanitize(String(marked.parse(descriptionMarkdown))) : null;
 
   return (
     <Dialog open={open} onOpenChange={(o: boolean) => !loading && onOpenChange(o)}>

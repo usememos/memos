@@ -1,8 +1,8 @@
 import { ClockIcon, MonitorIcon, SmartphoneIcon, TabletIcon, TrashIcon, WifiIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { UserSession } from "@/types/proto/api/v1/user_service";
@@ -162,12 +162,8 @@ const UserSessionsSection = () => {
                 })
               : ""
           }
-          descriptionMarkdown={
-            revokeTarget
-              ? t("setting.user-sessions-section.session-revocation-description")
-              : ""
-          }
-          confirmLabel={t("common.delete")}
+          descriptionMarkdown={revokeTarget ? t("setting.user-sessions-section.session-revocation-description") : ""}
+          confirmLabel={t("setting.user-sessions-section.revoke-session-button")}
           cancelLabel={t("common.cancel")}
           onConfirm={confirmRevokeSession}
           confirmVariant="destructive"

@@ -104,6 +104,9 @@ importers:
       lucide-react:
         specifier: ^0.486.0
         version: 0.486.0(react@18.3.1)
+      marked:
+        specifier: ^16.3.0
+        version: 16.3.0
       mermaid:
         specifier: ^11.11.0
         version: 11.11.0
@@ -2726,6 +2729,11 @@ packages:
   marked@15.0.12:
     resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
     engines: {node: '>= 18'}
+    hasBin: true
+
+  marked@16.3.0:
+    resolution: {integrity: sha512-K3UxuKu6l6bmA5FUwYho8CfJBlsUWAooKtdGgMcERSpF7gcBUrCGsLH7wDaaNOzwq18JzSUDyoEb/YsrqMac3w==}
+    engines: {node: '>= 20'}
     hasBin: true
 
   math-intrinsics@1.1.0:
@@ -6223,6 +6231,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   marked@15.0.12: {}
+
+  marked@16.3.0: {}
 
   math-intrinsics@1.1.0: {}
 

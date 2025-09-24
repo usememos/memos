@@ -2,8 +2,8 @@ import { Edit3Icon, HashIcon, MoreVerticalIcon, TagsIcon, TrashIcon } from "luci
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import ConfirmDialog from "@/components/ConfirmDialog";
 import useLocalStorage from "react-use/lib/useLocalStorage";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { Switch } from "@/components/ui/switch";
 import { memoServiceClient } from "@/grpcweb";
 import { useDialog } from "@/hooks/useDialog";
@@ -63,7 +63,7 @@ const TagsSection = observer((props: Props) => {
       parent: "memos/-",
       tag: deleteTagName,
     });
-    toast.success(t("message.deleted-successfully"));
+    toast.success(t("tag.delete-success"));
     setDeleteTagName(undefined);
   };
 
