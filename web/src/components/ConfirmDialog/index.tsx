@@ -3,7 +3,6 @@ import { marked } from "marked";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import styles from "./ConfirmDialog.module.scss";
 
 export interface ConfirmDialogProps {
   /** Whether the dialog is open */
@@ -67,7 +66,7 @@ export default function ConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o: boolean) => !loading && onOpenChange(o)}>
-      <DialogContent size="sm" className={styles.container}>
+      <DialogContent size="sm">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {/* 
@@ -85,7 +84,7 @@ export default function ConfirmDialog({
           <Button variant="ghost" disabled={loading} onClick={() => onOpenChange(false)}>
             {cancelLabel}
           </Button>
-          <Button variant={confirmVariant} disabled={loading} onClick={handleConfirm} data-loading={loading ? true : undefined}>
+          <Button variant={confirmVariant} disabled={loading} onClick={handleConfirm} data-loading={loading}>
             {confirmLabel}
           </Button>
         </DialogFooter>

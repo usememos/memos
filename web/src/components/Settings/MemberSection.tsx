@@ -61,6 +61,7 @@ const MemberSection = observer(() => {
 
   const confirmArchiveUser = async () => {
     if (!archiveTarget) return;
+    const username = archiveTarget.username;
     await userServiceClient.updateUser({
       user: {
         name: archiveTarget.name,
@@ -69,8 +70,8 @@ const MemberSection = observer(() => {
       updateMask: ["state"],
     });
     setArchiveTarget(undefined);
-    toast.success(t("setting.member-section.archive-success", { username: archiveTarget.username }));
-    fetchUsers();
+    toast.success(t("setting.member-section.archive-success", { username }));
+    await fetchUsers();
   };
 
   const handleRestoreUserClick = async (user: User) => {
@@ -83,7 +84,7 @@ const MemberSection = observer(() => {
       updateMask: ["state"],
     });
     toast.success(t("setting.member-section.restore-success", { username }));
-    fetchUsers();
+    await fetchUsers();
   };
 
   const handleDeleteUserClick = async (user: User) => {
@@ -96,7 +97,7 @@ const MemberSection = observer(() => {
     await userStore.deleteUser(name);
     setDeleteTarget(undefined);
     toast.success(t("setting.member-section.delete-success", { username }));
-    fetchUsers();
+    await fetchUsers();
   };
 
   return (
