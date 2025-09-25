@@ -29,14 +29,13 @@ const AccessTokenSection = () => {
     });
   }, []);
 
-  const handleCreateAccessTokenDialogConfirm = async () => {
-    const prevTokensSet = new Set(userAccessTokens.map((token) => token.accessToken));
+  const handleCreateAccessTokenDialogConfirm = async (created?: UserAccessToken) => {
+    // Refresh list to reflect server state and include stable fields like issuedAt/expiresAt
     const accessTokens = await listAccessTokens(currentUser.name);
     setUserAccessTokens(accessTokens);
-    const newToken = accessTokens.find((token) => !prevTokensSet.has(token.accessToken));
     toast.success(
       t("setting.access-token-section.create-dialog.access-token-created", {
-        description: newToken?.description ?? t("setting.access-token-section.create-dialog.access-token-created-default"),
+        description: created?.description ?? t("setting.access-token-section.create-dialog.access-token-created-default"),
       }),
     );
   };
@@ -56,9 +55,10 @@ const AccessTokenSection = () => {
 
   const confirmDeleteAccessToken = async () => {
     if (!deleteTarget) return;
-    const { name, accessToken, description } = deleteTarget;
-    await userServiceClient.deleteUserAccessToken({ name });
-    setUserAccessTokens((prev) => prev.filter((token) => token.accessToken !== accessToken));
+    const { name: tokenName, description } = deleteTarget;
+    await userServiceClient.deleteUserAccessToken({ name: tokenName });
+    // Filter by stable resource name to avoid ambiguity with duplicate token strings
+    setUserAccessTokens((prev) => prev.filter((token) => token.name !== tokenName));
     setDeleteTarget(undefined);
     toast.success(t("setting.access-token-section.access-token-deleted", { description }));
   };
@@ -108,7 +108,7 @@ const AccessTokenSection = () => {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {userAccessTokens.map((userAccessToken) => (
-                    <tr key={userAccessToken.accessToken}>
+                    <tr key={userAccessToken.name}>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-foreground flex flex-row justify-start items-center gap-x-1">
                         <span className="font-mono">{getFormatedAccessToken(userAccessToken.accessToken)}</span>
                         <Button variant="ghost" onClick={() => copyAccessToken(userAccessToken.accessToken)}>
