@@ -123,7 +123,7 @@ const ShortcutsSection = observer(() => {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-        title={t("setting.shortcut.delete-confirm")}
+        title={t("setting.shortcut.delete-confirm", { title: deleteTarget?.title ?? "" })}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteShortcut}
