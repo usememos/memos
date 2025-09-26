@@ -526,7 +526,7 @@ const MemoEditor = observer((props: Props) => {
               {!state.isRequesting ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                    <span className="pointer-events-auto">
+                    <span className="pointer-events-auto border-l pl-1">
                       <VisibilityIcon visibility={state.memoVisibility} className="w-4 h-auto ml-1 text-primary-foreground opacity-80" />
                     </span>
                   </DropdownMenuTrigger>
