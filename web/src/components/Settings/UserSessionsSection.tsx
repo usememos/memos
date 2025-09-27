@@ -1,6 +1,7 @@
 import { ClockIcon, MonitorIcon, SmartphoneIcon, TabletIcon, TrashIcon, WifiIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -16,6 +17,7 @@ const UserSessionsSection = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [userSessions, setUserSessions] = useState<UserSession[]>([]);
+  const [revokeTarget, setRevokeTarget] = useState<UserSession | undefined>(undefined);
 
   useEffect(() => {
     listUserSessions(currentUser.name).then((sessions) => {
@@ -24,13 +26,15 @@ const UserSessionsSection = () => {
   }, []);
 
   const handleRevokeSession = async (userSession: UserSession) => {
-    const formattedSessionId = getFormattedSessionId(userSession.sessionId);
-    const confirmed = window.confirm(t("setting.user-sessions-section.session-revocation", { sessionId: formattedSessionId }));
-    if (confirmed) {
-      await userServiceClient.revokeUserSession({ name: userSession.name });
-      setUserSessions(userSessions.filter((session) => session.sessionId !== userSession.sessionId));
-      toast.success(t("setting.user-sessions-section.session-revoked"));
-    }
+    setRevokeTarget(userSession);
+  };
+
+  const confirmRevokeSession = async () => {
+    if (!revokeTarget) return;
+    await userServiceClient.revokeUserSession({ name: revokeTarget.name });
+    setUserSessions(userSessions.filter((session) => session.sessionId !== revokeTarget.sessionId));
+    toast.success(t("setting.user-sessions-section.session-revoked"));
+    setRevokeTarget(undefined);
   };
 
   const getFormattedSessionId = (sessionId: string) => {
@@ -148,6 +152,22 @@ const UserSessionsSection = () => {
             </div>
           </div>
         </div>
+        <ConfirmDialog
+          open={!!revokeTarget}
+          onOpenChange={(open) => !open && setRevokeTarget(undefined)}
+          title={
+            revokeTarget
+              ? t("setting.user-sessions-section.session-revocation", {
+                  sessionId: getFormattedSessionId(revokeTarget.sessionId),
+                })
+              : ""
+          }
+          description={revokeTarget ? t("setting.user-sessions-section.session-revocation-description") : ""}
+          confirmLabel={t("setting.user-sessions-section.revoke-session-button")}
+          cancelLabel={t("common.cancel")}
+          onConfirm={confirmRevokeSession}
+          confirmVariant="destructive"
+        />
       </div>
     </div>
   );
