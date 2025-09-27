@@ -46,7 +46,7 @@ export default function ConfirmDialog({
       onOpenChange(false);
     } catch (e) {
       // Intentionally swallow errors so user can retry; surface via caller's toast/logging
-      console.error("ConfirmDialog error:", e);
+      console.error("ConfirmDialog error for action:", title, e);
     } finally {
       setLoading(false);
     }
