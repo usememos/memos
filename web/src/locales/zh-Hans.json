@@ -306,7 +306,24 @@
     "preference-section": {
       "default-memo-sort-option": "备忘录显示时间",
       "default-memo-visibility": "默认备忘录可见性",
-      "theme": "主题"
+      "theme": "主题",
+      "map-tile-layer-provider": "地图图层提供商",
+      "map-tile-layer-provider-custom-url": "自定义地图图层提供商URL",
+      "map-config": {
+        "title": "地图图层服务器配置",
+        "description": "选择内置模板或输入自定义URL模板。使用Leaflet占位符如 {z}、{x}、{y} 表示缩放级别和图块坐标。需要时请将 <your_token> 替换为您的实际API密钥。",
+        "quick-templates": "快速模板",
+        "tile-server-url": "图层服务器URL模板",
+        "parameters": "Leaflet URL模板参数：",
+        "zoom-level": "缩放级别 (0-18)",
+        "tile-x-coordinate": "图块X坐标",
+        "tile-y-coordinate": "图块Y坐标",
+        "subdomain": "子域名 (a, b, c) 用于负载均衡",
+        "retina-resolution": "视网膜分辨率 (@2x)",
+        "api-token-placeholder": "API令牌/密钥占位符（直接在URL中编辑）",
+        "requires-api-key": "需要API密钥",
+        "apply": "应用"
+      }
     },
     "sso": "单点登录",
     "sso-section": {

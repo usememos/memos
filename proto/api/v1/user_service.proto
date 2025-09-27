@@ -405,6 +405,8 @@ message UserSetting {
     // This references a CSS file in the web/public/themes/ directory.
     // If not set, the default theme will be used.
     string theme = 4 [(google.api.field_behavior) = OPTIONAL];
+    // The user's map tile layer provider.
+    string map_tile_layer_provider = 5 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // User authentication sessions configuration.

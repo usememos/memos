@@ -307,7 +307,24 @@
     "preference-section": {
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
-      "theme": "Theme"
+      "theme": "Theme",
+      "map-tile-layer-provider": "Map Tile Layer Provider",
+      "map-tile-layer-provider-custom-url": "Custom Map Tile Layer Provider URL",
+      "map-config": {
+        "title": "Map Tile Server Configuration",
+        "description": "Choose a built-in template or enter a custom URL template. Use Leaflet placeholders like {z}, {x}, {y} for zoom level and tile coordinates. Replace <your_token> with your actual API key when needed.",
+        "quick-templates": "Quick Templates",
+        "tile-server-url": "Tile Server URL Template",
+        "parameters": "Leaflet URL Template Parameters:",
+        "zoom-level": "Zoom level (0-18)",
+        "tile-x-coordinate": "Tile X coordinate",
+        "tile-y-coordinate": "Tile Y coordinate",
+        "subdomain": "Subdomain (a, b, c) for load balancing",
+        "retina-resolution": "Retina resolution (@2x)",
+        "api-token-placeholder": "API token/key placeholder (edit directly in URL)",
+        "requires-api-key": "Requires API Key",
+        "apply": "Apply"
+      }
     },
     "sso": "SSO",
     "sso-section": {
