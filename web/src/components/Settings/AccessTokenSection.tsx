@@ -29,15 +29,10 @@ const AccessTokenSection = () => {
     });
   }, []);
 
-  const handleCreateAccessTokenDialogConfirm = async (created?: UserAccessToken) => {
-    // Refresh list to reflect server state and include stable fields like issuedAt/expiresAt
+  const handleCreateAccessTokenDialogConfirm = async (created: UserAccessToken) => {
     const accessTokens = await listAccessTokens(currentUser.name);
     setUserAccessTokens(accessTokens);
-    toast.success(
-      t("setting.access-token-section.create-dialog.access-token-created", {
-        description: created?.description ?? t("setting.access-token-section.create-dialog.access-token-created-default"),
-      }),
-    );
+    toast.success(t("setting.access-token-section.create-dialog.access-token-created", { description: created.description }));
   };
 
   const handleCreateToken = () => {

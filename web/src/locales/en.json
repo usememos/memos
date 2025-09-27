@@ -245,7 +245,6 @@
       "access-token-deleted": "Access token `{{description}}` deleted",
       "create-dialog": {
         "access-token-created": "Access token `{{description}}` created",
-        "access-token-created-default": "Access token created",
         "create-access-token": "Create Access Token",
         "created-at": "Created At",
         "description": "Description",
