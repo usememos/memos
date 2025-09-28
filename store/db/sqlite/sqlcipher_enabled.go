@@ -11,8 +11,8 @@ import (
 
 	"github.com/usememos/memos/internal/profile"
 
-    // Import the CGO-backed SQLCipher-compatible SQLite driver.
-    _ "github.com/mattn/go-sqlite3"
+	// Import the CGO-backed SQLCipher-compatible SQLite driver.
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func openSQLiteDB(profile *profile.Profile) (*sql.DB, error) {
