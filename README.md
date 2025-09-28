@@ -95,6 +95,42 @@ Access Memos at `http://localhost:5230` and complete the initial setup.
 
 **Pro Tip**: The data directory stores all your notes, uploads, and settings. Include it in your backup strategy!
 
+### 🔒 Database Encryption (for SQLite)
+
+For enhanced security, Memos supports transparent, full-database encryption for SQLite using **SQLCipher**. This "Encryption at Rest" feature protects your database file even if your server's file system is compromised.
+
+> [!IMPORTANT]
+> This is **not** End-to-End Encryption (E2E). The Memos server holds the key in memory to process data. It protects the database file on the disk, not data from an attacker who has compromised the running application.
+
+Enabling this feature is a two-step process: building a special version of Memos and providing a key at runtime.
+
+#### Using Docker (Recommended)
+
+1.  **Build the SQLCipher-enabled image:**
+    ```bash
+    docker build \
+      --build-arg CGO_ENABLED=1 \
+      --build-arg MEMOS_BUILD_TAGS="memos_sqlcipher libsqlite3 sqlite_omit_load_extension" \
+      -t memos-sqlcipher \
+      -f scripts/Dockerfile .
+    ```
+
+2.  **Run the container with the encryption key:**
+    Provide your secret key via the `MEMOS_SQLITE_ENCRYPTION_KEY` environment variable.
+    ```bash
+    docker run -d \
+      --name memos \
+      -p 5230:5230 \
+      -v ~/.memos:/var/opt/memos \
+      -e MEMOS_SQLITE_ENCRYPTION_KEY="your-super-secret-key" \
+      memos-sqlcipher
+    ```
+
+> [!WARNING]
+> **Key Management is Your Responsibility.** If you lose your encryption key, your data is **permanently unrecoverable**. Back up your key in a secure location like a password manager.
+
+For detailed instructions, including how to encrypt an existing database, please see our full documentation on **[Database Encryption](https://www.usememos.com/docs/advanced-settings/database-encryption)**.
+
 ## Sponsors
 
 Memos is made possible by the generous support of our sponsors. Their contributions help ensure the project's continued development, maintenance, and growth.

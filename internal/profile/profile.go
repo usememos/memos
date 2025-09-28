@@ -28,6 +28,8 @@ type Profile struct {
 	// Driver is the database driver
 	// sqlite, mysql
 	Driver string
+	// SQLiteEncryptionKey unlocks SQLCipher-protected SQLite databases when provided.
+	SQLiteEncryptionKey string
 	// Version is the current version of server
 	Version string
 	// InstanceURL is the url of your memos instance.
@@ -86,6 +88,10 @@ func (p *Profile) Validate() error {
 	if p.Driver == "sqlite" && p.DSN == "" {
 		dbFile := fmt.Sprintf("memos_%s.db", p.Mode)
 		p.DSN = filepath.Join(dataDir, dbFile)
+	}
+
+	if p.SQLiteEncryptionKey != "" && p.Driver != "sqlite" {
+		return errors.New("sqlite encryption key is only supported when using the sqlite driver")
 	}
 
 	return nil
