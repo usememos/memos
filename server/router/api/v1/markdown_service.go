@@ -128,7 +128,12 @@ func convertFromASTNode(rawNode ast.Node) *v1pb.Node {
 	case *ast.Spoiler:
 		node.Node = &v1pb.Node_SpoilerNode{SpoilerNode: &v1pb.SpoilerNode{Content: n.Content}}
 	case *ast.HTMLElement:
-		node.Node = &v1pb.Node_HtmlElementNode{HtmlElementNode: &v1pb.HTMLElementNode{TagName: n.TagName, Attributes: n.Attributes}}
+		node.Node = &v1pb.Node_HtmlElementNode{HtmlElementNode: &v1pb.HTMLElementNode{
+			TagName:       n.TagName,
+			Attributes:    n.Attributes,
+			Children:      convertFromASTNodes(n.Children),
+			IsSelfClosing: n.IsSelfClosing,
+		}}
 	default:
 		node.Node = &v1pb.Node_TextNode{TextNode: &v1pb.TextNode{}}
 	}
@@ -168,7 +173,7 @@ func convertListKindFromASTNode(node ast.ListKind) v1pb.ListNode_Kind {
 		return v1pb.ListNode_ORDERED
 	case ast.UnorderedList:
 		return v1pb.ListNode_UNORDERED
-	case ast.DescrpitionList:
+	case ast.DescriptionList:
 		return v1pb.ListNode_DESCRIPTION
 	default:
 		return v1pb.ListNode_KIND_UNSPECIFIED
@@ -249,7 +254,16 @@ func convertToASTNode(node *v1pb.Node) ast.Node {
 	case *v1pb.Node_SpoilerNode:
 		return &ast.Spoiler{Content: n.SpoilerNode.Content}
 	case *v1pb.Node_HtmlElementNode:
-		return &ast.HTMLElement{TagName: n.HtmlElementNode.TagName, Attributes: n.HtmlElementNode.Attributes}
+		var children []ast.Node
+		if len(n.HtmlElementNode.Children) > 0 {
+			children = convertToASTNodes(n.HtmlElementNode.Children)
+		}
+		return &ast.HTMLElement{
+			TagName:       n.HtmlElementNode.TagName,
+			Attributes:    n.HtmlElementNode.Attributes,
+			Children:      children,
+			IsSelfClosing: n.HtmlElementNode.IsSelfClosing,
+		}
 	default:
 		return &ast.Text{}
 	}
@@ -286,9 +300,9 @@ func convertListKindToASTNode(kind v1pb.ListNode_Kind) ast.ListKind {
 	case v1pb.ListNode_UNORDERED:
 		return ast.UnorderedList
 	case v1pb.ListNode_DESCRIPTION:
-		return ast.DescrpitionList
+		return ast.DescriptionList
 	default:
 		// Default to description list.
-		return ast.DescrpitionList
+		return ast.DescriptionList
 	}
 }
