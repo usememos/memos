@@ -9,10 +9,10 @@ import { useTranslate } from "@/utils/i18n";
 
 const getCellOpacity = (ratio: number): string => {
   if (ratio === 0) return "";
-  if (ratio > 0.75) return "bg-destructive text-destructive-foreground";
-  if (ratio > 0.5) return "bg-destructive/70 text-destructive-foreground";
-  if (ratio > 0.25) return "bg-destructive/50 text-destructive-foreground";
-  return "bg-destructive/30 text-destructive-foreground";
+  if (ratio > 0.75) return "bg-primary text-primary-foreground";
+  if (ratio > 0.5) return "bg-primary/80 text-primary-foreground";
+  if (ratio > 0.25) return "bg-primary/60 text-primary-foreground";
+  return "bg-primary/40 text-primary";
 };
 
 const CalendarCell = memo(
