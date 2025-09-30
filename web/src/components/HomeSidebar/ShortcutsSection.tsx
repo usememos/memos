@@ -1,6 +1,8 @@
 import { Edit3Icon, MoreVerticalIcon, TrashIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { shortcutServiceClient } from "@/grpcweb";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
@@ -25,6 +27,7 @@ const ShortcutsSection = observer(() => {
   const t = useTranslate();
   const shortcuts = userStore.state.shortcuts;
   const [isCreateShortcutDialogOpen, setIsCreateShortcutDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Shortcut | undefined>();
   const [editingShortcut, setEditingShortcut] = useState<Shortcut | undefined>();
 
   useAsyncEffect(async () => {
@@ -32,11 +35,15 @@ const ShortcutsSection = observer(() => {
   }, []);
 
   const handleDeleteShortcut = async (shortcut: Shortcut) => {
-    const confirmed = window.confirm("Are you sure you want to delete this shortcut?");
-    if (confirmed) {
-      await shortcutServiceClient.deleteShortcut({ name: shortcut.name });
-      await userStore.fetchUserSettings();
-    }
+    setDeleteTarget(shortcut);
+  };
+
+  const confirmDeleteShortcut = async () => {
+    if (!deleteTarget) return;
+    await shortcutServiceClient.deleteShortcut({ name: deleteTarget.name });
+    await userStore.fetchUserSettings();
+    toast.success(t("setting.shortcut.delete-success", { title: deleteTarget.title }));
+    setDeleteTarget(undefined);
   };
 
   const handleCreateShortcut = () => {
@@ -112,6 +119,15 @@ const ShortcutsSection = observer(() => {
         onOpenChange={setIsCreateShortcutDialogOpen}
         shortcut={editingShortcut}
         onSuccess={handleShortcutDialogSuccess}
+      />
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
+        title={t("setting.shortcut.delete-confirm", { title: deleteTarget?.title ?? "" })}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmDeleteShortcut}
+        confirmVariant="destructive"
       />
     </div>
   );
