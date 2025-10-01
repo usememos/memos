@@ -114,8 +114,8 @@ importers:
         specifier: ^6.13.7
         version: 6.13.7
       mobx-react-lite:
-        specifier: ^4.1.0
-        version: 4.1.0(mobx@6.13.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^4.1.1
+        version: 4.1.1(mobx@6.13.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -2774,8 +2774,8 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  mobx-react-lite@4.1.0:
-    resolution: {integrity: sha512-QEP10dpHHBeQNv1pks3WnHRCem2Zp636lq54M2nKO2Sarr13pL4u6diQXf65yzXUn0mkk18SyIDCm9UOJYTi1w==}
+  mobx-react-lite@4.1.1:
+    resolution: {integrity: sha512-iUxiMpsvNraCKXU+yPotsOncNNmyeS2B5DKL+TL6Tar/xm+wwNJAubJmtRSeAoYawdZqwv8Z/+5nPRHeQxTiXg==}
     peerDependencies:
       mobx: ^6.9.0
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -6285,7 +6285,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
-  mobx-react-lite@4.1.0(mobx@6.13.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  mobx-react-lite@4.1.1(mobx@6.13.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       mobx: 6.13.7
       react: 18.3.1
