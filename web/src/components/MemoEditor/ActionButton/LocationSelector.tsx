@@ -21,7 +21,7 @@ interface State {
   position?: LatLng;
 }
 
-interface NomatimRateLimit {
+interface NominatimRateLimit {
   lastNominatimFetch: Date;
   nominatimTimeoutId: number | undefined;
   timeBetweenFetch: number;
@@ -34,7 +34,7 @@ const LocationSelector = (props: Props) => {
     placeholder: props.location?.placeholder || "",
     position: props.location ? new LatLng(props.location.latitude, props.location.longitude) : undefined,
   });
-  const rateLimit = useRef<NomatimRateLimit>({
+  const rateLimit = useRef<NominatimRateLimit>({
     lastNominatimFetch: new Date(0),
     nominatimTimeoutId: undefined,
     timeBetweenFetch: 1300,
@@ -95,7 +95,7 @@ const LocationSelector = (props: Props) => {
         toast.error("Failed to fetch reverse geocoding data");
         console.error("Failed to fetch reverse geocoding data:", error);
       });
-  }
+  };
 
   useEffect(() => {
     // Fetch reverse geocoding with rate limits
