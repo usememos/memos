@@ -13,11 +13,11 @@ if (process.env.DEV_PROXY_SERVER && process.env.DEV_PROXY_SERVER.length > 0) {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
-    tailwindcss(),
     codeInspectorPlugin({
       bundler: "vite",
     }),
+    react(),
+    tailwindcss(),
   ],
   server: {
     host: "0.0.0.0",
