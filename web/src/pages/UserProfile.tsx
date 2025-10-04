@@ -95,11 +95,17 @@ const UserProfile = observer(() => {
                 listSort={(memos: Memo[]) =>
                   memos
                     .filter((memo) => memo.state === State.NORMAL)
-                    .sort((a, b) =>
-                      viewStore.state.orderByTimeAsc
+                    .sort((a, b) => {
+                      if (a.pinned && !b.pinned) {
+                        return -1;
+                      }
+                      if (!a.pinned && b.pinned) {
+                        return 1;
+                      }
+                      return viewStore.state.orderByTimeAsc
                         ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
-                        : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix(),
-                    )
+                        : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix();
+                    })
                 }
                 orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
                 filter={memoFilter}

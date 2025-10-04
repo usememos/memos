@@ -21,7 +21,15 @@ class LocalState {
   }
 
   get memos() {
-    return Object.values(this.memoMapByName);
+    return Object.values(this.memoMapByName).sort((a, b) => {
+      if (a.pinned && !b.pinned) {
+        return -1;
+      }
+      if (!a.pinned && b.pinned) {
+        return 1;
+      }
+      return 0;
+    });
   }
 
   get size() {
