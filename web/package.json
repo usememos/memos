@@ -83,7 +83,7 @@
     "prettier": "^3.6.2",
     "terser": "^5.44.0",
     "tw-animate-css": "^1.3.8",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.44.0",
     "vite": "^7.1.5"
   },
