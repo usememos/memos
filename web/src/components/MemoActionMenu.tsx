@@ -101,7 +101,33 @@ const MemoActionMenu = observer((props: Props) => {
         },
         ["state"],
       );
-      toast(message);
+
+      toast.custom((tToast) => (
+        <div className="flex items-center gap-3 ml-auto bg-primary dark:bg-primary p-3 rounded-xl shadow">
+          <span className="text-background">{message}</span>
+          <button
+            className="ml-auto text-background italic hover:underline"
+            onClick={async () => {
+              await memoStore.updateMemo(
+                {
+                  name: memo.name,
+                  state: memo.state,
+                },
+                ["state"],
+              );
+              toast.dismiss(tToast.id);
+              toast.custom((tToast) => (
+                <div className="flex items-center gap-3 ml-auto bg-primary dark:bg-primary p-3 rounded-xl shadow">
+                  <span className="text-background">{t("message.undo-successful")}</span>
+                </div>
+              ));
+              memoUpdatedCallback();
+            }}
+          >
+            ({t("common.undo")})
+          </button>
+        </div>
+      ));
     } catch (error: any) {
       toast.error(error.details);
       console.error(error);
@@ -144,7 +170,6 @@ const MemoActionMenu = observer((props: Props) => {
           const children = node.listNode.children;
           for (let i = 0; i < children.length; i++) {
             if (children[i].type === NodeType.TASK_LIST_ITEM && children[i].taskListItemNode?.complete) {
-              // Remove completed taskList item and next line breaks
               children.splice(i, 1);
               if (children[i]?.type === NodeType.LINE_BREAK) {
                 children.splice(i, 1);
