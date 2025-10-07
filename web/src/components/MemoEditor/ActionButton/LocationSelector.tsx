@@ -19,6 +19,8 @@ interface State {
   initilized: boolean;
   placeholder: string;
   position?: LatLng;
+  latInput: string;
+  lngInput: string;
 }
 
 const LocationSelector = (props: Props) => {
@@ -27,6 +29,8 @@ const LocationSelector = (props: Props) => {
     initilized: false,
     placeholder: props.location?.placeholder || "",
     position: props.location ? new LatLng(props.location.latitude, props.location.longitude) : undefined,
+    latInput: props.location ? String(props.location.latitude) : "",
+    lngInput: props.location ? String(props.location.longitude) : "",
   });
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
@@ -35,6 +39,8 @@ const LocationSelector = (props: Props) => {
       ...state,
       placeholder: props.location?.placeholder || "",
       position: new LatLng(props.location?.latitude || 0, props.location?.longitude || 0),
+      latInput: String(props.location?.latitude ?? 0),
+      lngInput: String(props.location?.longitude ?? 0),
     }));
   }, [props.location]);
 
@@ -65,8 +71,15 @@ const LocationSelector = (props: Props) => {
 
   useEffect(() => {
     if (!state.position) {
-      setState({ ...state, placeholder: "" });
+      setState((prev) => ({ ...prev, placeholder: "" }));
       return;
+    }
+
+    // Sync lat/lng input values from position
+    const newLat = String(state.position.lat);
+    const newLng = String(state.position.lng);
+    if (state.latInput !== newLat || state.lngInput !== newLng) {
+      setState((prev) => ({ ...prev, latInput: newLat, lngInput: newLng }));
     }
 
     // Fetch reverse geocoding data.
@@ -74,7 +87,7 @@ const LocationSelector = (props: Props) => {
       .then((response) => response.json())
       .then((data) => {
         if (data && data.display_name) {
-          setState({ ...state, placeholder: data.display_name });
+          setState((prev) => ({ ...prev, placeholder: data.display_name }));
         }
       })
       .catch((error) => {
@@ -82,6 +95,17 @@ const LocationSelector = (props: Props) => {
         console.error("Failed to fetch reverse geocoding data:", error);
       });
   }, [state.position]);
+
+  // Update position when lat/lng inputs change (if valid numbers)
+  useEffect(() => {
+    const lat = parseFloat(state.latInput);
+    const lng = parseFloat(state.lngInput);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      if (!state.position || state.position.lat !== lat || state.position.lng !== lng) {
+        setState((prev) => ({ ...prev, position: new LatLng(lat, lng) }));
+      }
+    }
+  }, [state.latInput, state.lngInput]);
 
   const onPositionChanged = (position: LatLng) => {
     setState({ ...state, position });
@@ -126,19 +150,31 @@ const LocationSelector = (props: Props) => {
           <LeafletMap key={JSON.stringify(state.initilized)} latlng={state.position} onChange={onPositionChanged} />
           <div className="mt-2 w-full flex flex-row justify-between items-center gap-2">
             <div className="flex flex-row items-center justify-start gap-2 w-full">
-              <div className="relative flex-1">
-                {state.position && (
-                  <div className="absolute left-2 top-1/2 -translate-y-1/2 text-xs leading-6 opacity-60 z-10">
-                    [{state.position.lat.toFixed(2)}, {state.position.lng.toFixed(2)}]
-                  </div>
-                )}
+              <div id="lat-long-display" className="flex flex-row items-center gap-2">
                 <Input
-                  placeholder="Choose a position first."
-                  value={state.placeholder}
-                  disabled={!state.position}
-                  className={state.position ? "pl-24" : ""}
-                  onChange={(e) => setState((state) => ({ ...state, placeholder: e.target.value }))}
+                  placeholder="Lat"
+                  type="number"
+                  step="any"
+                  value={state.latInput}
+                  onChange={(e) => setState((prev) => ({ ...prev, latInput: e.target.value }))}
+                  className="w-28"
                 />
+                <Input
+                  placeholder="Lng"
+                  type="number"
+                  step="any"
+                  value={state.lngInput}
+                  onChange={(e) => setState((prev) => ({ ...prev, lngInput: e.target.value }))}
+                  className="w-28"
+                />
+                <div className="relative flex-1">
+                  <Input
+                    placeholder="Choose a position first."
+                    value={state.placeholder}
+                    disabled={!state.position}
+                    onChange={(e) => setState((prev) => ({ ...prev, placeholder: e.target.value }))}
+                  />
+                </div>
               </div>
             </div>
             <Button
