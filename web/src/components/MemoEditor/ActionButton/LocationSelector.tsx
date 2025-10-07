@@ -35,13 +35,23 @@ const LocationSelector = (props: Props) => {
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    setState((state) => ({
-      ...state,
-      placeholder: props.location?.placeholder || "",
-      position: new LatLng(props.location?.latitude || 0, props.location?.longitude || 0),
-      latInput: String(props.location?.latitude ?? 0),
-      lngInput: String(props.location?.longitude ?? 0),
-    }));
+    if (props.location) {
+      setState((state) => ({
+        ...state,
+        placeholder: props.location.placeholder || "",
+        position: new LatLng(props.location.latitude, props.location.longitude),
+        latInput: String(props.location.latitude),
+        lngInput: String(props.location.longitude),
+      }));
+    } else {
+      setState((state) => ({
+        ...state,
+        placeholder: "",
+        position: undefined,
+        latInput: "",
+        lngInput: "",
+      }));
+    }
   }, [props.location]);
 
   useEffect(() => {
