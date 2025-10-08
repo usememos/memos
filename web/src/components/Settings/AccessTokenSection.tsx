@@ -2,6 +2,7 @@ import copy from "copy-to-clipboard";
 import { ClipboardIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -20,6 +21,7 @@ const AccessTokenSection = () => {
   const currentUser = useCurrentUser();
   const [userAccessTokens, setUserAccessTokens] = useState<UserAccessToken[]>([]);
   const createTokenDialog = useDialog();
+  const [deleteTarget, setDeleteTarget] = useState<UserAccessToken | undefined>(undefined);
 
   useEffect(() => {
     listAccessTokens(currentUser.name).then((accessTokens) => {
@@ -27,9 +29,10 @@ const AccessTokenSection = () => {
     });
   }, []);
 
-  const handleCreateAccessTokenDialogConfirm = async () => {
+  const handleCreateAccessTokenDialogConfirm = async (created: UserAccessToken) => {
     const accessTokens = await listAccessTokens(currentUser.name);
     setUserAccessTokens(accessTokens);
+    toast.success(t("setting.access-token-section.create-dialog.access-token-created", { description: created.description }));
   };
 
   const handleCreateToken = () => {
@@ -42,12 +45,17 @@ const AccessTokenSection = () => {
   };
 
   const handleDeleteAccessToken = async (userAccessToken: UserAccessToken) => {
-    const formatedAccessToken = getFormatedAccessToken(userAccessToken.accessToken);
-    const confirmed = window.confirm(t("setting.access-token-section.access-token-deletion", { accessToken: formatedAccessToken }));
-    if (confirmed) {
-      await userServiceClient.deleteUserAccessToken({ name: userAccessToken.name });
-      setUserAccessTokens(userAccessTokens.filter((token) => token.accessToken !== userAccessToken.accessToken));
-    }
+    setDeleteTarget(userAccessToken);
+  };
+
+  const confirmDeleteAccessToken = async () => {
+    if (!deleteTarget) return;
+    const { name: tokenName, description } = deleteTarget;
+    await userServiceClient.deleteUserAccessToken({ name: tokenName });
+    // Filter by stable resource name to avoid ambiguity with duplicate token strings
+    setUserAccessTokens((prev) => prev.filter((token) => token.name !== tokenName));
+    setDeleteTarget(undefined);
+    toast.success(t("setting.access-token-section.access-token-deleted", { description }));
   };
 
   const getFormatedAccessToken = (accessToken: string) => {
@@ -133,6 +141,16 @@ const AccessTokenSection = () => {
         open={createTokenDialog.isOpen}
         onOpenChange={createTokenDialog.setOpen}
         onSuccess={handleCreateAccessTokenDialogConfirm}
+      />
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
+        title={deleteTarget ? t("setting.access-token-section.access-token-deletion", { description: deleteTarget.description }) : ""}
+        description={t("setting.access-token-section.access-token-deletion-description")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmDeleteAccessToken}
+        confirmVariant="destructive"
       />
     </div>
   );

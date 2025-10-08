@@ -2,6 +2,8 @@ import { sortBy } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -21,6 +23,8 @@ const MemberSection = observer(() => {
   const editDialog = useDialog();
   const [editingUser, setEditingUser] = useState<User | undefined>();
   const sortedUsers = sortBy(users, "id");
+  const [archiveTarget, setArchiveTarget] = useState<User | undefined>(undefined);
+  const [deleteTarget, setDeleteTarget] = useState<User | undefined>(undefined);
 
   useEffect(() => {
     fetchUsers();
@@ -52,20 +56,26 @@ const MemberSection = observer(() => {
   };
 
   const handleArchiveUserClick = async (user: User) => {
-    const confirmed = window.confirm(t("setting.member-section.archive-warning", { username: user.displayName }));
-    if (confirmed) {
-      await userServiceClient.updateUser({
-        user: {
-          name: user.name,
-          state: State.ARCHIVED,
-        },
-        updateMask: ["state"],
-      });
-      fetchUsers();
-    }
+    setArchiveTarget(user);
+  };
+
+  const confirmArchiveUser = async () => {
+    if (!archiveTarget) return;
+    const username = archiveTarget.username;
+    await userServiceClient.updateUser({
+      user: {
+        name: archiveTarget.name,
+        state: State.ARCHIVED,
+      },
+      updateMask: ["state"],
+    });
+    setArchiveTarget(undefined);
+    toast.success(t("setting.member-section.archive-success", { username }));
+    await fetchUsers();
   };
 
   const handleRestoreUserClick = async (user: User) => {
+    const { username } = user;
     await userServiceClient.updateUser({
       user: {
         name: user.name,
@@ -73,15 +83,21 @@ const MemberSection = observer(() => {
       },
       updateMask: ["state"],
     });
-    fetchUsers();
+    toast.success(t("setting.member-section.restore-success", { username }));
+    await fetchUsers();
   };
 
   const handleDeleteUserClick = async (user: User) => {
-    const confirmed = window.confirm(t("setting.member-section.delete-warning", { username: user.displayName }));
-    if (confirmed) {
-      await userStore.deleteUser(user.name);
-      fetchUsers();
-    }
+    setDeleteTarget(user);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!deleteTarget) return;
+    const { username, name } = deleteTarget;
+    await userStore.deleteUser(name);
+    setDeleteTarget(undefined);
+    toast.success(t("setting.member-section.delete-success", { username }));
+    await fetchUsers();
   };
 
   return (
@@ -169,6 +185,28 @@ const MemberSection = observer(() => {
 
       {/* Edit User Dialog */}
       <CreateUserDialog open={editDialog.isOpen} onOpenChange={editDialog.setOpen} user={editingUser} onSuccess={fetchUsers} />
+
+      <ConfirmDialog
+        open={!!archiveTarget}
+        onOpenChange={(open) => !open && setArchiveTarget(undefined)}
+        title={archiveTarget ? t("setting.member-section.archive-warning", { username: archiveTarget.username }) : ""}
+        description={archiveTarget ? t("setting.member-section.archive-warning-description") : ""}
+        confirmLabel={t("common.confirm")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmArchiveUser}
+        confirmVariant="default"
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
+        title={deleteTarget ? t("setting.member-section.delete-warning", { username: deleteTarget.username }) : ""}
+        description={deleteTarget ? t("setting.member-section.delete-warning-description") : ""}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmDeleteUser}
+        confirmVariant="destructive"
+      />
     </div>
   );
 });
