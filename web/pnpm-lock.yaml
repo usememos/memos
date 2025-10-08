@@ -102,8 +102,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       lucide-react:
-        specifier: ^0.486.0
-        version: 0.486.0(react@18.3.1)
+        specifier: ^0.544.0
+        version: 0.544.0(react@18.3.1)
       mermaid:
         specifier: ^11.11.0
         version: 11.11.0
@@ -2715,8 +2715,8 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  lucide-react@0.486.0:
-    resolution: {integrity: sha512-xWop/wMsC1ikiEVLZrxXjPKw4vU/eAip33G2mZHgbWnr4Nr5Rt4Vx4s/q1D3B/rQVbxjOuqASkEZcUxDEKzecw==}
+  lucide-react@0.544.0:
+    resolution: {integrity: sha512-t5tS44bqd825zAW45UQxpG2CvcC4urOwn2TrwSH8u+MjeE+1NnWl6QqeQ/6NdjMqdOygyiT9p3Ev0p1NJykxjw==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -6214,7 +6214,7 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucide-react@0.486.0(react@18.3.1):
+  lucide-react@0.544.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
