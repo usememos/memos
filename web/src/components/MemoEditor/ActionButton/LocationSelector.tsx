@@ -104,7 +104,7 @@ const LocationSelector = (props: Props) => {
     rateLimit.current.nominatimTimeoutId = setTimeout(() => {
       updateReverseGeocoding();
       rateLimit.current.lastNominatimFetch = new Date();
-    }, timeLeft);
+    }, Math.max(0, timeLeft));
   }, [state.position]);
 
   const onPositionChanged = (position: LatLng) => {
