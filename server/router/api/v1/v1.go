@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/server/notification"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
@@ -37,6 +38,8 @@ type APIV1Service struct {
 	Profile *profile.Profile
 	Store   *store.Store
 
+	Notification *notification.Service
+
 	grpcServer *grpc.Server
 }
 
@@ -46,6 +49,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		Secret:     secret,
 		Profile:    profile,
 		Store:      store,
+		Notification: notification.NewService(store),
 		grpcServer: grpcServer,
 	}
 	grpc_health_v1.RegisterHealthServer(grpcServer, apiv1Service)

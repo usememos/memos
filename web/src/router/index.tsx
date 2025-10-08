@@ -20,6 +20,7 @@ const SignIn = lazy(() => import("@/pages/SignIn"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const MemoDetailRedirect = lazy(() => import("./MemoDetailRedirect"));
+const MenuMVP = lazy(() => import("@/pages/MenuMVP"));
 
 export enum Routes {
   ROOT = "/",
@@ -28,6 +29,7 @@ export enum Routes {
   ARCHIVED = "/archived",
   SETTING = "/setting",
   EXPLORE = "/explore",
+  MENU = "/menu",
   AUTH = "/auth",
 }
 
@@ -115,6 +117,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Loading />}>
                 <Attachments />
+              </Suspense>
+            ),
+          },
+          {
+            path: Routes.MENU,
+            element: (
+              <Suspense fallback={<Loading />}>
+                <MenuMVP />
               </Suspense>
             ),
           },

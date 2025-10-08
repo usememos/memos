@@ -38,6 +38,7 @@
     "i18next": "^25.5.2",
     "katex": "^0.16.22",
     "leaflet": "^1.9.4",
+    "lightningcss-win32-x64-msvc": "1.30.1",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.544.0",
     "mermaid": "^11.11.0",

@@ -17,7 +17,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/runner/memopayload"
@@ -804,38 +803,18 @@ func (s *APIV1Service) DispatchMemoDeletedWebhook(ctx context.Context, memo *v1p
 }
 
 func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1pb.Memo, activityType string) error {
-	creatorID, err := ExtractUserIDFromName(memo.Creator)
-	if err != nil {
-		return status.Errorf(codes.InvalidArgument, "invalid memo creator")
-	}
-	webhooks, err := s.Store.GetUserWebhooks(ctx, creatorID)
-	if err != nil {
-		return err
-	}
-	for _, hook := range webhooks {
-		payload, err := convertMemoToWebhookPayload(memo)
-		if err != nil {
-			return errors.Wrap(err, "failed to convert memo to webhook payload")
-		}
-		payload.ActivityType = activityType
-		payload.URL = hook.Url
-
-		// Use asynchronous webhook dispatch
-		webhook.PostAsync(payload)
-	}
-	return nil
+    // 改造：通过集中式通知服务分发（支持 RAW/WeCom/Bark，内置基础防护）。
+    // 在测试环境或未初始化情况下，Notification 可能为 nil，需容错。
+    if s.Notification == nil {
+        return nil
+    }
+    if err := s.Notification.DispatchMemoWebhooks(ctx, memo, activityType); err != nil {
+        return err
+    }
+    return nil
 }
 
-func convertMemoToWebhookPayload(memo *v1pb.Memo) (*webhook.WebhookRequestPayload, error) {
-	creatorID, err := ExtractUserIDFromName(memo.Creator)
-	if err != nil {
-		return nil, errors.Wrap(err, "invalid memo creator")
-	}
-	return &webhook.WebhookRequestPayload{
-		Creator: fmt.Sprintf("%s%d", UserNamePrefix, creatorID),
-		Memo:    memo,
-	}, nil
-}
+// 旧的 payload 转换函数已由 server/notification/service.go 中的实现取代。
 
 func getMemoContentSnippet(content string) (string, error) {
 	doc, err := gomark.Parse(content)
