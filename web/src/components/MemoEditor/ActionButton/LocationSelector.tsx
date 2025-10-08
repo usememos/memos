@@ -157,7 +157,7 @@ const LocationSelector = (props: Props) => {
       </TooltipProvider>
       <PopoverContent align="center">
         <div className="min-w-80 sm:w-lg p-1 flex flex-col justify-start items-start">
-          <LeafletMap key={JSON.stringify(state.initilized)} latlng={state.position} onChange={onPositionChanged} />
+          <LeafletMap key={JSON.stringify(state.initialized)} latlng={state.position} onChange={onPositionChanged} />
           <div className="mt-2 w-full flex flex-row justify-between items-center gap-2">
             <div className="flex flex-row items-center justify-start gap-2 w-full">
               <div id="lat-long-display" className="flex flex-row items-center gap-2">
