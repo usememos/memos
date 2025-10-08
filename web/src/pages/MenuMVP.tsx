@@ -9,7 +9,7 @@ import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { toast } from "react-hot-toast";
 import MenuOrdersView from "@/components/MenuOrdersView";
 
-type MenuItem = { id: string; name: string; price?: number };
+type MenuItem = { id: string; name: string; price?: number; image?: string };
 type Menu = { id: string; name: string; items: MenuItem[] };
 
 const STORAGE_KEY = "memos.menu.mvp";
@@ -94,6 +94,51 @@ const MenuMVP = () => {
     );
     setMenus(next);
     saveMenus(next);
+  };
+
+  // 图片读取/压缩与设置
+  const fileToDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const resizeImage = (src: string, max: number, quality = 0.8) =>
+    new Promise<string>((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width;
+        let h = img.height;
+        const scale = Math.min(1, max / Math.max(w, h));
+        w = Math.round(w * scale);
+        h = Math.round(h * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        } else {
+          resolve(src);
+        }
+      };
+      img.onerror = () => resolve(src);
+      img.src = src;
+    });
+
+  const handleUploadImage = async (itemId: string, file?: File) => {
+    if (!file) return;
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      const resized = await resizeImage(dataUrl, 640, 0.8);
+      updateItem(itemId, { image: resized });
+    } catch (e) {
+      console.error(e);
+      toast.error("图片处理失败");
+    }
   };
 
   const deleteItem = (itemId: string) => {
@@ -245,7 +290,7 @@ const MenuMVP = () => {
       merged.push({
         id,
         name: im.name || id,
-        items: (im.items || []).map((it: any) => ({ id: it.id || slugify(it.name || "item"), name: it.name || "", price: it.price }))
+        items: (im.items || []).map((it: any) => ({ id: it.id || slugify(it.name || "item"), name: it.name || "", price: it.price, image: it.image }))
       });
     }
     setMenus(merged);
@@ -350,6 +395,49 @@ const MenuMVP = () => {
                 <Label className="text-xs">备注</Label>
                 <Input placeholder="如：少辣、走葱" value={note} onChange={(e) => setNote(e.target.value)} />
               </div>
+              {/* 图片选单（点击图片快速加购；可在卡片内上传/替换图片） */}
+              {selectedMenu.items.length > 0 && (
+                <div className="mt-3">
+                  <div className="text-sm font-medium mb-2">图片选单</div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {selectedMenu.items.map((it) => (
+                      <div key={`gallery-${it.id}`} className="border rounded-lg overflow-hidden">
+                        <button
+                          className="relative w-full h-32 group"
+                          onClick={() => setQty(it.id, Math.max(0, (qtyMap[it.id] ?? 0) + 1))}
+                          title={it.name || "未命名"}
+                        >
+                          {it.image ? (
+                            <img src={it.image} alt={it.name} className="w-full h-32 object-cover" />
+                          ) : (
+                            <div className="w-full h-32 flex items-center justify-center text-xs text-muted-foreground">无图片</div>
+                          )}
+                          {(qtyMap[it.id] ?? 0) > 0 && (
+                            <div className="absolute top-1 right-1 bg-primary text-primary-foreground text-xs rounded-full px-2 py-0.5">
+                              x{qtyMap[it.id]}
+                            </div>
+                          )}
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 flex justify-between">
+                            <span className="truncate">{it.name || "未命名"}</span>
+                            <span>{typeof it.price === "number" ? `¥${it.price}` : ""}</span>
+                          </div>
+                        </button>
+                        <div className="p-2 flex items-center justify-between gap-2 text-xs">
+                          <label className="inline-flex items-center gap-1">
+                            <span>图片</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleUploadImage(it.id, e.target.files?.[0])}
+                            />
+                          </label>
+                          <span className="opacity-60">+1 点图</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="mt-3 flex items-center gap-2">
                 <Button onClick={submitOrder}>生成订单备忘录</Button>
                 <Button variant="outline" onClick={() => navigator.clipboard.writeText(generateContent())}>复制内容预览</Button>
