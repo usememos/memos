@@ -118,7 +118,7 @@ const LocationSelector = (props: Props) => {
   }, [state.latInput, state.lngInput]);
 
   const onPositionChanged = (position: LatLng) => {
-    setState({ ...state, position });
+    setState((prev) => ({ ...prev, position }));
   };
 
   const removeLocation = (e: React.MouseEvent) => {
