@@ -16,7 +16,7 @@ interface Props {
 }
 
 interface State {
-  initilized: boolean;
+  initialized: boolean;
   placeholder: string;
   position?: LatLng;
   latInput: string;
@@ -26,7 +26,7 @@ interface State {
 const LocationSelector = (props: Props) => {
   const t = useTranslate();
   const [state, setState] = useState<State>({
-    initilized: false,
+    initialized: false,
     placeholder: props.location?.placeholder || "",
     position: props.location ? new LatLng(props.location.latitude, props.location.longitude) : undefined,
     latInput: props.location ? String(props.location.latitude) : "",
@@ -57,7 +57,7 @@ const LocationSelector = (props: Props) => {
   useEffect(() => {
     if (popoverOpen && !props.location) {
       const handleError = (error: any, errorMessage: string) => {
-        setState({ ...state, initilized: true });
+        setState({ ...state, initialized: true });
         toast.error(errorMessage);
         console.error(error);
       };
@@ -67,7 +67,7 @@ const LocationSelector = (props: Props) => {
           (position) => {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            setState({ ...state, position: new LatLng(lat, lng), initilized: true });
+            setState({ ...state, position: new LatLng(lat, lng), initialized: true });
           },
           (error) => {
             handleError(error, "Failed to get current position");
