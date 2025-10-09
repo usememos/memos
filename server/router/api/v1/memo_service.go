@@ -29,6 +29,9 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 
 	create := &store.Memo{
 		UID:        shortuuid.New(),
@@ -318,6 +321,9 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	// Only the creator or admin can update the memo.
 	if memo.CreatorID != user.ID && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -452,6 +458,9 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	// Only the creator or admin can update the memo.
 	if memo.CreatorID != user.ID && !isSuperUser(user) {
@@ -689,6 +698,9 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 
 	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
@@ -738,6 +750,9 @@ func (s *APIV1Service) DeleteMemoTag(ctx context.Context, request *v1pb.DeleteMe
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
 	memoFind := &store.FindMemo{

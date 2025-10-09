@@ -37,6 +37,9 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	reaction, err := s.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
 		ContentID:    request.Reaction.ContentId,

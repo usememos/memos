@@ -8,7 +8,11 @@ import "./index.css";
 import router from "./router";
 import { initialUserStore } from "./store/user";
 import { initialWorkspaceStore } from "./store/workspace";
+import { applyThemeEarly } from "./utils/theme";
 import "leaflet/dist/leaflet.css";
+
+// Apply theme early to prevent flash of wrong theme
+applyThemeEarly();
 
 const Main = observer(() => (
   <>

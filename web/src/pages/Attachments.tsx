@@ -1,15 +1,13 @@
 import dayjs from "dayjs";
 import { includes } from "lodash-es";
-import { PaperclipIcon, SearchIcon, TrashIcon } from "lucide-react";
+import { PaperclipIcon, SearchIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import AttachmentIcon from "@/components/AttachmentIcon";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { attachmentServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
@@ -55,16 +53,6 @@ const Attachments = observer(() => {
       Promise.all(attachments.map((attachment) => (attachment.memo ? memoStore.getOrFetchMemoByName(attachment.memo) : null)));
     });
   }, []);
-
-  const handleDeleteUnusedAttachments = async () => {
-    const confirmed = window.confirm("Are you sure to delete all unused attachments? This action cannot be undone.");
-    if (confirmed) {
-      for (const attachment of unusedAttachments) {
-        await attachmentServiceClient.deleteAttachment({ name: attachment.name });
-      }
-      setAttachments(attachments.filter((attachment) => attachment.memo));
-    }
-  };
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
@@ -138,18 +126,6 @@ const Attachments = observer(() => {
                             <div className="w-full flex flex-row justify-start items-center gap-2">
                               <span className="text-muted-foreground">{t("resource.unused-resources")}</span>
                               <span className="text-muted-foreground opacity-80">({unusedAttachments.length})</span>
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="sm" onClick={handleDeleteUnusedAttachments}>
-                                      <TrashIcon className="w-4 h-auto opacity-60" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Delete all</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
                             </div>
                             {unusedAttachments.map((attachment) => {
                               return (
