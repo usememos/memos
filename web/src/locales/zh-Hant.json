@@ -12,7 +12,7 @@
     "new-password": "新密碼",
     "repeat-new-password": "再次輸入新密碼",
     "sign-in-tip": "已經有帳戶了嗎？",
-    "sign-up-tip": "還沒有帳戶？"
+    "sign-up-tip": "還沒有帳戶嗎？"
   },
   "common": {
     "about": "關於",
@@ -21,6 +21,7 @@
     "archive": "封存",
     "archived": "已封存",
     "attachments": "附件",
+    "auto-expand": "自動展開",
     "avatar": "頭像",
     "basic": "基礎",
     "beta": "測試版",
@@ -114,7 +115,7 @@
     "add-your-comment-here": "在這裡添加您的評論...",
     "any-thoughts": "任何想法...",
     "save": "儲存",
-    "no-changes-detected": "未檢測到變更"
+    "no-changes-detected": "未發現變更"
   },
   "filters": {
     "has-code": "有程式碼",
@@ -122,9 +123,9 @@
     "has-task-list": "有待辦事項"
   },
   "inbox": {
-    "failed-to-load": "載入通知失敗",
     "memo-comment": "{{user}} 對您的 {{memo}} 發表了評論。",
-    "version-update": "新版本 {{version}} 現已推出！"
+    "version-update": "新版本 {{version}} 現已推出！",
+    "failed-to-load": "載入失敗"
   },
   "markdown": {
     "checkbox": "核取方塊",
@@ -141,8 +142,9 @@
       "write-a-comment": "寫下評論"
     },
     "copy-link": "複製連結",
-    "count-memos-in-date": "{{date}}的{{count}}條備忘錄",
-    "delete-confirm": "您確定要刪除此備忘錄？（此操作無法恢復）",
+    "count-memos-in-date": "{{date}} 的 {{count}} 條備忘錄",
+    "delete-confirm": "您確定要刪除此備忘錄嗎？",
+    "delete-confirm-description": "此操作無法恢復。附件、連結和引用將一併被移除。",
     "direction": "排序",
     "direction-asc": "升序",
     "direction-desc": "降序",
@@ -154,7 +156,7 @@
     "no-memos": "無備忘錄",
     "order-by": "排序",
     "remove-completed-task-list-items": "移除已完成的待辦事項",
-    "remove-completed-task-list-items-confirm": "您確定要移除所有完成的待辦事項嗎？（此操作無法恢復）",
+    "remove-completed-task-list-items-confirm": "您確定要移除所有完成的待辦事項嗎？此操作無法恢復。",
     "search-placeholder": "搜尋備忘錄",
     "show-less": "顯示較少",
     "show-more": "查看更多",
@@ -173,12 +175,12 @@
     "archived-successfully": "封存成功",
     "change-memo-created-time": "變更備忘錄建立時間",
     "copied": "已複製",
-    "deleted-successfully": "已成功刪除",
+    "deleted-successfully": "刪除成功",
     "description-is-required": "說明必填",
     "failed-to-embed-memo": "嵌入備忘錄失敗",
     "fill-all": "請填寫所有欄位。",
     "fill-all-required-fields": "請填寫所有必填欄位",
-    "maximum-upload-size-is": "最大允許檔案上傳大小 {{size}} MiB",
+    "maximum-upload-size-is": "最大允許上傳大小為 {{size}} MiB",
     "memo-not-found": "未找到備忘錄",
     "new-password-not-match": "新密碼不一致。",
     "no-data": "或許尋覓虛空，或者改換選擇之軌跡。",
@@ -218,6 +220,8 @@
     },
     "delete-resource": "刪除檔案",
     "delete-selected-resources": "刪除所選的檔案",
+    "delete-all-unused": "刪除所有未使用的檔案",
+    "delete-all-unused-confirm": "您確定要刪除所有未使用的檔案嗎？此操作無法恢復。",
     "fetching-data": "抓取資料...",
     "file-drag-drop-prompt": "將您的檔案拖曳到此處以上傳",
     "linked-amount": "連結數量",
@@ -225,7 +229,7 @@
     "no-resources": "無檔案。",
     "no-unused-resources": "無未使用的檔案",
     "reset-link": "重設連結",
-    "reset-link-prompt": "您確定要重設連結嗎？這將導致當前使用的連結失效。（此操作無法恢復）",
+    "reset-link-prompt": "您確定要重設連結嗎？這將導致當前使用的連結失效。此操作無法恢復。",
     "reset-resource-link": "重設檔案連結",
     "unused-resources": "未使用的檔案"
   },
@@ -236,8 +240,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "存取令牌已複製到剪貼簿",
-      "access-token-deletion": "您確定要刪除存取令牌 {{accessToken}} 嗎？（此操作無法恢復）",
+      "access-token-deletion": "您確定要刪除存取令牌 `{{description}}` 嗎？",
+      "access-token-deletion-description": "此操作無法恢復。您需要更新所有使用此令牌的服務以使用新的令牌。",
+      "access-token-deleted": "存取令牌 `{{description}}` 已刪除",
       "create-dialog": {
+        "access-token-created": "存取令牌 `{{description}}` 已建立",
         "create-access-token": "建立存取令牌",
         "created-at": "建立於",
         "description": "說明",
@@ -261,9 +268,11 @@
       "expires": "過期時間",
       "current": "當前裝置",
       "never": "永不過期",
-      "session-revocation": "您確定要撤銷 {{device}} 的工作階段嗎？（此操作無法恢復）",
+      "session-revocation": "您確定要撤銷工作階段 `{{sessionId}}` 嗎？",
+      "session-revocation-description": "您需要在該裝置上重新登入。",
       "session-revoked": "工作階段撤銷成功",
       "revoke-session": "撤銷工作階段",
+      "revoke-session-button": "撤銷",
       "cannot-revoke-current": "無法撤銷當前裝置的工作階段",
       "no-sessions": "無工作階段"
     },
@@ -273,7 +282,7 @@
       "export-memos": "導出備忘錄",
       "nickname-note": "顯示於橫幅",
       "openapi-reset": "重設 OpenAPI 密鑰（Key）",
-      "openapi-sample-post": "哈囉 來自 {{url}} 的 #memos",
+      "openapi-sample-post": "哈囉，來自 {{url}} 的 #memos",
       "openapi-title": "OpenAPI",
       "reset-api": "重設 API",
       "title": "帳號資訊",
@@ -285,10 +294,15 @@
     "member-section": {
       "admin": "管理者",
       "archive-member": "封存使用者",
-      "archive-warning": "您確定要封存 {{username}}?",
+      "archive-warning": "您確定要封存 {{username}} 嗎？",
+      "archive-warning-description": "封存會停用該帳戶。您可於日後恢復或刪除該帳戶。",
+      "archive-success": "{{username}} 封存成功",
+      "restore-success": "{{username}} 恢復成功",
       "create-a-member": "新增使用者",
       "delete-member": "刪除使用者",
-      "delete-warning": "您確定要刪除 {{username}}?（此操作無法恢復）",
+      "delete-warning": "您確定要刪除 {{username}} 嗎？",
+      "delete-warning-description": "此操作無法恢復。",
+      "delete-success": "{{username}} 刪除成功",
       "user": "使用者"
     },
     "memo-related": "備忘錄",
@@ -308,12 +322,16 @@
       "default-memo-visibility": "備忘錄預設瀏覽權限",
       "theme": "主題"
     },
+    "shortcut": {
+      "delete-confirm": "您確定要刪除快捷篩選 `{{title}}` 嗎？",
+      "delete-success": "快捷篩選 `{{title}}` 刪除成功"
+    },
     "sso": "SSO",
     "sso-section": {
       "authorization-endpoint": "驗證端點（Authorization Endpoint）",
       "client-id": "客戶端 ID（Client ID）",
       "client-secret": "客戶端金鑰（Client Secret）",
-      "confirm-delete": "您確定要刪除 \"{{name}}\" 的單點登錄 (SSO) 配置嗎？（此操作無法恢復）",
+      "confirm-delete": "您確定要刪除 `{{name}}` 的單點登錄 (SSO) 配置嗎？此操作無法恢復。",
       "create-sso": "新增 SSO",
       "custom": "自訂",
       "delete-sso": "確認刪除",
@@ -366,7 +384,7 @@
       "url-prefix-placeholder": "自訂網址前綴（選填）",
       "url-suffix": "網址後綴",
       "url-suffix-placeholder": "自訂網址後綴（選填）",
-      "warning-text": "您確定要刪除存儲服務 \"{{name}}\" 嗎？（此操作無法恢復）"
+      "warning-text": "您確定要刪除存儲服務 `{{name}}` 嗎？此操作無法恢復。"
     },
     "system": "系統",
     "system-section": {
@@ -383,7 +401,7 @@
       },
       "disable-markdown-shortcuts-in-editor": "停用編輯器 Markdown 快捷鍵",
       "disable-password-login": "停用密碼登入",
-      "disable-password-login-final-warning": "如果您知道自己在做什麼，請輸入「CONFIRM」。",
+      "disable-password-login-final-warning": "如果您知道自己在做什麼，請輸入 `CONFIRM`。",
       "disable-password-login-warning": "所有使用者將無法使用密碼登入。如果設定的身份識別提供者失效，不在資料庫中恢復此設定將無法登入。刪除身分識別提供者時也要特別小心❗",
       "disable-public-memos": "停用公共備忘錄",
       "display-with-updated-time": "顯示更新時間",
@@ -402,10 +420,16 @@
       "create-dialog": {
         "an-easy-to-remember-name": "一個容易記住的名稱",
         "create-webhook": "建立 Webhook",
+        "create-webhook-success": "Webhook `{{name}}` 已建立",
         "edit-webhook": "編輯 Webhook",
         "payload-url": "URL",
         "title": "標題",
         "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "此操作無法恢復。",
+        "delete-webhook-title": "您確定要刪除 webhook `{{name}}` 嗎？",
+        "delete-webhook-success": "Webhook `{{name}}` 刪除成功"
       },
       "no-webhooks-found": "尚未建立任何 Webhook。",
       "title": "Webhook",
@@ -428,13 +452,22 @@
     "create-tags-guide": "您可以通過輸入`#標籤`來建立標籤。",
     "delete-confirm": "您確定要刪除此標籤嗎？所有關聯的備忘錄將會被封存",
     "delete-tag": "刪除標籤",
-    "no-tag-found": "未找到標籤",
+    "delete-success": "標籤刪除成功",
     "new-name": "新標籤名稱",
+    "no-tag-found": "未找到標籤",
     "old-name": "舊標籤名稱",
     "rename-error-empty": "標籤名稱不能為空",
     "rename-error-repeat": "標籤名稱已存在",
     "rename-success": "重新命名標籤成功",
     "rename-tag": "重新命名標籤",
     "rename-tip": "您的標籤名稱將會被更新"
+  },
+  "tooltip": {
+    "link-memo": "連結備忘錄",
+    "markdown-menu": "Markdown",
+    "select-location": "位置",
+    "select-visibility": "瀏覽權限",
+    "tags": "標籤",
+    "upload-attachment": "上傳附件"
   }
 }
