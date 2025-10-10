@@ -37,6 +37,16 @@ const LocationMarker = (props: MarkerProps) => {
     map.locate();
   }, []);
 
+  // Keep marker and map in sync with external position updates
+  useEffect(() => {
+    if (props.position) {
+      setPosition(props.position);
+      map.setView(props.position);
+    } else {
+      setPosition(undefined);
+    }
+  }, [props.position, map]);
+
   return position === undefined ? null : <Marker position={position} icon={markerIcon}></Marker>;
 };
 
