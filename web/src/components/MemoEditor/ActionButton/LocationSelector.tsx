@@ -42,23 +42,6 @@ const LocationSelector = (props: Props) => {
       latInput: String(props.location?.latitude) || "",
       lngInput: String(props.location?.longitude) || "",
     }));
-    // if (props.location) {
-    //   setState((state) => ({
-    //     ...state,
-    //     placeholder: props.location.placeholder || "",
-    //     position: new LatLng(props.location.latitude, props.location.longitude),
-    //     latInput: String(props.location.latitude),
-    //     lngInput: String(props.location.longitude),
-    //   }));
-    // } else {
-    //   setState((state) => ({
-    //     ...state,
-    //     placeholder: "",
-    //     position: undefined,
-    //     latInput: "",
-    //     lngInput: "",
-    //   }));
-    // }
   }, [props.location]);
 
   useEffect(() => {
