@@ -122,6 +122,11 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	gwGroup.Any("/api/v1/*", handler)
 	gwGroup.Any("/file/*", handler)
 
+	// Register additional REST endpoints
+	adminGroup := echoServer.Group("/api/v1/admin")
+	adminGroup.Use(middleware.CORS())
+	s.registerCacheRoutes(adminGroup)
+
 	// GRPC web proxy.
 	options := []grpcweb.Option{
 		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
