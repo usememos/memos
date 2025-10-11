@@ -106,6 +106,78 @@ Access Memos at `http://localhost:5230` and complete the initial setup.
 
 **Pro Tip**: The data directory stores all your notes, uploads, and settings. Include it in your backup strategy!
 
+### 🔒 Database Encryption (for SQLite)
+
+<details>
+
+Memos can protect its SQLite database with **SQLCipher** so that the on-disk file is unreadable without a passphrase. This is *encryption at rest*: the server keeps the key in memory while running, so it does not provide end-to-end encryption for clients.
+
+> [!IMPORTANT]
+> Losing the passphrase means losing your data. Store it safely (for example, in a password manager or a hardware secret vault).
+
+#### Enable SQLCipher Builds
+
+- **Docker (recommended)**
+  ```bash
+  docker build \
+    --build-arg CGO_ENABLED=1 \
+    --build-arg MEMOS_BUILD_TAGS="memos_sqlcipher libsqlite3 sqlite_omit_load_extension" \
+    -t memos-sqlcipher \
+    -f scripts/Dockerfile .
+  docker run -d \
+    --name memos \
+    -p 5230:5230 \
+    -v ~/.memos:/var/opt/memos \
+    -e MEMOS_SQLITE_ENCRYPTION_KEY="your-super-secret-key" \
+    memos-sqlcipher
+  ```
+
+- **Manual build**
+  ```bash
+  CGO_ENABLED=1 \
+  CGO_CFLAGS="-I/usr/include/sqlcipher -DSQLITE_HAS_CODEC" \
+  CGO_LDFLAGS="-lsqlcipher" \
+  go build -tags "memos_sqlcipher libsqlite3 sqlite_omit_load_extension" -o memos-sqlcipher ./bin/memos
+  ./memos-sqlcipher --sqlite-encryption-key "your-super-secret-key" ...
+  ```
+
+#### Migration Plan for Existing Deployments
+
+1. **Full backup**
+   ```bash
+   cp ~/.memos/memos_prod.db ~/.memos/memos_prod.db.bak
+   cp ~/.memos/memos_prod.db-wal ~/.memos/memos_prod.db-wal.bak 2>/dev/null || true
+   cp ~/.memos/memos_prod.db-shm ~/.memos/memos_prod.db-shm.bak 2>/dev/null || true
+   ```
+
+2. **Stop every Memos instance** touching the database.
+
+3. **Build the SQLCipher-capable binary or Docker image** using the instructions above. The resulting image already contains the `sqlcipher` CLI.
+
+4. **Convert the database** using the SQLCipher CLI. You can do this without installing anything on the host:
+   ```bash
+   docker run --rm \
+     -v ~/.memos:/data \
+     memos-sqlcipher \
+     sh -c "cd /data && sqlcipher memos_prod.db <<'EOS'\nATTACH DATABASE 'memos_encrypted.db' AS encrypted KEY 'your-super-secret-key';\nSELECT sqlcipher_export('encrypted');\nDETACH DATABASE encrypted;\nEOS"
+   ```
+   If you prefer to run the command directly on the host, install `sqlcipher` (e.g. `brew install sqlcipher`, `apt install sqlcipher`) and execute the same `ATTACH ... sqlcipher_export` sequence locally.
+
+6. **Swap the files**
+   ```bash
+   mv memos_prod.db memos_prod.db.plaintext
+   mv memos_encrypted.db memos_prod.db
+   rm -f memos_prod.db-wal memos_prod.db-shm
+   ```
+
+7. **Start the SQLCipher build of Memos** and pass the same key (`MEMOS_SQLITE_ENCRYPTION_KEY` or `--sqlite-encryption-key`).
+
+8. **Verify the upgrade**
+   - Log in and ensure your memos/attachments are intact.
+   - Confirm the file is encrypted: `sqlite3 memos_prod.db '.tables'` should now print `Error: file is not a database`.
+
+</details>
+
 ## Sponsors
 
 Memos is made possible by the generous support of our sponsors. Their contributions help ensure the project's continued development, maintenance, and growth.
