@@ -22,8 +22,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 
 	normalStatus := store.Normal
 	memoFind := &store.FindMemo{
-		// Exclude comments by default.
-		ExcludeComments: true,
+		ExcludeComments: false,
 		ExcludeContent:  true,
 		RowStatus:       &normalStatus,
 	}
@@ -83,9 +82,8 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 
 	normalStatus := store.Normal
 	memoFind := &store.FindMemo{
-		CreatorID: &userID,
-		// Exclude comments by default.
-		ExcludeComments: true,
+		CreatorID:       &userID,
+		ExcludeComments: false,
 		ExcludeContent:  true,
 		RowStatus:       &normalStatus,
 	}
