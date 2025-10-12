@@ -12,7 +12,7 @@ interface Props {
   collapsed?: boolean;
 }
 
-const UserBanner = (props: Props) => {
+const UserMenu = (props: Props) => {
   const { collapsed } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
@@ -20,6 +20,21 @@ const UserBanner = (props: Props) => {
 
   const handleSignOut = async () => {
     await authServiceClient.deleteSession({});
+
+    // Clear user-specific localStorage items (e.g., drafts)
+    // Preserve app-wide settings like theme
+    const keysToPreserve = ["memos-theme", "tag-view-as-tree", "tag-tree-auto-expand", "viewStore"];
+    const keysToRemove: string[] = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && !keysToPreserve.includes(key)) {
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+
     window.location.href = Routes.AUTH;
   };
 
@@ -65,4 +80,4 @@ const UserBanner = (props: Props) => {
   );
 };
 
-export default UserBanner;
+export default UserMenu;
