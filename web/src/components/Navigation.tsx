@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 import { userStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
-import BrandBanner from "./BrandBanner";
-import UserBanner from "./UserBanner";
+import MemosLogo from "./MemosLogo";
+import UserMenu from "./UserMenu";
 
 interface NavLinkItem {
   id: string;
@@ -67,7 +67,7 @@ const Navigation = observer((props: Props) => {
     <header className={cn("w-full h-full overflow-auto flex flex-col justify-between items-start gap-4 hide-scrollbar", className)}>
       <div className="w-full px-1 py-1 flex flex-col justify-start items-start space-y-2 overflow-auto overflow-x-hidden hide-scrollbar shrink">
         <NavLink className="mb-3 cursor-default" to={currentUser ? Routes.ROOT : Routes.EXPLORE}>
-          <BrandBanner collapsed={collapsed} />
+          <MemosLogo collapsed={collapsed} />
         </NavLink>
         {navLinks.map((navLink) => (
           <NavLink
@@ -105,7 +105,7 @@ const Navigation = observer((props: Props) => {
       </div>
       {currentUser && (
         <div className={cn("w-full flex flex-col justify-end", props.collapsed ? "items-center" : "items-start pl-3")}>
-          <UserBanner collapsed={collapsed} />
+          <UserMenu collapsed={collapsed} />
         </div>
       )}
     </header>
