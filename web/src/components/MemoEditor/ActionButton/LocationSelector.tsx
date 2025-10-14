@@ -5,7 +5,9 @@ import toast from "react-hot-toast";
 import LeafletMap from "@/components/LeafletMap";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Location } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -47,7 +49,7 @@ const LocationSelector = (props: Props) => {
   useEffect(() => {
     if (popoverOpen && !props.location) {
       const handleError = (error: any, errorMessage: string) => {
-        setState({ ...state, initialized: true });
+        setState((prev) => ({ ...prev, initialized: true }));
         toast.error(errorMessage);
         console.error(error);
       };
@@ -57,7 +59,13 @@ const LocationSelector = (props: Props) => {
           (position) => {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            setState({ ...state, position: new LatLng(lat, lng), initialized: true });
+            setState((prev) => ({
+              ...prev,
+              position: new LatLng(lat, lng),
+              latInput: String(lat),
+              lngInput: String(lng),
+              initialized: true,
+            }));
           },
           (error) => {
             handleError(error, "Failed to get current position");
@@ -67,7 +75,7 @@ const LocationSelector = (props: Props) => {
         handleError("Geolocation is not supported by this browser.", "Geolocation is not supported by this browser.");
       }
     }
-  }, [popoverOpen]);
+  }, [popoverOpen, props.location]);
 
   useEffect(() => {
     if (!state.position) {
@@ -100,7 +108,8 @@ const LocationSelector = (props: Props) => {
   useEffect(() => {
     const lat = parseFloat(state.latInput);
     const lng = parseFloat(state.lngInput);
-    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    // Validate coordinate ranges: lat must be -90 to 90, lng must be -180 to 180
+    if (Number.isFinite(lat) && Number.isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
       if (!state.position || state.position.lat !== lat || state.position.lng !== lng) {
         setState((prev) => ({ ...prev, position: new LatLng(lat, lng) }));
       }
@@ -145,41 +154,66 @@ const LocationSelector = (props: Props) => {
           )}
         </Tooltip>
       </TooltipProvider>
-      <PopoverContent align="center">
-        <div className="min-w-80 sm:w-lg p-1 flex flex-col justify-start items-start">
-          <LeafletMap key={JSON.stringify(state.initialized)} latlng={state.position} onChange={onPositionChanged} />
-          <div className="mt-2 w-full flex flex-row justify-between items-center gap-2">
-            <div className="flex flex-row items-center justify-start gap-2 w-full">
-              <div id="lat-long-display" className="flex flex-row items-center gap-2">
+      <PopoverContent align="center" className="w-[min(24rem,calc(100vw-2rem))] p-0">
+        <div className="flex flex-col gap-4 p-4">
+          <div className="w-full overflow-hidden rounded-lg border bg-muted/30 shadow-xs">
+            <LeafletMap key={JSON.stringify(state.initialized)} latlng={state.position} onChange={onPositionChanged} />
+          </div>
+          <div className="w-full space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-1">
+                <Label htmlFor="memo-location-lat" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Lat
+                </Label>
                 <Input
+                  id="memo-location-lat"
                   placeholder="Lat"
                   type="number"
                   step="any"
+                  min="-90"
+                  max="90"
                   value={state.latInput}
                   onChange={(e) => setState((prev) => ({ ...prev, latInput: e.target.value }))}
-                  className="w-28"
+                  className="h-9"
                 />
+              </div>
+              <div className="grid gap-1">
+                <Label htmlFor="memo-location-lng" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Lng
+                </Label>
                 <Input
+                  id="memo-location-lng"
                   placeholder="Lng"
                   type="number"
                   step="any"
+                  min="-180"
+                  max="180"
                   value={state.lngInput}
                   onChange={(e) => setState((prev) => ({ ...prev, lngInput: e.target.value }))}
-                  className="w-28"
+                  className="h-9"
                 />
-                <div className="relative flex-1">
-                  <Input
-                    placeholder="Choose a position first."
-                    value={state.placeholder}
-                    disabled={!state.position}
-                    onChange={(e) => setState((prev) => ({ ...prev, placeholder: e.target.value }))}
-                  />
-                </div>
               </div>
             </div>
+            <div className="grid gap-1">
+              <Label htmlFor="memo-location-placeholder" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t("tooltip.select-location")}
+              </Label>
+              <Textarea
+                id="memo-location-placeholder"
+                placeholder="Choose a position first."
+                value={state.placeholder}
+                disabled={!state.position}
+                onChange={(e) => setState((prev) => ({ ...prev, placeholder: e.target.value }))}
+                className="min-h-16"
+              />
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setPopoverOpen(false)}>
+              {t("common.cancel")}
+            </Button>
             <Button
-              className="shrink-0"
-              color="primary"
+              size="sm"
               onClick={() => {
                 props.onChange(
                   Location.fromPartial({
@@ -190,7 +224,7 @@ const LocationSelector = (props: Props) => {
                 );
                 setPopoverOpen(false);
               }}
-              disabled={!state.position || state.placeholder.length === 0}
+              disabled={!state.position || state.placeholder.trim().length === 0}
             >
               {t("common.confirm")}
             </Button>
