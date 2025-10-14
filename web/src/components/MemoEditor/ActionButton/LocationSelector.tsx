@@ -101,10 +101,13 @@ const LocationSelector = (props: Props) => {
     // Fetch reverse geocoding with rate limits
     clearTimeout(rateLimit.current.nominatimTimeoutId);
     const timeLeft = rateLimit.current.timeBetweenFetch - (new Date().getTime() - rateLimit.current.lastNominatimFetch.getTime());
-    rateLimit.current.nominatimTimeoutId = setTimeout(() => {
-      updateReverseGeocoding();
-      rateLimit.current.lastNominatimFetch = new Date();
-    }, Math.max(0, timeLeft));
+    rateLimit.current.nominatimTimeoutId = setTimeout(
+      () => {
+        updateReverseGeocoding();
+        rateLimit.current.lastNominatimFetch = new Date();
+      },
+      Math.max(0, timeLeft),
+    );
   }, [state.position]);
 
   const onPositionChanged = (position: LatLng) => {
