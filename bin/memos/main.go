@@ -25,15 +25,16 @@ var (
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		Run: func(_ *cobra.Command, _ []string) {
 			instanceProfile := &profile.Profile{
-				Mode:        viper.GetString("mode"),
-				Addr:        viper.GetString("addr"),
-				Port:        viper.GetInt("port"),
-				UNIXSock:    viper.GetString("unix-sock"),
-				Data:        viper.GetString("data"),
-				Driver:      viper.GetString("driver"),
-				DSN:         viper.GetString("dsn"),
-				InstanceURL: viper.GetString("instance-url"),
-				Version:     version.GetCurrentVersion(viper.GetString("mode")),
+				Mode:                viper.GetString("mode"),
+				Addr:                viper.GetString("addr"),
+				Port:                viper.GetInt("port"),
+				UNIXSock:            viper.GetString("unix-sock"),
+				Data:                viper.GetString("data"),
+				Driver:              viper.GetString("driver"),
+				DSN:                 viper.GetString("dsn"),
+				SQLiteEncryptionKey: viper.GetString("sqlite-encryption-key"),
+				InstanceURL:         viper.GetString("instance-url"),
+				Version:             version.GetCurrentVersion(viper.GetString("mode")),
 			}
 			if err := instanceProfile.Validate(); err != nil {
 				panic(err)
@@ -100,6 +101,7 @@ func init() {
 	rootCmd.PersistentFlags().String("data", "", "data directory")
 	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
+	rootCmd.PersistentFlags().String("sqlite-encryption-key", "", "SQLCipher key used to unlock the SQLite database (requires binary built with memos_sqlcipher)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
 
 	if err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode")); err != nil {
@@ -123,6 +125,9 @@ func init() {
 	if err := viper.BindPFlag("dsn", rootCmd.PersistentFlags().Lookup("dsn")); err != nil {
 		panic(err)
 	}
+	if err := viper.BindPFlag("sqlite-encryption-key", rootCmd.PersistentFlags().Lookup("sqlite-encryption-key")); err != nil {
+		panic(err)
+	}
 	if err := viper.BindPFlag("instance-url", rootCmd.PersistentFlags().Lookup("instance-url")); err != nil {
 		panic(err)
 	}
@@ -130,6 +135,9 @@ func init() {
 	viper.SetEnvPrefix("memos")
 	viper.AutomaticEnv()
 	if err := viper.BindEnv("instance-url", "MEMOS_INSTANCE_URL"); err != nil {
+		panic(err)
+	}
+	if err := viper.BindEnv("sqlite-encryption-key", "MEMOS_SQLITE_ENCRYPTION_KEY"); err != nil {
 		panic(err)
 	}
 }
