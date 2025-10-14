@@ -46,10 +46,10 @@ const StatisticsView = observer(() => {
         />
       </div>
 
-      <div className="pt-1 w-full flex flex-row justify-start items-center gap-1 flex-wrap">
+      <div className="pt-2 w-full flex flex-wrap items-center gap-2">
         {isRootPath && hasPinnedMemos && (
           <StatCard
-            icon={<BookmarkIcon className="w-4 h-auto mr-1 opacity-70" />}
+            icon={<BookmarkIcon className="opacity-70" />}
             label={t("common.pinned")}
             count={userStore.state.currentUserStats!.pinnedMemos.length}
             onClick={() => handleFilterClick("pinned")}
@@ -57,20 +57,14 @@ const StatisticsView = observer(() => {
         )}
 
         <StatCard
-          icon={<LinkIcon className="w-4 h-auto mr-1 opacity-70" />}
+          icon={<LinkIcon className="opacity-70" />}
           label={t("memo.links")}
           count={memoTypeStats.linkCount}
           onClick={() => handleFilterClick("property.hasLink")}
         />
 
         <StatCard
-          icon={
-            memoTypeStats.undoCount > 0 ? (
-              <ListTodoIcon className="w-4 h-auto mr-1 opacity-70" />
-            ) : (
-              <CheckCircleIcon className="w-4 h-auto mr-1 opacity-70" />
-            )
-          }
+          icon={memoTypeStats.undoCount > 0 ? <ListTodoIcon className="opacity-70" /> : <CheckCircleIcon className="opacity-70" />}
           label={t("memo.to-do")}
           count={
             memoTypeStats.undoCount > 0 ? (
@@ -88,7 +82,7 @@ const StatisticsView = observer(() => {
         />
 
         <StatCard
-          icon={<Code2Icon className="w-4 h-auto mr-1 opacity-70" />}
+          icon={<Code2Icon className="opacity-70" />}
           label={t("memo.code")}
           count={memoTypeStats.codeCount}
           onClick={() => handleFilterClick("property.hasCode")}
