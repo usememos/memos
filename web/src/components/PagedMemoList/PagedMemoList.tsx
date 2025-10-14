@@ -12,11 +12,11 @@ import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "../Empty";
-import MasonryView from "../MasonryView";
+import MasonryView, { MemoRenderContext } from "../MasonryView";
 import MemoEditor from "../MemoEditor";
 
 interface Props {
-  renderer: (memo: Memo) => JSX.Element;
+  renderer: (memo: Memo, context?: MemoRenderContext) => JSX.Element;
   listSort?: (list: Memo[]) => Memo[];
   state?: State;
   orderBy?: string;

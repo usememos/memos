@@ -1,6 +1,17 @@
+<!-- Premium Sponsors -->
+<p align="center"><strong>Special thanks to our sponsor:</strong></p>
+<div align="center">
+  <a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
+    <img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/main/Github/Sponsor/Warp-Github-LG-02.png" alt="Warp" height="256" />
+  </a>
+  <p>
+    <a href="https://go.warp.dev/memos" target="_blank" rel="noopener">Warp is built for coding with multiple AI agents</a>
+  </p>
+</div>
+
 # Memos
 
-<img align="right" height="96px" src="https://www.usememos.com/logo-rounded.png" alt="Memos" />
+<img align="right" height="96px" src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/logo-rounded.png" alt="Memos" />
 
 A modern, open-source, self-hosted knowledge management and note-taking platform designed for privacy-conscious users and organizations. Memos provides a lightweight yet powerful solution for capturing, organizing, and sharing thoughts with comprehensive Markdown support and cross-platform accessibility.
 
@@ -17,7 +28,7 @@ A modern, open-source, self-hosted knowledge management and note-taking platform
 
 </div>
 
-![Memos Application Screenshot](https://www.usememos.com/demo.png)
+![Memos Application Screenshot](https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png)
 
 <!-- Premium Sponsors -->
 <!--
@@ -99,6 +110,7 @@ Access Memos at `http://localhost:5230` and complete the initial setup.
 
 Memos is made possible by the generous support of our sponsors. Their contributions help ensure the project's continued development, maintenance, and growth.
 
+<a href="https://github.com/warpdev" target="_blank"><img src="https://avatars.githubusercontent.com/u/71840468?s=200&v=4" alt="warp" height="60" /></a>
 <a href="https://github.com/yourselfhosted" target="_blank"><img src="https://avatars.githubusercontent.com/u/140182318?v=4" alt="yourselfhosted" height="60" /></a>
 <a href="https://github.com/fixermark" target="_blank"><img src="https://avatars.githubusercontent.com/u/169982?v=4" alt="fixermark" height="60" /></a>
 <a href="https://github.com/alik-agaev" target="_blank"><img src="https://avatars.githubusercontent.com/u/2662697?v=4" alt="alik-agaev" height="60" /></a>

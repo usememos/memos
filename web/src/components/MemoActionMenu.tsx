@@ -11,8 +11,10 @@ import {
   SquareCheckIcon,
 } from "lucide-react";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { markdownServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { memoStore, userStore } from "@/store";
@@ -49,6 +51,8 @@ const MemoActionMenu = observer((props: Props) => {
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [removeTasksDialogOpen, setRemoveTasksDialogOpen] = useState(false);
   const hasCompletedTaskList = checkHasCompletedTaskList(memo);
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
   const isComment = Boolean(memo.parent);
@@ -101,7 +105,7 @@ const MemoActionMenu = observer((props: Props) => {
         },
         ["state"],
       );
-      toast(message);
+      toast.success(message);
     } catch (error: any) {
       toast.error(error.details);
       console.error(error);
@@ -123,48 +127,50 @@ const MemoActionMenu = observer((props: Props) => {
     toast.success(t("message.succeed-copy-link"));
   };
 
-  const handleDeleteMemoClick = async () => {
-    const confirmed = window.confirm(t("memo.delete-confirm"));
-    if (confirmed) {
-      await memoStore.deleteMemo(memo.name);
-      toast.success(t("message.deleted-successfully"));
-      if (isInMemoDetailPage) {
-        navigateTo("/");
-      }
-      memoUpdatedCallback();
-    }
+  const handleDeleteMemoClick = () => {
+    setDeleteDialogOpen(true);
   };
 
-  const handleRemoveCompletedTaskListItemsClick = async () => {
-    const confirmed = window.confirm(t("memo.remove-completed-task-list-items-confirm"));
-    if (confirmed) {
-      const newNodes = JSON.parse(JSON.stringify(memo.nodes));
-      for (const node of newNodes) {
-        if (node.type === NodeType.LIST && node.listNode?.children?.length > 0) {
-          const children = node.listNode.children;
-          for (let i = 0; i < children.length; i++) {
-            if (children[i].type === NodeType.TASK_LIST_ITEM && children[i].taskListItemNode?.complete) {
-              // Remove completed taskList item and next line breaks
+  const confirmDeleteMemo = async () => {
+    await memoStore.deleteMemo(memo.name);
+    toast.success(t("message.deleted-successfully"));
+    if (isInMemoDetailPage) {
+      navigateTo("/");
+    }
+    memoUpdatedCallback();
+  };
+
+  const handleRemoveCompletedTaskListItemsClick = () => {
+    setRemoveTasksDialogOpen(true);
+  };
+
+  const confirmRemoveCompletedTaskListItems = async () => {
+    const newNodes = JSON.parse(JSON.stringify(memo.nodes));
+    for (const node of newNodes) {
+      if (node.type === NodeType.LIST && node.listNode?.children?.length > 0) {
+        const children = node.listNode.children;
+        for (let i = 0; i < children.length; i++) {
+          if (children[i].type === NodeType.TASK_LIST_ITEM && children[i].taskListItemNode?.complete) {
+            // Remove completed taskList item and next line breaks
+            children.splice(i, 1);
+            if (children[i]?.type === NodeType.LINE_BREAK) {
               children.splice(i, 1);
-              if (children[i]?.type === NodeType.LINE_BREAK) {
-                children.splice(i, 1);
-              }
-              i--;
             }
+            i--;
           }
         }
       }
-      const { markdown } = await markdownServiceClient.restoreMarkdownNodes({ nodes: newNodes });
-      await memoStore.updateMemo(
-        {
-          name: memo.name,
-          content: markdown,
-        },
-        ["content"],
-      );
-      toast.success(t("message.remove-completed-task-list-items-successfully"));
-      memoUpdatedCallback();
     }
+    const { markdown } = await markdownServiceClient.restoreMarkdownNodes({ nodes: newNodes });
+    await memoStore.updateMemo(
+      {
+        name: memo.name,
+        content: markdown,
+      },
+      ["content"],
+    );
+    toast.success(t("message.remove-completed-task-list-items-successfully"));
+    memoUpdatedCallback();
   };
 
   return (
@@ -216,6 +222,27 @@ const MemoActionMenu = observer((props: Props) => {
           </>
         )}
       </DropdownMenuContent>
+      {/* Delete confirmation dialog */}
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t("memo.delete-confirm")}
+        confirmLabel={t("common.delete")}
+        description={t("memo.delete-confirm-description")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmDeleteMemo}
+        confirmVariant="destructive"
+      />
+      {/* Remove completed tasks confirmation */}
+      <ConfirmDialog
+        open={removeTasksDialogOpen}
+        onOpenChange={setRemoveTasksDialogOpen}
+        title={t("memo.remove-completed-task-list-items-confirm")}
+        confirmLabel={t("common.confirm")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmRemoveCompletedTaskListItems}
+        confirmVariant="destructive"
+      />
     </DropdownMenu>
   );
 });

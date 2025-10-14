@@ -326,4 +326,6 @@ message SpoilerNode {
 message HTMLElementNode {
   string tag_name = 1;
   map<string, string> attributes = 2;
+  repeated Node children = 3;
+  bool is_self_closing = 4;
 }

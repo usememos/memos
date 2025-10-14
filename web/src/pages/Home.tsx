@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
+import { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -56,7 +57,9 @@ const Home = observer(() => {
   return (
     <div className="w-full min-h-full bg-background text-foreground">
       <PagedMemoList
-        renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact />}
+        renderer={(memo: Memo, context?: MemoRenderContext) => (
+          <MemoView key={`${memo.name}-${memo.displayTime}`} memo={memo} showVisibility showPinned compact={context?.compact} />
+        )}
         listSort={(memos: Memo[]) =>
           memos
             .filter((memo) => memo.state === State.NORMAL)

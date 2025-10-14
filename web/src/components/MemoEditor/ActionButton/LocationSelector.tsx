@@ -95,6 +95,7 @@ const LocationSelector = (props: Props) => {
       return;
     }
 
+    // Sync lat/lng input values from position
     const newLat = String(state.position.lat);
     const newLng = String(state.position.lng);
     if (state.latInput !== newLat || state.lngInput !== newLng) {

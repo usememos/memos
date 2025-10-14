@@ -36,6 +36,9 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	if currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
@@ -322,6 +325,9 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUser
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 
 	// Only allow user to get their own settings
 	if currentUser.ID != userID {
@@ -355,6 +361,9 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
 	// Only allow user to update their own settings
@@ -442,6 +451,9 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 
 	// Only allow user to list their own settings
 	if currentUser.ID != userID {
@@ -500,7 +512,7 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	if currentUser == nil {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -562,7 +574,7 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	if currentUser == nil {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -630,7 +642,7 @@ func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	if currentUser == nil {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -673,7 +685,7 @@ func (s *APIV1Service) ListUserSessions(ctx context.Context, request *v1pb.ListU
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	if currentUser == nil {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -736,7 +748,7 @@ func (s *APIV1Service) RevokeUserSession(ctx context.Context, request *v1pb.Revo
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	if currentUser == nil {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -796,6 +808,9 @@ func (s *APIV1Service) ListUserWebhooks(ctx context.Context, request *v1pb.ListU
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
@@ -824,6 +839,9 @@ func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.Crea
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -861,6 +879,9 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -930,6 +951,9 @@ func (s *APIV1Service) DeleteUserWebhook(ctx context.Context, request *v1pb.Dele
 	currentUser, err := s.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")

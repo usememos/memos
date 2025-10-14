@@ -503,6 +503,8 @@ export interface SpoilerNode {
 export interface HTMLElementNode {
   tagName: string;
   attributes: { [key: string]: string };
+  children: Node[];
+  isSelfClosing: boolean;
 }
 
 export interface HTMLElementNode_AttributesEntry {
@@ -3085,7 +3087,7 @@ export const SpoilerNode: MessageFns<SpoilerNode> = {
 };
 
 function createBaseHTMLElementNode(): HTMLElementNode {
-  return { tagName: "", attributes: {} };
+  return { tagName: "", attributes: {}, children: [], isSelfClosing: false };
 }
 
 export const HTMLElementNode: MessageFns<HTMLElementNode> = {
@@ -3096,6 +3098,12 @@ export const HTMLElementNode: MessageFns<HTMLElementNode> = {
     Object.entries(message.attributes).forEach(([key, value]) => {
       HTMLElementNode_AttributesEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).join();
     });
+    for (const v of message.children) {
+      Node.encode(v!, writer.uint32(26).fork()).join();
+    }
+    if (message.isSelfClosing !== false) {
+      writer.uint32(32).bool(message.isSelfClosing);
+    }
     return writer;
   },
 
@@ -3125,6 +3133,22 @@ export const HTMLElementNode: MessageFns<HTMLElementNode> = {
           }
           continue;
         }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.children.push(Node.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.isSelfClosing = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -3149,6 +3173,8 @@ export const HTMLElementNode: MessageFns<HTMLElementNode> = {
       },
       {},
     );
+    message.children = object.children?.map((e) => Node.fromPartial(e)) || [];
+    message.isSelfClosing = object.isSelfClosing ?? false;
     return message;
   },
 };

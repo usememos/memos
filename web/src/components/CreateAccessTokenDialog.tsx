@@ -8,12 +8,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
+import { UserAccessToken } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  onSuccess: (created: UserAccessToken) => void;
 }
 
 interface State {
@@ -72,7 +73,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
 
     try {
       requestState.setLoading();
-      await userServiceClient.createUserAccessToken({
+      const created = await userServiceClient.createUserAccessToken({
         parent: currentUser.name,
         accessToken: {
           description: state.description,
@@ -81,7 +82,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
       });
 
       requestState.setFinish();
-      onSuccess();
+      onSuccess(created);
       onOpenChange(false);
     } catch (error: any) {
       toast.error(error.details);
