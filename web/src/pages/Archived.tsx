@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
+import { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -27,7 +28,9 @@ const Archived = observer(() => {
 
   return (
     <PagedMemoList
-      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility compact />}
+      renderer={(memo: Memo, context?: MemoRenderContext) => (
+        <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility compact={context?.compact} />
+      )}
       listSort={(memos: Memo[]) =>
         memos
           .filter((memo) => memo.state === State.ARCHIVED)
