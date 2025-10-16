@@ -50,30 +50,38 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
 	where, having, args := []string{"1 = 1"}, []string{"1 = 1"}, []any{}
 
-	for _, filterStr := range find.Filters {
-		// Parse filter string and return the parsed expression.
-		// The filter string should be a CEL expression.
-		parsedExpr, err := filter.Parse(filterStr, filter.MemoFilterCELAttributes...)
-		if err != nil {
-			return nil, err
-		}
-		convertCtx := filter.NewConvertContext()
-		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
-		converter := filter.NewCommonSQLConverter(&filter.MySQLDialect{})
-		if err := converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
-			return nil, err
-		}
-		condition := convertCtx.Buffer.String()
-		if condition != "" {
-			where = append(where, fmt.Sprintf("(%s)", condition))
-			args = append(args, convertCtx.Args...)
-		}
+	engine, err := filter.DefaultEngine()
+	if err != nil {
+		return nil, err
+	}
+	if err := filter.AppendConditions(ctx, engine, find.Filters, filter.DialectMySQL, &where, &args); err != nil {
+		return nil, err
 	}
 	if v := find.ID; v != nil {
 		where, args = append(where, "`memo`.`id` = ?"), append(args, *v)
 	}
+	if len(find.IDList) > 0 {
+		placeholders := make([]string, 0, len(find.IDList))
+		for range find.IDList {
+			placeholders = append(placeholders, "?")
+		}
+		where = append(where, "`memo`.`id` IN ("+strings.Join(placeholders, ",")+")")
+		for _, id := range find.IDList {
+			args = append(args, id)
+		}
+	}
 	if v := find.UID; v != nil {
 		where, args = append(where, "`memo`.`uid` = ?"), append(args, *v)
+	}
+	if len(find.UIDList) > 0 {
+		placeholders := make([]string, 0, len(find.UIDList))
+		for range find.UIDList {
+			placeholders = append(placeholders, "?")
+		}
+		where = append(where, "`memo`.`uid` IN ("+strings.Join(placeholders, ",")+")")
+		for _, uid := range find.UIDList {
+			args = append(args, uid)
+		}
 	}
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "`memo`.`creator_id` = ?"), append(args, *v)

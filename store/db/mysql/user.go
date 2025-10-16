@@ -7,7 +7,6 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/plugin/filter"
 	"github.com/usememos/memos/store"
 )
 
@@ -85,24 +84,8 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
-	for _, filterStr := range find.Filters {
-		// Parse filter string and return the parsed expression.
-		// The filter string should be a CEL expression.
-		parsedExpr, err := filter.Parse(filterStr, filter.UserFilterCELAttributes...)
-		if err != nil {
-			return nil, err
-		}
-		convertCtx := filter.NewConvertContext()
-		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
-		converter := filter.NewUserSQLConverter(&filter.MySQLDialect{})
-		if err := converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
-			return nil, err
-		}
-		condition := convertCtx.Buffer.String()
-		if condition != "" {
-			where = append(where, fmt.Sprintf("(%s)", condition))
-			args = append(args, convertCtx.Args...)
-		}
+	if len(find.Filters) > 0 {
+		return nil, errors.Errorf("user filters are not supported")
 	}
 
 	if v := find.ID; v != nil {

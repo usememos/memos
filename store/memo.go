@@ -60,6 +60,9 @@ type FindMemo struct {
 	ID  *int32
 	UID *string
 
+	IDList  []int32
+	UIDList []string
+
 	// Standard fields
 	RowStatus *RowStatus
 	CreatorID *int32

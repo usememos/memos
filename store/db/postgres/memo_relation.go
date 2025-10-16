@@ -49,24 +49,32 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 		where, args = append(where, "type = "+placeholder(len(args)+1)), append(args, find.Type)
 	}
 	if find.MemoFilter != nil {
-		// Parse filter string and return the parsed expression.
-		// The filter string should be a CEL expression.
-		parsedExpr, err := filter.Parse(*find.MemoFilter, filter.MemoFilterCELAttributes...)
+		engine, err := filter.DefaultEngine()
 		if err != nil {
 			return nil, err
 		}
-		convertCtx := filter.NewConvertContext()
-		convertCtx.ArgsOffset = len(args)
-		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
-		converter := filter.NewCommonSQLConverterWithOffset(&filter.PostgreSQLDialect{}, convertCtx.ArgsOffset+len(convertCtx.Args))
-		if err := converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
+		stmt, err := engine.CompileToStatement(ctx, *find.MemoFilter, filter.RenderOptions{
+			Dialect:           filter.DialectPostgres,
+			PlaceholderOffset: len(args),
+		})
+		if err != nil {
 			return nil, err
 		}
-		condition := convertCtx.Buffer.String()
-		if condition != "" {
-			where = append(where, fmt.Sprintf("memo_id IN (SELECT id FROM memo WHERE %s)", condition))
-			where = append(where, fmt.Sprintf("related_memo_id IN (SELECT id FROM memo WHERE %s)", condition))
-			args = append(args, convertCtx.Args...)
+		if stmt.SQL != "" {
+			where = append(where, fmt.Sprintf("memo_id IN (SELECT id FROM memo WHERE %s)", stmt.SQL))
+			args = append(args, stmt.Args...)
+
+			stmtRelated, err := engine.CompileToStatement(ctx, *find.MemoFilter, filter.RenderOptions{
+				Dialect:           filter.DialectPostgres,
+				PlaceholderOffset: len(args),
+			})
+			if err != nil {
+				return nil, err
+			}
+			if stmtRelated.SQL != "" {
+				where = append(where, fmt.Sprintf("related_memo_id IN (SELECT id FROM memo WHERE %s)", stmtRelated.SQL))
+				args = append(args, stmtRelated.Args...)
+			}
 		}
 	}
 

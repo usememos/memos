@@ -9,7 +9,6 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/usememos/memos/plugin/filter"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -40,26 +39,6 @@ func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*s
 func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([]*store.Attachment, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
-	for _, filterStr := range find.Filters {
-		// Parse filter string and return the parsed expression.
-		// The filter string should be a CEL expression.
-		parsedExpr, err := filter.Parse(filterStr, filter.AttachmentFilterCELAttributes...)
-		if err != nil {
-			return nil, err
-		}
-		convertCtx := filter.NewConvertContext()
-		// ConvertExprToSQL converts the parsed expression to a SQL condition string.
-		converter := filter.NewCommonSQLConverter(&filter.PostgreSQLDialect{})
-		if err := converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr()); err != nil {
-			return nil, err
-		}
-		condition := convertCtx.Buffer.String()
-		if condition != "" {
-			where = append(where, fmt.Sprintf("(%s)", condition))
-			args = append(args, convertCtx.Args...)
-		}
-	}
-
 	if v := find.ID; v != nil {
 		where, args = append(where, "resource.id = "+placeholder(len(args)+1)), append(args, *v)
 	}
@@ -77,6 +56,16 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	}
 	if v := find.MemoID; v != nil {
 		where, args = append(where, "resource.memo_id = "+placeholder(len(args)+1)), append(args, *v)
+	}
+	if len(find.MemoIDList) > 0 {
+		holders := make([]string, 0, len(find.MemoIDList))
+		for range find.MemoIDList {
+			holders = append(holders, placeholder(len(args)+1))
+		}
+		where = append(where, "resource.memo_id IN ("+strings.Join(holders, ", ")+")")
+		for _, id := range find.MemoIDList {
+			args = append(args, id)
+		}
 	}
 	if find.HasRelatedMemo {
 		where = append(where, "resource.memo_id IS NOT NULL")

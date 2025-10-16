@@ -48,11 +48,11 @@ type FindAttachment struct {
 	Filename       *string
 	FilenameSearch *string
 	MemoID         *int32
+	MemoIDList     []int32
 	HasRelatedMemo bool
 	StorageType    *storepb.AttachmentStorageType
 	Limit          *int
 	Offset         *int
-	Filters        []string
 }
 
 type UpdateAttachment struct {

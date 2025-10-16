@@ -319,35 +319,30 @@ func (s *APIV1Service) DeleteShortcut(ctx context.Context, request *v1pb.DeleteS
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) validateFilter(_ context.Context, filterStr string) error {
+func (s *APIV1Service) validateFilter(ctx context.Context, filterStr string) error {
 	if filterStr == "" {
 		return errors.New("filter cannot be empty")
 	}
-	// Validate the filter.
-	parsedExpr, err := filter.Parse(filterStr, filter.MemoFilterCELAttributes...)
-	if err != nil {
-		return errors.Wrap(err, "failed to parse filter")
-	}
-	convertCtx := filter.NewConvertContext()
 
-	// Determine the dialect based on the actual database driver
-	var dialect filter.SQLDialect
+	engine, err := filter.DefaultEngine()
+	if err != nil {
+		return err
+	}
+
+	var dialect filter.DialectName
 	switch s.Profile.Driver {
 	case "sqlite":
-		dialect = &filter.SQLiteDialect{}
+		dialect = filter.DialectSQLite
 	case "mysql":
-		dialect = &filter.MySQLDialect{}
+		dialect = filter.DialectMySQL
 	case "postgres":
-		dialect = &filter.PostgreSQLDialect{}
+		dialect = filter.DialectPostgres
 	default:
-		// Default to SQLite for unknown drivers
-		dialect = &filter.SQLiteDialect{}
+		dialect = filter.DialectSQLite
 	}
 
-	converter := filter.NewCommonSQLConverter(dialect)
-	err = converter.ConvertExprToSQL(convertCtx, parsedExpr.GetExpr())
-	if err != nil {
-		return errors.Wrap(err, "failed to convert filter to SQL")
+	if _, err := engine.CompileToStatement(ctx, filterStr, filter.RenderOptions{Dialect: dialect}); err != nil {
+		return errors.Wrap(err, "failed to compile filter")
 	}
 	return nil
 }
