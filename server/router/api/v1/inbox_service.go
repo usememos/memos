@@ -216,8 +216,6 @@ func convertInboxStatusFromStore(status store.InboxStatus) v1pb.Inbox_Status {
 
 func convertInboxStatusToStore(status v1pb.Inbox_Status) store.InboxStatus {
 	switch status {
-	case v1pb.Inbox_UNREAD:
-		return store.UNREAD
 	case v1pb.Inbox_ARCHIVED:
 		return store.ARCHIVED
 	default:

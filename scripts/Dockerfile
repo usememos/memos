@@ -7,7 +7,7 @@ COPY . .
 # Refer to `pnpm release` in package.json for the build command.
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    go build -ldflags="-s -w" -o memos ./bin/memos/main.go
+    go build -ldflags="-s -w" -o memos ./cmd/memos
 
 # Make workspace with above generated files.
 FROM alpine:latest AS monolithic

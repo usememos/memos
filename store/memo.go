@@ -27,8 +27,6 @@ func (v Visibility) String() string {
 		return "PUBLIC"
 	case Protected:
 		return "PROTECTED"
-	case Private:
-		return "PRIVATE"
 	default:
 		return "PRIVATE"
 	}

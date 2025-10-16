@@ -30,8 +30,6 @@ func convertStateFromStore(rowStatus store.RowStatus) v1pb.State {
 
 func convertStateToStore(state v1pb.State) store.RowStatus {
 	switch state {
-	case v1pb.State_NORMAL:
-		return store.Normal
 	case v1pb.State_ARCHIVED:
 		return store.Archived
 	default:

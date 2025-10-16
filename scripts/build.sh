@@ -25,7 +25,7 @@ export GOCACHE="$(pwd)/build/.gocache"
 export GOMODCACHE="$(pwd)/build/.gomodcache"
 
 # Build the executable
-go build -o "$OUTPUT" ./bin/memos
+go build -o "$OUTPUT" ./cmd/memos
 
 echo "Build successful!"
 echo "To run the application, execute the following command:"

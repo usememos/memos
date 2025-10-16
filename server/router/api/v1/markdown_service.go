@@ -299,8 +299,6 @@ func convertListKindToASTNode(kind v1pb.ListNode_Kind) ast.ListKind {
 		return ast.OrderedList
 	case v1pb.ListNode_UNORDERED:
 		return ast.UnorderedList
-	case v1pb.ListNode_DESCRIPTION:
-		return ast.DescriptionList
 	default:
 		// Default to description list.
 		return ast.DescriptionList

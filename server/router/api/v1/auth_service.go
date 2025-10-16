@@ -359,14 +359,12 @@ func (*APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.Sessio
 	userAgent = strings.ToLower(userAgent)
 
 	// Detect device type
-	if strings.Contains(userAgent, "ipad") {
+	if strings.Contains(userAgent, "ipad") || strings.Contains(userAgent, "tablet") {
 		clientInfo.DeviceType = "tablet"
 	} else if strings.Contains(userAgent, "mobile") || strings.Contains(userAgent, "android") ||
 		strings.Contains(userAgent, "iphone") || strings.Contains(userAgent, "ipod") ||
 		strings.Contains(userAgent, "windows phone") || strings.Contains(userAgent, "blackberry") {
 		clientInfo.DeviceType = "mobile"
-	} else if strings.Contains(userAgent, "tablet") {
-		clientInfo.DeviceType = "tablet"
 	} else {
 		clientInfo.DeviceType = "desktop"
 	}

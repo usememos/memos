@@ -1,4 +1,4 @@
-package teststore
+package test
 
 import (
 	"context"

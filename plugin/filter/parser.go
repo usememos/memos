@@ -278,6 +278,8 @@ func buildValueExpr(expr *exprv1.Expr, schema Schema) (ValueExpr, error) {
 			if ok {
 				return &LiteralValue{Value: value}, nil
 			}
+		default:
+			// Fall through to error return below
 		}
 	}
 
@@ -402,10 +404,12 @@ func evaluateNumeric(expr *exprv1.Expr) (int64, bool, error) {
 			return left - right, true, nil
 		case "_*_":
 			return left * right, true, nil
+		default:
+			return 0, false, errors.Errorf("unsupported arithmetic operator %q", call.Function)
 		}
+	default:
+		return 0, false, nil
 	}
-
-	return 0, false, nil
 }
 
 func timeNowUnix() int64 {

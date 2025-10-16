@@ -1,11 +1,11 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-Memos pairs a Go backend with a Vite React client. The CLI entry in `bin/memos` boots the HTTP server under `server`, backed by shared domain logic in `internal` and persistence adapters in `store`. Frontend code lives in `web/src` with static assets in `web/public`; `pnpm release` publishes bundles into `server/router/frontend/dist`. API schemas sit in `proto/` (Buf-managed), extensions in `plugin/`, deployment helpers in `scripts/`, and sample SQLite databases in `build/`.
+Memos pairs a Go backend with a Vite React client. The CLI entry in `cmd/memos` boots the HTTP server under `server`, backed by shared domain logic in `internal` and persistence adapters in `store`. Frontend code lives in `web/src` with static assets in `web/public`; `pnpm release` publishes bundles into `server/router/frontend/dist`. API schemas sit in `proto/` (Buf-managed), extensions in `plugin/`, deployment helpers in `scripts/`, and sample SQLite databases in `build/`.
 
 ## Build, Test, and Development Commands
-- `go run ./bin/memos --mode dev --port 8081` – start the backend with the default SQLite store.
-- `go build ./bin/memos` – compile the backend binary.
+- `go run ./cmd/memos --mode dev --port 8081` – start the backend with the default SQLite store.
+- `go build ./cmd/memos` – compile the backend binary.
 - `go test ./...` – run Go unit and store tests.
 - `cd web && pnpm install` – install frontend dependencies.
 - `cd web && pnpm dev` – start the Vite dev server with hot reload.

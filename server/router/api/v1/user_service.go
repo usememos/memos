@@ -45,7 +45,7 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	userFind := &store.FindUser{}
 
 	if request.Filter != "" {
-		if err := s.validateUserFilter(ctx, request.Filter); err != nil {
+		if err := validateUserFilter(ctx, request.Filter); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 		}
 	}
@@ -1065,8 +1065,6 @@ func convertUserRoleToStore(role v1pb.User_Role) store.Role {
 		return store.RoleHost
 	case v1pb.User_ADMIN:
 		return store.RoleAdmin
-	case v1pb.User_USER:
-		return store.RoleUser
 	default:
 		return store.RoleUser
 	}
@@ -1147,10 +1145,6 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 		}
 
 		switch key {
-		case storepb.UserSetting_GENERAL:
-			setting.Value = &v1pb.UserSetting_GeneralSetting_{
-				GeneralSetting: getDefaultUserGeneralSetting(),
-			}
 		case storepb.UserSetting_SESSIONS:
 			setting.Value = &v1pb.UserSetting_SessionsSetting_{
 				SessionsSetting: &v1pb.UserSetting_SessionsSetting{
@@ -1365,7 +1359,7 @@ func extractWebhookIDFromName(name string) string {
 }
 
 // validateUserFilter validates the user filter string.
-func (s *APIV1Service) validateUserFilter(_ context.Context, filterStr string) error {
+func validateUserFilter(_ context.Context, filterStr string) error {
 	if strings.TrimSpace(filterStr) != "" {
 		return errors.New("user filters are not supported")
 	}

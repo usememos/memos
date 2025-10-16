@@ -4,8 +4,9 @@ tmp
 # Frontend asset
 web/dist
 
-# build folder
-build
+# Build artifacts
+build/
+bin/
 
 .DS_Store
 

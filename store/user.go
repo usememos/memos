@@ -22,8 +22,6 @@ func (e Role) String() string {
 		return "HOST"
 	case RoleAdmin:
 		return "ADMIN"
-	case RoleUser:
-		return "USER"
 	default:
 		return "USER"
 	}

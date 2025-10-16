@@ -892,15 +892,10 @@ func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) 
 	}
 
 	switch field {
-	case "display_time":
-		memoFind.OrderByTimeAsc = direction == "asc"
-	case "create_time":
+	case "display_time", "create_time", "name":
 		memoFind.OrderByTimeAsc = direction == "asc"
 	case "update_time":
 		memoFind.OrderByUpdatedTs = true
-		memoFind.OrderByTimeAsc = direction == "asc"
-	case "name":
-		// For ordering by memo name/id - not commonly used but supported
 		memoFind.OrderByTimeAsc = direction == "asc"
 	default:
 		return errors.Errorf("unsupported order field: %s, supported fields are: display_time, create_time, update_time, name", field)
