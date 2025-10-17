@@ -301,6 +301,9 @@ message ListMemosRequest {
 
   // Optional. If true, show deleted memos in the response.
   bool show_deleted = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. If true, include comment memos in the response.
+  bool show_comments = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListMemosResponse {

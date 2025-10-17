@@ -20,6 +20,7 @@ interface Props {
   listSort?: (list: Memo[]) => Memo[];
   state?: State;
   orderBy?: string;
+  showComments?: boolean;
   filter?: string;
   pageSize?: number;
 }
@@ -49,6 +50,7 @@ const PagedMemoList = observer((props: Props) => {
       const response = await memoStore.fetchMemos({
         state: props.state || State.NORMAL,
         orderBy: props.orderBy || "display_time desc",
+        showComments: props.showComments,
         filter: props.filter,
         pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
         pageToken,
@@ -99,7 +101,7 @@ const PagedMemoList = observer((props: Props) => {
   // Initial load and reload when props change
   useEffect(() => {
     refreshList();
-  }, [props.state, props.orderBy, props.filter, props.pageSize]);
+  }, [props.state, props.orderBy, props.filter, props.pageSize, props.showComments]);
 
   // Auto-fetch more content when list changes and page isn't full
   useEffect(() => {

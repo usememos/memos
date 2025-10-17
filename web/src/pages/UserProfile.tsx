@@ -103,6 +103,7 @@ const UserProfile = observer(() => {
                     )
                 }
                 orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
+                showComments={viewStore.state.showComments}
                 filter={memoFilter}
               />
             </>
