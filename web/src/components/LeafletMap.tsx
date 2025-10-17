@@ -34,6 +34,7 @@ const LocationMarker = (props: MarkerProps) => {
 
   useEffect(() => {
     map.attributionControl.setPrefix("");
+    map.attributionControl.addAttribution("<a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>");
     map.locate();
   }, []);
 

@@ -1,6 +1,6 @@
 import { LatLng } from "leaflet";
 import { MapPinIcon, XIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import LeafletMap from "@/components/LeafletMap";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,12 @@ interface State {
   lngInput: string;
 }
 
+interface NominatimRateLimit {
+  lastNominatimFetch: Date;
+  nominatimTimeoutId: number | undefined;
+  timeBetweenFetch: number;
+}
+
 const LocationSelector = (props: Props) => {
   const t = useTranslate();
   const [state, setState] = useState<State>({
@@ -34,6 +40,12 @@ const LocationSelector = (props: Props) => {
     latInput: props.location ? String(props.location.latitude) : "",
     lngInput: props.location ? String(props.location.longitude) : "",
   });
+  const rateLimit = useRef<NominatimRateLimit>({
+    lastNominatimFetch: new Date(0),
+    nominatimTimeoutId: undefined,
+    timeBetweenFetch: 1300,
+  });
+
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -77,7 +89,7 @@ const LocationSelector = (props: Props) => {
     }
   }, [popoverOpen, props.location]);
 
-  useEffect(() => {
+  const updateReverseGeocoding = () => {
     if (!state.position) {
       setState((prev) => ({ ...prev, placeholder: "" }));
       return;
@@ -91,7 +103,10 @@ const LocationSelector = (props: Props) => {
     }
 
     // Fetch reverse geocoding data.
-    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${state.position.lat}&lon=${state.position.lng}&format=json`)
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${state.position.lat}&lon=${state.position.lng}&format=json`, {
+      cache: "default",
+      headers: new Headers({ "Cache-Control": "max-age=86400" }),
+    })
       .then((response) => response.json())
       .then((data) => {
         if (data && data.display_name) {
@@ -102,6 +117,19 @@ const LocationSelector = (props: Props) => {
         toast.error("Failed to fetch reverse geocoding data");
         console.error("Failed to fetch reverse geocoding data:", error);
       });
+  };
+
+  useEffect(() => {
+    // Fetch reverse geocoding with rate limits
+    clearTimeout(rateLimit.current.nominatimTimeoutId);
+    const timeLeft = rateLimit.current.timeBetweenFetch - (new Date().getTime() - rateLimit.current.lastNominatimFetch.getTime());
+    rateLimit.current.nominatimTimeoutId = setTimeout(
+      () => {
+        updateReverseGeocoding();
+        rateLimit.current.lastNominatimFetch = new Date();
+      },
+      Math.max(0, timeLeft),
+    );
   }, [state.position]);
 
   // Update position when lat/lng inputs change (if valid numbers)
