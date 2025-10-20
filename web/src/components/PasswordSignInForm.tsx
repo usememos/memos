@@ -16,8 +16,8 @@ const PasswordSignInForm = observer(() => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const actionBtnLoadingState = useLoading(false);
-  const [username, setUsername] = useState(workspaceStore.state.profile.mode === "demo" ? "yourselfhosted" : "");
-  const [password, setPassword] = useState(workspaceStore.state.profile.mode === "demo" ? "yourselfhosted" : "");
+  const [username, setUsername] = useState(workspaceStore.state.profile.mode === "demo" ? "memos" : "");
+  const [password, setPassword] = useState(workspaceStore.state.profile.mode === "demo" ? "memos" : "");
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
