@@ -195,7 +195,9 @@ export interface ListMemosRequest {
   /**
    * Optional. The order to sort results by.
    * Default to "display_time desc".
-   * Example: "display_time desc" or "create_time asc"
+   * Supports comma-separated list of fields following AIP-132.
+   * Example: "pinned desc, display_time desc" or "create_time asc"
+   * Supported fields: pinned, display_time, create_time, update_time, name
    */
   orderBy: string;
   /**

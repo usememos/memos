@@ -875,30 +875,55 @@ func substring(s string, length int) string {
 }
 
 // parseMemoOrderBy parses the order_by field and sets the appropriate ordering in memoFind.
+// Follows AIP-132: supports comma-separated list of fields with optional "desc" suffix.
+// Example: "pinned desc, display_time desc" or "create_time asc".
 func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) error {
-	// Parse order_by field like "display_time desc" or "create_time asc"
-	parts := strings.Fields(strings.TrimSpace(orderBy))
-	if len(parts) == 0 {
+	if strings.TrimSpace(orderBy) == "" {
 		return errors.New("empty order_by")
 	}
 
-	field := parts[0]
-	direction := "desc" // default
-	if len(parts) > 1 {
-		direction = strings.ToLower(parts[1])
-		if direction != "asc" && direction != "desc" {
-			return errors.Errorf("invalid order direction: %s, must be 'asc' or 'desc'", parts[1])
+	// Split by comma to support multiple sort fields per AIP-132.
+	fields := strings.Split(orderBy, ",")
+
+	// Track if we've seen pinned field.
+	hasPinned := false
+
+	for _, field := range fields {
+		parts := strings.Fields(strings.TrimSpace(field))
+		if len(parts) == 0 {
+			continue
+		}
+
+		fieldName := parts[0]
+		fieldDirection := "desc" // default per AIP-132 (we use desc as default for time fields)
+		if len(parts) > 1 {
+			fieldDirection = strings.ToLower(parts[1])
+			if fieldDirection != "asc" && fieldDirection != "desc" {
+				return errors.Errorf("invalid order direction: %s, must be 'asc' or 'desc'", parts[1])
+			}
+		}
+
+		switch fieldName {
+		case "pinned":
+			hasPinned = true
+			memoFind.OrderByPinned = true
+			// Note: pinned is always DESC (true first) regardless of direction specified.
+		case "display_time", "create_time", "name":
+			// Only set if this is the first time field we encounter.
+			if !memoFind.OrderByUpdatedTs {
+				memoFind.OrderByTimeAsc = fieldDirection == "asc"
+			}
+		case "update_time":
+			memoFind.OrderByUpdatedTs = true
+			memoFind.OrderByTimeAsc = fieldDirection == "asc"
+		default:
+			return errors.Errorf("unsupported order field: %s, supported fields are: pinned, display_time, create_time, update_time, name", fieldName)
 		}
 	}
 
-	switch field {
-	case "display_time", "create_time", "name":
-		memoFind.OrderByTimeAsc = direction == "asc"
-	case "update_time":
-		memoFind.OrderByUpdatedTs = true
-		memoFind.OrderByTimeAsc = direction == "asc"
-	default:
-		return errors.Errorf("unsupported order field: %s, supported fields are: display_time, create_time, update_time, name", field)
+	// If only pinned was specified, still need to set a default time ordering.
+	if hasPinned && !memoFind.OrderByUpdatedTs && len(fields) == 1 {
+		memoFind.OrderByTimeAsc = false // default to desc
 	}
 
 	return nil

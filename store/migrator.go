@@ -64,7 +64,7 @@ const (
 	// Before 0.22, migration history had inconsistent versioning that needed normalization.
 	migrationHistoryNormalizedVersion = "0.22"
 
-	// Mode constants for profile mode
+	// Mode constants for profile mode.
 	modeProd = "prod"
 	modeDemo = "demo"
 )

@@ -76,6 +76,7 @@ type FindMemo struct {
 	Offset *int
 
 	// Ordering
+	OrderByPinned    bool
 	OrderByUpdatedTs bool
 	OrderByTimeAsc   bool
 }
