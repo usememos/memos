@@ -21,11 +21,15 @@ func GetCurrentVersion(mode string) string {
 	return Version
 }
 
+// GetMinorVersion extracts the minor version (e.g., "0.25") from a full version string (e.g., "0.25.1").
+// Returns the minor version string or empty string if the version format is invalid.
+// Version format should be "major.minor.patch" (e.g., "0.25.1").
 func GetMinorVersion(version string) string {
 	versionList := strings.Split(version, ".")
-	if len(versionList) < 3 {
+	if len(versionList) < 2 {
 		return ""
 	}
+	// Return major.minor only (first two components)
 	return versionList[0] + "." + versionList[1]
 }
 

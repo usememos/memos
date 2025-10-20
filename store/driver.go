@@ -14,6 +14,9 @@ type Driver interface {
 	IsInitialized(ctx context.Context) (bool, error)
 
 	// MigrationHistory model related methods.
+	// NOTE: These methods are deprecated. The migration_history table is no longer used
+	// for tracking schema versions. Schema version is now stored in workspace_setting.
+	// These methods are kept for backward compatibility to migrate existing installations.
 	FindMigrationHistoryList(ctx context.Context, find *FindMigrationHistory) ([]*MigrationHistory, error)
 	UpsertMigrationHistory(ctx context.Context, upsert *UpsertMigrationHistory) (*MigrationHistory, error)
 
