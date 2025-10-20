@@ -18,7 +18,7 @@ interface Props {
 const DateTimeInput: React.FC<Props> = ({ value, onChange }) => {
   return (
     <input
-      type="text"
+      type="datetime-local"
       className={cn("px-1 bg-transparent rounded text-xs transition-all", "border-transparent outline-none focus:border-border", "border")}
       defaultValue={formatDate(value)}
       onBlur={(e) => {
