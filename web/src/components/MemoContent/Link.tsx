@@ -53,6 +53,7 @@ const Link: React.FC<Props> = ({ content, url }: Props) => {
             rel="noopener noreferrer"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={() => setShowTooltip(false)}
+            onClick={(e) => e.stopPropagation()}
           >
             {content ? content.map((child, index) => <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />) : url}
           </a>
