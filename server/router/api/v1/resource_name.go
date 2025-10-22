@@ -75,7 +75,7 @@ func ExtractUserIDFromName(name string) (int32, error) {
 
 // extractUserIdentifierFromName extracts the identifier (ID or username) from a user resource name.
 // Supports: "users/101" or "users/steven"
-// Returns the identifier string (e.g., "101" or "steven")
+// Returns the identifier string (e.g., "101" or "steven").
 func extractUserIdentifierFromName(name string) string {
 	tokens, err := GetNameParentTokens(name, UserNamePrefix)
 	if err != nil || len(tokens) == 0 {
