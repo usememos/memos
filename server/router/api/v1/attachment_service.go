@@ -492,13 +492,40 @@ func (s *APIV1Service) GetAttachmentBlob(attachment *store.Attachment) ([]byte, 
 		}
 		return blob, nil
 	}
+	// For S3 storage, download the file from S3.
+	if attachment.StorageType == storepb.AttachmentStorageType_S3 {
+		if attachment.Payload == nil {
+			return nil, errors.New("attachment payload is missing")
+		}
+		s3Object := attachment.Payload.GetS3Object()
+		if s3Object == nil {
+			return nil, errors.New("S3 object payload is missing")
+		}
+		if s3Object.S3Config == nil {
+			return nil, errors.New("S3 config is missing")
+		}
+		if s3Object.Key == "" {
+			return nil, errors.New("S3 object key is missing")
+		}
+
+		s3Client, err := s3.NewClient(context.Background(), s3Object.S3Config)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to create S3 client")
+		}
+
+		blob, err := s3Client.GetObject(context.Background(), s3Object.Key)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get object from S3")
+		}
+		return blob, nil
+	}
 	// For database storage, return the blob from the database.
 	return attachment.Blob, nil
 }
 
 const (
-	// thumbnailRatio is the ratio of the thumbnail image.
-	thumbnailRatio = 0.8
+	// thumbnailMaxSize is the maximum size in pixels for the largest dimension of the thumbnail image.
+	thumbnailMaxSize = 600
 )
 
 // getOrGenerateThumbnail returns the thumbnail image of the attachment.
@@ -523,9 +550,31 @@ func (s *APIV1Service) getOrGenerateThumbnail(attachment *store.Attachment) ([]b
 			return nil, errors.Wrap(err, "failed to decode thumbnail image")
 		}
 
-		thumbnailWidth := int(float64(img.Bounds().Dx()) * thumbnailRatio)
-		// Resize the image to the thumbnailWidth.
-		thumbnailImage := imaging.Resize(img, thumbnailWidth, 0, imaging.Lanczos)
+		// The largest dimension is set to thumbnailMaxSize and the smaller dimension is scaled proportionally.
+		// Small images are not enlarged.
+		width := img.Bounds().Dx()
+		height := img.Bounds().Dy()
+		var thumbnailWidth, thumbnailHeight int
+
+		// Only resize if the image is larger than thumbnailMaxSize
+		if max(width, height) > thumbnailMaxSize {
+			if width > height {
+				// Landscape or square - constrain width, maintain aspect ratio for height
+				thumbnailWidth = thumbnailMaxSize
+				thumbnailHeight = 0
+			} else {
+				// Portrait - constrain height, maintain aspect ratio for width
+				thumbnailWidth = 0
+				thumbnailHeight = thumbnailMaxSize
+			}
+		} else {
+			// Keep original dimensions for small images
+			thumbnailWidth = width
+			thumbnailHeight = height
+		}
+
+		// Resize the image to the calculated dimensions.
+		thumbnailImage := imaging.Resize(img, thumbnailWidth, thumbnailHeight, imaging.Lanczos)
 		if err := imaging.Save(thumbnailImage, filePath); err != nil {
 			return nil, errors.Wrap(err, "failed to save thumbnail file")
 		}

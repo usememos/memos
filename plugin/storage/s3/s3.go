@@ -79,6 +79,20 @@ func (c *Client) PresignGetObject(ctx context.Context, key string) (string, erro
 	return presignResult.URL, nil
 }
 
+// GetObject retrieves an object from S3.
+func (c *Client) GetObject(ctx context.Context, key string) ([]byte, error) {
+	downloader := manager.NewDownloader(c.Client)
+	buffer := manager.NewWriteAtBuffer([]byte{})
+	_, err := downloader.Download(ctx, buffer, &s3.GetObjectInput{
+		Bucket: c.Bucket,
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to download object")
+	}
+	return buffer.Bytes(), nil
+}
+
 // DeleteObject deletes an object in S3.
 func (c *Client) DeleteObject(ctx context.Context, key string) error {
 	_, err := c.Client.DeleteObject(ctx, &s3.DeleteObjectInput{
