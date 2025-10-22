@@ -156,33 +156,9 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 		Offset:    &offset,
 	}
 
-	// Basic filter support for common cases
-	if request.Filter != "" {
-		// Simple filter parsing - can be enhanced later
-		// For now, support basic type filtering: "type=image/png"
-		if strings.HasPrefix(request.Filter, "type=") {
-			filterType := strings.TrimPrefix(request.Filter, "type=")
-			// Create a temporary struct to hold type filter
-			// Since FindAttachment doesn't have Type field, we'll apply this post-query
-			_ = filterType // We'll filter after getting results
-		}
-	}
-
 	attachments, err := s.Store.ListAttachments(ctx, findAttachment)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list attachments: %v", err)
-	}
-
-	// Apply type filter if specified
-	if request.Filter != "" && strings.HasPrefix(request.Filter, "type=") {
-		filterType := strings.TrimPrefix(request.Filter, "type=")
-		filteredAttachments := make([]*store.Attachment, 0)
-		for _, attachment := range attachments {
-			if attachment.Type == filterType {
-				filteredAttachments = append(filteredAttachments, attachment)
-			}
-		}
-		attachments = filteredAttachments
 	}
 
 	response := &v1pb.ListAttachmentsResponse{}
