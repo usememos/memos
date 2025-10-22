@@ -483,7 +483,7 @@ const MemoEditor = observer((props: Props) => {
     >
       <div
         className={cn(
-          "group relative w-full flex flex-col justify-start items-start bg-background px-4 pt-3 pb-2 rounded-lg border",
+          "group relative w-full flex flex-col justify-start items-start bg-card px-4 pt-3 pb-2 rounded-lg border",
           state.isDraggingFile ? "border-dashed border-muted-foreground cursor-copy" : "border-border cursor-auto",
           className,
         )}

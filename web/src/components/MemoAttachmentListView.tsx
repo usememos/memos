@@ -58,7 +58,7 @@ const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[
       return (
         <video
           className={cn(
-            "cursor-pointer h-full w-auto rounded-lg border border-border/60 object-contain bg-popover transition-colors",
+            "cursor-pointer h-full w-auto rounded-lg border border-border/60 object-contain bg-muted transition-colors",
             className,
           )}
           preload="metadata"

@@ -38,7 +38,7 @@ const AttachmentListView = (props: Props) => {
               return (
                 <div
                   key={attachment.name}
-                  className="max-w-full w-auto flex flex-row justify-start items-center flex-nowrap gap-x-1 bg-popover px-2 py-1 rounded hover:shadow-sm text-muted-foreground"
+                  className="max-w-full w-auto flex flex-row justify-start items-center flex-nowrap gap-x-1 bg-muted px-2 py-1 rounded hover:shadow-sm text-muted-foreground"
                 >
                   <SortableItem id={attachment.name} className="flex flex-row justify-start items-center gap-x-1">
                     <AttachmentIcon attachment={attachment} className="w-4! h-4! opacity-100!" />

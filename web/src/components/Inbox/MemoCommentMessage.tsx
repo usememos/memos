@@ -129,7 +129,7 @@ const MemoCommentMessage = observer(({ inbox }: Props) => {
           "shrink-0 mt-2 p-2 rounded-full border",
           inbox.status === Inbox_Status.UNREAD
             ? "border-primary text-primary bg-primary/10"
-            : "border-muted-foreground text-muted-foreground bg-popover",
+            : "border-muted-foreground text-muted-foreground bg-muted",
         )}
       >
         <TooltipProvider>

@@ -73,7 +73,7 @@ const ReactionView = observer((props: Props) => {
               "h-7 border px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1",
               "text-sm text-muted-foreground",
               currentUser && !readonly && "cursor-pointer",
-              hasReaction && "bg-popover border-border",
+              hasReaction && "bg-accent border-border",
             )}
             onClick={handleReactionClick}
           >

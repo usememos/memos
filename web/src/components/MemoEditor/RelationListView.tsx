@@ -37,7 +37,7 @@ const RelationListView = observer((props: Props) => {
             return (
               <div
                 key={memo.name}
-                className="w-auto max-w-xs overflow-hidden flex flex-row justify-start items-center bg-popover hover:opacity-80 rounded-md text-sm p-1 px-2 text-muted-foreground cursor-pointer hover:line-through"
+                className="w-auto max-w-xs overflow-hidden flex flex-row justify-start items-center bg-muted hover:opacity-80 rounded-md text-sm p-1 px-2 text-muted-foreground cursor-pointer hover:line-through"
                 onClick={() => handleDeleteRelation(memo)}
               >
                 <LinkIcon className="w-4 h-auto shrink-0 opacity-80" />

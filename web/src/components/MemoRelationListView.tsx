@@ -30,7 +30,7 @@ const MemoRelationListView = (props: Props) => {
   }
 
   return (
-    <div className="relative flex flex-col justify-start items-start w-full px-2 pt-2 pb-1.5 bg-popover rounded-lg border border-border">
+    <div className="relative flex flex-col justify-start items-start w-full px-2 pt-2 pb-1.5 bg-muted/50 rounded-lg border border-border">
       <div className="w-full flex flex-row justify-start items-center mb-1 gap-3 opacity-60">
         {referencingMemoList.length > 0 && (
           <button
