@@ -47,7 +47,7 @@ const Link: React.FC<Props> = ({ content, url }: Props) => {
       <Tooltip open={showTooltip}>
         <TooltipTrigger asChild>
           <a
-            className="underline text-primary hover:text-primary/80"
+            className="underline text-primary hover:opacity-80 transition-all"
             target="_blank"
             href={url}
             rel="noopener noreferrer"
