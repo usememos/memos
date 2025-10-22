@@ -290,9 +290,9 @@ type ListUsersRequest struct {
 	// Provide this to retrieve the subsequent page.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. Filter to apply to the list results.
-	// Example: "state=ACTIVE" or "role=USER" or "email:@example.com"
-	// Supported operators: =, !=, <, <=, >, >=, :
-	// Supported fields: username, email, role, state, create_time, update_time
+	// Example: "username == 'steven'"
+	// Supported operators: ==
+	// Supported fields: username
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. If true, show deleted users in the response.
 	ShowDeleted   bool `protobuf:"varint,4,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
@@ -425,7 +425,11 @@ func (x *ListUsersResponse) GetTotalSize() int32 {
 type GetUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the user.
-	// Format: users/{user}
+	// Supports both numeric IDs and username strings:
+	//   - users/{id}       (e.g., users/101)
+	//   - users/{username} (e.g., users/steven)
+	//
+	// Format: users/{id_or_username}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The fields to return in the response.
 	// If not specified, all fields are returned.

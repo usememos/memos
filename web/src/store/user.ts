@@ -83,12 +83,10 @@ const userStore = (() => {
         return userMap[name];
       }
     }
-    // Use search instead of the deprecated getUserByUsername
-    const { users } = await userServiceClient.listUsers({
-      filter: `username == "${username}"`,
-      pageSize: 10,
+    // Use GetUser with username - supports both "users/{id}" and "users/{username}"
+    const user = await userServiceClient.getUser({
+      name: `users/${username}`,
     });
-    const user = users.find((u) => u.username === username);
     if (!user) {
       throw new Error(`User with username ${username} not found`);
     }

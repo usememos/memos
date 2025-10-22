@@ -109,9 +109,9 @@ export interface ListUsersRequest {
   pageToken: string;
   /**
    * Optional. Filter to apply to the list results.
-   * Example: "state=ACTIVE" or "role=USER" or "email:@example.com"
-   * Supported operators: =, !=, <, <=, >, >=, :
-   * Supported fields: username, email, role, state, create_time, update_time
+   * Example: "username == 'steven'"
+   * Supported operators: ==
+   * Supported fields: username
    */
   filter: string;
   /** Optional. If true, show deleted users in the response. */
@@ -133,7 +133,10 @@ export interface ListUsersResponse {
 export interface GetUserRequest {
   /**
    * Required. The resource name of the user.
-   * Format: users/{user}
+   * Supports both numeric IDs and username strings:
+   *   - users/{id}       (e.g., users/101)
+   *   - users/{username} (e.g., users/steven)
+   * Format: users/{id_or_username}
    */
   name: string;
   /**
@@ -3221,7 +3224,12 @@ export const UserServiceDefinition = {
         },
       },
     },
-    /** GetUser gets a user by name. */
+    /**
+     * GetUser gets a user by ID or username.
+     * Supports both numeric IDs and username strings:
+     *   - users/{id}       (e.g., users/101)
+     *   - users/{username} (e.g., users/steven)
+     */
     getUser: {
       name: "GetUser",
       requestType: GetUserRequest,

@@ -49,7 +49,10 @@ const (
 type UserServiceClient interface {
 	// ListUsers returns a list of users.
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
-	// GetUser gets a user by name.
+	// GetUser gets a user by ID or username.
+	// Supports both numeric IDs and username strings:
+	//   - users/{id}       (e.g., users/101)
+	//   - users/{username} (e.g., users/steven)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)
 	// CreateUser creates a new user.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
@@ -303,7 +306,10 @@ func (c *userServiceClient) DeleteUserWebhook(ctx context.Context, in *DeleteUse
 type UserServiceServer interface {
 	// ListUsers returns a list of users.
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
-	// GetUser gets a user by name.
+	// GetUser gets a user by ID or username.
+	// Supports both numeric IDs and username strings:
+	//   - users/{id}       (e.g., users/101)
+	//   - users/{username} (e.g., users/steven)
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)

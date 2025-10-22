@@ -14,6 +14,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/ast"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -45,8 +47,12 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	userFind := &store.FindUser{}
 
 	if request.Filter != "" {
-		if err := validateUserFilter(ctx, request.Filter); err != nil {
+		username, err := extractUsernameFromFilter(request.Filter)
+		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		}
+		if username != "" {
+			userFind.Username = &username
 		}
 	}
 
@@ -68,13 +74,29 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 }
 
 func (s *APIV1Service) GetUser(ctx context.Context, request *v1pb.GetUserRequest) (*v1pb.User, error) {
-	userID, err := ExtractUserIDFromName(request.Name)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	// Extract identifier from "users/{id_or_username}"
+	identifier := extractUserIdentifierFromName(request.Name)
+	if identifier == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %s", request.Name)
 	}
-	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
-	})
+
+	var user *store.User
+	var err error
+
+	// Try to parse as numeric ID first
+	if userID, parseErr := strconv.ParseInt(identifier, 10, 32); parseErr == nil {
+		// It's a numeric ID
+		userID32 := int32(userID)
+		user, err = s.Store.GetUser(ctx, &store.FindUser{
+			ID: &userID32,
+		})
+	} else {
+		// It's a username
+		user, err = s.Store.GetUser(ctx, &store.FindUser{
+			Username: &identifier,
+		})
+	}
+
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
@@ -1358,10 +1380,95 @@ func extractWebhookIDFromName(name string) string {
 	return ""
 }
 
-// validateUserFilter validates the user filter string.
-func validateUserFilter(_ context.Context, filterStr string) error {
-	if strings.TrimSpace(filterStr) != "" {
-		return errors.New("user filters are not supported")
+// extractUsernameFromFilter extracts username from the filter string using CEL.
+// Supported filter format: "username == 'steven'"
+// Returns the username value and an error if the filter format is invalid.
+func extractUsernameFromFilter(filterStr string) (string, error) {
+	filterStr = strings.TrimSpace(filterStr)
+	if filterStr == "" {
+		return "", nil
 	}
-	return nil
+
+	// Create CEL environment with username variable
+	env, err := cel.NewEnv(
+		cel.Variable("username", cel.StringType),
+	)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to create CEL environment")
+	}
+
+	// Parse and check the filter expression
+	celAST, issues := env.Compile(filterStr)
+	if issues != nil && issues.Err() != nil {
+		return "", errors.Wrapf(issues.Err(), "invalid filter expression: %s", filterStr)
+	}
+
+	// Extract username from the AST
+	username, err := extractUsernameFromAST(celAST.NativeRep().Expr())
+	if err != nil {
+		return "", err
+	}
+
+	return username, nil
+}
+
+// extractUsernameFromAST extracts the username value from a CEL AST expression.
+func extractUsernameFromAST(expr ast.Expr) (string, error) {
+	if expr == nil {
+		return "", errors.New("empty expression")
+	}
+
+	// Check if this is a call expression (for ==, !=, etc.)
+	if expr.Kind() != ast.CallKind {
+		return "", errors.New("filter must be a comparison expression (e.g., username == 'value')")
+	}
+
+	call := expr.AsCall()
+
+	// We only support == operator
+	if call.FunctionName() != "_==_" {
+		return "", errors.Errorf("unsupported operator: %s (only '==' is supported)", call.FunctionName())
+	}
+
+	// The call should have exactly 2 arguments
+	args := call.Args()
+	if len(args) != 2 {
+		return "", errors.New("invalid comparison expression")
+	}
+
+	// Try to extract username from either left or right side
+	if username, ok := extractUsernameFromComparison(args[0], args[1]); ok {
+		return username, nil
+	}
+	if username, ok := extractUsernameFromComparison(args[1], args[0]); ok {
+		return username, nil
+	}
+
+	return "", errors.New("filter must compare 'username' field with a string constant")
+}
+
+// extractUsernameFromComparison tries to extract username value if left is 'username' ident and right is a string constant.
+func extractUsernameFromComparison(left, right ast.Expr) (string, bool) {
+	// Check if left side is 'username' identifier
+	if left.Kind() != ast.IdentKind {
+		return "", false
+	}
+	ident := left.AsIdent()
+	if ident != "username" {
+		return "", false
+	}
+
+	// Right side should be a constant string
+	if right.Kind() != ast.LiteralKind {
+		return "", false
+	}
+	literal := right.AsLiteral()
+
+	// literal is a ref.Val, we need to get the Go value
+	str, ok := literal.Value().(string)
+	if !ok || str == "" {
+		return "", false
+	}
+
+	return str, true
 }

@@ -20,7 +20,10 @@ service UserService {
     option (google.api.http) = {get: "/api/v1/users"};
   }
 
-  // GetUser gets a user by name.
+  // GetUser gets a user by ID or username.
+  // Supports both numeric IDs and username strings:
+  //   - users/{id}       (e.g., users/101)
+  //   - users/{username} (e.g., users/steven)
   rpc GetUser(GetUserRequest) returns (User) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
@@ -220,9 +223,9 @@ message ListUsersRequest {
   string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. Filter to apply to the list results.
-  // Example: "state=ACTIVE" or "role=USER" or "email:@example.com"
-  // Supported operators: =, !=, <, <=, >, >=, :
-  // Supported fields: username, email, role, state, create_time, update_time
+  // Example: "username == 'steven'"
+  // Supported operators: ==
+  // Supported fields: username
   string filter = 3 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. If true, show deleted users in the response.
@@ -243,7 +246,10 @@ message ListUsersResponse {
 
 message GetUserRequest {
   // Required. The resource name of the user.
-  // Format: users/{user}
+  // Supports both numeric IDs and username strings:
+  //   - users/{id}       (e.g., users/101)
+  //   - users/{username} (e.g., users/steven)
+  // Format: users/{id_or_username}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/User"}

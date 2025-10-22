@@ -1217,9 +1217,9 @@ paths:
                   in: query
                   description: |-
                     Optional. Filter to apply to the list results.
-                     Example: "state=ACTIVE" or "role=USER" or "email:@example.com"
-                     Supported operators: =, !=, <, <=, >, >=, :
-                     Supported fields: username, email, role, state, create_time, update_time
+                     Example: "username == 'steven'"
+                     Supported operators: ==
+                     Supported fields: username
                   schema:
                     type: string
                 - name: showDeleted
@@ -1289,7 +1289,11 @@ paths:
         get:
             tags:
                 - UserService
-            description: GetUser gets a user by name.
+            description: |-
+                GetUser gets a user by ID or username.
+                 Supports both numeric IDs and username strings:
+                   - users/{id}       (e.g., users/101)
+                   - users/{username} (e.g., users/steven)
             operationId: UserService_GetUser
             parameters:
                 - name: user
