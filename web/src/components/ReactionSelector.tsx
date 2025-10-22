@@ -66,9 +66,9 @@ const ReactionSelector = observer((props: Props) => {
           <SmilePlusIcon className="w-4 h-4 mx-auto text-muted-foreground" />
         </span>
       </PopoverTrigger>
-      <PopoverContent align="center">
+      <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
         <div ref={containerRef}>
-          <div className="grid grid-cols-4 sm:grid-cols-6 h-auto gap-1 max-w-56">
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">
             {workspaceMemoRelatedSetting.reactions.map((reactionType) => {
               return (
                 <span
