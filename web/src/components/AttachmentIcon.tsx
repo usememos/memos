@@ -12,7 +12,7 @@ import {
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
-import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
+import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import PreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
 
@@ -48,7 +48,7 @@ const AttachmentIcon = (props: Props) => {
         <SquareDiv className={cn(className, "flex items-center justify-center overflow-clip")}>
           <img
             className="min-w-full min-h-full object-cover"
-            src={attachment.externalLink ? attachmentUrl : attachmentUrl + "?thumbnail=true"}
+            src={getAttachmentThumbnailUrl(attachment)}
             onClick={handleImageClick}
             onError={(e) => {
               // Fallback to original image if thumbnail fails

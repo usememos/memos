@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
-import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
+import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import MemoAttachment from "./MemoAttachment";
 import PreviewImageDialog from "./PreviewImageDialog";
 
@@ -35,12 +35,13 @@ const MemoAttachmentListView = ({ attachments = [] }: { attachments: Attachment[
   const MediaCard = ({ attachment, className }: { attachment: Attachment; className?: string }) => {
     const type = getAttachmentType(attachment);
     const attachmentUrl = getAttachmentUrl(attachment);
+    const attachmentThumbnailUrl = getAttachmentThumbnailUrl(attachment);
 
     if (type === "image/*") {
       return (
         <img
           className={cn("cursor-pointer h-full w-auto rounded-lg border border-border/60 object-contain transition-colors", className)}
-          src={attachment.externalLink ? attachmentUrl : attachmentUrl + "?thumbnail=true"}
+          src={attachmentThumbnailUrl}
           onError={(e) => {
             // Fallback to original image if thumbnail fails
             const target = e.target as HTMLImageElement;
