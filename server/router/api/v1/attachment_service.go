@@ -99,6 +99,19 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	create.Size = int64(size)
 	create.Blob = request.Attachment.Content
 
+	// Downscale images before storing them if they are larger than maxAttachmentImageDimension
+	if util.HasPrefixes(create.Type, SupportedThumbnailMimeTypes...) {
+		downscaledBlob, err := downscaleImage(create.Blob, maxAttachmentImageDimension, defaultJPEGQuality)
+		if err != nil {
+			// Log the error but continue with the original image if downscaling fails
+			slog.Warn("failed to downscale image attachment", slog.Any("error", err), slog.String("filename", create.Filename))
+		} else {
+			// Update the blob and size with the downscaled version
+			create.Blob = downscaledBlob
+			create.Size = int64(len(downscaledBlob))
+		}
+	}
+
 	if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
 	}
@@ -531,13 +544,12 @@ const (
 	thumbnailMaxSize = 600
 	// defaultJPEGQuality is the default JPEG quality for downscaling images.
 	defaultJPEGQuality = 85
+	// defaultThumbnailJPEGQuality is the JPEG quality for generated thumbnails.
+	defaultThumbnailJPEGQuality = 75
+	// maxAttachmentImageDimension is the maximum size in pixels for the largest dimension when storing images. Images larger than this will be downscaled before storage.
+	maxAttachmentImageDimension = 2048
 )
 
-// downscaleImage takes an image blob and returns a downscaled version as a blob.
-// The maxDimension parameter specifies the maximum size in pixels for the largest dimension.
-// The quality parameter specifies the JPEG encoding quality (1-100, where 100 is best quality).
-// PNG images are preserved as PNG, other formats are encoded as JPEG.
-// Images smaller than maxDimension are not enlarged.
 func downscaleImage(imageBlob []byte, maxDimension int, quality int) ([]byte, error) {
 	// Detect the image format before decoding
 	reader := bytes.NewReader(imageBlob)
@@ -616,7 +628,7 @@ func (s *APIV1Service) getOrGenerateThumbnail(attachment *store.Attachment) ([]b
 		}
 
 		// Downscale the image
-		thumbnailBlob, err := downscaleImage(blob, thumbnailMaxSize, defaultJPEGQuality)
+		thumbnailBlob, err := downscaleImage(blob, thumbnailMaxSize, defaultThumbnailJPEGQuality)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to downscale image")
 		}
