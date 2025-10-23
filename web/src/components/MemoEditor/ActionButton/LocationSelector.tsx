@@ -155,11 +155,11 @@ const LocationSelector = (props: Props) => {
         </Tooltip>
       </TooltipProvider>
       <PopoverContent align="center" className="w-[min(24rem,calc(100vw-2rem))] p-0">
-        <div className="flex flex-col gap-4 p-4">
-          <div className="w-full overflow-hidden rounded-lg border bg-muted/30 shadow-xs">
+        <div className="flex flex-col gap-2 p-0">
+          <div className="w-full overflow-hidden bg-muted/30">
             <LeafletMap key={JSON.stringify(state.initialized)} latlng={state.position} onChange={onPositionChanged} />
           </div>
-          <div className="w-full space-y-3">
+          <div className="w-full space-y-3 px-2 pb-2">
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1">
                 <Label htmlFor="memo-location-lat" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -207,27 +207,27 @@ const LocationSelector = (props: Props) => {
                 className="min-h-16"
               />
             </div>
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setPopoverOpen(false)}>
-              {t("common.cancel")}
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => {
-                props.onChange(
-                  Location.fromPartial({
-                    placeholder: state.placeholder,
-                    latitude: state.position?.lat,
-                    longitude: state.position?.lng,
-                  }),
-                );
-                setPopoverOpen(false);
-              }}
-              disabled={!state.position || state.placeholder.trim().length === 0}
-            >
-              {t("common.confirm")}
-            </Button>
+            <div className="w-full flex items-center justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setPopoverOpen(false)}>
+                {t("common.cancel")}
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  props.onChange(
+                    Location.fromPartial({
+                      placeholder: state.placeholder,
+                      latitude: state.position?.lat,
+                      longitude: state.position?.lng,
+                    }),
+                  );
+                  setPopoverOpen(false);
+                }}
+                disabled={!state.position || state.placeholder.trim().length === 0}
+              >
+                {t("common.confirm")}
+              </Button>
+            </div>
           </div>
         </div>
       </PopoverContent>
