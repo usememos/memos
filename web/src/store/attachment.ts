@@ -4,6 +4,7 @@
  * Manages file attachment state including uploads and metadata.
  * This is a server state store that fetches and caches attachment data.
  */
+import { makeObservable, observable, computed } from "mobx";
 import { attachmentServiceClient } from "@/grpcweb";
 import { CreateAttachmentRequest, Attachment, UpdateAttachmentRequest } from "@/types/proto/api/v1/attachment_service";
 import { StandardState, createServerStore } from "./base-store";
@@ -18,6 +19,15 @@ class AttachmentState extends StandardState {
    * Map of attachments indexed by resource name (e.g., "attachments/123")
    */
   attachmentMapByName: Record<string, Attachment> = {};
+
+  constructor() {
+    super();
+    makeObservable(this, {
+      attachmentMapByName: observable,
+      attachments: computed,
+      size: computed,
+    });
+  }
 
   /**
    * Computed getter for all attachments as an array

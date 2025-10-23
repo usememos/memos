@@ -6,7 +6,7 @@
  * - BaseClientStore: For stores that manage UI/client state
  * - Common patterns for all stores
  */
-import { makeAutoObservable } from "mobx";
+import { makeObservable, action } from "mobx";
 import { RequestDeduplicator, StoreError } from "./store-utils";
 
 /**
@@ -166,7 +166,9 @@ export function createClientStore<TState extends BaseState>(state: TState, confi
  */
 export abstract class StandardState implements BaseState {
   constructor() {
-    makeAutoObservable(this);
+    makeObservable(this, {
+      setPartial: action,
+    });
   }
 
   setPartial(partial: Partial<this>): void {
