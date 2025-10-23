@@ -46,6 +46,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [creator, setCreator] = useState(userStore.getUserByName(memo.creator));
   const [showNSFWContent, setShowNSFWContent] = useState(props.showNsfwContent);
+  const [reactionSelectorOpen, setReactionSelectorOpen] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({
     open: false,
     urls: [],
@@ -136,7 +137,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   ) : (
     <div
       className={cn(
-        "relative flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-lg border border-border transition-colors",
+        "relative group flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-lg border border-border transition-colors",
         className,
       )}
     >
@@ -177,22 +178,16 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           )}
         </div>
         <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
-          <div className="w-auto flex flex-row justify-between items-center gap-2">
-            {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <span className="flex justify-center items-center rounded-md p-1 hover:opacity-80">
-                    <VisibilityIcon visibility={memo.visibility} />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>{t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)}</TooltipContent>
-              </Tooltip>
-            )}
-            {currentUser && !isArchived && <ReactionSelector className="border-none w-auto h-auto" memo={memo} />}
-          </div>
-          {!isInMemoDetailPage && commentAmount > 0 && (
+          {currentUser && !isArchived && (
+            <ReactionSelector
+              className={cn("border-none w-auto h-auto", reactionSelectorOpen && "!block", "hidden group-hover:block")}
+              memo={memo}
+              onOpenChange={setReactionSelectorOpen}
+            />
+          )}
+          {!isInMemoDetailPage && (
             <Link
-              className={cn("flex flex-row justify-start items-center rounded-md p-1 hover:opacity-80", commentAmount === 0 && "invisible")}
+              className="flex flex-row justify-start items-center rounded-md p-1 hover:opacity-80"
               to={`/${memo.name}#comments`}
               viewTransition
               state={{
@@ -202,6 +197,16 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
               <MessageCircleMoreIcon className="w-4 h-4 mx-auto text-muted-foreground" />
               {commentAmount > 0 && <span className="text-xs text-muted-foreground">{commentAmount}</span>}
             </Link>
+          )}
+          {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
+            <Tooltip>
+              <TooltipTrigger>
+                <span className="flex justify-center items-center rounded-md hover:opacity-80">
+                  <VisibilityIcon visibility={memo.visibility} />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>{t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)}</TooltipContent>
+            </Tooltip>
           )}
           {props.showPinned && memo.pinned && (
             <TooltipProvider>
