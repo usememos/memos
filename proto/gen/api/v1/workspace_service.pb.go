@@ -589,7 +589,17 @@ type WorkspaceSetting_StorageSetting struct {
 	// The max upload size in megabytes.
 	UploadSizeLimitMb int64 `protobuf:"varint,3,opt,name=upload_size_limit_mb,json=uploadSizeLimitMb,proto3" json:"upload_size_limit_mb,omitempty"`
 	// The S3 config.
-	S3Config      *WorkspaceSetting_StorageSetting_S3Config `protobuf:"bytes,4,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
+	S3Config *WorkspaceSetting_StorageSetting_S3Config `protobuf:"bytes,4,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
+	// The maximum size in pixels for the largest dimension of thumbnail images.
+	ThumbnailMaxSize int32 `protobuf:"varint,5,opt,name=thumbnail_max_size,json=thumbnailMaxSize,proto3" json:"thumbnail_max_size,omitempty"`
+	// The JPEG quality (0-100) used when downscaling uploaded images.
+	JpegQuality int32 `protobuf:"varint,6,opt,name=jpeg_quality,json=jpegQuality,proto3" json:"jpeg_quality,omitempty"`
+	// The JPEG quality (0-100) used when generating thumbnails.
+	ThumbnailJpegQuality int32 `protobuf:"varint,7,opt,name=thumbnail_jpeg_quality,json=thumbnailJpegQuality,proto3" json:"thumbnail_jpeg_quality,omitempty"`
+	// The maximum size in pixels for the largest dimension when storing images.
+	// Images larger than this will be downscaled before storage.
+	// Set to 0 to disable downscaling.
+	ImageMaxSize  int32 `protobuf:"varint,8,opt,name=image_max_size,json=imageMaxSize,proto3" json:"image_max_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -650,6 +660,34 @@ func (x *WorkspaceSetting_StorageSetting) GetS3Config() *WorkspaceSetting_Storag
 		return x.S3Config
 	}
 	return nil
+}
+
+func (x *WorkspaceSetting_StorageSetting) GetThumbnailMaxSize() int32 {
+	if x != nil {
+		return x.ThumbnailMaxSize
+	}
+	return 0
+}
+
+func (x *WorkspaceSetting_StorageSetting) GetJpegQuality() int32 {
+	if x != nil {
+		return x.JpegQuality
+	}
+	return 0
+}
+
+func (x *WorkspaceSetting_StorageSetting) GetThumbnailJpegQuality() int32 {
+	if x != nil {
+		return x.ThumbnailJpegQuality
+	}
+	return 0
+}
+
+func (x *WorkspaceSetting_StorageSetting) GetImageMaxSize() int32 {
+	if x != nil {
+		return x.ImageMaxSize
+	}
+	return 0
 }
 
 // Memo-related workspace settings and policies.
@@ -935,7 +973,7 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1c\n" +
-	"\x1aGetWorkspaceProfileRequest\"\x97\x11\n" +
+	"\x1aGetWorkspaceProfileRequest\"\xc4\x12\n" +
 	"\x10WorkspaceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12X\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2-.memos.api.v1.WorkspaceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12X\n" +
@@ -955,12 +993,16 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
 	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x12\x16\n" +
-	"\x06locale\x18\x04 \x01(\tR\x06locale\x1a\xbe\x04\n" +
+	"\x06locale\x18\x04 \x01(\tR\x06locale\x1a\xeb\x05\n" +
 	"\x0eStorageSetting\x12\\\n" +
 	"\fstorage_type\x18\x01 \x01(\x0e29.memos.api.v1.WorkspaceSetting.StorageSetting.StorageTypeR\vstorageType\x12+\n" +
 	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +
 	"\x14upload_size_limit_mb\x18\x03 \x01(\x03R\x11uploadSizeLimitMb\x12S\n" +
-	"\ts3_config\x18\x04 \x01(\v26.memos.api.v1.WorkspaceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\xcc\x01\n" +
+	"\ts3_config\x18\x04 \x01(\v26.memos.api.v1.WorkspaceSetting.StorageSetting.S3ConfigR\bs3Config\x12,\n" +
+	"\x12thumbnail_max_size\x18\x05 \x01(\x05R\x10thumbnailMaxSize\x12!\n" +
+	"\fjpeg_quality\x18\x06 \x01(\x05R\vjpegQuality\x124\n" +
+	"\x16thumbnail_jpeg_quality\x18\a \x01(\x05R\x14thumbnailJpegQuality\x12$\n" +
+	"\x0eimage_max_size\x18\b \x01(\x05R\fimageMaxSize\x1a\xcc\x01\n" +
 	"\bS3Config\x12\"\n" +
 	"\raccess_key_id\x18\x01 \x01(\tR\vaccessKeyId\x12*\n" +
 	"\x11access_key_secret\x18\x02 \x01(\tR\x0faccessKeySecret\x12\x1a\n" +

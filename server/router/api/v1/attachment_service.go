@@ -99,9 +99,10 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	create.Size = int64(size)
 	create.Blob = request.Attachment.Content
 
-	// Downscale images before storing them if they are larger than maxAttachmentImageDimension
-	if util.HasPrefixes(create.Type, SupportedThumbnailMimeTypes...) {
-		downscaledBlob, err := downscaleImage(create.Blob, maxAttachmentImageDimension, defaultJPEGQuality)
+	// Downscale images before storing them if they are larger than the configured max dimension
+	// ImageMaxSize of 0 means no downscaling should be performed
+	if util.HasPrefixes(create.Type, SupportedThumbnailMimeTypes...) && workspaceStorageSetting.ImageMaxSize > 0 {
+		downscaledBlob, err := downscaleImage(create.Blob, int(workspaceStorageSetting.ImageMaxSize), int(workspaceStorageSetting.JpegQuality))
 		if err != nil {
 			// Log the error but continue with the original image if downscaling fails
 			slog.Warn("failed to downscale image attachment", slog.Any("error", err), slog.String("filename", create.Filename))
@@ -539,17 +540,6 @@ func (s *APIV1Service) GetAttachmentBlob(attachment *store.Attachment) ([]byte, 
 	return attachment.Blob, nil
 }
 
-const (
-	// thumbnailMaxSize is the maximum size in pixels for the largest dimension of the thumbnail image.
-	thumbnailMaxSize = 600
-	// defaultJPEGQuality is the default JPEG quality for downscaling images.
-	defaultJPEGQuality = 85
-	// defaultThumbnailJPEGQuality is the JPEG quality for generated thumbnails.
-	defaultThumbnailJPEGQuality = 75
-	// maxAttachmentImageDimension is the maximum size in pixels for the largest dimension when storing images. Images larger than this will be downscaled before storage.
-	maxAttachmentImageDimension = 2048
-)
-
 func downscaleImage(imageBlob []byte, maxDimension int, quality int) ([]byte, error) {
 	// Detect the image format before decoding
 	reader := bytes.NewReader(imageBlob)
@@ -611,6 +601,11 @@ func downscaleImage(imageBlob []byte, maxDimension int, quality int) ([]byte, er
 
 // getOrGenerateThumbnail returns the thumbnail image of the attachment.
 func (s *APIV1Service) getOrGenerateThumbnail(attachment *store.Attachment) ([]byte, error) {
+	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(context.Background())
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace storage setting")
+	}
+
 	thumbnailCacheFolder := filepath.Join(s.Profile.Data, ThumbnailCacheFolder)
 	if err := os.MkdirAll(thumbnailCacheFolder, os.ModePerm); err != nil {
 		return nil, errors.Wrap(err, "failed to create thumbnail cache folder")
@@ -628,7 +623,7 @@ func (s *APIV1Service) getOrGenerateThumbnail(attachment *store.Attachment) ([]b
 		}
 
 		// Downscale the image
-		thumbnailBlob, err := downscaleImage(blob, thumbnailMaxSize, defaultThumbnailJPEGQuality)
+		thumbnailBlob, err := downscaleImage(blob, int(workspaceStorageSetting.ThumbnailMaxSize), int(workspaceStorageSetting.ThumbnailJpegQuality))
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to downscale image")
 		}

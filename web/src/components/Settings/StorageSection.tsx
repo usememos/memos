@@ -39,6 +39,19 @@ const StorageSection = observer(() => {
     if (workspaceStorageSetting.uploadSizeLimitMb <= 0) {
       return false;
     }
+    // imageMaxSize can be 0 (meaning no downscaling) or positive
+    if (workspaceStorageSetting.imageMaxSize < 0) {
+      return false;
+    }
+    if (workspaceStorageSetting.jpegQuality <= 0 || workspaceStorageSetting.jpegQuality > 100) {
+      return false;
+    }
+    if (workspaceStorageSetting.thumbnailMaxSize <= 0) {
+      return false;
+    }
+    if (workspaceStorageSetting.thumbnailJpegQuality <= 0 || workspaceStorageSetting.thumbnailJpegQuality > 100) {
+      return false;
+    }
 
     const origin = WorkspaceSetting_StorageSetting.fromPartial(
       workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {},
@@ -69,6 +82,54 @@ const StorageSection = observer(() => {
     const update: WorkspaceSetting_StorageSetting = {
       ...workspaceStorageSetting,
       uploadSizeLimitMb: num,
+    };
+    setWorkspaceStorageSetting(update);
+  };
+
+  const handleThumbnailMaxSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
+    let num = parseInt(event.target.value);
+    if (Number.isNaN(num)) {
+      num = 0;
+    }
+    const update: WorkspaceSetting_StorageSetting = {
+      ...workspaceStorageSetting,
+      thumbnailMaxSize: num,
+    };
+    setWorkspaceStorageSetting(update);
+  };
+
+  const handleJpegQualityChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
+    let num = parseInt(event.target.value);
+    if (Number.isNaN(num)) {
+      num = 0;
+    }
+    const update: WorkspaceSetting_StorageSetting = {
+      ...workspaceStorageSetting,
+      jpegQuality: num,
+    };
+    setWorkspaceStorageSetting(update);
+  };
+
+  const handleThumbnailJpegQualityChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
+    let num = parseInt(event.target.value);
+    if (Number.isNaN(num)) {
+      num = 0;
+    }
+    const update: WorkspaceSetting_StorageSetting = {
+      ...workspaceStorageSetting,
+      thumbnailJpegQuality: num,
+    };
+    setWorkspaceStorageSetting(update);
+  };
+
+  const handleImageMaxSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
+    let num = parseInt(event.target.value);
+    if (Number.isNaN(num)) {
+      num = 0;
+    }
+    const update: WorkspaceSetting_StorageSetting = {
+      ...workspaceStorageSetting,
+      imageMaxSize: num,
     };
     setWorkspaceStorageSetting(update);
   };
@@ -171,7 +232,7 @@ const StorageSection = observer(() => {
             </Tooltip>
           </TooltipProvider>
         </div>
-        <Input className="w-16 font-mono" value={workspaceStorageSetting.uploadSizeLimitMb} onChange={handleMaxUploadSizeChanged} />
+        <Input className="w-20 font-mono" value={workspaceStorageSetting.uploadSizeLimitMb} onChange={handleMaxUploadSizeChanged} />
       </div>
       {workspaceStorageSetting.storageType !== WorkspaceSetting_StorageSetting_StorageType.DATABASE && (
         <div className="w-full flex flex-row justify-between items-center">
@@ -240,6 +301,71 @@ const StorageSection = observer(() => {
           </div>
         </>
       )}
+      
+      <div className="w-full flex flex-row justify-between items-center">
+        <div className="flex flex-row items-center">
+          <span className="text-muted-foreground mr-1">Maximum image size (px)</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <HelpCircleIcon className="w-4 h-auto" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Maximum size in pixels for the largest dimension when storing images. Images larger than this will be downscaled. Set to 0 to disable downscaling (default: 0, no downscaling).</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <Input className="w-20 font-mono" value={workspaceStorageSetting.imageMaxSize} onChange={handleImageMaxSizeChanged} />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <div className="flex flex-row items-center">
+          <span className="text-muted-foreground mr-1">JPEG quality</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <HelpCircleIcon className="w-4 h-auto" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>JPEG quality (0-100) used when downscaling uploaded images. Higher values = better quality but larger file size (default: 85).</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <Input className="w-20 font-mono" value={workspaceStorageSetting.jpegQuality} onChange={handleJpegQualityChanged} />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <div className="flex flex-row items-center">
+          <span className="text-muted-foreground mr-1">Thumbnail size (px)</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <HelpCircleIcon className="w-4 h-auto" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Maximum size in pixels for the largest dimension of thumbnail images (default: 600).</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <Input className="w-20 font-mono" value={workspaceStorageSetting.thumbnailMaxSize} onChange={handleThumbnailMaxSizeChanged} />
+      </div>
+      <div className="w-full flex flex-row justify-between items-center">
+        <div className="flex flex-row items-center">
+          <span className="text-muted-foreground mr-1">Thumbnail JPEG quality</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <HelpCircleIcon className="w-4 h-auto" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>JPEG quality (0-100) used when generating thumbnails. Lower values save space (default: 75).</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <Input className="w-20 font-mono" value={workspaceStorageSetting.thumbnailJpegQuality} onChange={handleThumbnailJpegQualityChanged} />
+      </div>
       <div>
         <Button disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>
           {t("common.save")}
