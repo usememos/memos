@@ -20,7 +20,7 @@ Write, organize, and own your knowledge
   <img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/main/Github/Sponsor/Warp-Github-LG-02.png" alt="Warp - The terminal for the 21st century" height="200" />
 </a>
 
-**[Warp](https://go.warp.dev/memos)** — The AI-powered terminal built for speed and collaboration
+[**Warp** — The AI-powered terminal built for speed and collaboration](https://go.warp.dev/memos)
 
 ![screenshot](https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png)
 
@@ -42,6 +42,7 @@ Memos is an open-source, self-hosted alternative to cloud note-taking services. 
 ## 🚀 Quick Start
 
 Get up and running in **under 30 seconds**:
+
 ```bash
 docker run -d \
   --name memos \
@@ -56,40 +57,19 @@ Open `http://localhost:5230` and start writing! 🎉
 
 ## ✨ Features
 
-<table>
-<tr>
-<td width="50%">
+- **🔒 Privacy-First Architecture** — Self-hosted on your infrastructure with no telemetry or tracking. Your data stays yours with full ownership and export capabilities.
 
-### 🔐 Privacy First
-- Self-hosted on your infrastructure
-- No telemetry or tracking
-- Full data ownership
-- Export anytime
+- **⚡ Lightning-Fast Performance** — Built with Go and React for exceptional speed. Real-time updates ensure your notes are always in sync across devices.
 
-### 📱 Modern Experience
-- Clean, intuitive interface
-- Mobile-responsive design
-- Real-time updates
-- Dark mode support
+- **📝 Markdown Native** — Write naturally with full markdown support, code highlighting, and rich text rendering. No lock-in, just plain text you can take anywhere.
 
-</td>
-<td width="50%">
+- **🐳 Deploy in Seconds** — One Docker command to get started. Simple deployment with Docker Compose, binaries, or Kubernetes.
 
-### 🛠️ Developer Friendly
-- RESTful API
-- SQLite, PostgreSQL, MySQL support
-- Easy to deploy and scale
-- Extensive documentation
+- **🎨 Beautiful & Minimal UI** — Clean, intuitive interface that stays out of your way. Mobile-responsive design with dark mode support.
 
-### 🌍 Open Source
-- MIT licensed
-- Active community
-- Regular updates
-- Transparent development
+- **🔗 Powerful API** — RESTful and gRPC APIs for seamless integration with your existing workflow. Build custom tools and automations easily.
 
-</td>
-</tr>
-</table>
+- **🌍 Open Source & Community-Driven** — MIT licensed with an active community. Regular updates and transparent development on GitHub.
 
 ## 💡 Perfect For
 
@@ -114,13 +94,14 @@ Love Memos? Help us keep it growing!
 <a href="https://github.com/fixermark" target="_blank"><img src="https://avatars.githubusercontent.com/u/169982?v=4" alt="fixermark" height="50" style="border-radius: 50%; margin: 5px;" /></a>
 <a href="https://github.com/alik-agaev" target="_blank"><img src="https://avatars.githubusercontent.com/u/2662697?v=4" alt="alik-agaev" height="50" style="border-radius: 50%; margin: 5px;" /></a>
 
-*Every contribution, big or small, makes a difference!*
+_Every contribution, big or small, makes a difference!_
 
 ## 🤝 Contributing
 
 We love contributions! Whether you're fixing bugs, adding features, improving docs, or spreading the word — every contribution matters.
 
 **Get involved:**
+
 - 🐛 [Report bugs](https://github.com/usememos/memos/issues/new?template=bug_report.md)
 - 💡 [Suggest features](https://github.com/usememos/memos/issues/new?template=feature_request.md)
 - 🔧 [Submit pull requests](https://github.com/usememos/memos/pulls)
@@ -135,11 +116,11 @@ We love contributions! Whether you're fixing bugs, adding features, improving do
 
 <div align="center">
 
-**[Website](https://www.usememos.com)** • 
-**[Documentation](https://www.usememos.com/docs)** • 
-**[Demo](https://demo.usememos.com/)** • 
-**[Discord](https://discord.gg/tfPJa4UmAv)** • 
-**[Twitter](https://twitter.com/usememos)**
+**[Website](https://www.usememos.com)** •
+**[Docs](https://www.usememos.com/docs)** •
+**[Demo](https://demo.usememos.com/)** •
+**[X](https://x.com/usememos)** •
+**[Discord](https://discord.gg/tfPJa4UmAv)**
 
 Made with ❤️ by the Memos community
 
