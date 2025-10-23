@@ -31,6 +31,7 @@
     "close": "Close",
     "collapse": "Collapse",
     "confirm": "Confirm",
+    "copy": "Copy",
     "create": "Create",
     "created-at": "Created At",
     "database": "Database",
@@ -141,6 +142,7 @@
       "self": "Comments",
       "write-a-comment": "Write a comment"
     },
+    "copy-content": "Copy Content",
     "copy-link": "Copy Link",
     "count-memos-in-date": "{{count}} {{memos}} in {{date}}",
     "delete-confirm": "Are you sure you want to delete this memo?",
@@ -188,6 +190,7 @@
     "password-not-match": "Passwords do not match.",
     "remove-completed-task-list-items-successfully": "The removal was successful",
     "restored-successfully": "Restored successfully",
+    "succeed-copy-content": "Content copied successfully.",
     "succeed-copy-link": "Link copied successfully.",
     "update-succeed": "Update succeeded",
     "user-not-found": "User not found"

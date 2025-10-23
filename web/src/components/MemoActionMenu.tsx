@@ -6,6 +6,8 @@ import {
   BookmarkPlusIcon,
   CopyIcon,
   Edit3Icon,
+  FileTextIcon,
+  LinkIcon,
   MoreVerticalIcon,
   TrashIcon,
   SquareCheckIcon,
@@ -24,7 +26,15 @@ import { NodeType } from "@/types/proto/api/v1/markdown_service";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { Button } from "./ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 interface Props {
   memo: Memo;
@@ -127,6 +137,11 @@ const MemoActionMenu = observer((props: Props) => {
     toast.success(t("message.succeed-copy-link"));
   };
 
+  const handleCopyContent = () => {
+    copy(memo.content);
+    toast.success(t("message.succeed-copy-content"));
+  };
+
   const handleDeleteMemoClick = () => {
     setDeleteDialogOpen(true);
   };
@@ -196,10 +211,22 @@ const MemoActionMenu = observer((props: Props) => {
           </>
         )}
         {!isArchived && (
-          <DropdownMenuItem onClick={handleCopyLink}>
-            <CopyIcon className="w-4 h-auto" />
-            {t("memo.copy-link")}
-          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <CopyIcon className="w-4 h-auto" />
+              {t("common.copy")}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={handleCopyLink}>
+                <LinkIcon className="w-4 h-auto" />
+                {t("memo.copy-link")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleCopyContent}>
+                <FileTextIcon className="w-4 h-auto" />
+                {t("memo.copy-content")}
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
         )}
         {!readonly && (
           <>
