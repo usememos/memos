@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
-import { getAttachmentType, getAttachmentUrl, getAttachmentThumbnailUrl } from "@/utils/attachment";
+import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import MemoAttachment from "./MemoAttachment";
 import PreviewImageDialog from "./PreviewImageDialog";
 

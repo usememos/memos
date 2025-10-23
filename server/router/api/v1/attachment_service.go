@@ -558,7 +558,7 @@ func (s *APIV1Service) getOrGenerateThumbnail(attachment *store.Attachment) ([]b
 
 		// Only resize if the image is larger than thumbnailMaxSize
 		if max(width, height) > thumbnailMaxSize {
-			if width > height {
+			if width >= height {
 				// Landscape or square - constrain width, maintain aspect ratio for height
 				thumbnailWidth = thumbnailMaxSize
 				thumbnailHeight = 0
