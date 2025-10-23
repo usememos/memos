@@ -5,7 +5,7 @@ INSERT INTO memo (id,uid,creator_id,content,visibility,payload) VALUES(3,'8x7bm2
 INSERT INTO memo (id,uid,creator_id,content,visibility,payload) VALUES(4,'kBfJKAyFvE52kQ9dmSZMfE',1,'Wow, it can be **referenced** too! REALLY GREAT!!! #features','PUBLIC','{"tags":["features"]}');
 INSERT INTO memo (id,uid,creator_id,content,visibility,pinned,payload) VALUES(5,'RF9XnAcWpcBzKttK83zQtf',1,replace('#sponsor **[Warp](https://go.warp.dev/memos)**: A modern terminal reimagined to work with AI, helping developers build faster and more efficiently.\n[![Warp](https://raw.githubusercontent.com/warpdotdev/brand-assets/main/Github/Sponsor/Warp-Github-LG-02.png)](https://go.warp.dev/memos)','\n',char(10)),'PUBLIC',1,'{"tags":["sponsor"],"property":{"hasLink":true}}');
 INSERT INTO memo_relation VALUES(4,1,'REFERENCE');
-INSERT INTO reaction VALUES(1,1722097094,1,'memos/4','👍');
-INSERT INTO reaction VALUES(2,1722097100,1,'memos/4','🔥');
-INSERT INTO reaction VALUES(3,1722097101,1,'memos/4','+1');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(1,1,'memos/4','👍');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(2,1,'memos/4','🔥');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(3,1,'memos/4','+1');
 INSERT INTO system_setting VALUES ('MEMO_RELATED', '{"contentLengthLimit":8192,"enableAutoCompact":true,"enableComment":true,"enableLocation":true,"defaultVisibility":"PUBLIC","reactions":["👍","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓","+1"]}', '');
