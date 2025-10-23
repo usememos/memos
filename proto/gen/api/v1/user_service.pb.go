@@ -428,7 +428,6 @@ type GetUserRequest struct {
 	// Supports both numeric IDs and username strings:
 	//   - users/{id}       (e.g., users/101)
 	//   - users/{username} (e.g., users/steven)
-	//
 	// Format: users/{id_or_username}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The fields to return in the response.

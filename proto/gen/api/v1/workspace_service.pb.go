@@ -672,9 +672,12 @@ type WorkspaceSetting_MemoRelatedSetting struct {
 	// enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
 	EnableBlurNsfwContent bool `protobuf:"varint,9,opt,name=enable_blur_nsfw_content,json=enableBlurNsfwContent,proto3" json:"enable_blur_nsfw_content,omitempty"`
 	// nsfw_tags is the list of tags that mark content as NSFW for blurring.
-	NsfwTags      []string `protobuf:"bytes,10,rep,name=nsfw_tags,json=nsfwTags,proto3" json:"nsfw_tags,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	NsfwTags []string `protobuf:"bytes,10,rep,name=nsfw_tags,json=nsfwTags,proto3" json:"nsfw_tags,omitempty"`
+	// use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.
+	// When false, images stored in S3 will not have thumbnails generated.
+	UseThumbnailsForS3Images bool `protobuf:"varint,11,opt,name=use_thumbnails_for_s3_images,json=useThumbnailsForS3Images,proto3" json:"use_thumbnails_for_s3_images,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *WorkspaceSetting_MemoRelatedSetting) Reset() {
@@ -768,6 +771,13 @@ func (x *WorkspaceSetting_MemoRelatedSetting) GetNsfwTags() []string {
 		return x.NsfwTags
 	}
 	return nil
+}
+
+func (x *WorkspaceSetting_MemoRelatedSetting) GetUseThumbnailsForS3Images() bool {
+	if x != nil {
+		return x.UseThumbnailsForS3Images
+	}
+	return false
 }
 
 // Custom profile configuration for workspace branding.
@@ -935,7 +945,7 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1c\n" +
-	"\x1aGetWorkspaceProfileRequest\"\x97\x11\n" +
+	"\x1aGetWorkspaceProfileRequest\"\xd7\x11\n" +
 	"\x10WorkspaceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12X\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2-.memos.api.v1.WorkspaceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12X\n" +
@@ -972,7 +982,7 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\x1a\xd8\x03\n" +
+	"\x02S3\x10\x03\x1a\x98\x04\n" +
 	"\x12MemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
@@ -983,7 +993,8 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x1adisable_markdown_shortcuts\x18\b \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
 	"\tnsfw_tags\x18\n" +
-	" \x03(\tR\bnsfwTags\"F\n" +
+	" \x03(\tR\bnsfwTags\x12>\n" +
+	"\x1cuse_thumbnails_for_s3_images\x18\v \x01(\bR\x18useThumbnailsForS3Images\"F\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\v\n" +

@@ -316,7 +316,8 @@
       "enable-memo-comments": "Enable memo comments",
       "enable-memo-location": "Enable memo location",
       "reactions": "Reactions",
-      "title": "Memo related settings"
+      "title": "Memo related settings",
+      "use-thumbnails-for-s3-images": "Generate and serve thumbnails for images stored in S3"
     },
     "my-account": "My Account",
     "preference": "Preferences",
