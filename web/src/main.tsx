@@ -6,6 +6,8 @@ import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
 import router from "./router";
+// Configure MobX before importing any stores
+import "./store/config";
 import { initialUserStore } from "./store/user";
 import { initialWorkspaceStore } from "./store/workspace";
 import { applyThemeEarly } from "./utils/theme";
