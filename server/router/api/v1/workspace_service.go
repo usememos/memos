@@ -264,6 +264,7 @@ func convertWorkspaceMemoRelatedSettingFromStore(setting *storepb.WorkspaceMemoR
 		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
 		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
 		NsfwTags:                 setting.NsfwTags,
+		UseThumbnailsForS3Images: setting.UseThumbnailsForS3Images,
 	}
 }
 
@@ -281,6 +282,7 @@ func convertWorkspaceMemoRelatedSettingToStore(setting *v1pb.WorkspaceSetting_Me
 		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
 		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
 		NsfwTags:                 setting.NsfwTags,
+		UseThumbnailsForS3Images: setting.UseThumbnailsForS3Images,
 	}
 }
 

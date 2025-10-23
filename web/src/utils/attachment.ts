@@ -1,4 +1,5 @@
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
+import workspaceStore from "@/store/workspace";
 
 export const getAttachmentUrl = (attachment: Attachment) => {
   if (attachment.externalLink) {
@@ -9,6 +10,15 @@ export const getAttachmentUrl = (attachment: Attachment) => {
 };
 
 export const getAttachmentThumbnailUrl = (attachment: Attachment) => {
+  // Check if thumbnails are disabled for S3 images
+  const isS3Image = !!attachment.externalLink;
+  const useThumbnailsForS3Images = workspaceStore.state.memoRelatedSetting.useThumbnailsForS3Images;
+
+  // Don't request thumbnails for S3 images if the setting is disabled
+  if (isS3Image && !useThumbnailsForS3Images) {
+    return getAttachmentUrl(attachment);
+  }
+
   return `${window.location.origin}/file/${attachment.name}/${attachment.filename}?thumbnail=true`;
 };
 

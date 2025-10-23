@@ -230,6 +230,11 @@ export interface WorkspaceSetting_MemoRelatedSetting {
   enableBlurNsfwContent: boolean;
   /** nsfw_tags is the list of tags that mark content as NSFW for blurring. */
   nsfwTags: string[];
+  /**
+   * use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.
+   * When false, images stored in S3 will not have thumbnails generated.
+   */
+  useThumbnailsForS3Images: boolean;
 }
 
 /** Request message for GetWorkspaceSetting method. */
@@ -905,6 +910,7 @@ function createBaseWorkspaceSetting_MemoRelatedSetting(): WorkspaceSetting_MemoR
     disableMarkdownShortcuts: false,
     enableBlurNsfwContent: false,
     nsfwTags: [],
+    useThumbnailsForS3Images: false,
   };
 }
 
@@ -936,6 +942,9 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
     }
     for (const v of message.nsfwTags) {
       writer.uint32(82).string(v!);
+    }
+    if (message.useThumbnailsForS3Images !== false) {
+      writer.uint32(88).bool(message.useThumbnailsForS3Images);
     }
     return writer;
   },
@@ -1019,6 +1028,14 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
           message.nsfwTags.push(reader.string());
           continue;
         }
+        case 11: {
+          if (tag !== 88) {
+            break;
+          }
+
+          message.useThumbnailsForS3Images = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1042,6 +1059,7 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
     message.disableMarkdownShortcuts = object.disableMarkdownShortcuts ?? false;
     message.enableBlurNsfwContent = object.enableBlurNsfwContent ?? false;
     message.nsfwTags = object.nsfwTags?.map((e) => e) || [];
+    message.useThumbnailsForS3Images = object.useThumbnailsForS3Images ?? false;
     return message;
   },
 };
