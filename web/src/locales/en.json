@@ -316,8 +316,7 @@
       "enable-memo-comments": "Enable memo comments",
       "enable-memo-location": "Enable memo location",
       "reactions": "Reactions",
-      "title": "Memo related settings",
-      "use-thumbnails-for-s3-images": "Generate and serve thumbnails for images stored in S3"
+      "title": "Memo related settings"
     },
     "my-account": "My Account",
     "preference": "Preferences",
@@ -388,6 +387,7 @@
       "url-prefix-placeholder": "Custom URL prefix, optional",
       "url-suffix": "URL suffix",
       "url-suffix-placeholder": "Custom URL suffix, optional",
+      "use-thumbnails-for-s3-images": "Generate and serve thumbnails for images stored in S3",
       "warning-text": "Are you sure you want to delete storage service `{{name}}`? THIS ACTION IS IRREVERSIBLE"
     },
     "system": "System",
