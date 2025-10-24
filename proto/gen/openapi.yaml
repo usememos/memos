@@ -2166,6 +2166,10 @@ components:
                 memo:
                     type: string
                     description: "Optional. The related memo. Refer to `Memo.name`.\r\n Format: memos/{memo}"
+                useThumbnailForS3Image:
+                    readOnly: true
+                    type: boolean
+                    description: Optional. Output only. Whether to use thumbnails for this attachment when stored in S3.
         CreateSessionRequest:
             type: object
             properties:
@@ -3242,9 +3246,6 @@ components:
                     items:
                         type: string
                     description: nsfw_tags is the list of tags that mark content as NSFW for blurring.
-                useThumbnailsForS3Images:
-                    type: boolean
-                    description: "use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.\r\n When false, images stored in S3 will not have thumbnails generated."
             description: Memo-related workspace settings and policies.
         WorkspaceSetting_StorageSetting:
             type: object
@@ -3268,6 +3269,9 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/StorageSetting_S3Config'
                     description: The S3 config.
+                useThumbnailsForS3Images:
+                    type: boolean
+                    description: "use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.\r\n When false, images stored in S3 will not have thumbnails generated."
             description: Storage configuration settings for workspace attachments.
 tags:
     - name: ActivityService

@@ -240,6 +240,18 @@ const StorageSection = observer(() => {
           </div>
         </>
       )}
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("setting.memo-related-settings.use-thumbnails-for-s3-images")}</span>
+        <Switch
+          checked={workspaceStorageSetting.useThumbnailsForS3Images}
+          onCheckedChange={(checked) =>
+            setWorkspaceStorageSetting({
+              ...workspaceStorageSetting,
+              useThumbnailsForS3Images: checked,
+            })
+          }
+        />
+      </div>
       <div>
         <Button disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>
           {t("common.save")}
