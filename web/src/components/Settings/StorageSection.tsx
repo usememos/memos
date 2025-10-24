@@ -43,13 +43,13 @@ const StorageSection = observer(() => {
     if (workspaceStorageSetting.imageMaxSize < 0) {
       return false;
     }
-    if (workspaceStorageSetting.jpegQuality <= 0 || workspaceStorageSetting.jpegQuality > 100) {
+    if (workspaceStorageSetting.jpegQuality < 1 || workspaceStorageSetting.jpegQuality > 100) {
       return false;
     }
     if (workspaceStorageSetting.thumbnailMaxSize <= 0) {
       return false;
     }
-    if (workspaceStorageSetting.thumbnailJpegQuality <= 0 || workspaceStorageSetting.thumbnailJpegQuality > 100) {
+    if (workspaceStorageSetting.thumbnailJpegQuality < 1 || workspaceStorageSetting.thumbnailJpegQuality > 100) {
       return false;
     }
 
@@ -301,7 +301,7 @@ const StorageSection = observer(() => {
           </div>
         </>
       )}
-      
+
       <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">
           <span className="text-muted-foreground mr-1">Maximum image size (px)</span>
@@ -311,7 +311,10 @@ const StorageSection = observer(() => {
                 <HelpCircleIcon className="w-4 h-auto" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Maximum size in pixels for the largest dimension when storing images. Images larger than this will be downscaled. Set to 0 to disable downscaling (default: 0, no downscaling).</p>
+                <p>
+                  Maximum size in pixels for the largest dimension when storing images. Images larger than this will be downscaled. Set to 0
+                  to disable downscaling (default: 0, no downscaling).
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -327,7 +330,10 @@ const StorageSection = observer(() => {
                 <HelpCircleIcon className="w-4 h-auto" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>JPEG quality (0-100) used when downscaling uploaded images. Higher values = better quality but larger file size (default: 85).</p>
+                <p>
+                  JPEG quality (0-100) used when downscaling uploaded images. Higher values = better quality but larger file size (default:
+                  85).
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -364,7 +370,11 @@ const StorageSection = observer(() => {
             </Tooltip>
           </TooltipProvider>
         </div>
-        <Input className="w-20 font-mono" value={workspaceStorageSetting.thumbnailJpegQuality} onChange={handleThumbnailJpegQualityChanged} />
+        <Input
+          className="w-20 font-mono"
+          value={workspaceStorageSetting.thumbnailJpegQuality}
+          onChange={handleThumbnailJpegQualityChanged}
+        />
       </div>
       <div>
         <Button disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>

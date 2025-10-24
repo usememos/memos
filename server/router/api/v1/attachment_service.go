@@ -6,8 +6,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"image"
-	_ "image/jpeg"
-	_ "image/png"
 	"io"
 	"log/slog"
 	"os"
@@ -549,7 +547,9 @@ func downscaleImage(imageBlob []byte, maxDimension int, quality int) ([]byte, er
 	}
 
 	// Reset reader position for actual decoding
-	reader.Seek(0, 0)
+	if _, err := reader.Seek(0, 0); err != nil {
+		return nil, errors.Wrap(err, "failed to reset reader position")
+	}
 
 	// Decode the image with auto-orientation support
 	img, err := imaging.Decode(reader, imaging.AutoOrientation(true))
@@ -574,9 +574,8 @@ func downscaleImage(imageBlob []byte, maxDimension int, quality int) ([]byte, er
 			targetHeight = maxDimension
 		}
 	} else {
-		// Keep original dimensions for small images
-		targetWidth = width
-		targetHeight = height
+		// Do not modify small images
+		return imageBlob, nil
 	}
 
 	// Resize the image to the calculated dimensions
