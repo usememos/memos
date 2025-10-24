@@ -7,6 +7,7 @@
  * Filters are URL-driven and shareable - copying the URL preserves the filter state.
  */
 import { uniqBy } from "lodash-es";
+import { makeObservable, observable, action } from "mobx";
 import { StandardState } from "./base-store";
 
 /**
@@ -90,6 +91,15 @@ class MemoFilterState extends StandardState {
    */
   constructor() {
     super();
+    makeObservable(this, {
+      filters: observable,
+      shortcut: observable,
+      addFilter: action,
+      removeFilter: action,
+      removeFiltersByFactor: action,
+      clearAllFilters: action,
+      setShortcut: action,
+    });
     this.initFromURL();
   }
 
