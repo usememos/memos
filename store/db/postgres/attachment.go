@@ -59,13 +59,11 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	}
 	if len(find.MemoIDList) > 0 {
 		holders := make([]string, 0, len(find.MemoIDList))
-		for range find.MemoIDList {
-			holders = append(holders, placeholder(len(args)+1))
-		}
-		where = append(where, "resource.memo_id IN ("+strings.Join(holders, ", ")+")")
 		for _, id := range find.MemoIDList {
+			holders = append(holders, placeholder(len(args)+1))
 			args = append(args, id)
 		}
+		where = append(where, "resource.memo_id IN ("+strings.Join(holders, ", ")+")")
 	}
 	if find.HasRelatedMemo {
 		where = append(where, "resource.memo_id IS NOT NULL")
