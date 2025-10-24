@@ -382,10 +382,10 @@ func (r *renderer) renderElementInCondition(cond *ElementInCondition) (renderRes
 		sql := fmt.Sprintf("%s LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s"%%`, str)))
 		return renderResult{sql: sql}, nil
 	case DialectMySQL:
-		sql := fmt.Sprintf("JSON_CONTAINS(%s, %s)", jsonArrayExpr(r.dialect, field), r.addArg(str))
+		sql := fmt.Sprintf("JSON_CONTAINS(%s, %s)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
 		return renderResult{sql: sql}, nil
 	case DialectPostgres:
-		sql := fmt.Sprintf("%s @> jsonb_build_array(%s::json)", jsonArrayExpr(r.dialect, field), r.addArg(str))
+		sql := fmt.Sprintf("%s @> jsonb_build_array(%s::json)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
 		return renderResult{sql: sql}, nil
 	default:
 		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)

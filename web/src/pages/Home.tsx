@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
 import { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
@@ -23,7 +22,8 @@ const Home = observer(() => {
   const user = useCurrentUser();
   const selectedShortcut = userStore.state.shortcuts.find((shortcut) => getShortcutId(shortcut.name) === memoFilterStore.shortcut);
 
-  const memoFilter = useMemo(() => {
+  // Build filter from active filters - no useMemo needed since component is MobX observer
+  const buildMemoFilter = () => {
     const conditions = [`creator_id == ${extractUserIdFromName(user.name)}`];
     if (selectedShortcut?.filter) {
       conditions.push(selectedShortcut.filter);
@@ -52,7 +52,9 @@ const Home = observer(() => {
       }
     }
     return conditions.length > 0 ? conditions.join(" && ") : undefined;
-  }, [memoFilterStore.filters, selectedShortcut?.filter]);
+  };
+
+  const memoFilter = buildMemoFilter();
 
   return (
     <div className="w-full min-h-full bg-background text-foreground">

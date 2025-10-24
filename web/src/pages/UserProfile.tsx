@@ -2,7 +2,7 @@ import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { ExternalLinkIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { MemoRenderContext } from "@/components/MasonryView";
@@ -43,7 +43,8 @@ const UserProfile = observer(() => {
       });
   }, [params.username]);
 
-  const memoFilter = useMemo(() => {
+  // Build filter from active filters - no useMemo needed since component is MobX observer
+  const buildMemoFilter = () => {
     if (!user) {
       return undefined;
     }
@@ -57,7 +58,9 @@ const UserProfile = observer(() => {
       }
     }
     return conditions.length > 0 ? conditions.join(" && ") : undefined;
-  }, [user, memoFilterStore.filters]);
+  };
+
+  const memoFilter = buildMemoFilter();
 
   const handleCopyProfileLink = () => {
     if (!user) {

@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
 import { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
@@ -14,7 +13,8 @@ import { Memo } from "@/types/proto/api/v1/memo_service";
 const Archived = observer(() => {
   const user = useCurrentUser();
 
-  const memoFitler = useMemo(() => {
+  // Build filter from active filters - no useMemo needed since component is MobX observer
+  const buildMemoFilter = () => {
     const conditions = [`creator_id == ${extractUserIdFromName(user.name)}`];
     for (const filter of memoFilterStore.filters) {
       if (filter.factor === "contentSearch") {
@@ -24,7 +24,9 @@ const Archived = observer(() => {
       }
     }
     return conditions.length > 0 ? conditions.join(" && ") : undefined;
-  }, [memoFilterStore.filters]);
+  };
+
+  const memoFilter = buildMemoFilter();
 
   return (
     <PagedMemoList
@@ -47,7 +49,7 @@ const Archived = observer(() => {
       }
       state={State.ARCHIVED}
       orderBy={viewStore.state.orderByTimeAsc ? "pinned desc, display_time asc" : "pinned desc, display_time desc"}
-      filter={memoFitler}
+      filter={memoFilter}
     />
   );
 });

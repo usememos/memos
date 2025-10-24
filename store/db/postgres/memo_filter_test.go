@@ -109,7 +109,7 @@ func TestConvertExprToSQL(t *testing.T) {
 		{
 			filter: `"work" in tags`,
 			want:   "memo.payload->'tags' @> jsonb_build_array($1::json)",
-			args:   []any{"work"},
+			args:   []any{`"work"`},
 		},
 		{
 			filter: `size(tags) == 2`,

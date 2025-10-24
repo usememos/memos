@@ -109,7 +109,7 @@ func TestConvertExprToSQL(t *testing.T) {
 		{
 			filter: `"work" in tags`,
 			want:   "JSON_CONTAINS(JSON_EXTRACT(`memo`.`payload`, '$.tags'), ?)",
-			args:   []any{"work"},
+			args:   []any{`"work"`},
 		},
 		{
 			filter: `size(tags) == 2`,
