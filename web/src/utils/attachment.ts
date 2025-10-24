@@ -1,5 +1,5 @@
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import workspaceStore from "@/store/workspace";
+import { Attachment } from "@/types/proto/api/v1/attachment_service";
 
 export const getAttachmentUrl = (attachment: Attachment) => {
   if (attachment.externalLink) {
