@@ -9,10 +9,9 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/gomark"
-	"github.com/usememos/gomark/renderer"
 
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/plugin/markdown"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -22,8 +21,9 @@ const (
 )
 
 type RSSService struct {
-	Profile *profile.Profile
-	Store   *store.Store
+	Profile         *profile.Profile
+	Store           *store.Store
+	MarkdownService markdown.Service
 }
 
 type RSSHeading struct {
@@ -31,10 +31,11 @@ type RSSHeading struct {
 	Description string
 }
 
-func NewRSSService(profile *profile.Profile, store *store.Store) *RSSService {
+func NewRSSService(profile *profile.Profile, store *store.Store, markdownService markdown.Service) *RSSService {
 	return &RSSService{
-		Profile: profile,
-		Store:   store,
+		Profile:         profile,
+		Store:           store,
+		MarkdownService: markdownService,
 	}
 }
 
@@ -113,7 +114,7 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 	feed.Items = make([]*feeds.Item, itemCountLimit)
 	for i := 0; i < itemCountLimit; i++ {
 		memo := memoList[i]
-		description, err := getRSSItemDescription(memo.Content)
+		description, err := s.getRSSItemDescription(memo.Content)
 		if err != nil {
 			return "", err
 		}
@@ -151,13 +152,12 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 	return rss, nil
 }
 
-func getRSSItemDescription(content string) (string, error) {
-	doc, err := gomark.Parse(content)
+func (s *RSSService) getRSSItemDescription(content string) (string, error) {
+	html, err := s.MarkdownService.RenderHTML([]byte(content))
 	if err != nil {
 		return "", err
 	}
-	result := renderer.NewHTMLRenderer().RenderDocument(doc)
-	return result, nil
+	return html, nil
 }
 
 func getRSSHeading(ctx context.Context, stores *store.Store) (RSSHeading, error) {

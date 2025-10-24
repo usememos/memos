@@ -4,7 +4,6 @@ import { AttachmentServiceDefinition } from "./types/proto/api/v1/attachment_ser
 import { AuthServiceDefinition } from "./types/proto/api/v1/auth_service";
 import { IdentityProviderServiceDefinition } from "./types/proto/api/v1/idp_service";
 import { InboxServiceDefinition } from "./types/proto/api/v1/inbox_service";
-import { MarkdownServiceDefinition } from "./types/proto/api/v1/markdown_service";
 import { MemoServiceDefinition } from "./types/proto/api/v1/memo_service";
 import { ShortcutServiceDefinition } from "./types/proto/api/v1/shortcut_service";
 import { UserServiceDefinition } from "./types/proto/api/v1/user_service";
@@ -34,7 +33,5 @@ export const shortcutServiceClient = clientFactory.create(ShortcutServiceDefinit
 export const inboxServiceClient = clientFactory.create(InboxServiceDefinition, channel);
 
 export const activityServiceClient = clientFactory.create(ActivityServiceDefinition, channel);
-
-export const markdownServiceClient = clientFactory.create(MarkdownServiceDefinition, channel);
 
 export const identityProviderServiceClient = clientFactory.create(IdentityProviderServiceDefinition, channel);

@@ -507,114 +507,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/markdown/links:getMetadata:
-        get:
-            tags:
-                - MarkdownService
-            description: |-
-                GetLinkMetadata returns metadata for a given link.
-                 This is useful for generating link previews.
-            operationId: MarkdownService_GetLinkMetadata
-            parameters:
-                - name: link
-                  in: query
-                  description: The link URL to get metadata for.
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/LinkMetadata'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/markdown:parse:
-        post:
-            tags:
-                - MarkdownService
-            description: |-
-                ParseMarkdown parses the given markdown content and returns a list of nodes.
-                 This is a utility method that transforms markdown text into structured nodes.
-            operationId: MarkdownService_ParseMarkdown
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ParseMarkdownRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ParseMarkdownResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/markdown:restore:
-        post:
-            tags:
-                - MarkdownService
-            description: |-
-                RestoreMarkdownNodes restores the given nodes to markdown content.
-                 This is the inverse operation of ParseMarkdown.
-            operationId: MarkdownService_RestoreMarkdownNodes
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/RestoreMarkdownNodesRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/RestoreMarkdownNodesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/markdown:stringify:
-        post:
-            tags:
-                - MarkdownService
-            description: |-
-                StringifyMarkdownNodes stringify the given nodes to plain text content.
-                 This removes all markdown formatting and returns plain text.
-            operationId: MarkdownService_StringifyMarkdownNodes
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/StringifyMarkdownNodesRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/StringifyMarkdownNodesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/v1/memos:
         get:
             tags:
@@ -2312,48 +2204,6 @@ components:
                     description: |-
                         Optional. The related memo. Refer to `Memo.name`.
                          Format: memos/{memo}
-        AutoLinkNode:
-            type: object
-            properties:
-                url:
-                    type: string
-                isRawText:
-                    type: boolean
-        BlockquoteNode:
-            type: object
-            properties:
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-        BoldItalicNode:
-            type: object
-            properties:
-                symbol:
-                    type: string
-                content:
-                    type: string
-        BoldNode:
-            type: object
-            properties:
-                symbol:
-                    type: string
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-        CodeBlockNode:
-            type: object
-            properties:
-                language:
-                    type: string
-                content:
-                    type: string
-        CodeNode:
-            type: object
-            properties:
-                content:
-                    type: string
         CreateSessionRequest:
             type: object
             properties:
@@ -2436,20 +2286,6 @@ components:
                 deleteRelatedMemos:
                     type: boolean
                     description: Optional. Whether to delete related memos.
-        EmbeddedContentNode:
-            type: object
-            properties:
-                resourceName:
-                    type: string
-                    description: The resource name of the embedded content.
-                params:
-                    type: string
-                    description: Additional parameters for the embedded content.
-        EscapingCharacterNode:
-            type: object
-            properties:
-                symbol:
-                    type: string
         FieldMapping:
             type: object
             properties:
@@ -2492,41 +2328,6 @@ components:
                     description: The type of the serialized message.
             additionalProperties: true
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-        HTMLElementNode:
-            type: object
-            properties:
-                tagName:
-                    type: string
-                attributes:
-                    type: object
-                    additionalProperties:
-                        type: string
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-                isSelfClosing:
-                    type: boolean
-        HeadingNode:
-            type: object
-            properties:
-                level:
-                    type: integer
-                    format: int32
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-        HighlightNode:
-            type: object
-            properties:
-                content:
-                    type: string
-        HorizontalRuleNode:
-            type: object
-            properties:
-                symbol:
-                    type: string
         IdentityProvider:
             required:
                 - type
@@ -2561,13 +2362,6 @@ components:
             properties:
                 oauth2Config:
                     $ref: '#/components/schemas/OAuth2Config'
-        ImageNode:
-            type: object
-            properties:
-                altText:
-                    type: string
-                url:
-                    type: string
         Inbox:
             type: object
             properties:
@@ -2614,39 +2408,6 @@ components:
                     type: integer
                     description: Optional. The activity ID associated with this inbox notification.
                     format: int32
-        ItalicNode:
-            type: object
-            properties:
-                symbol:
-                    type: string
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-        LineBreakNode:
-            type: object
-            properties: {}
-        LinkMetadata:
-            type: object
-            properties:
-                title:
-                    type: string
-                    description: The title of the linked page.
-                description:
-                    type: string
-                    description: The description of the linked page.
-                image:
-                    type: string
-                    description: The URL of the preview image for the linked page.
-        LinkNode:
-            type: object
-            properties:
-                content:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-                url:
-                    type: string
         ListActivitiesResponse:
             type: object
             properties:
@@ -2788,24 +2549,6 @@ components:
                     type: integer
                     description: The total count of memos (may be approximate).
                     format: int32
-        ListNode:
-            type: object
-            properties:
-                kind:
-                    enum:
-                        - KIND_UNSPECIFIED
-                        - ORDERED
-                        - UNORDERED
-                        - DESCRIPTION
-                    type: string
-                    format: enum
-                indent:
-                    type: integer
-                    format: int32
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
         ListShortcutsResponse:
             type: object
             properties:
@@ -2894,16 +2637,6 @@ components:
                     type: number
                     description: The longitude of the location.
                     format: double
-        MathBlockNode:
-            type: object
-            properties:
-                content:
-                    type: string
-        MathNode:
-            type: object
-            properties:
-                content:
-                    type: string
         Memo:
             required:
                 - state
@@ -2947,12 +2680,6 @@ components:
                 content:
                     type: string
                     description: Required. The content of the memo in Markdown format.
-                nodes:
-                    readOnly: true
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-                    description: Output only. The parsed nodes from the content.
                 visibility:
                     enum:
                         - VISIBILITY_UNSPECIFIED
@@ -3055,111 +2782,6 @@ components:
                 hasIncompleteTasks:
                     type: boolean
             description: Computed properties of a memo.
-        Node:
-            type: object
-            properties:
-                type:
-                    enum:
-                        - NODE_UNSPECIFIED
-                        - LINE_BREAK
-                        - PARAGRAPH
-                        - CODE_BLOCK
-                        - HEADING
-                        - HORIZONTAL_RULE
-                        - BLOCKQUOTE
-                        - LIST
-                        - ORDERED_LIST_ITEM
-                        - UNORDERED_LIST_ITEM
-                        - TASK_LIST_ITEM
-                        - MATH_BLOCK
-                        - TABLE
-                        - EMBEDDED_CONTENT
-                        - TEXT
-                        - BOLD
-                        - ITALIC
-                        - BOLD_ITALIC
-                        - CODE
-                        - IMAGE
-                        - LINK
-                        - AUTO_LINK
-                        - TAG
-                        - STRIKETHROUGH
-                        - ESCAPING_CHARACTER
-                        - MATH
-                        - HIGHLIGHT
-                        - SUBSCRIPT
-                        - SUPERSCRIPT
-                        - REFERENCED_CONTENT
-                        - SPOILER
-                        - HTML_ELEMENT
-                    type: string
-                    format: enum
-                lineBreakNode:
-                    allOf:
-                        - $ref: '#/components/schemas/LineBreakNode'
-                    description: Block nodes.
-                paragraphNode:
-                    $ref: '#/components/schemas/ParagraphNode'
-                codeBlockNode:
-                    $ref: '#/components/schemas/CodeBlockNode'
-                headingNode:
-                    $ref: '#/components/schemas/HeadingNode'
-                horizontalRuleNode:
-                    $ref: '#/components/schemas/HorizontalRuleNode'
-                blockquoteNode:
-                    $ref: '#/components/schemas/BlockquoteNode'
-                listNode:
-                    $ref: '#/components/schemas/ListNode'
-                orderedListItemNode:
-                    $ref: '#/components/schemas/OrderedListItemNode'
-                unorderedListItemNode:
-                    $ref: '#/components/schemas/UnorderedListItemNode'
-                taskListItemNode:
-                    $ref: '#/components/schemas/TaskListItemNode'
-                mathBlockNode:
-                    $ref: '#/components/schemas/MathBlockNode'
-                tableNode:
-                    $ref: '#/components/schemas/TableNode'
-                embeddedContentNode:
-                    $ref: '#/components/schemas/EmbeddedContentNode'
-                textNode:
-                    allOf:
-                        - $ref: '#/components/schemas/TextNode'
-                    description: Inline nodes.
-                boldNode:
-                    $ref: '#/components/schemas/BoldNode'
-                italicNode:
-                    $ref: '#/components/schemas/ItalicNode'
-                boldItalicNode:
-                    $ref: '#/components/schemas/BoldItalicNode'
-                codeNode:
-                    $ref: '#/components/schemas/CodeNode'
-                imageNode:
-                    $ref: '#/components/schemas/ImageNode'
-                linkNode:
-                    $ref: '#/components/schemas/LinkNode'
-                autoLinkNode:
-                    $ref: '#/components/schemas/AutoLinkNode'
-                tagNode:
-                    $ref: '#/components/schemas/TagNode'
-                strikethroughNode:
-                    $ref: '#/components/schemas/StrikethroughNode'
-                escapingCharacterNode:
-                    $ref: '#/components/schemas/EscapingCharacterNode'
-                mathNode:
-                    $ref: '#/components/schemas/MathNode'
-                highlightNode:
-                    $ref: '#/components/schemas/HighlightNode'
-                subscriptNode:
-                    $ref: '#/components/schemas/SubscriptNode'
-                superscriptNode:
-                    $ref: '#/components/schemas/SuperscriptNode'
-                referencedContentNode:
-                    $ref: '#/components/schemas/ReferencedContentNode'
-                spoilerNode:
-                    $ref: '#/components/schemas/SpoilerNode'
-                htmlElementNode:
-                    $ref: '#/components/schemas/HTMLElementNode'
         OAuth2Config:
             type: object
             properties:
@@ -3179,41 +2801,6 @@ components:
                         type: string
                 fieldMapping:
                     $ref: '#/components/schemas/FieldMapping'
-        OrderedListItemNode:
-            type: object
-            properties:
-                number:
-                    type: string
-                indent:
-                    type: integer
-                    format: int32
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-        ParagraphNode:
-            type: object
-            properties:
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-        ParseMarkdownRequest:
-            required:
-                - markdown
-            type: object
-            properties:
-                markdown:
-                    type: string
-                    description: The markdown content to parse.
-        ParseMarkdownResponse:
-            type: object
-            properties:
-                nodes:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-                    description: The parsed markdown nodes.
         Reaction:
             required:
                 - contentId
@@ -3246,15 +2833,6 @@ components:
                     type: string
                     description: Output only. The creation timestamp.
                     format: date-time
-        ReferencedContentNode:
-            type: object
-            properties:
-                resourceName:
-                    type: string
-                    description: The resource name of the referenced content.
-                params:
-                    type: string
-                    description: Additional parameters for the referenced content.
         RenameMemoTagRequest:
             required:
                 - parent
@@ -3273,22 +2851,6 @@ components:
                 newTag:
                     type: string
                     description: Required. The new tag name.
-        RestoreMarkdownNodesRequest:
-            required:
-                - nodes
-            type: object
-            properties:
-                nodes:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-                    description: The nodes to restore to markdown content.
-        RestoreMarkdownNodesResponse:
-            type: object
-            properties:
-                markdown:
-                    type: string
-                    description: The restored markdown content.
         SetMemoAttachmentsRequest:
             required:
                 - name
@@ -3337,11 +2899,6 @@ components:
                 filter:
                     type: string
                     description: The filter expression for the shortcut.
-        SpoilerNode:
-            type: object
-            properties:
-                content:
-                    type: string
         Status:
             type: object
             properties:
@@ -3376,95 +2933,6 @@ components:
             description: |-
                 S3 configuration for cloud storage backend.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
-        StrikethroughNode:
-            type: object
-            properties:
-                content:
-                    type: string
-        StringifyMarkdownNodesRequest:
-            required:
-                - nodes
-            type: object
-            properties:
-                nodes:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-                    description: The nodes to stringify to plain text.
-        StringifyMarkdownNodesResponse:
-            type: object
-            properties:
-                plainText:
-                    type: string
-                    description: The plain text content.
-        SubscriptNode:
-            type: object
-            properties:
-                content:
-                    type: string
-        SuperscriptNode:
-            type: object
-            properties:
-                content:
-                    type: string
-        TableNode:
-            type: object
-            properties:
-                header:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-                delimiter:
-                    type: array
-                    items:
-                        type: string
-                rows:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/TableNode_Row'
-        TableNode_Row:
-            type: object
-            properties:
-                cells:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-        TagNode:
-            type: object
-            properties:
-                content:
-                    type: string
-        TaskListItemNode:
-            type: object
-            properties:
-                symbol:
-                    type: string
-                indent:
-                    type: integer
-                    format: int32
-                complete:
-                    type: boolean
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
-        TextNode:
-            type: object
-            properties:
-                content:
-                    type: string
-        UnorderedListItemNode:
-            type: object
-            properties:
-                symbol:
-                    type: string
-                indent:
-                    type: integer
-                    format: int32
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Node'
         UpsertMemoReactionRequest:
             required:
                 - name
@@ -3884,7 +3352,6 @@ tags:
     - name: AuthService
     - name: IdentityProviderService
     - name: InboxService
-    - name: MarkdownService
     - name: MemoService
     - name: ShortcutService
     - name: UserService
