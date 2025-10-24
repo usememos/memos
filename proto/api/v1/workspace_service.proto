@@ -147,6 +147,9 @@ message WorkspaceSetting {
     }
     // The S3 config.
     S3Config s3_config = 4;
+    // use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.
+    // When false, images stored in S3 will not have thumbnails generated.
+    bool use_thumbnails_for_s3_images = 5;
   }
 
   // Memo-related workspace settings and policies.
@@ -169,9 +172,6 @@ message WorkspaceSetting {
     bool enable_blur_nsfw_content = 9;
     // nsfw_tags is the list of tags that mark content as NSFW for blurring.
     repeated string nsfw_tags = 10;
-    // use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.
-    // When false, images stored in S3 will not have thumbnails generated.
-    bool use_thumbnails_for_s3_images = 11;
   }
 }
 

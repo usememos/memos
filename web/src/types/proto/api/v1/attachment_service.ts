@@ -37,7 +37,14 @@ export interface Attachment {
    * Optional. The related memo. Refer to `Memo.name`.
    * Format: memos/{memo}
    */
-  memo?: string | undefined;
+  memo?:
+    | string
+    | undefined;
+  /**
+   * Optional. Output only. Whether to use thumbnails for this attachment when stored in S3.
+   * This is determined by the workspace setting at the time of attachment creation.
+   */
+  useThumbnailForS3Image?: boolean | undefined;
 }
 
 export interface CreateAttachmentRequest {
@@ -138,6 +145,7 @@ function createBaseAttachment(): Attachment {
     type: "",
     size: 0,
     memo: undefined,
+    useThumbnailForS3Image: undefined,
   };
 }
 
@@ -166,6 +174,9 @@ export const Attachment: MessageFns<Attachment> = {
     }
     if (message.memo !== undefined) {
       writer.uint32(66).string(message.memo);
+    }
+    if (message.useThumbnailForS3Image !== undefined) {
+      writer.uint32(72).bool(message.useThumbnailForS3Image);
     }
     return writer;
   },
@@ -241,6 +252,14 @@ export const Attachment: MessageFns<Attachment> = {
           message.memo = reader.string();
           continue;
         }
+        case 9: {
+          if (tag !== 72) {
+            break;
+          }
+
+          message.useThumbnailForS3Image = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -263,6 +282,7 @@ export const Attachment: MessageFns<Attachment> = {
     message.type = object.type ?? "";
     message.size = object.size ?? 0;
     message.memo = object.memo ?? undefined;
+    message.useThumbnailForS3Image = object.useThumbnailForS3Image ?? undefined;
     return message;
   },
 };

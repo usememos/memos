@@ -175,13 +175,6 @@ const MemoRelatedSettings = observer(() => {
           </div>
         </div>
       </div>
-      <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.memo-related-settings.use-thumbnails-for-s3-images")}</span>
-        <Switch
-          checked={memoRelatedSetting.useThumbnailsForS3Images}
-          onCheckedChange={(checked) => updatePartialSetting({ useThumbnailsForS3Images: checked })}
-        />
-      </div>
       <div className="mt-2 w-full flex justify-end">
         <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
           {t("common.save")}
