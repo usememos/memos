@@ -509,7 +509,17 @@ type WorkspaceStorageSetting struct {
 	// The max upload size in megabytes.
 	UploadSizeLimitMb int64 `protobuf:"varint,3,opt,name=upload_size_limit_mb,json=uploadSizeLimitMb,proto3" json:"upload_size_limit_mb,omitempty"`
 	// The S3 config.
-	S3Config      *StorageS3Config `protobuf:"bytes,4,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
+	S3Config *StorageS3Config `protobuf:"bytes,4,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
+	// The maximum size in pixels for the largest dimension of thumbnail images.
+	ThumbnailMaxSize int32 `protobuf:"varint,5,opt,name=thumbnail_max_size,json=thumbnailMaxSize,proto3" json:"thumbnail_max_size,omitempty"`
+	// The JPEG quality (0-100) used when downscaling uploaded images.
+	JpegQuality int32 `protobuf:"varint,6,opt,name=jpeg_quality,json=jpegQuality,proto3" json:"jpeg_quality,omitempty"`
+	// The JPEG quality (0-100) used when generating thumbnails.
+	ThumbnailJpegQuality int32 `protobuf:"varint,7,opt,name=thumbnail_jpeg_quality,json=thumbnailJpegQuality,proto3" json:"thumbnail_jpeg_quality,omitempty"`
+	// The maximum size in pixels for the largest dimension when storing images.
+	// Images larger than this will be downscaled before storage.
+	// Set to 0 to disable downscaling.
+	ImageMaxSize  int32 `protobuf:"varint,8,opt,name=image_max_size,json=imageMaxSize,proto3" json:"image_max_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -570,6 +580,34 @@ func (x *WorkspaceStorageSetting) GetS3Config() *StorageS3Config {
 		return x.S3Config
 	}
 	return nil
+}
+
+func (x *WorkspaceStorageSetting) GetThumbnailMaxSize() int32 {
+	if x != nil {
+		return x.ThumbnailMaxSize
+	}
+	return 0
+}
+
+func (x *WorkspaceStorageSetting) GetJpegQuality() int32 {
+	if x != nil {
+		return x.JpegQuality
+	}
+	return 0
+}
+
+func (x *WorkspaceStorageSetting) GetThumbnailJpegQuality() int32 {
+	if x != nil {
+		return x.ThumbnailJpegQuality
+	}
+	return 0
+}
+
+func (x *WorkspaceStorageSetting) GetImageMaxSize() int32 {
+	if x != nil {
+		return x.ImageMaxSize
+	}
+	return 0
 }
 
 // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
@@ -804,12 +842,16 @@ const file_store_workspace_setting_proto_rawDesc = "" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
 	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x12\x16\n" +
-	"\x06locale\x18\x04 \x01(\tR\x06locale\"\xd5\x02\n" +
+	"\x06locale\x18\x04 \x01(\tR\x06locale\"\x82\x04\n" +
 	"\x17WorkspaceStorageSetting\x12S\n" +
 	"\fstorage_type\x18\x01 \x01(\x0e20.memos.store.WorkspaceStorageSetting.StorageTypeR\vstorageType\x12+\n" +
 	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +
 	"\x14upload_size_limit_mb\x18\x03 \x01(\x03R\x11uploadSizeLimitMb\x129\n" +
-	"\ts3_config\x18\x04 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\"L\n" +
+	"\ts3_config\x18\x04 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\x12,\n" +
+	"\x12thumbnail_max_size\x18\x05 \x01(\x05R\x10thumbnailMaxSize\x12!\n" +
+	"\fjpeg_quality\x18\x06 \x01(\x05R\vjpegQuality\x124\n" +
+	"\x16thumbnail_jpeg_quality\x18\a \x01(\x05R\x14thumbnailJpegQuality\x12$\n" +
+	"\x0eimage_max_size\x18\b \x01(\x05R\fimageMaxSize\"L\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +

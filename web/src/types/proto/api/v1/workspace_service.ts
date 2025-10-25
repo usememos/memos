@@ -141,7 +141,21 @@ export interface WorkspaceSetting_StorageSetting {
   /** The max upload size in megabytes. */
   uploadSizeLimitMb: number;
   /** The S3 config. */
-  s3Config?: WorkspaceSetting_StorageSetting_S3Config | undefined;
+  s3Config?:
+    | WorkspaceSetting_StorageSetting_S3Config
+    | undefined;
+  /** The maximum size in pixels for the largest dimension of thumbnail images. */
+  thumbnailMaxSize: number;
+  /** The JPEG quality (0-100) used when downscaling uploaded images. */
+  jpegQuality: number;
+  /** The JPEG quality (0-100) used when generating thumbnails. */
+  thumbnailJpegQuality: number;
+  /**
+   * The maximum size in pixels for the largest dimension when storing images.
+   * Images larger than this will be downscaled before storage.
+   * Set to 0 to disable downscaling.
+   */
+  imageMaxSize: number;
 }
 
 /** Storage type enumeration for different storage backends. */
@@ -705,6 +719,10 @@ function createBaseWorkspaceSetting_StorageSetting(): WorkspaceSetting_StorageSe
     filepathTemplate: "",
     uploadSizeLimitMb: 0,
     s3Config: undefined,
+    thumbnailMaxSize: 0,
+    jpegQuality: 0,
+    thumbnailJpegQuality: 0,
+    imageMaxSize: 0,
   };
 }
 
@@ -721,6 +739,18 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
     }
     if (message.s3Config !== undefined) {
       WorkspaceSetting_StorageSetting_S3Config.encode(message.s3Config, writer.uint32(34).fork()).join();
+    }
+    if (message.thumbnailMaxSize !== 0) {
+      writer.uint32(40).int32(message.thumbnailMaxSize);
+    }
+    if (message.jpegQuality !== 0) {
+      writer.uint32(48).int32(message.jpegQuality);
+    }
+    if (message.thumbnailJpegQuality !== 0) {
+      writer.uint32(56).int32(message.thumbnailJpegQuality);
+    }
+    if (message.imageMaxSize !== 0) {
+      writer.uint32(64).int32(message.imageMaxSize);
     }
     return writer;
   },
@@ -764,6 +794,38 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
           message.s3Config = WorkspaceSetting_StorageSetting_S3Config.decode(reader, reader.uint32());
           continue;
         }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.thumbnailMaxSize = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.jpegQuality = reader.int32();
+          continue;
+        }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.thumbnailJpegQuality = reader.int32();
+          continue;
+        }
+        case 8: {
+          if (tag !== 64) {
+            break;
+          }
+
+          message.imageMaxSize = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -784,6 +846,10 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
     message.s3Config = (object.s3Config !== undefined && object.s3Config !== null)
       ? WorkspaceSetting_StorageSetting_S3Config.fromPartial(object.s3Config)
       : undefined;
+    message.thumbnailMaxSize = object.thumbnailMaxSize ?? 0;
+    message.jpegQuality = object.jpegQuality ?? 0;
+    message.thumbnailJpegQuality = object.thumbnailJpegQuality ?? 0;
+    message.imageMaxSize = object.imageMaxSize ?? 0;
     return message;
   },
 };

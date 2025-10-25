@@ -211,9 +211,13 @@ func convertWorkspaceStorageSettingFromStore(settingpb *storepb.WorkspaceStorage
 		return nil
 	}
 	setting := &v1pb.WorkspaceSetting_StorageSetting{
-		StorageType:       v1pb.WorkspaceSetting_StorageSetting_StorageType(settingpb.StorageType),
-		FilepathTemplate:  settingpb.FilepathTemplate,
-		UploadSizeLimitMb: settingpb.UploadSizeLimitMb,
+		StorageType:          v1pb.WorkspaceSetting_StorageSetting_StorageType(settingpb.StorageType),
+		FilepathTemplate:     settingpb.FilepathTemplate,
+		UploadSizeLimitMb:    settingpb.UploadSizeLimitMb,
+		ThumbnailMaxSize:     settingpb.ThumbnailMaxSize,
+		JpegQuality:          settingpb.JpegQuality,
+		ThumbnailJpegQuality: settingpb.ThumbnailJpegQuality,
+		ImageMaxSize:         settingpb.ImageMaxSize,
 	}
 	if settingpb.S3Config != nil {
 		setting.S3Config = &v1pb.WorkspaceSetting_StorageSetting_S3Config{
@@ -233,9 +237,13 @@ func convertWorkspaceStorageSettingToStore(setting *v1pb.WorkspaceSetting_Storag
 		return nil
 	}
 	settingpb := &storepb.WorkspaceStorageSetting{
-		StorageType:       storepb.WorkspaceStorageSetting_StorageType(setting.StorageType),
-		FilepathTemplate:  setting.FilepathTemplate,
-		UploadSizeLimitMb: setting.UploadSizeLimitMb,
+		StorageType:          storepb.WorkspaceStorageSetting_StorageType(setting.StorageType),
+		FilepathTemplate:     setting.FilepathTemplate,
+		UploadSizeLimitMb:    setting.UploadSizeLimitMb,
+		ThumbnailMaxSize:     setting.ThumbnailMaxSize,
+		JpegQuality:          setting.JpegQuality,
+		ThumbnailJpegQuality: setting.ThumbnailJpegQuality,
+		ImageMaxSize:         setting.ImageMaxSize,
 	}
 	if setting.S3Config != nil {
 		settingpb.S3Config = &storepb.StorageS3Config{

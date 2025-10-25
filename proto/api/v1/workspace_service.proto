@@ -147,6 +147,16 @@ message WorkspaceSetting {
     }
     // The S3 config.
     S3Config s3_config = 4;
+    // The maximum size in pixels for the largest dimension of thumbnail images.
+    int32 thumbnail_max_size = 5;
+    // The JPEG quality (0-100) used when downscaling uploaded images.
+    int32 jpeg_quality = 6;
+    // The JPEG quality (0-100) used when generating thumbnails.
+    int32 thumbnail_jpeg_quality = 7;
+    // The maximum size in pixels for the largest dimension when storing images.
+    // Images larger than this will be downscaled before storage.
+    // Set to 0 to disable downscaling.
+    int32 image_max_size = 8;
   }
 
   // Memo-related workspace settings and policies.

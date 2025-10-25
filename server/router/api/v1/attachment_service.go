@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"image"
 	"io"
 	"log/slog"
 	"os"
@@ -95,6 +96,20 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	}
 	create.Size = int64(size)
 	create.Blob = request.Attachment.Content
+
+	// Downscale images before storing them if they are larger than the configured max dimension
+	// ImageMaxSize of 0 means no downscaling should be performed
+	if util.HasPrefixes(create.Type, SupportedThumbnailMimeTypes...) && workspaceStorageSetting.ImageMaxSize > 0 {
+		downscaledBlob, err := downscaleImage(create.Blob, int(workspaceStorageSetting.ImageMaxSize), int(workspaceStorageSetting.JpegQuality))
+		if err != nil {
+			// Log the error but continue with the original image if downscaling fails
+			slog.Warn("failed to downscale image attachment", slog.Any("error", err), slog.String("filename", create.Filename))
+		} else {
+			// Update the blob and size with the downscaled version
+			create.Blob = downscaledBlob
+			create.Size = int64(len(downscaledBlob))
+		}
+	}
 
 	if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
@@ -523,13 +538,73 @@ func (s *APIV1Service) GetAttachmentBlob(attachment *store.Attachment) ([]byte, 
 	return attachment.Blob, nil
 }
 
-const (
-	// thumbnailMaxSize is the maximum size in pixels for the largest dimension of the thumbnail image.
-	thumbnailMaxSize = 600
-)
+func downscaleImage(imageBlob []byte, maxDimension int, quality int) ([]byte, error) {
+	// Detect the image format before decoding
+	reader := bytes.NewReader(imageBlob)
+	_, formatName, err := image.DecodeConfig(reader)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to detect image format")
+	}
+
+	// Reset reader position for actual decoding
+	if _, err := reader.Seek(0, 0); err != nil {
+		return nil, errors.Wrap(err, "failed to reset reader position")
+	}
+
+	// Decode the image with auto-orientation support
+	img, err := imaging.Decode(reader, imaging.AutoOrientation(true))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to decode image")
+	}
+
+	// Get original dimensions
+	width := img.Bounds().Dx()
+	height := img.Bounds().Dy()
+	var targetWidth, targetHeight int
+
+	// Only resize if the image is larger than maxDimension
+	if max(width, height) > maxDimension {
+		if width >= height {
+			// Landscape or square - constrain width, maintain aspect ratio for height
+			targetWidth = maxDimension
+			targetHeight = 0
+		} else {
+			// Portrait - constrain height, maintain aspect ratio for width
+			targetWidth = 0
+			targetHeight = maxDimension
+		}
+	} else {
+		// Do not modify small images
+		return imageBlob, nil
+	}
+
+	// Resize the image to the calculated dimensions
+	resizedImage := imaging.Resize(img, targetWidth, targetHeight, imaging.Lanczos)
+
+	// Encode the image based on the original format
+	var buf bytes.Buffer
+	if formatName == "png" {
+		// Preserve PNG format for PNG images
+		if err := imaging.Encode(&buf, resizedImage, imaging.PNG); err != nil {
+			return nil, errors.Wrap(err, "failed to encode PNG image")
+		}
+	} else {
+		// Encode as JPEG for all other formats
+		if err := imaging.Encode(&buf, resizedImage, imaging.JPEG, imaging.JPEGQuality(quality)); err != nil {
+			return nil, errors.Wrap(err, "failed to encode JPEG image")
+		}
+	}
+
+	return buf.Bytes(), nil
+}
 
 // getOrGenerateThumbnail returns the thumbnail image of the attachment.
 func (s *APIV1Service) getOrGenerateThumbnail(attachment *store.Attachment) ([]byte, error) {
+	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(context.Background())
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace storage setting")
+	}
+
 	thumbnailCacheFolder := filepath.Join(s.Profile.Data, ThumbnailCacheFolder)
 	if err := os.MkdirAll(thumbnailCacheFolder, os.ModePerm); err != nil {
 		return nil, errors.Wrap(err, "failed to create thumbnail cache folder")
@@ -545,39 +620,19 @@ func (s *APIV1Service) getOrGenerateThumbnail(attachment *store.Attachment) ([]b
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to get attachment blob")
 		}
-		img, err := imaging.Decode(bytes.NewReader(blob), imaging.AutoOrientation(true))
+
+		// Downscale the image
+		thumbnailBlob, err := downscaleImage(blob, int(workspaceStorageSetting.ThumbnailMaxSize), int(workspaceStorageSetting.ThumbnailJpegQuality))
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to decode thumbnail image")
+			return nil, errors.Wrap(err, "failed to downscale image")
 		}
 
-		// The largest dimension is set to thumbnailMaxSize and the smaller dimension is scaled proportionally.
-		// Small images are not enlarged.
-		width := img.Bounds().Dx()
-		height := img.Bounds().Dy()
-		var thumbnailWidth, thumbnailHeight int
-
-		// Only resize if the image is larger than thumbnailMaxSize
-		if max(width, height) > thumbnailMaxSize {
-			if width >= height {
-				// Landscape or square - constrain width, maintain aspect ratio for height
-				thumbnailWidth = thumbnailMaxSize
-				thumbnailHeight = 0
-			} else {
-				// Portrait - constrain height, maintain aspect ratio for width
-				thumbnailWidth = 0
-				thumbnailHeight = thumbnailMaxSize
-			}
-		} else {
-			// Keep original dimensions for small images
-			thumbnailWidth = width
-			thumbnailHeight = height
-		}
-
-		// Resize the image to the calculated dimensions.
-		thumbnailImage := imaging.Resize(img, thumbnailWidth, thumbnailHeight, imaging.Lanczos)
-		if err := imaging.Save(thumbnailImage, filePath); err != nil {
+		// Save the thumbnail to disk
+		if err := os.WriteFile(filePath, thumbnailBlob, 0644); err != nil {
 			return nil, errors.Wrap(err, "failed to save thumbnail file")
 		}
+
+		return thumbnailBlob, nil
 	}
 
 	thumbnailFile, err := os.Open(filePath)

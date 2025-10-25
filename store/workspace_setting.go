@@ -175,9 +175,12 @@ func (s *Store) GetWorkspaceMemoRelatedSetting(ctx context.Context) (*storepb.Wo
 }
 
 const (
-	defaultWorkspaceStorageType       = storepb.WorkspaceStorageSetting_DATABASE
-	defaultWorkspaceUploadSizeLimitMb = 30
-	defaultWorkspaceFilepathTemplate  = "assets/{timestamp}_{filename}"
+	defaultWorkspaceStorageType          = storepb.WorkspaceStorageSetting_DATABASE
+	defaultWorkspaceUploadSizeLimitMb    = 30
+	defaultWorkspaceFilepathTemplate     = "assets/{timestamp}_{filename}"
+	defaultThumbnailMaxSize              = 600
+	defaultJPEGQuality                   = 85
+	defaultThumbnailJPEGQuality          = 75
 )
 
 func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.WorkspaceStorageSetting, error) {
@@ -201,6 +204,16 @@ func (s *Store) GetWorkspaceStorageSetting(ctx context.Context) (*storepb.Worksp
 	if workspaceStorageSetting.FilepathTemplate == "" {
 		workspaceStorageSetting.FilepathTemplate = defaultWorkspaceFilepathTemplate
 	}
+	if workspaceStorageSetting.ThumbnailMaxSize == 0 {
+		workspaceStorageSetting.ThumbnailMaxSize = defaultThumbnailMaxSize
+	}
+	if workspaceStorageSetting.JpegQuality == 0 {
+		workspaceStorageSetting.JpegQuality = defaultJPEGQuality
+	}
+	if workspaceStorageSetting.ThumbnailJpegQuality == 0 {
+		workspaceStorageSetting.ThumbnailJpegQuality = defaultThumbnailJPEGQuality
+	}
+	// Note: ImageMaxSize of 0 is a valid value meaning "no downscaling", so we don't apply a default
 	s.workspaceSettingCache.Set(ctx, storepb.WorkspaceSettingKey_STORAGE.String(), &storepb.WorkspaceSetting{
 		Key:   storepb.WorkspaceSettingKey_STORAGE,
 		Value: &storepb.WorkspaceSetting_StorageSetting{StorageSetting: workspaceStorageSetting},
