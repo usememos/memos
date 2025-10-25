@@ -119,7 +119,7 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		return nil, status.Errorf(codes.Internal, "failed to create attachment: %v", err)
 	}
 
-	return s.convertAttachmentFromStore(ctx, attachment), nil
+	return convertAttachmentFromStore(attachment, workspaceStorageSetting), nil
 }
 
 func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAttachmentsRequest) (*v1pb.ListAttachmentsResponse, error) {
@@ -161,10 +161,15 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 		return nil, status.Errorf(codes.Internal, "failed to list attachments: %v", err)
 	}
 
+	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace storage setting: %v", err)
+	}
+
 	response := &v1pb.ListAttachmentsResponse{}
 
 	for _, attachment := range attachments {
-		response.Attachments = append(response.Attachments, s.convertAttachmentFromStore(ctx, attachment))
+		response.Attachments = append(response.Attachments, convertAttachmentFromStore(attachment, workspaceStorageSetting))
 	}
 
 	// For simplicity, set total size to the number of returned attachments.
@@ -191,7 +196,11 @@ func (s *APIV1Service) GetAttachment(ctx context.Context, request *v1pb.GetAttac
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
-	return s.convertAttachmentFromStore(ctx, attachment), nil
+	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace storage setting: %v", err)
+	}
+	return convertAttachmentFromStore(attachment, workspaceStorageSetting), nil
 }
 
 func (s *APIV1Service) GetAttachmentBinary(ctx context.Context, request *v1pb.GetAttachmentBinaryRequest) (*httpbody.HttpBody, error) {
@@ -381,7 +390,7 @@ func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.Delet
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) convertAttachmentFromStore(ctx context.Context, attachment *store.Attachment) *v1pb.Attachment {
+func convertAttachmentFromStore(attachment *store.Attachment, workspaceStorageSetting *storepb.WorkspaceStorageSetting) *v1pb.Attachment {
 	attachmentMessage := &v1pb.Attachment{
 		Name:       fmt.Sprintf("%s%s", AttachmentNamePrefix, attachment.UID),
 		CreateTime: timestamppb.New(time.Unix(attachment.CreatedTs, 0)),
@@ -398,14 +407,9 @@ func (s *APIV1Service) convertAttachmentFromStore(ctx context.Context, attachmen
 	}
 
 	// Populate use_thumbnail_for_s3_image based on workspace setting and storage type
-	if attachment.StorageType == storepb.AttachmentStorageType_S3 {
-		storageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
-		if err != nil {
-			slog.Warn("failed to get workspace storage setting", slog.Any("error", err))
-		} else {
-			useThumbnail := storageSetting.UseThumbnailsForS3Images
-			attachmentMessage.UseThumbnailForS3Image = &useThumbnail
-		}
+	if attachment.StorageType == storepb.AttachmentStorageType_S3 && workspaceStorageSetting != nil {
+		useThumbnail := workspaceStorageSetting.UseThumbnailsForS3Images
+		attachmentMessage.UseThumbnailForS3Image = &useThumbnail
 	}
 
 	return attachmentMessage
