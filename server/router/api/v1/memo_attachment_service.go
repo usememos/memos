@@ -92,11 +92,16 @@ func (s *APIV1Service) ListMemoAttachments(ctx context.Context, request *v1pb.Li
 		return nil, status.Errorf(codes.Internal, "failed to list attachments: %v", err)
 	}
 
+	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workspace storage setting: %v", err)
+	}
+
 	response := &v1pb.ListMemoAttachmentsResponse{
 		Attachments: []*v1pb.Attachment{},
 	}
 	for _, attachment := range attachments {
-		response.Attachments = append(response.Attachments, s.convertAttachmentFromStore(ctx, attachment))
+		response.Attachments = append(response.Attachments, convertAttachmentFromStore(attachment, workspaceStorageSetting))
 	}
 	return response, nil
 }
