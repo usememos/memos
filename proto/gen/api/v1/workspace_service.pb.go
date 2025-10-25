@@ -589,9 +589,12 @@ type WorkspaceSetting_StorageSetting struct {
 	// The max upload size in megabytes.
 	UploadSizeLimitMb int64 `protobuf:"varint,3,opt,name=upload_size_limit_mb,json=uploadSizeLimitMb,proto3" json:"upload_size_limit_mb,omitempty"`
 	// The S3 config.
-	S3Config      *WorkspaceSetting_StorageSetting_S3Config `protobuf:"bytes,4,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	S3Config *WorkspaceSetting_StorageSetting_S3Config `protobuf:"bytes,4,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
+	// use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.
+	// When false, images stored in S3 will not have thumbnails generated.
+	UseThumbnailsForS3Images bool `protobuf:"varint,5,opt,name=use_thumbnails_for_s3_images,json=useThumbnailsForS3Images,proto3" json:"use_thumbnails_for_s3_images,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *WorkspaceSetting_StorageSetting) Reset() {
@@ -650,6 +653,13 @@ func (x *WorkspaceSetting_StorageSetting) GetS3Config() *WorkspaceSetting_Storag
 		return x.S3Config
 	}
 	return nil
+}
+
+func (x *WorkspaceSetting_StorageSetting) GetUseThumbnailsForS3Images() bool {
+	if x != nil {
+		return x.UseThumbnailsForS3Images
+	}
+	return false
 }
 
 // Memo-related workspace settings and policies.
@@ -935,7 +945,7 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1c\n" +
-	"\x1aGetWorkspaceProfileRequest\"\x97\x11\n" +
+	"\x1aGetWorkspaceProfileRequest\"\xd7\x11\n" +
 	"\x10WorkspaceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12X\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2-.memos.api.v1.WorkspaceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12X\n" +
@@ -955,12 +965,13 @@ const file_api_v1_workspace_service_proto_rawDesc = "" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
 	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x12\x16\n" +
-	"\x06locale\x18\x04 \x01(\tR\x06locale\x1a\xbe\x04\n" +
+	"\x06locale\x18\x04 \x01(\tR\x06locale\x1a\xfe\x04\n" +
 	"\x0eStorageSetting\x12\\\n" +
 	"\fstorage_type\x18\x01 \x01(\x0e29.memos.api.v1.WorkspaceSetting.StorageSetting.StorageTypeR\vstorageType\x12+\n" +
 	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +
 	"\x14upload_size_limit_mb\x18\x03 \x01(\x03R\x11uploadSizeLimitMb\x12S\n" +
-	"\ts3_config\x18\x04 \x01(\v26.memos.api.v1.WorkspaceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\xcc\x01\n" +
+	"\ts3_config\x18\x04 \x01(\v26.memos.api.v1.WorkspaceSetting.StorageSetting.S3ConfigR\bs3Config\x12>\n" +
+	"\x1cuse_thumbnails_for_s3_images\x18\x05 \x01(\bR\x18useThumbnailsForS3Images\x1a\xcc\x01\n" +
 	"\bS3Config\x12\"\n" +
 	"\raccess_key_id\x18\x01 \x01(\tR\vaccessKeyId\x12*\n" +
 	"\x11access_key_secret\x18\x02 \x01(\tR\x0faccessKeySecret\x12\x1a\n" +

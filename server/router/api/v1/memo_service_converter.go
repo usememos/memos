@@ -25,6 +25,11 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		displayTs = memo.UpdatedTs
 	}
 
+	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get workspace storage setting")
+	}
+
 	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 	memoMessage := &v1pb.Memo{
 		Name:        name,
@@ -64,7 +69,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	memoMessage.Attachments = []*v1pb.Attachment{}
 
 	for _, attachment := range attachments {
-		attachmentResponse := convertAttachmentFromStore(attachment)
+		attachmentResponse := convertAttachmentFromStore(attachment, workspaceStorageSetting)
 		memoMessage.Attachments = append(memoMessage.Attachments, attachmentResponse)
 	}
 

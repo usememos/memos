@@ -387,6 +387,7 @@
       "url-prefix-placeholder": "Custom URL prefix, optional",
       "url-suffix": "URL suffix",
       "url-suffix-placeholder": "Custom URL suffix, optional",
+      "use-thumbnails-for-s3-images": "Generate and serve thumbnails for images stored in S3",
       "warning-text": "Are you sure you want to delete storage service `{{name}}`? THIS ACTION IS IRREVERSIBLE"
     },
     "system": "System",

@@ -9,6 +9,11 @@ export const getAttachmentUrl = (attachment: Attachment) => {
 };
 
 export const getAttachmentThumbnailUrl = (attachment: Attachment) => {
+  // Don't request thumbnails for S3 images if the setting is disabled
+  if (attachment.externalLink && !attachment.useThumbnailForS3Image) {
+    return getAttachmentUrl(attachment);
+  }
+
   return `${window.location.origin}/file/${attachment.name}/${attachment.filename}?thumbnail=true`;
 };
 
