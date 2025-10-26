@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
@@ -843,25 +842,6 @@ func (s *APIV1Service) getMemoContentSnippet(content string) (string, error) {
 		return "", errors.Wrap(err, "failed to generate snippet")
 	}
 	return snippet, nil
-}
-
-func substring(s string, length int) string {
-	if length <= 0 {
-		return ""
-	}
-
-	runeCount := 0
-	byteIndex := 0
-	for byteIndex < len(s) {
-		_, size := utf8.DecodeRuneInString(s[byteIndex:])
-		byteIndex += size
-		runeCount++
-		if runeCount == length {
-			break
-		}
-	}
-
-	return s[:byteIndex]
 }
 
 // parseMemoOrderBy parses the order_by field and sets the appropriate ordering in memoFind.

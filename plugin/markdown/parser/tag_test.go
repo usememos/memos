@@ -110,7 +110,8 @@ func TestTagParser(t *testing.T) {
 				require.NotNil(t, node, "Expected tag to be parsed")
 				require.IsType(t, &mast.TagNode{}, node)
 
-				tagNode := node.(*mast.TagNode)
+				tagNode, ok := node.(*mast.TagNode)
+				require.True(t, ok, "Expected node to be *mast.TagNode")
 				assert.Equal(t, tt.expectedTag, string(tagNode.Tag))
 			} else {
 				assert.Nil(t, node, "Expected tag NOT to be parsed")
@@ -137,7 +138,8 @@ func TestTagParser_MultipleTags(t *testing.T) {
 	// Parse first tag
 	node1 := p.Parse(nil, reader, ctx)
 	require.NotNil(t, node1)
-	tagNode1 := node1.(*mast.TagNode)
+	tagNode1, ok := node1.(*mast.TagNode)
+	require.True(t, ok, "Expected node1 to be *mast.TagNode")
 	assert.Equal(t, "tag1", string(tagNode1.Tag))
 
 	// Advance past the space
@@ -146,7 +148,8 @@ func TestTagParser_MultipleTags(t *testing.T) {
 	// Parse second tag
 	node2 := p.Parse(nil, reader, ctx)
 	require.NotNil(t, node2)
-	tagNode2 := node2.(*mast.TagNode)
+	tagNode2, ok := node2.(*mast.TagNode)
+	require.True(t, ok, "Expected node2 to be *mast.TagNode")
 	assert.Equal(t, "tag2", string(tagNode2.Tag))
 }
 

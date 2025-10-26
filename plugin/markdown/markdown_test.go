@@ -446,7 +446,7 @@ func TestTruncateAtWord(t *testing.T) {
 	}
 }
 
-// Benchmark tests
+// Benchmark tests.
 func BenchmarkGenerateSnippet(b *testing.B) {
 	svc := NewService()
 	content := []byte(`# Large Document

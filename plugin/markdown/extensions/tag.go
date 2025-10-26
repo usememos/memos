@@ -10,7 +10,7 @@ import (
 
 type tagExtension struct{}
 
-// TagExtension is a goldmark extension for #tag syntax
+// TagExtension is a goldmark extension for #tag syntax.
 var TagExtension = &tagExtension{}
 
 // Extend extends the goldmark parser with tag support.

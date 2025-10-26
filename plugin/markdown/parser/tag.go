@@ -10,7 +10,7 @@ import (
 
 type tagParser struct{}
 
-// NewTagParser creates a new inline parser for #tag syntax
+// NewTagParser creates a new inline parser for #tag syntax.
 func NewTagParser() parser.InlineParser {
 	return &tagParser{}
 }
@@ -20,8 +20,8 @@ func (*tagParser) Trigger() []byte {
 	return []byte{'#'}
 }
 
-// Parse parses #tag syntax
-func (p *tagParser) Parse(parent gast.Node, block text.Reader, pc parser.Context) gast.Node {
+// Parse parses #tag syntax.
+func (*tagParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.Node {
 	line, _ := block.PeekLine()
 
 	// Must start with #

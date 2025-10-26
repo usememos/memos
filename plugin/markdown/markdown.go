@@ -17,7 +17,7 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
-// ExtractedData contains all metadata extracted from markdown in a single pass
+// ExtractedData contains all metadata extracted from markdown in a single pass.
 type ExtractedData struct {
 	Tags       []string
 	Property   *storepb.MemoPayload_Property
@@ -57,12 +57,12 @@ type Service interface {
 	RenameTag(content []byte, oldTag, newTag string) (string, error)
 }
 
-// service implements the Service interface
+// service implements the Service interface.
 type service struct {
 	md goldmark.Markdown
 }
 
-// Option configures the markdown service
+// Option configures the markdown service.
 type Option func(*config)
 
 type config struct {
@@ -70,21 +70,21 @@ type config struct {
 	enableWikilink bool
 }
 
-// WithTagExtension enables #tag parsing
+// WithTagExtension enables #tag parsing.
 func WithTagExtension() Option {
 	return func(c *config) {
 		c.enableTags = true
 	}
 }
 
-// WithWikilinkExtension enables [[wikilink]] parsing
+// WithWikilinkExtension enables [[wikilink]] parsing.
 func WithWikilinkExtension() Option {
 	return func(c *config) {
 		c.enableWikilink = true
 	}
 }
 
-// NewService creates a new markdown service with the given options
+// NewService creates a new markdown service with the given options.
 func NewService(opts ...Option) Service {
 	cfg := &config{}
 	for _, opt := range opts {
@@ -115,14 +115,14 @@ func NewService(opts ...Option) Service {
 	}
 }
 
-// parse is an internal helper to parse content into AST
+// parse is an internal helper to parse content into AST.
 func (s *service) parse(content []byte) (gast.Node, error) {
 	reader := text.NewReader(content)
 	doc := s.md.Parser().Parse(reader)
 	return doc, nil
 }
 
-// ExtractTags returns all #tags found in content
+// ExtractTags returns all #tags found in content.
 func (s *service) ExtractTags(content []byte) ([]string, error) {
 	root, err := s.parse(content)
 	if err != nil {
@@ -153,7 +153,7 @@ func (s *service) ExtractTags(content []byte) ([]string, error) {
 	return uniqueLowercase(tags), nil
 }
 
-// ExtractProperties computes boolean properties about the content
+// ExtractProperties computes boolean properties about the content.
 func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Property, error) {
 	root, err := s.parse(content)
 	if err != nil {
@@ -171,13 +171,7 @@ func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Proper
 		case gast.KindLink, mast.KindWikilink:
 			prop.HasLink = true
 
-		case mast.KindWikilink:
-			prop.HasLink = true
-
 		case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:
-			prop.HasCode = true
-
-		case gast.KindCodeSpan:
 			prop.HasCode = true
 
 		case east.KindTaskCheckBox:
@@ -187,6 +181,8 @@ func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Proper
 					prop.HasIncompleteTasks = true
 				}
 			}
+		default:
+			// No special handling for other node types
 		}
 
 		return gast.WalkContinue, nil
@@ -199,7 +195,7 @@ func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Proper
 	return prop, nil
 }
 
-// ExtractReferences returns all wikilink references found in content
+// ExtractReferences returns all wikilink references found in content.
 func (s *service) ExtractReferences(content []byte) ([]string, error) {
 	root, err := s.parse(content)
 	if err != nil {
@@ -229,7 +225,7 @@ func (s *service) ExtractReferences(content []byte) ([]string, error) {
 	return references, nil
 }
 
-// RenderMarkdown renders goldmark AST back to markdown text
+// RenderMarkdown renders goldmark AST back to markdown text.
 func (s *service) RenderMarkdown(content []byte) (string, error) {
 	root, err := s.parse(content)
 	if err != nil {
@@ -240,7 +236,7 @@ func (s *service) RenderMarkdown(content []byte) (string, error) {
 	return mdRenderer.Render(root, content), nil
 }
 
-// RenderHTML renders markdown content to HTML using goldmark's built-in HTML renderer
+// RenderHTML renders markdown content to HTML using goldmark's built-in HTML renderer.
 func (s *service) RenderHTML(content []byte) (string, error) {
 	var buf bytes.Buffer
 	if err := s.md.Convert(content, &buf); err != nil {
@@ -249,7 +245,7 @@ func (s *service) RenderHTML(content []byte) (string, error) {
 	return buf.String(), nil
 }
 
-// GenerateSnippet creates a plain text summary from markdown content
+// GenerateSnippet creates a plain text summary from markdown content.
 func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error) {
 	root, err := s.parse(content)
 	if err != nil {
@@ -265,6 +261,8 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			switch n.Kind() {
 			case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:
 				return gast.WalkSkipChildren, nil
+			default:
+				// Continue walking for other node types
 			}
 
 			// Add space before block elements (except first)
@@ -273,6 +271,8 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 				if buf.Len() > 0 && lastNodeWasBlock {
 					buf.WriteByte(' ')
 				}
+			default:
+				// No space needed for other node types
 			}
 		}
 
@@ -281,6 +281,8 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			switch n.Kind() {
 			case gast.KindParagraph, gast.KindHeading, gast.KindListItem:
 				lastNodeWasBlock = true
+			default:
+				// Not a block element
 			}
 			return gast.WalkContinue, nil
 		}
@@ -321,14 +323,14 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 	return strings.TrimSpace(snippet), nil
 }
 
-// ValidateContent checks if the markdown content is valid
+// ValidateContent checks if the markdown content is valid.
 func (s *service) ValidateContent(content []byte) error {
 	// Try to parse the content
 	_, err := s.parse(content)
 	return err
 }
 
-// ExtractAll extracts tags, properties, and references in a single parse for efficiency
+// ExtractAll extracts tags, properties, and references in a single parse for efficiency.
 func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	root, err := s.parse(content)
 	if err != nil {
@@ -362,13 +364,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		case gast.KindLink, mast.KindWikilink:
 			data.Property.HasLink = true
 
-		case mast.KindWikilink:
-			data.Property.HasLink = true
-
 		case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:
-			data.Property.HasCode = true
-
-		case gast.KindCodeSpan:
 			data.Property.HasCode = true
 
 		case east.KindTaskCheckBox:
@@ -378,6 +374,8 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 					data.Property.HasIncompleteTasks = true
 				}
 			}
+		default:
+			// No special handling for other node types
 		}
 
 		return gast.WalkContinue, nil
@@ -393,7 +391,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	return data, nil
 }
 
-// RenameTag renames all occurrences of oldTag to newTag in content
+// RenameTag renames all occurrences of oldTag to newTag in content.
 func (s *service) RenameTag(content []byte, oldTag, newTag string) (string, error) {
 	root, err := s.parse(content)
 	if err != nil {
@@ -425,7 +423,7 @@ func (s *service) RenameTag(content []byte, oldTag, newTag string) (string, erro
 	return mdRenderer.Render(root, content), nil
 }
 
-// uniqueLowercase returns unique lowercase strings from input
+// uniqueLowercase returns unique lowercase strings from input.
 func uniqueLowercase(strs []string) []string {
 	seen := make(map[string]bool)
 	var result []string
@@ -441,7 +439,7 @@ func uniqueLowercase(strs []string) []string {
 	return result
 }
 
-// truncateAtWord truncates a string at the last word boundary before maxLength
+// truncateAtWord truncates a string at the last word boundary before maxLength.
 func truncateAtWord(s string, maxLength int) string {
 	if len(s) <= maxLength {
 		return s

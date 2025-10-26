@@ -10,7 +10,7 @@ import (
 
 type wikilinkExtension struct{}
 
-// WikilinkExtension is a goldmark extension for [[...]] wikilink syntax
+// WikilinkExtension is a goldmark extension for [[...]] wikilink syntax.
 var WikilinkExtension = &wikilinkExtension{}
 
 // Extend extends the goldmark parser with wikilink support.

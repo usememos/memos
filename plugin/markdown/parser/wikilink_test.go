@@ -124,7 +124,8 @@ func TestWikilinkParser(t *testing.T) {
 				require.NotNil(t, node, "Expected wikilink to be parsed")
 				require.IsType(t, &mast.WikilinkNode{}, node)
 
-				wikilinkNode := node.(*mast.WikilinkNode)
+				wikilinkNode, ok := node.(*mast.WikilinkNode)
+				require.True(t, ok, "Expected node to be *mast.WikilinkNode")
 				assert.Equal(t, tt.expectedTarget, string(wikilinkNode.Target))
 				assert.Equal(t, tt.expectedParams, string(wikilinkNode.Params))
 			} else {

@@ -252,7 +252,7 @@ func (r *MarkdownRenderer) renderListItem(node *gast.ListItem, source []byte, de
 
 	// Add list marker
 	if list.IsOrdered() {
-		r.buf.WriteString(fmt.Sprintf("%d. ", list.Start))
+		fmt.Fprintf(r.buf, "%d. ", list.Start)
 		list.Start++ // Increment for next item
 	} else {
 		r.buf.WriteString("- ")

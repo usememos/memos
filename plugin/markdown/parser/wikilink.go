@@ -12,7 +12,7 @@ import (
 
 type wikilinkParser struct{}
 
-// NewWikilinkParser creates a new inline parser for [[...]] wikilink syntax
+// NewWikilinkParser creates a new inline parser for [[...]] wikilink syntax.
 func NewWikilinkParser() parser.InlineParser {
 	return &wikilinkParser{}
 }
@@ -23,7 +23,7 @@ func (*wikilinkParser) Trigger() []byte {
 }
 
 // Parse parses [[target]] or [[target?params]] wikilink syntax.
-func (*wikilinkParser) Parse(parent gast.Node, block text.Reader, pc parser.Context) gast.Node {
+func (*wikilinkParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.Node {
 	line, _ := block.PeekLine()
 
 	// Must start with [[
@@ -64,8 +64,8 @@ func (*wikilinkParser) Parse(parent gast.Node, block text.Reader, pc parser.Cont
 	return node
 }
 
-// findClosingBrackets finds the position of ]] in the byte slice
-// Returns -1 if not found
+// findClosingBrackets finds the position of ]] in the byte slice.
+// Returns -1 if not found.
 func findClosingBrackets(data []byte) int {
 	for i := 0; i < len(data)-1; i++ {
 		if data[i] == ']' && data[i+1] == ']' {
@@ -75,7 +75,7 @@ func findClosingBrackets(data []byte) int {
 	return -1
 }
 
-// parseTargetAndParams splits content on ? to extract target and parameters
+// parseTargetAndParams splits content on ? to extract target and parameters.
 func parseTargetAndParams(content []byte) (target []byte, params []byte) {
 	// Find ? separator
 	idx := bytes.IndexByte(content, '?')
