@@ -88,10 +88,8 @@ type MemoPayload_Property struct {
 	HasTaskList        bool                   `protobuf:"varint,2,opt,name=has_task_list,json=hasTaskList,proto3" json:"has_task_list,omitempty"`
 	HasCode            bool                   `protobuf:"varint,3,opt,name=has_code,json=hasCode,proto3" json:"has_code,omitempty"`
 	HasIncompleteTasks bool                   `protobuf:"varint,4,opt,name=has_incomplete_tasks,json=hasIncompleteTasks,proto3" json:"has_incomplete_tasks,omitempty"`
-	// The references of the memo. Should be a list of uuid.
-	References    []string `protobuf:"bytes,5,rep,name=references,proto3" json:"references,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *MemoPayload_Property) Reset() {
@@ -150,13 +148,6 @@ func (x *MemoPayload_Property) GetHasIncompleteTasks() bool {
 		return x.HasIncompleteTasks
 	}
 	return false
-}
-
-func (x *MemoPayload_Property) GetReferences() []string {
-	if x != nil {
-		return x.References
-	}
-	return nil
 }
 
 type MemoPayload_Location struct {
@@ -223,19 +214,16 @@ var File_store_memo_proto protoreflect.FileDescriptor
 
 const file_store_memo_proto_rawDesc = "" +
 	"\n" +
-	"\x10store/memo.proto\x12\vmemos.store\"\xc0\x03\n" +
+	"\x10store/memo.proto\x12\vmemos.store\"\xa0\x03\n" +
 	"\vMemoPayload\x12=\n" +
 	"\bproperty\x18\x01 \x01(\v2!.memos.store.MemoPayload.PropertyR\bproperty\x12=\n" +
 	"\blocation\x18\x02 \x01(\v2!.memos.store.MemoPayload.LocationR\blocation\x12\x12\n" +
-	"\x04tags\x18\x03 \x03(\tR\x04tags\x1a\xb6\x01\n" +
+	"\x04tags\x18\x03 \x03(\tR\x04tags\x1a\x96\x01\n" +
 	"\bProperty\x12\x19\n" +
 	"\bhas_link\x18\x01 \x01(\bR\ahasLink\x12\"\n" +
 	"\rhas_task_list\x18\x02 \x01(\bR\vhasTaskList\x12\x19\n" +
 	"\bhas_code\x18\x03 \x01(\bR\ahasCode\x120\n" +
-	"\x14has_incomplete_tasks\x18\x04 \x01(\bR\x12hasIncompleteTasks\x12\x1e\n" +
-	"\n" +
-	"references\x18\x05 \x03(\tR\n" +
-	"references\x1af\n" +
+	"\x14has_incomplete_tasks\x18\x04 \x01(\bR\x12hasIncompleteTasks\x1af\n" +
 	"\bLocation\x12 \n" +
 	"\vplaceholder\x18\x01 \x01(\tR\vplaceholder\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +

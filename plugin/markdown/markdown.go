@@ -19,9 +19,8 @@ import (
 
 // ExtractedData contains all metadata extracted from markdown in a single pass.
 type ExtractedData struct {
-	Tags       []string
-	Property   *storepb.MemoPayload_Property
-	References []string
+	Tags     []string
+	Property *storepb.MemoPayload_Property
 }
 
 // Service handles markdown metadata extraction.
@@ -37,9 +36,6 @@ type Service interface {
 
 	// ExtractProperties computes boolean properties
 	ExtractProperties(content []byte) (*storepb.MemoPayload_Property, error)
-
-	// ExtractReferences returns all wikilink references ([[...]]) found in content
-	ExtractReferences(content []byte) ([]string, error)
 
 	// RenderMarkdown renders goldmark AST back to markdown text
 	RenderMarkdown(content []byte) (string, error)
@@ -195,36 +191,6 @@ func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Proper
 	return prop, nil
 }
 
-// ExtractReferences returns all wikilink references found in content.
-func (s *service) ExtractReferences(content []byte) ([]string, error) {
-	root, err := s.parse(content)
-	if err != nil {
-		return nil, err
-	}
-
-	references := []string{} // Initialize to empty slice, not nil
-
-	// Walk the AST to find wikilink nodes
-	err = gast.Walk(root, func(n gast.Node, entering bool) (gast.WalkStatus, error) {
-		if !entering {
-			return gast.WalkContinue, nil
-		}
-
-		// Check for custom WikilinkNode
-		if wikilinkNode, ok := n.(*mast.WikilinkNode); ok {
-			references = append(references, string(wikilinkNode.Target))
-		}
-
-		return gast.WalkContinue, nil
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return references, nil
-}
-
 // RenderMarkdown renders goldmark AST back to markdown text.
 func (s *service) RenderMarkdown(content []byte) (string, error) {
 	root, err := s.parse(content)
@@ -338,9 +304,8 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	}
 
 	data := &ExtractedData{
-		Tags:       []string{},
-		Property:   &storepb.MemoPayload_Property{},
-		References: []string{},
+		Tags:     []string{},
+		Property: &storepb.MemoPayload_Property{},
 	}
 
 	// Single walk to collect all data
@@ -352,11 +317,6 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		// Extract tags
 		if tagNode, ok := n.(*mast.TagNode); ok {
 			data.Tags = append(data.Tags, string(tagNode.Tag))
-		}
-
-		// Extract references (wikilinks)
-		if wikilinkNode, ok := n.(*mast.WikilinkNode); ok {
-			data.References = append(data.References, string(wikilinkNode.Target))
 		}
 
 		// Extract properties based on node kind

@@ -82,9 +82,6 @@ func RebuildMemoPayload(memo *store.Memo, markdownService markdown.Service) erro
 		return errors.Wrap(err, "failed to extract markdown metadata")
 	}
 
-	// Set references in property
-	data.Property.References = data.References
-
 	memo.Payload.Tags = data.Tags
 	memo.Payload.Property = data.Property
 	return nil
