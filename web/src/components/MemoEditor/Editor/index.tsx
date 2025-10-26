@@ -1,8 +1,6 @@
-import { last } from "lodash-es";
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { markdownServiceClient } from "@/grpcweb";
 import { cn } from "@/lib/utils";
-import { Node, NodeType, OrderedListItemNode, TaskListItemNode, UnorderedListItemNode } from "@/types/proto/api/v1/markdown_service";
+import { detectLastListItem, generateListContinuation } from "@/utils/markdown-list-detection";
 import { Command } from "../types/command";
 import CommandSuggestions from "./CommandSuggestions";
 import TagSuggestions from "./TagSuggestions";
@@ -154,20 +152,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     updateEditorHeight();
   }, []);
 
-  const getLastNode = (nodes: Node[]): Node | undefined => {
-    const lastNode = last(nodes);
-    if (!lastNode) {
-      return undefined;
-    }
-    if (lastNode.type === NodeType.LIST) {
-      const children = lastNode.listNode?.children;
-      if (children) {
-        return getLastNode(children);
-      }
-    }
-    return lastNode;
-  };
-
   const handleEditorKeyDown = async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !isInIME) {
       if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
@@ -176,41 +160,11 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
 
       const cursorPosition = editorActions.getCursorPosition();
       const prevContent = editorActions.getContent().substring(0, cursorPosition);
-      const { nodes } = await markdownServiceClient.parseMarkdown({ markdown: prevContent });
-      const lastNode = getLastNode(nodes);
-      if (!lastNode) {
-        return;
-      }
 
-      // Get the indentation of the previous line
-      const lines = prevContent.split("\n");
-      const lastLine = lines[lines.length - 1];
-      const indentationMatch = lastLine.match(/^\s*/);
-      let insertText = indentationMatch ? indentationMatch[0] : ""; // Keep the indentation of the previous line
-      if (lastNode.type === NodeType.TASK_LIST_ITEM) {
-        const { symbol } = lastNode.taskListItemNode as TaskListItemNode;
-        insertText += `${symbol} [ ] `;
-      } else if (lastNode.type === NodeType.UNORDERED_LIST_ITEM) {
-        const { symbol } = lastNode.unorderedListItemNode as UnorderedListItemNode;
-        insertText += `${symbol} `;
-      } else if (lastNode.type === NodeType.ORDERED_LIST_ITEM) {
-        const { number } = lastNode.orderedListItemNode as OrderedListItemNode;
-        insertText += `${Number(number) + 1}. `;
-      } else if (lastNode.type === NodeType.TABLE) {
-        const columns = lastNode.tableNode?.header.length;
-        if (!columns) {
-          return;
-        }
-
-        insertText += "| ";
-        for (let i = 1; i < columns; i++) {
-          insertText += " | ";
-        }
-        insertText += " |";
-      }
-
-      if (insertText) {
-        // Insert the text at the current cursor position.
+      // Detect list item using regex-based detection
+      const listInfo = detectLastListItem(prevContent);
+      if (listInfo.type) {
+        const insertText = generateListContinuation(listInfo);
         editorActions.insertText(insertText);
       }
     }

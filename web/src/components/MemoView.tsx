@@ -239,7 +239,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
         <MemoContent
           key={`${memo.name}-${memo.updateTime}`}
           memoName={memo.name}
-          nodes={memo.nodes}
+          content={memo.content}
           readonly={readonly}
           onClick={handleMemoContentClick}
           onDoubleClick={handleMemoContentDoubleClick}

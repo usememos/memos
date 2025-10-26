@@ -1,26 +1,32 @@
 import { observer } from "mobx-react-lite";
 import { memo, useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+import remarkWikiLink from "remark-wiki-link";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { memoStore } from "@/store";
-import { Node, NodeType } from "@/types/proto/api/v1/markdown_service";
 import { useTranslate } from "@/utils/i18n";
+import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
+import { remarkTag } from "@/utils/remark-plugins/remark-tag";
 import { isSuperUser } from "@/utils/user";
-import Renderer from "./Renderer";
-import { RendererContext } from "./types";
+import { createConditionalComponent, isTagNode, isTaskListItemNode, isWikiLinkNode } from "./ConditionalComponent";
+import { DefaultLink } from "./DefaultLink";
+import { MemoContentContext } from "./MemoContentContext";
+import { Tag } from "./Tag";
+import { TaskListItem } from "./TaskListItem";
+import { WikiLink } from "./WikiLink";
 
 // MAX_DISPLAY_HEIGHT is the maximum height of the memo content to display in compact mode.
 const MAX_DISPLAY_HEIGHT = 256;
 
 interface Props {
-  nodes: Node[];
+  content: string;
   memoName?: string;
   compact?: boolean;
   readonly?: boolean;
   disableFilter?: boolean;
-  // embeddedMemos is a set of memo resource names that are embedded in the current memo.
-  // This is used to prevent infinite loops when a memo embeds itself.
-  embeddedMemos?: Set<string>;
   className?: string;
   contentClassName?: string;
   onClick?: (e: React.MouseEvent) => void;
@@ -31,13 +37,21 @@ interface Props {
 type ContentCompactView = "ALL" | "SNIPPET";
 
 const MemoContent = observer((props: Props) => {
-  const { className, contentClassName, nodes, memoName, embeddedMemos, onClick, onDoubleClick } = props;
+  const { className, contentClassName, content, memoName, onClick, onDoubleClick } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const [showCompactMode, setShowCompactMode] = useState<ContentCompactView | undefined>(undefined);
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
   const allowEdit = !props.readonly && memo && (currentUser?.name === memo.creator || isSuperUser(currentUser));
+
+  // Context for custom components
+  const contextValue = {
+    memoName,
+    readonly: !allowEdit,
+    disableFilter: props.disableFilter,
+    parentPage: props.parentPage,
+  };
 
   // Initial compact mode.
   useEffect(() => {
@@ -54,6 +68,7 @@ const MemoContent = observer((props: Props) => {
   }, []);
 
   const onMemoContentClick = async (e: React.MouseEvent) => {
+    // Image clicks and other handlers
     if (onClick) {
       onClick(e);
     }
@@ -65,48 +80,40 @@ const MemoContent = observer((props: Props) => {
     }
   };
 
-  let prevNode: Node | null = null;
-  let skipNextLineBreakFlag = false;
   const compactStates = {
     ALL: { text: t("memo.show-more"), nextState: "SNIPPET" },
     SNIPPET: { text: t("memo.show-less"), nextState: "ALL" },
   };
 
   return (
-    <RendererContext.Provider
-      value={{
-        nodes,
-        memoName: memoName,
-        readonly: !allowEdit,
-        disableFilter: props.disableFilter,
-        embeddedMemos: embeddedMemos || new Set(),
-        parentPage: props.parentPage,
-      }}
-    >
+    <MemoContentContext.Provider value={contextValue}>
       <div className={`w-full flex flex-col justify-start items-start text-foreground ${className || ""}`}>
         <div
           ref={memoContentContainerRef}
           className={cn(
-            "relative w-full max-w-full break-words text-base leading-6 space-y-1 whitespace-pre-wrap",
+            "markdown-content relative w-full max-w-full break-words text-base leading-6",
             showCompactMode == "ALL" && "line-clamp-6 max-h-60",
             contentClassName,
           )}
           onClick={onMemoContentClick}
           onDoubleClick={onMemoContentDoubleClick}
         >
-          {nodes.map((node, index) => {
-            if (prevNode?.type !== NodeType.LINE_BREAK && node.type === NodeType.LINE_BREAK && skipNextLineBreakFlag) {
-              skipNextLineBreakFlag = false;
-              return null;
-            }
-            prevNode = node;
-            skipNextLineBreakFlag = true;
-            return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
-          })}
-          {showCompactMode == "ALL" && (
-            <div className="absolute bottom-0 left-0 w-full h-12 bg-linear-to-b from-transparent to-background pointer-events-none"></div>
-          )}
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm, remarkWikiLink, remarkTag, remarkPreserveType]}
+            rehypePlugins={[rehypeRaw]}
+            components={{
+              // Conditionally render custom components based on AST node type
+              input: createConditionalComponent(TaskListItem, "input", isTaskListItemNode),
+              a: createConditionalComponent(WikiLink, DefaultLink, isWikiLinkNode),
+              span: createConditionalComponent(Tag, "span", isTagNode),
+            }}
+          >
+            {content}
+          </ReactMarkdown>
         </div>
+        {showCompactMode == "ALL" && (
+          <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-b from-transparent to-background pointer-events-none"></div>
+        )}
         {showCompactMode != undefined && (
           <div className="w-full mt-1">
             <span
@@ -120,7 +127,7 @@ const MemoContent = observer((props: Props) => {
           </div>
         )}
       </div>
-    </RendererContext.Provider>
+    </MemoContentContext.Provider>
   );
 });
 

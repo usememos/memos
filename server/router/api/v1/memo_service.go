@@ -10,9 +10,6 @@ import (
 
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/gomark"
-	"github.com/usememos/gomark/ast"
-	"github.com/usememos/gomark/renderer"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -53,7 +50,7 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if len(create.Content) > contentLengthLimit {
 		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
 	}
-	if err := memopayload.RebuildMemoPayload(create); err != nil {
+	if err := memopayload.RebuildMemoPayload(create, s.MarkdownService); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 	}
 	if request.Memo.Location != nil {
@@ -338,7 +335,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 				return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
 			}
 			memo.Content = request.Memo.Content
-			if err := memopayload.RebuildMemoPayload(memo); err != nil {
+			if err := memopayload.RebuildMemoPayload(memo, s.MarkdownService); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 			}
 			update.Content = &memo.Content
@@ -711,17 +708,14 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 	}
 
 	for _, memo := range memos {
-		doc, err := gomark.Parse(memo.Content)
+		// Rename tag using goldmark
+		newContent, err := s.MarkdownService.RenameTag([]byte(memo.Content), request.OldTag, request.NewTag)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to parse memo: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to rename tag: %v", err)
 		}
-		memopayload.TraverseASTDocument(doc, func(node ast.Node) {
-			if tag, ok := node.(*ast.Tag); ok && tag.Content == request.OldTag {
-				tag.Content = request.NewTag
-			}
-		})
-		memo.Content = gomark.Restore(doc)
-		if err := memopayload.RebuildMemoPayload(memo); err != nil {
+		memo.Content = newContent
+
+		if err := memopayload.RebuildMemoPayload(memo, s.MarkdownService); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 		}
 		if err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{
@@ -842,17 +836,13 @@ func convertMemoToWebhookPayload(memo *v1pb.Memo) (*webhook.WebhookRequestPayloa
 	}, nil
 }
 
-func getMemoContentSnippet(content string) (string, error) {
-	doc, err := gomark.Parse(content)
+func (s *APIV1Service) getMemoContentSnippet(content string) (string, error) {
+	// Use goldmark service for snippet generation
+	snippet, err := s.MarkdownService.GenerateSnippet([]byte(content), 64)
 	if err != nil {
-		return "", errors.Wrap(err, "failed to parse content")
+		return "", errors.Wrap(err, "failed to generate snippet")
 	}
-
-	plainText := renderer.NewStringRenderer().RenderDocument(doc)
-	if len(plainText) > 64 {
-		return substring(plainText, 64) + "...", nil
-	}
-	return plainText, nil
+	return snippet, nil
 }
 
 func substring(s string, length int) string {

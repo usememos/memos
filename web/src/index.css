@@ -13,4 +13,301 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* ========================================
+   * Task List Styles
+   * ======================================== */
+
+  /* Task list containers */
+  .markdown-content ul.contains-task-list,
+  .prose ul.contains-task-list {
+    padding: 0 !important;
+    margin: 0.5rem 0 !important;
+    list-style: none !important;
+    margin-block-start: 0 !important;
+    margin-block-end: 0 !important;
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
+    padding-block-start: 0 !important;
+    padding-block-end: 0 !important;
+    padding-inline-start: 0 !important;
+    padding-inline-end: 0 !important;
+  }
+
+  /* Remove pseudo-elements */
+  .markdown-content ul.contains-task-list::before,
+  .markdown-content ul.contains-task-list::after,
+  .prose ul.contains-task-list::before,
+  .prose ul.contains-task-list::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* Task list items */
+  .markdown-content ul.contains-task-list li.task-list-item,
+  .prose ul.contains-task-list li.task-list-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    margin: 0.125rem 0 !important;
+    padding: 0 !important;
+    line-height: 1.5rem !important;
+    list-style: none !important;
+    margin-block-start: 0 !important;
+    margin-block-end: 0 !important;
+  }
+
+  /* Remove list item markers */
+  .markdown-content ul.contains-task-list li.task-list-item::before,
+  .markdown-content ul.contains-task-list li.task-list-item::marker,
+  .prose ul.contains-task-list li.task-list-item::before,
+  .prose ul.contains-task-list li.task-list-item::marker {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* Task checkboxes */
+  .markdown-content ul.contains-task-list li.task-list-item input[type="checkbox"],
+  .prose ul.contains-task-list li.task-list-item input[type="checkbox"] {
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+    width: 1rem !important;
+    height: 1rem !important;
+    vertical-align: middle !important;
+  }
+
+  /* Task item text */
+  .markdown-content ul.contains-task-list li.task-list-item p,
+  .prose ul.contains-task-list li.task-list-item p {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline !important;
+    line-height: inherit !important;
+  }
+
+  /* All children */
+  .markdown-content ul.contains-task-list li.task-list-item > *,
+  .prose ul.contains-task-list li.task-list-item > * {
+    margin: 0 !important;
+  }
+
+  /* Override parent space-y utility for task lists */
+  .markdown-content ul.contains-task-list + *,
+  .prose ul.contains-task-list + * {
+    margin-top: 0.25rem !important;
+  }
+
+  * + .markdown-content ul.contains-task-list,
+  * + .prose ul.contains-task-list {
+    margin-top: 0.25rem !important;
+  }
+
+  /* ========================================
+   * Markdown Content Styles
+   * Custom minimal styles for markdown rendering
+   * ======================================== */
+
+  .markdown-content {
+    color: var(--foreground);
+    white-space: pre-line; /* Preserve newlines but collapse multiple spaces */
+  }
+
+  /* Block elements should not inherit pre-line */
+  .markdown-content h1,
+  .markdown-content h2,
+  .markdown-content h3,
+  .markdown-content h4,
+  .markdown-content h5,
+  .markdown-content h6,
+  .markdown-content p,
+  .markdown-content ul,
+  .markdown-content ol,
+  .markdown-content pre,
+  .markdown-content blockquote,
+  .markdown-content table {
+    white-space: normal;
+  }
+
+  /* Code blocks need pre-wrap */
+  .markdown-content pre {
+    white-space: pre-wrap;
+  }
+
+  /* Headings */
+  .markdown-content h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    line-height: 2.25rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .markdown-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 2rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .markdown-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .markdown-content h4,
+  .markdown-content h5,
+  .markdown-content h6 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* First heading has no top margin */
+  .markdown-content > :first-child {
+    margin-top: 0;
+  }
+
+  /* Paragraphs */
+  .markdown-content p {
+    margin: 0.5rem 0;
+  }
+
+  /* Links */
+  .markdown-content a {
+    color: var(--primary);
+    text-decoration: underline;
+    transition: opacity 150ms;
+  }
+
+  .markdown-content a:hover {
+    opacity: 0.8;
+  }
+
+  /* Lists - MINIMAL spacing */
+  .markdown-content ul,
+  .markdown-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5em;
+    list-style-position: outside;
+  }
+
+  .markdown-content ul {
+    list-style-type: disc;
+  }
+
+  .markdown-content ol {
+    list-style-type: decimal;
+  }
+
+  .markdown-content li {
+    margin: 0.125rem 0;
+    line-height: 1.5;
+  }
+
+  .markdown-content li:first-child {
+    margin-top: 0;
+  }
+
+  .markdown-content li:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Nested lists */
+  .markdown-content li > ul,
+  .markdown-content li > ol {
+    margin: 0.25rem 0;
+  }
+
+  /* Code */
+  .markdown-content code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--muted);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+  }
+
+  .markdown-content pre {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    background: var(--muted);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 0.75rem 0;
+  }
+
+  .markdown-content pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  /* Blockquotes */
+  .markdown-content blockquote {
+    border-left: 3px solid var(--border);
+    padding-left: 1rem;
+    margin: 0.75rem 0;
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+
+  /* Horizontal rule */
+  .markdown-content hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1rem 0;
+  }
+
+  /* Tables */
+  .markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+  }
+
+  .markdown-content th,
+  .markdown-content td {
+    border: 1px solid var(--border);
+    padding: 0.5rem;
+    text-align: left;
+  }
+
+  .markdown-content th {
+    background: var(--muted);
+    font-weight: 600;
+  }
+
+  /* Images */
+  .markdown-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 0.75rem 0;
+  }
+
+  /* Strong/Bold */
+  .markdown-content strong {
+    font-weight: 600;
+  }
+
+  /* Emphasis/Italic */
+  .markdown-content em {
+    font-style: italic;
+  }
+
+  /* Inline elements shouldn't add vertical spacing */
+  .markdown-content code,
+  .markdown-content strong,
+  .markdown-content em,
+  .markdown-content a {
+    vertical-align: baseline;
+  }
 }

@@ -122,7 +122,7 @@ func (s *APIV1Service) convertMemoRelationFromStore(ctx context.Context, memoRel
 	if err != nil {
 		return nil, err
 	}
-	memoSnippet, err := getMemoContentSnippet(memo.Content)
+	memoSnippet, err := s.getMemoContentSnippet(memo.Content)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get memo content snippet")
 	}
@@ -130,7 +130,7 @@ func (s *APIV1Service) convertMemoRelationFromStore(ctx context.Context, memoRel
 	if err != nil {
 		return nil, err
 	}
-	relatedMemoSnippet, err := getMemoContentSnippet(relatedMemo.Content)
+	relatedMemoSnippet, err := s.getMemoContentSnippet(relatedMemo.Content)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get related memo content snippet")
 	}

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/plugin/markdown"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/store"
 	teststore "github.com/usememos/memos/store/test"
@@ -36,10 +37,15 @@ func NewTestService(t *testing.T) *TestService {
 
 	// Create APIV1Service with nil grpcServer since we're testing direct calls
 	secret := "test-secret"
+	markdownService := markdown.NewService(
+		markdown.WithTagExtension(),
+		markdown.WithWikilinkExtension(),
+	)
 	service := &apiv1.APIV1Service{
-		Secret:  secret,
-		Profile: testProfile,
-		Store:   testStore,
+		Secret:          secret,
+		Profile:         testProfile,
+		Store:           testStore,
+		MarkdownService: markdownService,
 	}
 
 	return &TestService{

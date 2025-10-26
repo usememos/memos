@@ -8,8 +8,6 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/gomark"
-
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -68,15 +66,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		memoMessage.Attachments = append(memoMessage.Attachments, attachmentResponse)
 	}
 
-	doc, err := gomark.Parse(memo.Content)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse content")
-	}
-	if doc != nil {
-		memoMessage.Nodes = convertFromASTNodes(doc.Children)
-	}
-
-	snippet, err := getMemoContentSnippet(memo.Content)
+	snippet, err := s.getMemoContentSnippet(memo.Content)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get memo content snippet")
 	}

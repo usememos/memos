@@ -4,7 +4,6 @@ package memos.api.v1;
 
 import "api/v1/attachment_service.proto";
 import "api/v1/common.proto";
-import "api/v1/markdown_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
@@ -201,9 +200,6 @@ message Memo {
 
   // Required. The content of the memo in Markdown format.
   string content = 7 [(google.api.field_behavior) = REQUIRED];
-
-  // Output only. The parsed nodes from the content.
-  repeated Node nodes = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The visibility of the memo.
   Visibility visibility = 9 [(google.api.field_behavior) = REQUIRED];

@@ -118,7 +118,7 @@ const AddMemoRelationPopover = () => {
               placeholder={t("reference.search-placeholder")}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="mb-2"
+              className="mb-2 !text-sm"
             />
             <div className="max-h-[200px] overflow-y-auto">
               {filteredMemos.length === 0 ? (
