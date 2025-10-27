@@ -45,7 +45,6 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 	grpc.EnableTracing = true
 	markdownService := markdown.NewService(
 		markdown.WithTagExtension(),
-		markdown.WithWikilinkExtension(),
 	)
 	apiv1Service := &APIV1Service{
 		Secret:          secret,

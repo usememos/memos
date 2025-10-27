@@ -96,6 +96,36 @@ func TestTagParser(t *testing.T) {
 			expectedTag: "WorkNotes",
 			shouldParse: true,
 		},
+		{
+			name:        "hierarchical tag with slash",
+			input:       "#tag1/subtag",
+			expectedTag: "tag1/subtag",
+			shouldParse: true,
+		},
+		{
+			name:        "hierarchical tag with multiple levels",
+			input:       "#tag1/subtag/subtag2",
+			expectedTag: "tag1/subtag/subtag2",
+			shouldParse: true,
+		},
+		{
+			name:        "hierarchical tag followed by space",
+			input:       "#work/notes ",
+			expectedTag: "work/notes",
+			shouldParse: true,
+		},
+		{
+			name:        "hierarchical tag followed by punctuation",
+			input:       "#project/2024.",
+			expectedTag: "project/2024",
+			shouldParse: true,
+		},
+		{
+			name:        "hierarchical tag with numbers and dashes",
+			input:       "#work-log/2024/q1",
+			expectedTag: "work-log/2024/q1",
+			shouldParse: true,
+		},
 	}
 
 	for _, tt := range tests {

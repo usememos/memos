@@ -19,7 +19,6 @@ func TestMarkdownRenderer(t *testing.T) {
 		goldmark.WithExtensions(
 			extension.GFM,
 			extensions.TagExtension,
-			extensions.WikilinkExtension,
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
@@ -112,14 +111,9 @@ func TestMarkdownRenderer(t *testing.T) {
 			expected: "#work #important meeting notes",
 		},
 		{
-			name:     "referenced content (wikilink)",
-			input:    "Check [[memos/42]] for details",
-			expected: "Check [[memos/42]] for details",
-		},
-		{
 			name:     "complex mixed content",
-			input:    "# Meeting Notes\n\n**Date**: 2024-01-01\n\n## Attendees\n- Alice\n- Bob\n\n## Discussion\n\nWe discussed #project status.\n\nSee [[memos/1]] for background.\n\n```python\nprint('hello')\n```",
-			expected: "# Meeting Notes\n\n**Date**: 2024-01-01\n\n## Attendees\n\n- Alice\n- Bob\n\n## Discussion\n\nWe discussed #project status.\n\nSee [[memos/1]] for background.\n\n```python\nprint('hello')\n```",
+			input:    "# Meeting Notes\n\n**Date**: 2024-01-01\n\n## Attendees\n- Alice\n- Bob\n\n## Discussion\n\nWe discussed #project status.\n\n```python\nprint('hello')\n```",
+			expected: "# Meeting Notes\n\n**Date**: 2024-01-01\n\n## Attendees\n\n- Alice\n- Bob\n\n## Discussion\n\nWe discussed #project status.\n\n```python\nprint('hello')\n```",
 		},
 	}
 
@@ -153,7 +147,6 @@ func TestMarkdownRendererPreservesStructure(t *testing.T) {
 		goldmark.WithExtensions(
 			extension.GFM,
 			extensions.TagExtension,
-			extensions.WikilinkExtension,
 		),
 	)
 
@@ -162,7 +155,6 @@ func TestMarkdownRendererPreservesStructure(t *testing.T) {
 		"**Bold** and *italic*",
 		"- List\n- Items",
 		"#tag #another",
-		"[[wikilink]]",
 		"> Quote",
 	}
 

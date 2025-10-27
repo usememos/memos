@@ -45,7 +45,7 @@ func (*tagParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.N
 	}
 
 	// Scan tag characters
-	// Valid: alphanumeric, dash, underscore
+	// Valid: alphanumeric, dash, underscore, forward slash
 	tagEnd := 1 // Start after #
 	for tagEnd < len(line) {
 		c := line[tagEnd]
@@ -53,7 +53,7 @@ func (*tagParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.N
 		isValid := (c >= 'a' && c <= 'z') ||
 			(c >= 'A' && c <= 'Z') ||
 			(c >= '0' && c <= '9') ||
-			c == '-' || c == '_'
+			c == '-' || c == '_' || c == '/'
 
 		if !isValid {
 			break

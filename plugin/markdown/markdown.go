@@ -62,21 +62,13 @@ type service struct {
 type Option func(*config)
 
 type config struct {
-	enableTags     bool
-	enableWikilink bool
+	enableTags bool
 }
 
 // WithTagExtension enables #tag parsing.
 func WithTagExtension() Option {
 	return func(c *config) {
 		c.enableTags = true
-	}
-}
-
-// WithWikilinkExtension enables [[wikilink]] parsing.
-func WithWikilinkExtension() Option {
-	return func(c *config) {
-		c.enableWikilink = true
 	}
 }
 
@@ -94,9 +86,6 @@ func NewService(opts ...Option) Service {
 	// Add custom extensions based on config
 	if cfg.enableTags {
 		exts = append(exts, extensions.TagExtension)
-	}
-	if cfg.enableWikilink {
-		exts = append(exts, extensions.WikilinkExtension)
 	}
 
 	md := goldmark.New(
@@ -164,7 +153,7 @@ func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Proper
 		}
 
 		switch n.Kind() {
-		case gast.KindLink, mast.KindWikilink:
+		case gast.KindLink:
 			prop.HasLink = true
 
 		case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:
@@ -321,7 +310,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 
 		// Extract properties based on node kind
 		switch n.Kind() {
-		case gast.KindLink, mast.KindWikilink:
+		case gast.KindLink:
 			data.Property.HasLink = true
 
 		case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:

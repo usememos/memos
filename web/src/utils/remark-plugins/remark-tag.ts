@@ -11,10 +11,11 @@ import { visit } from "unist-util-visit";
  *   #work → <span class="tag" data-tag="work">#work</span>
  *   #2024_plans → <span class="tag" data-tag="2024_plans">#2024_plans</span>
  *   #work-notes → <span class="tag" data-tag="work-notes">#work-notes</span>
+ *   #tag1/subtag/subtag2 → <span class="tag" data-tag="tag1/subtag/subtag2">#tag1/subtag/subtag2</span>
  *
  * Rules:
- * - Tag must start with # followed by alphanumeric, underscore, or hyphen
- * - Tag ends at whitespace, punctuation (except - and _), or end of line
+ * - Tag must start with # followed by alphanumeric, underscore, hyphen, or forward slash
+ * - Tag ends at whitespace, punctuation (except -, _, /), or end of line
  * - Tags at start of line after ## are headings, not tags
  */
 
@@ -22,7 +23,7 @@ import { visit } from "unist-util-visit";
  * Check if character is valid for tag content
  */
 function isTagChar(char: string): boolean {
-  return /[a-zA-Z0-9_-]/.test(char);
+  return /[a-zA-Z0-9_\-/]/.test(char);
 }
 
 /**

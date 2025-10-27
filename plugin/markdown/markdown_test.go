@@ -109,7 +109,6 @@ func TestExtractProperties(t *testing.T) {
 	tests := []struct {
 		name     string
 		content  string
-		withExt  bool
 		hasLink  bool
 		hasCode  bool
 		hasTasks bool
@@ -118,7 +117,6 @@ func TestExtractProperties(t *testing.T) {
 		{
 			name:     "plain text",
 			content:  "Just plain text",
-			withExt:  false,
 			hasLink:  false,
 			hasCode:  false,
 			hasTasks: false,
@@ -127,7 +125,6 @@ func TestExtractProperties(t *testing.T) {
 		{
 			name:     "with link",
 			content:  "Check out [this link](https://example.com)",
-			withExt:  false,
 			hasLink:  true,
 			hasCode:  false,
 			hasTasks: false,
@@ -136,7 +133,6 @@ func TestExtractProperties(t *testing.T) {
 		{
 			name:     "with inline code",
 			content:  "Use `console.log()` to debug",
-			withExt:  false,
 			hasLink:  false,
 			hasCode:  true,
 			hasTasks: false,
@@ -145,7 +141,6 @@ func TestExtractProperties(t *testing.T) {
 		{
 			name:     "with code block",
 			content:  "```go\nfunc main() {}\n```",
-			withExt:  false,
 			hasLink:  false,
 			hasCode:  true,
 			hasTasks: false,
@@ -154,7 +149,6 @@ func TestExtractProperties(t *testing.T) {
 		{
 			name:     "with completed task",
 			content:  "- [x] Completed task",
-			withExt:  false,
 			hasLink:  false,
 			hasCode:  false,
 			hasTasks: true,
@@ -163,7 +157,6 @@ func TestExtractProperties(t *testing.T) {
 		{
 			name:     "with incomplete task",
 			content:  "- [ ] Todo item",
-			withExt:  false,
 			hasLink:  false,
 			hasCode:  false,
 			hasTasks: true,
@@ -172,25 +165,14 @@ func TestExtractProperties(t *testing.T) {
 		{
 			name:     "mixed tasks",
 			content:  "- [x] Done\n- [ ] Not done",
-			withExt:  false,
 			hasLink:  false,
 			hasCode:  false,
 			hasTasks: true,
 			hasInc:   true,
 		},
 		{
-			name:     "with referenced content",
-			content:  "See [[memos/1]] for details",
-			withExt:  true,
-			hasLink:  true,
-			hasCode:  false,
-			hasTasks: false,
-			hasInc:   false,
-		},
-		{
 			name:     "everything",
 			content:  "# Title\n\n[Link](url)\n\n`code`\n\n- [ ] Task",
-			withExt:  false,
 			hasLink:  true,
 			hasCode:  true,
 			hasTasks: true,
@@ -200,12 +182,7 @@ func TestExtractProperties(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var svc Service
-			if tt.withExt {
-				svc = NewService(WithWikilinkExtension())
-			} else {
-				svc = NewService()
-			}
+			svc := NewService()
 
 			props, err := svc.ExtractProperties([]byte(tt.content))
 			require.NoError(t, err)

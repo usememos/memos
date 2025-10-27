@@ -39,15 +39,6 @@ export const createConditionalComponent = <P extends Record<string, any>>(
  * - First checks node.data.mdastType (preserved by remarkPreserveType plugin)
  * - Falls back to checking HAST properties/className for compatibility
  */
-export const isWikiLinkNode = (node: any): boolean => {
-  // Check preserved mdast type first
-  if (node?.data?.mdastType === "wikiLink") {
-    return true;
-  }
-  // Fallback: check hast properties
-  return node?.properties?.className?.includes?.("wikilink") || false;
-};
-
 export const isTagNode = (node: any): boolean => {
   // Check preserved mdast type first
   if (node?.data?.mdastType === "tagNode") {

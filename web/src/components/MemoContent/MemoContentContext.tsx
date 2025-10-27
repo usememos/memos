@@ -4,7 +4,7 @@ import { createContext } from "react";
  * Context for MemoContent rendering
  *
  * Provides memo metadata and configuration to child components
- * Used by custom react-markdown components (TaskListItem, WikiLink, Tag, etc.)
+ * Used by custom react-markdown components (TaskListItem, Tag, etc.)
  */
 
 export interface MemoContentContextType {

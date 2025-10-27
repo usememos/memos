@@ -3,7 +3,6 @@ import { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import remarkWikiLink from "remark-wiki-link";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { memoStore } from "@/store";
@@ -11,12 +10,10 @@ import { useTranslate } from "@/utils/i18n";
 import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
 import { remarkTag } from "@/utils/remark-plugins/remark-tag";
 import { isSuperUser } from "@/utils/user";
-import { createConditionalComponent, isTagNode, isTaskListItemNode, isWikiLinkNode } from "./ConditionalComponent";
-import { DefaultLink } from "./DefaultLink";
+import { createConditionalComponent, isTagNode, isTaskListItemNode } from "./ConditionalComponent";
 import { MemoContentContext } from "./MemoContentContext";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
-import { WikiLink } from "./WikiLink";
 
 // MAX_DISPLAY_HEIGHT is the maximum height of the memo content to display in compact mode.
 const MAX_DISPLAY_HEIGHT = 256;
@@ -99,12 +96,11 @@ const MemoContent = observer((props: Props) => {
           onDoubleClick={onMemoContentDoubleClick}
         >
           <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkWikiLink, remarkTag, remarkPreserveType]}
+            remarkPlugins={[remarkGfm, remarkTag, remarkPreserveType]}
             rehypePlugins={[rehypeRaw]}
             components={{
               // Conditionally render custom components based on AST node type
               input: createConditionalComponent(TaskListItem, "input", isTaskListItemNode),
-              a: createConditionalComponent(WikiLink, DefaultLink, isWikiLinkNode),
               span: createConditionalComponent(Tag, "span", isTagNode),
             }}
           >
