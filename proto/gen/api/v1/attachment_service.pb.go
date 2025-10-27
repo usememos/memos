@@ -47,7 +47,6 @@ type Attachment struct {
 	// Format: memos/{memo}
 	Memo *string `protobuf:"bytes,8,opt,name=memo,proto3,oneof" json:"memo,omitempty"`
 	// Optional. Output only. Whether to use thumbnails for this attachment when stored in S3.
-	// This is determined by the workspace setting at the time of attachment creation.
 	UseThumbnailForS3Image *bool `protobuf:"varint,9,opt,name=use_thumbnail_for_s3_image,json=useThumbnailForS3Image,proto3,oneof" json:"use_thumbnail_for_s3_image,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache

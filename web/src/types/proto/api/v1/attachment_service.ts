@@ -40,10 +40,7 @@ export interface Attachment {
   memo?:
     | string
     | undefined;
-  /**
-   * Optional. Output only. Whether to use thumbnails for this attachment when stored in S3.
-   * This is determined by the workspace setting at the time of attachment creation.
-   */
+  /** Optional. Output only. Whether to use thumbnails for this attachment when stored in S3. */
   useThumbnailForS3Image?: boolean | undefined;
 }
 
