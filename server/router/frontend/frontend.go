@@ -39,8 +39,12 @@ func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 		if c.Path() == "/" || c.Path() == "/index.html" {
 			return false
 		}
-		// Set Cache-Control header to allow public caching with a max-age of 7 days.
-		c.Response().Header().Set(echo.HeaderCacheControl, "public, max-age=604800") // 7 days
+		// Set Cache-Control header for static assets.
+		// Since Vite generates content-hashed filenames (e.g., index-BtVjejZf.js),
+		// we can cache aggressively but use immutable to prevent revalidation checks.
+		// For frequently redeployed instances, use shorter max-age (1 hour) to avoid
+		// serving stale assets after redeployment.
+		c.Response().Header().Set(echo.HeaderCacheControl, "public, max-age=3600, immutable") // 1 hour
 		return false
 	}
 
