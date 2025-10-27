@@ -1,12 +1,8 @@
-<div align="center">
-
-<img height="96px" src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/logo-rounded.png" alt="Memos" />
-
 # Memos
 
-**A privacy-first, lightweight note-taking service**
+<img align="right" height="96px" src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/logo-rounded.png" alt="Memos" />
 
-Write, organize, and own your knowledge
+An open-source, self-hosted note-taking services. Write, organize, and own your notes. No tracking, no ads, no subscription fees — just a clean, fast way to capture your ideas.
 
 [![Home](https://img.shields.io/badge/🏠-usememos.com-blue?style=flat-square)](https://www.usememos.com)
 [![Live Demo](https://img.shields.io/badge/✨-Try%20Demo-orange?style=flat-square)](https://demo.usememos.com/)
@@ -14,17 +10,15 @@ Write, organize, and own your knowledge
 [![Discord](https://img.shields.io/badge/💬-Discord-5865f2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/tfPJa4UmAv)
 [![Docker Pulls](https://img.shields.io/docker/pulls/neosmemo/memos?style=flat-square&logo=docker)](https://hub.docker.com/r/neosmemo/memos)
 
-### 💎 Sponsored By
+<img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png" alt="Memos Demo Screenshot" height="512" />
 
-<a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
-  <img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/main/Github/Sponsor/Warp-Github-LG-02.png" alt="Warp - The terminal for the 21st century" height="200" />
-</a>
+### 💎 Featured Sponsors
 
 [**Warp** — The AI-powered terminal built for speed and collaboration](https://go.warp.dev/memos)
 
-![Memos Demo Screenshot](https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png)
-
-</div>
+<a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
+  <img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/main/Github/Sponsor/Warp-Github-LG-02.png" alt="Warp - The terminal for the 21st century" height="300" />
+</a>
 
 ## 🎯 Why Memos?
 
