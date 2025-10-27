@@ -4,6 +4,7 @@
  * Manages UI display preferences and layout settings.
  * This is a client state store that persists to localStorage.
  */
+import { makeObservable, observable } from "mobx";
 import { StandardState } from "./base-store";
 
 const LOCAL_STORAGE_KEY = "memos-view-setting";
@@ -29,6 +30,14 @@ class ViewState extends StandardState {
    * - MASONRY: Pinterest-style grid layout
    */
   layout: LayoutMode = "LIST";
+
+  constructor() {
+    super();
+    makeObservable(this, {
+      orderByTimeAsc: observable,
+      layout: observable,
+    });
+  }
 
   /**
    * Override setPartial to persist to localStorage
