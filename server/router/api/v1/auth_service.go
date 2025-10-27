@@ -29,6 +29,15 @@ const (
 	unmatchedUsernameAndPasswordError = "unmatched username and password"
 )
 
+// GetCurrentSession retrieves the current authenticated session information.
+//
+// This endpoint is used to:
+// - Check if a user is currently authenticated
+// - Get the current user's information
+// - Retrieve the last accessed time of the session
+//
+// Authentication: Required (session cookie or access token)
+// Returns: User information and last accessed timestamp.
 func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrentSessionRequest) (*v1pb.GetCurrentSessionResponse, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
@@ -59,8 +68,23 @@ func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrent
 	}, nil
 }
 
+// CreateSession authenticates a user and establishes a new session.
+//
+// This endpoint supports two authentication methods:
+// 1. Password-based authentication (username + password)
+// 2. SSO authentication (OAuth2 authorization code)
+//
+// On successful authentication:
+// - A session cookie is set for web browsers (cookie: user_session={userID}-{sessionID})
+// - Session information is stored including client details (IP, user agent, device type)
+// - Sessions use sliding expiration: 14 days from last access
+//
+// Authentication: Not required (public endpoint)
+// Returns: Authenticated user information and last accessed timestamp.
 func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSessionRequest) (*v1pb.CreateSessionResponse, error) {
 	var existingUser *store.User
+
+	// Authentication Method 1: Password-based authentication
 	if passwordCredentials := request.GetPasswordCredentials(); passwordCredentials != nil {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			Username: &passwordCredentials.Username,
@@ -85,6 +109,7 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 		}
 		existingUser = user
 	} else if ssoCredentials := request.GetSsoCredentials(); ssoCredentials != nil {
+		// Authentication Method 2: SSO (OAuth2) authentication
 		identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
 			ID: &ssoCredentials.IdpId,
 		})
@@ -183,6 +208,16 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 	}, nil
 }
 
+// doSignIn performs the actual sign-in operation by creating a session and setting the cookie.
+//
+// This function:
+// 1. Generates a unique session ID (UUID)
+// 2. Tracks the session in user settings with client information
+// 3. Sets a session cookie in the format: {userID}-{sessionID}
+// 4. Configures cookie security settings (HttpOnly, Secure, SameSite)
+//
+// Cookie lifetime is 100 years, but actual session validity is controlled by
+// sliding expiration (14 days from last access) checked during authentication.
 func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) error {
 	// Generate unique session ID for web use
 	sessionID, err := GenerateSessionID()
@@ -212,6 +247,14 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 	return nil
 }
 
+// DeleteSession terminates the current user session (logout).
+//
+// This endpoint:
+// 1. Removes the session from the user's sessions list in the database
+// 2. Clears the session cookie by setting it to expire immediately
+//
+// Authentication: Required (session cookie or access token)
+// Returns: Empty response on success.
 func (s *APIV1Service) DeleteSession(ctx context.Context, _ *v1pb.DeleteSessionRequest) (*emptypb.Empty, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
@@ -298,7 +341,13 @@ func (s *APIV1Service) GetCurrentUser(ctx context.Context) (*store.User, error) 
 	return user, nil
 }
 
-// Helper function to track user session for session management.
+// trackUserSession creates a new session record in the user's settings.
+//
+// Session information includes:
+// - session_id: Unique UUID for this session
+// - create_time: When the session was created
+// - last_accessed_time: When the session was last used (for sliding expiration)
+// - client_info: Device details (user agent, IP, device type, OS, browser).
 func (s *APIV1Service) trackUserSession(ctx context.Context, userID int32, sessionID string) error {
 	// Extract client information from the context
 	clientInfo := s.extractClientInfo(ctx)
@@ -313,19 +362,19 @@ func (s *APIV1Service) trackUserSession(ctx context.Context, userID int32, sessi
 	return s.Store.AddUserSession(ctx, userID, session)
 }
 
-// Helper function to extract client information from the gRPC context.
 // extractClientInfo extracts comprehensive client information from the request context.
-// This includes user agent parsing to determine device type, operating system, browser,
-// and IP address extraction. This information is used to provide detailed session
-// tracking and management capabilities in the web UI.
 //
-// Fields populated:
-// - UserAgent: Raw user agent string
-// - IpAddress: Client IP (from X-Forwarded-For or X-Real-IP headers)
-// - DeviceType: "mobile", "tablet", or "desktop"
-// - Os: Operating system name and version (e.g., "iOS 17.1", "Windows 10/11")
+// This function parses metadata from the gRPC context to extract:
+// - User Agent: Raw user agent string for detailed parsing
+// - IP Address: Client IP from X-Forwarded-For or X-Real-IP headers
+// - Device Type: "mobile", "tablet", or "desktop" (parsed from user agent)
+// - Operating System: OS name and version (e.g., "iOS 17.1", "Windows 10/11")
 // - Browser: Browser name and version (e.g., "Chrome 120.0.0.0")
-// - Country: Geographic location (TODO: implement with GeoIP service).
+//
+// This information enables users to:
+// - See all active sessions with device details
+// - Identify suspicious login attempts
+// - Revoke specific sessions from unknown devices.
 func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsUserSetting_ClientInfo {
 	clientInfo := &storepb.SessionsUserSetting_ClientInfo{}
 
@@ -351,6 +400,14 @@ func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsU
 }
 
 // parseUserAgent extracts device type, OS, and browser information from user agent string.
+//
+// Detection logic:
+// - Device Type: Checks for keywords like "mobile", "tablet", "ipad"
+// - OS: Pattern matches for iOS, Android, Windows, macOS, Linux, Chrome OS
+// - Browser: Identifies Edge, Chrome, Firefox, Safari, Opera
+//
+// Note: This is a simplified parser. For production use with high accuracy requirements,
+// consider using a dedicated user agent parsing library.
 func (*APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.SessionsUserSetting_ClientInfo) {
 	if userAgent == "" {
 		return

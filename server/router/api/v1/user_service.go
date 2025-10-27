@@ -521,6 +521,21 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 	return response, nil
 }
 
+// ListUserAccessTokens retrieves all Personal Access Tokens (PATs) for a user.
+//
+// Personal Access Tokens are used for:
+// - Mobile app authentication
+// - CLI tool authentication
+// - API client authentication
+// - Any programmatic access requiring Bearer token auth
+//
+// Security:
+// - Only the token owner can list their tokens
+// - Returns full token strings (so users can manage/revoke them)
+// - Invalid or expired tokens are filtered out
+//
+// Authentication: Required (session cookie or access token)
+// Authorization: User can only list their own tokens.
 func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.ListUserAccessTokensRequest) (*v1pb.ListUserAccessTokensResponse, error) {
 	userID, err := ExtractUserIDFromName(request.Parent)
 	if err != nil {
@@ -584,6 +599,26 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 	return response, nil
 }
 
+// CreateUserAccessToken creates a new Personal Access Token (PAT) for a user.
+//
+// Use cases:
+// - User manually creates token in settings for mobile app
+// - User creates token for CLI tool
+// - User creates token for third-party integration
+//
+// Token properties:
+// - JWT format signed with server secret
+// - Contains user ID and username in claims
+// - Optional expiration time (can be never-expiring)
+// - User-provided description for identification
+//
+// Security considerations:
+// - Full token is only shown ONCE (in this response)
+// - User should copy and store it securely
+// - Token can be revoked by deleting it from settings
+//
+// Authentication: Required (session cookie or access token)
+// Authorization: User can only create tokens for themselves.
 func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.CreateUserAccessTokenRequest) (*v1pb.UserAccessToken, error) {
 	userID, err := ExtractUserIDFromName(request.Parent)
 	if err != nil {
@@ -643,6 +678,19 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 	return userAccessToken, nil
 }
 
+// DeleteUserAccessToken revokes a Personal Access Token.
+//
+// This endpoint:
+// 1. Removes the token from the user's access tokens list
+// 2. Immediately invalidates the token (subsequent API calls with it will fail)
+//
+// Use cases:
+// - User revokes a compromised token
+// - User removes token for unused app/device
+// - User cleans up old tokens
+//
+// Authentication: Required (session cookie or access token)
+// Authorization: User can only delete their own tokens.
 func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.DeleteUserAccessTokenRequest) (*emptypb.Empty, error) {
 	// Extract user ID from the access token resource name
 	// Format: users/{user}/accessTokens/{access_token}
@@ -694,6 +742,21 @@ func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.
 	return &emptypb.Empty{}, nil
 }
 
+// ListUserSessions retrieves all active sessions for a user.
+//
+// Sessions represent active browser logins. Each session includes:
+// - session_id: Unique identifier
+// - create_time: When the session was created
+// - last_accessed_time: Last API call time (for sliding expiration)
+// - client_info: Device details (browser, OS, IP address, device type)
+//
+// Use cases:
+// - User reviews where they're logged in
+// - User identifies suspicious login attempts
+// - User prepares to revoke specific sessions
+//
+// Authentication: Required (session cookie or access token)
+// Authorization: User can only list their own sessions.
 func (s *APIV1Service) ListUserSessions(ctx context.Context, request *v1pb.ListUserSessionsRequest) (*v1pb.ListUserSessionsResponse, error) {
 	userID, err := ExtractUserIDFromName(request.Parent)
 	if err != nil {
@@ -749,6 +812,23 @@ func (s *APIV1Service) ListUserSessions(ctx context.Context, request *v1pb.ListU
 	return response, nil
 }
 
+// RevokeUserSession terminates a specific session for a user.
+//
+// This endpoint:
+// 1. Removes the session from the user's sessions list
+// 2. Immediately invalidates the session
+// 3. Forces the device to re-login on next request
+//
+// Use cases:
+// - User logs out from a specific device (e.g., "Log out my phone")
+// - User removes suspicious/unknown session
+// - User logs out from all devices except current one
+//
+// Note: This is different from DeleteSession (logout current session).
+// This endpoint allows revoking ANY session, not just the current one.
+//
+// Authentication: Required (session cookie or access token)
+// Authorization: User can only revoke their own sessions.
 func (s *APIV1Service) RevokeUserSession(ctx context.Context, request *v1pb.RevokeUserSessionRequest) (*emptypb.Empty, error) {
 	// Extract user ID and session ID from the session resource name
 	// Format: users/{user}/sessions/{session}

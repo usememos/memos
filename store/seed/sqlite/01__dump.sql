@@ -22,12 +22,12 @@ INSERT INTO memo (id,uid,creator_id,content,visibility,pinned,payload) VALUES(6,
 -- Memo Relations
 INSERT INTO memo_relation VALUES(3,1,'REFERENCE');
 
--- Reactions
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(1,1,'memos/1','🎉');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(2,1,'memos/1','👍');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(3,1,'memos/2','✅');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(4,1,'memos/5','💡');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(5,1,'memos/6','🚀');
+-- Reactions (using memo UIDs, not numeric IDs)
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(1,1,'memos/welcome2memos001','🎉');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(2,1,'memos/welcome2memos001','👍');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(3,1,'memos/taskdemo000001','✅');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(4,1,'memos/idea00000001','💡');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(5,1,'memos/sponsor0000001','🚀');
 
 -- System Settings
 INSERT INTO system_setting VALUES ('MEMO_RELATED', '{"contentLengthLimit":8192,"enableAutoCompact":true,"enableComment":true,"enableLocation":true,"defaultVisibility":"PUBLIC","reactions":["👍","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓","+1","🎉","💡","✅"]}', '');

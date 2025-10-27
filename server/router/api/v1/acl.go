@@ -23,11 +23,16 @@ import (
 type ContextKey int
 
 const (
-	// The key name used to store user's ID in the context (for user-based auth).
+	// userIDContextKey stores the authenticated user's ID in the context.
+	// Set for both session-based and token-based authentication.
 	userIDContextKey ContextKey = iota
-	// The key name used to store session ID in the context (for session-based auth).
+
+	// sessionIDContextKey stores the session ID in the context.
+	// Only set for session-based authentication (cookie auth).
 	sessionIDContextKey
-	// The key name used to store access token in the context (for token-based auth).
+
+	// accessTokenContextKey stores the JWT access token in the context.
+	// Only set for token-based authentication (Bearer token).
 	accessTokenContextKey
 )
 
@@ -46,13 +51,26 @@ func NewGRPCAuthInterceptor(store *store.Store, secret string) *GRPCAuthIntercep
 }
 
 // AuthenticationInterceptor is the unary interceptor for gRPC API.
+//
+// Authentication Strategy (in priority order):
+// 1. Session Cookie: Check for "user_session" cookie with format "{userID}-{sessionID}"
+// 2. Access Token: Check for "Authorization: Bearer {token}" header with JWT
+// 3. Public Endpoints: Allow if method is in public allowlist
+// 4. Reject: Return 401 Unauthenticated if none of the above succeed
+//
+// On successful authentication, sets context values:
+// - userIDContextKey: The authenticated user's ID (always set)
+// - sessionIDContextKey: Session ID (only for cookie auth)
+// - accessTokenContextKey: JWT token (only for Bearer token auth).
 func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to parse metadata from incoming context")
 	}
 
-	// Try to authenticate via session ID (from cookie) first
+	// Authentication Method 1: Session-based authentication (Cookie)
+	// Format: Cookie: user_session={userID}-{sessionID}
+	// Used by: Web browsers
 	if sessionCookieValue, err := getSessionIDFromMetadata(md); err == nil && sessionCookieValue != "" {
 		user, err := in.authenticateBySession(ctx, sessionCookieValue)
 		if err == nil && user != nil {
@@ -65,7 +83,9 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 		}
 	}
 
-	// Try to authenticate via JWT access token (from Authorization header)
+	// Authentication Method 2: Token-based authentication (JWT)
+	// Format: Authorization: Bearer {jwt_token}
+	// Used by: Mobile apps, CLI tools, API clients
 	if accessToken, err := getAccessTokenFromMetadata(md); err == nil && accessToken != "" {
 		user, err := in.authenticateByJWT(ctx, accessToken)
 		if err == nil && user != nil {
@@ -73,7 +93,9 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 		}
 	}
 
-	// If no valid authentication found, check if this method is in the allowlist (public endpoints)
+	// Authentication Method 3: Public endpoints
+	// Some endpoints don't require authentication (e.g., login, signup)
+	// Check if this method is in the allowlist
 	if isUnauthorizeAllowedMethod(serverInfo.FullMethod) {
 		return handler(ctx, request)
 	}
@@ -109,6 +131,14 @@ func (in *GRPCAuthInterceptor) handleAuthenticatedRequest(ctx context.Context, r
 }
 
 // authenticateByJWT authenticates a user using JWT access token from Authorization header.
+//
+// Validation steps:
+// 1. Parse and verify JWT signature using server secret
+// 2. Extract user ID from JWT claims (subject field)
+// 3. Verify user exists and is not archived
+// 4. Verify token exists in user's access_tokens list (for revocation support)
+//
+// Returns the authenticated user or an error.
 func (in *GRPCAuthInterceptor) authenticateByJWT(ctx context.Context, accessToken string) (*store.User, error) {
 	if accessToken == "" {
 		return nil, status.Errorf(codes.Unauthenticated, "access token not found")
@@ -160,6 +190,14 @@ func (in *GRPCAuthInterceptor) authenticateByJWT(ctx context.Context, accessToke
 }
 
 // authenticateBySession authenticates a user using session ID from cookie.
+//
+// Validation steps:
+// 1. Parse cookie value to extract userID and sessionID
+// 2. Verify user exists and is not archived
+// 3. Verify session exists in user's sessions list
+// 4. Check session hasn't expired (sliding expiration: 14 days from last access)
+//
+// Returns the authenticated user or an error.
 func (in *GRPCAuthInterceptor) authenticateBySession(ctx context.Context, sessionCookieValue string) (*store.User, error) {
 	if sessionCookieValue == "" {
 		return nil, status.Errorf(codes.Unauthenticated, "session cookie value not found")
@@ -204,6 +242,11 @@ func (in *GRPCAuthInterceptor) updateSessionLastAccessed(ctx context.Context, us
 }
 
 // validateUserSession checks if a session exists and is still valid using sliding expiration.
+//
+// Sliding expiration logic:
+// - Session is valid if: last_accessed_time + 14 days > current_time
+// - Each API call updates last_accessed_time, extending the session
+// - This provides better UX than fixed expiration (users stay logged in while active).
 func validateUserSession(sessionID string, userSessions []*storepb.SessionsUserSetting_Session) bool {
 	for _, session := range userSessions {
 		if sessionID == session.SessionId {
@@ -220,7 +263,10 @@ func validateUserSession(sessionID string, userSessions []*storepb.SessionsUserS
 	return false
 }
 
-// getSessionIDFromMetadata extracts session cookie value from cookie.
+// getSessionIDFromMetadata extracts session cookie value from metadata.
+//
+// Checks both "grpcgateway-cookie" (set by gRPC-Gateway) and "cookie" (set by native gRPC).
+// Cookie format: user_session={userID}-{sessionID}.
 func getSessionIDFromMetadata(md metadata.MD) (string, error) {
 	// Check the cookie header for session cookie value
 	var sessionCookieValue string
@@ -238,7 +284,10 @@ func getSessionIDFromMetadata(md metadata.MD) (string, error) {
 	return sessionCookieValue, nil
 }
 
-// getAccessTokenFromMetadata extracts access token from Authorization header.
+// getAccessTokenFromMetadata extracts JWT access token from Authorization header.
+//
+// Expected header format: Authorization: Bearer {jwt_token}
+// This follows the OAuth 2.0 Bearer token specification (RFC 6750).
 func getAccessTokenFromMetadata(md metadata.MD) (string, error) {
 	// Check the HTTP request Authorization header.
 	authorizationHeaders := md.Get("Authorization")
@@ -252,6 +301,10 @@ func getAccessTokenFromMetadata(md metadata.MD) (string, error) {
 	return authHeaderParts[1], nil
 }
 
+// validateAccessToken checks if the provided JWT token exists in the user's access tokens list.
+//
+// This enables token revocation: when a user deletes a token from their settings,
+// it's removed from this list and subsequent API calls with that token will fail.
 func validateAccessToken(accessTokenString string, userAccessTokens []*storepb.AccessTokensUserSetting_AccessToken) bool {
 	for _, userAccessToken := range userAccessTokens {
 		if accessTokenString == userAccessToken.AccessToken {
