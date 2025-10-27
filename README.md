@@ -22,7 +22,7 @@ Write, organize, and own your knowledge
 
 [**Warp** — The AI-powered terminal built for speed and collaboration](https://go.warp.dev/memos)
 
-![screenshot](https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png)
+![Memos Demo Screenshot](https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png)
 
 </div>
 
@@ -32,28 +32,17 @@ Write, organize, and own your knowledge
 
 Memos is an open-source, self-hosted alternative to cloud note-taking services. No tracking, no ads, no subscription fees — just a clean, fast way to capture and organize your ideas.
 
-- 🔒 **Privacy by design** — All data stays on your server
-- ⚡ **Lightning fast** — Built with Go and React for speed
-- 📝 **Markdown native** — Write naturally with full markdown support
-- 🐳 **Deploy in seconds** — One Docker command to get started
-- 🎨 **Beautiful & minimal** — Focus on your thoughts, not the UI
-- 🔗 **API-first** — Integrate with your workflow seamlessly
+### 🆚 What Makes Memos Different?
 
-## 🚀 Quick Start
-
-Get up and running in **under 30 seconds**:
-
-```bash
-docker run -d \
-  --name memos \
-  -p 5230:5230 \
-  -v ~/.memos:/var/opt/memos \
-  neosmemo/memos:stable
-```
-
-Open `http://localhost:5230` and start writing! 🎉
-
-**Need more options?** Check out our [installation guide](https://www.usememos.com/docs/installation) for Docker Compose, binaries, and building from source.
+| Feature           | Memos                          | Cloud Services                |
+| ----------------- | ------------------------------ | ----------------------------- |
+| **Privacy**       | ✅ Self-hosted, zero telemetry | ❌ Your data on their servers |
+| **Cost**          | ✅ Free forever, MIT license   | ❌ Subscription fees          |
+| **Performance**   | ✅ Instant load, no latency    | ⚠️ Depends on internet        |
+| **Ownership**     | ✅ Full control & export       | ❌ Vendor lock-in             |
+| **API Access**    | ✅ Full REST + gRPC APIs       | ⚠️ Limited or paid            |
+| **Customization** | ✅ Open source, forkable       | ❌ Closed ecosystem           |
+| **Deployment**    | ✅ Single binary, Docker       | ⚠️ SaaS only                  |
 
 ## ✨ Features
 
@@ -73,12 +62,46 @@ Open `http://localhost:5230` and start writing! 🎉
 
 ## 💡 Perfect For
 
-- 📓 **Personal journaling** — Daily thoughts and reflections
-- 🧠 **Knowledge management** — Build your second brain
-- 📋 **Quick notes** — Capture ideas on the go
-- 🔗 **Link collections** — Save and organize useful resources
-- 👥 **Team wikis** — Collaborative knowledge bases
-- 🎓 **Learning logs** — Document your learning journey
+- 📓 **Personal Journaling** — Capture daily thoughts, reflections, and life moments in a private space
+- 🧠 **Knowledge Management** — Build your second brain with interconnected notes and tags
+- 📋 **Quick Captures** — Instantly jot down ideas before they vanish
+- 💻 **Developer Notes** — Store code snippets, commands, and technical references with syntax highlighting
+- 🔗 **Link Collections** — Bookmark and organize articles, resources, and inspiration
+- 👥 **Team Wikis** — Share knowledge across your team with collaborative docs
+- 🎓 **Learning Logs** — Track your learning journey, courses, and new skills
+- 📝 **Meeting Notes** — Keep all your meeting agendas and action items organized
+
+## 🚀 Quick Start
+
+Get up and running in **under 30 seconds**:
+
+```bash
+docker run -d \
+  --name memos \
+  -p 5230:5230 \
+  -v ~/.memos:/var/opt/memos \
+  neosmemo/memos:stable
+```
+
+Open `http://localhost:5230` and start writing! 🎉
+
+### 🎮 Try the Live Demo
+
+Don't want to install yet? Try our [live demo](https://demo.usememos.com/) first!
+
+**Demo Credentials:**
+
+- Username: `demo`
+- Password: `secret`
+
+### 📦 More Deployment Options
+
+**Need more options?** Check out our [installation guide](https://www.usememos.com/docs/installation) for:
+
+- Docker Compose (recommended for production)
+- Pre-built binaries (Linux, macOS, Windows)
+- Kubernetes deployments
+- Building from source
 
 ## 💖 Support Memos
 
