@@ -10,6 +10,7 @@ import { useTranslate } from "@/utils/i18n";
 import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
 import { remarkTag } from "@/utils/remark-plugins/remark-tag";
 import { isSuperUser } from "@/utils/user";
+import { CodeBlock } from "./CodeBlock";
 import { createConditionalComponent, isTagNode, isTaskListItemNode } from "./ConditionalComponent";
 import { MemoContentContext } from "./MemoContentContext";
 import { Tag } from "./Tag";
@@ -102,6 +103,12 @@ const MemoContent = observer((props: Props) => {
               // Conditionally render custom components based on AST node type
               input: createConditionalComponent(TaskListItem, "input", isTaskListItemNode),
               span: createConditionalComponent(Tag, "span", isTagNode),
+              pre: CodeBlock,
+              a: ({ href, children, ...props }) => (
+                <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+                  {children}
+                </a>
+              ),
             }}
           >
             {content}

@@ -84,6 +84,13 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     const targetEl = e.target as HTMLElement;
 
     if (targetEl.tagName === "IMG") {
+      // Check if the image is inside a link
+      const linkElement = targetEl.closest("a");
+      if (linkElement) {
+        // If image is inside a link, only navigate to the link (don't show preview)
+        return;
+      }
+
       const imgUrl = targetEl.getAttribute("src");
       if (imgUrl) {
         setPreviewImage({ open: true, urls: [imgUrl], index: 0 });
