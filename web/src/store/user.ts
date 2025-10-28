@@ -194,8 +194,11 @@ const userStore = (() => {
       return;
     }
 
-    const { settings } = await userServiceClient.listUserSettings({ parent: state.currentUser });
-    const { shortcuts } = await shortcutServiceClient.listShortcuts({ parent: state.currentUser });
+    // Fetch settings and shortcuts in parallel for better performance
+    const [{ settings }, { shortcuts }] = await Promise.all([
+      userServiceClient.listUserSettings({ parent: state.currentUser }),
+      shortcutServiceClient.listShortcuts({ parent: state.currentUser }),
+    ]);
 
     // Extract and store each setting type
     const generalSetting = settings.find((s) => s.generalSetting)?.generalSetting;

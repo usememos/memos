@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { Routes } from "@/router";
-import { memoStore, viewStore } from "@/store";
+import { memoStore, userStore, viewStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "../Empty";
 import MasonryView, { MemoRenderContext } from "../MasonryView";
 import MemoEditor from "../MemoEditor";
+import MemoSkeleton from "../MemoSkeleton";
 
 interface Props {
   renderer: (memo: Memo, context?: MemoRenderContext) => JSX.Element;
@@ -22,6 +23,7 @@ interface Props {
   orderBy?: string;
   filter?: string;
   pageSize?: number;
+  showCreator?: boolean;
 }
 
 const PagedMemoList = observer((props: Props) => {
@@ -55,6 +57,13 @@ const PagedMemoList = observer((props: Props) => {
       });
 
       setNextPageToken(response?.nextPageToken || "");
+
+      // Batch-fetch creators in parallel to avoid individual fetches in MemoView
+      // This significantly improves perceived performance by pre-populating the cache
+      if (response?.memos && props.showCreator) {
+        const uniqueCreators = Array.from(new Set(response.memos.map((memo) => memo.creator)));
+        await Promise.allSettled(uniqueCreators.map((creator) => userStore.getOrFetchUserByName(creator)));
+      }
     } finally {
       setIsRequesting(false);
     }
@@ -134,32 +143,42 @@ const PagedMemoList = observer((props: Props) => {
 
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">
-      <MasonryView
-        memoList={sortedMemoList}
-        renderer={props.renderer}
-        prefixElement={showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" /> : undefined}
-        listMode={viewStore.state.layout === "LIST"}
-      />
-
-      {/* Loading indicator */}
-      {isRequesting && (
-        <div className="w-full flex flex-row justify-center items-center my-4">
-          <LoaderIcon className="animate-spin text-muted-foreground" />
-        </div>
-      )}
-
-      {/* Empty state or back-to-top button */}
-      {!isRequesting && (
+      {/* Show skeleton loader during initial load */}
+      {isRequesting && sortedMemoList.length === 0 ? (
         <>
-          {!nextPageToken && sortedMemoList.length === 0 ? (
-            <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
-              <Empty />
-              <p className="mt-2 text-muted-foreground">{t("message.no-data")}</p>
+          {showMemoEditor && <MemoEditor className="mb-2" cacheKey="home-memo-editor" />}
+          <MemoSkeleton showCreator={props.showCreator} count={6} />
+        </>
+      ) : (
+        <>
+          <MasonryView
+            memoList={sortedMemoList}
+            renderer={props.renderer}
+            prefixElement={showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" /> : undefined}
+            listMode={viewStore.state.layout === "LIST"}
+          />
+
+          {/* Loading indicator for pagination */}
+          {isRequesting && (
+            <div className="w-full flex flex-row justify-center items-center my-4">
+              <LoaderIcon className="animate-spin text-muted-foreground" />
             </div>
-          ) : (
-            <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
-              <BackToTop />
-            </div>
+          )}
+
+          {/* Empty state or back-to-top button */}
+          {!isRequesting && (
+            <>
+              {!nextPageToken && sortedMemoList.length === 0 ? (
+                <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
+                  <Empty />
+                  <p className="mt-2 text-muted-foreground">{t("message.no-data")}</p>
+                </div>
+              ) : (
+                <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
+                  <BackToTop />
+                </div>
+              )}
+            </>
           )}
         </>
       )}

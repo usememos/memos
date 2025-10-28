@@ -30,6 +30,7 @@ const Explore = observer(() => {
               )
           }
           orderBy={viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc"}
+          showCreator
         />
       </div>
     </section>
