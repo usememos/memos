@@ -12,6 +12,18 @@ const THEME_CONTENT: Record<ValidTheme, string | null> = {
   whitewall: whitewallThemeContent,
 };
 
+export interface ThemeOption {
+  value: string;
+  label: string;
+}
+
+export const THEME_OPTIONS: ThemeOption[] = [
+  { value: "default", label: "Default Light" },
+  { value: "default-dark", label: "Default Dark" },
+  { value: "paper", label: "Paper" },
+  { value: "whitewall", label: "Whitewall" },
+];
+
 const validateTheme = (theme: string): ValidTheme => {
   return VALID_THEMES.includes(theme as ValidTheme) ? (theme as ValidTheme) : "default";
 };

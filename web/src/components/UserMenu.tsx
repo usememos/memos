@@ -1,22 +1,58 @@
-import { ArchiveIcon, LogOutIcon, User2Icon, SquareUserIcon, SettingsIcon, BellIcon } from "lucide-react";
+import {
+  ArchiveIcon,
+  LogOutIcon,
+  User2Icon,
+  SquareUserIcon,
+  SettingsIcon,
+  BellIcon,
+  GlobeIcon,
+  PaletteIcon,
+  CheckIcon,
+} from "lucide-react";
+import { observer } from "mobx-react-lite";
 import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { useTranslate } from "@/utils/i18n";
+import { userStore, workspaceStore } from "@/store";
+import { getLocaleDisplayName, useTranslate } from "@/utils/i18n";
+import { THEME_OPTIONS } from "@/utils/theme";
 import UserAvatar from "./UserAvatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 interface Props {
   collapsed?: boolean;
 }
 
-const UserMenu = (props: Props) => {
+const UserMenu = observer((props: Props) => {
   const { collapsed } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
+  const generalSetting = userStore.state.userGeneralSetting;
+  const currentLocale = generalSetting?.locale || "en";
+  const currentTheme = generalSetting?.theme || "default";
+
+  const handleLocaleChange = async (locale: Locale) => {
+    // Update workspace store immediately for instant UI feedback
+    workspaceStore.state.setPartial({ locale });
+    // Persist to user settings
+    await userStore.updateUserGeneralSetting({ locale }, ["locale"]);
+  };
+
+  const handleThemeChange = async (theme: string) => {
+    await userStore.updateUserGeneralSetting({ theme }, ["theme"]);
+  };
 
   const handleSignOut = async () => {
     await authServiceClient.deleteSession({});
@@ -67,6 +103,36 @@ const UserMenu = (props: Props) => {
           <BellIcon className="size-4 text-muted-foreground" />
           {t("common.inbox")}
         </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <GlobeIcon className="size-4 text-muted-foreground" />
+            {t("common.language")}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="max-h-[90vh] overflow-y-auto">
+            {locales.map((locale) => (
+              <DropdownMenuItem key={locale} onClick={() => handleLocaleChange(locale)}>
+                {currentLocale === locale && <CheckIcon className="w-4 h-auto mr-2" />}
+                {currentLocale !== locale && <span className="w-4 mr-2" />}
+                {getLocaleDisplayName(locale)}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <PaletteIcon className="size-4 text-muted-foreground" />
+            {t("setting.preference-section.theme")}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            {THEME_OPTIONS.map((option) => (
+              <DropdownMenuItem key={option.value} onClick={() => handleThemeChange(option.value)}>
+                {currentTheme === option.value && <CheckIcon className="w-4 h-auto mr-2" />}
+                {currentTheme !== option.value && <span className="w-4 mr-2" />}
+                {option.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
         <DropdownMenuItem onClick={() => navigateTo(Routes.SETTING)}>
           <SettingsIcon className="size-4 text-muted-foreground" />
           {t("common.settings")}
@@ -78,6 +144,6 @@ const UserMenu = (props: Props) => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+});
 
 export default UserMenu;

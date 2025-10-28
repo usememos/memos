@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { userStore } from "@/store";
+import { userStore, workspaceStore } from "@/store";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { UserSetting_GeneralSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -16,6 +16,9 @@ const PreferencesSection = observer(() => {
   const generalSetting = userStore.state.userGeneralSetting;
 
   const handleLocaleSelectChange = async (locale: Locale) => {
+    // Update workspace store immediately for instant UI feedback
+    workspaceStore.state.setPartial({ locale });
+    // Persist to user settings
     await userStore.updateUserGeneralSetting({ locale }, ["locale"]);
   };
 
