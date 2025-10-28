@@ -1,7 +1,6 @@
 import { LatLng } from "leaflet";
 import { MapPinIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import LeafletMap from "@/components/LeafletMap";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,10 +47,9 @@ const LocationSelector = (props: Props) => {
 
   useEffect(() => {
     if (popoverOpen && !props.location) {
-      const handleError = (error: any, errorMessage: string) => {
+      const handleError = (error: any) => {
         setState((prev) => ({ ...prev, initialized: true }));
-        toast.error(errorMessage);
-        console.error(error);
+        console.error("Geolocation error:", error);
       };
 
       if (navigator.geolocation) {
@@ -68,11 +66,11 @@ const LocationSelector = (props: Props) => {
             }));
           },
           (error) => {
-            handleError(error, "Failed to get current position");
+            handleError(error);
           },
         );
       } else {
-        handleError("Geolocation is not supported by this browser.", "Geolocation is not supported by this browser.");
+        handleError("Geolocation is not supported by this browser.");
       }
     }
   }, [popoverOpen, props.location]);
@@ -91,16 +89,29 @@ const LocationSelector = (props: Props) => {
     }
 
     // Fetch reverse geocoding data.
-    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${state.position.lat}&lon=${state.position.lng}&format=json`)
+    const lat = state.position.lat;
+    const lng = state.position.lng;
+
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
       .then((response) => response.json())
       .then((data) => {
         if (data && data.display_name) {
           setState((prev) => ({ ...prev, placeholder: data.display_name }));
+        } else {
+          // Fallback to coordinates if no display name
+          setState((prev) => ({
+            ...prev,
+            placeholder: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+          }));
         }
       })
       .catch((error) => {
-        toast.error("Failed to fetch reverse geocoding data");
+        // Silent fallback: use coordinates as placeholder when geocoding fails
         console.error("Failed to fetch reverse geocoding data:", error);
+        setState((prev) => ({
+          ...prev,
+          placeholder: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        }));
       });
   }, [state.position]);
 
