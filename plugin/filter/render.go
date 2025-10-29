@@ -338,13 +338,22 @@ func (r *renderer) renderTagInList(values []ValueExpr) (renderResult, error) {
 
 		switch r.dialect {
 		case DialectSQLite:
-			expr := fmt.Sprintf("%s LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s"%%`, str)))
+			// Support hierarchical tags: match exact tag OR tags with this prefix (e.g., "book" matches "book" and "book/something")
+			exactMatch := fmt.Sprintf("%s LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s"%%`, str)))
+			prefixMatch := fmt.Sprintf("%s LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s/%%`, str)))
+			expr := fmt.Sprintf("(%s OR %s)", exactMatch, prefixMatch)
 			conditions = append(conditions, expr)
 		case DialectMySQL:
-			expr := fmt.Sprintf("JSON_CONTAINS(%s, %s)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
+			// Support hierarchical tags: match exact tag OR tags with this prefix
+			exactMatch := fmt.Sprintf("JSON_CONTAINS(%s, %s)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
+			prefixMatch := fmt.Sprintf("%s LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s/%%`, str)))
+			expr := fmt.Sprintf("(%s OR %s)", exactMatch, prefixMatch)
 			conditions = append(conditions, expr)
 		case DialectPostgres:
-			expr := fmt.Sprintf("%s @> jsonb_build_array(%s::json)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
+			// Support hierarchical tags: match exact tag OR tags with this prefix
+			exactMatch := fmt.Sprintf("%s @> jsonb_build_array(%s::json)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
+			prefixMatch := fmt.Sprintf("%s::text LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s/%%`, str)))
+			expr := fmt.Sprintf("(%s OR %s)", exactMatch, prefixMatch)
 			conditions = append(conditions, expr)
 		default:
 			return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
