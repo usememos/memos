@@ -25,8 +25,6 @@ const (
 	MemoService_GetMemo_FullMethodName             = "/memos.api.v1.MemoService/GetMemo"
 	MemoService_UpdateMemo_FullMethodName          = "/memos.api.v1.MemoService/UpdateMemo"
 	MemoService_DeleteMemo_FullMethodName          = "/memos.api.v1.MemoService/DeleteMemo"
-	MemoService_RenameMemoTag_FullMethodName       = "/memos.api.v1.MemoService/RenameMemoTag"
-	MemoService_DeleteMemoTag_FullMethodName       = "/memos.api.v1.MemoService/DeleteMemoTag"
 	MemoService_SetMemoAttachments_FullMethodName  = "/memos.api.v1.MemoService/SetMemoAttachments"
 	MemoService_ListMemoAttachments_FullMethodName = "/memos.api.v1.MemoService/ListMemoAttachments"
 	MemoService_SetMemoRelations_FullMethodName    = "/memos.api.v1.MemoService/SetMemoRelations"
@@ -52,10 +50,6 @@ type MemoServiceClient interface {
 	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*Memo, error)
 	// DeleteMemo deletes a memo.
 	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// RenameMemoTag renames a tag for a memo.
-	RenameMemoTag(ctx context.Context, in *RenameMemoTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// DeleteMemoTag deletes a tag for a memo.
-	DeleteMemoTag(ctx context.Context, in *DeleteMemoTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// SetMemoAttachments sets attachments for a memo.
 	SetMemoAttachments(ctx context.Context, in *SetMemoAttachmentsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListMemoAttachments lists attachments for a memo.
@@ -128,26 +122,6 @@ func (c *memoServiceClient) DeleteMemo(ctx context.Context, in *DeleteMemoReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MemoService_DeleteMemo_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *memoServiceClient) RenameMemoTag(ctx context.Context, in *RenameMemoTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, MemoService_RenameMemoTag_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *memoServiceClient) DeleteMemoTag(ctx context.Context, in *DeleteMemoTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, MemoService_DeleteMemoTag_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -258,10 +232,6 @@ type MemoServiceServer interface {
 	UpdateMemo(context.Context, *UpdateMemoRequest) (*Memo, error)
 	// DeleteMemo deletes a memo.
 	DeleteMemo(context.Context, *DeleteMemoRequest) (*emptypb.Empty, error)
-	// RenameMemoTag renames a tag for a memo.
-	RenameMemoTag(context.Context, *RenameMemoTagRequest) (*emptypb.Empty, error)
-	// DeleteMemoTag deletes a tag for a memo.
-	DeleteMemoTag(context.Context, *DeleteMemoTagRequest) (*emptypb.Empty, error)
 	// SetMemoAttachments sets attachments for a memo.
 	SetMemoAttachments(context.Context, *SetMemoAttachmentsRequest) (*emptypb.Empty, error)
 	// ListMemoAttachments lists attachments for a memo.
@@ -304,12 +274,6 @@ func (UnimplementedMemoServiceServer) UpdateMemo(context.Context, *UpdateMemoReq
 }
 func (UnimplementedMemoServiceServer) DeleteMemo(context.Context, *DeleteMemoRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMemo not implemented")
-}
-func (UnimplementedMemoServiceServer) RenameMemoTag(context.Context, *RenameMemoTagRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RenameMemoTag not implemented")
-}
-func (UnimplementedMemoServiceServer) DeleteMemoTag(context.Context, *DeleteMemoTagRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteMemoTag not implemented")
 }
 func (UnimplementedMemoServiceServer) SetMemoAttachments(context.Context, *SetMemoAttachmentsRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetMemoAttachments not implemented")
@@ -445,42 +409,6 @@ func _MemoService_DeleteMemo_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemoServiceServer).DeleteMemo(ctx, req.(*DeleteMemoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MemoService_RenameMemoTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RenameMemoTagRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemoServiceServer).RenameMemoTag(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MemoService_RenameMemoTag_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemoServiceServer).RenameMemoTag(ctx, req.(*RenameMemoTagRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MemoService_DeleteMemoTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteMemoTagRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemoServiceServer).DeleteMemoTag(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MemoService_DeleteMemoTag_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemoServiceServer).DeleteMemoTag(ctx, req.(*DeleteMemoTagRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -673,14 +601,6 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteMemo",
 			Handler:    _MemoService_DeleteMemo_Handler,
-		},
-		{
-			MethodName: "RenameMemoTag",
-			Handler:    _MemoService_RenameMemoTag_Handler,
-		},
-		{
-			MethodName: "DeleteMemoTag",
-			Handler:    _MemoService_DeleteMemoTag_Handler,
 		},
 		{
 			MethodName: "SetMemoAttachments",

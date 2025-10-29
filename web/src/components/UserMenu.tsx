@@ -111,8 +111,8 @@ const UserMenu = observer((props: Props) => {
           <DropdownMenuSubContent className="max-h-[90vh] overflow-y-auto">
             {locales.map((locale) => (
               <DropdownMenuItem key={locale} onClick={() => handleLocaleChange(locale)}>
-                {currentLocale === locale && <CheckIcon className="w-4 h-auto mr-2" />}
-                {currentLocale !== locale && <span className="w-4 mr-2" />}
+                {currentLocale === locale && <CheckIcon className="w-4 h-auto" />}
+                {currentLocale !== locale && <span className="w-4" />}
                 {getLocaleDisplayName(locale)}
               </DropdownMenuItem>
             ))}
@@ -126,8 +126,8 @@ const UserMenu = observer((props: Props) => {
           <DropdownMenuSubContent>
             {THEME_OPTIONS.map((option) => (
               <DropdownMenuItem key={option.value} onClick={() => handleThemeChange(option.value)}>
-                {currentTheme === option.value && <CheckIcon className="w-4 h-auto mr-2" />}
-                {currentTheme !== option.value && <span className="w-4 mr-2" />}
+                {currentTheme === option.value && <CheckIcon className="w-4 h-auto" />}
+                {currentTheme !== option.value && <span className="w-4" />}
                 {option.label}
               </DropdownMenuItem>
             ))}

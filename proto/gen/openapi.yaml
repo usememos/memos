@@ -592,16 +592,6 @@ paths:
                      If empty, a unique ID will be generated.
                   schema:
                     type: string
-                - name: validateOnly
-                  in: query
-                  description: Optional. If set, validate the request but don't actually create the memo.
-                  schema:
-                    type: boolean
-                - name: requestId
-                  in: query
-                  description: Optional. An idempotency token.
-                  schema:
-                    type: string
             requestBody:
                 content:
                     application/json:
@@ -634,14 +624,6 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: readMask
-                  in: query
-                  description: |-
-                    Optional. The fields to return in the response.
-                     If not specified, all fields are returned.
-                  schema:
-                    type: string
-                    format: field-mask
             responses:
                 "200":
                     description: OK
@@ -700,11 +682,6 @@ paths:
                   schema:
                     type: string
                     format: field-mask
-                - name: allowMissing
-                  in: query
-                  description: Optional. If set to true, allows updating sensitive fields.
-                  schema:
-                    type: boolean
             requestBody:
                 content:
                     application/json:
@@ -989,64 +966,6 @@ paths:
                     application/json:
                         schema:
                             $ref: '#/components/schemas/SetMemoRelationsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/memos/{memo}/tags:delete:
-        post:
-            tags:
-                - MemoService
-            description: DeleteMemoTag deletes a tag for a memo.
-            operationId: MemoService_DeleteMemoTag
-            parameters:
-                - name: memo
-                  in: path
-                  description: The memo id.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeleteMemoTagRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/memos/{memo}/tags:rename:
-        patch:
-            tags:
-                - MemoService
-            description: RenameMemoTag renames a tag for a memo.
-            operationId: MemoService_RenameMemoTag
-            parameters:
-                - name: memo
-                  in: path
-                  description: The memo id.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/RenameMemoTagRequest'
                 required: true
             responses:
                 "200":
@@ -2269,23 +2188,6 @@ components:
                         Last time the session was accessed.
                          Used for sliding expiration calculation (last_accessed_time + 2 weeks).
                     format: date-time
-        DeleteMemoTagRequest:
-            required:
-                - parent
-                - tag
-            type: object
-            properties:
-                parent:
-                    type: string
-                    description: |-
-                        Required. The parent, who owns the tags.
-                         Format: memos/{memo}. Use "memos/-" to delete all tags.
-                tag:
-                    type: string
-                    description: Required. The tag name to delete.
-                deleteRelatedMemos:
-                    type: boolean
-                    description: Optional. Whether to delete related memos.
         FieldMapping:
             type: object
             properties:
@@ -2483,10 +2385,6 @@ components:
                 nextPageToken:
                     type: string
                     description: A token for the next page of results.
-                totalSize:
-                    type: integer
-                    description: The total count of attachments.
-                    format: int32
         ListMemoCommentsResponse:
             type: object
             properties:
@@ -2528,10 +2426,6 @@ components:
                 nextPageToken:
                     type: string
                     description: A token for the next page of results.
-                totalSize:
-                    type: integer
-                    description: The total count of relations.
-                    format: int32
         ListMemosResponse:
             type: object
             properties:
@@ -2545,10 +2439,6 @@ components:
                     description: |-
                         A token that can be sent as `page_token` to retrieve the next page.
                          If this field is omitted, there are no subsequent pages.
-                totalSize:
-                    type: integer
-                    description: The total count of memos (may be approximate).
-                    format: int32
         ListShortcutsResponse:
             type: object
             properties:
@@ -2833,24 +2723,6 @@ components:
                     type: string
                     description: Output only. The creation timestamp.
                     format: date-time
-        RenameMemoTagRequest:
-            required:
-                - parent
-                - oldTag
-                - newTag
-            type: object
-            properties:
-                parent:
-                    type: string
-                    description: |-
-                        Required. The parent, who owns the tags.
-                         Format: memos/{memo}. Use "memos/-" to rename all tags.
-                oldTag:
-                    type: string
-                    description: Required. The old tag name to rename.
-                newTag:
-                    type: string
-                    description: Required. The new tag name.
         SetMemoAttachmentsRequest:
             required:
                 - name

@@ -115,26 +115,27 @@ const TagItemContainer = observer((props: TagItemContainerProps) => {
 
   return (
     <>
-      <div className="relative flex flex-row justify-between items-center w-full leading-6 py-0 mt-px rounded-lg text-sm select-none shrink-0">
+      <div className="relative flex flex-row justify-between items-center w-full leading-6 py-0 mt-px text-sm select-none shrink-0">
         <div
-          className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-muted-foreground ${
-            isActive && "text-primary!"
+          className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 cursor-pointer transition-colors ${
+            isActive ? "text-primary" : "text-muted-foreground"
           }`}
+          onClick={handleTagClick}
         >
-          <div className="shrink-0">
-            <HashIcon className="w-4 h-auto shrink-0 mr-1 text-muted-foreground" />
-          </div>
-          <span className="truncate cursor-pointer hover:opacity-80" onClick={handleTagClick}>
-            {tag.key} {tag.amount > 1 && `(${tag.amount})`}
+          <HashIcon className="w-4 h-auto shrink-0 mr-1" />
+          <span className={`truncate hover:opacity-80 ${isActive ? "font-medium" : ""}`}>
+            {tag.key} {tag.amount > 1 && <span className="opacity-60">({tag.amount})</span>}
           </span>
         </div>
         <div className="flex flex-row justify-end items-center">
           {hasSubTags ? (
             <span
-              className={`flex flex-row justify-center items-center w-6 h-6 shrink-0 transition-all rotate-0 ${showSubTags && "rotate-90"}`}
+              className={`flex flex-row justify-center items-center w-6 h-6 shrink-0 transition-all rotate-0 cursor-pointer ${
+                showSubTags && "rotate-90"
+              }`}
               onClick={handleToggleBtnClick}
             >
-              <ChevronRightIcon className="w-5 h-5 cursor-pointer text-muted-foreground" />
+              <ChevronRightIcon className="w-5 h-5 text-muted-foreground hover:text-foreground" />
             </span>
           ) : null}
         </div>
@@ -142,7 +143,7 @@ const TagItemContainer = observer((props: TagItemContainerProps) => {
       {hasSubTags ? (
         <div
           className={`w-[calc(100%-0.5rem)] flex flex-col justify-start items-start h-auto ml-2 pl-2 border-l-2 border-l-border ${
-            !showSubTags && "hidden!"
+            !showSubTags && "hidden"
           }`}
         >
           {tag.subTags.map((st, idx) => (

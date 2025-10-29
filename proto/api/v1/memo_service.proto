@@ -46,22 +46,6 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*}"};
     option (google.api.method_signature) = "name";
   }
-  // RenameMemoTag renames a tag for a memo.
-  rpc RenameMemoTag(RenameMemoTagRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      patch: "/api/v1/{parent=memos/*}/tags:rename"
-      body: "*"
-    };
-    option (google.api.method_signature) = "parent,old_tag,new_tag";
-  }
-  // DeleteMemoTag deletes a tag for a memo.
-  rpc DeleteMemoTag(DeleteMemoTagRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/api/v1/{parent=memos/*}/tags:delete"
-      body: "*"
-    };
-    option (google.api.method_signature) = "parent,tag";
-  }
   // SetMemoAttachments sets attachments for a memo.
   rpc SetMemoAttachments(SetMemoAttachmentsRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
@@ -262,12 +246,6 @@ message CreateMemoRequest {
   // Optional. The memo ID to use for this memo.
   // If empty, a unique ID will be generated.
   string memo_id = 2 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. If set, validate the request but don't actually create the memo.
-  bool validate_only = 3 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. An idempotency token.
-  string request_id = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListMemosRequest {
@@ -308,9 +286,6 @@ message ListMemosResponse {
   // A token that can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
   string next_page_token = 2;
-
-  // The total count of memos (may be approximate).
-  int32 total_size = 3;
 }
 
 message GetMemoRequest {
@@ -320,10 +295,6 @@ message GetMemoRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
   ];
-
-  // Optional. The fields to return in the response.
-  // If not specified, all fields are returned.
-  google.protobuf.FieldMask read_mask = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message UpdateMemoRequest {
@@ -333,9 +304,6 @@ message UpdateMemoRequest {
 
   // Required. The list of fields to update.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // Optional. If set to true, allows updating sensitive fields.
-  bool allow_missing = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message DeleteMemoRequest {
@@ -348,36 +316,6 @@ message DeleteMemoRequest {
 
   // Optional. If set to true, the memo will be deleted even if it has associated data.
   bool force = 2 [(google.api.field_behavior) = OPTIONAL];
-}
-
-message RenameMemoTagRequest {
-  // Required. The parent, who owns the tags.
-  // Format: memos/{memo}. Use "memos/-" to rename all tags.
-  string parent = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
-  ];
-
-  // Required. The old tag name to rename.
-  string old_tag = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // Required. The new tag name.
-  string new_tag = 3 [(google.api.field_behavior) = REQUIRED];
-}
-
-message DeleteMemoTagRequest {
-  // Required. The parent, who owns the tags.
-  // Format: memos/{memo}. Use "memos/-" to delete all tags.
-  string parent = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
-  ];
-
-  // Required. The tag name to delete.
-  string tag = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // Optional. Whether to delete related memos.
-  bool delete_related_memos = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message SetMemoAttachmentsRequest {
@@ -413,9 +351,6 @@ message ListMemoAttachmentsResponse {
 
   // A token for the next page of results.
   string next_page_token = 2;
-
-  // The total count of attachments.
-  int32 total_size = 3;
 }
 
 message MemoRelation {
@@ -480,9 +415,6 @@ message ListMemoRelationsResponse {
 
   // A token for the next page of results.
   string next_page_token = 2;
-
-  // The total count of relations.
-  int32 total_size = 3;
 }
 
 message CreateMemoCommentRequest {
