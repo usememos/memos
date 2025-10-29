@@ -147,9 +147,9 @@ message WorkspaceSetting {
     }
     // The S3 config.
     S3Config s3_config = 4;
-    // use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.
+    // enable_s3_image_thumbnails enables thumbnail generation for images stored in S3.
     // When false, images stored in S3 will not have thumbnails generated.
-    bool use_thumbnails_for_s3_images = 5;
+    bool enable_s3_image_thumbnails = 5;
   }
 
   // Memo-related workspace settings and policies.

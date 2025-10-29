@@ -214,7 +214,7 @@ func convertWorkspaceStorageSettingFromStore(settingpb *storepb.WorkspaceStorage
 		StorageType:              v1pb.WorkspaceSetting_StorageSetting_StorageType(settingpb.StorageType),
 		FilepathTemplate:         settingpb.FilepathTemplate,
 		UploadSizeLimitMb:        settingpb.UploadSizeLimitMb,
-		UseThumbnailsForS3Images: settingpb.UseThumbnailsForS3Images,
+		EnableS3ImageThumbnails:  settingpb.EnableS3ImageThumbnails,
 	}
 	if settingpb.S3Config != nil {
 		setting.S3Config = &v1pb.WorkspaceSetting_StorageSetting_S3Config{
@@ -237,7 +237,7 @@ func convertWorkspaceStorageSettingToStore(setting *v1pb.WorkspaceSetting_Storag
 		StorageType:              storepb.WorkspaceStorageSetting_StorageType(setting.StorageType),
 		FilepathTemplate:         setting.FilepathTemplate,
 		UploadSizeLimitMb:        setting.UploadSizeLimitMb,
-		UseThumbnailsForS3Images: setting.UseThumbnailsForS3Images,
+		EnableS3ImageThumbnails:  setting.EnableS3ImageThumbnails,
 	}
 	if setting.S3Config != nil {
 		settingpb.S3Config = &storepb.StorageS3Config{

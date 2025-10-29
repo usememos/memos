@@ -243,11 +243,11 @@ const StorageSection = observer(() => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>{t("setting.storage-section.use-thumbnails-for-s3-images")}</span>
         <Switch
-          checked={workspaceStorageSetting.useThumbnailsForS3Images}
+          checked={workspaceStorageSetting.enableS3ImageThumbnails}
           onCheckedChange={(checked) =>
             setWorkspaceStorageSetting({
               ...workspaceStorageSetting,
-              useThumbnailsForS3Images: checked,
+              enableS3ImageThumbnails: checked,
             })
           }
         />

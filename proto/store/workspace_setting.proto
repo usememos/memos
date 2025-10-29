@@ -83,9 +83,9 @@ message WorkspaceStorageSetting {
   int64 upload_size_limit_mb = 3;
   // The S3 config.
   StorageS3Config s3_config = 4;
-  // use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.
+  // enable_s3_image_thumbnails enables thumbnail generation for images stored in S3.
   // When false, images stored in S3 will not have thumbnails generated.
-  bool use_thumbnails_for_s3_images = 5;
+  bool enable_s3_image_thumbnails = 5;
 }
 
 // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/

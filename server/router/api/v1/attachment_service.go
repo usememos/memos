@@ -247,7 +247,7 @@ func (s *APIV1Service) GetAttachmentBinary(ctx context.Context, request *v1pb.Ge
 			storageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
 			if err != nil {
 				slog.Warn("failed to get workspace storage setting", slog.Any("error", err))
-			} else if !storageSetting.UseThumbnailsForS3Images {
+			} else if !storageSetting.EnableS3ImageThumbnails {
 				shouldGenerateThumbnail = false
 			}
 		}
@@ -408,7 +408,7 @@ func convertAttachmentFromStore(attachment *store.Attachment, workspaceStorageSe
 
 	// Populate use_thumbnail_for_s3_image based on workspace setting and storage type
 	if attachment.StorageType == storepb.AttachmentStorageType_S3 && workspaceStorageSetting != nil {
-		useThumbnail := workspaceStorageSetting.UseThumbnailsForS3Images
+		useThumbnail := workspaceStorageSetting.EnableS3ImageThumbnails
 		attachmentMessage.UseThumbnailForS3Image = &useThumbnail
 	}
 

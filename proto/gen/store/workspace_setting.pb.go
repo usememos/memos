@@ -510,11 +510,11 @@ type WorkspaceStorageSetting struct {
 	UploadSizeLimitMb int64 `protobuf:"varint,3,opt,name=upload_size_limit_mb,json=uploadSizeLimitMb,proto3" json:"upload_size_limit_mb,omitempty"`
 	// The S3 config.
 	S3Config *StorageS3Config `protobuf:"bytes,4,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
-	// use_thumbnails_for_s3_images enables thumbnail generation for images stored in S3.
+	// enable_s3_image_thumbnails enables thumbnail generation for images stored in S3.
 	// When false, images stored in S3 will not have thumbnails generated.
-	UseThumbnailsForS3Images bool `protobuf:"varint,5,opt,name=use_thumbnails_for_s3_images,json=useThumbnailsForS3Images,proto3" json:"use_thumbnails_for_s3_images,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	EnableS3ImageThumbnails bool `protobuf:"varint,5,opt,name=enable_s3_image_thumbnails,json=enableS3ImageThumbnails,proto3" json:"enable_s3_image_thumbnails,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *WorkspaceStorageSetting) Reset() {
@@ -575,9 +575,9 @@ func (x *WorkspaceStorageSetting) GetS3Config() *StorageS3Config {
 	return nil
 }
 
-func (x *WorkspaceStorageSetting) GetUseThumbnailsForS3Images() bool {
+func (x *WorkspaceStorageSetting) GetEnableS3ImageThumbnails() bool {
 	if x != nil {
-		return x.UseThumbnailsForS3Images
+		return x.EnableS3ImageThumbnails
 	}
 	return false
 }
@@ -814,13 +814,13 @@ const file_store_workspace_setting_proto_rawDesc = "" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
 	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x12\x16\n" +
-	"\x06locale\x18\x04 \x01(\tR\x06locale\"\x95\x03\n" +
+	"\x06locale\x18\x04 \x01(\tR\x06locale\"\x92\x03\n" +
 	"\x17WorkspaceStorageSetting\x12S\n" +
 	"\fstorage_type\x18\x01 \x01(\x0e20.memos.store.WorkspaceStorageSetting.StorageTypeR\vstorageType\x12+\n" +
 	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +
 	"\x14upload_size_limit_mb\x18\x03 \x01(\x03R\x11uploadSizeLimitMb\x129\n" +
-	"\ts3_config\x18\x04 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\x12>\n" +
-	"\x1cuse_thumbnails_for_s3_images\x18\x05 \x01(\bR\x18useThumbnailsForS3Images\"L\n" +
+	"\ts3_config\x18\x04 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\x12;\n" +
+	"\x1aenable_s3_image_thumbnails\x18\x05 \x01(\bR\x17enableS3ImageThumbnails\"L\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
