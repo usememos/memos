@@ -8,6 +8,7 @@ import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import LocaleSelect from "../LocaleSelect";
 import ThemeSelect from "../ThemeSelect";
+import ThemeInfoCard from "../ThemeInfoCard";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
 
@@ -47,9 +48,14 @@ const PreferencesSection = observer(() => {
       </div>
 
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.preference-section.theme")}</span>
+        <div className="flex flex-col">
+          <span>{t("setting.preference-section.theme")}</span>
+          <span className="text-xs text-muted-foreground">Your personal theme preference (overrides default)</span>
+        </div>
         <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
       </div>
+
+      <ThemeInfoCard />
 
       <p className="font-medium text-muted-foreground">{t("setting.preference")}</p>
 
