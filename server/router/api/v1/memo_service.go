@@ -679,7 +679,6 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	return response, nil
 }
 
-
 func (s *APIV1Service) getContentLengthLimit(ctx context.Context) (int, error) {
 	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
 	if err != nil {
