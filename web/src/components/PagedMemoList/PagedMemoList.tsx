@@ -14,6 +14,7 @@ import { useTranslate } from "@/utils/i18n";
 import Empty from "../Empty";
 import MasonryView, { MemoRenderContext } from "../MasonryView";
 import MemoEditor from "../MemoEditor";
+import MemoFilters from "../MemoFilters";
 import MemoSkeleton from "../MemoSkeleton";
 
 interface Props {
@@ -153,7 +154,12 @@ const PagedMemoList = observer((props: Props) => {
           <MasonryView
             memoList={sortedMemoList}
             renderer={props.renderer}
-            prefixElement={showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" /> : undefined}
+            prefixElement={
+              <>
+                {showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" /> : undefined}
+                <MemoFilters />
+              </>
+            }
             listMode={viewStore.state.layout === "LIST"}
           />
 

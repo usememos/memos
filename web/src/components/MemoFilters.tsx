@@ -1,11 +1,62 @@
 import { isEqual } from "lodash-es";
-import { CalendarIcon, CheckCircleIcon, CodeIcon, EyeIcon, HashIcon, LinkIcon, BookmarkIcon, SearchIcon, XIcon } from "lucide-react";
+import {
+  BookmarkIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  CodeIcon,
+  EyeIcon,
+  HashIcon,
+  LinkIcon,
+  LucideIcon,
+  SearchIcon,
+  XIcon,
+} from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { memoFilterStore } from "@/store";
 import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters } from "@/store/memoFilter";
 import { useTranslate } from "@/utils/i18n";
+
+interface FilterConfig {
+  icon: LucideIcon;
+  getLabel: (value: string, t: ReturnType<typeof useTranslate>) => string;
+}
+
+const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
+  tagSearch: {
+    icon: HashIcon,
+    getLabel: (value) => value,
+  },
+  visibility: {
+    icon: EyeIcon,
+    getLabel: (value) => value,
+  },
+  contentSearch: {
+    icon: SearchIcon,
+    getLabel: (value) => value,
+  },
+  displayTime: {
+    icon: CalendarIcon,
+    getLabel: (value) => value,
+  },
+  pinned: {
+    icon: BookmarkIcon,
+    getLabel: (value) => value,
+  },
+  "property.hasLink": {
+    icon: LinkIcon,
+    getLabel: (_, t) => t("filters.has-link"),
+  },
+  "property.hasTaskList": {
+    icon: CheckCircleIcon,
+    getLabel: (_, t) => t("filters.has-task-list"),
+  },
+  "property.hasCode": {
+    icon: CodeIcon,
+    getLabel: (_, t) => t("filters.has-code"),
+  },
+};
 
 const MemoFilters = observer(() => {
   const t = useTranslate();
@@ -18,63 +69,51 @@ const MemoFilters = observer(() => {
       searchParams.set("filter", stringifyFilters(filters));
     }
     setSearchParams(searchParams);
-  }, [filters]);
+  }, [filters, setSearchParams]);
 
-  const getFilterDisplayText = (filter: MemoFilter) => {
-    if (filter.value) {
-      return filter.value;
+  const handleRemoveFilter = (filter: MemoFilter) => {
+    memoFilterStore.removeFilter((f: MemoFilter) => isEqual(f, filter));
+  };
+
+  const getFilterDisplayText = (filter: MemoFilter): string => {
+    const config = FILTER_CONFIGS[filter.factor];
+    if (!config) {
+      return filter.value || filter.factor;
     }
-    if (filter.factor.startsWith("property.")) {
-      const factorLabel = filter.factor.replace("property.", "");
-      switch (factorLabel) {
-        case "hasLink":
-          return t("filters.has-link");
-        case "hasCode":
-          return t("filters.has-code");
-        case "hasTaskList":
-          return t("filters.has-task-list");
-        default:
-          return factorLabel;
-      }
-    }
-    return filter.factor;
+    return config.getLabel(filter.value, t);
   };
 
   if (filters.length === 0) {
-    return undefined;
+    return null;
   }
 
   return (
-    <div className="w-full mt-2 flex flex-row justify-start items-center flex-wrap gap-x-2 gap-y-1">
-      {filters.map((filter: MemoFilter) => (
-        <div
-          key={getMemoFilterKey(filter)}
-          className="w-auto leading-7 h-7 shrink-0 flex flex-row items-center gap-1 bg-background border pl-1.5 pr-1 rounded-md hover:line-through cursor-pointer"
-          onClick={() => memoFilterStore.removeFilter((f: MemoFilter) => isEqual(f, filter))}
-        >
-          <FactorIcon className="w-4 h-auto text-muted-foreground opacity-60" factor={filter.factor} />
-          <span className="text-muted-foreground text-sm max-w-32 truncate">{getFilterDisplayText(filter)}</span>
-          <button className="text-muted-foreground opacity-60 hover:opacity-100">
-            <XIcon className="w-4 h-auto" />
-          </button>
-        </div>
-      ))}
+    <div className="w-full mb-2 flex flex-row justify-start items-center flex-wrap gap-2">
+      {filters.map((filter) => {
+        const config = FILTER_CONFIGS[filter.factor];
+        const Icon = config?.icon;
+
+        return (
+          <div
+            key={getMemoFilterKey(filter)}
+            className="group inline-flex items-center gap-1.5 h-7 px-2.5 bg-accent/50 hover:bg-accent border border-border/50 rounded-full text-sm transition-all duration-200 hover:shadow-sm"
+          >
+            {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
+            <span className="text-foreground/80 font-medium max-w-32 truncate">{getFilterDisplayText(filter)}</span>
+            <button
+              onClick={() => handleRemoveFilter(filter)}
+              className="ml-0.5 -mr-1 p-0.5 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"
+              aria-label="Remove filter"
+            >
+              <XIcon className="w-3 h-3" />
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 });
 
-const FactorIcon = ({ factor, className }: { factor: FilterFactor; className?: string }) => {
-  const iconMap = {
-    tagSearch: <HashIcon className={className} />,
-    visibility: <EyeIcon className={className} />,
-    contentSearch: <SearchIcon className={className} />,
-    displayTime: <CalendarIcon className={className} />,
-    pinned: <BookmarkIcon className={className} />,
-    "property.hasLink": <LinkIcon className={className} />,
-    "property.hasTaskList": <CheckCircleIcon className={className} />,
-    "property.hasCode": <CodeIcon className={className} />,
-  };
-  return iconMap[factor as keyof typeof iconMap] || <></>;
-};
+MemoFilters.displayName = "MemoFilters";
 
 export default MemoFilters;

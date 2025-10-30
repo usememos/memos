@@ -11,12 +11,13 @@ import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import useLoading from "@/hooks/useLoading";
-import { viewStore, userStore } from "@/store";
+import { viewStore, userStore, workspaceStore } from "@/store";
 import { extractUserIdFromName } from "@/store/common";
 import memoFilterStore from "@/store/memoFilter";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { User } from "@/types/proto/api/v1/user_service";
+import { WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = observer(() => {
@@ -43,7 +44,7 @@ const UserProfile = observer(() => {
       });
   }, [params.username]);
 
-  // Build filter from active filters - no useMemo needed since component is MobX observer
+  // Build filter from active filters
   const buildMemoFilter = () => {
     if (!user) {
       return undefined;
@@ -55,6 +56,22 @@ const UserProfile = observer(() => {
         conditions.push(`content.contains("${filter.value}")`);
       } else if (filter.factor === "tagSearch") {
         conditions.push(`tag in ["${filter.value}"]`);
+      } else if (filter.factor === "pinned") {
+        conditions.push(`pinned`);
+      } else if (filter.factor === "property.hasLink") {
+        conditions.push(`has_link`);
+      } else if (filter.factor === "property.hasTaskList") {
+        conditions.push(`has_task_list`);
+      } else if (filter.factor === "property.hasCode") {
+        conditions.push(`has_code`);
+      } else if (filter.factor === "displayTime") {
+        const displayWithUpdateTime = workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.MEMO_RELATED).memoRelatedSetting
+          ?.displayWithUpdateTime;
+        const factor = displayWithUpdateTime ? "updated_ts" : "created_ts";
+        const filterDate = new Date(filter.value);
+        const filterUtcTimestamp = filterDate.getTime() + filterDate.getTimezoneOffset() * 60 * 1000;
+        const timestampAfter = filterUtcTimestamp / 1000;
+        conditions.push(`${factor} >= ${timestampAfter} && ${factor} < ${timestampAfter + 60 * 60 * 24}`);
       }
     }
     return conditions.length > 0 ? conditions.join(" && ") : undefined;
