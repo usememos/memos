@@ -78,23 +78,35 @@ paths:
             parameters:
                 - name: pageSize
                   in: query
-                  description: "Optional. The maximum number of attachments to return.\r\n The service may return fewer than this value.\r\n If unspecified, at most 50 attachments will be returned.\r\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+                  description: |-
+                    Optional. The maximum number of attachments to return.
+                     The service may return fewer than this value.
+                     If unspecified, at most 50 attachments will be returned.
+                     The maximum value is 1000; values above 1000 will be coerced to 1000.
                   schema:
                     type: integer
                     format: int32
                 - name: pageToken
                   in: query
-                  description: "Optional. A page token, received from a previous `ListAttachments` call.\r\n Provide this to retrieve the subsequent page."
+                  description: |-
+                    Optional. A page token, received from a previous `ListAttachments` call.
+                     Provide this to retrieve the subsequent page.
                   schema:
                     type: string
                 - name: filter
                   in: query
-                  description: "Optional. Filter to apply to the list results.\r\n Example: \"type=image/png\" or \"filename:*.jpg\"\r\n Supported operators: =, !=, <, <=, >, >=, :\r\n Supported fields: filename, type, size, create_time, memo"
+                  description: |-
+                    Optional. Filter to apply to the list results.
+                     Example: "type=image/png" or "filename:*.jpg"
+                     Supported operators: =, !=, <, <=, >, >=, :
+                     Supported fields: filename, type, size, create_time, memo
                   schema:
                     type: string
                 - name: orderBy
                   in: query
-                  description: "Optional. The order to sort results by.\r\n Example: \"create_time desc\" or \"filename asc\""
+                  description: |-
+                    Optional. The order to sort results by.
+                     Example: "create_time desc" or "filename asc"
                   schema:
                     type: string
             responses:
@@ -118,7 +130,9 @@ paths:
             parameters:
                 - name: attachmentId
                   in: query
-                  description: "Optional. The attachment ID to use for this attachment.\r\n If empty, a unique ID will be generated."
+                  description: |-
+                    Optional. The attachment ID to use for this attachment.
+                     If empty, a unique ID will be generated.
                   schema:
                     type: string
             requestBody:
@@ -502,18 +516,26 @@ paths:
             parameters:
                 - name: pageSize
                   in: query
-                  description: "Optional. The maximum number of memos to return.\r\n The service may return fewer than this value.\r\n If unspecified, at most 50 memos will be returned.\r\n The maximum value is 1000; values above 1000 will be coerced to 1000."
+                  description: |-
+                    Optional. The maximum number of memos to return.
+                     The service may return fewer than this value.
+                     If unspecified, at most 50 memos will be returned.
+                     The maximum value is 1000; values above 1000 will be coerced to 1000.
                   schema:
                     type: integer
                     format: int32
                 - name: pageToken
                   in: query
-                  description: "Optional. A page token, received from a previous `ListMemos` call.\r\n Provide this to retrieve the subsequent page."
+                  description: |-
+                    Optional. A page token, received from a previous `ListMemos` call.
+                     Provide this to retrieve the subsequent page.
                   schema:
                     type: string
                 - name: state
                   in: query
-                  description: "Optional. The state of the memos to list.\r\n Default to `NORMAL`. Set to `ARCHIVED` to list archived memos."
+                  description: |-
+                    Optional. The state of the memos to list.
+                     Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
                   schema:
                     enum:
                         - STATE_UNSPECIFIED
@@ -523,12 +545,20 @@ paths:
                     format: enum
                 - name: orderBy
                   in: query
-                  description: "Optional. The order to sort results by.\r\n Default to \"display_time desc\".\r\n Supports comma-separated list of fields following AIP-132.\r\n Example: \"pinned desc, display_time desc\" or \"create_time asc\"\r\n Supported fields: pinned, display_time, create_time, update_time, name"
+                  description: |-
+                    Optional. The order to sort results by.
+                     Default to "display_time desc".
+                     Supports comma-separated list of fields following AIP-132.
+                     Example: "pinned desc, display_time desc" or "create_time asc"
+                     Supported fields: pinned, display_time, create_time, update_time, name
                   schema:
                     type: string
                 - name: filter
                   in: query
-                  description: "Optional. Filter to apply to the list results.\r\n Filter is a CEL expression to filter memos.\r\n Refer to `Shortcut.filter`."
+                  description: |-
+                    Optional. Filter to apply to the list results.
+                     Filter is a CEL expression to filter memos.
+                     Refer to `Shortcut.filter`.
                   schema:
                     type: string
                 - name: showDeleted
@@ -557,7 +587,9 @@ paths:
             parameters:
                 - name: memoId
                   in: query
-                  description: "Optional. The memo ID to use for this memo.\r\n If empty, a unique ID will be generated."
+                  description: |-
+                    Optional. The memo ID to use for this memo.
+                     If empty, a unique ID will be generated.
                   schema:
                     type: string
                 - name: validateOnly
@@ -604,7 +636,9 @@ paths:
                     type: string
                 - name: readMask
                   in: query
-                  description: "Optional. The fields to return in the response.\r\n If not specified, all fields are returned."
+                  description: |-
+                    Optional. The fields to return in the response.
+                     If not specified, all fields are returned.
                   schema:
                     type: string
                     format: field-mask
@@ -2139,7 +2173,9 @@ components:
             properties:
                 name:
                     type: string
-                    description: "The name of the attachment.\r\n Format: attachments/{attachment}"
+                    description: |-
+                        The name of the attachment.
+                         Format: attachments/{attachment}
                 createTime:
                     readOnly: true
                     type: string
@@ -2165,7 +2201,9 @@ components:
                     description: Output only. The size of the attachment in bytes.
                 memo:
                     type: string
-                    description: "Optional. The related memo. Refer to `Memo.name`.\r\n Format: memos/{memo}"
+                    description: |-
+                        Optional. The related memo. Refer to `Memo.name`.
+                         Format: memos/{memo}
         CreateSessionRequest:
             type: object
             properties:
@@ -2239,7 +2277,9 @@ components:
             properties:
                 parent:
                     type: string
-                    description: "Required. The parent, who owns the tags.\r\n Format: memos/{memo}. Use \"memos/-\" to delete all tags."
+                    description: |-
+                        Required. The parent, who owns the tags.
+                         Format: memos/{memo}. Use "memos/-" to delete all tags.
                 tag:
                     type: string
                     description: Required. The tag name to delete.
@@ -2400,7 +2440,9 @@ components:
                     description: The list of attachments.
                 nextPageToken:
                     type: string
-                    description: "A token that can be sent as `page_token` to retrieve the next page.\r\n If this field is omitted, there are no subsequent pages."
+                    description: |-
+                        A token that can be sent as `page_token` to retrieve the next page.
+                         If this field is omitted, there are no subsequent pages.
                 totalSize:
                     type: integer
                     description: The total count of attachments (may be approximate).
@@ -2500,7 +2542,9 @@ components:
                     description: The list of memos.
                 nextPageToken:
                     type: string
-                    description: "A token that can be sent as `page_token` to retrieve the next page.\r\n If this field is omitted, there are no subsequent pages."
+                    description: |-
+                        A token that can be sent as `page_token` to retrieve the next page.
+                         If this field is omitted, there are no subsequent pages.
                 totalSize:
                     type: integer
                     description: The total count of memos (may be approximate).
@@ -2602,7 +2646,9 @@ components:
             properties:
                 name:
                     type: string
-                    description: "The resource name of the memo.\r\n Format: memos/{memo}, memo is the user defined id or uuid."
+                    description: |-
+                        The resource name of the memo.
+                         Format: memos/{memo}, memo is the user defined id or uuid.
                 state:
                     enum:
                         - STATE_UNSPECIFIED
@@ -2614,7 +2660,9 @@ components:
                 creator:
                     readOnly: true
                     type: string
-                    description: "The name of the creator.\r\n Format: users/{user}"
+                    description: |-
+                        The name of the creator.
+                         Format: users/{user}
                 createTime:
                     readOnly: true
                     type: string
@@ -2674,7 +2722,9 @@ components:
                 parent:
                     readOnly: true
                     type: string
-                    description: "Output only. The name of the parent memo.\r\n Format: memos/{memo}"
+                    description: |-
+                        Output only. The name of the parent memo.
+                         Format: memos/{memo}
                 snippet:
                     readOnly: true
                     type: string
@@ -2712,7 +2762,9 @@ components:
             properties:
                 name:
                     type: string
-                    description: "The resource name of the memo.\r\n Format: memos/{memo}"
+                    description: |-
+                        The resource name of the memo.
+                         Format: memos/{memo}
                 snippet:
                     readOnly: true
                     type: string
@@ -2758,14 +2810,21 @@ components:
                 name:
                     readOnly: true
                     type: string
-                    description: "The resource name of the reaction.\r\n Format: reactions/{reaction}"
+                    description: |-
+                        The resource name of the reaction.
+                         Format: reactions/{reaction}
                 creator:
                     readOnly: true
                     type: string
-                    description: "The resource name of the creator.\r\n Format: users/{user}"
+                    description: |-
+                        The resource name of the creator.
+                         Format: users/{user}
                 contentId:
                     type: string
-                    description: "The resource name of the content.\r\n For memo reactions, this should be the memo's resource name.\r\n Format: memos/{memo}"
+                    description: |-
+                        The resource name of the content.
+                         For memo reactions, this should be the memo's resource name.
+                         Format: memos/{memo}
                 reactionType:
                     type: string
                     description: "Required. The type of reaction (e.g., \"\U0001F44D\", \"❤️\", \"\U0001F604\")."
@@ -2783,7 +2842,9 @@ components:
             properties:
                 parent:
                     type: string
-                    description: "Required. The parent, who owns the tags.\r\n Format: memos/{memo}. Use \"memos/-\" to rename all tags."
+                    description: |-
+                        Required. The parent, who owns the tags.
+                         Format: memos/{memo}. Use "memos/-" to rename all tags.
                 oldTag:
                     type: string
                     description: Required. The old tag name to rename.
@@ -2798,7 +2859,9 @@ components:
             properties:
                 name:
                     type: string
-                    description: "Required. The resource name of the memo.\r\n Format: memos/{memo}"
+                    description: |-
+                        Required. The resource name of the memo.
+                         Format: memos/{memo}
                 attachments:
                     type: array
                     items:
@@ -2812,7 +2875,9 @@ components:
             properties:
                 name:
                     type: string
-                    description: "Required. The resource name of the memo.\r\n Format: memos/{memo}"
+                    description: |-
+                        Required. The resource name of the memo.
+                         Format: memos/{memo}
                 relations:
                     type: array
                     items:
@@ -2865,7 +2930,9 @@ components:
                     type: string
                 usePathStyle:
                     type: boolean
-            description: "S3 configuration for cloud storage backend.\r\n Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/"
+            description: |-
+                S3 configuration for cloud storage backend.
+                 Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
         UpsertMemoReactionRequest:
             required:
                 - name
@@ -2874,7 +2941,9 @@ components:
             properties:
                 name:
                     type: string
-                    description: "Required. The resource name of the memo.\r\n Format: memos/{memo}"
+                    description: |-
+                        Required. The resource name of the memo.
+                         Format: memos/{memo}
                 reaction:
                     allOf:
                         - $ref: '#/components/schemas/Reaction'
@@ -3150,7 +3219,9 @@ components:
             properties:
                 owner:
                     type: string
-                    description: "The name of instance owner.\r\n Format: users/{user}"
+                    description: |-
+                        The name of instance owner.
+                         Format: users/{user}
                 version:
                     type: string
                     description: Version is the current version of instance.
@@ -3166,7 +3237,9 @@ components:
             properties:
                 name:
                     type: string
-                    description: "The name of the workspace setting.\r\n Format: workspace/settings/{setting}"
+                    description: |-
+                        The name of the workspace setting.
+                         Format: workspace/settings/{setting}
                 generalSetting:
                     $ref: '#/components/schemas/WorkspaceSetting_GeneralSetting'
                 storageSetting:
@@ -3179,7 +3252,9 @@ components:
             properties:
                 theme:
                     type: string
-                    description: "theme is the name of the selected theme.\r\n This references a CSS file in the web/public/themes/ directory."
+                    description: |-
+                        theme is the name of the selected theme.
+                         This references a CSS file in the web/public/themes/ directory.
                 disallowUserRegistration:
                     type: boolean
                     description: disallow_user_registration disallows user registration.
@@ -3198,7 +3273,10 @@ components:
                     description: custom_profile is the custom profile.
                 weekStartDayOffset:
                     type: integer
-                    description: "week_start_day_offset is the week start day offset from Sunday.\r\n 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday\r\n Default is Sunday."
+                    description: |-
+                        week_start_day_offset is the week start day offset from Sunday.
+                         0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+                         Default is Sunday.
                     format: int32
                 disallowChangeUsername:
                     type: boolean
@@ -3257,7 +3335,9 @@ components:
                     format: enum
                 filepathTemplate:
                     type: string
-                    description: "The template of file path.\r\n e.g. assets/{timestamp}_{filename}"
+                    description: |-
+                        The template of file path.
+                         e.g. assets/{timestamp}_{filename}
                 uploadSizeLimitMb:
                     type: string
                     description: The max upload size in megabytes.
@@ -3267,7 +3347,9 @@ components:
                     description: The S3 config.
                 enableS3ImageThumbnails:
                     type: boolean
-                    description: "enable_s3_image_thumbnails enables thumbnail generation for images stored in S3.\r\n When false, images stored in S3 will not have thumbnails generated."
+                    description: |-
+                        enable_s3_image_thumbnails enables thumbnail generation for images stored in S3.
+                         When false, images stored in S3 will not have thumbnails generated.
             description: Storage configuration settings for workspace attachments.
 tags:
     - name: ActivityService
