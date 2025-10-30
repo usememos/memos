@@ -84,9 +84,6 @@ message Attachment {
   // Optional. The related memo. Refer to `Memo.name`.
   // Format: memos/{memo}
   optional string memo = 8 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. Output only. Whether to use thumbnails for this attachment when stored in S3.
-  optional bool use_thumbnail_for_s3_image = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateAttachmentRequest {
