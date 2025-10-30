@@ -1,4 +1,6 @@
+import workspaceStore from "@/store/workspace";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
+import { WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 
 export const getAttachmentUrl = (attachment: Attachment) => {
   if (attachment.externalLink) {
@@ -10,7 +12,10 @@ export const getAttachmentUrl = (attachment: Attachment) => {
 
 export const getAttachmentThumbnailUrl = (attachment: Attachment) => {
   // Don't request thumbnails for S3 images if the setting is disabled
-  if (attachment.externalLink && !attachment.useThumbnailForS3Image) {
+  if (
+    attachment.externalLink &&
+    !(workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE).storageSetting?.enableS3ImageThumbnails ?? false)
+  ) {
     return getAttachmentUrl(attachment);
   }
 

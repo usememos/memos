@@ -247,6 +247,7 @@ export const initialWorkspaceStore = async (): Promise<void> => {
     await Promise.all([
       workspaceStore.fetchWorkspaceSetting(WorkspaceSetting_Key.GENERAL),
       workspaceStore.fetchWorkspaceSetting(WorkspaceSetting_Key.MEMO_RELATED),
+      workspaceStore.fetchWorkspaceSetting(WorkspaceSetting_Key.STORAGE),
     ]);
 
     // Apply settings to state

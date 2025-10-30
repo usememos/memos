@@ -70,12 +70,9 @@ func (s *APIV1Service) GetWorkspaceSetting(ctx context.Context, request *v1pb.Ge
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 		}
-		if user == nil {
-			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-		}
 
 		// Host can see everything, regular users only see enable_s3_image_thumbnails.
-		if user.Role != store.RoleHost {
+		if user == nil || user.Role != store.RoleHost {
 			// Convert and filter for non-host users.
 			convertedSetting := convertWorkspaceStorageSettingFromStore(workspaceSetting.GetStorageSetting())
 			// Clear sensitive fields.
