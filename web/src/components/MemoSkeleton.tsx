@@ -11,7 +11,7 @@ const MemoSkeleton = ({ showCreator = false, count = 6 }: Props) => {
       {Array.from({ length: count }).map((_, index) => (
         <div
           key={index}
-          className="relative flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 rounded-lg border border-border animate-pulse"
+          className="relative flex flex-col justify-start items-start bg-card w-full max-w-2xl mx-auto px-4 py-3 mb-2 gap-2 rounded-lg border border-border animate-pulse"
         >
           {/* Header section */}
           <div className="w-full flex flex-row justify-between items-center gap-2">
