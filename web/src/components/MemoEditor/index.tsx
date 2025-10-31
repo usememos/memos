@@ -6,9 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
-import VisibilityIcon from "@/components/VisibilityIcon";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
@@ -22,13 +20,11 @@ import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/t
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import DateTimeInput from "../DateTimeInput";
-import AddMemoRelationPopover from "./ActionButton/AddMemoRelationPopover";
-import LocationSelector from "./ActionButton/LocationSelector";
-import MarkdownMenu from "./ActionButton/MarkdownMenu";
-import TagSelector from "./ActionButton/TagSelector";
-import UploadAttachmentButton from "./ActionButton/UploadAttachmentButton";
+import InsertMenu from "./ActionButton/InsertMenu";
+import VisibilitySelector from "./ActionButton/VisibilitySelector";
 import AttachmentListView from "./AttachmentListView";
 import Editor, { EditorRefActions } from "./Editor";
+import LocationView from "./LocationView";
 import RelationListView from "./RelationListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
@@ -494,17 +490,23 @@ const MemoEditor = observer((props: Props) => {
         onCompositionEnd={handleCompositionEnd}
       >
         <Editor ref={editorRef} {...editorConfig} />
+        <LocationView
+          location={state.location}
+          onRemove={() =>
+            setState((prevState) => ({
+              ...prevState,
+              location: undefined,
+            }))
+          }
+        />
         <AttachmentListView attachmentList={state.attachmentList} setAttachmentList={handleSetAttachmentList} />
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
-        <div className="relative w-full flex flex-row justify-between items-center py-1 gap-2" onFocus={(e) => e.stopPropagation()}>
-          <div className="flex flex-row justify-start items-center opacity-60 shrink-1">
-            <TagSelector editorRef={editorRef} />
-            <MarkdownMenu editorRef={editorRef} />
-            <UploadAttachmentButton isUploading={state.isUploadingAttachment} />
-            <AddMemoRelationPopover />
-            <LocationSelector
+        <div className="relative w-full flex flex-row justify-between items-center pt-2 gap-2" onFocus={(e) => e.stopPropagation()}>
+          <div className="flex flex-row justify-start items-center gap-1">
+            <InsertMenu
+              isUploading={state.isUploadingAttachment}
               location={state.location}
-              onChange={(location) =>
+              onLocationChange={(location) =>
                 setState((prevState) => ({
                   ...prevState,
                   location,
@@ -512,39 +514,15 @@ const MemoEditor = observer((props: Props) => {
               }
             />
           </div>
-          <div className="shrink-0 -mr-1 flex flex-row justify-end items-center gap-1">
+          <div className="shrink-0 flex flex-row justify-end items-center gap-1">
+            <VisibilitySelector value={state.memoVisibility} onChange={(visibility) => handleMemoVisibilityChange(visibility)} />
             {props.onCancel && (
-              <Button variant="ghost" className="opacity-60" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
+              <Button variant="ghost" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
                 {t("common.cancel")}
               </Button>
             )}
             <Button disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick}>
-              {t("editor.save")}
-              {!state.isRequesting ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                    <span className="pointer-events-auto">
-                      <VisibilityIcon visibility={state.memoVisibility} className="w-4 h-auto ml-1 text-primary-foreground opacity-80" />
-                    </span>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" alignOffset={-12} sideOffset={12} onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenuItem onClick={() => handleMemoVisibilityChange(Visibility.PRIVATE)}>
-                      <VisibilityIcon visibility={Visibility.PRIVATE} className="w-4 h-4" />
-                      {t("memo.visibility.private")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleMemoVisibilityChange(Visibility.PROTECTED)}>
-                      <VisibilityIcon visibility={Visibility.PROTECTED} className="w-4 h-4" />
-                      {t("memo.visibility.protected")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleMemoVisibilityChange(Visibility.PUBLIC)}>
-                      <VisibilityIcon visibility={Visibility.PUBLIC} className="w-4 h-4" />
-                      {t("memo.visibility.public")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <LoaderIcon className="w-4 h-auto ml-1 animate-spin" />
-              )}
+              {state.isRequesting ? <LoaderIcon className="w-4 h-4 animate-spin" /> : t("editor.save")}
             </Button>
           </div>
         </div>

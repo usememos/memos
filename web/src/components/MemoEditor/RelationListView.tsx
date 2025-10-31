@@ -37,12 +37,12 @@ const RelationListView = observer((props: Props) => {
             return (
               <div
                 key={memo.name}
-                className="w-auto max-w-xs overflow-hidden flex flex-row justify-start items-center bg-muted hover:opacity-80 rounded-md text-sm p-1 px-2 text-muted-foreground cursor-pointer hover:line-through"
+                className="group relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background text-secondary-foreground text-xs transition-colors hover:bg-accent cursor-pointer"
                 onClick={() => handleDeleteRelation(memo)}
               >
-                <LinkIcon className="w-4 h-auto shrink-0 opacity-80" />
-                <span className="mx-1 max-w-full text-ellipsis whitespace-nowrap overflow-hidden">{memo.snippet}</span>
-                <XIcon className="w-4 h-auto cursor-pointer shrink-0 opacity-60 hover:opacity-100" />
+                <LinkIcon className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+                <span className="truncate max-w-[160px]">{memo.snippet}</span>
+                <XIcon className="w-3 h-3 shrink-0 text-muted-foreground" />
               </div>
             );
           })}
