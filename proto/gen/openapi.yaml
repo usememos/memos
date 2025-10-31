@@ -442,71 +442,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/inboxes/{inboxe}:
-        delete:
-            tags:
-                - InboxService
-            description: DeleteInbox deletes an inbox.
-            operationId: InboxService_DeleteInbox
-            parameters:
-                - name: inboxe
-                  in: path
-                  description: The inboxe id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        patch:
-            tags:
-                - InboxService
-            description: UpdateInbox updates an inbox.
-            operationId: InboxService_UpdateInbox
-            parameters:
-                - name: inboxe
-                  in: path
-                  description: The inboxe id.
-                  required: true
-                  schema:
-                    type: string
-                - name: updateMask
-                  in: query
-                  description: Required. The list of fields to update.
-                  schema:
-                    type: string
-                    format: field-mask
-                - name: allowMissing
-                  in: query
-                  description: Optional. If set to true, allows updating missing fields.
-                  schema:
-                    type: boolean
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/Inbox'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Inbox'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/v1/memos:
         get:
             tags:
@@ -1329,12 +1264,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}/inboxes:
+    /api/v1/users/{user}/notifications:
         get:
             tags:
-                - InboxService
-            description: ListInboxes lists inboxes for a user.
-            operationId: InboxService_ListInboxes
+                - UserService
+            description: ListUserNotifications lists notifications for a user.
+            operationId: UserService_ListUserNotifications
             parameters:
                 - name: user
                   in: path
@@ -1344,35 +1279,15 @@ paths:
                     type: string
                 - name: pageSize
                   in: query
-                  description: |-
-                    Optional. The maximum number of inboxes to return.
-                     The service may return fewer than this value.
-                     If unspecified, at most 50 inboxes will be returned.
-                     The maximum value is 1000; values above 1000 will be coerced to 1000.
                   schema:
                     type: integer
                     format: int32
                 - name: pageToken
                   in: query
-                  description: |-
-                    Optional. A page token, received from a previous `ListInboxes` call.
-                     Provide this to retrieve the subsequent page.
                   schema:
                     type: string
                 - name: filter
                   in: query
-                  description: |-
-                    Optional. Filter to apply to the list results.
-                     Example: "status=UNREAD" or "type=MEMO_COMMENT"
-                     Supported operators: =, !=
-                     Supported fields: status, type, sender, create_time
-                  schema:
-                    type: string
-                - name: orderBy
-                  in: query
-                  description: |-
-                    Optional. The order to sort results by.
-                     Example: "create_time desc" or "status asc"
                   schema:
                     type: string
             responses:
@@ -1381,7 +1296,78 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListInboxesResponse'
+                                $ref: '#/components/schemas/ListUserNotificationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/notifications/{notification}:
+        delete:
+            tags:
+                - UserService
+            description: DeleteUserNotification deletes a notification.
+            operationId: UserService_DeleteUserNotification
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: notification
+                  in: path
+                  description: The notification id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - UserService
+            description: UpdateUserNotification updates a notification.
+            operationId: UserService_UpdateUserNotification
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: notification
+                  in: path
+                  description: The notification id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserNotification'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserNotification'
                 default:
                     description: Default error response
                     content:
@@ -2039,7 +2025,6 @@ components:
                     enum:
                         - TYPE_UNSPECIFIED
                         - MEMO_COMMENT
-                        - VERSION_UPDATE
                     type: string
                     description: The type of the activity.
                     format: enum
@@ -2264,52 +2249,6 @@ components:
             properties:
                 oauth2Config:
                     $ref: '#/components/schemas/OAuth2Config'
-        Inbox:
-            type: object
-            properties:
-                name:
-                    type: string
-                    description: |-
-                        The resource name of the inbox.
-                         Format: inboxes/{inbox}
-                sender:
-                    readOnly: true
-                    type: string
-                    description: |-
-                        The sender of the inbox notification.
-                         Format: users/{user}
-                receiver:
-                    readOnly: true
-                    type: string
-                    description: |-
-                        The receiver of the inbox notification.
-                         Format: users/{user}
-                status:
-                    enum:
-                        - STATUS_UNSPECIFIED
-                        - UNREAD
-                        - ARCHIVED
-                    type: string
-                    description: The status of the inbox notification.
-                    format: enum
-                createTime:
-                    readOnly: true
-                    type: string
-                    description: Output only. The creation timestamp.
-                    format: date-time
-                type:
-                    readOnly: true
-                    enum:
-                        - TYPE_UNSPECIFIED
-                        - MEMO_COMMENT
-                        - VERSION_UPDATE
-                    type: string
-                    description: The type of the inbox notification.
-                    format: enum
-                activityId:
-                    type: integer
-                    description: Optional. The activity ID associated with this inbox notification.
-                    format: int32
         ListActivitiesResponse:
             type: object
             properties:
@@ -2357,23 +2296,6 @@ components:
                     items:
                         $ref: '#/components/schemas/IdentityProvider'
                     description: The list of identity providers.
-        ListInboxesResponse:
-            type: object
-            properties:
-                inboxes:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Inbox'
-                    description: The list of inboxes.
-                nextPageToken:
-                    type: string
-                    description: |-
-                        A token that can be sent as `page_token` to retrieve the next page.
-                         If this field is omitted, there are no subsequent pages.
-                totalSize:
-                    type: integer
-                    description: The total count of inboxes (may be approximate).
-                    format: int32
         ListMemoAttachmentsResponse:
             type: object
             properties:
@@ -2462,6 +2384,15 @@ components:
                     type: integer
                     description: The total count of access tokens.
                     format: int32
+        ListUserNotificationsResponse:
+            type: object
+            properties:
+                notifications:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserNotification'
+                nextPageToken:
+                    type: string
         ListUserSessionsResponse:
             type: object
             properties:
@@ -2903,6 +2834,46 @@ components:
                     description: Optional. The expiration timestamp.
                     format: date-time
             description: User access token message
+        UserNotification:
+            type: object
+            properties:
+                name:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The resource name of the notification.
+                         Format: users/{user}/notifications/{notification}
+                sender:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The sender of the notification.
+                         Format: users/{user}
+                status:
+                    enum:
+                        - STATUS_UNSPECIFIED
+                        - UNREAD
+                        - ARCHIVED
+                    type: string
+                    description: The status of the notification.
+                    format: enum
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: The creation timestamp.
+                    format: date-time
+                type:
+                    readOnly: true
+                    enum:
+                        - TYPE_UNSPECIFIED
+                        - MEMO_COMMENT
+                    type: string
+                    description: The type of the notification.
+                    format: enum
+                activityId:
+                    type: integer
+                    description: The activity ID associated with this notification.
+                    format: int32
         UserSession:
             type: object
             properties:
@@ -3223,7 +3194,6 @@ tags:
     - name: AttachmentService
     - name: AuthService
     - name: IdentityProviderService
-    - name: InboxService
     - name: MemoService
     - name: ShortcutService
     - name: UserService

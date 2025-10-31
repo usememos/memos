@@ -1,14 +1,4 @@
-import {
-  ArchiveIcon,
-  LogOutIcon,
-  User2Icon,
-  SquareUserIcon,
-  SettingsIcon,
-  BellIcon,
-  GlobeIcon,
-  PaletteIcon,
-  CheckIcon,
-} from "lucide-react";
+import { ArchiveIcon, LogOutIcon, User2Icon, SquareUserIcon, SettingsIcon, GlobeIcon, PaletteIcon, CheckIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -98,10 +88,6 @@ const UserMenu = observer((props: Props) => {
         <DropdownMenuItem onClick={() => navigateTo(Routes.ARCHIVED)}>
           <ArchiveIcon className="size-4 text-muted-foreground" />
           {t("common.archived")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigateTo(Routes.INBOX)}>
-          <BellIcon className="size-4 text-muted-foreground" />
-          {t("common.inbox")}
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>

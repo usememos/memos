@@ -89,8 +89,6 @@ export enum Inbox_Type {
   TYPE_UNSPECIFIED = "TYPE_UNSPECIFIED",
   /** MEMO_COMMENT - Memo comment notification. */
   MEMO_COMMENT = "MEMO_COMMENT",
-  /** VERSION_UPDATE - Version update notification. */
-  VERSION_UPDATE = "VERSION_UPDATE",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
 
@@ -102,9 +100,6 @@ export function inbox_TypeFromJSON(object: any): Inbox_Type {
     case 1:
     case "MEMO_COMMENT":
       return Inbox_Type.MEMO_COMMENT;
-    case 2:
-    case "VERSION_UPDATE":
-      return Inbox_Type.VERSION_UPDATE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -118,8 +113,6 @@ export function inbox_TypeToNumber(object: Inbox_Type): number {
       return 0;
     case Inbox_Type.MEMO_COMMENT:
       return 1;
-    case Inbox_Type.VERSION_UPDATE:
-      return 2;
     case Inbox_Type.UNRECOGNIZED:
     default:
       return -1;

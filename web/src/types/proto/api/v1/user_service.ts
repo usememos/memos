@@ -579,6 +579,127 @@ export interface DeleteUserWebhookRequest {
   name: string;
 }
 
+export interface UserNotification {
+  /**
+   * The resource name of the notification.
+   * Format: users/{user}/notifications/{notification}
+   */
+  name: string;
+  /**
+   * The sender of the notification.
+   * Format: users/{user}
+   */
+  sender: string;
+  /** The status of the notification. */
+  status: UserNotification_Status;
+  /** The creation timestamp. */
+  createTime?:
+    | Date
+    | undefined;
+  /** The type of the notification. */
+  type: UserNotification_Type;
+  /** The activity ID associated with this notification. */
+  activityId?: number | undefined;
+}
+
+export enum UserNotification_Status {
+  STATUS_UNSPECIFIED = "STATUS_UNSPECIFIED",
+  UNREAD = "UNREAD",
+  ARCHIVED = "ARCHIVED",
+  UNRECOGNIZED = "UNRECOGNIZED",
+}
+
+export function userNotification_StatusFromJSON(object: any): UserNotification_Status {
+  switch (object) {
+    case 0:
+    case "STATUS_UNSPECIFIED":
+      return UserNotification_Status.STATUS_UNSPECIFIED;
+    case 1:
+    case "UNREAD":
+      return UserNotification_Status.UNREAD;
+    case 2:
+    case "ARCHIVED":
+      return UserNotification_Status.ARCHIVED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return UserNotification_Status.UNRECOGNIZED;
+  }
+}
+
+export function userNotification_StatusToNumber(object: UserNotification_Status): number {
+  switch (object) {
+    case UserNotification_Status.STATUS_UNSPECIFIED:
+      return 0;
+    case UserNotification_Status.UNREAD:
+      return 1;
+    case UserNotification_Status.ARCHIVED:
+      return 2;
+    case UserNotification_Status.UNRECOGNIZED:
+    default:
+      return -1;
+  }
+}
+
+export enum UserNotification_Type {
+  TYPE_UNSPECIFIED = "TYPE_UNSPECIFIED",
+  MEMO_COMMENT = "MEMO_COMMENT",
+  UNRECOGNIZED = "UNRECOGNIZED",
+}
+
+export function userNotification_TypeFromJSON(object: any): UserNotification_Type {
+  switch (object) {
+    case 0:
+    case "TYPE_UNSPECIFIED":
+      return UserNotification_Type.TYPE_UNSPECIFIED;
+    case 1:
+    case "MEMO_COMMENT":
+      return UserNotification_Type.MEMO_COMMENT;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return UserNotification_Type.UNRECOGNIZED;
+  }
+}
+
+export function userNotification_TypeToNumber(object: UserNotification_Type): number {
+  switch (object) {
+    case UserNotification_Type.TYPE_UNSPECIFIED:
+      return 0;
+    case UserNotification_Type.MEMO_COMMENT:
+      return 1;
+    case UserNotification_Type.UNRECOGNIZED:
+    default:
+      return -1;
+  }
+}
+
+export interface ListUserNotificationsRequest {
+  /**
+   * The parent user resource.
+   * Format: users/{user}
+   */
+  parent: string;
+  pageSize: number;
+  pageToken: string;
+  filter: string;
+}
+
+export interface ListUserNotificationsResponse {
+  notifications: UserNotification[];
+  nextPageToken: string;
+}
+
+export interface UpdateUserNotificationRequest {
+  notification?: UserNotification | undefined;
+  updateMask?: string[] | undefined;
+}
+
+export interface DeleteUserNotificationRequest {
+  /** Format: users/{user}/notifications/{notification} */
+  name: string;
+}
+
 function createBaseUser(): User {
   return {
     name: "",
@@ -3206,6 +3327,365 @@ export const DeleteUserWebhookRequest: MessageFns<DeleteUserWebhookRequest> = {
   },
 };
 
+function createBaseUserNotification(): UserNotification {
+  return {
+    name: "",
+    sender: "",
+    status: UserNotification_Status.STATUS_UNSPECIFIED,
+    createTime: undefined,
+    type: UserNotification_Type.TYPE_UNSPECIFIED,
+    activityId: undefined,
+  };
+}
+
+export const UserNotification: MessageFns<UserNotification> = {
+  encode(message: UserNotification, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.sender !== "") {
+      writer.uint32(18).string(message.sender);
+    }
+    if (message.status !== UserNotification_Status.STATUS_UNSPECIFIED) {
+      writer.uint32(24).int32(userNotification_StatusToNumber(message.status));
+    }
+    if (message.createTime !== undefined) {
+      Timestamp.encode(toTimestamp(message.createTime), writer.uint32(34).fork()).join();
+    }
+    if (message.type !== UserNotification_Type.TYPE_UNSPECIFIED) {
+      writer.uint32(40).int32(userNotification_TypeToNumber(message.type));
+    }
+    if (message.activityId !== undefined) {
+      writer.uint32(48).int32(message.activityId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UserNotification {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUserNotification();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.sender = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.status = userNotification_StatusFromJSON(reader.int32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.createTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.type = userNotification_TypeFromJSON(reader.int32());
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.activityId = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<UserNotification>): UserNotification {
+    return UserNotification.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<UserNotification>): UserNotification {
+    const message = createBaseUserNotification();
+    message.name = object.name ?? "";
+    message.sender = object.sender ?? "";
+    message.status = object.status ?? UserNotification_Status.STATUS_UNSPECIFIED;
+    message.createTime = object.createTime ?? undefined;
+    message.type = object.type ?? UserNotification_Type.TYPE_UNSPECIFIED;
+    message.activityId = object.activityId ?? undefined;
+    return message;
+  },
+};
+
+function createBaseListUserNotificationsRequest(): ListUserNotificationsRequest {
+  return { parent: "", pageSize: 0, pageToken: "", filter: "" };
+}
+
+export const ListUserNotificationsRequest: MessageFns<ListUserNotificationsRequest> = {
+  encode(message: ListUserNotificationsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.parent !== "") {
+      writer.uint32(10).string(message.parent);
+    }
+    if (message.pageSize !== 0) {
+      writer.uint32(16).int32(message.pageSize);
+    }
+    if (message.pageToken !== "") {
+      writer.uint32(26).string(message.pageToken);
+    }
+    if (message.filter !== "") {
+      writer.uint32(34).string(message.filter);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListUserNotificationsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListUserNotificationsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.parent = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.pageSize = reader.int32();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.pageToken = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.filter = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<ListUserNotificationsRequest>): ListUserNotificationsRequest {
+    return ListUserNotificationsRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ListUserNotificationsRequest>): ListUserNotificationsRequest {
+    const message = createBaseListUserNotificationsRequest();
+    message.parent = object.parent ?? "";
+    message.pageSize = object.pageSize ?? 0;
+    message.pageToken = object.pageToken ?? "";
+    message.filter = object.filter ?? "";
+    return message;
+  },
+};
+
+function createBaseListUserNotificationsResponse(): ListUserNotificationsResponse {
+  return { notifications: [], nextPageToken: "" };
+}
+
+export const ListUserNotificationsResponse: MessageFns<ListUserNotificationsResponse> = {
+  encode(message: ListUserNotificationsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.notifications) {
+      UserNotification.encode(v!, writer.uint32(10).fork()).join();
+    }
+    if (message.nextPageToken !== "") {
+      writer.uint32(18).string(message.nextPageToken);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListUserNotificationsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListUserNotificationsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.notifications.push(UserNotification.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.nextPageToken = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<ListUserNotificationsResponse>): ListUserNotificationsResponse {
+    return ListUserNotificationsResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ListUserNotificationsResponse>): ListUserNotificationsResponse {
+    const message = createBaseListUserNotificationsResponse();
+    message.notifications = object.notifications?.map((e) => UserNotification.fromPartial(e)) || [];
+    message.nextPageToken = object.nextPageToken ?? "";
+    return message;
+  },
+};
+
+function createBaseUpdateUserNotificationRequest(): UpdateUserNotificationRequest {
+  return { notification: undefined, updateMask: undefined };
+}
+
+export const UpdateUserNotificationRequest: MessageFns<UpdateUserNotificationRequest> = {
+  encode(message: UpdateUserNotificationRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.notification !== undefined) {
+      UserNotification.encode(message.notification, writer.uint32(10).fork()).join();
+    }
+    if (message.updateMask !== undefined) {
+      FieldMask.encode(FieldMask.wrap(message.updateMask), writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateUserNotificationRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateUserNotificationRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.notification = UserNotification.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.updateMask = FieldMask.unwrap(FieldMask.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<UpdateUserNotificationRequest>): UpdateUserNotificationRequest {
+    return UpdateUserNotificationRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<UpdateUserNotificationRequest>): UpdateUserNotificationRequest {
+    const message = createBaseUpdateUserNotificationRequest();
+    message.notification = (object.notification !== undefined && object.notification !== null)
+      ? UserNotification.fromPartial(object.notification)
+      : undefined;
+    message.updateMask = object.updateMask ?? undefined;
+    return message;
+  },
+};
+
+function createBaseDeleteUserNotificationRequest(): DeleteUserNotificationRequest {
+  return { name: "" };
+}
+
+export const DeleteUserNotificationRequest: MessageFns<DeleteUserNotificationRequest> = {
+  encode(message: DeleteUserNotificationRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteUserNotificationRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteUserNotificationRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  create(base?: DeepPartial<DeleteUserNotificationRequest>): DeleteUserNotificationRequest {
+    return DeleteUserNotificationRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DeleteUserNotificationRequest>): DeleteUserNotificationRequest {
+    const message = createBaseDeleteUserNotificationRequest();
+    message.name = object.name ?? "";
+    return message;
+  },
+};
+
 export type UserServiceDefinition = typeof UserServiceDefinition;
 export const UserServiceDefinition = {
   name: "UserService",
@@ -4308,6 +4788,235 @@ export const UserServiceDefinition = {
               111,
               111,
               107,
+              115,
+              47,
+              42,
+              125,
+            ]),
+          ],
+        },
+      },
+    },
+    /** ListUserNotifications lists notifications for a user. */
+    listUserNotifications: {
+      name: "ListUserNotifications",
+      requestType: ListUserNotificationsRequest,
+      requestStream: false,
+      responseType: ListUserNotificationsResponse,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          8410: [new Uint8Array([6, 112, 97, 114, 101, 110, 116])],
+          578365826: [
+            new Uint8Array([
+              40,
+              18,
+              38,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              123,
+              112,
+              97,
+              114,
+              101,
+              110,
+              116,
+              61,
+              117,
+              115,
+              101,
+              114,
+              115,
+              47,
+              42,
+              125,
+              47,
+              110,
+              111,
+              116,
+              105,
+              102,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              115,
+            ]),
+          ],
+        },
+      },
+    },
+    /** UpdateUserNotification updates a notification. */
+    updateUserNotification: {
+      name: "UpdateUserNotification",
+      requestType: UpdateUserNotificationRequest,
+      requestStream: false,
+      responseType: UserNotification,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          8410: [
+            new Uint8Array([
+              24,
+              110,
+              111,
+              116,
+              105,
+              102,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              44,
+              117,
+              112,
+              100,
+              97,
+              116,
+              101,
+              95,
+              109,
+              97,
+              115,
+              107,
+            ]),
+          ],
+          578365826: [
+            new Uint8Array([
+              67,
+              58,
+              12,
+              110,
+              111,
+              116,
+              105,
+              102,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              50,
+              51,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              123,
+              110,
+              111,
+              116,
+              105,
+              102,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              46,
+              110,
+              97,
+              109,
+              101,
+              61,
+              117,
+              115,
+              101,
+              114,
+              115,
+              47,
+              42,
+              47,
+              110,
+              111,
+              116,
+              105,
+              102,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              115,
+              47,
+              42,
+              125,
+            ]),
+          ],
+        },
+      },
+    },
+    /** DeleteUserNotification deletes a notification. */
+    deleteUserNotification: {
+      name: "DeleteUserNotification",
+      requestType: DeleteUserNotificationRequest,
+      requestStream: false,
+      responseType: Empty,
+      responseStream: false,
+      options: {
+        _unknownFields: {
+          8410: [new Uint8Array([4, 110, 97, 109, 101])],
+          578365826: [
+            new Uint8Array([
+              40,
+              42,
+              38,
+              47,
+              97,
+              112,
+              105,
+              47,
+              118,
+              49,
+              47,
+              123,
+              110,
+              97,
+              109,
+              101,
+              61,
+              117,
+              115,
+              101,
+              114,
+              115,
+              47,
+              42,
+              47,
+              110,
+              111,
+              116,
+              105,
+              102,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
               115,
               47,
               42,

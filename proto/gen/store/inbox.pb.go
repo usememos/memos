@@ -25,8 +25,8 @@ type InboxMessage_Type int32
 
 const (
 	InboxMessage_TYPE_UNSPECIFIED InboxMessage_Type = 0
-	InboxMessage_MEMO_COMMENT     InboxMessage_Type = 1
-	InboxMessage_VERSION_UPDATE   InboxMessage_Type = 2
+	// Memo comment notification.
+	InboxMessage_MEMO_COMMENT InboxMessage_Type = 1
 )
 
 // Enum value maps for InboxMessage_Type.
@@ -34,12 +34,10 @@ var (
 	InboxMessage_Type_name = map[int32]string{
 		0: "TYPE_UNSPECIFIED",
 		1: "MEMO_COMMENT",
-		2: "VERSION_UPDATE",
 	}
 	InboxMessage_Type_value = map[string]int32{
 		"TYPE_UNSPECIFIED": 0,
 		"MEMO_COMMENT":     1,
-		"VERSION_UPDATE":   2,
 	}
 )
 
@@ -71,9 +69,11 @@ func (InboxMessage_Type) EnumDescriptor() ([]byte, []int) {
 }
 
 type InboxMessage struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          InboxMessage_Type      `protobuf:"varint,1,opt,name=type,proto3,enum=memos.store.InboxMessage_Type" json:"type,omitempty"`
-	ActivityId    *int32                 `protobuf:"varint,2,opt,name=activity_id,json=activityId,proto3,oneof" json:"activity_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of the inbox message.
+	Type InboxMessage_Type `protobuf:"varint,1,opt,name=type,proto3,enum=memos.store.InboxMessage_Type" json:"type,omitempty"`
+	// The system-generated unique ID of related activity.
+	ActivityId    *int32 `protobuf:"varint,2,opt,name=activity_id,json=activityId,proto3,oneof" json:"activity_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -126,15 +126,14 @@ var File_store_inbox_proto protoreflect.FileDescriptor
 
 const file_store_inbox_proto_rawDesc = "" +
 	"\n" +
-	"\x11store/inbox.proto\x12\vmemos.store\"\xbc\x01\n" +
+	"\x11store/inbox.proto\x12\vmemos.store\"\xa8\x01\n" +
 	"\fInboxMessage\x122\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x1e.memos.store.InboxMessage.TypeR\x04type\x12$\n" +
 	"\vactivity_id\x18\x02 \x01(\x05H\x00R\n" +
-	"activityId\x88\x01\x01\"B\n" +
+	"activityId\x88\x01\x01\".\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fMEMO_COMMENT\x10\x01\x12\x12\n" +
-	"\x0eVERSION_UPDATE\x10\x02B\x0e\n" +
+	"\fMEMO_COMMENT\x10\x01B\x0e\n" +
 	"\f_activity_idB\x95\x01\n" +
 	"\x0fcom.memos.storeB\n" +
 	"InboxProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"

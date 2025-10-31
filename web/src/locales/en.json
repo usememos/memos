@@ -18,6 +18,7 @@
     "about": "About",
     "add": "Add",
     "admin": "Admin",
+    "all": "All",
     "archive": "Archive",
     "archived": "Archived",
     "attachments": "Attachments",
@@ -125,8 +126,10 @@
   },
   "inbox": {
     "memo-comment": "{{user}} has a comment on your {{memo}}.",
-    "version-update": "New version {{version}} is available now!",
-    "failed-to-load": "Failed to load inbox item"
+    "failed-to-load": "Failed to load inbox item",
+    "unread": "Unread",
+    "no-unread": "No unread notifications",
+    "no-archived": "No archived notifications"
   },
   "markdown": {
     "checkbox": "Checkbox",

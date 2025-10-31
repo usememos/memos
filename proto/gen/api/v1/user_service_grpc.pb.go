@@ -21,26 +21,29 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_ListUsers_FullMethodName             = "/memos.api.v1.UserService/ListUsers"
-	UserService_GetUser_FullMethodName               = "/memos.api.v1.UserService/GetUser"
-	UserService_CreateUser_FullMethodName            = "/memos.api.v1.UserService/CreateUser"
-	UserService_UpdateUser_FullMethodName            = "/memos.api.v1.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName            = "/memos.api.v1.UserService/DeleteUser"
-	UserService_GetUserAvatar_FullMethodName         = "/memos.api.v1.UserService/GetUserAvatar"
-	UserService_ListAllUserStats_FullMethodName      = "/memos.api.v1.UserService/ListAllUserStats"
-	UserService_GetUserStats_FullMethodName          = "/memos.api.v1.UserService/GetUserStats"
-	UserService_GetUserSetting_FullMethodName        = "/memos.api.v1.UserService/GetUserSetting"
-	UserService_UpdateUserSetting_FullMethodName     = "/memos.api.v1.UserService/UpdateUserSetting"
-	UserService_ListUserSettings_FullMethodName      = "/memos.api.v1.UserService/ListUserSettings"
-	UserService_ListUserAccessTokens_FullMethodName  = "/memos.api.v1.UserService/ListUserAccessTokens"
-	UserService_CreateUserAccessToken_FullMethodName = "/memos.api.v1.UserService/CreateUserAccessToken"
-	UserService_DeleteUserAccessToken_FullMethodName = "/memos.api.v1.UserService/DeleteUserAccessToken"
-	UserService_ListUserSessions_FullMethodName      = "/memos.api.v1.UserService/ListUserSessions"
-	UserService_RevokeUserSession_FullMethodName     = "/memos.api.v1.UserService/RevokeUserSession"
-	UserService_ListUserWebhooks_FullMethodName      = "/memos.api.v1.UserService/ListUserWebhooks"
-	UserService_CreateUserWebhook_FullMethodName     = "/memos.api.v1.UserService/CreateUserWebhook"
-	UserService_UpdateUserWebhook_FullMethodName     = "/memos.api.v1.UserService/UpdateUserWebhook"
-	UserService_DeleteUserWebhook_FullMethodName     = "/memos.api.v1.UserService/DeleteUserWebhook"
+	UserService_ListUsers_FullMethodName              = "/memos.api.v1.UserService/ListUsers"
+	UserService_GetUser_FullMethodName                = "/memos.api.v1.UserService/GetUser"
+	UserService_CreateUser_FullMethodName             = "/memos.api.v1.UserService/CreateUser"
+	UserService_UpdateUser_FullMethodName             = "/memos.api.v1.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName             = "/memos.api.v1.UserService/DeleteUser"
+	UserService_GetUserAvatar_FullMethodName          = "/memos.api.v1.UserService/GetUserAvatar"
+	UserService_ListAllUserStats_FullMethodName       = "/memos.api.v1.UserService/ListAllUserStats"
+	UserService_GetUserStats_FullMethodName           = "/memos.api.v1.UserService/GetUserStats"
+	UserService_GetUserSetting_FullMethodName         = "/memos.api.v1.UserService/GetUserSetting"
+	UserService_UpdateUserSetting_FullMethodName      = "/memos.api.v1.UserService/UpdateUserSetting"
+	UserService_ListUserSettings_FullMethodName       = "/memos.api.v1.UserService/ListUserSettings"
+	UserService_ListUserAccessTokens_FullMethodName   = "/memos.api.v1.UserService/ListUserAccessTokens"
+	UserService_CreateUserAccessToken_FullMethodName  = "/memos.api.v1.UserService/CreateUserAccessToken"
+	UserService_DeleteUserAccessToken_FullMethodName  = "/memos.api.v1.UserService/DeleteUserAccessToken"
+	UserService_ListUserSessions_FullMethodName       = "/memos.api.v1.UserService/ListUserSessions"
+	UserService_RevokeUserSession_FullMethodName      = "/memos.api.v1.UserService/RevokeUserSession"
+	UserService_ListUserWebhooks_FullMethodName       = "/memos.api.v1.UserService/ListUserWebhooks"
+	UserService_CreateUserWebhook_FullMethodName      = "/memos.api.v1.UserService/CreateUserWebhook"
+	UserService_UpdateUserWebhook_FullMethodName      = "/memos.api.v1.UserService/UpdateUserWebhook"
+	UserService_DeleteUserWebhook_FullMethodName      = "/memos.api.v1.UserService/DeleteUserWebhook"
+	UserService_ListUserNotifications_FullMethodName  = "/memos.api.v1.UserService/ListUserNotifications"
+	UserService_UpdateUserNotification_FullMethodName = "/memos.api.v1.UserService/UpdateUserNotification"
+	UserService_DeleteUserNotification_FullMethodName = "/memos.api.v1.UserService/DeleteUserNotification"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -90,6 +93,12 @@ type UserServiceClient interface {
 	UpdateUserWebhook(ctx context.Context, in *UpdateUserWebhookRequest, opts ...grpc.CallOption) (*UserWebhook, error)
 	// DeleteUserWebhook deletes a webhook for a user.
 	DeleteUserWebhook(ctx context.Context, in *DeleteUserWebhookRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// ListUserNotifications lists notifications for a user.
+	ListUserNotifications(ctx context.Context, in *ListUserNotificationsRequest, opts ...grpc.CallOption) (*ListUserNotificationsResponse, error)
+	// UpdateUserNotification updates a notification.
+	UpdateUserNotification(ctx context.Context, in *UpdateUserNotificationRequest, opts ...grpc.CallOption) (*UserNotification, error)
+	// DeleteUserNotification deletes a notification.
+	DeleteUserNotification(ctx context.Context, in *DeleteUserNotificationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type userServiceClient struct {
@@ -300,6 +309,36 @@ func (c *userServiceClient) DeleteUserWebhook(ctx context.Context, in *DeleteUse
 	return out, nil
 }
 
+func (c *userServiceClient) ListUserNotifications(ctx context.Context, in *ListUserNotificationsRequest, opts ...grpc.CallOption) (*ListUserNotificationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserNotificationsResponse)
+	err := c.cc.Invoke(ctx, UserService_ListUserNotifications_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateUserNotification(ctx context.Context, in *UpdateUserNotificationRequest, opts ...grpc.CallOption) (*UserNotification, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserNotification)
+	err := c.cc.Invoke(ctx, UserService_UpdateUserNotification_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DeleteUserNotification(ctx context.Context, in *DeleteUserNotificationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserService_DeleteUserNotification_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -347,6 +386,12 @@ type UserServiceServer interface {
 	UpdateUserWebhook(context.Context, *UpdateUserWebhookRequest) (*UserWebhook, error)
 	// DeleteUserWebhook deletes a webhook for a user.
 	DeleteUserWebhook(context.Context, *DeleteUserWebhookRequest) (*emptypb.Empty, error)
+	// ListUserNotifications lists notifications for a user.
+	ListUserNotifications(context.Context, *ListUserNotificationsRequest) (*ListUserNotificationsResponse, error)
+	// UpdateUserNotification updates a notification.
+	UpdateUserNotification(context.Context, *UpdateUserNotificationRequest) (*UserNotification, error)
+	// DeleteUserNotification deletes a notification.
+	DeleteUserNotification(context.Context, *DeleteUserNotificationRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -416,6 +461,15 @@ func (UnimplementedUserServiceServer) UpdateUserWebhook(context.Context, *Update
 }
 func (UnimplementedUserServiceServer) DeleteUserWebhook(context.Context, *DeleteUserWebhookRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserWebhook not implemented")
+}
+func (UnimplementedUserServiceServer) ListUserNotifications(context.Context, *ListUserNotificationsRequest) (*ListUserNotificationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserNotifications not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateUserNotification(context.Context, *UpdateUserNotificationRequest) (*UserNotification, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserNotification not implemented")
+}
+func (UnimplementedUserServiceServer) DeleteUserNotification(context.Context, *DeleteUserNotificationRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserNotification not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -798,6 +852,60 @@ func _UserService_DeleteUserWebhook_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ListUserNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserNotificationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListUserNotifications(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListUserNotifications_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListUserNotifications(ctx, req.(*ListUserNotificationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateUserNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserNotificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateUserNotification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateUserNotification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateUserNotification(ctx, req.(*UpdateUserNotificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DeleteUserNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserNotificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DeleteUserNotification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_DeleteUserNotification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DeleteUserNotification(ctx, req.(*DeleteUserNotificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -884,6 +992,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUserWebhook",
 			Handler:    _UserService_DeleteUserWebhook_Handler,
+		},
+		{
+			MethodName: "ListUserNotifications",
+			Handler:    _UserService_ListUserNotifications_Handler,
+		},
+		{
+			MethodName: "UpdateUserNotification",
+			Handler:    _UserService_UpdateUserNotification_Handler,
+		},
+		{
+			MethodName: "DeleteUserNotification",
+			Handler:    _UserService_DeleteUserNotification_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -64,6 +64,9 @@ func (s *APIV1Service) GetActivity(ctx context.Context, request *v1pb.GetActivit
 	return activityMessage, nil
 }
 
+// convertActivityFromStore converts a storage-layer activity to an API activity.
+// This handles the mapping between internal activity representation and the public API,
+// including proper type and level conversions.
 func (s *APIV1Service) convertActivityFromStore(ctx context.Context, activity *store.Activity) (*v1pb.Activity, error) {
 	payload, err := s.convertActivityPayloadFromStore(ctx, activity.Payload)
 	if err != nil {
@@ -98,9 +101,12 @@ func (s *APIV1Service) convertActivityFromStore(ctx context.Context, activity *s
 	}, nil
 }
 
+// convertActivityPayloadFromStore converts a storage-layer activity payload to an API payload.
+// This resolves references (e.g., memo IDs) to resource names for the API.
 func (s *APIV1Service) convertActivityPayloadFromStore(ctx context.Context, payload *storepb.ActivityPayload) (*v1pb.ActivityPayload, error) {
 	v2Payload := &v1pb.ActivityPayload{}
 	if payload.MemoComment != nil {
+		// Fetch the comment memo
 		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 			ID:             &payload.MemoComment.MemoId,
 			ExcludeContent: true,
@@ -111,6 +117,8 @@ func (s *APIV1Service) convertActivityPayloadFromStore(ctx context.Context, payl
 		if memo == nil {
 			return nil, status.Errorf(codes.NotFound, "memo does not exist")
 		}
+		
+		// Fetch the related memo (the one being commented on)
 		relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 			ID:             &payload.MemoComment.RelatedMemoId,
 			ExcludeContent: true,
@@ -118,6 +126,7 @@ func (s *APIV1Service) convertActivityPayloadFromStore(ctx context.Context, payl
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get related memo: %v", err)
 		}
+		
 		v2Payload.Payload = &v1pb.ActivityPayload_MemoComment{
 			MemoComment: &v1pb.ActivityMemoCommentPayload{
 				Memo:        fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),

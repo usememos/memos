@@ -39,8 +39,6 @@ export enum Activity_Type {
   TYPE_UNSPECIFIED = "TYPE_UNSPECIFIED",
   /** MEMO_COMMENT - Memo comment activity. */
   MEMO_COMMENT = "MEMO_COMMENT",
-  /** VERSION_UPDATE - Version update activity. */
-  VERSION_UPDATE = "VERSION_UPDATE",
   UNRECOGNIZED = "UNRECOGNIZED",
 }
 
@@ -52,9 +50,6 @@ export function activity_TypeFromJSON(object: any): Activity_Type {
     case 1:
     case "MEMO_COMMENT":
       return Activity_Type.MEMO_COMMENT;
-    case 2:
-    case "VERSION_UPDATE":
-      return Activity_Type.VERSION_UPDATE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -68,8 +63,6 @@ export function activity_TypeToNumber(object: Activity_Type): number {
       return 0;
     case Activity_Type.MEMO_COMMENT:
       return 1;
-    case Activity_Type.VERSION_UPDATE:
-      return 2;
     case Activity_Type.UNRECOGNIZED:
     default:
       return -1;

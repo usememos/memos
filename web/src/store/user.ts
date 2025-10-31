@@ -1,10 +1,10 @@
 import { uniqueId } from "lodash-es";
 import { makeAutoObservable, computed } from "mobx";
-import { authServiceClient, inboxServiceClient, userServiceClient, shortcutServiceClient } from "@/grpcweb";
-import { Inbox } from "@/types/proto/api/v1/inbox_service";
+import { authServiceClient, userServiceClient, shortcutServiceClient } from "@/grpcweb";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import {
   User,
+  UserNotification,
   UserSetting,
   UserSetting_Key,
   UserSetting_GeneralSetting,
@@ -24,7 +24,7 @@ class LocalState {
   userAccessTokensSetting?: UserSetting_AccessTokensSetting;
   userWebhooksSetting?: UserSetting_WebhooksSetting;
   shortcuts: Shortcut[] = [];
-  inboxes: Inbox[] = [];
+  notifications: UserNotification[] = [];
   userMapByName: Record<string, User> = {};
   userStatsByName: Record<string, UserStats> = {};
 
@@ -218,40 +218,40 @@ const userStore = (() => {
   // Note: fetchShortcuts is now handled by fetchUserSettings
   // The shortcuts are extracted from the user shortcuts setting
 
-  const fetchInboxes = async () => {
+  const fetchNotifications = async () => {
     if (!state.currentUser) {
       throw new Error("No current user available");
     }
 
-    const { inboxes } = await inboxServiceClient.listInboxes({
+    const { notifications } = await userServiceClient.listUserNotifications({
       parent: state.currentUser,
     });
 
     state.setPartial({
-      inboxes,
+      notifications,
     });
   };
 
-  const updateInbox = async (inbox: Partial<Inbox>, updateMask: string[]) => {
-    const updatedInbox = await inboxServiceClient.updateInbox({
-      inbox,
+  const updateNotification = async (notification: Partial<UserNotification>, updateMask: string[]) => {
+    const updatedNotification = await userServiceClient.updateUserNotification({
+      notification,
       updateMask,
     });
     state.setPartial({
-      inboxes: state.inboxes.map((i) => {
-        if (i.name === updatedInbox.name) {
-          return updatedInbox;
+      notifications: state.notifications.map((n) => {
+        if (n.name === updatedNotification.name) {
+          return updatedNotification;
         }
-        return i;
+        return n;
       }),
     });
-    return updatedInbox;
+    return updatedNotification;
   };
 
-  const deleteInbox = async (name: string) => {
-    await inboxServiceClient.deleteInbox({ name });
+  const deleteNotification = async (name: string) => {
+    await userServiceClient.deleteUserNotification({ name });
     state.setPartial({
-      inboxes: state.inboxes.filter((i) => i.name !== name),
+      notifications: state.notifications.filter((n) => n.name !== name),
     });
   };
 
@@ -296,9 +296,9 @@ const userStore = (() => {
     updateUserGeneralSetting,
     getUserGeneralSetting,
     fetchUserSettings,
-    fetchInboxes,
-    updateInbox,
-    deleteInbox,
+    fetchNotifications,
+    updateNotification,
+    deleteNotification,
     fetchUserStats,
     setStatsStateId,
   };

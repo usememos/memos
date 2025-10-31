@@ -5,11 +5,14 @@ package memos.store;
 option go_package = "gen/store";
 
 message InboxMessage {
+  // The type of the inbox message.
+  Type type = 1;
+  // The system-generated unique ID of related activity.
+  optional int32 activity_id = 2;
+
   enum Type {
     TYPE_UNSPECIFIED = 0;
+    // Memo comment notification.
     MEMO_COMMENT = 1;
-    VERSION_UPDATE = 2;
   }
-  Type type = 1;
-  optional int32 activity_id = 2;
 }

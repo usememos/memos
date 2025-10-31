@@ -86,8 +86,6 @@ const (
 	Inbox_TYPE_UNSPECIFIED Inbox_Type = 0
 	// Memo comment notification.
 	Inbox_MEMO_COMMENT Inbox_Type = 1
-	// Version update notification.
-	Inbox_VERSION_UPDATE Inbox_Type = 2
 )
 
 // Enum value maps for Inbox_Type.
@@ -95,12 +93,10 @@ var (
 	Inbox_Type_name = map[int32]string{
 		0: "TYPE_UNSPECIFIED",
 		1: "MEMO_COMMENT",
-		2: "VERSION_UPDATE",
 	}
 	Inbox_Type_value = map[string]int32{
 		"TYPE_UNSPECIFIED": 0,
 		"MEMO_COMMENT":     1,
-		"VERSION_UPDATE":   2,
 	}
 )
 
@@ -500,7 +496,7 @@ var File_api_v1_inbox_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_inbox_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1aapi/v1/inbox_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x87\x04\n" +
+	"\x1aapi/v1/inbox_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\x03\n" +
 	"\x05Inbox\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1b\n" +
 	"\x06sender\x18\x02 \x01(\tB\x03\xe0A\x03R\x06sender\x12\x1f\n" +
@@ -515,11 +511,10 @@ const file_api_v1_inbox_service_proto_rawDesc = "" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06UNREAD\x10\x01\x12\f\n" +
-	"\bARCHIVED\x10\x02\"B\n" +
+	"\bARCHIVED\x10\x02\".\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fMEMO_COMMENT\x10\x01\x12\x12\n" +
-	"\x0eVERSION_UPDATE\x10\x02:>\xeaA;\n" +
+	"\fMEMO_COMMENT\x10\x01:>\xeaA;\n" +
 	"\x12memos.api.v1/Inbox\x12\x0finboxes/{inbox}\x1a\x04name*\ainboxes2\x05inboxB\x0e\n" +
 	"\f_activity_id\"\xca\x01\n" +
 	"\x12ListInboxesRequest\x121\n" +

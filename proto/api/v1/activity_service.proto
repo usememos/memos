@@ -61,8 +61,6 @@ message Activity {
     TYPE_UNSPECIFIED = 0;
     // Memo comment activity.
     MEMO_COMMENT = 1;
-    // Version update activity.
-    VERSION_UPDATE = 2;
   }
 
   // Activity levels.
