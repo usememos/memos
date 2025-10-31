@@ -1645,6 +1645,8 @@ func (s *APIV1Service) UpdateUserNotification(ctx context.Context, request *v1pb
 				return nil, status.Errorf(codes.InvalidArgument, "invalid status")
 			}
 			update.Status = inboxStatus
+		default:
+			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", path)
 		}
 	}
 
@@ -1700,7 +1702,7 @@ func (s *APIV1Service) DeleteUserNotification(ctx context.Context, request *v1pb
 
 // convertInboxToUserNotification converts a storage-layer inbox to an API notification.
 // This handles the mapping between the internal inbox representation and the public API.
-func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox *store.Inbox) (*v1pb.UserNotification, error) {
+func (*APIV1Service) convertInboxToUserNotification(_ context.Context, inbox *store.Inbox) (*v1pb.UserNotification, error) {
 	notification := &v1pb.UserNotification{
 		Name:       fmt.Sprintf("users/%d/notifications/%d", inbox.ReceiverID, inbox.ID),
 		Sender:     fmt.Sprintf("%s%d", UserNamePrefix, inbox.SenderID),
@@ -1735,7 +1737,7 @@ func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox
 }
 
 // ExtractNotificationIDFromName extracts the notification ID from a resource name.
-// Expected format: users/{user_id}/notifications/{notification_id}
+// Expected format: users/{user_id}/notifications/{notification_id}.
 func ExtractNotificationIDFromName(name string) (int32, error) {
 	pattern := regexp.MustCompile(`^users/(\d+)/notifications/(\d+)$`)
 	matches := pattern.FindStringSubmatch(name)

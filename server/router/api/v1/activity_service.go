@@ -117,7 +117,7 @@ func (s *APIV1Service) convertActivityPayloadFromStore(ctx context.Context, payl
 		if memo == nil {
 			return nil, status.Errorf(codes.NotFound, "memo does not exist")
 		}
-		
+
 		// Fetch the related memo (the one being commented on)
 		relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 			ID:             &payload.MemoComment.RelatedMemoId,
@@ -126,7 +126,7 @@ func (s *APIV1Service) convertActivityPayloadFromStore(ctx context.Context, payl
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get related memo: %v", err)
 		}
-		
+
 		v2Payload.Payload = &v1pb.ActivityPayload_MemoComment{
 			MemoComment: &v1pb.ActivityMemoCommentPayload{
 				Memo:        fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
