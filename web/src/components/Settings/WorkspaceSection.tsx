@@ -81,7 +81,10 @@ const WorkspaceSection = observer(() => {
       <Separator />
       <p className="font-medium text-foreground">{t("setting.system-section.title")}</p>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>Theme</span>
+        <div className="flex flex-col">
+          <span>Default Theme</span>
+          <span className="text-xs text-muted-foreground">Sets the default theme for all users</span>
+        </div>
         <ThemeSelect
           value={workspaceGeneralSetting.theme || "default"}
           onValueChange={(value: string) => updatePartialSetting({ theme: value })}
