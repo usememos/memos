@@ -141,7 +141,14 @@ export interface WorkspaceSetting_StorageSetting {
   /** The max upload size in megabytes. */
   uploadSizeLimitMb: number;
   /** The S3 config. */
-  s3Config?: WorkspaceSetting_StorageSetting_S3Config | undefined;
+  s3Config?:
+    | WorkspaceSetting_StorageSetting_S3Config
+    | undefined;
+  /**
+   * enable_s3_image_thumbnails enables thumbnail generation for images stored in S3.
+   * When false, images stored in S3 will not have thumbnails generated.
+   */
+  enableS3ImageThumbnails: boolean;
 }
 
 /** Storage type enumeration for different storage backends. */
@@ -705,6 +712,7 @@ function createBaseWorkspaceSetting_StorageSetting(): WorkspaceSetting_StorageSe
     filepathTemplate: "",
     uploadSizeLimitMb: 0,
     s3Config: undefined,
+    enableS3ImageThumbnails: false,
   };
 }
 
@@ -721,6 +729,9 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
     }
     if (message.s3Config !== undefined) {
       WorkspaceSetting_StorageSetting_S3Config.encode(message.s3Config, writer.uint32(34).fork()).join();
+    }
+    if (message.enableS3ImageThumbnails !== false) {
+      writer.uint32(40).bool(message.enableS3ImageThumbnails);
     }
     return writer;
   },
@@ -764,6 +775,14 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
           message.s3Config = WorkspaceSetting_StorageSetting_S3Config.decode(reader, reader.uint32());
           continue;
         }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.enableS3ImageThumbnails = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -784,6 +803,7 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
     message.s3Config = (object.s3Config !== undefined && object.s3Config !== null)
       ? WorkspaceSetting_StorageSetting_S3Config.fromPartial(object.s3Config)
       : undefined;
+    message.enableS3ImageThumbnails = object.enableS3ImageThumbnails ?? false;
     return message;
   },
 };

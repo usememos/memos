@@ -64,14 +64,30 @@ func (s *APIV1Service) GetWorkspaceSetting(ctx context.Context, request *v1pb.Ge
 		return nil, status.Errorf(codes.NotFound, "workspace setting not found")
 	}
 
-	// For storage setting, only host can get it.
+	// For storage setting, filter based on user role.
 	if workspaceSetting.Key == storepb.WorkspaceSettingKey_STORAGE {
 		user, err := s.GetCurrentUser(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 		}
+
+		// Host can see everything, regular users only see enable_s3_image_thumbnails.
 		if user == nil || user.Role != store.RoleHost {
-			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+			// Convert and filter for non-host users.
+			convertedSetting := convertWorkspaceStorageSettingFromStore(workspaceSetting.GetStorageSetting())
+			// Clear sensitive fields.
+			convertedSetting.StorageType = v1pb.WorkspaceSetting_StorageSetting_STORAGE_TYPE_UNSPECIFIED
+			convertedSetting.FilepathTemplate = ""
+			convertedSetting.UploadSizeLimitMb = 0
+			convertedSetting.S3Config = nil
+			// Keep only EnableS3ImageThumbnails.
+
+			return &v1pb.WorkspaceSetting{
+				Name: fmt.Sprintf("workspace/settings/%s", workspaceSetting.Key.String()),
+				Value: &v1pb.WorkspaceSetting_StorageSetting_{
+					StorageSetting: convertedSetting,
+				},
+			}, nil
 		}
 	}
 
@@ -211,9 +227,10 @@ func convertWorkspaceStorageSettingFromStore(settingpb *storepb.WorkspaceStorage
 		return nil
 	}
 	setting := &v1pb.WorkspaceSetting_StorageSetting{
-		StorageType:       v1pb.WorkspaceSetting_StorageSetting_StorageType(settingpb.StorageType),
-		FilepathTemplate:  settingpb.FilepathTemplate,
-		UploadSizeLimitMb: settingpb.UploadSizeLimitMb,
+		StorageType:             v1pb.WorkspaceSetting_StorageSetting_StorageType(settingpb.StorageType),
+		FilepathTemplate:        settingpb.FilepathTemplate,
+		UploadSizeLimitMb:       settingpb.UploadSizeLimitMb,
+		EnableS3ImageThumbnails: settingpb.EnableS3ImageThumbnails,
 	}
 	if settingpb.S3Config != nil {
 		setting.S3Config = &v1pb.WorkspaceSetting_StorageSetting_S3Config{
@@ -233,9 +250,10 @@ func convertWorkspaceStorageSettingToStore(setting *v1pb.WorkspaceSetting_Storag
 		return nil
 	}
 	settingpb := &storepb.WorkspaceStorageSetting{
-		StorageType:       storepb.WorkspaceStorageSetting_StorageType(setting.StorageType),
-		FilepathTemplate:  setting.FilepathTemplate,
-		UploadSizeLimitMb: setting.UploadSizeLimitMb,
+		StorageType:             storepb.WorkspaceStorageSetting_StorageType(setting.StorageType),
+		FilepathTemplate:        setting.FilepathTemplate,
+		UploadSizeLimitMb:       setting.UploadSizeLimitMb,
+		EnableS3ImageThumbnails: setting.EnableS3ImageThumbnails,
 	}
 	if setting.S3Config != nil {
 		settingpb.S3Config = &storepb.StorageS3Config{
