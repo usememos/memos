@@ -1,10 +1,11 @@
 import { LatLng } from "leaflet";
 import LeafletMap from "@/components/LeafletMap";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useTranslate } from "@/utils/i18n";
 import { LocationState } from "./types";
 
@@ -39,7 +40,15 @@ export const LocationDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[min(28rem,calc(100vw-2rem))] !p-0">
-        <DialogClose className="hidden"></DialogClose>
+        <VisuallyHidden>
+          <DialogClose />
+        </VisuallyHidden>
+        <VisuallyHidden>
+          <DialogTitle>{t("tooltip.select-location")}</DialogTitle>
+        </VisuallyHidden>
+        <VisuallyHidden>
+          <DialogDescription>Select a location on the map or enter coordinates manually</DialogDescription>
+        </VisuallyHidden>
         <div className="flex flex-col">
           <div className="w-full h-64 overflow-hidden rounded-t-md bg-muted/30">
             <LeafletMap key={JSON.stringify(locationInitialized)} latlng={position} onChange={onPositionChange} />
