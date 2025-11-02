@@ -14,6 +14,7 @@ import { workspaceStore } from "@/store";
 import { extractIdentityProviderIdFromName } from "@/store/common";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
+import { storeOAuthState } from "@/utils/oauth";
 
 const SignIn = observer(() => {
   const t = useTranslate();
@@ -38,7 +39,6 @@ const SignIn = observer(() => {
   }, []);
 
   const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
-    const stateQueryParameter = `auth.signin.${identityProvider.title}-${extractIdentityProviderIdFromName(identityProvider.name)}`;
     if (identityProvider.type === IdentityProvider_Type.OAUTH2) {
       const redirectUri = absolutifyLink("/auth/callback");
       const oauth2Config = identityProvider.config?.oauth2Config;
@@ -46,12 +46,24 @@ const SignIn = observer(() => {
         toast.error("Identity provider configuration is invalid.");
         return;
       }
-      const authUrl = `${oauth2Config.authUrl}?client_id=${
-        oauth2Config.clientId
-      }&redirect_uri=${encodeURIComponent(redirectUri)}&state=${stateQueryParameter}&response_type=code&scope=${encodeURIComponent(
-        oauth2Config.scopes.join(" "),
-      )}`;
-      window.location.href = authUrl;
+
+      try {
+        // Generate and store secure state parameter with CSRF protection
+        const identityProviderId = extractIdentityProviderIdFromName(identityProvider.name);
+        const state = storeOAuthState(identityProviderId);
+
+        // Build OAuth authorization URL with secure state
+        const authUrl = `${oauth2Config.authUrl}?client_id=${
+          oauth2Config.clientId
+        }&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&response_type=code&scope=${encodeURIComponent(
+          oauth2Config.scopes.join(" "),
+        )}`;
+
+        window.location.href = authUrl;
+      } catch (error) {
+        console.error("Failed to initiate OAuth flow:", error);
+        toast.error("Failed to initiate sign-in. Please try again.");
+      }
     }
   };
 

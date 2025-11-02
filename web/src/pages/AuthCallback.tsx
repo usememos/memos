@@ -1,4 +1,3 @@
-import { last } from "lodash-es";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { ClientError } from "nice-grpc-web";
@@ -8,6 +7,7 @@ import { authServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { initialUserStore } from "@/store/user";
+import { validateOAuthState } from "@/utils/oauth";
 
 interface State {
   loading: boolean;
@@ -29,21 +29,24 @@ const AuthCallback = observer(() => {
     if (!code || !state) {
       setState({
         loading: false,
-        errorMessage: "Failed to authorize. Invalid state passed to the auth callback.",
+        errorMessage: "Failed to authorize. Missing authorization code or state parameter.",
       });
       return;
     }
 
-    const identityProviderId = Number(last(state.split("-")));
-    if (!identityProviderId) {
+    // Validate OAuth state (CSRF protection)
+    const validatedState = validateOAuthState(state);
+    if (!validatedState) {
       setState({
         loading: false,
-        errorMessage: "No identity provider ID found in the state parameter.",
+        errorMessage: "Failed to authorize. Invalid or expired state parameter. This may indicate a CSRF attack attempt.",
       });
       return;
     }
 
+    const { identityProviderId, returnUrl } = validatedState;
     const redirectUri = absolutifyLink("/auth/callback");
+
     (async () => {
       try {
         await authServiceClient.createSession({
@@ -58,7 +61,8 @@ const AuthCallback = observer(() => {
           errorMessage: "",
         });
         await initialUserStore();
-        navigateTo("/");
+        // Redirect to return URL if specified, otherwise home
+        navigateTo(returnUrl || "/");
       } catch (error: any) {
         console.error(error);
         setState({

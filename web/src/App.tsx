@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import useNavigateTo from "./hooks/useNavigateTo";
 import { userStore, workspaceStore } from "./store";
+import { cleanupExpiredOAuthState } from "./utils/oauth";
 import { loadTheme } from "./utils/theme";
 
 const App = observer(() => {
@@ -12,6 +13,11 @@ const App = observer(() => {
   const workspaceProfile = workspaceStore.state.profile;
   const userGeneralSetting = userStore.state.userGeneralSetting;
   const workspaceGeneralSetting = workspaceStore.state.generalSetting;
+
+  // Clean up expired OAuth states on app initialization
+  useEffect(() => {
+    cleanupExpiredOAuthState();
+  }, []);
 
   // Redirect to sign up page if no instance owner.
   useEffect(() => {
