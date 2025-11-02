@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import HomeSidebar from "./HomeSidebar";
+import MemoExplorer from "./MemoExplorer";
 
-const HomeSidebarDrawer = () => {
+const MemoExplorerDrawer = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -24,10 +24,10 @@ const HomeSidebarDrawer = () => {
         <SheetHeader>
           <SheetTitle />
         </SheetHeader>
-        <HomeSidebar className="px-4" />
+        <MemoExplorer className="px-4" />
       </SheetContent>
     </Sheet>
   );
 };
 
-export default HomeSidebarDrawer;
+export default MemoExplorerDrawer;

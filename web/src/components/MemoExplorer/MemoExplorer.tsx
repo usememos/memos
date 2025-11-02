@@ -10,7 +10,7 @@ interface Props {
   className?: string;
 }
 
-const HomeSidebar = observer((props: Props) => {
+const MemoExplorer = observer((props: Props) => {
   const currentUser = useCurrentUser();
 
   return (
@@ -30,4 +30,4 @@ const HomeSidebar = observer((props: Props) => {
   );
 });
 
-export default HomeSidebar;
+export default MemoExplorer;
