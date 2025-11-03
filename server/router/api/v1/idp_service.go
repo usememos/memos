@@ -38,8 +38,17 @@ func (s *APIV1Service) ListIdentityProviders(ctx context.Context, _ *v1pb.ListId
 	response := &v1pb.ListIdentityProvidersResponse{
 		IdentityProviders: []*v1pb.IdentityProvider{},
 	}
+
+	// Default to lowest-privilege role, update later based on real role
+	currentUserRole := store.RoleUser
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err == nil && currentUser != nil {
+		currentUserRole = currentUser.Role
+	}
+
 	for _, identityProvider := range identityProviders {
-		response.IdentityProviders = append(response.IdentityProviders, convertIdentityProviderFromStore(identityProvider))
+		identityProviderConverted := convertIdentityProviderFromStore(identityProvider)
+		response.IdentityProviders = append(response.IdentityProviders, redactIdentityProviderResponse(identityProviderConverted, currentUserRole))
 	}
 	return response, nil
 }
@@ -58,7 +67,16 @@ func (s *APIV1Service) GetIdentityProvider(ctx context.Context, request *v1pb.Ge
 	if identityProvider == nil {
 		return nil, status.Errorf(codes.NotFound, "identity provider not found")
 	}
-	return convertIdentityProviderFromStore(identityProvider), nil
+
+	// Default to lowest-privilege role, update later based on real role
+	currentUserRole := store.RoleUser
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err == nil && currentUser != nil {
+		currentUserRole = currentUser.Role
+	}
+
+	identityProviderConverted := convertIdentityProviderFromStore(identityProvider)
+	return redactIdentityProviderResponse(identityProviderConverted, currentUserRole), nil
 }
 
 func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb.UpdateIdentityProviderRequest) (*v1pb.IdentityProvider, error) {
@@ -182,4 +200,14 @@ func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProv
 		}
 	}
 	return nil
+}
+
+func redactIdentityProviderResponse(identityProvider *v1pb.IdentityProvider, userRole store.Role) *v1pb.IdentityProvider {
+	if userRole != store.RoleHost {
+		if identityProvider.Type == v1pb.IdentityProvider_OAUTH2 {
+			identityProvider.Config.GetOauth2Config().ClientSecret = ""
+		}
+	}
+
+	return identityProvider
 }
