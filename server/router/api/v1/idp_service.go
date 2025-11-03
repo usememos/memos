@@ -80,6 +80,14 @@ func (s *APIV1Service) GetIdentityProvider(ctx context.Context, request *v1pb.Ge
 }
 
 func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb.UpdateIdentityProviderRequest) (*v1pb.IdentityProvider, error) {
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser == nil || currentUser.Role != store.RoleHost {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update_mask is required")
 	}
@@ -113,6 +121,14 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 }
 
 func (s *APIV1Service) DeleteIdentityProvider(ctx context.Context, request *v1pb.DeleteIdentityProviderRequest) (*emptypb.Empty, error) {
+	currentUser, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser == nil || currentUser.Role != store.RoleHost {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
 	id, err := ExtractIdentityProviderIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
