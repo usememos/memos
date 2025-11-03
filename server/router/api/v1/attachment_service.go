@@ -64,6 +64,9 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	if request.Attachment.Filename == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "filename is required")
 	}
+	if !validateFilename(request.Attachment.Filename) {
+		return nil, status.Errorf(codes.InvalidArgument, "filename contains invalid characters or format")
+	}
 	if request.Attachment.Type == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "type is required")
 	}
@@ -325,6 +328,9 @@ func (s *APIV1Service) UpdateAttachment(ctx context.Context, request *v1pb.Updat
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "filename" {
+			if !validateFilename(request.Attachment.Filename) {
+				return nil, status.Errorf(codes.InvalidArgument, "filename contains invalid characters or format")
+			}
 			update.Filename = &request.Attachment.Filename
 		}
 	}
@@ -700,4 +706,19 @@ func setResponseHeaders(ctx context.Context, headers map[string]string) error {
 		pairs = append(pairs, key, value)
 	}
 	return grpc.SetHeader(ctx, metadata.Pairs(pairs...))
+}
+
+func validateFilename(filename string) bool {
+	// Reject path traversal attempts and make sure no additional directories are created
+	if !filepath.IsLocal(filename) || strings.ContainsAny(filename, "/\\") {
+		return false
+	}
+
+	// Reject filenames starting or ending with spaces or periods
+	if strings.HasPrefix(filename, " ") || strings.HasSuffix(filename, " ") ||
+		strings.HasPrefix(filename, ".") || strings.HasSuffix(filename, ".") {
+		return false
+	}
+
+	return true
 }
