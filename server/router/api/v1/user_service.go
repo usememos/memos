@@ -169,6 +169,17 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 			// Unauthenticated or non-HOST users can only create normal users
 			roleToAssign = store.RoleUser
 		}
+
+		// Only allow user registration if it is enabled in the settings or user is superuser
+		if currentUser == nil || !isSuperUser(currentUser) {
+			workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get workspace general setting, error: %v", err)
+			}
+			if workspaceGeneralSetting.DisallowUserRegistration {
+				return nil, status.Errorf(codes.PermissionDenied, "user registration is not allowed")
+			}
+		}
 	}
 
 	if !base.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
