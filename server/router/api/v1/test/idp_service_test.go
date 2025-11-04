@@ -233,6 +233,7 @@ func TestGetIdentityProvider(t *testing.T) {
 			Name: created.Name,
 		}
 
+		// Test unauthenticated, should not contain client secret
 		resp, err := ts.Service.GetIdentityProvider(ctx, getReq)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
@@ -241,7 +242,18 @@ func TestGetIdentityProvider(t *testing.T) {
 		require.Equal(t, v1pb.IdentityProvider_OAUTH2, resp.Type)
 		require.NotNil(t, resp.Config.GetOauth2Config())
 		require.Equal(t, "test-client", resp.Config.GetOauth2Config().ClientId)
-		require.Equal(t, "test-secret", resp.Config.GetOauth2Config().ClientSecret)
+		require.Equal(t, "", resp.Config.GetOauth2Config().ClientSecret)
+
+		// Test as host user, should contain client secret
+		respHostUser, err := ts.Service.GetIdentityProvider(userCtx, getReq)
+		require.NoError(t, err)
+		require.NotNil(t, respHostUser)
+		require.Equal(t, created.Name, respHostUser.Name)
+		require.Equal(t, "Test Provider", respHostUser.Title)
+		require.Equal(t, v1pb.IdentityProvider_OAUTH2, respHostUser.Type)
+		require.NotNil(t, respHostUser.Config.GetOauth2Config())
+		require.Equal(t, "test-client", respHostUser.Config.GetOauth2Config().ClientId)
+		require.Equal(t, "test-secret", respHostUser.Config.GetOauth2Config().ClientSecret)
 	})
 
 	t.Run("GetIdentityProvider not found", func(t *testing.T) {
@@ -353,6 +365,13 @@ func TestUpdateIdentityProvider(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
+		// Create host user
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		// Set user context
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
 		req := &v1pb.UpdateIdentityProviderRequest{
 			IdentityProvider: &v1pb.IdentityProvider{
 				Name:  "identityProviders/1",
@@ -360,14 +379,21 @@ func TestUpdateIdentityProvider(t *testing.T) {
 			},
 		}
 
-		_, err := ts.Service.UpdateIdentityProvider(ctx, req)
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "update_mask is required")
+		_, errUpdate := ts.Service.UpdateIdentityProvider(userCtx, req)
+		require.Error(t, errUpdate)
+		require.Contains(t, errUpdate.Error(), "update_mask is required")
 	})
 
 	t.Run("UpdateIdentityProvider invalid name", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
+
+		// Create host user
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		// Set user context
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		req := &v1pb.UpdateIdentityProviderRequest{
 			IdentityProvider: &v1pb.IdentityProvider{
@@ -379,9 +405,9 @@ func TestUpdateIdentityProvider(t *testing.T) {
 			},
 		}
 
-		_, err := ts.Service.UpdateIdentityProvider(ctx, req)
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "invalid identity provider name")
+		_, errUpdate := ts.Service.UpdateIdentityProvider(userCtx, req)
+		require.Error(t, errUpdate)
+		require.Contains(t, errUpdate.Error(), "invalid identity provider name")
 	})
 }
 
@@ -445,13 +471,20 @@ func TestDeleteIdentityProvider(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
+		// Create host user
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		// Set user context
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
 		req := &v1pb.DeleteIdentityProviderRequest{
 			Name: "invalid-name",
 		}
 
-		_, err := ts.Service.DeleteIdentityProvider(ctx, req)
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "invalid identity provider name")
+		_, errDelete := ts.Service.DeleteIdentityProvider(userCtx, req)
+		require.Error(t, errDelete)
+		require.Contains(t, errDelete.Error(), "invalid identity provider name")
 	})
 
 	t.Run("DeleteIdentityProvider not found", func(t *testing.T) {
