@@ -379,9 +379,9 @@ func TestUpdateIdentityProvider(t *testing.T) {
 			},
 		}
 
-		_, errUpdate := ts.Service.UpdateIdentityProvider(userCtx, req)
-		require.Error(t, errUpdate)
-		require.Contains(t, errUpdate.Error(), "update_mask is required")
+		_, err = ts.Service.UpdateIdentityProvider(userCtx, req)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "update_mask is required")
 	})
 
 	t.Run("UpdateIdentityProvider invalid name", func(t *testing.T) {
@@ -405,9 +405,9 @@ func TestUpdateIdentityProvider(t *testing.T) {
 			},
 		}
 
-		_, errUpdate := ts.Service.UpdateIdentityProvider(userCtx, req)
-		require.Error(t, errUpdate)
-		require.Contains(t, errUpdate.Error(), "invalid identity provider name")
+		_, err = ts.Service.UpdateIdentityProvider(userCtx, req)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid identity provider name")
 	})
 }
 
@@ -482,9 +482,9 @@ func TestDeleteIdentityProvider(t *testing.T) {
 			Name: "invalid-name",
 		}
 
-		_, errDelete := ts.Service.DeleteIdentityProvider(userCtx, req)
-		require.Error(t, errDelete)
-		require.Contains(t, errDelete.Error(), "invalid identity provider name")
+		_, err = ts.Service.DeleteIdentityProvider(userCtx, req)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid identity provider name")
 	})
 
 	t.Run("DeleteIdentityProvider not found", func(t *testing.T) {
