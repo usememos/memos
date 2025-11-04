@@ -49,6 +49,7 @@ const MemoContent = observer((props: Props) => {
     readonly: !allowEdit,
     disableFilter: props.disableFilter,
     parentPage: props.parentPage,
+    containerRef: memoContentContainerRef,
   };
 
   // Initial compact mode.

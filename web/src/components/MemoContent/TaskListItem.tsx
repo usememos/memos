@@ -44,8 +44,14 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, ...props })
     if (taskIndexStr !== null) {
       taskIndex = parseInt(taskIndexStr);
     } else {
-      // Fallback: Calculate index by counting previous task list items
-      const allTaskItems = listItem.closest("ul, ol")?.querySelectorAll("li.task-list-item") || [];
+      // Fallback: Calculate index by counting ALL task list items in the memo
+      // Use the container ref from context for proper scoping
+      const container = context.containerRef?.current;
+      if (!container) {
+        return;
+      }
+
+      const allTaskItems = container.querySelectorAll("li.task-list-item");
       for (let i = 0; i < allTaskItems.length; i++) {
         if (allTaskItems[i] === listItem) {
           taskIndex = i;

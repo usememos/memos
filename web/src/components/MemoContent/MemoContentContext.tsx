@@ -19,6 +19,9 @@ export interface MemoContentContextType {
 
   /** Parent page path (for navigation) */
   parentPage?: string;
+
+  /** Reference to the container element for the memo content */
+  containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const MemoContentContext = createContext<MemoContentContextType>({
