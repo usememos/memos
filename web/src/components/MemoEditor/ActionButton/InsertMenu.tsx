@@ -78,8 +78,18 @@ const InsertMenu = observer((props: Props) => {
   const handlePositionChange = (position: LatLng) => {
     location.handlePositionChange(position);
 
-    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.lat}&lon=${position.lng}&format=json`)
-      .then((response) => response.json())
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.lat}&lon=${position.lng}&format=json`, {
+      headers: {
+        "User-Agent": "Memos/1.0 (https://github.com/usememos/memos)",
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         if (data?.display_name) {
           location.setPlaceholder(data.display_name);
