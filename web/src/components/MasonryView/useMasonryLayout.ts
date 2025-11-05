@@ -45,7 +45,9 @@ export function useMasonryLayout(
 
     const containerWidth = containerRef.current.offsetWidth;
     const scale = containerWidth / MINIMUM_MEMO_VIEWPORT_WIDTH;
-    return scale >= 2 ? Math.round(scale) : 1;
+    // Use ceiling to maximize columns: 688px (1.34x) → 2 cols, 1280px (2.5x) → 3 cols
+    // Only use single column if scale is very small (< 1.2)
+    return scale >= 1.2 ? Math.ceil(scale) : 1;
   }, [containerRef, listMode]);
 
   /**

@@ -4,20 +4,40 @@ import { observer } from "mobx-react-lite";
 import { useState, useCallback } from "react";
 import { matchPath, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useStatisticsData } from "@/hooks/useStatisticsData";
 import { Routes } from "@/router";
 import { userStore } from "@/store";
 import memoFilterStore, { FilterFactor } from "@/store/memoFilter";
+import type { StatisticsData } from "@/types/statistics";
 import { useTranslate } from "@/utils/i18n";
 import ActivityCalendar from "../ActivityCalendar";
 import { MonthNavigator } from "./MonthNavigator";
 import { StatCard } from "./StatCard";
 
-const StatisticsView = observer(() => {
+export type StatisticsViewContext = "home" | "explore" | "archived" | "profile";
+
+interface Props {
+  /**
+   * Context for the statistics view
+   * Affects which stat cards are shown
+   * Default: "home"
+   */
+  context?: StatisticsViewContext;
+
+  /**
+   * Statistics data computed from filtered memos
+   * Should be provided by parent component using useFilteredMemoStats
+   */
+  statisticsData: StatisticsData;
+}
+
+const StatisticsView = observer((props: Props) => {
+  const { context = "home", statisticsData } = props;
   const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
-  const { memoTypeStats, activityStats } = useStatisticsData();
+
+  const { memoTypeStats, activityStats } = statisticsData;
+
   const [selectedDate] = useState(new Date());
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs().format("YYYY-MM"));
 
@@ -33,6 +53,11 @@ const StatisticsView = observer(() => {
   const isRootPath = matchPath(Routes.ROOT, location.pathname);
   const hasPinnedMemos = currentUser && (userStore.state.currentUserStats?.pinnedMemos || []).length > 0;
 
+  // Determine if we should show the pinned stat card
+  // Only show on home page (root path) for the current user with pinned memos
+  // Don't show on explore page since it's global
+  const shouldShowPinned = context === "home" && isRootPath && hasPinnedMemos;
+
   return (
     <div className="group w-full mt-2 space-y-1 text-muted-foreground animate-fade-in">
       <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} />
@@ -47,7 +72,7 @@ const StatisticsView = observer(() => {
       </div>
 
       <div className="pt-2 w-full flex flex-wrap items-center gap-2">
-        {isRootPath && hasPinnedMemos && (
+        {shouldShowPinned && (
           <StatCard
             icon={<BookmarkIcon className="opacity-70" />}
             label={t("common.pinned")}

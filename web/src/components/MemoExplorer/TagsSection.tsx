@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { userStore } from "@/store";
 import memoFilterStore, { MemoFilter } from "@/store/memoFilter";
 import { useTranslate } from "@/utils/i18n";
 import TagTree from "../TagTree";
@@ -11,13 +10,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface Props {
   readonly?: boolean;
+  /**
+   * Tag count computed from filtered memos
+   * Should be provided by parent component using useFilteredMemoStats
+   */
+  tagCount: Record<string, number>;
 }
 
 const TagsSection = observer((props: Props) => {
   const t = useTranslate();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
   const [treeAutoExpand, setTreeAutoExpand] = useLocalStorage<boolean>("tag-tree-auto-expand", false);
-  const tags = Object.entries(userStore.state.tagCount)
+
+  const tags = Object.entries(props.tagCount)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .sort((a, b) => b[1] - a[1]);
 

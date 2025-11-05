@@ -514,16 +514,18 @@ const MemoEditor = observer((props: Props) => {
               }
             />
           </div>
-          <div className="shrink-0 flex flex-row justify-end items-center gap-1">
+          <div className="shrink-0 flex flex-row justify-end items-center">
             <VisibilitySelector value={state.memoVisibility} onChange={(visibility) => handleMemoVisibilityChange(visibility)} />
-            {props.onCancel && (
-              <Button variant="ghost" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
-                {t("common.cancel")}
+            <div className="flex flex-row justify-end gap-1">
+              {props.onCancel && (
+                <Button variant="ghost" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
+                  {t("common.cancel")}
+                </Button>
+              )}
+              <Button disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick}>
+                {state.isRequesting ? <LoaderIcon className="w-4 h-4 animate-spin" /> : t("editor.save")}
               </Button>
-            )}
-            <Button disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick}>
-              {state.isRequesting ? <LoaderIcon className="w-4 h-4 animate-spin" /> : t("editor.save")}
-            </Button>
+            </div>
           </div>
         </div>
       </div>
