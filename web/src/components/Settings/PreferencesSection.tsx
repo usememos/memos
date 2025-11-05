@@ -47,7 +47,10 @@ const PreferencesSection = observer(() => {
       </div>
 
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.preference-section.theme")}</span>
+        <div className="flex flex-col">
+          <span>{t("setting.preference-section.theme")}</span>
+          <span className="text-xs text-muted-foreground">Your personal theme preference (overrides default)</span>
+        </div>
         <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
       </div>
 
