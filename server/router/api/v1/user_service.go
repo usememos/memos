@@ -170,7 +170,7 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 			roleToAssign = store.RoleUser
 		}
 
-		// Only allow user registration if it is enabled in the settings or user is superuser
+		// Only allow user registration if it is enabled in the settings, or if the user is a superuser
 		if currentUser == nil || !isSuperUser(currentUser) {
 			workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
 			if err != nil {
