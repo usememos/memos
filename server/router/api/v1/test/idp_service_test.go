@@ -56,7 +56,7 @@ func TestCreateIdentityProvider(t *testing.T) {
 		require.NotNil(t, resp)
 		require.Equal(t, "Test OAuth2 Provider", resp.Title)
 		require.Equal(t, v1pb.IdentityProvider_OAUTH2, resp.Type)
-		require.Contains(t, resp.Name, "identityProviders/")
+		require.Contains(t, resp.Name, "identity-providers/")
 		require.NotNil(t, resp.Config.GetOauth2Config())
 		require.Equal(t, "test-client-id", resp.Config.GetOauth2Config().ClientId)
 	})
@@ -249,7 +249,7 @@ func TestGetIdentityProvider(t *testing.T) {
 		defer ts.Cleanup()
 
 		req := &v1pb.GetIdentityProviderRequest{
-			Name: "identityProviders/999",
+			Name: "identity-providers/999",
 		}
 
 		_, err := ts.Service.GetIdentityProvider(ctx, req)
@@ -355,7 +355,7 @@ func TestUpdateIdentityProvider(t *testing.T) {
 
 		req := &v1pb.UpdateIdentityProviderRequest{
 			IdentityProvider: &v1pb.IdentityProvider{
-				Name:  "identityProviders/1",
+				Name:  "identity-providers/1",
 				Title: "Updated Provider",
 			},
 		}
@@ -466,7 +466,7 @@ func TestDeleteIdentityProvider(t *testing.T) {
 		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		req := &v1pb.DeleteIdentityProviderRequest{
-			Name: "identityProviders/999",
+			Name: "identity-providers/999",
 		}
 
 		_, err = ts.Service.DeleteIdentityProvider(userCtx, req)

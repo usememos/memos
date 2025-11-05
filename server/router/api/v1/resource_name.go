@@ -16,7 +16,7 @@ const (
 	AttachmentNamePrefix       = "attachments/"
 	ReactionNamePrefix         = "reactions/"
 	InboxNamePrefix            = "inboxes/"
-	IdentityProviderNamePrefix = "identityProviders/"
+	IdentityProviderNamePrefix = "identity-providers/"
 	ActivityNamePrefix         = "activities/"
 	WebhookNamePrefix          = "webhooks/"
 )

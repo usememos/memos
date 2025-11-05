@@ -14,19 +14,19 @@ option go_package = "gen/api/v1";
 service IdentityProviderService {
   // ListIdentityProviders lists identity providers.
   rpc ListIdentityProviders(ListIdentityProvidersRequest) returns (ListIdentityProvidersResponse) {
-    option (google.api.http) = {get: "/api/v1/identityProviders"};
+    option (google.api.http) = {get: "/api/v1/identity-providers"};
   }
 
   // GetIdentityProvider gets an identity provider.
   rpc GetIdentityProvider(GetIdentityProviderRequest) returns (IdentityProvider) {
-    option (google.api.http) = {get: "/api/v1/{name=identityProviders/*}"};
+    option (google.api.http) = {get: "/api/v1/{name=identity-providers/*}"};
     option (google.api.method_signature) = "name";
   }
 
   // CreateIdentityProvider creates an identity provider.
   rpc CreateIdentityProvider(CreateIdentityProviderRequest) returns (IdentityProvider) {
     option (google.api.http) = {
-      post: "/api/v1/identityProviders"
+      post: "/api/v1/identity-providers"
       body: "identity_provider"
     };
     option (google.api.method_signature) = "identity_provider";
@@ -35,7 +35,7 @@ service IdentityProviderService {
   // UpdateIdentityProvider updates an identity provider.
   rpc UpdateIdentityProvider(UpdateIdentityProviderRequest) returns (IdentityProvider) {
     option (google.api.http) = {
-      patch: "/api/v1/{identity_provider.name=identityProviders/*}"
+      patch: "/api/v1/{identity_provider.name=identity-providers/*}"
       body: "identity_provider"
     };
     option (google.api.method_signature) = "identity_provider,update_mask";
@@ -43,7 +43,7 @@ service IdentityProviderService {
 
   // DeleteIdentityProvider deletes an identity provider.
   rpc DeleteIdentityProvider(DeleteIdentityProviderRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/{name=identityProviders/*}"};
+    option (google.api.http) = {delete: "/api/v1/{name=identity-providers/*}"};
     option (google.api.method_signature) = "name";
   }
 }
@@ -51,14 +51,14 @@ service IdentityProviderService {
 message IdentityProvider {
   option (google.api.resource) = {
     type: "memos.api.v1/IdentityProvider"
-    pattern: "identityProviders/{idp}"
+    pattern: "identity-providers/{idp}"
     name_field: "name"
     singular: "identityProvider"
     plural: "identityProviders"
   };
 
   // The resource name of the identity provider.
-  // Format: identityProviders/{idp}
+  // Format: identity-providers/{idp}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   // Required. The type of the identity provider.
@@ -112,7 +112,7 @@ message ListIdentityProvidersResponse {
 
 message GetIdentityProviderRequest {
   // Required. The resource name of the identity provider to get.
-  // Format: identityProviders/{idp}
+  // Format: identity-providers/{idp}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
@@ -139,7 +139,7 @@ message UpdateIdentityProviderRequest {
 
 message DeleteIdentityProviderRequest {
   // Required. The resource name of the identity provider to delete.
-  // Format: identityProviders/{idp}
+  // Format: identity-providers/{idp}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
