@@ -235,16 +235,29 @@ func (s *APIV1Service) GetAttachmentBinary(ctx context.Context, request *v1pb.Ge
 	}
 
 	if request.Thumbnail && util.HasPrefixes(attachment.Type, SupportedThumbnailMimeTypes...) {
-		thumbnailBlob, err := s.getOrGenerateThumbnail(attachment)
-		if err != nil {
-			// thumbnail failures are logged as warnings and not cosidered critical failures as
-			// a attachment image can be used in its place.
-			slog.Warn("failed to get attachment thumbnail image", slog.Any("error", err))
-		} else {
-			return &httpbody.HttpBody{
-				ContentType: attachment.Type,
-				Data:        thumbnailBlob,
-			}, nil
+		// Check if we should generate thumbnails for S3 images
+		shouldGenerateThumbnail := true
+		if attachment.StorageType == storepb.AttachmentStorageType_S3 {
+			storageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
+			if err != nil {
+				slog.Warn("failed to get workspace storage setting", slog.Any("error", err))
+			} else if !storageSetting.EnableS3ImageThumbnails {
+				shouldGenerateThumbnail = false
+			}
+		}
+
+		if shouldGenerateThumbnail {
+			thumbnailBlob, err := s.getOrGenerateThumbnail(attachment)
+			if err != nil {
+				// thumbnail failures are logged as warnings and not cosidered critical failures as
+				// a attachment image can be used in its place.
+				slog.Warn("failed to get attachment thumbnail image", slog.Any("error", err))
+			} else {
+				return &httpbody.HttpBody{
+					ContentType: attachment.Type,
+					Data:        thumbnailBlob,
+				}, nil
+			}
 		}
 	}
 

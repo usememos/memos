@@ -3188,6 +3188,11 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/StorageSetting_S3Config'
                     description: The S3 config.
+                enableS3ImageThumbnails:
+                    type: boolean
+                    description: |-
+                        enable_s3_image_thumbnails enables thumbnail generation for images stored in S3.
+                         When false, images stored in S3 will not have thumbnails generated.
             description: Storage configuration settings for workspace attachments.
 tags:
     - name: ActivityService
