@@ -54,7 +54,7 @@ message GetWorkspaceProfileRequest {}
 // A workspace setting resource.
 message WorkspaceSetting {
   option (google.api.resource) = {
-    type: "api.memos.dev/WorkspaceSetting"
+    type: "memos.api.v1/WorkspaceSetting"
     pattern: "workspace/settings/{setting}"
     singular: "workspaceSetting"
     plural: "workspaceSettings"
@@ -178,7 +178,7 @@ message GetWorkspaceSettingRequest {
   // Format: workspace/settings/{setting}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.memos.dev/WorkspaceSetting"}
+    (google.api.resource_reference) = {type: "memos.api.v1/WorkspaceSetting"}
   ];
 }
 
